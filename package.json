@@ -1,15 +1,15 @@
 {
-  "name": "storybook-addon-kit",
+  "name": "@chromaui/storybook-visual-tests",
   "version": "0.0.0",
-  "description": "everything you need to build a Storybook addon",
+  "description": "Visual Testing addon with Chromatic",
   "keywords": [
-    "storybook-addons"
+    "tests", "visual tests", "vrt", "chromatic", "storybook-addons"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/storybookjs/storybook-addon-kit"
+    "url": "https://github.com/chromaui/storybook-visual-tests"
   },
-  "author": "package-author",
+  "author": "Tom Coleman <tom@chromatic.com>",
   "license": "MIT",
   "exports": {
     ".": {
@@ -39,7 +39,6 @@
     "*.d.ts"
   ],
   "scripts": {
-    "postinstall": "node scripts/welcome.js",
     "clean": "rimraf ./dist",
     "prebuild": "yarn clean",
     "build": "tsup",
@@ -101,9 +100,9 @@
     "access": "public"
   },
   "storybook": {
-    "displayName": "Addon Kit",
+    "displayName": "Visual Tests",
     "supportedFrameworks": [
-      "supported-frameworks"
+      "react", "vue", "angular", "web-components", "ember", "html", "svelte", "preact", "react-native"
     ],
     "icon": "https://user-images.githubusercontent.com/321738/63501763-88dbf600-c4cc-11e9-96cd-94adadc2fd72.png"
   }

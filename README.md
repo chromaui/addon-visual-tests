@@ -1,41 +1,5 @@
-<!-- README START -->
-
-# Storybook Addon Kit ([demo](https://main--601ada52c3d4040021afdc30.chromatic.com))
-
-Simplify the creation of Storybook addons
-
-- 📝 Live-editing in development
-- ⚛️ React/JSX support
-- 📦 Transpiling and bundling with [tsup](https://tsup.egoist.dev/)
-- 🏷 Plugin metadata
-- 🚢 Release management with [Auto](https://github.com/intuit/auto)
-- 🧺 Boilerplate and sample code
-- 🛄 ESM support
-- 🛂 TypeScript by default with option to eject to JS
-
-### Migrating from Storybook 6.x to 7
-
-Note, if you're looking to upgrade your addon from Storybook 6.x to 7, please refer to the [migration guide](https://github.com/storybookjs/storybook/blob/next/MIGRATION.md#70-addon-authors-changes). The major changes are:
-
-- `register.js` was removed
-- No more default export from `@storybook/addons`
-- `@storybook/api` has been split into `@storybook/preview-api` and `@storybook/manager-api`
-
-Skip this section if you're bootstrapping a new addon.
-
-## Getting Started
-
-Click the **Use this template** button to get started.
-
-![](https://user-images.githubusercontent.com/321738/125058439-8d9ef880-e0aa-11eb-9211-e6d7be812959.gif)
-
-Clone your repository and install dependencies.
-
-```sh
-yarn
-```
-
-<!-- README END -->
+# Storybook Addon Visual Tests
+Visual Testing addon with Chromatic
 
 ### Development scripts
 
