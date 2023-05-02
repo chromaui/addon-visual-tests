@@ -1,8 +1,7 @@
 import React from "react";
-import { useAddonState, useChannel } from "@storybook/manager-api";
+import { useAddonState } from "@storybook/manager-api";
 import { AddonPanel } from "@storybook/components";
-import { ADDON_ID, EVENTS } from "./constants";
-import { PanelContent } from "./components/PanelContent";
+import { ADDON_ID } from "./constants";
 
 interface PanelProps {
   active: boolean;
@@ -10,27 +9,11 @@ interface PanelProps {
 
 export const Panel: React.FC<PanelProps> = (props) => {
   // https://storybook.js.org/docs/react/addons/addons-api#useaddonstate
-  const [results, setState] = useAddonState(ADDON_ID, {
-    danger: [],
-    warning: [],
-  });
-
-  // https://storybook.js.org/docs/react/addons/addons-api#usechannel
-  const emit = useChannel({
-    [EVENTS.RESULT]: (newResults) => setState(newResults),
-  });
+  const [{ build }] = useAddonState<{ build: { url?: string } }>(ADDON_ID, {});
 
   return (
     <AddonPanel {...props}>
-      <PanelContent
-        results={results}
-        fetchData={() => {
-          emit(EVENTS.REQUEST);
-        }}
-        clearData={() => {
-          emit(EVENTS.CLEAR);
-        }}
-      />
+      {build ? <a href={build.url}>Build Running</a> : <p>No build yet</p>}
     </AddonPanel>
   );
 };

@@ -1,38 +1,46 @@
-import React, { memo, useCallback, useEffect } from "react";
-import { useGlobals, useStorybookApi } from "@storybook/manager-api";
+import React, { memo, useCallback, useState } from "react";
+import { useAddonState } from "@storybook/manager-api";
 import { Icons, IconButton } from "@storybook/components";
-import { ADDON_ID, PARAM_KEY, TOOL_ID } from "./constants";
+import { ADDON_ID, TOOL_ID } from "./constants";
+
+// Temporary approach, later we'll use the server channel for this.
+const cliServerUrl = "http://localhost:8765";
+
+type BuildInfo = { url: string };
+async function runBuild() {
+  const response = await fetch(`${cliServerUrl}/build`, { method: "POST" });
+
+  if (!response.ok)
+    throw new Error(`Failed to run build: ${response.statusText}`);
+
+  return (await response.json()) as BuildInfo;
+}
 
 export const Tool = memo(function MyAddonSelector() {
-  const [globals, updateGlobals] = useGlobals();
-  const api = useStorybookApi();
+  const [running, setRunning] = useState(false);
+  const [_, setAddonState] = useAddonState(ADDON_ID);
 
-  const isActive = [true, "true"].includes(globals[PARAM_KEY]);
+  const onRun = useCallback(async () => {
+    if (running) return;
 
-  const toggleMyTool = useCallback(() => {
-    updateGlobals({
-      [PARAM_KEY]: !isActive,
-    });
-  }, [isActive]);
-
-  useEffect(() => {
-    api.setAddonShortcut(ADDON_ID, {
-      label: "Toggle Measure [O]",
-      defaultShortcut: ["O"],
-      actionName: "outline",
-      showInMenu: false,
-      action: toggleMyTool,
-    });
-  }, [toggleMyTool, api]);
+    setRunning(true);
+    try {
+      const build = await runBuild();
+      setAddonState({ build });
+    } finally {
+      console.log("finally");
+      setRunning(false);
+    }
+  }, [running]);
 
   return (
     <IconButton
       key={TOOL_ID}
-      active={isActive}
-      title="Enable my addon"
-      onClick={toggleMyTool}
+      active={running}
+      title="Run visual tests"
+      onClick={onRun}
     >
-      <Icons icon="lightning" />
+      <Icons icon="play" />
     </IconButton>
   );
 });
