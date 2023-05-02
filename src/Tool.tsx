@@ -40,7 +40,7 @@ export const Tool = memo(function MyAddonSelector() {
       title="Run visual tests"
       onClick={onRun}
     >
-      <Icons icon="play" />
+      <Icons icon="play" /> Run Tests
     </IconButton>
   );
 });
