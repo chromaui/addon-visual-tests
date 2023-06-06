@@ -109,11 +109,12 @@ export const SignIn = ({ onBack, onSignIn, onSignInWithSSO }: SignInProps) => (
 );
 
 interface VerifyProps {
+  userCode: string;
   onBack: (e: SyntheticEvent) => void;
   onOpenChromatic: (e: SyntheticEvent) => void;
 }
 
-export const Verify = ({ onBack, onOpenChromatic }: VerifyProps) => (
+export const Verify = ({ userCode, onBack, onOpenChromatic }: VerifyProps) => (
   <Container>
     <BackButton onClick={onBack}>
       <BackIcon />
@@ -125,8 +126,8 @@ export const Verify = ({ onBack, onOpenChromatic }: VerifyProps) => (
       published Storybooks.
     </Text>
     <Digits>
-      {[1, 2, 3, "", 4, 5, 6].map((digit) => (
-        <li key={digit}>{digit}</li>
+      {userCode.split("").map((char: string, index: number) => (
+        <li key={index}>{char.replace(/[^A-Z0-9]/, "")}</li>
       ))}
     </Digits>
     <Button onClick={onOpenChromatic}>Go to Chromatic</Button>
@@ -146,6 +147,7 @@ export const Onboarding = () => {
     ),
     verify: (
       <Verify
+        userCode="123-123"
         onBack={() => setScreen("signin")}
         onOpenChromatic={() => setScreen("welcome")}
       />

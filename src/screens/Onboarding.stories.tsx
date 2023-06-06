@@ -32,6 +32,7 @@ export const SignIn = {
 export const Verify = {
   render: Onboarding.Verify,
   args: {
+    userCode: "123-123",
     onBack: linkTo("screens/Onboarding", "Sign In"),
     onOpenChromatic: linkTo("screens/Onboarding", "Welcome"),
   },
