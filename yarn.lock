@@ -2171,6 +2171,11 @@
   resolved "https://registry.yarnpkg.com/@storybook/channels/-/channels-7.0.0-rc.1.tgz#c60f4a9c82e899f1766f3979c97e7b884518e1b1"
   integrity sha512-hBER6gliJxsrYEbWlXNljf0/1ybIlYCtaK0Vcgqdw/zmTLG6hEbBpVnxJh56T3mD0Beng8ro9D4EkcLZGQ1LlA==
 
+"@storybook/channels@7.0.18":
+  version "7.0.18"
+  resolved "https://registry.yarnpkg.com/@storybook/channels/-/channels-7.0.18.tgz#0b5053ad6237ad7f619f1e17448d588de90ac235"
+  integrity sha512-rkA7ea0M3+dWS+71iHJdiZ5R2QuIdiVg0CgyLJHDagc1qej7pEVNhMWtppeq+X5Pwp9nkz8ZTQ7aCjTf6th0/A==
+
 "@storybook/cli@7.0.0":
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/@storybook/cli/-/cli-7.0.0.tgz#fd64dd0edeabbad041ce3a9aff078bf04851105e"
@@ -2375,6 +2380,28 @@
     fs-extra "^11.1.0"
     recast "^0.23.1"
     ts-dedent "^2.0.0"
+
+"@storybook/csf-tools@^7.0.12":
+  version "7.0.18"
+  resolved "https://registry.yarnpkg.com/@storybook/csf-tools/-/csf-tools-7.0.18.tgz#f61810f683b4eaa855a4a1ff876628835e82e965"
+  integrity sha512-0IJ2qdrxleTl67FUzsEvGcy96CY0OKyERE33tAsLNbvWcabdJKpLHP+rJwbsCw4z6IlS+kkmEffeFf5qRPTwkQ==
+  dependencies:
+    "@babel/generator" "~7.21.1"
+    "@babel/parser" "~7.21.2"
+    "@babel/traverse" "~7.21.2"
+    "@babel/types" "~7.21.2"
+    "@storybook/csf" "^0.1.0"
+    "@storybook/types" "7.0.18"
+    fs-extra "^11.1.0"
+    recast "^0.23.1"
+    ts-dedent "^2.0.0"
+
+"@storybook/csf@^0.1.0":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@storybook/csf/-/csf-0.1.1.tgz#abccc8c3e49aed0a6a7e87beb0d1c262b1921c06"
+  integrity sha512-4hE3AlNVxR60Wc5KSC68ASYzUobjPqtSKyhV6G+ge0FIXU55N5nTY7dXGRZHQGDBPq+XqchMkIdlkHPRs8nTHg==
+  dependencies:
+    type-fest "^2.19.0"
 
 "@storybook/csf@next":
   version "0.0.2-next.10"
@@ -2629,6 +2656,16 @@
   integrity sha512-wWFGKzXXD04j52iHTE7mxCz0zkJH0J/wh7pSsYAxUgyQaYHIIqLZUb9PLWVWf1v6RiSSa5k0HXhFWnfBOJeVIQ==
   dependencies:
     "@storybook/channels" "7.0.0-rc.1"
+    "@types/babel__core" "^7.0.0"
+    "@types/express" "^4.7.0"
+    file-system-cache "^2.0.0"
+
+"@storybook/types@7.0.18":
+  version "7.0.18"
+  resolved "https://registry.yarnpkg.com/@storybook/types/-/types-7.0.18.tgz#9418da288db3a1258996aab17fd49ca4eb810b7a"
+  integrity sha512-qPop2CbvmX42/BX29YT9jIzW2TlMcMjAE+KCpcKLBiD1oT5DJ1fhMzpe6RW9HkMegkBxjWx54iamN4oHM/pwcQ==
+  dependencies:
+    "@storybook/channels" "7.0.18"
     "@types/babel__core" "^7.0.0"
     "@types/express" "^4.7.0"
     file-system-cache "^2.0.0"
@@ -2997,11 +3034,6 @@
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/@types/unist/-/unist-2.0.6.tgz#250a7b16c3b91f672a24552ec64678eeb1d3a08d"
   integrity sha512-PBjIUxZHOuj0R15/xuwJYjFi+KZdNFrehocChv4g5hu6aFroHue8m0lBP0POdK2nKzbw0cgV1mws8+V/JAcEkQ==
-
-"@types/webpack-env@^1.17.0":
-  version "1.18.0"
-  resolved "https://registry.yarnpkg.com/@types/webpack-env/-/webpack-env-1.18.0.tgz#ed6ecaa8e5ed5dfe8b2b3d00181702c9925f13fb"
-  integrity sha512-56/MAlX5WMsPVbOg7tAxnYvNYMMWr/QJiIp6BxVSW3JJXUVzzOn64qW8TzQyMSqSUFM2+PVI4aUHcHOzIz/1tg==
 
 "@types/yargs-parser@*":
   version "21.0.0"
@@ -3752,14 +3784,14 @@ chownr@^2.0.0:
   resolved "https://registry.yarnpkg.com/chownr/-/chownr-2.0.0.tgz#15bfbe53d2eab4cf70f18a8cd68ebe5b3cb1dece"
   integrity sha512-bIomtDF5KGpdogkLd9VspvFzk9KfpyyGlS8YFVZl7TGPBHL5snIOnxeshwVgPteQ9b4Eydl+pVbIyE1DcvCWgQ==
 
-chromatic@^6.17.3:
-  version "6.17.3"
-  resolved "https://registry.yarnpkg.com/chromatic/-/chromatic-6.17.3.tgz#e0825f30e3efe71b016f7b5e265fbfbfde71c522"
-  integrity sha512-x6WAHLBqub/BYiGXEOsgw9T3m459SmwOvIz0Ra7rCriE2A9AqDKRmVdAEhzVud24ut6ehd54FJpDtArnR5/TbA==
+chromatic@6.19.0-canary.3:
+  version "6.19.0-canary.3"
+  resolved "https://registry.yarnpkg.com/chromatic/-/chromatic-6.19.0-canary.3.tgz#e1d2bf06a331e29226dc6ed84e7d256a84a57853"
+  integrity sha512-gYBFG1d0BvyIgtWH5zqeOIeXwybEEweoJ0ZNXX4R81FiZMMJQ/KmejBSo5S9Y7CpO+dNiANxMat8CtqNNnflaQ==
   dependencies:
     "@discoveryjs/json-ext" "^0.5.7"
-    "@types/webpack-env" "^1.17.0"
-    snyk-nodejs-lockfile-parser "^1.47.4"
+    "@storybook/csf-tools" "^7.0.12"
+    snyk-nodejs-lockfile-parser "^1.49.0"
 
 ci-info@^2.0.0:
   version "2.0.0"
@@ -7625,10 +7657,10 @@ snyk-config@^5.0.0:
     lodash.merge "^4.6.2"
     minimist "^1.2.5"
 
-snyk-nodejs-lockfile-parser@^1.47.4:
-  version "1.49.0"
-  resolved "https://registry.yarnpkg.com/snyk-nodejs-lockfile-parser/-/snyk-nodejs-lockfile-parser-1.49.0.tgz#5185e4ce0f471a989cc22ea9c0bd0d6fd5770403"
-  integrity sha512-73iqwHB8YSWex/PTx+TRUwtNPyKn5wP4n/kxEPbX9EfN3uSIcw6mSKiLm8gSKl5gtf8hcP0R0f1tBFjjdzQvRQ==
+snyk-nodejs-lockfile-parser@^1.49.0:
+  version "1.51.1"
+  resolved "https://registry.yarnpkg.com/snyk-nodejs-lockfile-parser/-/snyk-nodejs-lockfile-parser-1.51.1.tgz#8a1c81fc2450a1b512d3b9e9334a8ad3807a7878"
+  integrity sha512-NVD93nZwuLg/uhgHpMLk0e28r1Xz2wTsY00zK9L7dPMGF1BKbh05O5WXGagCb7yL5zFcb/xNyIkYyGoaTxWtmQ==
   dependencies:
     "@snyk/dep-graph" "^2.3.0"
     "@snyk/graphlib" "2.1.9-patch.3"
