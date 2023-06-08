@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Client, Provider, cacheExchange, fetchExchange } from "urql";
 
-export { Provider };
+import { STORAGE_KEY } from "../constants";
 
-const STORAGE_KEY = "chromaticAccessToken";
+export { Provider };
 
 let currentToken: string = localStorage.getItem(STORAGE_KEY);
 
