@@ -1,6 +1,7 @@
 import { styled, typography } from "@storybook/theming";
-
 import React from "react";
+
+import { Provider, client } from "./utils/graphQLClient";
 
 const Wrapper = styled.div({
   width: "100vw",
@@ -14,7 +15,9 @@ const Wrapper = styled.div({
 });
 
 export const storyWrapper = (Story: any) => (
-  <Wrapper>
-    <Story />
-  </Wrapper>
+  <Provider value={client}>
+    <Wrapper>
+      <Story />
+    </Wrapper>
+  </Provider>
 );

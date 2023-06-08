@@ -2,8 +2,7 @@ import { useState } from "react";
 
 // @ts-expect-error File is in plain JS
 import { sha256 } from "./sha256";
-
-const CHROMATIC_BASE_URL = "https://www.staging-chromatic.com";
+import { CHROMATIC_BASE_URL } from "../constants";
 
 const bytes = (buf: number[]) =>
   new Uint8Array(buf).reduce((acc, val) => acc + String.fromCharCode(val), "");

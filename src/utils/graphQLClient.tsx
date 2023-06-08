@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Client, Provider, cacheExchange, fetchExchange } from "urql";
 
-import { STORAGE_KEY } from "../constants";
+import { CHROMATIC_BASE_URL, STORAGE_KEY } from "../constants";
 
 export { Provider };
 
@@ -20,9 +20,12 @@ export const useAccessToken = () => {
 };
 
 export const client = new Client({
-  url: "https://www.staging-chromatic.com/api",
+  url: `${CHROMATIC_BASE_URL}/api`,
   exchanges: [cacheExchange, fetchExchange],
   fetchOptions: () => ({
-    headers: { authorization: currentToken ? `Bearer ${currentToken}` : "" },
+    headers: {
+      accept: "*/*", // workaround for https://github.com/mswjs/msw/issues/1593
+      authorization: currentToken ? `Bearer ${currentToken}` : "",
+    },
   }),
 });

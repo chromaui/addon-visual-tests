@@ -7,7 +7,7 @@ import { Text } from "../components/Text";
 import { Stack } from "../components/Stack";
 
 const ProjectQuery = gql`
-  query ($projectId: ID!) {
+  query ProjectQuery($projectId: ID!) {
     project(id: $projectId) {
       id
       name
@@ -31,7 +31,7 @@ export const SelectProject = () => {
       <Stack>
         {fetching && <p>Loading...</p>}
         {error && <p>{error.message}</p>}
-        {data && (
+        {data?.project && (
           <div>
             <Heading>Selected project</Heading>
             <Text>Baselines will be used with this project.</Text>
