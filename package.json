@@ -52,7 +52,8 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
-    "@storybook/design-system": "^7.15.11"
+    "@storybook/design-system": "^7.15.11",
+    "urql": "^4.0.3"
   },
   "devDependencies": {
     "@storybook/addon-essentials": "^7.0.0",
