@@ -8,10 +8,10 @@ import { Button } from "../../components/Button";
 import { Stack } from "../../components/Stack";
 
 interface WelcomeProps {
-  onEnable: () => void;
+  onNext: () => void;
 }
 
-export const Welcome = ({ onEnable }: WelcomeProps) => (
+export const Welcome = ({ onNext }: WelcomeProps) => (
   <Container>
     <Stack>
       <div>
@@ -22,7 +22,7 @@ export const Welcome = ({ onEnable }: WelcomeProps) => (
           changes.
         </Text>
       </div>
-      <Button appearance="secondary" onClick={onEnable}>
+      <Button appearance="secondary" onClick={onNext}>
         Enable
       </Button>
     </Stack>

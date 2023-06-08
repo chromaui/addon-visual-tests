@@ -28,12 +28,12 @@ const Digits = styled.ol({
 });
 
 interface VerifyProps {
-  userCode: string;
   onBack: () => void;
-  onOpenChromatic: () => void;
+  userCode: string;
+  verificationUrl: string;
 }
 
-export const Verify = ({ userCode, onBack, onOpenChromatic }: VerifyProps) => (
+export const Verify = ({ onBack, userCode, verificationUrl }: VerifyProps) => (
   <Container>
     <BackButton onClick={onBack}>
       <BackIcon />
@@ -46,12 +46,12 @@ export const Verify = ({ userCode, onBack, onOpenChromatic }: VerifyProps) => (
           Enter this verification code on Chromatic to grant access to your published Storybooks.
         </Text>
         <Digits>
-          {userCode.split("").map((char: string, index: number) => (
+          {userCode?.split("").map((char: string, index: number) => (
             <li key={index}>{char.replace(/[^A-Z0-9]/, "")}</li>
           ))}
         </Digits>
       </div>
-      <Button appearance="secondary" onClick={onOpenChromatic}>
+      <Button isLink appearance="secondary" href={verificationUrl} target="_blank">
         Go to Chromatic
       </Button>
     </Stack>
