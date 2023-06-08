@@ -18,8 +18,8 @@ export const Welcome = ({ onEnable }: WelcomeProps) => (
         <VisualTestsIcon />
         <Heading>Visual tests</Heading>
         <Text>
-          Catch bugs in UI appearance automatically. Compare image snapshots to
-          detect visual changes.
+          Catch bugs in UI appearance automatically. Compare image snapshots to detect visual
+          changes.
         </Text>
       </div>
       <Button appearance="secondary" onClick={onEnable}>

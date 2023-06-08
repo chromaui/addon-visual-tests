@@ -43,8 +43,7 @@ export const Verify = ({ userCode, onBack, onOpenChromatic }: VerifyProps) => (
       <div>
         <Heading>Verify your account</Heading>
         <Text>
-          Enter this verification code on Chromatic to grant access to your
-          published Storybooks.
+          Enter this verification code on Chromatic to grant access to your published Storybooks.
         </Text>
         <Digits>
           {userCode.split("").map((char: string, index: number) => (

@@ -37,8 +37,8 @@ export const SignIn = ({ onBack, onSignIn, onSignInWithSSO }: SignInProps) => (
         <VisualTestsIcon />
         <Heading>Sign in to begin visual testing</Heading>
         <Text>
-          Pinpoint bugs instantly by connecting with cloud browsers that run
-          visual tests in parallel.
+          Pinpoint bugs instantly by connecting with cloud browsers that run visual tests in
+          parallel.
         </Text>
       </div>
       <Button appearance="secondary" onClick={() => onSignIn()}>

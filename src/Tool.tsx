@@ -10,8 +10,7 @@ type BuildInfo = { url: string };
 async function runBuild() {
   const response = await fetch(`${cliServerUrl}/build`, { method: "POST" });
 
-  if (!response.ok)
-    throw new Error(`Failed to run build: ${response.statusText}`);
+  if (!response.ok) throw new Error(`Failed to run build: ${response.statusText}`);
 
   return (await response.json()) as BuildInfo;
 }
@@ -34,12 +33,7 @@ export const Tool = memo(function MyAddonSelector() {
   }, [running]);
 
   return (
-    <IconButton
-      key={TOOL_ID}
-      active={running}
-      title="Run visual tests"
-      onClick={onRun}
-    >
+    <IconButton key={TOOL_ID} active={running} title="Run visual tests" onClick={onRun}>
       <Icons icon="play" /> Run Tests
     </IconButton>
   );

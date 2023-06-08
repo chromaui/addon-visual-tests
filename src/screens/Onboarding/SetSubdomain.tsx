@@ -115,11 +115,7 @@ export const SetSubdomain = ({ onBack, onSignIn }: SetSubdomainProps) => {
           error={inputError}
           errorTooltipPlacement="top"
         />
-        <SuffixOverlay
-          value={subdomain}
-          placeholder="yourteam"
-          suffix=".chromatic.com"
-        />
+        <SuffixOverlay value={subdomain} placeholder="yourteam" suffix=".chromatic.com" />
         <SubmitButton type="submit" appearance="secondary">
           Continue
         </SubmitButton>

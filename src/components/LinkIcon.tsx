@@ -1,23 +1,9 @@
 import React from "react";
 
 export const LinkIcon = () => (
-  <svg
-    width="58"
-    height="53"
-    viewBox="0 0 58 53"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
+  <svg width="58" height="53" viewBox="0 0 58 53" fill="none" xmlns="http://www.w3.org/2000/svg">
     <g filter="url(#filter0_dd_304_317890)">
-      <rect
-        x="6"
-        y="2"
-        width="40"
-        height="40"
-        rx="8"
-        fill="#FF4785"
-        shapeRendering="crispEdges"
-      />
+      <rect x="6" y="2" width="40" height="40" rx="8" fill="#FF4785" shapeRendering="crispEdges" />
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -49,15 +35,8 @@ export const LinkIcon = () => (
         />
         <feOffset dy="5" />
         <feGaussianBlur stdDeviation="3" />
-        <feColorMatrix
-          type="matrix"
-          values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.06 0"
-        />
-        <feBlend
-          mode="normal"
-          in2="BackgroundImageFix"
-          result="effect1_dropShadow_304_317890"
-        />
+        <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.06 0" />
+        <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_304_317890" />
         <feColorMatrix
           in="SourceAlpha"
           type="matrix"
@@ -67,10 +46,7 @@ export const LinkIcon = () => (
         <feOffset dy="1" />
         <feGaussianBlur stdDeviation="1.5" />
         <feComposite in2="hardAlpha" operator="out" />
-        <feColorMatrix
-          type="matrix"
-          values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0"
-        />
+        <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0" />
         <feBlend
           mode="normal"
           in2="effect1_dropShadow_304_317890"

@@ -1,25 +1,12 @@
 import React from "react";
 
 export const VisualTestsIcon = () => (
-  <svg
-    width="52"
-    height="53"
-    viewBox="0 0 52 53"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
+  <svg width="52" height="53" viewBox="0 0 52 53" fill="none" xmlns="http://www.w3.org/2000/svg">
     <g filter="url(#filter0_dd_304_317945)">
       <g clipPath="url(#clip0_304_317945)">
         <rect x="6" y="2" width="40" height="40" rx="8" fill="#288041" />
         <g clipPath="url(#clip1_304_317945)">
-          <rect
-            x="14.75"
-            y="10.75"
-            width="22.5"
-            height="22.5"
-            rx="2"
-            fill="#215D31"
-          />
+          <rect x="14.75" y="10.75" width="22.5" height="22.5" rx="2" fill="#215D31" />
           <rect
             x="20.6104"
             y="20.1591"
@@ -48,14 +35,7 @@ export const VisualTestsIcon = () => (
         />
         <g clipPath="url(#clip2_304_317945)">
           <g clipPath="url(#clip3_304_317945)">
-            <rect
-              x="14.75"
-              y="10.75"
-              width="22.5"
-              height="22.5"
-              rx="2"
-              fill="#2B733F"
-            />
+            <rect x="14.75" y="10.75" width="22.5" height="22.5" rx="2" fill="#2B733F" />
             <rect
               x="21.3604"
               y="21.6592"
@@ -97,15 +77,8 @@ export const VisualTestsIcon = () => (
         <feOffset dy="5" />
         <feGaussianBlur stdDeviation="3" />
         <feComposite in2="hardAlpha" operator="out" />
-        <feColorMatrix
-          type="matrix"
-          values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.06 0"
-        />
-        <feBlend
-          mode="normal"
-          in2="BackgroundImageFix"
-          result="effect1_dropShadow_304_317945"
-        />
+        <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.06 0" />
+        <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_304_317945" />
         <feColorMatrix
           in="SourceAlpha"
           type="matrix"
@@ -115,10 +88,7 @@ export const VisualTestsIcon = () => (
         <feOffset dy="1" />
         <feGaussianBlur stdDeviation="1.5" />
         <feComposite in2="hardAlpha" operator="out" />
-        <feColorMatrix
-          type="matrix"
-          values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0"
-        />
+        <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0" />
         <feBlend
           mode="normal"
           in2="effect1_dropShadow_304_317945"
@@ -135,14 +105,7 @@ export const VisualTestsIcon = () => (
         <rect x="6" y="2" width="40" height="40" rx="8" fill="white" />
       </clipPath>
       <clipPath id="clip1_304_317945">
-        <rect
-          x="14.75"
-          y="10.75"
-          width="22.5"
-          height="22.5"
-          rx="2"
-          fill="white"
-        />
+        <rect x="14.75" y="10.75" width="22.5" height="22.5" rx="2" fill="white" />
       </clipPath>
       <clipPath id="clip2_304_317945">
         <rect
@@ -153,14 +116,7 @@ export const VisualTestsIcon = () => (
         />
       </clipPath>
       <clipPath id="clip3_304_317945">
-        <rect
-          x="14.75"
-          y="10.75"
-          width="22.5"
-          height="22.5"
-          rx="2"
-          fill="white"
-        />
+        <rect x="14.75" y="10.75" width="22.5" height="22.5" rx="2" fill="white" />
       </clipPath>
     </defs>
   </svg>
