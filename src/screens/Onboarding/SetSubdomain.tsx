@@ -18,8 +18,8 @@ const Form = styled.form({
   maxWidth: 300,
   margin: 10,
 
-  input: {
-    fontSize: `${typography.size.s2 - 1}px!important`,
+  "&& input": {
+    fontSize: `${typography.size.s2 - 1}px`,
   },
 });
 

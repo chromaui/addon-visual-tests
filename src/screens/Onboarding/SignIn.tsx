@@ -18,12 +18,14 @@ interface SignInProps {
   onSignInWithSSO: () => void;
 }
 
-const OpaqueLink = styled(Link)`
-  opacity: 0.7;
-  font-size: 12px;
-  line-height: 18px;
-  color: ${color.darker} !important;
-`;
+const OpaqueLink = styled(Link)({
+  "&&": {
+    opacity: 0.7,
+    fontSize: "12px",
+    lineHeight: "18px",
+    color: color.darker,
+  },
+});
 
 export const SignIn = ({ onBack, onSignIn, onSignInWithSSO }: SignInProps) => (
   <Container>
