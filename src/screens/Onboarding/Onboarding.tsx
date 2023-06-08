@@ -10,8 +10,10 @@ interface OnboardingProps {
   setAccessToken: (token: string) => void;
 }
 
+type OnboardingScreen = "welcome" | "signin" | "subdomain" | "verify";
+
 export const Onboarding = ({ setAccessToken }: OnboardingProps) => {
-  const [screen, setScreen] = useState("welcome");
+  const [screen, setScreen] = useState<OnboardingScreen>("welcome");
 
   const [isMounted, setMounted] = useState(true);
   useEffect(() => () => setMounted(false), []);
