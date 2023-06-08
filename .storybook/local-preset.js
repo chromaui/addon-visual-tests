@@ -8,11 +8,7 @@ function managerEntries(entry = []) {
   return [...entry, require.resolve("../dist/manager.mjs")];
 }
 
-module.exports = {
-  managerEntries,
-};
-
-function serve() {
+function serve(projectToken) {
   // Temporarily create a server as a psuedo server channel. This is throwaway code
   const app = express();
 
@@ -22,7 +18,7 @@ function serve() {
 
     await run({
       flags: {
-        projectToken: "00baf09dbbe8",
+        projectToken,
       },
       options: {
         onTaskComplete(ctx) {
@@ -51,4 +47,16 @@ function serve() {
     });
 }
 
-serve();
+let hasServed = false;
+async function core(existing, { projectToken }) {
+  if (!hasServed) {
+    serve(projectToken);
+    hasServed = true;
+  }
+  return existing;
+}
+
+module.exports = {
+  managerEntries,
+  core,
+};

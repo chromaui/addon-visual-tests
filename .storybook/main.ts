@@ -5,7 +5,12 @@ const config: StorybookConfig = {
     "@storybook/addon-links",
     "@storybook/addon-essentials",
     "@storybook/addon-interactions",
-    "./local-preset.js",
+    {
+      name: "./local-preset.js",
+      options: {
+        projectToken: "00baf09dbbe8",
+      },
+    },
   ],
   framework: {
     name: "@storybook/react-vite",
