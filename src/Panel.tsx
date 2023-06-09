@@ -1,7 +1,7 @@
 import React from "react";
 
-import { Onboarding } from "./screens/Onboarding/Onboarding";
-import { SelectProject } from "./screens/SelectProject";
+import { Authentication } from "./screens/Authentication/Authentication";
+import { LinkProject } from "./screens/LinkProject";
 import { Provider, useAccessToken, client } from "./utils/graphQLClient";
 
 interface PanelProps {
@@ -15,12 +15,12 @@ export const Panel = (props: PanelProps) => {
   // Storybook's AddonPanel component does the same but it's not styleable so we don't use it.
   if (!props.active) return <div hidden />;
 
-  // Render the onboarding flow if the user is not signed in.
-  if (!accessToken) return <Onboarding setAccessToken={setAccessToken} />;
+  // Render the Authentication flow if the user is not signed in.
+  if (!accessToken) return <Authentication setAccessToken={setAccessToken} />;
 
   return (
     <Provider value={client}>
-      <SelectProject />
+      <LinkProject />
     </Provider>
   );
 };

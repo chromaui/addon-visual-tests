@@ -20,7 +20,7 @@ const ProjectQuery = gql`
   }
 `;
 
-export const SelectProject = () => {
+export const LinkProject = () => {
   const [{ data, fetching, error }] = useQuery({
     query: ProjectQuery,
     variables: { projectId: "5fa3f227c1c504002259feba" },
