@@ -4,6 +4,7 @@ import { graphql } from "msw";
 import { storyWrapper } from "../../utils/graphQLClient";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
 import { Onboarding } from "./Onboarding";
+import { withFigmaDesign } from "../../utils/withFigmaDesign";
 
 const meta = {
   component: Onboarding,
