@@ -1,8 +1,8 @@
 import { Meta, StoryObj } from "@storybook/react";
 import { graphql } from "msw";
 
-import { storyWrapper } from "../utils/graphQLClient";
-import { withFigmaDesign } from "../utils/withFigmaDesign";
+import { storyWrapper } from "../../utils/graphQLClient";
+import { withFigmaDesign } from "../../utils/withFigmaDesign";
 import { LinkProject } from "./LinkProject";
 
 const meta = {

@@ -1,12 +1,12 @@
 import { Meta, StoryObj } from "@storybook/react";
 import { graphql } from "msw";
 
-import { storyWrapper } from "../utils/graphQLClient";
-import { withFigmaDesign } from "../utils/withFigmaDesign";
-import { LinkProject } from "./LinkProject";
+import { storyWrapper } from "../../utils/graphQLClient";
+import { withFigmaDesign } from "../../utils/withFigmaDesign";
+import { VisualTests } from "./VisualTests";
 
 const meta = {
-  component: LinkProject,
+  component: VisualTests,
   decorators: [storyWrapper],
   parameters: {
     msw: {
@@ -29,7 +29,7 @@ const meta = {
       ],
     },
   },
-} satisfies Meta<typeof LinkProject>;
+} satisfies Meta<typeof VisualTests>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
