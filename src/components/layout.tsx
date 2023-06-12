@@ -1,4 +1,4 @@
-import { styled } from "@storybook/theming";
+import { css, styled } from "@storybook/theming";
 
 export const Sections = styled.div({
   display: "flex",
@@ -25,21 +25,26 @@ export const Bar = styled(Row)({
   margin: "0 10px",
 });
 
-export const Col = styled.div({
-  display: "flex",
-  flexDirection: "column",
-  // justifyContent: "center",
-  // alignItems: "center",
-  "& + &": {
-    marginLeft: 15,
+export const Col = styled.div<{ push?: boolean }>(
+  {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    "& + &": {
+      marginLeft: 10,
+    },
   },
-});
+  ({ push }) => push && css({ marginLeft: "auto" })
+);
 
 export const Text = styled.div(({ theme }) => ({
   lineHeight: "18px",
   color: `${theme.color.defaultText}99`,
   b: {
     color: theme.color.defaultText,
+  },
+  small: {
+    fontSize: theme.typography.size.s1,
   },
   svg: {
     verticalAlign: "top",

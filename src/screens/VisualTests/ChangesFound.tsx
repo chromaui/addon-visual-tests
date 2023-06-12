@@ -31,7 +31,7 @@ const SnapshotImage = styled.div({
   justifyContent: "center",
   alignItems: "center",
   background: "#fff",
-  minHeight: 100,
+  height: "100%",
 });
 
 const ViewportSelector = () => (
@@ -75,10 +75,10 @@ export const ChangesFound = () => {
               <b>3 changes</b>
               <StatusIcon icon="changed" />
               <br />
-              <span>3 viewports, 3 browsers • Ran 1m ago</span>
+              <small>3 viewports, 3 browsers • Ran 1m ago</small>
             </Text>
           </Col>
-          <Col>
+          <Col push>
             <Button secondary small>
               Verify changes
             </Button>
@@ -86,7 +86,7 @@ export const ChangesFound = () => {
         </Row>
         <Bar>
           <Col>
-            <IconButton>
+            <IconButton active>
               <Icon icon="contrast" />
             </IconButton>
           </Col>
@@ -96,6 +96,14 @@ export const ChangesFound = () => {
           <Col>
             <BrowserSelector />
           </Col>
+          <Col push>
+            <IconButton secondary>Accept</IconButton>
+          </Col>
+          <Col>
+            <IconButton secondary>
+              <Icon icon="batchaccept" />
+            </IconButton>
+          </Col>
         </Bar>
       </Section>
       <Section style={{ flexGrow: 1 }}>
@@ -104,11 +112,21 @@ export const ChangesFound = () => {
         </SnapshotImage>
       </Section>
       <Section>
-        <Row>
+        <Bar>
           <Col>
-            <Text>No changes</Text>
+            <Text style={{ marginLeft: 5 }}>Latest snapshot on feature-branch</Text>
           </Col>
-        </Row>
+          <Col push>
+            <IconButton>
+              <Icon icon="controls" />
+            </IconButton>
+          </Col>
+          <Col>
+            <IconButton status="warning">
+              <Icon icon="alert" />2
+            </IconButton>
+          </Col>
+        </Bar>
       </Section>
     </Sections>
   );

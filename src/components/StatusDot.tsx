@@ -1,9 +1,9 @@
 import { styled } from "@storybook/theming";
 
 export const StatusDot = styled.div<{ status?: "passed" | "changed" | "failed" }>(({ theme }) => ({
-  display: "inline-block",
   position: "relative",
-  height: "1em",
+  display: "inline-flex",
+  justifyContent: "center",
 
   "img, svg": {
     verticalAlign: "top",
