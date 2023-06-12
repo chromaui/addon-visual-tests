@@ -2,14 +2,12 @@ import React from "react";
 
 import { Container } from "../../components/Container";
 import { BackButton } from "../../components/BackButton";
-import { BackIcon } from "../../components/BackIcon";
-import { LinkIcon } from "../../components/LinkIcon";
-import { VisualTestsIcon } from "../../components/VisualTestsIcon";
+import { BackIcon } from "../../components/icons/BackIcon";
+import { LinkIcon } from "../../components/icons/LinkIcon";
+import { VisualTestsIcon } from "../../components/icons/VisualTestsIcon";
 import { Heading } from "../../components/Heading";
 import { Text } from "../../components/Text";
 import { Button } from "../../components/Button";
-import { Link } from "@storybook/design-system";
-import { color, styled } from "@storybook/theming";
 import { Stack } from "../../components/Stack";
 
 interface SignInProps {
@@ -17,15 +15,6 @@ interface SignInProps {
   onSignIn: () => void;
   onSignInWithSSO: () => void;
 }
-
-const OpaqueLink = styled(Link)({
-  "&&": {
-    opacity: 0.7,
-    fontSize: "12px",
-    lineHeight: "18px",
-    color: color.darker,
-  },
-});
 
 export const SignIn = ({ onBack, onSignIn, onSignInWithSSO }: SignInProps) => (
   <Container>
@@ -43,12 +32,12 @@ export const SignIn = ({ onBack, onSignIn, onSignInWithSSO }: SignInProps) => (
           parallel.
         </Text>
       </div>
-      <Button appearance="secondary" onClick={() => onSignIn()}>
+      <Button secondary onClick={() => onSignIn()}>
         Sign in with Chromatic
       </Button>
-      <OpaqueLink isButton onClick={() => onSignInWithSSO()}>
+      <Button link onClick={() => onSignInWithSSO()}>
         Sign into Chromatic with SSO
-      </OpaqueLink>
+      </Button>
     </Stack>
   </Container>
 );

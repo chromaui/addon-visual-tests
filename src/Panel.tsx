@@ -1,7 +1,7 @@
 import React from "react";
 
 import { Authentication } from "./screens/Authentication/Authentication";
-import { LinkProject } from "./screens/LinkProject";
+import { LinkProject } from "./screens/LinkProject/LinkProject";
 import { Provider, useAccessToken, client } from "./utils/graphQLClient";
 
 interface PanelProps {

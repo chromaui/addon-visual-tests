@@ -6,6 +6,7 @@ import { rest } from "msw";
 import { storyWrapper } from "../../utils/graphQLClient";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
 import { Authentication } from "./Authentication";
+import { playAll } from "../../utils/playAll";
 
 const meta = {
   component: Authentication,
@@ -55,38 +56,34 @@ export const SignIn: Story = {
   parameters: withFigmaDesign(
     "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-317993&t=3EAIRe8423CpOQWY-4"
   ),
-  play: async ({ canvasElement }) => {
+  play: playAll<Story>(async ({ canvasElement }) => {
     const button = await findByRole(canvasElement, "button", {
       name: "Enable",
     });
     await userEvent.click(button);
-  },
+  }),
 };
 
 export const SSO: Story = {
   parameters: withFigmaDesign(
     "https://www.figma.com/file/p4ZIW7diUWC2l2DAf5xpYI/Storybook-Connect-plugin-(EXTERNAL-USE)?type=design&node-id=1-1734&t=ysgtc5qR40kqRKtI-4"
   ),
-  play: async (context) => {
-    await SignIn.play(context);
-
+  play: playAll<Story>(SignIn, async (context) => {
     const button = await findByRole(context.canvasElement, "button", {
       name: "Sign into Chromatic with SSO",
     });
     await userEvent.click(button);
-  },
+  }),
 };
 
 export const Verify: Story = {
   parameters: withFigmaDesign(
     "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318063&t=3EAIRe8423CpOQWY-4"
   ),
-  play: async (context) => {
-    await SignIn.play(context);
-
+  play: playAll<Story>(SignIn, async (context) => {
     const button = await findByRole(context.canvasElement, "button", {
       name: "Sign in with Chromatic",
     });
     await userEvent.click(button);
-  },
+  }),
 };

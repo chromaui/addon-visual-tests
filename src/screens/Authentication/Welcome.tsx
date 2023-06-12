@@ -3,7 +3,7 @@ import React from "react";
 import { Container } from "../../components/Container";
 import { Heading } from "../../components/Heading";
 import { Text } from "../../components/Text";
-import { VisualTestsIcon } from "../../components/VisualTestsIcon";
+import { VisualTestsIcon } from "../../components/icons/VisualTestsIcon";
 import { Button } from "../../components/Button";
 import { Stack } from "../../components/Stack";
 
@@ -22,7 +22,7 @@ export const Welcome = ({ onNext }: WelcomeProps) => (
           changes.
         </Text>
       </div>
-      <Button appearance="secondary" onClick={onNext}>
+      <Button secondary onClick={onNext}>
         Enable
       </Button>
     </Stack>

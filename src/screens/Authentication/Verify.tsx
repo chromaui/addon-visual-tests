@@ -3,13 +3,13 @@ import React from "react";
 
 import { Container } from "../../components/Container";
 import { BackButton } from "../../components/BackButton";
-import { BackIcon } from "../../components/BackIcon";
+import { BackIcon } from "../../components/icons/BackIcon";
 import { Heading } from "../../components/Heading";
 import { Text } from "../../components/Text";
 import { Button } from "../../components/Button";
 import { Stack } from "../../components/Stack";
 
-const Digits = styled.ol({
+const Digits = styled.ol(({ theme }) => ({
   display: "inline-flex",
   listStyle: "none",
   margin: 8,
@@ -20,12 +20,12 @@ const Digits = styled.ol({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    border: `1px dashed #ccc`,
+    border: `1px dashed ${theme.input.border}`,
     borderRadius: 4,
     width: 28,
     height: 32,
   },
-});
+}));
 
 interface VerifyProps {
   onBack: () => void;
@@ -73,7 +73,7 @@ export const Verify = ({ onBack, userCode, verificationUrl }: VerifyProps) => {
             ))}
           </Digits>
         </div>
-        <Button appearance="secondary" onClick={openChromatic}>
+        <Button secondary onClick={openChromatic}>
           Go to Chromatic
         </Button>
       </Stack>
