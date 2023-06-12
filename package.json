@@ -67,7 +67,7 @@
     "@types/react": "^18.0.34",
     "@vitejs/plugin-react": "^3.1.0",
     "auto": "^10.3.0",
-    "boxen": "^7.1.0",
+    "boxen": "^5.0.1",
     "chromatic": "^6.17.3",
     "dedent": "^0.7.0",
     "msw": "^1.2.1",
