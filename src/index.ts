@@ -1,6 +1,5 @@
 import express from "express";
 import { run } from "chromatic/node";
-import type { Context } from "chromatic/node";
 
 /**
  * to load the built addon in this test Storybook
@@ -22,7 +21,7 @@ function serve(projectToken: string) {
         projectToken,
       },
       options: {
-        onTaskComplete(ctx: Context) {
+        onTaskComplete(ctx: any) {
           console.log(`Completed task '${ctx.title}'`);
           if (ctx.announcedBuild && !sent) {
             const { id, number, app } = ctx.announcedBuild;
@@ -33,7 +32,7 @@ function serve(projectToken: string) {
             sent = true;
           }
         },
-      },
+      } as any,
     });
   });
 

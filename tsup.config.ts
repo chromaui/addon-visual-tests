@@ -6,11 +6,16 @@ export default defineConfig((options) => [
     splitting: false,
     minify: !options.watch,
     format: ["cjs"],
-    dts: false,
+    dts: {
+      resolve: true,
+    },
     treeshake: true,
     sourcemap: true,
     clean: true,
     platform: "node",
+    esbuildOptions(options) {
+      options.conditions = ["module"];
+    },
   },
   {
     entry: ["src/manager.ts"],
