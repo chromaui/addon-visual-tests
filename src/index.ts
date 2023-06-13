@@ -1,5 +1,6 @@
-import express from "express";
+import type { Channel } from "@storybook/channels";
 import { run } from "chromatic/node";
+import { BUILD_STARTED, START_BUILD } from "./constants";
 
 /**
  * to load the built addon in this test Storybook
@@ -8,14 +9,12 @@ function managerEntries(entry: string[] = []) {
   return [...entry, require.resolve("./manager.mjs")];
 }
 
-function serve(projectToken: string) {
-  // Temporarily create a server as a psuedo server channel. This is throwaway code
-  const app = express();
-
-  app.post("/build", async (req, res) => {
+async function experimental_serverChannel(
+  channel: Channel,
+  { projectToken }: { projectToken: string }
+) {
+  channel.on(START_BUILD, async () => {
     let sent = false;
-    res.setHeader("access-control-allow-origin", "*");
-
     await run({
       flags: {
         projectToken,
@@ -25,7 +24,8 @@ function serve(projectToken: string) {
           console.log(`Completed task '${ctx.title}'`);
           if (ctx.announcedBuild && !sent) {
             const { id, number, app } = ctx.announcedBuild;
-            res.json({
+            console.log("emitting", BUILD_STARTED);
+            channel.emit(BUILD_STARTED, {
               id,
               url: `https://www.chromatic.com/build?appId=${app.id}&number=${number}`,
             });
@@ -35,28 +35,9 @@ function serve(projectToken: string) {
       } as any,
     });
   });
-
-  app
-    .listen(8765, () => {
-      console.log("Listening on port 8765");
-    })
-    .on("error", (err) => {
-      // The above will throw when you try and build your SB or start a second dev server.
-      // As this is throwaway code we won't try and fix this.
-      console.log(`caught err, ${err}`);
-    });
-}
-
-let hasServed = false;
-async function core(existing: any, { projectToken }: { projectToken: string }) {
-  if (!hasServed) {
-    serve(projectToken);
-    hasServed = true;
-  }
-  return existing;
 }
 
 module.exports = {
   managerEntries,
-  core,
+  experimental_serverChannel,
 };

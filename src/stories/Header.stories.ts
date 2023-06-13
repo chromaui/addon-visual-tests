@@ -22,3 +22,7 @@ export const LoggedIn: Story = {
 };
 
 export const LoggedOut: Story = {};
+
+export const Small2: Story = {
+  args: {},
+};
