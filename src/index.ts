@@ -35,6 +35,8 @@ async function experimental_serverChannel(
       } as any,
     });
   });
+
+  return channel;
 }
 
 module.exports = {
