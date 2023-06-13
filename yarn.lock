@@ -3784,10 +3784,10 @@ chownr@^2.0.0:
   resolved "https://registry.yarnpkg.com/chownr/-/chownr-2.0.0.tgz#15bfbe53d2eab4cf70f18a8cd68ebe5b3cb1dece"
   integrity sha512-bIomtDF5KGpdogkLd9VspvFzk9KfpyyGlS8YFVZl7TGPBHL5snIOnxeshwVgPteQ9b4Eydl+pVbIyE1DcvCWgQ==
 
-chromatic@6.19.0-canary.3:
-  version "6.19.0-canary.3"
-  resolved "https://registry.yarnpkg.com/chromatic/-/chromatic-6.19.0-canary.3.tgz#e1d2bf06a331e29226dc6ed84e7d256a84a57853"
-  integrity sha512-gYBFG1d0BvyIgtWH5zqeOIeXwybEEweoJ0ZNXX4R81FiZMMJQ/KmejBSo5S9Y7CpO+dNiANxMat8CtqNNnflaQ==
+chromatic@^6.19.1:
+  version "6.19.1"
+  resolved "https://registry.yarnpkg.com/chromatic/-/chromatic-6.19.1.tgz#614c400113241674e10ad8415d472b6d0669855a"
+  integrity sha512-uNjQfnrLvPfu9ASnmWe419KBnpK177PcpUkpMyhHnnaOLZzJp81rFwl/05Qp+y7pQzuSwJY9C41znR73iZWTFQ==
   dependencies:
     "@discoveryjs/json-ext" "^0.5.7"
     "@storybook/csf-tools" "^7.0.12"

@@ -6,7 +6,7 @@ const config: StorybookConfig = {
     "@storybook/addon-essentials",
     "@storybook/addon-interactions",
     {
-      name: "./local-preset.js",
+      name: "../dist/index.js",
       options: {
         projectToken: "00baf09dbbe8",
       },
