@@ -2,7 +2,7 @@ import React, { memo, useCallback, useState } from "react";
 import type { Channel } from "@storybook/channels";
 import { useAddonState, useChannel } from "@storybook/manager-api";
 import { Icons, IconButton } from "@storybook/components";
-import { ADDON_ID, START_BUILD, TOOL_ID } from "./constants";
+import { ADDON_ID, BUILD_STARTED, START_BUILD, TOOL_ID } from "./constants";
 
 type BuildInfo = { url: string };
 
@@ -11,7 +11,7 @@ export const Tool = memo(function MyAddonSelector() {
   const [_, setAddonState] = useAddonState(ADDON_ID);
 
   const emit = useChannel({
-    BUILD_STARTED: (build: BuildInfo) => {
+    [BUILD_STARTED]: (build: BuildInfo) => {
       setAddonState({ build });
     },
   });
@@ -20,12 +20,7 @@ export const Tool = memo(function MyAddonSelector() {
     if (running) return;
 
     setRunning(true);
-    try {
-      const build = await emit(START_BUILD);
-    } finally {
-      console.log("finally");
-      setRunning(false);
-    }
+    emit(START_BUILD);
   }, [running]);
 
   return (
