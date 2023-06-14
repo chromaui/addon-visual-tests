@@ -10,6 +10,8 @@ const displayName = packageJson.storybook.displayName;
 let exitCode = 0;
 $.verbose = false;
 
+// TODO: Consider adding more checks here
+
 /**
  * Check that meta data has been updated
  */

@@ -24,12 +24,7 @@ export const Tool = memo(function MyAddonSelector() {
   }, [running]);
 
   return (
-    <IconButton
-      key={TOOL_ID}
-      active={running}
-      title="Run visual tests"
-      onClick={onRun}
-    >
+    <IconButton key={TOOL_ID} active={running} title="Run visual tests" onClick={onRun}>
       <Icons icon="play" /> Run Tests
     </IconButton>
   );
