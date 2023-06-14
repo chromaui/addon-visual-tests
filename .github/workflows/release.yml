@@ -17,12 +17,15 @@ jobs:
         with:
           node-version: 16.x
 
-      - name: Install dependencies
-        run: yarn install --ignore-scripts
+      - uses: pnpm/action-setup@v2
+        name: Install dependencies
+        with:
+          version: 7
+          run_install: true
 
       - name: Create Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          yarn release
+          pnpm run release
