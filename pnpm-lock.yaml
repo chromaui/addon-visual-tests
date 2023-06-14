@@ -4,6 +4,10 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  react: ^18.0.0
+  react-dom: ^18.0.0
+
 dependencies:
   '@storybook/blocks':
     specifier: ^7.1.0-alpha.34

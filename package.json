@@ -13,8 +13,8 @@
     "type": "git",
     "url": "https://github.com/chromaui/storybook-visual-tests"
   },
-  "author": "Chromatic <tom@chromatic.com>",
   "license": "MIT",
+  "author": "Chromatic <tom@chromatic.com>",
   "exports": {
     ".": {
       "require": "./dist/index.js",
@@ -51,14 +51,14 @@
   },
   "dependencies": {
     "@storybook/design-system": "^7.15.11",
-    "urql": "^4.0.3",
-    "chromatic": "^6.19.6-canary.0"
+    "chromatic": "^6.19.6-canary.0",
+    "urql": "^4.0.3"
   },
   "devDependencies": {
-    "@storybook/channels": "^7.1.0-alpha.34",
     "@storybook/addon-essentials": "^7.1.0-alpha.34",
     "@storybook/addon-interactions": "^7.1.0-alpha.34",
     "@storybook/addon-links": "^7.1.0-alpha.34",
+    "@storybook/channels": "^7.1.0-alpha.34",
     "@storybook/react": "^7.1.0-alpha.34",
     "@storybook/react-vite": "^7.1.0-alpha.34",
     "@storybook/testing-library": "^0.0.14-next.1",
@@ -94,10 +94,6 @@
     "react": "^16.8.0 || ^17.0.0 || ^18.0.0",
     "react-dom": "^16.8.0 || ^17.0.0 || ^18.0.0"
   },
-  "overrides": {
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0"
-  },
   "peerDependenciesMeta": {
     "react": {
       "optional": true
@@ -108,6 +104,15 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "msw": {
+    "workerDirectory": "public"
+  },
+  "pnpm": {
+    "overrides": {
+      "react": "^18.0.0",
+      "react-dom": "^18.0.0"
+    }
   },
   "storybook": {
     "displayName": "Visual Tests",
@@ -123,8 +128,5 @@
       "react-native"
     ],
     "icon": "https://user-images.githubusercontent.com/321738/63501763-88dbf600-c4cc-11e9-96cd-94adadc2fd72.png"
-  },
-  "msw": {
-    "workerDirectory": "public"
   }
 }
