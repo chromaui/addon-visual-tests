@@ -3,12 +3,12 @@ Visual Testing addon with Chromatic
 
 ### Development scripts
 
-- `yarn start` runs babel in watch mode and starts Storybook
-- `yarn build` build and package your addon code
+- `pnpm run start` runs babel in watch mode and starts Storybook
+- `pnpm run build` build and package your addon code
 
 ### Switch from TypeScript to JavaScript
 
-Don't want to use TypeScript? We offer a handy eject command: `yarn eject-ts`
+Don't want to use TypeScript? We offer a handy eject command: `pnpm run eject-ts`
 
 This will convert all code to JS. It is a destructive process, so we recommended running this before you start writing any code.
 
@@ -81,7 +81,7 @@ Go to `Settings > Secrets`, click `New repository secret`, and add your `NPM_TOK
 To create a release locally you can run the following command, otherwise the GitHub action will make the release for you.
 
 ```sh
-yarn release
+pnpm run release
 ```
 
 That will:

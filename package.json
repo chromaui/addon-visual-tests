@@ -41,10 +41,10 @@
     "chromatic": "chromatic -t 9b39ff142a7f",
     "build": "tsup",
     "build:staging": "CHROMATIC_BASE_URL=https://www.staging-chromatic.com tsup",
-    "build:watch": "yarn build --watch",
+    "build:watch": "pnpm run build --watch",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "run-p build:watch 'storybook --quiet'",
-    "release": "yarn build && auto shipit",
+    "release": "pnpm run build && auto shipit",
     "eject-ts": "zx scripts/eject-typescript.mjs",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
@@ -55,11 +55,12 @@
     "chromatic": "^6.19.6-canary.0"
   },
   "devDependencies": {
-    "@storybook/addon-essentials": "^7.1.0-alpha.32",
-    "@storybook/addon-interactions": "^7.1.0-alpha.32",
-    "@storybook/addon-links": "^7.1.0-alpha.32",
-    "@storybook/react": "^7.1.0-alpha.32",
-    "@storybook/react-vite": "^7.1.0-alpha.32",
+    "@storybook/channels": "^7.1.0-alpha.34",
+    "@storybook/addon-essentials": "^7.1.0-alpha.34",
+    "@storybook/addon-interactions": "^7.1.0-alpha.34",
+    "@storybook/addon-links": "^7.1.0-alpha.34",
+    "@storybook/react": "^7.1.0-alpha.34",
+    "@storybook/react-vite": "^7.1.0-alpha.34",
     "@storybook/testing-library": "^0.0.14-next.1",
     "@types/node": "^18.15.0",
     "@types/react": "^18.0.34",
@@ -75,7 +76,7 @@
     "prop-types": "^15.8.1",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "storybook": "^7.1.0-alpha.32",
+    "storybook": "^7.1.0-alpha.34",
     "tsup": "^6.6.3",
     "typescript": "^4.9.5",
     "vite": "^4.1.4",
@@ -83,15 +84,19 @@
     "zx": "^1.14.1"
   },
   "peerDependencies": {
-    "@storybook/blocks": "^7.1.0-alpha.32",
-    "@storybook/components": "^7.1.0-alpha.32",
-    "@storybook/core-events": "^7.1.0-alpha.32",
-    "@storybook/manager-api": "^7.1.0-alpha.32",
-    "@storybook/preview-api": "^7.1.0-alpha.32",
-    "@storybook/theming": "^7.1.0-alpha.32",
-    "@storybook/types": "^7.1.0-alpha.32",
+    "@storybook/blocks": "^7.1.0-alpha.34",
+    "@storybook/components": "^7.1.0-alpha.34",
+    "@storybook/core-events": "^7.1.0-alpha.34",
+    "@storybook/manager-api": "^7.1.0-alpha.34",
+    "@storybook/preview-api": "^7.1.0-alpha.34",
+    "@storybook/theming": "^7.1.0-alpha.34",
+    "@storybook/types": "^7.1.0-alpha.34",
     "react": "^16.8.0 || ^17.0.0 || ^18.0.0",
     "react-dom": "^16.8.0 || ^17.0.0 || ^18.0.0"
+  },
+  "overrides": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
   },
   "peerDependenciesMeta": {
     "react": {
