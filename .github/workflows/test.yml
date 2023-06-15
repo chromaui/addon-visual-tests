@@ -1,0 +1,14 @@
+name: "Test"
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Install dependencies
+        run: yarn
+      - name: Lint
+        run: yarn lint
+      # Currently we don't have any tests written, this is here for when we do
+      # - name: Test
+      # run: yarn test
