@@ -46,7 +46,7 @@
     "build": "tsup",
     "build:staging": "CHROMATIC_BASE_URL=https://www.staging-chromatic.com tsup",
     "build:watch": "pnpm run build --watch",
-    "lint": "pnpm eslint src",
+    "lint": "eslint src",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "run-p build:watch 'storybook --quiet'",
     "release": "pnpm run build && auto shipit",
