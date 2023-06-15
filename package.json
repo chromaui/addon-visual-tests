@@ -56,7 +56,7 @@
   },
   "dependencies": {
     "@storybook/design-system": "^7.15.11",
-    "chromatic": "^6.19.6-canary.0",
+    "chromatic": "^6.19.8-canary.2",
     "urql": "^4.0.3"
   },
   "devDependencies": {
