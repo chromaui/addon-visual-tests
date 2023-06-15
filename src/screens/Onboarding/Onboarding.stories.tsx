@@ -3,7 +3,7 @@ import { Meta, StoryObj } from "@storybook/react";
 import { findByRole, userEvent } from "@storybook/testing-library";
 import { rest } from "msw";
 
-import { storyWrapper } from "../../storyWrapper";
+import { storyWrapper } from "../../utils/graphQLClient";
 import { Onboarding } from "./Onboarding";
 
 const meta = {
