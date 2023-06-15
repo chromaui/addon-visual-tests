@@ -12,17 +12,20 @@ jobs:
       - name: Prepare repository
         run: git fetch --unshallow --tags
 
-      - name: Use Node.js 16.x
+      - name: Use Node.js 18.x
         uses: actions/setup-node@v3
         with:
-          node-version: 16.x
+          node-version: 18.x
 
-      - name: Install dependencies
-        run: yarn install --ignore-scripts
+      - uses: pnpm/action-setup@v2
+        name: Install dependencies
+        with:
+          version: 8
+          run_install: true
 
       - name: Create Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          yarn release
+          pnpm run release

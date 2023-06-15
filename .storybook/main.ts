@@ -6,7 +6,12 @@ const config: StorybookConfig = {
     "@storybook/addon-essentials",
     "@storybook/addon-interactions",
     "storybook-addon-designs",
-    "./local-preset.js",
+    {
+      name: "../dist/index.js",
+      options: {
+        projectToken: "00baf09dbbe8",
+      },
+    },
   ],
   docs: {
     autodocs: "tag",
@@ -16,7 +21,8 @@ const config: StorybookConfig = {
     options: {},
   },
   staticDirs: ["../public"],
-  stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|ts|tsx)"],
+  stories: ["../src/**/*.stories.@(js|jsx|ts|tsx)"],
+  logLevel: "debug",
 };
 
 export default config;
