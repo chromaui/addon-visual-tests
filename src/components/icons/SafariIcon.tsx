@@ -36,8 +36,8 @@ export const SafariIcon = (props: any) => (
         y2="15.7084"
         gradientUnits="userSpaceOnUse"
       >
-        <stop stop-color="#F8F8F8" />
-        <stop offset="1" stop-color="#CCCCCC" />
+        <stop stopColor="#F8F8F8" />
+        <stop offset="1" stopColor="#CCCCCC" />
       </linearGradient>
       <radialGradient
         id="paint1_radial_466_21186"
@@ -47,8 +47,8 @@ export const SafariIcon = (props: any) => (
         gradientUnits="userSpaceOnUse"
         gradientTransform="translate(8.00216 8.0046) scale(7.06173)"
       >
-        <stop stop-color="#00F0FF" />
-        <stop offset="1" stop-color="#0070E0" />
+        <stop stopColor="#00F0FF" />
+        <stop offset="1" stopColor="#0070E0" />
       </radialGradient>
     </defs>
   </svg>

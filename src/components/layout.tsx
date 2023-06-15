@@ -30,8 +30,8 @@ export const Col = styled.div<{ push?: boolean }>(
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    "& + &": {
-      marginLeft: 10,
+    "&:not(:last-of-type)": {
+      marginRight: 6,
     },
   },
   ({ push }) => push && css({ marginLeft: "auto" })
@@ -45,6 +45,9 @@ export const Text = styled.div(({ theme }) => ({
   },
   small: {
     fontSize: theme.typography.size.s1,
+  },
+  span: {
+    whiteSpace: "nowrap",
   },
   svg: {
     verticalAlign: "top",

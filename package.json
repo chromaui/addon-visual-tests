@@ -54,6 +54,7 @@
   },
   "dependencies": {
     "@storybook/design-system": "^7.15.11",
+    "pluralize": "^8.0.0",
     "urql": "^4.0.3"
   },
   "devDependencies": {

@@ -41,8 +41,8 @@ export const ChromeIcon = (props: any) => (
         gradientUnits="userSpaceOnUse"
         gradientTransform="translate(7.69229 4.63226) scale(7.07721 1.89116)"
       >
-        <stop stop-color="#3E2723" stop-opacity="0.2" />
-        <stop offset="1" stop-color="#3E2723" stop-opacity="0.01" />
+        <stop stopColor="#3E2723" stopOpacity="0.2" />
+        <stop offset="1" stopColor="#3E2723" stopOpacity="0.01" />
       </radialGradient>
       <radialGradient
         id="paint1_radial_466_21161"
@@ -52,8 +52,8 @@ export const ChromeIcon = (props: any) => (
         gradientUnits="userSpaceOnUse"
         gradientTransform="translate(1.77445 4.00677) scale(6.56938 7.75127)"
       >
-        <stop stop-color="#3E2723" stop-opacity="0.2" />
-        <stop offset="1" stop-color="#3E2723" stop-opacity="0.01" />
+        <stop stopColor="#3E2723" stopOpacity="0.2" />
+        <stop offset="1" stopColor="#3E2723" stopOpacity="0.01" />
       </radialGradient>
       <radialGradient
         id="paint2_radial_466_21161"
@@ -63,8 +63,8 @@ export const ChromeIcon = (props: any) => (
         gradientUnits="userSpaceOnUse"
         gradientTransform="translate(8.00025 8.01489) scale(7.39644 14.8995)"
       >
-        <stop stop-color="#263238" stop-opacity="0.2" />
-        <stop offset="1" stop-color="#263238" stop-opacity="0.01" />
+        <stop stopColor="#263238" stopOpacity="0.2" />
+        <stop offset="1" stopColor="#263238" stopOpacity="0.01" />
       </radialGradient>
     </defs>
   </svg>

@@ -7,6 +7,7 @@ import { storyWrapper } from "../../utils/graphQLClient";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
 import { Authentication } from "./Authentication";
 import { playAll } from "../../utils/playAll";
+import { storyWrapper } from "../../utils/graphQLClient";
 
 const meta = {
   component: Authentication,
