@@ -1,8 +1,7 @@
 import { Icon } from "@storybook/design-system";
 import { styled } from "@storybook/theming";
 import React from "react";
-
-import { TestStatus } from "../../types";
+import { BuildStatus, TestStatus } from "../../constants";
 
 const StyledIcon = styled(Icon)<{ icon: "passed" | "changed" | "failed" }>(({ icon, theme }) => ({
   width: 12,
@@ -17,11 +16,14 @@ const StyledIcon = styled(Icon)<{ icon: "passed" | "changed" | "failed" }>(({ ic
   }[icon],
 }));
 
-export const StatusIcon = ({ status }: { status: TestStatus }) =>
+export const StatusIcon = ({ status }: { status: BuildStatus }) =>
   ({
-    "in-progress": null,
-    passed: <StyledIcon icon="passed" />,
-    pending: <StyledIcon icon="changed" />,
-    accepted: <StyledIcon icon="passed" />,
-    failed: <StyledIcon icon="failed" />,
+    [BuildStatus.IN_PROGRESS]: null,
+    [BuildStatus.PASSED]: <StyledIcon icon="passed" />,
+    [BuildStatus.PENDING]: <StyledIcon icon="changed" />,
+    [BuildStatus.ACCEPTED]: <StyledIcon icon="passed" />,
+    [BuildStatus.DENIED]: <StyledIcon icon="failed" />,
+    [BuildStatus.BROKEN]: <StyledIcon icon="failed" />,
+    [BuildStatus.FAILED]: <StyledIcon icon="failed" />,
+    [BuildStatus.CANCELLED]: <StyledIcon icon="failed" />,
   }[status]);

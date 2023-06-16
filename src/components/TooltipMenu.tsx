@@ -30,7 +30,6 @@ export const TooltipMenu = ({ children, links, ...props }: TooltipMenuProps) => 
         </Tooltip>
       }
       trigger="click"
-      withArrows
       {...props}
     >
       {typeof children === "function" ? (

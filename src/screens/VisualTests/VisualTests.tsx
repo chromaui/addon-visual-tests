@@ -1,4 +1,5 @@
 import { Icon } from "@storybook/design-system";
+import { formatDistance } from "date-fns";
 import pluralize from "pluralize";
 import React, { useState } from "react";
 
@@ -10,18 +11,48 @@ import { ViewportSelector } from "../../components/ViewportSelector";
 import { BrowserSelector } from "../../components/BrowserSelector";
 import { SnapshotImage } from "../../components/SnapshotImage";
 import { TooltipMenu } from "../../components/TooltipMenu";
-import { TestStatus } from "../../types";
+import { BuildStatus, ComparisonResult, TestStatus, aggregate } from "../../constants";
 import { useAccessToken } from "../../utils/graphQLClient";
 
-interface VisualTestsProps {
-  branch: string;
+interface Test {
+  id: string;
   status: TestStatus;
-  changeCount?: number;
+  comparisons: {
+    browser: string;
+    viewport: string;
+    result: ComparisonResult;
+  }[];
 }
 
-export const VisualTests = ({ branch, status, changeCount }: VisualTestsProps) => {
+interface VisualTestsProps {
+  build: {
+    branch: string;
+    changeCount?: number;
+    status: BuildStatus;
+    startedAt: Date;
+    tests?: Test[];
+  };
+}
+
+export const VisualTests = ({ build }: VisualTestsProps) => {
   const [, setAccessToken] = useAccessToken();
   const [diffVisible, setDiffVisible] = useState(true);
+
+  const { branch, changeCount, status, startedAt, tests } = build;
+  const startedAgo = formatDistance(startedAt, new Date(), { addSuffix: true });
+
+  const viewportStatuses = Object.fromEntries(
+    tests?.map((test) => [test.comparisons[0].viewport, test.status]) || []
+  );
+  const browserResults = tests?.reduce((acc, test) => {
+    test.comparisons.forEach((comparison) => {
+      acc[comparison.browser] = aggregate<ComparisonResult>([
+        comparison.result,
+        acc[comparison.browser],
+      ]);
+    });
+    return acc;
+  }, {} as Record<string, ComparisonResult>);
 
   return (
     <Sections>
@@ -33,11 +64,15 @@ export const VisualTests = ({ branch, status, changeCount }: VisualTestsProps) =
               <StatusIcon status={status} />
               <br />
               <small>
-                <span>3 viewports, 3 browsers</span> • <span>Ran 1m ago</span>
+                <span>
+                  {pluralize("viewport", Object.keys(viewportStatuses).length, true)},{" "}
+                  {pluralize("browser", Object.keys(browserResults).length, true)}
+                </span>{" "}
+                • <span title={startedAt.toUTCString()}>Ran {startedAgo}</span>
               </small>
             </Text>
           </Col>
-          {status === "pending" && (
+          {status === TestStatus.PENDING && (
             <Col push>
               <Button secondary small>
                 Verify changes
@@ -52,12 +87,12 @@ export const VisualTests = ({ branch, status, changeCount }: VisualTestsProps) =
             </IconButton>
           </Col>
           <Col>
-            <ViewportSelector status={status} onSelectViewport={console.log} />
+            <ViewportSelector viewportStatuses={viewportStatuses} onSelectViewport={console.log} />
           </Col>
           <Col>
-            <BrowserSelector status={status} onSelectBrowser={console.log} />
+            <BrowserSelector browserResults={browserResults} onSelectBrowser={console.log} />
           </Col>
-          {status === "pending" && (
+          {status === TestStatus.PENDING && (
             <>
               <Col push>
                 <IconButton secondary>Accept</IconButton>

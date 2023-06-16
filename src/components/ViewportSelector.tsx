@@ -1,42 +1,48 @@
 import { Icon } from "@storybook/design-system";
 import React from "react";
 
-import { StatusDot, StatusDotWrapper } from "./StatusDot";
+import { aggregate, TestStatus } from "../constants";
 import { ArrowIcon } from "./icons/ArrowIcon";
-import { TestStatus } from "../types";
+import { StatusDot, StatusDotWrapper } from "./StatusDot";
 import { TooltipMenu } from "./TooltipMenu";
 
 interface ViewportSelectorProps {
-  status: TestStatus;
-  onSelectViewport: (viewport: number) => void;
+  viewportStatuses: Record<string, TestStatus>;
+  onSelectViewport: (viewport: string) => void;
 }
 
-export const ViewportSelector = ({ status, onSelectViewport }: ViewportSelectorProps) => {
-  const [selected, setSelected] = React.useState(764);
+export const ViewportSelector = ({ viewportStatuses, onSelectViewport }: ViewportSelectorProps) => {
+  const [selected, setSelected] = React.useState(Object.keys(viewportStatuses)[0]);
 
   const handleSelect = React.useCallback(
-    (viewport: number) => {
+    (viewport: string) => {
       setSelected(viewport);
       onSelectViewport(viewport);
     },
     [onSelectViewport]
   );
 
+  const status = aggregate(Object.values(viewportStatuses));
+
   return (
     <TooltipMenu
       placement="bottom"
-      links={[764, 1024, 1200].map((viewport: number) => ({
+      links={Object.entries(viewportStatuses).map(([viewport, status]) => ({
         id: `viewport-${viewport}`,
-        title: `${viewport}px`,
-        right: <StatusDot status="pending" />,
+        title: viewport,
+        right: status !== TestStatus.PASSED && <StatusDot status={status} />,
         onClick: () => handleSelect(viewport),
         active: selected === viewport,
       }))}
     >
-      <StatusDotWrapper status={status}>
+      {status === TestStatus.PASSED ? (
         <Icon icon="grow" />
-      </StatusDotWrapper>
-      {selected}px
+      ) : (
+        <StatusDotWrapper status={status}>
+          <Icon icon="grow" />
+        </StatusDotWrapper>
+      )}
+      {selected}
       <ArrowIcon icon="arrowdown" />
     </TooltipMenu>
   );

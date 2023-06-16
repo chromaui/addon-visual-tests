@@ -4,6 +4,67 @@ import { graphql } from "msw";
 import { storyWrapper } from "../../utils/graphQLClient";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
 import { VisualTests } from "./VisualTests";
+import { BuildStatus, ComparisonResult, TestStatus } from "../../constants";
+
+const tests = [
+  {
+    id: "1",
+    status: TestStatus.PASSED,
+    comparisons: [
+      { browser: "chrome", viewport: "1200px", result: ComparisonResult.EQUAL },
+      { browser: "safari", viewport: "1200px", result: ComparisonResult.EQUAL },
+    ],
+  },
+  {
+    id: "2",
+    status: TestStatus.PENDING,
+    comparisons: [
+      { browser: "chrome", viewport: "800px", result: ComparisonResult.EQUAL },
+      { browser: "safari", viewport: "800px", result: ComparisonResult.CHANGED },
+    ],
+  },
+  {
+    id: "3",
+    status: TestStatus.PASSED,
+    comparisons: [
+      { browser: "chrome", viewport: "400px", result: ComparisonResult.EQUAL },
+      { browser: "safari", viewport: "400px", result: ComparisonResult.EQUAL },
+    ],
+  },
+];
+
+const inProgressBuild = {
+  branch: "feature-branch",
+  status: BuildStatus.IN_PROGRESS,
+  startedAt: new Date(Date.now() - 1000 * 60 * 2), // 2 minutes ago
+};
+
+const passedBuild = {
+  ...inProgressBuild,
+  status: BuildStatus.PASSED,
+  changeCount: 0,
+  tests: tests.map((test) => ({
+    ...test,
+    status: TestStatus.PASSED,
+    comparisons: test.comparisons.map((comparison) => ({
+      ...comparison,
+      result: ComparisonResult.EQUAL,
+    })),
+  })),
+};
+
+const pendingBuild = {
+  ...inProgressBuild,
+  status: BuildStatus.PENDING,
+  changeCount: 3,
+  tests,
+};
+
+const acceptedBuild = {
+  ...pendingBuild,
+  status: BuildStatus.ACCEPTED,
+  tests: tests.map((test) => ({ ...test, status: TestStatus.ACCEPTED })),
+};
 
 const meta = {
   component: VisualTests,
@@ -17,7 +78,7 @@ const meta = {
               project: {
                 id: "123",
                 name: "acme",
-                webUrl: "https://www.chromatic.com/builds?appId=123",
+                webUrl: "https://www.chromatic.com/passedBuilds?appId=123",
                 lastBuild: {
                   branch: "main",
                   number: 123,
@@ -36,8 +97,7 @@ type Story = StoryObj<typeof meta>;
 
 export const NoChanges: Story = {
   args: {
-    branch: "feature-branch",
-    status: "passed",
+    build: passedBuild,
   },
   parameters: withFigmaDesign(
     "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304933&t=0rxMQnkxsVpVj1qy-4"
@@ -46,8 +106,7 @@ export const NoChanges: Story = {
 
 export const Outdated: Story = {
   args: {
-    branch: "feature-branch",
-    status: "passed",
+    build: passedBuild,
   },
   parameters: withFigmaDesign(
     "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304922&t=0rxMQnkxsVpVj1qy-4"
@@ -56,8 +115,7 @@ export const Outdated: Story = {
 
 export const InProgress: Story = {
   args: {
-    branch: "feature-branch",
-    status: "in-progress",
+    build: inProgressBuild,
   },
   parameters: withFigmaDesign(
     "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304861&t=0rxMQnkxsVpVj1qy-4"
@@ -66,9 +124,7 @@ export const InProgress: Story = {
 
 export const Pending: Story = {
   args: {
-    branch: "feature-branch",
-    status: "pending",
-    changeCount: 3,
+    build: pendingBuild,
   },
   parameters: withFigmaDesign(
     "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304718&t=0rxMQnkxsVpVj1qy-4"
@@ -77,9 +133,7 @@ export const Pending: Story = {
 
 export const Accepted: Story = {
   args: {
-    branch: "feature-branch",
-    status: "accepted",
-    changeCount: 3,
+    build: acceptedBuild,
   },
   parameters: withFigmaDesign(
     "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-305053&t=0rxMQnkxsVpVj1qy-4"
