@@ -4,13 +4,18 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: pnpm/action-setup@v2
-        name: Install dependencies
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        uses: pnpm/action-setup@v2
         with:
           version: 8
           run_install: true
+
       - name: Lint
         run: pnpm lint
+
       # Currently we don't have any tests written, this is here for when we do
       # - name: Test
       # run: yarn test
