@@ -28,8 +28,8 @@ dependencies:
     specifier: ^7.1.0-alpha.34
     version: 7.1.0-alpha.34
   chromatic:
-    specifier: ^6.19.8-canary.2
-    version: 6.19.8-canary.2
+    specifier: ^6.19.8
+    version: 6.19.8
   urql:
     specifier: ^4.0.3
     version: 4.0.3(react@18.0.0)
@@ -5216,8 +5216,8 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /chromatic@6.19.8-canary.2:
-    resolution: {integrity: sha512-G5ulYhz88WFlzCcOPY2UIRyQBanrUmhsVcIAOzS8UbFncWdbBp4cXpV99hG2YnbbXNq5mrwXZqzMTZKs5RuUbg==}
+  /chromatic@6.19.8:
+    resolution: {integrity: sha512-cvQAd/BkhRscXYbHuwIYwkmqzgpLz50maBGvUDa+WdfpoxzYrUvG2uZ1YU3tS857dAwMuTL5wUFiawiffDIKvQ==}
     hasBin: true
     dev: false
 
