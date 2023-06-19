@@ -1,18 +1,18 @@
 import { Icon } from "@storybook/design-system";
 import React from "react";
 
-import { aggregate, TestStatus } from "../constants";
+import { aggregate, ComparisonResult } from "../constants";
 import { ArrowIcon } from "./icons/ArrowIcon";
 import { StatusDot, StatusDotWrapper } from "./StatusDot";
 import { TooltipMenu } from "./TooltipMenu";
 
 interface ViewportSelectorProps {
-  viewportStatuses: Record<string, TestStatus>;
+  viewportResults: Record<string, ComparisonResult>;
   onSelectViewport: (viewport: string) => void;
 }
 
-export const ViewportSelector = ({ viewportStatuses, onSelectViewport }: ViewportSelectorProps) => {
-  const [selected, setSelected] = React.useState(Object.keys(viewportStatuses)[0]);
+export const ViewportSelector = ({ viewportResults, onSelectViewport }: ViewportSelectorProps) => {
+  const [selected, setSelected] = React.useState(Object.keys(viewportResults)[0]);
 
   const handleSelect = React.useCallback(
     (viewport: string) => {
@@ -22,23 +22,23 @@ export const ViewportSelector = ({ viewportStatuses, onSelectViewport }: Viewpor
     [onSelectViewport]
   );
 
-  const status = aggregate(Object.values(viewportStatuses));
+  const result = aggregate(Object.values(viewportResults));
 
   return (
     <TooltipMenu
       placement="bottom"
-      links={Object.entries(viewportStatuses).map(([viewport, status]) => ({
+      links={Object.entries(viewportResults).map(([viewport, result]) => ({
         id: `viewport-${viewport}`,
         title: viewport,
-        right: status !== TestStatus.PASSED && <StatusDot status={status} />,
+        right: result !== ComparisonResult.EQUAL && <StatusDot status={result} />,
         onClick: () => handleSelect(viewport),
         active: selected === viewport,
       }))}
     >
-      {status === TestStatus.PASSED ? (
+      {result === ComparisonResult.EQUAL ? (
         <Icon icon="grow" />
       ) : (
-        <StatusDotWrapper status={status}>
+        <StatusDotWrapper status={result}>
           <Icon icon="grow" />
         </StatusDotWrapper>
       )}

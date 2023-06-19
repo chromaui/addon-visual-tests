@@ -5,6 +5,8 @@ import { storyWrapper } from "../../utils/graphQLClient";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
 import { VisualTests } from "./VisualTests";
 import { BuildStatus, ComparisonResult, TestStatus } from "../../constants";
+import { playAll } from "../../utils/playAll";
+import { findByRole, fireEvent } from "@storybook/testing-library";
 
 const tests = [
   {
@@ -138,4 +140,30 @@ export const Accepted: Story = {
   parameters: withFigmaDesign(
     "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-305053&t=0rxMQnkxsVpVj1qy-4"
   ),
+};
+
+export const RenderSettings: Story = {
+  args: {
+    build: passedBuild,
+  },
+  parameters: withFigmaDesign(
+    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-525764&t=18c1zI1SMe76dWYk-4"
+  ),
+  play: playAll(async ({ canvasElement }) => {
+    const button = await findByRole(canvasElement, "button", { name: "Show render settings" });
+    await fireEvent.click(button);
+  }),
+};
+
+export const Warnings: Story = {
+  args: {
+    build: passedBuild,
+  },
+  parameters: withFigmaDesign(
+    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=516-672810&t=18c1zI1SMe76dWYk-4"
+  ),
+  play: playAll(async ({ canvasElement }) => {
+    const button = await findByRole(canvasElement, "button", { name: "Show warnings" });
+    await fireEvent.click(button);
+  }),
 };

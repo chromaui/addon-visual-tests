@@ -6,16 +6,17 @@ export const Sections = styled.div({
   height: "100%",
 });
 
-export const Section = styled.div(({ theme }) => ({
-  "& + &": {
-    borderTop: `1px solid ${theme.color.border}`,
+export const Section = styled.div<{ grow?: boolean }>(({ grow, theme }) => ({
+  flexGrow: grow ? 1 : "auto",
+  borderBottom: `1px solid ${theme.color.border}`,
+  "&:last-of-type": {
+    borderBottom: 0,
   },
 }));
 
 export const Row = styled.div({
   display: "flex",
   flexDirection: "row",
-  // justifyContent: "space-between",
   margin: 15,
 });
 

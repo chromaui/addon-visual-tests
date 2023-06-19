@@ -7,6 +7,7 @@ export const SnapshotImage = styled.div({
   alignItems: "center",
   background: "#fff",
   minHeight: 100,
+  padding: 2,
 
   img: {
     maxWidth: "100%",

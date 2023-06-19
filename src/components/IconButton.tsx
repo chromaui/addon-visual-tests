@@ -21,7 +21,7 @@ export const IconButton = styled(BaseIconButton)<{
       width: "auto",
     },
   }),
-  ({ status, theme }) => (status ? { color: theme.color.warningText } : {}),
+  ({ active, status, theme }) => (!active && status ? { color: theme.color.warningText } : {}),
   ({ active, theme }) => {
     const isLightTheme = theme.background.content === theme.color.lightest;
     const activeBg = isLightTheme ? "rgb(241,248,255)" : "rgb(28,37,45)";
