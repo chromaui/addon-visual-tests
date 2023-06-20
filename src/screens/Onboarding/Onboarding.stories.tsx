@@ -5,6 +5,7 @@ import { rest } from "msw";
 
 import { storyWrapper } from "../../utils/graphQLClient";
 import { Onboarding } from "./Onboarding";
+import { playAll } from "../../utils/playAll";
 
 const meta = {
   component: Onboarding,
@@ -47,32 +48,28 @@ type Story = StoryObj<typeof meta>;
 export const Welcome: Story = {};
 
 export const SignIn: Story = {
-  play: async ({ canvasElement }) => {
+  play: playAll(async ({ canvasElement }) => {
     const button = await findByRole(canvasElement, "button", {
       name: "Enable",
     });
     await userEvent.click(button);
-  },
+  }),
 };
 
 export const SSO: Story = {
-  play: async (context) => {
-    await SignIn.play(context);
-
+  play: playAll(SignIn, async (context) => {
     const button = await findByRole(context.canvasElement, "button", {
       name: "Sign into Chromatic with SSO",
     });
     await userEvent.click(button);
-  },
+  }),
 };
 
 export const Verify: Story = {
-  play: async (context) => {
-    await SignIn.play(context);
-
+  play: playAll(SignIn, async (context) => {
     const button = await findByRole(context.canvasElement, "button", {
       name: "Sign in with Chromatic",
     });
     await userEvent.click(button);
-  },
+  }),
 };
