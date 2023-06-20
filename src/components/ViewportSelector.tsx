@@ -22,7 +22,7 @@ export const ViewportSelector = ({ viewportResults, onSelectViewport }: Viewport
     [onSelectViewport]
   );
 
-  const result = aggregate(Object.values(viewportResults));
+  const aggregateResult = aggregate(Object.values(viewportResults));
 
   return (
     <TooltipMenu
@@ -35,10 +35,10 @@ export const ViewportSelector = ({ viewportResults, onSelectViewport }: Viewport
         active: selected === viewport,
       }))}
     >
-      {result === ComparisonResult.EQUAL ? (
+      {aggregateResult === ComparisonResult.EQUAL ? (
         <Icon icon="grow" />
       ) : (
-        <StatusDotWrapper status={result}>
+        <StatusDotWrapper status={aggregateResult}>
           <Icon icon="grow" />
         </StatusDotWrapper>
       )}

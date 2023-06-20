@@ -1,14 +1,14 @@
 import React from "react";
 
-import { Container } from "../../components/Container";
 import { BackButton } from "../../components/BackButton";
+import { Button } from "../../components/Button";
+import { Container } from "../../components/Container";
+import { Heading } from "../../components/Heading";
 import { BackIcon } from "../../components/icons/BackIcon";
 import { LinkIcon } from "../../components/icons/LinkIcon";
 import { VisualTestsIcon } from "../../components/icons/VisualTestsIcon";
-import { Heading } from "../../components/Heading";
-import { Text } from "../../components/Text";
-import { Button } from "../../components/Button";
 import { Stack } from "../../components/Stack";
+import { Text } from "../../components/Text";
 
 interface SignInProps {
   onBack: () => void;

@@ -116,24 +116,6 @@ export const parameters: Preview["parameters"] = {
     },
   },
   layout: "fullscreen",
-  viewport: {
-    viewports: {
-      right: {
-        name: "Right panel",
-        styles: {
-          width: "420px",
-          height: "640px",
-        },
-      },
-      bottom: {
-        name: "Bottom panel",
-        styles: {
-          width: "900px",
-          height: "300px",
-        },
-      },
-    },
-  },
 };
 
 export const globalTypes = {

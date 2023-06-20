@@ -3,15 +3,16 @@ import { formatDistance } from "date-fns";
 import pluralize from "pluralize";
 import React, { useState } from "react";
 
+import { BrowserSelector } from "../../components/BrowserSelector";
 import { Button } from "../../components/Button";
-import { Col, Text, Row, Section, Sections, Bar } from "../../components/layout";
 import { IconButton } from "../../components/IconButton";
 import { StatusIcon } from "../../components/icons/StatusIcon";
-import { ViewportSelector } from "../../components/ViewportSelector";
-import { BrowserSelector } from "../../components/BrowserSelector";
+import { Bar, Col, Row, Section, Sections, Text } from "../../components/layout";
 import { SnapshotImage } from "../../components/SnapshotImage";
 import { TooltipMenu } from "../../components/TooltipMenu";
-import { BuildStatus, ComparisonResult, TestStatus, aggregate } from "../../constants";
+import { ViewportSelector } from "../../components/ViewportSelector";
+import { aggregate } from "../../constants";
+import { BuildStatus, ComparisonResult, TestStatus } from "../../gql/graphql";
 import { useAccessToken } from "../../utils/graphQLClient";
 import { RenderSettings } from "./RenderSettings";
 import { Warnings } from "./Warnings";
@@ -64,6 +65,8 @@ export const VisualTests = ({ build }: VisualTestsProps) => {
     return acc;
   }, {} as Record<string, ComparisonResult>);
 
+  const test = tests?.[0];
+
   return (
     <>
       <Sections>
@@ -83,7 +86,7 @@ export const VisualTests = ({ build }: VisualTestsProps) => {
                 </small>
               </Text>
             </Col>
-            {status === TestStatus.PENDING && (
+            {test.status === TestStatus.Pending && (
               <Col push>
                 <Button secondary small>
                   Verify changes
@@ -103,7 +106,7 @@ export const VisualTests = ({ build }: VisualTestsProps) => {
             <Col>
               <BrowserSelector browserResults={browserResults} onSelectBrowser={console.log} />
             </Col>
-            {status === TestStatus.PENDING && (
+            {test.status === TestStatus.Pending && (
               <>
                 <Col push>
                   <IconButton secondary>Accept</IconButton>
@@ -119,8 +122,8 @@ export const VisualTests = ({ build }: VisualTestsProps) => {
         </Section>
         <Section grow hidden={settingsVisible || warningsVisible}>
           <SnapshotImage>
-            <img src="/B.png" />
-            {diffVisible && <img src="/B-comparison.png" />}
+            <img src="/B.png" alt="" />
+            {diffVisible && <img src="/B-comparison.png" alt="" />}
           </SnapshotImage>
         </Section>
         <Section grow hidden={!settingsVisible}>

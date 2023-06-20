@@ -1,13 +1,13 @@
 import { styled } from "@storybook/theming";
 import React from "react";
 
-import { Container } from "../../components/Container";
 import { BackButton } from "../../components/BackButton";
-import { BackIcon } from "../../components/icons/BackIcon";
-import { Heading } from "../../components/Heading";
-import { Text } from "../../components/Text";
 import { Button } from "../../components/Button";
+import { Container } from "../../components/Container";
+import { Heading } from "../../components/Heading";
+import { BackIcon } from "../../components/icons/BackIcon";
 import { Stack } from "../../components/Stack";
+import { Text } from "../../components/Text";
 
 const Digits = styled.ol(({ theme }) => ({
   display: "inline-flex",
@@ -69,7 +69,8 @@ export const Verify = ({ onBack, userCode, verificationUrl }: VerifyProps) => {
           </Text>
           <Digits>
             {userCode?.split("").map((char: string, index: number) => (
-              <li key={index}>{char.replace(/[^A-Z0-9]/, "")}</li>
+              // eslint-disable-next-line react/no-array-index-key
+              <li key={`${index}-${char}`}>{char.replace(/[^A-Z0-9]/, "")}</li>
             ))}
           </Digits>
         </div>

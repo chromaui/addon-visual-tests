@@ -1,12 +1,12 @@
-import { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react";
+import { findByRole, fireEvent } from "@storybook/testing-library";
 import { graphql } from "msw";
 
+import { BuildStatus, ComparisonResult, TestStatus } from "../../constants";
 import { storyWrapper } from "../../utils/graphQLClient";
+import { playAll } from "../../utils/playAll";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
 import { VisualTests } from "./VisualTests";
-import { BuildStatus, ComparisonResult, TestStatus } from "../../constants";
-import { playAll } from "../../utils/playAll";
-import { findByRole, fireEvent } from "@storybook/testing-library";
 
 const tests = [
   {

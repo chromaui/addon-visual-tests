@@ -1,6 +1,7 @@
 import { Icon } from "@storybook/design-system";
 import { styled } from "@storybook/theming";
 import React from "react";
+
 import { BuildStatus } from "../../constants";
 
 const StyledIcon = styled(Icon)<{ icon: "passed" | "changed" | "failed" }>(({ icon, theme }) => ({

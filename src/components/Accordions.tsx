@@ -1,5 +1,6 @@
 import { Icons } from "@storybook/components";
 import { styled } from "@storybook/theming";
+
 import { IconButton } from "./IconButton";
 
 export const Accordions = styled.div({

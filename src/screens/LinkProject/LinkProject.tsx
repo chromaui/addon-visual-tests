@@ -3,8 +3,8 @@ import { gql, useQuery } from "urql";
 
 import { Container } from "../../components/Container";
 import { Heading } from "../../components/Heading";
-import { Text } from "../../components/Text";
 import { Stack } from "../../components/Stack";
+import { Text } from "../../components/Text";
 
 const ProjectQuery = gql`
   query ProjectQuery($projectId: ID!) {

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Client, Provider, cacheExchange, fetchExchange } from "urql";
+import { cacheExchange, Client, fetchExchange, Provider } from "urql";
 
 import { CHROMATIC_BASE_URL, STORAGE_KEY } from "../constants";
 

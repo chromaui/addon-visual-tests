@@ -1,9 +1,9 @@
-import { Meta, StoryObj } from "@storybook/react";
-
-import { RenderSettings } from "./RenderSettings";
-import { storyWrapper } from "../../utils/graphQLClient";
+import type { Meta, StoryObj } from "@storybook/react";
 import { graphql } from "msw";
+
+import { storyWrapper } from "../../utils/graphQLClient";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
+import { RenderSettings } from "./RenderSettings";
 
 const meta = {
   component: RenderSettings,

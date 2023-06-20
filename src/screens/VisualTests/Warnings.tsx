@@ -1,3 +1,4 @@
+import { Icons } from "@storybook/components";
 import React from "react";
 
 import {
@@ -7,9 +8,8 @@ import {
   CloseIcon,
   Heading,
 } from "../../components/Accordions";
-import { Button } from "../../components/Button";
-import { Icons } from "@storybook/components";
 import { Badge } from "../../components/Badge";
+import { Button } from "../../components/Button";
 
 interface WarningsProps {
   onClose: () => void;

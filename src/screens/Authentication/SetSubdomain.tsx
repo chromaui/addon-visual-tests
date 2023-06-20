@@ -2,14 +2,14 @@ import { Button } from "@storybook/components";
 import { styled } from "@storybook/theming";
 import React, { useCallback, useState } from "react";
 
-import { Container } from "../../components/Container";
 import { BackButton } from "../../components/BackButton";
+import { Container } from "../../components/Container";
+import { Heading } from "../../components/Heading";
 import { BackIcon } from "../../components/icons/BackIcon";
 import { LinkIcon } from "../../components/icons/LinkIcon";
 import { VisualTestsIcon } from "../../components/icons/VisualTestsIcon";
-import { Text } from "../../components/Text";
-import { Heading } from "../../components/Heading";
 import { SuffixInput } from "../../components/SuffixInput";
+import { Text } from "../../components/Text";
 
 const Form = styled.form({
   position: "relative",

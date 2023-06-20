@@ -1,13 +1,13 @@
 import React from "react";
 
-import { ChromeIcon } from "./icons/ChromeIcon";
+import { aggregate, ComparisonResult } from "../constants";
 import { ArrowIcon } from "./icons/ArrowIcon";
-import { StatusDot, StatusDotWrapper } from "./StatusDot";
+import { ChromeIcon } from "./icons/ChromeIcon";
+import { EdgeIcon } from "./icons/EdgeIcon";
 import { FirefoxIcon } from "./icons/FirefoxIcon";
 import { SafariIcon } from "./icons/SafariIcon";
+import { StatusDot, StatusDotWrapper } from "./StatusDot";
 import { TooltipMenu } from "./TooltipMenu";
-import { ComparisonResult, aggregate } from "../constants";
-import { EdgeIcon } from "./icons/EdgeIcon";
 
 const supportedBrowsers = {
   chrome: { title: "Chrome", icon: <ChromeIcon alt="Chrome" /> },

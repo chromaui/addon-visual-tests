@@ -1,6 +1,5 @@
 import { Link } from "@storybook/components";
 import { styled } from "@storybook/theming";
-
 import React from "react";
 
 const OpaqueLink = styled(Link)({

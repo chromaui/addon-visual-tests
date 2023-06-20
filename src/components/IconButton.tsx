@@ -1,6 +1,5 @@
-import { styled } from "@storybook/theming";
-
 import { IconButton as BaseIconButton } from "@storybook/components";
+import { styled } from "@storybook/theming";
 
 export const IconButton = styled(BaseIconButton)<{
   active?: boolean;

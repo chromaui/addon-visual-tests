@@ -1,9 +1,16 @@
 import type { StorybookConfig } from "@storybook/react-vite";
 
+const CHROMATIC_BASE_URL = process.env.CHROMATIC_BASE_URL || "https://www.chromatic.com";
+
 const config: StorybookConfig = {
   addons: [
-    "@storybook/addon-links",
-    "@storybook/addon-essentials",
+    {
+      name: "@storybook/addon-essentials",
+      options: {
+        backgrounds: false,
+        viewport: false,
+      },
+    },
     "@storybook/addon-interactions",
     "storybook-addon-designs",
     {
@@ -16,6 +23,10 @@ const config: StorybookConfig = {
   docs: {
     autodocs: "tag",
   },
+  env: (config) => ({
+    ...config,
+    CHROMATIC_BASE_URL,
+  }),
   framework: {
     name: "@storybook/react-vite",
     options: {},

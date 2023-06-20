@@ -1,8 +1,8 @@
 import { useState } from "react";
 
+import { CHROMATIC_BASE_URL } from "../constants";
 // @ts-expect-error File is in plain JS
 import { sha256 } from "./sha256";
-import { CHROMATIC_BASE_URL } from "../constants";
 
 const bytes = (buf: number[]) =>
   new Uint8Array(buf).reduce((acc, val) => acc + String.fromCharCode(val), "");
@@ -43,7 +43,7 @@ const pollForAccessToken = async (options: {
   if (!isMounted || Date.now() >= expires) return;
 
   try {
-    const res = await fetch(CHROMATIC_BASE_URL + "/token", {
+    const res = await fetch(`${CHROMATIC_BASE_URL}/token`, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
       body: requestBody,
@@ -76,7 +76,7 @@ const signInWithRetry = async (options: {
   const verifier = base64URLEncode(seed());
   const challenge = base64URLEncode(hexStringToBytes(sha256(verifier)));
 
-  const res = await fetch(CHROMATIC_BASE_URL + "/authorize", {
+  const res = await fetch(`${CHROMATIC_BASE_URL}/authorize`, {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
@@ -87,6 +87,7 @@ const signInWithRetry = async (options: {
     }),
   });
 
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   const { device_code, user_code, verification_uri_complete, expires_in, interval } =
     await res.json();
 
@@ -115,7 +116,7 @@ const signInWithRetry = async (options: {
     requestBody: encodeParams({
       client_id: "storybook-visual-tests",
       grant_type: "urn:ietf:params:oauth:grant-type:device_code",
-      device_code: device_code,
+      device_code,
       code_verifier: verifier,
       scope: "user:read account:read project:read project:write",
     }),

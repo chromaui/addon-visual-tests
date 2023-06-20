@@ -1,4 +1,4 @@
-import { StoryObj } from "@storybook/react";
+import type { StoryObj } from "@storybook/react";
 
 export function playAll<Story extends StoryObj>(
   ...sequence: (Story | Story["play"])[]
