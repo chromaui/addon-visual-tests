@@ -1,7 +1,8 @@
 import { Icon } from "@storybook/design-system";
 import React from "react";
 
-import { aggregate, ComparisonResult } from "../constants";
+import { aggregate } from "../constants";
+import { ComparisonResult } from "../gql/graphql";
 import { ArrowIcon } from "./icons/ArrowIcon";
 import { StatusDot, StatusDotWrapper } from "./StatusDot";
 import { TooltipMenu } from "./TooltipMenu";
@@ -23,6 +24,7 @@ export const ViewportSelector = ({ viewportResults, onSelectViewport }: Viewport
   );
 
   const aggregateResult = aggregate(Object.values(viewportResults));
+  if (!aggregateResult) return null;
 
   return (
     <TooltipMenu
@@ -30,12 +32,12 @@ export const ViewportSelector = ({ viewportResults, onSelectViewport }: Viewport
       links={Object.entries(viewportResults).map(([viewport, result]) => ({
         id: `viewport-${viewport}`,
         title: viewport,
-        right: result !== ComparisonResult.EQUAL && <StatusDot status={result} />,
+        right: result !== ComparisonResult.Equal && <StatusDot status={result} />,
         onClick: () => handleSelect(viewport),
         active: selected === viewport,
       }))}
     >
-      {aggregateResult === ComparisonResult.EQUAL ? (
+      {aggregateResult === ComparisonResult.Equal ? (
         <Icon icon="grow" />
       ) : (
         <StatusDotWrapper status={aggregateResult}>

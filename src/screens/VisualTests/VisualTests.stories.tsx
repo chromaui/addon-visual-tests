@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { findByRole, fireEvent } from "@storybook/testing-library";
 import { graphql } from "msw";
 
-import { BuildStatus, ComparisonResult, TestStatus } from "../../constants";
+import { BuildStatus, ComparisonResult, TestStatus } from "../../gql/graphql";
 import { storyWrapper } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
@@ -11,61 +11,66 @@ import { VisualTests } from "./VisualTests";
 const tests = [
   {
     id: "1",
-    status: TestStatus.PASSED,
+    status: TestStatus.Passed,
     comparisons: [
-      { browser: "chrome", viewport: "1200px", result: ComparisonResult.EQUAL },
-      { browser: "safari", viewport: "1200px", result: ComparisonResult.EQUAL },
+      { browser: "chrome", viewport: "1200px", result: ComparisonResult.Equal },
+      { browser: "safari", viewport: "1200px", result: ComparisonResult.Equal },
     ],
   },
   {
     id: "2",
-    status: TestStatus.PENDING,
+    status: TestStatus.Pending,
     comparisons: [
-      { browser: "chrome", viewport: "800px", result: ComparisonResult.EQUAL },
-      { browser: "safari", viewport: "800px", result: ComparisonResult.CHANGED },
+      { browser: "chrome", viewport: "800px", result: ComparisonResult.Equal },
+      { browser: "safari", viewport: "800px", result: ComparisonResult.Changed },
     ],
   },
   {
     id: "3",
-    status: TestStatus.PASSED,
+    status: TestStatus.Passed,
     comparisons: [
-      { browser: "chrome", viewport: "400px", result: ComparisonResult.EQUAL },
-      { browser: "safari", viewport: "400px", result: ComparisonResult.EQUAL },
+      { browser: "chrome", viewport: "400px", result: ComparisonResult.Equal },
+      { browser: "safari", viewport: "400px", result: ComparisonResult.Equal },
     ],
   },
 ];
 
 const inProgressBuild = {
   branch: "feature-branch",
-  status: BuildStatus.IN_PROGRESS,
+  status: BuildStatus.InProgress,
   startedAt: new Date(Date.now() - 1000 * 60 * 2), // 2 minutes ago
+  tests: tests.map((test) => ({
+    ...test,
+    status: TestStatus.InProgress,
+    comparisons: null,
+  })),
 };
 
 const passedBuild = {
   ...inProgressBuild,
-  status: BuildStatus.PASSED,
+  status: BuildStatus.Passed,
   changeCount: 0,
   tests: tests.map((test) => ({
     ...test,
-    status: TestStatus.PASSED,
+    status: TestStatus.Passed,
     comparisons: test.comparisons.map((comparison) => ({
       ...comparison,
-      result: ComparisonResult.EQUAL,
+      result: ComparisonResult.Equal,
     })),
   })),
 };
 
 const pendingBuild = {
   ...inProgressBuild,
-  status: BuildStatus.PENDING,
+  status: BuildStatus.Pending,
   changeCount: 3,
   tests,
 };
 
 const acceptedBuild = {
   ...pendingBuild,
-  status: BuildStatus.ACCEPTED,
-  tests: tests.map((test) => ({ ...test, status: TestStatus.ACCEPTED })),
+  status: BuildStatus.Accepted,
+  tests: tests.map((test) => ({ ...test, status: TestStatus.Accepted })),
 };
 
 const meta = {

@@ -20,7 +20,7 @@ import { Warnings } from "./Warnings";
 interface Test {
   id: string;
   status: TestStatus;
-  comparisons: {
+  comparisons?: {
     browser: string;
     viewport: string;
     result: ComparisonResult;
@@ -47,7 +47,7 @@ export const VisualTests = ({ build }: VisualTestsProps) => {
   const startedAgo = formatDistance(startedAt, new Date(), { addSuffix: true });
 
   const viewportResults = tests?.reduce((acc, test) => {
-    test.comparisons.forEach((comparison) => {
+    test.comparisons?.forEach((comparison) => {
       acc[comparison.viewport] = aggregate<ComparisonResult>([
         comparison.result,
         acc[comparison.viewport],
@@ -56,7 +56,7 @@ export const VisualTests = ({ build }: VisualTestsProps) => {
     return acc;
   }, {} as Record<string, ComparisonResult>);
   const browserResults = tests?.reduce((acc, test) => {
-    test.comparisons.forEach((comparison) => {
+    test.comparisons?.forEach((comparison) => {
       acc[comparison.browser] = aggregate<ComparisonResult>([
         comparison.result,
         acc[comparison.browser],
@@ -66,6 +66,7 @@ export const VisualTests = ({ build }: VisualTestsProps) => {
   }, {} as Record<string, ComparisonResult>);
 
   const test = tests?.[0];
+  if (!test) return null;
 
   return (
     <>

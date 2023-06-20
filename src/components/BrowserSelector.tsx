@@ -1,6 +1,7 @@
 import React from "react";
 
-import { aggregate, ComparisonResult } from "../constants";
+import { aggregate } from "../constants";
+import { ComparisonResult } from "../gql/graphql";
 import { ArrowIcon } from "./icons/ArrowIcon";
 import { ChromeIcon } from "./icons/ChromeIcon";
 import { EdgeIcon } from "./icons/EdgeIcon";
@@ -40,15 +41,16 @@ export const BrowserSelector = ({ browserResults, onSelectBrowser }: BrowserSele
       active: selected === browser,
       id: browser,
       onClick: () => handleSelect(browser),
-      right: status !== ComparisonResult.EQUAL && <StatusDot status={status} />,
+      right: status !== ComparisonResult.Equal && <StatusDot status={status} />,
       title: supportedBrowsers[browser as Browser].title,
     }));
 
   const status = aggregate(Object.values(browserResults));
+  if (!status) return null;
 
   return (
     <TooltipMenu placement="bottom" links={links}>
-      {status === ComparisonResult.EQUAL ? (
+      {status === ComparisonResult.Equal ? (
         supportedBrowsers[selected as Browser].icon
       ) : (
         <StatusDotWrapper status={status}>
