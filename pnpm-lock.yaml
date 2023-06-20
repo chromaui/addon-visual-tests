@@ -27,6 +27,9 @@ dependencies:
   '@storybook/types':
     specifier: ^7.1.0-alpha.34
     version: 7.1.0-alpha.34
+  chromatic:
+    specifier: ^6.19.8
+    version: 6.19.8
   urql:
     specifier: ^4.0.3
     version: 4.0.3(react@18.0.0)
@@ -83,9 +86,6 @@ devDependencies:
   boxen:
     specifier: ^5.0.1
     version: 5.0.1
-  chromatic:
-    specifier: ^6.19.8
-    version: 6.19.8
   dedent:
     specifier: ^0.7.0
     version: 0.7.0
@@ -5668,7 +5668,7 @@ packages:
   /chromatic@6.19.8:
     resolution: {integrity: sha512-cvQAd/BkhRscXYbHuwIYwkmqzgpLz50maBGvUDa+WdfpoxzYrUvG2uZ1YU3tS857dAwMuTL5wUFiawiffDIKvQ==}
     hasBin: true
-    dev: true
+    dev: false
 
   /ci-info@3.8.0:
     resolution: {integrity: sha512-eXTggHWSooYhq49F2opQhuHWgzucfF2YgODK4e1566GQs5BIfP30B0oenwBJHfWxAs2fyPB1s7Mg949zLf61Yw==}
