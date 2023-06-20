@@ -1,5 +1,6 @@
 import type { Channel } from "@storybook/channels";
 import { run } from "chromatic/node";
+
 import { BUILD_STARTED, START_BUILD } from "./constants";
 
 /**
@@ -9,10 +10,7 @@ function managerEntries(entry: string[] = []) {
   return [...entry, require.resolve("./manager.mjs")];
 }
 
-async function experimental_serverChannel(
-  channel: Channel,
-  { projectToken }: { projectToken: string }
-) {
+async function serverChannel(channel: Channel, { projectToken }: { projectToken: string }) {
   channel.on(START_BUILD, async () => {
     let sent = false;
     await run({
@@ -41,5 +39,5 @@ async function experimental_serverChannel(
 
 module.exports = {
   managerEntries,
-  experimental_serverChannel,
+  experimental_serverChannel: serverChannel,
 };

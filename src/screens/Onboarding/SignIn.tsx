@@ -1,16 +1,16 @@
-import React from "react";
-
-import { Container } from "../../components/Container";
-import { BackButton } from "../../components/BackButton";
-import { BackIcon } from "../../components/BackIcon";
-import { LinkIcon } from "../../components/LinkIcon";
-import { VisualTestsIcon } from "../../components/VisualTestsIcon";
-import { Heading } from "../../components/Heading";
-import { Text } from "../../components/Text";
-import { Button } from "../../components/Button";
 import { Link } from "@storybook/design-system";
 import { color, styled } from "@storybook/theming";
+import React from "react";
+
+import { BackButton } from "../../components/BackButton";
+import { BackIcon } from "../../components/BackIcon";
+import { Button } from "../../components/Button";
+import { Container } from "../../components/Container";
+import { Heading } from "../../components/Heading";
+import { LinkIcon } from "../../components/LinkIcon";
 import { Stack } from "../../components/Stack";
+import { Text } from "../../components/Text";
+import { VisualTestsIcon } from "../../components/VisualTestsIcon";
 
 interface SignInProps {
   onBack: () => void;

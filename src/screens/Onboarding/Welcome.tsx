@@ -1,11 +1,11 @@
 import React from "react";
 
+import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
 import { Heading } from "../../components/Heading";
+import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
 import { VisualTestsIcon } from "../../components/VisualTestsIcon";
-import { Button } from "../../components/Button";
-import { Stack } from "../../components/Stack";
 
 interface WelcomeProps {
   onNext: () => void;

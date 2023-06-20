@@ -4,8 +4,8 @@ import { findByRole, userEvent } from "@storybook/testing-library";
 import { rest } from "msw";
 
 import { storyWrapper } from "../../utils/graphQLClient";
-import { Onboarding } from "./Onboarding";
 import { playAll } from "../../utils/playAll";
+import { Onboarding } from "./Onboarding";
 
 const meta = {
   component: Onboarding,

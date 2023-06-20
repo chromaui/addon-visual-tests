@@ -37,6 +37,5 @@ export default defineConfig((options) => [
         "process.env.CHROMATIC_BASE_URL": JSON.stringify(CHROMATIC_BASE_URL),
       };
     },
-
   },
 ]);
