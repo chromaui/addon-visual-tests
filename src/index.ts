@@ -1,4 +1,5 @@
 import type { Channel } from "@storybook/channels";
+// eslint-disable-next-line import/no-unresolved
 import { run } from "chromatic/node";
 
 import { BUILD_STARTED, START_BUILD } from "./constants";
