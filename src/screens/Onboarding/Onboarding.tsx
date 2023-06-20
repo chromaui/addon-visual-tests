@@ -53,5 +53,8 @@ export const Onboarding = ({ setAccessToken }: OnboardingProps) => {
           verificationUrl={verificationUrl}
         />
       );
+
+    default:
+      return null;
   }
 };
