@@ -42,16 +42,16 @@
     "*.d.ts"
   ],
   "scripts": {
-    "chromatic": "chromatic -t 9b39ff142a7f",
     "build": "tsup",
     "build:staging": "CHROMATIC_BASE_URL=https://www.staging-chromatic.com tsup",
-    "build:watch": "pnpm run build --watch",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "run-p build:watch 'storybook --quiet'",
+    "build:watch": "run-p 'build --watch' 'codegen --watch'",
+    "build-storybook": "storybook build",
+    "chromatic": "chromatic -t 9b39ff142a7f",
+    "codegen": "graphql-codegen",
     "release": "pnpm run build && auto shipit",
-    "eject-ts": "zx scripts/eject-typescript.mjs",
+    "start": "run-p build:watch 'storybook --quiet'",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "@storybook/design-system": "^7.15.11",
@@ -61,6 +61,8 @@
     "urql": "^4.0.3"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "^4.0.1",
+    "@graphql-codegen/client-preset": "^4.0.1",
     "@storybook/addon-actions": "^7.1.0-alpha.34",
     "@storybook/addon-essentials": "^7.1.0-alpha.34",
     "@storybook/addon-interactions": "^7.1.0-alpha.34",
@@ -78,6 +80,7 @@
     "auto": "^10.3.0",
     "boxen": "^5.0.1",
     "dedent": "^0.7.0",
+    "graphql": "^16.6.0",
     "msw": "^1.2.1",
     "msw-storybook-addon": "^1.8.0",
     "npm-run-all": "^4.1.5",
