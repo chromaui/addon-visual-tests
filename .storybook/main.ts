@@ -2,8 +2,13 @@ import type { StorybookConfig } from "@storybook/react-vite";
 
 const config: StorybookConfig = {
   addons: [
-    "@storybook/addon-links",
-    "@storybook/addon-essentials",
+    {
+      name: "@storybook/addon-essentials",
+      options: {
+        backgrounds: false,
+        viewport: false,
+      },
+    },
     "@storybook/addon-interactions",
     "storybook-addon-designs",
     {
