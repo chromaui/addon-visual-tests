@@ -1,14 +1,14 @@
-import React, { memo, useCallback, useState } from "react";
-import type { Channel } from "@storybook/channels";
+import { IconButton, Icons } from "@storybook/components";
 import { useAddonState, useChannel } from "@storybook/manager-api";
-import { Icons, IconButton } from "@storybook/components";
+import React, { memo, useCallback, useState } from "react";
+
 import { ADDON_ID, BUILD_STARTED, START_BUILD, TOOL_ID } from "./constants";
 
 type BuildInfo = { url: string };
 
 export const Tool = memo(function MyAddonSelector() {
   const [running, setRunning] = useState(false);
-  const [_, setAddonState] = useAddonState(ADDON_ID);
+  const [, setAddonState] = useAddonState(ADDON_ID);
 
   const emit = useChannel({
     [BUILD_STARTED]: (build: BuildInfo) => {
@@ -21,7 +21,7 @@ export const Tool = memo(function MyAddonSelector() {
 
     setRunning(true);
     emit(START_BUILD);
-  }, [running]);
+  }, [running, emit]);
 
   return (
     <IconButton key={TOOL_ID} active={running} title="Run visual tests" onClick={onRun}>

@@ -2,13 +2,13 @@ import { Button, Input } from "@storybook/design-system";
 import { color, styled, typography } from "@storybook/theming";
 import React, { ReactNode, useCallback, useState } from "react";
 
-import { Container } from "../../components/Container";
 import { BackButton } from "../../components/BackButton";
 import { BackIcon } from "../../components/BackIcon";
-import { LinkIcon } from "../../components/LinkIcon";
-import { VisualTestsIcon } from "../../components/VisualTestsIcon";
-import { Text } from "../../components/Text";
+import { Container } from "../../components/Container";
 import { Heading } from "../../components/Heading";
+import { LinkIcon } from "../../components/LinkIcon";
+import { Text } from "../../components/Text";
+import { VisualTestsIcon } from "../../components/VisualTestsIcon";
 
 const Form = styled.form({
   position: "relative",

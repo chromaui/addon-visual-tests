@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 
-import { Welcome } from "./Welcome";
-import { SignIn } from "./SignIn";
-import { SetSubdomain } from "./SetSubdomain";
-import { Verify } from "./Verify";
 import { useSignIn } from "../../utils/useSignIn";
+import { SetSubdomain } from "./SetSubdomain";
+import { SignIn } from "./SignIn";
+import { Verify } from "./Verify";
+import { Welcome } from "./Welcome";
 
 interface OnboardingProps {
   setAccessToken: (token: string) => void;
@@ -53,5 +53,8 @@ export const Onboarding = ({ setAccessToken }: OnboardingProps) => {
           verificationUrl={verificationUrl}
         />
       );
+
+    default:
+      return null;
   }
 };

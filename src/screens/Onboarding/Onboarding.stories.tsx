@@ -1,11 +1,11 @@
 import { action } from "@storybook/addon-actions";
-import { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react";
 import { findByRole, userEvent } from "@storybook/testing-library";
 import { rest } from "msw";
 
 import { storyWrapper } from "../../utils/graphQLClient";
-import { Onboarding } from "./Onboarding";
 import { playAll } from "../../utils/playAll";
+import { Onboarding } from "./Onboarding";
 
 const meta = {
   component: Onboarding,
