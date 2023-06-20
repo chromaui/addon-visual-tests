@@ -18,4 +18,4 @@ jobs:
 
       # Currently we don't have any tests written, this is here for when we do
       # - name: Test
-      # run: yarn test
+      # run: pnpm test
