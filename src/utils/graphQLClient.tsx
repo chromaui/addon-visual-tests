@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Client, Provider, cacheExchange, fetchExchange } from "urql";
 
 import { CHROMATIC_BASE_URL, STORAGE_KEY } from "../constants";
@@ -29,3 +29,9 @@ export const client = new Client({
     },
   }),
 });
+
+export const storyWrapper = (Story: any) => (
+  <Provider value={client}>
+    <Story />
+  </Provider>
+);
