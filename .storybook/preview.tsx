@@ -30,18 +30,16 @@ const Panels = styled.div<{ orientation: "right" | "bottom" }>(
     flexDirection: orientation === "right" ? "row" : "column",
   }),
   {
-    width: "100vw",
-    height: "100vh",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    gap: 20,
+    gap: 40,
   }
 );
 
 const Panel = styled.div<{ orientation: "right" | "bottom" }>(
   ({ orientation }) => ({
-    width: orientation === "right" ? 420 : 900,
+    width: orientation === "right" ? 420 : 880,
     height: orientation === "right" ? 640 : 300,
     overflow: "auto",
   }),
@@ -72,10 +70,14 @@ export const decorators = [
   // Note this assumes any play functions are equipped to deal with multiple canvases
   (StoryFn, { globals, parameters }) => {
     const theme = globals.theme || parameters.theme || "right";
+    const rootStyles = {
+      ".sb-show-main.sb-main-centered": { display: "block" },
+      ".sb-show-main.sb-main-centered #storybook-root": { height: "100vh", padding: 0 },
+    };
     return theme === "light" || theme === "dark" ? (
       <ThemeProvider theme={convert(themes[theme])}>
         <Global styles={createReset} />
-        <Global styles={{ "#storybook-root": { height: "100vh" } }}></Global>
+        <Global styles={rootStyles}></Global>
         <ThemedSetRoot />
         <StoryFn />
       </ThemeProvider>
@@ -109,13 +111,16 @@ export const parameters: Preview["parameters"] = {
   backgrounds: {
     disable: true,
   },
+  chromatic: {
+    viewports: [960],
+  },
   controls: {
     matchers: {
       color: /(background|color)$/i,
       date: /Date$/,
     },
   },
-  layout: "fullscreen",
+  layout: "centered",
 };
 
 export const globalTypes = {
