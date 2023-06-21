@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { cacheExchange, Client, fetchExchange, Provider } from "urql";
+import { Client, fetchExchange, Provider } from "urql";
 
 import { CHROMATIC_BASE_URL, STORAGE_KEY } from "../constants";
 
@@ -21,7 +21,7 @@ export const useAccessToken = () => {
 
 export const client = new Client({
   url: `${CHROMATIC_BASE_URL}/api`,
-  exchanges: [cacheExchange, fetchExchange],
+  exchanges: [fetchExchange], // no cacheExchange to prevent sharing data between stories
   fetchOptions: () => ({
     headers: {
       accept: "*/*", // workaround for https://github.com/mswjs/msw/issues/1593

@@ -14,6 +14,7 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  */
 const documents = {
     "\n  query ProjectQuery($projectId: ID!) {\n    project(id: $projectId) {\n      id\n      name\n      webUrl\n      lastBuild {\n        branch\n        number\n      }\n    }\n  }\n": types.ProjectQueryDocument,
+    "\n  query LastBuildQuery($projectId: ID!, $branch: String!, $storyId: String!) {\n    project(id: $projectId) {\n      id\n      name\n      webUrl\n      lastBuild(branches: [$branch]) {\n        id\n        number\n        branch\n        commit\n        status\n        ... on TestedBuild {\n          changeCount: testCount(results: [ADDED, CHANGED, FIXED])\n          startedAt\n          tests(storyId: $storyId) {\n            nodes {\n              id\n              status\n              comparisons {\n                browser\n                viewport\n                result\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n": types.LastBuildQueryDocument,
 };
 
 /**
@@ -34,6 +35,10 @@ export function graphql(source: string): unknown;
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query ProjectQuery($projectId: ID!) {\n    project(id: $projectId) {\n      id\n      name\n      webUrl\n      lastBuild {\n        branch\n        number\n      }\n    }\n  }\n"): (typeof documents)["\n  query ProjectQuery($projectId: ID!) {\n    project(id: $projectId) {\n      id\n      name\n      webUrl\n      lastBuild {\n        branch\n        number\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query LastBuildQuery($projectId: ID!, $branch: String!, $storyId: String!) {\n    project(id: $projectId) {\n      id\n      name\n      webUrl\n      lastBuild(branches: [$branch]) {\n        id\n        number\n        branch\n        commit\n        status\n        ... on TestedBuild {\n          changeCount: testCount(results: [ADDED, CHANGED, FIXED])\n          startedAt\n          tests(storyId: $storyId) {\n            nodes {\n              id\n              status\n              comparisons {\n                browser\n                viewport\n                result\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query LastBuildQuery($projectId: ID!, $branch: String!, $storyId: String!) {\n    project(id: $projectId) {\n      id\n      name\n      webUrl\n      lastBuild(branches: [$branch]) {\n        id\n        number\n        branch\n        commit\n        status\n        ... on TestedBuild {\n          changeCount: testCount(results: [ADDED, CHANGED, FIXED])\n          startedAt\n          tests(storyId: $storyId) {\n            nodes {\n              id\n              status\n              comparisons {\n                browser\n                viewport\n                result\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};
