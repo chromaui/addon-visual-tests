@@ -1,7 +1,7 @@
 import React from "react";
 
-import { aggregate } from "../constants";
-import { ComparisonResult } from "../gql/graphql";
+import { Browser, BrowserInfo, ComparisonResult } from "../gql/graphql";
+import { aggregateResult } from "../utils/aggregateResult";
 import { ArrowIcon } from "./icons/ArrowIcon";
 import { ChromeIcon } from "./icons/ChromeIcon";
 import { EdgeIcon } from "./icons/EdgeIcon";
@@ -10,52 +10,51 @@ import { SafariIcon } from "./icons/SafariIcon";
 import { StatusDot, StatusDotWrapper } from "./StatusDot";
 import { TooltipMenu } from "./TooltipMenu";
 
-const supportedBrowsers = {
-  chrome: { title: "Chrome", icon: <ChromeIcon alt="Chrome" /> },
-  firefox: { title: "Firefox", icon: <FirefoxIcon alt="Firefox" /> },
-  safari: { title: "Safari", icon: <SafariIcon alt="Safari" /> },
-  edge: { title: "Edge", icon: <EdgeIcon alt="Edge" /> },
+const browserIcons = {
+  [Browser.Chrome]: <ChromeIcon alt="Chrome" />,
+  [Browser.Firefox]: <FirefoxIcon alt="Firefox" />,
+  [Browser.Safari]: <SafariIcon alt="Safari" />,
+  [Browser.Edge]: <EdgeIcon alt="Edge" />,
 } as const;
 
-type Browser = keyof typeof supportedBrowsers;
+type BrowserData = Pick<BrowserInfo, "id" | "key" | "name">;
 
 interface BrowserSelectorProps {
-  browserResults: Record<string, ComparisonResult>;
-  onSelectBrowser: (browser: string) => void;
+  browserResults: { browser: BrowserData; result: ComparisonResult }[];
+  onSelectBrowser: (browser: BrowserData) => void;
 }
 
 export const BrowserSelector = ({ browserResults, onSelectBrowser }: BrowserSelectorProps) => {
-  const [selected, setSelected] = React.useState(Object.keys(browserResults)[0]);
+  const [selected, setSelected] = React.useState(browserResults[0].browser);
 
   const handleSelect = React.useCallback(
-    (browser: string) => {
+    (browser: BrowserData) => {
       setSelected(browser);
       onSelectBrowser(browser);
     },
     [onSelectBrowser]
   );
 
-  const links = Object.entries(browserResults)
-    .filter(([browser]) => browser in supportedBrowsers)
-    .map(([browser, status]) => ({
+  const links = browserResults
+    .filter(({ browser }) => browser.key in browserIcons)
+    .map(({ browser, result }) => ({
       active: selected === browser,
-      id: browser,
+      id: browser.id,
       onClick: () => handleSelect(browser),
-      right: status !== ComparisonResult.Equal && <StatusDot status={status} />,
-      title: supportedBrowsers[browser as Browser].title,
+      right: result !== ComparisonResult.Equal && <StatusDot status={result} />,
+      title: browser.name,
     }));
 
-  const status = aggregate(Object.values(browserResults));
-  if (!status) return null;
+  const aggregate = aggregateResult(browserResults.map(({ result }) => result));
+  if (!aggregate) return null;
 
+  const icon = browserIcons[selected.key];
   return (
     <TooltipMenu placement="bottom" links={links}>
-      {status === ComparisonResult.Equal ? (
-        supportedBrowsers[selected as Browser].icon
+      {aggregate === ComparisonResult.Equal ? (
+        icon
       ) : (
-        <StatusDotWrapper status={status}>
-          {supportedBrowsers[selected as Browser].icon}
-        </StatusDotWrapper>
+        <StatusDotWrapper status={aggregate}>{icon}</StatusDotWrapper>
       )}
       <ArrowIcon icon="arrowdown" />
     </TooltipMenu>

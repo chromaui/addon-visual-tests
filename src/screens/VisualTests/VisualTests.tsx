@@ -1,7 +1,8 @@
-import { Icon } from "@storybook/design-system";
+import { Icon, Input, Spinner } from "@storybook/design-system";
+import { useTheme } from "@storybook/theming";
 import { formatDistance } from "date-fns";
 import pluralize from "pluralize";
-import React, { useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import { useQuery } from "urql";
 
 import { BrowserSelector } from "../../components/BrowserSelector";
@@ -12,15 +13,14 @@ import { Bar, Col, Row, Section, Sections, Text } from "../../components/layout"
 import { SnapshotImage } from "../../components/SnapshotImage";
 import { TooltipMenu } from "../../components/TooltipMenu";
 import { ViewportSelector } from "../../components/ViewportSelector";
-import { aggregate } from "../../constants";
 import { graphql } from "../../gql";
-import { ComparisonResult, LastBuildQueryQuery, TestStatus } from "../../gql/graphql";
-import { useAccessToken } from "../../utils/graphQLClient";
+import { ComparisonResult, LastBuildQuery, TestResult, TestStatus } from "../../gql/graphql";
+import { aggregateResult } from "../../utils/aggregateResult";
 import { RenderSettings } from "./RenderSettings";
 import { Warnings } from "./Warnings";
 
-const LastBuildQuery = graphql(/* GraphQL */ `
-  query LastBuildQuery($projectId: ID!, $branch: String!, $storyId: String!) {
+const QueryLastBuild = graphql(/* GraphQL */ `
+  query LastBuild($projectId: ID!, $branch: String!, $storyId: String!) {
     project(id: $projectId) {
       id
       name
@@ -31,17 +31,33 @@ const LastBuildQuery = graphql(/* GraphQL */ `
         branch
         commit
         status
+        browsers {
+          id
+          key
+          name
+        }
         ... on TestedBuild {
           changeCount: testCount(results: [ADDED, CHANGED, FIXED])
           startedAt
           tests(storyId: $storyId) {
             nodes {
               id
+              result
               status
               comparisons {
-                browser
-                viewport
                 result
+                browser {
+                  id
+                }
+                viewport {
+                  id
+                }
+              }
+              parameters {
+                viewport {
+                  id
+                  name
+                }
               }
             }
           }
@@ -51,22 +67,28 @@ const LastBuildQuery = graphql(/* GraphQL */ `
   }
 `);
 
-export const VisualTests = () => {
-  const [{ data, fetching, error }] = useQuery<LastBuildQueryQuery>({
-    query: LastBuildQuery,
+interface VisualTestsProps {
+  setAccessToken: (accessToken: string | null) => void;
+}
+
+export const VisualTests = ({ setAccessToken }: VisualTestsProps) => {
+  const theme = useTheme();
+  const [projectId, setProjectId] = useState("5fa3f227c1c504002259feba");
+
+  const [{ data, fetching, error }, rerun] = useQuery<LastBuildQuery>({
+    query: QueryLastBuild,
     variables: {
-      projectId: "5fa3f227c1c504002259feba",
+      projectId,
       branch: "test",
       storyId: "components-tile--donut",
     },
   });
 
-  const [, setAccessToken] = useAccessToken();
   const [diffVisible, setDiffVisible] = useState(true);
   const [settingsVisible, setSettingsVisible] = useState(false);
   const [warningsVisible, setWarningsVisible] = useState(false);
 
-  if (fetching || error) {
+  if (fetching || error || !data?.project) {
     return (
       <Sections>
         <Section grow>
@@ -74,6 +96,23 @@ export const VisualTests = () => {
             <Row>
               <Col>
                 <Text>{error.message}</Text>
+              </Col>
+            </Row>
+          )}
+          {fetching && <Spinner inverse={theme.base === "dark"} />}
+          {!fetching && !data?.project && (
+            <Row>
+              <Col>
+                <Input
+                  id="projectId"
+                  label="Project ID"
+                  value={projectId}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                    e.preventDefault();
+                    setProjectId(e.target.value);
+                  }}
+                />
+                <Button onClick={rerun}>Retry</Button>
               </Col>
             </Row>
           )}
@@ -109,32 +148,62 @@ export const VisualTests = () => {
       </Sections>
     );
   }
-  if (!data || !data.project) return <>no data</>;
 
-  const { branch, changeCount, startedAt, tests } = data.project.lastBuild;
+  const { branch, browsers, startedAt, tests } = data.project.lastBuild;
   const startedAgo = formatDistance(new Date(startedAt), new Date(), { addSuffix: true });
 
-  const viewportResults = tests.nodes.reduce((acc, test) => {
-    test.comparisons.forEach((comparison) => {
-      acc[comparison.viewport] = aggregate<ComparisonResult>([
-        comparison.result,
-        acc[comparison.viewport],
-      ]);
-    });
-    return acc;
-  }, {} as Record<string, ComparisonResult>);
-  const browserResults = tests.nodes.reduce((acc, test) => {
-    test.comparisons.forEach((comparison) => {
-      acc[comparison.browser] = aggregate<ComparisonResult>([
-        comparison.result,
-        acc[comparison.browser],
-      ]);
-    });
-    return acc;
-  }, {} as Record<string, ComparisonResult>);
+  const { changeCount, brokenCount, resultsByBrowser, resultsByViewport, viewportInfoById } = (
+    tests.nodes || []
+  ).reduce(
+    (acc, test) => {
+      if (test.result === TestResult.Changed) {
+        acc.changeCount += 1;
+      }
+      if (test.result === TestResult.CaptureError || test.result === TestResult.SystemError) {
+        acc.brokenCount += 1;
+      }
+      test.comparisons?.forEach(({ browser, result }) => {
+        acc.resultsByBrowser[browser.id] = aggregateResult([
+          result,
+          acc.resultsByBrowser[browser.id],
+        ]);
+      });
+      test.comparisons?.forEach(({ viewport, result }) => {
+        acc.resultsByViewport[viewport.id] = aggregateResult([
+          result,
+          acc.resultsByViewport[viewport.id],
+        ]);
+      });
+      acc.viewportInfoById[test.parameters.viewport.id] = test.parameters.viewport;
+      return acc;
+    },
+    {
+      changeCount: 0,
+      brokenCount: 0,
+      resultsByBrowser: {} as Record<string, ComparisonResult>,
+      resultsByViewport: {} as Record<string, ComparisonResult>,
+      viewportInfoById: {} as Record<
+        string,
+        LastBuildQuery["project"]["lastBuild"]["tests"]["nodes"][0]["parameters"]["viewport"]
+      >,
+    }
+  );
 
-  const test = tests.nodes?.[0];
-  if (!test) return null;
+  const test = tests.nodes?.find(({ result }) => result === TestResult.Changed) || tests.nodes?.[0];
+  const isPending = test?.status === TestStatus.Pending;
+
+  const browserCount = browsers.length;
+  const browserInfoById = Object.fromEntries(browsers.map((browser) => [browser.id, browser]));
+  const browserResults = Object.entries(resultsByBrowser).map(([id, result]) => ({
+    browser: browserInfoById[id],
+    result,
+  }));
+
+  const viewportCount = tests.nodes?.length;
+  const viewportResults = Object.entries(resultsByViewport).map(([id, result]) => ({
+    viewport: viewportInfoById[id],
+    result,
+  }));
 
   return (
     <Sections>
@@ -142,22 +211,28 @@ export const VisualTests = () => {
         <Row>
           <Col>
             <Text>
-              <b>{changeCount ? pluralize("change", changeCount, true) : "No changes"}</b>
-              <StatusIcon status={test.status} />
+              <b>
+                {changeCount ? pluralize("change", changeCount, true) : "No changes"}
+                {brokenCount ? `, ${pluralize("error", brokenCount, true)}` : null}
+              </b>
+              {/* eslint-disable-next-line no-nested-ternary */}
+              <StatusIcon icon={brokenCount ? "failed" : isPending ? "changed" : "passed"} />
               <br />
               <small>
                 <span>
-                  {pluralize("viewport", Object.keys(viewportResults).length, true)},{" "}
-                  {pluralize("browser", Object.keys(browserResults).length, true)}
-                </span>{" "}
-                • <span title={new Date(startedAt).toUTCString()}>Ran {startedAgo}</span>
+                  {pluralize("viewport", viewportCount, true)}
+                  {", "}
+                  {pluralize("browser", browserCount, true)}
+                </span>
+                {" • "}
+                <span title={new Date(startedAt).toUTCString()}>{startedAgo}</span>
               </small>
             </Text>
           </Col>
-          {test.status === TestStatus.Pending && (
+          {changeCount > 0 && (
             <Col push>
-              <Button secondary small>
-                Verify changes
+              <Button small secondary={isPending} tertiary={!isPending}>
+                {isPending ? "Verify changes" : "View changes"}
               </Button>
             </Col>
           )}
@@ -168,13 +243,17 @@ export const VisualTests = () => {
               <Icon icon="contrast" />
             </IconButton>
           </Col>
-          <Col>
-            <ViewportSelector viewportResults={viewportResults} onSelectViewport={console.log} />
-          </Col>
-          <Col>
-            <BrowserSelector browserResults={browserResults} onSelectBrowser={console.log} />
-          </Col>
-          {test.status === TestStatus.Pending && (
+          {viewportResults.length > 0 && (
+            <Col>
+              <ViewportSelector viewportResults={viewportResults} onSelectViewport={console.log} />
+            </Col>
+          )}
+          {browserResults.length > 0 && (
+            <Col>
+              <BrowserSelector browserResults={browserResults} onSelectBrowser={console.log} />
+            </Col>
+          )}
+          {changeCount > 0 && (
             <>
               <Col push>
                 <IconButton secondary>Accept</IconButton>

@@ -2,40 +2,81 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { findByRole, fireEvent } from "@storybook/testing-library";
 import { graphql } from "msw";
 
-import { BuildStatus, ComparisonResult, TestStatus } from "../../gql/graphql";
+import type { LastBuildQuery } from "../../gql/graphql";
+import { Browser, BuildStatus, ComparisonResult, TestResult, TestStatus } from "../../gql/graphql";
 import { storyWrapper } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
 import { VisualTests } from "./VisualTests";
 
+type Build = LastBuildQuery["project"]["lastBuild"];
+
+const browser = (key: Browser) => ({
+  id: key,
+  key,
+  name: key.slice(0, 1) + key.slice(1).toLowerCase(),
+  version: "<unknown>",
+});
+const viewport = (width: number) => ({ id: `_${width}`, name: `${width}px`, width });
+
 const tests = [
   {
     id: "1",
     status: TestStatus.Passed,
+    result: TestResult.Equal,
     comparisons: [
-      { browser: "chrome", viewport: "1200px", result: ComparisonResult.Equal },
-      { browser: "safari", viewport: "1200px", result: ComparisonResult.Equal },
+      {
+        browser: browser(Browser.Chrome),
+        viewport: viewport(1200),
+        result: ComparisonResult.Equal,
+      },
+      {
+        browser: browser(Browser.Safari),
+        viewport: viewport(1200),
+        result: ComparisonResult.Equal,
+      },
     ],
+    parameters: { viewport: viewport(1200) },
   },
   {
     id: "2",
     status: TestStatus.Pending,
+    result: TestResult.Changed,
     comparisons: [
-      { browser: "chrome", viewport: "800px", result: ComparisonResult.Equal },
-      { browser: "safari", viewport: "800px", result: ComparisonResult.Changed },
+      {
+        browser: browser(Browser.Chrome),
+        viewport: viewport(800),
+        result: ComparisonResult.Equal,
+      },
+      {
+        browser: browser(Browser.Safari),
+        viewport: viewport(800),
+        result: ComparisonResult.Changed,
+      },
     ],
+    parameters: { viewport: viewport(800) },
   },
   {
     id: "3",
     status: TestStatus.Passed,
+    result: TestResult.Equal,
     comparisons: [
-      { browser: "chrome", viewport: "400px", result: ComparisonResult.Equal },
-      { browser: "safari", viewport: "400px", result: ComparisonResult.Equal },
+      {
+        browser: browser(Browser.Chrome),
+        viewport: viewport(400),
+        result: ComparisonResult.Equal,
+      },
+      {
+        browser: browser(Browser.Safari),
+        viewport: viewport(400),
+        result: ComparisonResult.Equal,
+      },
     ],
+    parameters: { viewport: viewport(400) },
   },
 ];
 
-const paginated = (nodes: { id: string; [x: string]: any }[]) => ({
+const paginated = (nodes: Build["tests"]["nodes"]) => ({
   edges: nodes.map((node) => ({ cursor: node.id, node })),
   nodes,
   pageInfo: {
@@ -47,18 +88,26 @@ const paginated = (nodes: { id: string; [x: string]: any }[]) => ({
   totalCount: nodes.length,
 });
 
-const inProgressBuild = {
+const inProgressBuild: Build = {
+  id: "1",
+  number: 1,
   branch: "feature-branch",
-  status: BuildStatus.InProgress,
+  commit: "1234567",
+  browsers: [browser(Browser.Chrome), browser(Browser.Safari)],
   startedAt: new Date(Date.now() - 1000 * 60 * 2), // 2 minutes ago
-  tests: tests.map((test) => ({
-    ...test,
-    status: TestStatus.InProgress,
-    comparisons: null,
-  })),
+  status: BuildStatus.InProgress,
+  changeCount: null,
+  tests: paginated(
+    tests.map((test) => ({
+      ...test,
+      status: TestStatus.InProgress,
+      result: null,
+      comparisons: null,
+    }))
+  ),
 };
 
-const passedBuild = {
+const passedBuild: Build = {
   ...inProgressBuild,
   status: BuildStatus.Passed,
   changeCount: 0,
@@ -66,6 +115,7 @@ const passedBuild = {
     tests.map((test) => ({
       ...test,
       status: TestStatus.Passed,
+      result: TestResult.Equal,
       comparisons: test.comparisons.map((comparison) => ({
         ...comparison,
         result: ComparisonResult.Equal,
@@ -74,17 +124,39 @@ const passedBuild = {
   ),
 };
 
-const pendingBuild = {
+const pendingBuild: Build = {
   ...inProgressBuild,
   status: BuildStatus.Pending,
   changeCount: 3,
   tests: paginated(tests),
 };
 
-const acceptedBuild = {
+const acceptedBuild: Build = {
   ...pendingBuild,
   status: BuildStatus.Accepted,
-  tests: paginated(tests.map((test) => ({ ...test, status: TestStatus.Accepted }))),
+  tests: paginated(
+    tests.map((test) => ({
+      ...test,
+      status: TestStatus.Accepted,
+    }))
+  ),
+};
+
+const brokenBuild: Build = {
+  ...inProgressBuild,
+  status: BuildStatus.Pending,
+  changeCount: 3,
+  tests: paginated(
+    tests.map((test) => ({
+      ...test,
+      status: TestStatus.Broken,
+      result: TestResult.CaptureError,
+      comparisons: test.comparisons.map((comparison) => ({
+        ...comparison,
+        result: ComparisonResult.CaptureError,
+      })),
+    }))
+  ),
 };
 
 const withGraphQLQuery = (...args: Parameters<typeof graphql.query>) => ({
@@ -93,8 +165,8 @@ const withGraphQLQuery = (...args: Parameters<typeof graphql.query>) => ({
   },
 });
 
-const withLastBuild = (lastBuild: any) =>
-  withGraphQLQuery("LastBuildQuery", (req, res, ctx) =>
+const withLastBuild = (lastBuild: Build) =>
+  withGraphQLQuery("LastBuild", (req, res, ctx) =>
     res(
       ctx.data({
         project: {
@@ -103,7 +175,7 @@ const withLastBuild = (lastBuild: any) =>
           webUrl: "https://www.chromatic.com/builds?appId=123",
           lastBuild,
         },
-      })
+      } as LastBuildQuery)
     )
   );
 
@@ -118,7 +190,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Loading: Story = {
   parameters: {
-    ...withGraphQLQuery("LastBuildQuery", (req, res, ctx) =>
+    ...withGraphQLQuery("LastBuild", (req, res, ctx) =>
       res(ctx.status(200), ctx.data({}), ctx.delay("infinite"))
     ),
     ...withFigmaDesign(
@@ -166,6 +238,15 @@ export const Pending: Story = {
 export const Accepted: Story = {
   parameters: {
     ...withLastBuild(acceptedBuild),
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-305053&t=0rxMQnkxsVpVj1qy-4"
+    ),
+  },
+};
+
+export const CaptureError: Story = {
+  parameters: {
+    ...withLastBuild(brokenBuild),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-305053&t=0rxMQnkxsVpVj1qy-4"
     ),

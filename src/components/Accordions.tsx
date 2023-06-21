@@ -66,7 +66,7 @@ export const CloseIcon = styled(Icons)({
   marginLeft: "auto",
 });
 
-export const CloseButton = styled(IconButton)({
+export const CloseButton: typeof IconButton = styled(IconButton)({
   margin: -5,
   marginLeft: "auto",
 });

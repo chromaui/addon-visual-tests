@@ -12,7 +12,8 @@ export const useAccessToken = () => {
 
   const updateToken = (newToken: string) => {
     currentToken = newToken;
-    localStorage.setItem(STORAGE_KEY, currentToken);
+    if (currentToken) localStorage.setItem(STORAGE_KEY, currentToken);
+    else localStorage.removeItem(STORAGE_KEY);
     setToken(newToken);
   };
 

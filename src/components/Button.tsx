@@ -1,7 +1,7 @@
 import { Button as BaseButton } from "@storybook/components";
 import { css, styled } from "@storybook/theming";
 
-export const Button = styled(BaseButton)<{ link?: boolean }>(
+export const Button = styled(BaseButton)<{ link?: boolean; tertiary?: boolean }>(
   {
     "&&": {
       borderRadius: 4,
@@ -25,5 +25,10 @@ export const Button = styled(BaseButton)<{ link?: boolean }>(
           outline: `1px solid ${theme.color.secondary}`,
         },
       },
+    }),
+  ({ tertiary }) =>
+    tertiary &&
+    css({
+      "&&:hover": { boxShadow: "none" },
     })
 );

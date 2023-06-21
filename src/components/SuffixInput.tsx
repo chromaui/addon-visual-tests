@@ -1,5 +1,5 @@
 import { Input } from "@storybook/design-system";
-import { color, styled } from "@storybook/theming";
+import { styled } from "@storybook/theming";
 import React, { ComponentProps, ReactNode } from "react";
 
 const InputWrapper = styled.div(({ theme }) => ({

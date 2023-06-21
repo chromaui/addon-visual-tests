@@ -1,7 +1,7 @@
 import { css, styled } from "@storybook/theming";
 import React from "react";
 
-import { ComparisonResult, TestStatus } from "../constants";
+import { ComparisonResult, TestStatus } from "../gql/graphql";
 
 interface StatusDotProps {
   status?: TestStatus | ComparisonResult;
@@ -14,20 +14,20 @@ const Dot = styled.div<StatusDotProps & { overlay?: boolean }>(
     height: 6,
     borderRadius: "50%",
     background: {
-      [TestStatus.IN_PROGRESS]: "transparent",
-      [TestStatus.PASSED]: theme.color.positive,
-      [TestStatus.PENDING]: theme.color.gold,
-      [TestStatus.ACCEPTED]: theme.color.positive,
-      [TestStatus.DENIED]: theme.color.positive,
-      [TestStatus.BROKEN]: theme.color.negative,
-      [TestStatus.FAILED]: theme.color.negative,
-      [ComparisonResult.EQUAL]: theme.color.positive,
-      [ComparisonResult.FIXED]: theme.color.positive,
-      [ComparisonResult.ADDED]: theme.color.gold,
-      [ComparisonResult.CHANGED]: theme.color.gold,
-      [ComparisonResult.REMOVED]: theme.color.gold,
-      [ComparisonResult.CAPTURE_ERROR]: theme.color.negative,
-      [ComparisonResult.SYSTEM_ERROR]: theme.color.negative,
+      [TestStatus.InProgress]: "transparent",
+      [TestStatus.Passed]: theme.color.positive,
+      [TestStatus.Pending]: theme.color.gold,
+      [TestStatus.Accepted]: theme.color.positive,
+      [TestStatus.Denied]: theme.color.positive,
+      [TestStatus.Broken]: theme.color.negative,
+      [TestStatus.Failed]: theme.color.negative,
+      [ComparisonResult.Equal]: theme.color.positive,
+      [ComparisonResult.Fixed]: theme.color.positive,
+      [ComparisonResult.Added]: theme.color.gold,
+      [ComparisonResult.Changed]: theme.color.gold,
+      [ComparisonResult.Removed]: theme.color.gold,
+      [ComparisonResult.CaptureError]: theme.color.negative,
+      [ComparisonResult.SystemError]: theme.color.negative,
     }[status],
   }),
   ({ overlay, theme }) =>

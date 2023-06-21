@@ -1,12 +1,15 @@
 import { IconButton as BaseIconButton } from "@storybook/components";
 import { styled } from "@storybook/theming";
+import { ComponentProps } from "react";
 
-export const IconButton = styled(BaseIconButton)<{
+interface IconButtonProps extends ComponentProps<typeof BaseIconButton> {
   active?: boolean;
   as?: string;
   secondary?: boolean;
   status?: "warning";
-}>(
+}
+
+export const IconButton: React.FC<IconButtonProps> = styled(BaseIconButton)<IconButtonProps>(
   ({ active, secondary, theme }) => ({
     display: "inline-flex",
     alignItems: "center",
