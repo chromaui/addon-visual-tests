@@ -1,4 +1,5 @@
-import { Icon, Input, Spinner } from "@storybook/design-system";
+import { Loader } from "@storybook/components";
+import { Icon, Input } from "@storybook/design-system";
 import { useTheme } from "@storybook/theming";
 import { formatDistance } from "date-fns";
 import pluralize from "pluralize";
@@ -8,8 +9,10 @@ import { useQuery } from "urql";
 import { BrowserSelector } from "../../components/BrowserSelector";
 import { Button } from "../../components/Button";
 import { IconButton } from "../../components/IconButton";
+import { ProgressIcon } from "../../components/icons/ProgressIcon";
 import { StatusIcon } from "../../components/icons/StatusIcon";
 import { Bar, Col, Row, Section, Sections, Text } from "../../components/layout";
+import { Placeholder } from "../../components/Placeholder";
 import { SnapshotImage } from "../../components/SnapshotImage";
 import { TooltipMenu } from "../../components/TooltipMenu";
 import { ViewportSelector } from "../../components/ViewportSelector";
@@ -99,7 +102,7 @@ export const VisualTests = ({ setAccessToken }: VisualTestsProps) => {
               </Col>
             </Row>
           )}
-          {fetching && <Spinner inverse={theme.base === "dark"} />}
+          {fetching && <Loader />}
           {!fetching && !data?.project && (
             <Row>
               <Col>
@@ -191,6 +194,7 @@ export const VisualTests = ({ setAccessToken }: VisualTestsProps) => {
 
   const test = tests.nodes?.find(({ result }) => result === TestResult.Changed) || tests.nodes?.[0];
   const isPending = test?.status === TestStatus.Pending;
+  const isInProgress = tests.nodes?.some(({ status }) => status === TestStatus.InProgress);
 
   const browserCount = browsers.length;
   const browserInfoById = Object.fromEntries(browsers.map((browser) => [browser.id, browser]));
@@ -211,12 +215,21 @@ export const VisualTests = ({ setAccessToken }: VisualTestsProps) => {
         <Row>
           <Col>
             <Text>
-              <b>
-                {changeCount ? pluralize("change", changeCount, true) : "No changes"}
-                {brokenCount ? `, ${pluralize("error", brokenCount, true)}` : null}
-              </b>
-              {/* eslint-disable-next-line no-nested-ternary */}
-              <StatusIcon icon={brokenCount ? "failed" : isPending ? "changed" : "passed"} />
+              {isInProgress ? (
+                <>
+                  <b>Running tests...</b>
+                  <ProgressIcon />
+                </>
+              ) : (
+                <>
+                  <b>
+                    {changeCount ? pluralize("change", changeCount, true) : "No changes"}
+                    {brokenCount ? `, ${pluralize("error", brokenCount, true)}` : null}
+                  </b>
+                  {/* eslint-disable-next-line no-nested-ternary */}
+                  <StatusIcon icon={brokenCount ? "failed" : isPending ? "changed" : "passed"} />
+                </>
+              )}
               <br />
               <small>
                 <span>
@@ -225,7 +238,11 @@ export const VisualTests = ({ setAccessToken }: VisualTestsProps) => {
                   {pluralize("browser", browserCount, true)}
                 </span>
                 {" • "}
-                <span title={new Date(startedAt).toUTCString()}>{startedAgo}</span>
+                {isInProgress ? (
+                  <span>Test in progress...</span>
+                ) : (
+                  <span title={new Date(startedAt).toUTCString()}>{startedAgo}</span>
+                )}
               </small>
             </Text>
           </Col>
@@ -237,41 +254,57 @@ export const VisualTests = ({ setAccessToken }: VisualTestsProps) => {
             </Col>
           )}
         </Row>
-        <Bar>
-          <Col>
-            <IconButton active={diffVisible} onClick={() => setDiffVisible(!diffVisible)}>
-              <Icon icon="contrast" />
-            </IconButton>
-          </Col>
-          {viewportResults.length > 0 && (
+        {isInProgress ? (
+          <Bar>
+            <Placeholder />
+            <Placeholder />
+            <Placeholder width={50} marginLeft={-5} />
+            <Placeholder />
+          </Bar>
+        ) : (
+          <Bar>
             <Col>
-              <ViewportSelector viewportResults={viewportResults} onSelectViewport={console.log} />
+              <IconButton active={diffVisible} onClick={() => setDiffVisible(!diffVisible)}>
+                <Icon icon="contrast" />
+              </IconButton>
             </Col>
-          )}
-          {browserResults.length > 0 && (
-            <Col>
-              <BrowserSelector browserResults={browserResults} onSelectBrowser={console.log} />
-            </Col>
-          )}
-          {changeCount > 0 && (
-            <>
-              <Col push>
-                <IconButton secondary>Accept</IconButton>
-              </Col>
+            {viewportResults.length > 0 && (
               <Col>
-                <IconButton secondary>
-                  <Icon icon="batchaccept" />
-                </IconButton>
+                <ViewportSelector
+                  viewportResults={viewportResults}
+                  onSelectViewport={console.log}
+                />
               </Col>
-            </>
-          )}
-        </Bar>
+            )}
+            {browserResults.length > 0 && (
+              <Col>
+                <BrowserSelector browserResults={browserResults} onSelectBrowser={console.log} />
+              </Col>
+            )}
+            {changeCount > 0 && (
+              <>
+                <Col push>
+                  <IconButton secondary>Accept</IconButton>
+                </Col>
+                <Col>
+                  <IconButton secondary>
+                    <Icon icon="batchaccept" />
+                  </IconButton>
+                </Col>
+              </>
+            )}
+          </Bar>
+        )}
       </Section>
       <Section grow hidden={settingsVisible || warningsVisible}>
-        <SnapshotImage>
-          <img src="/B.png" alt="" />
-          {diffVisible && <img src="/B-comparison.png" alt="" />}
-        </SnapshotImage>
+        {isInProgress ? (
+          <Loader />
+        ) : (
+          <SnapshotImage>
+            <img src="/B.png" alt="" />
+            {diffVisible && <img src="/B-comparison.png" alt="" />}
+          </SnapshotImage>
+        )}
       </Section>
       <Section grow hidden={!settingsVisible}>
         <RenderSettings onClose={() => setSettingsVisible(false)} />
