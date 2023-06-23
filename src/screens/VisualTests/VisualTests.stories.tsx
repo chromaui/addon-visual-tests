@@ -209,6 +209,9 @@ export const NoChanges: Story = {
 };
 
 export const Outdated: Story = {
+  args: {
+    isOutdated: true,
+  },
   parameters: {
     ...withLastBuild(passedBuild),
     ...withFigmaDesign(

@@ -9,6 +9,7 @@ import { useQuery } from "urql";
 import { BrowserSelector } from "../../components/BrowserSelector";
 import { Button } from "../../components/Button";
 import { IconButton } from "../../components/IconButton";
+import { AlertIcon } from "../../components/icons/AlertIcon";
 import { ProgressIcon } from "../../components/icons/ProgressIcon";
 import { StatusIcon } from "../../components/icons/StatusIcon";
 import { Bar, Col, Row, Section, Sections, Text } from "../../components/layout";
@@ -77,10 +78,11 @@ const QueryLastBuild = graphql(/* GraphQL */ `
 `);
 
 interface VisualTestsProps {
+  isOutdated?: boolean;
   setAccessToken: (accessToken: string | null) => void;
 }
 
-export const VisualTests = ({ setAccessToken }: VisualTestsProps) => {
+export const VisualTests = ({ isOutdated, setAccessToken }: VisualTestsProps) => {
   const [projectId, setProjectId] = useState("5fa3f227c1c504002259feba");
 
   const [{ data, fetching, error }, rerun] = useQuery<LastBuildQuery, LastBuildQueryVariables>({
@@ -220,12 +222,19 @@ export const VisualTests = ({ setAccessToken }: VisualTestsProps) => {
         <Row>
           <Col>
             <Text>
-              {isInProgress ? (
+              {isInProgress && (
                 <>
                   <b>Running tests...</b>
                   <ProgressIcon />
                 </>
-              ) : (
+              )}
+              {!isInProgress && isOutdated && (
+                <>
+                  <b>Snapshots outdated</b>
+                  <AlertIcon />
+                </>
+              )}
+              {!isInProgress && !isOutdated && (
                 <>
                   <b>
                     {changeCount ? pluralize("change", changeCount, true) : "No changes"}
@@ -236,22 +245,36 @@ export const VisualTests = ({ setAccessToken }: VisualTestsProps) => {
                 </>
               )}
               <br />
-              <small>
-                <span>
-                  {pluralize("viewport", viewportCount, true)}
-                  {", "}
-                  {pluralize("browser", browserCount, true)}
-                </span>
-                {" • "}
-                {isInProgress ? (
-                  <span>Test in progress...</span>
-                ) : (
-                  <span title={new Date(startedAt).toUTCString()}>{startedAgo}</span>
-                )}
-              </small>
+              {isOutdated ? (
+                <small>
+                  <span>Run tests to see what changed</span>
+                </small>
+              ) : (
+                <small>
+                  <span>
+                    {pluralize("viewport", viewportCount, true)}
+                    {", "}
+                    {pluralize("browser", browserCount, true)}
+                  </span>
+                  {" • "}
+                  {isInProgress ? (
+                    <span>Test in progress...</span>
+                  ) : (
+                    <span title={new Date(startedAt).toUTCString()}>{startedAgo}</span>
+                  )}
+                </small>
+              )}
             </Text>
           </Col>
-          {changeCount > 0 && (
+          {isOutdated && (
+            <Col push>
+              <Button small secondary>
+                <Icon icon="play" />
+                Run tests
+              </Button>
+            </Col>
+          )}
+          {!isOutdated && changeCount > 0 && (
             <Col push>
               <Button small secondary={isPending} tertiary={!isPending}>
                 {isPending ? "Verify changes" : "View changes"}
@@ -268,11 +291,13 @@ export const VisualTests = ({ setAccessToken }: VisualTestsProps) => {
           </Bar>
         ) : (
           <Bar>
-            <Col>
-              <IconButton active={diffVisible} onClick={() => setDiffVisible(!diffVisible)}>
-                <Icon icon="contrast" />
-              </IconButton>
-            </Col>
+            {!isOutdated && (
+              <Col>
+                <IconButton active={diffVisible} onClick={() => setDiffVisible(!diffVisible)}>
+                  <Icon icon="contrast" />
+                </IconButton>
+              </Col>
+            )}
             {viewportResults.length > 0 && (
               <Col>
                 <ViewportSelector
@@ -307,7 +332,7 @@ export const VisualTests = ({ setAccessToken }: VisualTestsProps) => {
         ) : (
           <SnapshotImage>
             <img src="/B.png" alt="" />
-            {diffVisible && <img src="/B-comparison.png" alt="" />}
+            {diffVisible && !isOutdated && <img src="/B-comparison.png" alt="" />}
           </SnapshotImage>
         )}
       </Section>
