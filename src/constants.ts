@@ -9,3 +9,6 @@ export const PROJECT_PARAM_KEY = "projectId";
 
 export const START_BUILD = `${ADDON_ID}/startBuild`;
 export const BUILD_STARTED = `${ADDON_ID}/buildStarted`;
+
+export const UPDATE_PROJECT_ID = `${ADDON_ID}/updateProjectId`;
+export const PROJECT_ID_UPDATED = `${ADDON_ID}/projectIdUpdated`;
