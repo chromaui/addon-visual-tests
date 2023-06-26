@@ -1,7 +1,7 @@
-import { useGlobals, useParameter } from "@storybook/manager-api";
+import { useChannel, useParameter } from "@storybook/manager-api";
 import React from "react";
 
-import { PROJECT_PARAM_KEY } from "../constants";
+import { PROJECT_ID_UPDATED, PROJECT_PARAM_KEY, UPDATE_PROJECT_ID } from "../constants";
 
 let inMemoryProjectId: string | null = null;
 
@@ -20,7 +20,17 @@ export const useProjectId = (): [
     configuredProjectId || inMemoryProjectId
   );
 
+  // TODO: This is where we need to update the main.ts config with the projectId
+  const emit = useChannel({
+    [PROJECT_ID_UPDATED]: (selectedProjectId: string) => {
+      // eslint-disable-next-line no-console
+      console.log("projectId selected from emit", selectedProjectId);
+      setProjectId(selectedProjectId);
+    },
+  });
+
   const updateProjectId = (id: string) => {
+    emit(UPDATE_PROJECT_ID, id);
     inMemoryProjectId = id;
     setProjectId(inMemoryProjectId);
   };
