@@ -1,7 +1,7 @@
 import { Loader } from "@storybook/components";
 import { Icon, Input } from "@storybook/design-system";
-import { useTheme } from "@storybook/theming";
 import { formatDistance } from "date-fns";
+import type { DocumentNode } from "graphql";
 import pluralize from "pluralize";
 import React, { ChangeEvent, useState } from "react";
 import { useQuery } from "urql";
@@ -19,9 +19,9 @@ import { TooltipMenu } from "../../components/TooltipMenu";
 import { ViewportSelector } from "../../components/ViewportSelector";
 import { graphql } from "../../gql";
 import {
-  ComparisonResult,
   LastBuildQuery,
   LastBuildQueryVariables,
+  TestedBuild,
   TestResult,
   TestStatus,
 } from "../../gql/graphql";
@@ -29,7 +29,9 @@ import { aggregateResult } from "../../utils/aggregateResult";
 import { RenderSettings } from "./RenderSettings";
 import { Warnings } from "./Warnings";
 
-const QueryLastBuild = graphql(/* GraphQL */ `
+type ComparisonResult = any;
+
+const QueryLastBuild: DocumentNode = graphql(/* GraphQL */ `
   query LastBuild($projectId: ID!, $branch: String!, $storyId: String!) {
     project(id: $projectId) {
       id
@@ -52,21 +54,30 @@ const QueryLastBuild = graphql(/* GraphQL */ `
           tests(storyId: $storyId) {
             nodes {
               id
-              result
               status
+              result
               comparisons {
-                result
+                id
                 browser {
                   id
+                  key
+                  name
+                  version
                 }
                 viewport {
                   id
+                  name
+                  width
+                  isDefault
                 }
+                result
               }
               parameters {
                 viewport {
                   id
                   name
+                  width
+                  isDefault
                 }
               }
             }
@@ -79,10 +90,17 @@ const QueryLastBuild = graphql(/* GraphQL */ `
 
 interface VisualTestsProps {
   isOutdated?: boolean;
+  isRunning?: boolean;
+  runTests: () => void;
   setAccessToken: (accessToken: string | null) => void;
 }
 
-export const VisualTests = ({ isOutdated, setAccessToken }: VisualTestsProps) => {
+export const VisualTests = ({
+  isOutdated,
+  isRunning,
+  runTests,
+  setAccessToken,
+}: VisualTestsProps) => {
   const [projectId, setProjectId] = useState("5fa3f227c1c504002259feba");
 
   const [{ data, fetching, error }, rerun] = useQuery<LastBuildQuery, LastBuildQueryVariables>({
@@ -159,7 +177,8 @@ export const VisualTests = ({ isOutdated, setAccessToken }: VisualTestsProps) =>
     );
   }
 
-  const { branch, browsers, startedAt, tests } = data.project.lastBuild;
+  const { branch, browsers, startedAt, tests } = data.project.lastBuild as TestedBuild;
+
   const startedAgo = formatDistance(new Date(startedAt), new Date(), { addSuffix: true });
 
   const { changeCount, brokenCount, resultsByBrowser, resultsByViewport, viewportInfoById } = (
@@ -194,7 +213,7 @@ export const VisualTests = ({ isOutdated, setAccessToken }: VisualTestsProps) =>
       resultsByViewport: {} as Record<string, ComparisonResult>,
       viewportInfoById: {} as Record<
         string,
-        LastBuildQuery["project"]["lastBuild"]["tests"]["nodes"][0]["parameters"]["viewport"]
+        TestedBuild["tests"]["nodes"][0]["parameters"]["viewport"]
       >,
     }
   );
@@ -268,8 +287,8 @@ export const VisualTests = ({ isOutdated, setAccessToken }: VisualTestsProps) =>
           </Col>
           {isOutdated && (
             <Col push>
-              <Button small secondary>
-                <Icon icon="play" />
+              <Button small secondary onClick={runTests} disabled={isRunning}>
+                {isRunning ? <ProgressIcon onButton /> : <Icon icon="play" />}
                 Run tests
               </Button>
             </Col>
@@ -302,13 +321,18 @@ export const VisualTests = ({ isOutdated, setAccessToken }: VisualTestsProps) =>
               <Col>
                 <ViewportSelector
                   viewportResults={viewportResults}
+                  // eslint-disable-next-line no-console
                   onSelectViewport={console.log}
                 />
               </Col>
             )}
             {browserResults.length > 0 && (
               <Col>
-                <BrowserSelector browserResults={browserResults} onSelectBrowser={console.log} />
+                <BrowserSelector
+                  browserResults={browserResults}
+                  // eslint-disable-next-line no-console
+                  onSelectBrowser={console.log}
+                />
               </Col>
             )}
             {changeCount > 0 && (

@@ -2,14 +2,12 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { findByRole, fireEvent } from "@storybook/testing-library";
 import { graphql } from "msw";
 
-import type { LastBuildQuery } from "../../gql/graphql";
+import type { LastBuildQuery, StartedBuild } from "../../gql/graphql";
 import { Browser, BuildStatus, ComparisonResult, TestResult, TestStatus } from "../../gql/graphql";
 import { storyWrapper } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
 import { VisualTests } from "./VisualTests";
-
-type Build = LastBuildQuery["project"]["lastBuild"];
 
 const browser = (key: Browser) => ({
   id: key,
@@ -76,7 +74,7 @@ const tests = [
   },
 ];
 
-const paginated = (nodes: Build["tests"]["nodes"]) => ({
+const paginated = (nodes: StartedBuild["tests"]["nodes"]) => ({
   edges: nodes.map((node) => ({ cursor: node.id, node })),
   nodes,
   pageInfo: {
@@ -88,7 +86,7 @@ const paginated = (nodes: Build["tests"]["nodes"]) => ({
   totalCount: nodes.length,
 });
 
-const inProgressBuild: Build = {
+const inProgressBuild: StartedBuild = {
   id: "1",
   number: 1,
   branch: "feature-branch",
@@ -217,6 +215,16 @@ export const Outdated: Story = {
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304922&t=0rxMQnkxsVpVj1qy-4"
     ),
+  },
+};
+
+export const OutdatedRunning: Story = {
+  args: {
+    ...Outdated.args,
+    isRunning: true,
+  },
+  parameters: {
+    ...Outdated.parameters,
   },
 };
 

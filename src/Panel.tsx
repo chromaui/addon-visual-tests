@@ -21,7 +21,12 @@ export const Panel = ({ active }: PanelProps) => {
 
   return (
     <Provider key={PANEL_ID} value={client}>
-      <VisualTests setAccessToken={setAccessToken} />
+      <VisualTests
+        isOutdated={false}
+        isRunning={false}
+        runTests={() => {}}
+        setAccessToken={setAccessToken}
+      />
     </Provider>
   );
 };
