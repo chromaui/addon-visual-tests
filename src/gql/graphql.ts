@@ -24,6 +24,28 @@ export type Scalars = {
   URL: { input: any; output: any; }
 };
 
+/** A build that has been pre-announced but not published yet. */
+export type AnnouncedBuild = Build & Node & Temporal & {
+  __typename?: 'AnnouncedBuild';
+  branch: Scalars['String']['output'];
+  browsers: Array<BrowserInfo>;
+  /** Git commit hash (unshortened). */
+  commit: Scalars['String']['output'];
+  /** Link to the commit details at the Git provider linked to the project. */
+  commitUrl?: Maybe<Scalars['String']['output']>;
+  /** When the commit was created in Git. */
+  committedAt: Scalars['DateTime']['output'];
+  /** When the entity was first created in Chromatic. */
+  createdAt: Scalars['DateTime']['output'];
+  /** GraphQL node identifier */
+  id: Scalars['ID']['output'];
+  number: Scalars['Int']['output'];
+  slug?: Maybe<Scalars['String']['output']>;
+  status: BuildStatus;
+  /** When the entity was last updated or created in Chromatic. */
+  updatedAt: Scalars['DateTime']['output'];
+};
+
 export enum Browser {
   Chrome = 'CHROME',
   Edge = 'EDGE',
@@ -99,6 +121,12 @@ export enum BuildStatus {
   Published = 'PUBLISHED'
 }
 
+export type Capture = {
+  __typename?: 'Capture';
+  /** The ID of the capture. */
+  id: Scalars['ID']['output'];
+};
+
 export type CaptureImage = Image & {
   __typename?: 'CaptureImage';
   /** Computed CSS background color of the captured HTML body. */
@@ -113,15 +141,6 @@ export type CaptureImage = Image & {
   textDirection?: Maybe<Scalars['String']['output']>;
   /** URL of the thumbnail image. */
   thumbnailUrl: Scalars['URL']['output'];
-};
-
-export type Comparison = Node & {
-  __typename?: 'Comparison';
-  browser: BrowserInfo;
-  /** GraphQL node identifier */
-  id: Scalars['ID']['output'];
-  result?: Maybe<ComparisonResult>;
-  viewport: ViewportInfo;
 };
 
 export enum ComparisonResult {
@@ -201,40 +220,6 @@ export type ComponentRepresentation = {
   /** This test is the best representation of the first spec of the component on this build. */
   representativeTest: Test;
 };
-
-/** Connection to a list of ComponentRepresentation. */
-export type ComponentRepresentationConnection = {
-  __typename?: 'ComponentRepresentationConnection';
-  /** List of edges for ComponentRepresentationConnection. */
-  edges: Array<ComponentRepresentationEdge>;
-  /** List of nodes for ComponentRepresentationConnection. */
-  nodes: Array<ComponentRepresentation>;
-  /** Pagination details for ComponentRepresentationConnection. */
-  pageInfo: PageInfo;
-  /** Total number of items for ComponentRepresentationConnection. */
-  totalCount: Scalars['Int']['output'];
-};
-
-/** The edge type for ComponentRepresentation. */
-export type ComponentRepresentationEdge = {
-  __typename?: 'ComponentRepresentationEdge';
-  /** Cursor to this item. */
-  cursor: Scalars['String']['output'];
-  /** The item at the edge. */
-  node: ComponentRepresentation;
-};
-
-export type ComponentRepresentationsOrder = {
-  direction: OrderDirection;
-  field: ComponentRepresentationsOrderField;
-};
-
-export enum ComponentRepresentationsOrderField {
-  CreatedAt = 'createdAt',
-  ResultOrder = 'resultOrder',
-  StoryOrder = 'storyOrder',
-  UpdatedAt = 'updatedAt'
-}
 
 export type ComponentsOrder = {
   direction: OrderDirection;
@@ -375,6 +360,34 @@ export type PublicAccountInfo = {
   name: Scalars['String']['output'];
 };
 
+/** A build that has been published but not started testing yet. */
+export type PublishedBuild = Build & Node & Temporal & {
+  __typename?: 'PublishedBuild';
+  branch: Scalars['String']['output'];
+  browsers: Array<BrowserInfo>;
+  /** Git commit hash (unshortened). */
+  commit: Scalars['String']['output'];
+  /** Link to the commit details at the Git provider linked to the project. */
+  commitUrl?: Maybe<Scalars['String']['output']>;
+  /** When the commit was created in Git. */
+  committedAt: Scalars['DateTime']['output'];
+  /** When the entity was first created in Chromatic. */
+  createdAt: Scalars['DateTime']['output'];
+  /** GraphQL node identifier */
+  id: Scalars['ID']['output'];
+  /** Link to the published Storybook's canvas (iframe.html). */
+  isolatorUrl: Scalars['URL']['output'];
+  number: Scalars['Int']['output'];
+  /** When the Storybook was published on Chromatic. */
+  publishedAt: Scalars['DateTime']['output'];
+  slug?: Maybe<Scalars['String']['output']>;
+  status: BuildStatus;
+  /** Link to the published Storybook. */
+  storybookUrl: Scalars['URL']['output'];
+  /** When the entity was last updated or created in Chromatic. */
+  updatedAt: Scalars['DateTime']['output'];
+};
+
 export type Query = {
   __typename?: 'Query';
   bulkFigmaMetadata?: Maybe<Array<Maybe<FigmaMetadata>>>;
@@ -408,6 +421,105 @@ export type QueryProjectArgs = {
 export type QueryStorybookArgs = {
   url: Scalars['URL']['input'];
 };
+
+/** A build that has started but not completed testing. */
+export type StartedBuild = Build & Node & Temporal & {
+  __typename?: 'StartedBuild';
+  branch: Scalars['String']['output'];
+  browsers: Array<BrowserInfo>;
+  /** Git commit hash (unshortened). */
+  commit: Scalars['String']['output'];
+  /** Link to the commit details at the Git provider linked to the project. */
+  commitUrl?: Maybe<Scalars['String']['output']>;
+  /** When the commit was created in Git. */
+  committedAt: Scalars['DateTime']['output'];
+  /** The number of components in the published Storybook, excluding docsOnly components */
+  componentCount: Scalars['Int']['output'];
+  /** When the entity was first created in Chromatic. */
+  createdAt: Scalars['DateTime']['output'];
+  /** The number of docsOnly stories in the published Storybook */
+  docsCount: Scalars['Int']['output'];
+  /** GraphQL node identifier */
+  id: Scalars['ID']['output'];
+  interactionTestFailuresCount?: Maybe<Scalars['Int']['output']>;
+  /** Whether the build is reviewable. */
+  isReviewable: Scalars['Boolean']['output'];
+  /** Link to the published Storybook's canvas (iframe.html). */
+  isolatorUrl: Scalars['URL']['output'];
+  number: Scalars['Int']['output'];
+  /** When the Storybook was published on Chromatic. */
+  publishedAt: Scalars['DateTime']['output'];
+  slug?: Maybe<Scalars['String']['output']>;
+  /** The number of stories in the published Storybook, excluding docsOnly stories */
+  specCount: Scalars['Int']['output'];
+  /** When the build was started in Chromatic. */
+  startedAt: Scalars['DateTime']['output'];
+  status: BuildStatus;
+  /** Link to the published Storybook. */
+  storybookUrl: Scalars['URL']['output'];
+  /** Count the number of tests in the build. All provided filter arguments must match (AND). */
+  testCount: Scalars['Int']['output'];
+  tests?: Maybe<StartedBuildTestConnection>;
+  /** When the entity was last updated or created in Chromatic. */
+  updatedAt: Scalars['DateTime']['output'];
+  /** Whether the build was limited to just representative stories due to insufficient snapshot quota. */
+  wasLimited: Scalars['Boolean']['output'];
+  /** Link to the build details on Chromatic. */
+  webUrl: Scalars['URL']['output'];
+};
+
+
+/** A build that has started but not completed testing. */
+export type StartedBuildTestCountArgs = {
+  results?: InputMaybe<Array<TestResult>>;
+  reviewable?: InputMaybe<Scalars['Boolean']['input']>;
+  statuses?: InputMaybe<Array<TestStatus>>;
+};
+
+
+/** A build that has started but not completed testing. */
+export type StartedBuildTestsArgs = {
+  after?: InputMaybe<Scalars['ID']['input']>;
+  before?: InputMaybe<Scalars['ID']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<StartedBuildTestsOrder>;
+  storyId?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** Connection to a list of StartedBuildTest. */
+export type StartedBuildTestConnection = {
+  __typename?: 'StartedBuildTestConnection';
+  /** List of edges for StartedBuildTestConnection. */
+  edges: Array<StartedBuildTestEdge>;
+  /** List of nodes for StartedBuildTestConnection. */
+  nodes: Array<Test>;
+  /** Pagination details for StartedBuildTestConnection. */
+  pageInfo: PageInfo;
+  /** Total number of items for StartedBuildTestConnection. */
+  totalCount: Scalars['Int']['output'];
+};
+
+/** The edge type for StartedBuildTest. */
+export type StartedBuildTestEdge = {
+  __typename?: 'StartedBuildTestEdge';
+  /** Cursor to this item. */
+  cursor: Scalars['String']['output'];
+  /** The item at the edge. */
+  node: Test;
+};
+
+export type StartedBuildTestsOrder = {
+  direction: OrderDirection;
+  field: StartedBuildTestsOrderField;
+};
+
+export enum StartedBuildTestsOrderField {
+  CreatedAt = 'createdAt',
+  ResultOrder = 'resultOrder',
+  StoryOrder = 'storyOrder',
+  UpdatedAt = 'updatedAt'
+}
 
 export type StoriesOrder = {
   direction: OrderDirection;
@@ -489,10 +601,10 @@ export type Temporal = {
   updatedAt: Scalars['DateTime']['output'];
 };
 
+/** A set of captures for a story at a specific viewport, compared against the baseline. */
 export type Test = Node & Temporal & {
   __typename?: 'Test';
-  captureImage?: Maybe<CaptureImage>;
-  comparisons: Array<Comparison>;
+  comparisons: Array<TestComparisonType>;
   /** When the entity was first created in Chromatic. */
   createdAt: Scalars['DateTime']['output'];
   /** GraphQL node identifier */
@@ -502,32 +614,19 @@ export type Test = Node & Temporal & {
   result?: Maybe<TestResult>;
   /** This is the user state of the test; has it been reviewed? */
   status: TestStatus;
-  story: Story;
-  storybookUrl: Scalars['URL']['output'];
+  story?: Maybe<Story>;
   /** When the entity was last updated or created in Chromatic. */
   updatedAt: Scalars['DateTime']['output'];
 };
 
-/** Connection to a list of Test. */
-export type TestConnection = {
-  __typename?: 'TestConnection';
-  /** List of edges for TestConnection. */
-  edges: Array<TestEdge>;
-  /** List of nodes for TestConnection. */
-  nodes: Array<Test>;
-  /** Pagination details for TestConnection. */
-  pageInfo: PageInfo;
-  /** Total number of items for TestConnection. */
-  totalCount: Scalars['Int']['output'];
-};
-
-/** The edge type for Test. */
-export type TestEdge = {
-  __typename?: 'TestEdge';
-  /** Cursor to this item. */
-  cursor: Scalars['String']['output'];
-  /** The item at the edge. */
-  node: Test;
+export type TestComparisonType = Node & {
+  __typename?: 'TestComparisonType';
+  browser: BrowserInfo;
+  headCapture?: Maybe<Capture>;
+  /** GraphQL node identifier */
+  id: Scalars['ID']['output'];
+  result?: Maybe<ComparisonResult>;
+  viewport: ViewportInfo;
 };
 
 export type TestParameters = {
@@ -607,7 +706,7 @@ export type TestedBuild = Build & Node & Temporal & {
   completedAt: Scalars['DateTime']['output'];
   /** The number of components in the published Storybook, excluding docsOnly components */
   componentCount: Scalars['Int']['output'];
-  componentRepresentations: ComponentRepresentationConnection;
+  componentRepresentations?: Maybe<TestedBuildComponentRepresentationConnection>;
   /** When the entity was first created in Chromatic. */
   createdAt: Scalars['DateTime']['output'];
   /** The number of docsOnly stories in the published Storybook */
@@ -633,7 +732,7 @@ export type TestedBuild = Build & Node & Temporal & {
   storybookUrl: Scalars['URL']['output'];
   /** Count the number of tests in the build. All provided filter arguments must match (AND). */
   testCount: Scalars['Int']['output'];
-  tests: TestConnection;
+  tests?: Maybe<TestedBuildTestConnection>;
   /** When the entity was last updated or created in Chromatic. */
   updatedAt: Scalars['DateTime']['output'];
   /** Whether the build was limited to just representative stories due to insufficient snapshot quota. */
@@ -649,7 +748,7 @@ export type TestedBuildComponentRepresentationsArgs = {
   before?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<ComponentRepresentationsOrder>;
+  orderBy?: InputMaybe<TestedBuildComponentRepresentationsOrder>;
 };
 
 
@@ -667,16 +766,72 @@ export type TestedBuildTestsArgs = {
   before?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<TestsOrder>;
+  orderBy?: InputMaybe<TestedBuildTestsOrder>;
   storyId?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type TestsOrder = {
-  direction: OrderDirection;
-  field: TestsOrderField;
+/** Connection to a list of TestedBuildComponentRepresentation. */
+export type TestedBuildComponentRepresentationConnection = {
+  __typename?: 'TestedBuildComponentRepresentationConnection';
+  /** List of edges for TestedBuildComponentRepresentationConnection. */
+  edges: Array<TestedBuildComponentRepresentationEdge>;
+  /** List of nodes for TestedBuildComponentRepresentationConnection. */
+  nodes: Array<ComponentRepresentation>;
+  /** Pagination details for TestedBuildComponentRepresentationConnection. */
+  pageInfo: PageInfo;
+  /** Total number of items for TestedBuildComponentRepresentationConnection. */
+  totalCount: Scalars['Int']['output'];
 };
 
-export enum TestsOrderField {
+/** The edge type for TestedBuildComponentRepresentation. */
+export type TestedBuildComponentRepresentationEdge = {
+  __typename?: 'TestedBuildComponentRepresentationEdge';
+  /** Cursor to this item. */
+  cursor: Scalars['String']['output'];
+  /** The item at the edge. */
+  node: ComponentRepresentation;
+};
+
+export type TestedBuildComponentRepresentationsOrder = {
+  direction: OrderDirection;
+  field: TestedBuildComponentRepresentationsOrderField;
+};
+
+export enum TestedBuildComponentRepresentationsOrderField {
+  CreatedAt = 'createdAt',
+  ResultOrder = 'resultOrder',
+  StoryOrder = 'storyOrder',
+  UpdatedAt = 'updatedAt'
+}
+
+/** Connection to a list of TestedBuildTest. */
+export type TestedBuildTestConnection = {
+  __typename?: 'TestedBuildTestConnection';
+  /** List of edges for TestedBuildTestConnection. */
+  edges: Array<TestedBuildTestEdge>;
+  /** List of nodes for TestedBuildTestConnection. */
+  nodes: Array<Test>;
+  /** Pagination details for TestedBuildTestConnection. */
+  pageInfo: PageInfo;
+  /** Total number of items for TestedBuildTestConnection. */
+  totalCount: Scalars['Int']['output'];
+};
+
+/** The edge type for TestedBuildTest. */
+export type TestedBuildTestEdge = {
+  __typename?: 'TestedBuildTestEdge';
+  /** Cursor to this item. */
+  cursor: Scalars['String']['output'];
+  /** The item at the edge. */
+  node: Test;
+};
+
+export type TestedBuildTestsOrder = {
+  direction: OrderDirection;
+  field: TestedBuildTestsOrderField;
+};
+
+export enum TestedBuildTestsOrderField {
   CreatedAt = 'createdAt',
   ResultOrder = 'resultOrder',
   StoryOrder = 'storyOrder',
@@ -713,7 +868,7 @@ export type ProjectQueryQueryVariables = Exact<{
 }>;
 
 
-export type ProjectQueryQuery = { __typename?: 'Query', project?: { __typename?: 'Project', id: string, name: string, webUrl: any, lastBuild?: { __typename?: 'TestedBuild', branch: string, number: number } | null } | null };
+export type ProjectQueryQuery = { __typename?: 'Query', project?: { __typename?: 'Project', id: string, name: string, webUrl: any, lastBuild?: { __typename?: 'AnnouncedBuild', branch: string, number: number } | { __typename?: 'PublishedBuild', branch: string, number: number } | { __typename?: 'StartedBuild', branch: string, number: number } | { __typename?: 'TestedBuild', branch: string, number: number } | null } | null };
 
 export type LastBuildQueryVariables = Exact<{
   projectId: Scalars['ID']['input'];
@@ -722,8 +877,8 @@ export type LastBuildQueryVariables = Exact<{
 }>;
 
 
-export type LastBuildQuery = { __typename?: 'Query', project?: { __typename?: 'Project', id: string, name: string, webUrl: any, lastBuild?: { __typename?: 'TestedBuild', startedAt: any, id: string, number: number, branch: string, commit: string, status: BuildStatus, changeCount: number, tests: { __typename?: 'TestConnection', nodes: Array<{ __typename?: 'Test', id: string, result?: TestResult | null, status: TestStatus, comparisons: Array<{ __typename?: 'Comparison', result?: ComparisonResult | null, browser: { __typename?: 'BrowserInfo', id: string }, viewport: { __typename?: 'ViewportInfo', id: string } }>, parameters: { __typename?: 'TestParameters', viewport: { __typename?: 'ViewportInfo', id: string, name: string } } }> }, browsers: Array<{ __typename?: 'BrowserInfo', id: string, key: Browser, name: string }> } | null } | null };
+export type LastBuildQuery = { __typename?: 'Query', project?: { __typename?: 'Project', id: string, name: string, webUrl: any, lastBuild?: { __typename?: 'AnnouncedBuild', id: string, number: number, branch: string, commit: string, status: BuildStatus, browsers: Array<{ __typename?: 'BrowserInfo', id: string, key: Browser, name: string }> } | { __typename?: 'PublishedBuild', id: string, number: number, branch: string, commit: string, status: BuildStatus, browsers: Array<{ __typename?: 'BrowserInfo', id: string, key: Browser, name: string }> } | { __typename?: 'StartedBuild', startedAt: any, id: string, number: number, branch: string, commit: string, status: BuildStatus, changeCount: number, tests?: { __typename?: 'StartedBuildTestConnection', nodes: Array<{ __typename?: 'Test', id: string, result?: TestResult | null, status: TestStatus, comparisons: Array<{ __typename?: 'TestComparisonType', result?: ComparisonResult | null, browser: { __typename?: 'BrowserInfo', id: string }, viewport: { __typename?: 'ViewportInfo', id: string } }>, parameters: { __typename?: 'TestParameters', viewport: { __typename?: 'ViewportInfo', id: string, name: string } } }> } | null, browsers: Array<{ __typename?: 'BrowserInfo', id: string, key: Browser, name: string }> } | { __typename?: 'TestedBuild', id: string, number: number, branch: string, commit: string, status: BuildStatus, browsers: Array<{ __typename?: 'BrowserInfo', id: string, key: Browser, name: string }> } | null } | null };
 
 
 export const ProjectQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ProjectQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"project"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"webUrl"}},{"kind":"Field","name":{"kind":"Name","value":"lastBuild"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"branch"}},{"kind":"Field","name":{"kind":"Name","value":"number"}}]}}]}}]}}]} as unknown as DocumentNode<ProjectQueryQuery, ProjectQueryQueryVariables>;
-export const LastBuildDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"LastBuild"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"branch"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"storyId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"project"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"webUrl"}},{"kind":"Field","name":{"kind":"Name","value":"lastBuild"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"branches"},"value":{"kind":"ListValue","values":[{"kind":"Variable","name":{"kind":"Name","value":"branch"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"number"}},{"kind":"Field","name":{"kind":"Name","value":"branch"}},{"kind":"Field","name":{"kind":"Name","value":"commit"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"browsers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TestedBuild"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"changeCount"},"name":{"kind":"Name","value":"testCount"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"results"},"value":{"kind":"ListValue","values":[{"kind":"EnumValue","value":"ADDED"},{"kind":"EnumValue","value":"CHANGED"},{"kind":"EnumValue","value":"FIXED"}]}}]},{"kind":"Field","name":{"kind":"Name","value":"startedAt"}},{"kind":"Field","name":{"kind":"Name","value":"tests"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"storyId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"storyId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"result"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"comparisons"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"result"}},{"kind":"Field","name":{"kind":"Name","value":"browser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"viewport"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"parameters"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"viewport"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<LastBuildQuery, LastBuildQueryVariables>;
+export const LastBuildDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"LastBuild"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"branch"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"storyId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"project"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"webUrl"}},{"kind":"Field","name":{"kind":"Name","value":"lastBuild"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"branches"},"value":{"kind":"ListValue","values":[{"kind":"Variable","name":{"kind":"Name","value":"branch"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"number"}},{"kind":"Field","name":{"kind":"Name","value":"branch"}},{"kind":"Field","name":{"kind":"Name","value":"commit"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"browsers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"StartedBuild"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"changeCount"},"name":{"kind":"Name","value":"testCount"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"results"},"value":{"kind":"ListValue","values":[{"kind":"EnumValue","value":"ADDED"},{"kind":"EnumValue","value":"CHANGED"},{"kind":"EnumValue","value":"FIXED"}]}}]},{"kind":"Field","name":{"kind":"Name","value":"startedAt"}},{"kind":"Field","name":{"kind":"Name","value":"tests"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"storyId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"storyId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"result"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"comparisons"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"result"}},{"kind":"Field","name":{"kind":"Name","value":"browser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"viewport"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"parameters"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"viewport"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<LastBuildQuery, LastBuildQueryVariables>;

@@ -17,7 +17,13 @@ import { SnapshotImage } from "../../components/SnapshotImage";
 import { TooltipMenu } from "../../components/TooltipMenu";
 import { ViewportSelector } from "../../components/ViewportSelector";
 import { graphql } from "../../gql";
-import { ComparisonResult, LastBuildQuery, TestResult, TestStatus } from "../../gql/graphql";
+import {
+  ComparisonResult,
+  LastBuildQuery,
+  LastBuildQueryVariables,
+  TestResult,
+  TestStatus,
+} from "../../gql/graphql";
 import { aggregateResult } from "../../utils/aggregateResult";
 import { RenderSettings } from "./RenderSettings";
 import { Warnings } from "./Warnings";
@@ -39,7 +45,7 @@ const QueryLastBuild = graphql(/* GraphQL */ `
           key
           name
         }
-        ... on TestedBuild {
+        ... on StartedBuild {
           changeCount: testCount(results: [ADDED, CHANGED, FIXED])
           startedAt
           tests(storyId: $storyId) {
@@ -75,10 +81,9 @@ interface VisualTestsProps {
 }
 
 export const VisualTests = ({ setAccessToken }: VisualTestsProps) => {
-  const theme = useTheme();
   const [projectId, setProjectId] = useState("5fa3f227c1c504002259feba");
 
-  const [{ data, fetching, error }, rerun] = useQuery<LastBuildQuery>({
+  const [{ data, fetching, error }, rerun] = useQuery<LastBuildQuery, LastBuildQueryVariables>({
     query: QueryLastBuild,
     variables: {
       projectId,
