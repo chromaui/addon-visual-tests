@@ -24,6 +24,25 @@ export type Scalars = {
   URL: { input: any; output: any; }
 };
 
+export type Account = Node & Temporal & {
+  __typename?: 'Account';
+  avatarUrl?: Maybe<Scalars['String']['output']>;
+  /** When the entity was first created in Chromatic. */
+  createdAt: Scalars['DateTime']['output'];
+  /** GraphQL node identifier */
+  id: Scalars['ID']['output'];
+  /** Account name, typically the repository owner. */
+  name: Scalars['String']['output'];
+  projects?: Maybe<Array<Maybe<Project>>>;
+  /** When the entity was last updated or created in Chromatic. */
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+
+export type AccountProjectsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+};
+
 /** A build that has been pre-announced but not published yet. */
 export type AnnouncedBuild = Build & Node & Temporal & {
   __typename?: 'AnnouncedBuild';
@@ -695,6 +714,8 @@ export type Project = Node & Temporal & {
   lastBuild?: Maybe<Build>;
   /** Project name, typically the repository name. */
   name: Scalars['String']['output'];
+  /** Project token to start builds with Chromatic CLI. */
+  projectToken: Scalars['String']['output'];
   /** Account information which does not require the `account` scope. */
   publicAccountInfo: PublicAccountInfo;
   /** When the entity was last updated or created in Chromatic. */
@@ -763,12 +784,20 @@ export type PublishedBuild = Build & Node & Temporal & {
 
 export type Query = {
   __typename?: 'Query';
+  account?: Maybe<Account>;
+  accounts?: Maybe<Array<Maybe<Account>>>;
   build?: Maybe<Build>;
   bulkFigmaMetadata?: Maybe<Array<Maybe<FigmaMetadata>>>;
   figmaMetadata?: Maybe<FigmaMetadata>;
   figmaMetadataById?: Maybe<FigmaMetadata>;
   project?: Maybe<Project>;
   storybook?: Maybe<Storybook>;
+  viewer?: Maybe<User>;
+};
+
+
+export type QueryAccountArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -1104,6 +1133,7 @@ export enum TestStatus {
 
 export type User = Node & Temporal & {
   __typename?: 'User';
+  accounts: Array<Account>;
   avatarUrl?: Maybe<Scalars['URL']['output']>;
   /** When the entity was first created in Chromatic. */
   createdAt: Scalars['DateTime']['output'];

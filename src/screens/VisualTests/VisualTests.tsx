@@ -16,6 +16,7 @@ import {
   TestStatus,
 } from "../../gql/graphql";
 import { aggregateResult } from "../../utils/aggregateResult";
+import { useProjectId } from "../../utils/useProjectId";
 import { BuildInfo } from "./BuildInfo";
 import { RenderSettings } from "./RenderSettings";
 import { SnapshotComparison } from "./SnapshotComparison";
@@ -132,6 +133,8 @@ export const VisualTests = ({
   setIsRunning,
   storyId,
 }: VisualTestsProps) => {
+  // TODO: Replace hardcoded projectId with useProjectId hook and parameters
+  const [projectId, setProjectId, projectIdChanged] = useProjectId();
   const [{ data, fetching, error }, rerun] = useQuery<BuildQuery, BuildQueryVariables>({
     query: QueryBuild,
     variables: {

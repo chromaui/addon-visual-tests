@@ -3,9 +3,11 @@ import React, { useCallback } from "react";
 
 import { ADDON_ID, PANEL_ID, START_BUILD } from "./constants";
 import { Authentication } from "./screens/Authentication/Authentication";
+import { LinkProject } from "./screens/LinkProject/LinkProject";
 import { VisualTests } from "./screens/VisualTests/VisualTests";
 import { AddonState } from "./types";
 import { client, Provider, useAccessToken } from "./utils/graphQLClient";
+import { useProjectId } from "./utils/useProjectId";
 
 interface PanelProps {
   active: boolean;
@@ -13,6 +15,7 @@ interface PanelProps {
 
 export const Panel = ({ active }: PanelProps) => {
   const [accessToken, setAccessToken] = useAccessToken();
+
   const [state, setAddonState] = useAddonState<AddonState>(ADDON_ID, { isOutdated: true });
   const { storyId } = useStorybookState();
 
@@ -33,12 +36,16 @@ export const Panel = ({ active }: PanelProps) => {
     emit(START_BUILD);
   }, [emit, state, setAddonState]);
 
+  const [projectId] = useProjectId();
+
   // Render a hidden element when the addon panel is not active.
   // Storybook's AddonPanel component does the same but it's not styleable so we don't use it.
   if (!active) return <div hidden key={PANEL_ID} />;
 
   // Render the Authentication flow if the user is not signed in.
   if (!accessToken) return <Authentication key={PANEL_ID} setAccessToken={setAccessToken} />;
+
+  if (!projectId) return <LinkProject />;
 
   return (
     <Provider key={PANEL_ID} value={client}>
