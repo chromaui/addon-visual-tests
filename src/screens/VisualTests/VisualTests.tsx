@@ -19,6 +19,7 @@ import { ViewportSelector } from "../../components/ViewportSelector";
 import { graphql } from "../../gql";
 import { ComparisonResult, LastBuildQuery, TestResult, TestStatus } from "../../gql/graphql";
 import { aggregateResult } from "../../utils/aggregateResult";
+import { useProjectId } from "../../utils/useProjectId";
 import { RenderSettings } from "./RenderSettings";
 import { Warnings } from "./Warnings";
 
@@ -76,7 +77,7 @@ interface VisualTestsProps {
 
 export const VisualTests = ({ setAccessToken }: VisualTestsProps) => {
   const theme = useTheme();
-  const [projectId, setProjectId] = useState("5fa3f227c1c504002259feba");
+  const [projectId, setProjectId, projectIdChanged] = useProjectId();
 
   const [{ data, fetching, error }, rerun] = useQuery<LastBuildQuery>({
     query: QueryLastBuild,

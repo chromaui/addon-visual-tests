@@ -17,6 +17,7 @@ const config: StorybookConfig = {
       name: "../dist/index.js",
       options: {
         projectToken: "00baf09dbbe8",
+        projectId: "6480e1b0042842f149cfd74c", // Default to the the production project of this addon
       },
     },
   ],
