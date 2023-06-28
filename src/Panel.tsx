@@ -3,7 +3,7 @@ import React, { useCallback } from "react";
 
 import { ADDON_ID, PANEL_ID, START_BUILD } from "./constants";
 import { Authentication } from "./screens/Authentication/Authentication";
-import { LinkProject } from "./screens/LinkProject/LinkProject";
+import { LinkedProject, LinkProject } from "./screens/LinkProject/LinkProject";
 import { VisualTests } from "./screens/VisualTests/VisualTests";
 import { AddonState } from "./types";
 import { client, Provider, useAccessToken } from "./utils/graphQLClient";
@@ -36,7 +36,7 @@ export const Panel = ({ active }: PanelProps) => {
     emit(START_BUILD);
   }, [emit, state, setAddonState]);
 
-  const [projectId] = useProjectId();
+  const [projectId, updateProjectId, projectIdChanged, clearProjectIdChanged] = useProjectId();
 
   // Render a hidden element when the addon panel is not active.
   // Storybook's AddonPanel component does the same but it's not styleable so we don't use it.
@@ -48,10 +48,13 @@ export const Panel = ({ active }: PanelProps) => {
   if (!projectId)
     return (
       <Provider key={PANEL_ID} value={client}>
-        <LinkProject />
+        <LinkProject onUpdateProjectId={updateProjectId} />
       </Provider>
     );
 
+  if (projectId && projectIdChanged) {
+    return <LinkedProject projectId={projectId} goToNext={clearProjectIdChanged} />;
+  }
   return (
     <Provider key={PANEL_ID} value={client}>
       <VisualTests
