@@ -175,7 +175,7 @@ const withLastBuild = (lastBuild: Build) =>
           webUrl: "https://www.chromatic.com/builds?appId=123",
           lastBuild,
         },
-      } as LastBuildQuery)
+      } satisfies LastBuildQuery)
     )
   );
 

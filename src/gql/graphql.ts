@@ -24,6 +24,30 @@ export type Scalars = {
   URL: { input: any; output: any; }
 };
 
+export type Account = Node & Temporal & {
+  __typename?: 'Account';
+  /** When the entity was first created in Chromatic. */
+  createdAt: Scalars['DateTime']['output'];
+  /** GraphQL node identifier */
+  id: Scalars['ID']['output'];
+  /** Account name, typically the repository owner. */
+  name: Scalars['String']['output'];
+  projects?: Maybe<Array<Maybe<Project>>>;
+  /** When the entity was last updated or created in Chromatic. */
+  updatedAt: Scalars['DateTime']['output'];
+  /** a dirty hack to get the user's id */
+  user?: Maybe<User>;
+};
+
+
+export type AccountProjectsArgs = {
+  after?: InputMaybe<Scalars['ID']['input']>;
+  before?: InputMaybe<Scalars['ID']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<ProjectOrder>;
+};
+
 export enum Browser {
   Chrome = 'CHROME',
   Edge = 'EDGE',
@@ -367,6 +391,16 @@ export type ProjectLastBuildArgs = {
   statuses?: InputMaybe<Array<BuildStatus>>;
 };
 
+export type ProjectOrder = {
+  direction: OrderDirection;
+  field: ProjectOrderField;
+};
+
+export enum ProjectOrderField {
+  CreatedAt = 'createdAt',
+  UpdatedAt = 'updatedAt'
+}
+
 export type PublicAccountInfo = {
   __typename?: 'PublicAccountInfo';
   /** Avatar URL of the repository owner or token holder. */
@@ -377,11 +411,18 @@ export type PublicAccountInfo = {
 
 export type Query = {
   __typename?: 'Query';
+  account?: Maybe<Account>;
+  accounts?: Maybe<Array<Maybe<Account>>>;
   bulkFigmaMetadata?: Maybe<Array<Maybe<FigmaMetadata>>>;
   figmaMetadata?: Maybe<FigmaMetadata>;
   figmaMetadataById?: Maybe<FigmaMetadata>;
   project?: Maybe<Project>;
   storybook?: Maybe<Storybook>;
+};
+
+
+export type QueryAccountArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -708,6 +749,11 @@ export type ViewportInfo = {
   width: Scalars['Int']['output'];
 };
 
+export type SelectProjectsQueryQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type SelectProjectsQueryQuery = { __typename?: 'Query', accounts?: Array<{ __typename?: 'Account', id: string, name: string, projects?: Array<{ __typename?: 'Project', id: string, name: string, webUrl: any, lastBuild?: { __typename?: 'TestedBuild', branch: string, number: number } | null } | null> | null } | null> | null };
+
 export type ProjectQueryQueryVariables = Exact<{
   projectId: Scalars['ID']['input'];
 }>;
@@ -725,5 +771,6 @@ export type LastBuildQueryVariables = Exact<{
 export type LastBuildQuery = { __typename?: 'Query', project?: { __typename?: 'Project', id: string, name: string, webUrl: any, lastBuild?: { __typename?: 'TestedBuild', startedAt: any, id: string, number: number, branch: string, commit: string, status: BuildStatus, changeCount: number, tests: { __typename?: 'TestConnection', nodes: Array<{ __typename?: 'Test', id: string, result?: TestResult | null, status: TestStatus, comparisons: Array<{ __typename?: 'Comparison', result?: ComparisonResult | null, browser: { __typename?: 'BrowserInfo', id: string }, viewport: { __typename?: 'ViewportInfo', id: string } }>, parameters: { __typename?: 'TestParameters', viewport: { __typename?: 'ViewportInfo', id: string, name: string } } }> }, browsers: Array<{ __typename?: 'BrowserInfo', id: string, key: Browser, name: string }> } | null } | null };
 
 
+export const SelectProjectsQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"SelectProjectsQuery"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"accounts"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"projects"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"webUrl"}},{"kind":"Field","name":{"kind":"Name","value":"lastBuild"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"branch"}},{"kind":"Field","name":{"kind":"Name","value":"number"}}]}}]}}]}}]}}]} as unknown as DocumentNode<SelectProjectsQueryQuery, SelectProjectsQueryQueryVariables>;
 export const ProjectQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ProjectQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"project"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"webUrl"}},{"kind":"Field","name":{"kind":"Name","value":"lastBuild"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"branch"}},{"kind":"Field","name":{"kind":"Name","value":"number"}}]}}]}}]}}]} as unknown as DocumentNode<ProjectQueryQuery, ProjectQueryQueryVariables>;
 export const LastBuildDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"LastBuild"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"branch"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"storyId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"project"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"webUrl"}},{"kind":"Field","name":{"kind":"Name","value":"lastBuild"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"branches"},"value":{"kind":"ListValue","values":[{"kind":"Variable","name":{"kind":"Name","value":"branch"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"number"}},{"kind":"Field","name":{"kind":"Name","value":"branch"}},{"kind":"Field","name":{"kind":"Name","value":"commit"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"browsers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TestedBuild"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"changeCount"},"name":{"kind":"Name","value":"testCount"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"results"},"value":{"kind":"ListValue","values":[{"kind":"EnumValue","value":"ADDED"},{"kind":"EnumValue","value":"CHANGED"},{"kind":"EnumValue","value":"FIXED"}]}}]},{"kind":"Field","name":{"kind":"Name","value":"startedAt"}},{"kind":"Field","name":{"kind":"Name","value":"tests"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"storyId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"storyId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"result"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"comparisons"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"result"}},{"kind":"Field","name":{"kind":"Name","value":"browser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"viewport"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"parameters"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"viewport"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<LastBuildQuery, LastBuildQueryVariables>;

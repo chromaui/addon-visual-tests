@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { graphql } from "msw";
+import { Project, ProjectQueryQuery } from "src/gql/graphql";
 
 import { storyWrapper } from "../../utils/graphQLClient";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
@@ -23,7 +24,7 @@ const meta = {
                   number: 123,
                 },
               },
-            })
+            } satisfies ProjectQueryQuery)
           )
         ),
       ],
