@@ -45,7 +45,12 @@ export const Panel = ({ active }: PanelProps) => {
   // Render the Authentication flow if the user is not signed in.
   if (!accessToken) return <Authentication key={PANEL_ID} setAccessToken={setAccessToken} />;
 
-  if (!projectId) return <LinkProject />;
+  if (!projectId)
+    return (
+      <Provider key={PANEL_ID} value={client}>
+        <LinkProject />
+      </Provider>
+    );
 
   return (
     <Provider key={PANEL_ID} value={client}>
