@@ -1,8 +1,10 @@
-import { ListItem } from "@storybook/components";
+import { Header, Icon, ListItem } from "@storybook/design-system";
+import { styled } from "@storybook/theming";
 import { set } from "date-fns";
 import React, { useMemo, useState } from "react";
 import { gql, useQuery } from "urql";
 
+import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
 import { Heading } from "../../components/Heading";
 import { Row } from "../../components/layout";
@@ -45,30 +47,41 @@ const ProjectQuery = gql`
 `;
 
 type LinkProjectScreen = "select" | "linked";
-export const LinkProject = () => {
-  const [screen, setScreen] = React.useState<LinkProjectScreen>("select");
-  const [projectId, updateProjectId] = useProjectId();
-
+export const LinkProject = ({ onUpdateProjectId }: { onUpdateProjectId: (v: string) => void }) => {
   const onSelectProjectId = React.useCallback(
     (selectedProjectId: string) => {
-      updateProjectId(selectedProjectId);
-      setScreen("linked");
+      onUpdateProjectId(selectedProjectId);
     },
-    [updateProjectId, setScreen]
+    [onUpdateProjectId]
   );
 
-  switch (screen) {
-    case "select":
-      return <SelectProject onSelectProject={onSelectProjectId} />;
-    case "linked":
-      return <LinkedProject projectId={projectId} />;
-    default:
-      return null;
-  }
+  return <SelectProject onSelectProjectId={onSelectProjectId} />;
 };
 
+const ListHeading = styled.div`
+  width: 195px;
+  background-color: ${({ theme }) => theme.background.app};
+  padding: 9px 15px;
+
+  & nth-child(1) {
+    background-color: ${({ theme }) => theme.color.lighter};
+  }
+`;
+
+const LeftList = styled.div`
+  max-height: 300px;
+  overflow-y: auto;
+  background-color: FFFFFF;
+`;
+
+const RightList = styled.div`
+  max-height: 300px;
+  overflow-y: auto;
+  background-color: F7FAFC;
+`;
+
 // default? 5fa3f227c1c504002259feba
-function SelectProject({ onSelectProject }: { onSelectProject: (id: string) => void }) {
+function SelectProject({ onSelectProjectId }: { onSelectProjectId: (id: string) => void }) {
   const [selectedAccount, setSelectedAccount] =
     useState<SelectProjectsQueryQuery["accounts"][number]>(null);
   const [{ data, fetching, error }] = useQuery<SelectProjectsQueryQuery>({
@@ -87,29 +100,45 @@ function SelectProject({ onSelectProject }: { onSelectProject: (id: string) => v
       {error && <p>{error.message}</p>}
       {!fetching && data.accounts && (
         <Row>
-          <Stack>
-            <Heading>Accounts</Heading>
-            {data.accounts?.map((account) => (
-              <ListItem
-                key={account.id}
-                title={account.name}
-                onClick={() => onSelectAccount(account)}
-              />
-            ))}
-          </Stack>
-          <Stack>
-            <Heading>Projects</Heading>
-            {selectedAccount?.projects?.map((project) => (
-              <ListItem key={project.id} onClick={() => onSelectProjectId(project.id)} å />
-            ))}
-          </Stack>
+          <div>
+            <ListHeading>Accounts</ListHeading>
+            <LeftList>
+              {data.accounts?.map((account) => (
+                <ListItem
+                  key={account.id}
+                  title={account.name}
+                  onClick={() => onSelectAccount(account)}
+                />
+              ))}
+            </LeftList>
+          </div>
+          <div>
+            <ListHeading>Projects</ListHeading>
+            <RightList>
+              {selectedAccount?.projects?.map((project) => (
+                <ListItem
+                  key={project.id}
+                  title={project.name}
+                  onClick={() => onSelectProjectId(project.id)}
+                  å
+                />
+              ))}
+            </RightList>
+          </div>
         </Row>
       )}
-    </Container>
+    </Container >
   );
 }
 
-export const LinkedProject = ({ projectId }: { projectId: string }) => {
+// TODO: This should just be controlled by parent component and set using projectId && projectIdChanged from useProjectId()
+export const LinkedProject = ({
+  projectId,
+  goToNext,
+}: {
+  projectId: string;
+  goToNext: () => void;
+}) => {
   const [{ data, fetching, error }] = useQuery<ProjectQueryQuery>({
     query: ProjectQuery,
     variables: { projectId },
@@ -121,20 +150,37 @@ export const LinkedProject = ({ projectId }: { projectId: string }) => {
         {fetching && <p>Loading...</p>}
         {error && <p>{error.message}</p>}
         {data?.project && (
-          <div>
-            <Heading>Selected project</Heading>
-            <Text>Baselines will be used with this project.</Text>
-            <b>
-              <a href={data.project.webUrl}>{data.project.name}</a>
-            </b>
+          <Stack>
+            <Icon icon="check" />
+            <Heading>Project linked!</Heading>
+            <p>
+              We added project ID to main.js. The design-system app ID will be used to reference
+              prior tests. Please commit this change to continue using this addon.
+            </p>
+            <Button secondary onClick={() => goToNext()}>
+              Next
+            </Button>
+            <p>
+              What is the app ID for? <a href="https://www.chromatic.com/docs/cli">Learn More »</a>
+            </p>
+            {data?.project && (
+              <div>
+                <Heading>Selected project</Heading>
+                <Text>Baselines will be used with this project.</Text>
+                <b>
+                  <a href={data.project.webUrl}>{data.project.name}</a>
+                </b>
+              </div>
+            )}
             {data.project.lastBuild && (
               <p>
                 Last build: {data.project.lastBuild.number} on branch{" "}
                 {data.project.lastBuild.branch}
               </p>
             )}
-          </div>
+          </Stack>
         )}
+        ;
       </Stack>
     </Container>
   );
