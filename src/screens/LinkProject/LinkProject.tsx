@@ -12,7 +12,6 @@ import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
 import { graphql } from "../../gql";
 import { ProjectQueryQuery, SelectProjectsQueryQuery } from "../../gql/graphql";
-import { useProjectId } from "../../utils/useProjectId";
 
 const SelectProjectsQuery = graphql(/* GraphQL */ `
   query SelectProjectsQuery {
@@ -46,7 +45,6 @@ const ProjectQuery = gql`
   }
 `;
 
-type LinkProjectScreen = "select" | "linked";
 export const LinkProject = ({ onUpdateProjectId }: { onUpdateProjectId: (v: string) => void }) => {
   const onSelectProjectId = React.useCallback(
     (selectedProjectId: string) => {
@@ -80,7 +78,6 @@ const RightList = styled.div`
   background-color: F7FAFC;
 `;
 
-// default? 5fa3f227c1c504002259feba
 function SelectProject({ onSelectProjectId }: { onSelectProjectId: (id: string) => void }) {
   const [selectedAccount, setSelectedAccount] =
     useState<SelectProjectsQueryQuery["accounts"][number]>(null);
@@ -120,18 +117,16 @@ function SelectProject({ onSelectProjectId }: { onSelectProjectId: (id: string) 
                   key={project.id}
                   title={project.name}
                   onClick={() => onSelectProjectId(project.id)}
-                  å
                 />
               ))}
             </RightList>
           </div>
         </Row>
       )}
-    </Container >
+    </Container>
   );
 }
 
-// TODO: This should just be controlled by parent component and set using projectId && projectIdChanged from useProjectId()
 export const LinkedProject = ({
   projectId,
   goToNext,
@@ -154,8 +149,8 @@ export const LinkedProject = ({
             <Icon icon="check" />
             <Heading>Project linked!</Heading>
             <p>
-              We added project ID to main.js. The design-system app ID will be used to reference
-              prior tests. Please commit this change to continue using this addon.
+              We added project ID to main.js. The {data.project.name} app ID will be used to
+              reference prior tests. Please commit this change to continue using this addon.
             </p>
             <Button secondary onClick={() => goToNext()}>
               Next
