@@ -55,6 +55,7 @@
     "storybook": "storybook dev -p 6006"
   },
   "dependencies": {
+    "@storybook/csf-tools": "^7.1.0-alpha.34",
     "@storybook/design-system": "^7.15.11",
     "chromatic": "^6.19.8",
     "date-fns": "^2.30.0",
