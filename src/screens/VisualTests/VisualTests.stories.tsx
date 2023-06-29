@@ -2,12 +2,12 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { findByRole, fireEvent } from "@storybook/testing-library";
 import { graphql } from "msw";
 
-import type { LastBuildQuery, StartedBuild } from "../../gql/graphql";
+import type { BuildQuery } from "../../gql/graphql";
 import { Browser, BuildStatus, ComparisonResult, TestResult, TestStatus } from "../../gql/graphql";
 import { storyWrapper } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
-import { VisualTests } from "./VisualTests";
+import { StartedBuild, VisualTests } from "./VisualTests";
 
 const browser = (key: Browser) => ({
   id: key,
@@ -15,7 +15,12 @@ const browser = (key: Browser) => ({
   name: key.slice(0, 1) + key.slice(1).toLowerCase(),
   version: "<unknown>",
 });
-const viewport = (width: number) => ({ id: `_${width}`, name: `${width}px`, width });
+const viewport = (width: number) => ({
+  id: `_${width}`,
+  name: `${width}px`,
+  width,
+  isDefault: width === 1200,
+});
 
 const tests = [
   {
@@ -24,11 +29,13 @@ const tests = [
     result: TestResult.Equal,
     comparisons: [
       {
+        id: "11",
         browser: browser(Browser.Chrome),
         viewport: viewport(1200),
         result: ComparisonResult.Equal,
       },
       {
+        id: "12",
         browser: browser(Browser.Safari),
         viewport: viewport(1200),
         result: ComparisonResult.Equal,
@@ -42,11 +49,13 @@ const tests = [
     result: TestResult.Changed,
     comparisons: [
       {
+        id: "21",
         browser: browser(Browser.Chrome),
         viewport: viewport(800),
         result: ComparisonResult.Equal,
       },
       {
+        id: "22",
         browser: browser(Browser.Safari),
         viewport: viewport(800),
         result: ComparisonResult.Changed,
@@ -60,11 +69,13 @@ const tests = [
     result: TestResult.Equal,
     comparisons: [
       {
+        id: "31",
         browser: browser(Browser.Chrome),
         viewport: viewport(400),
         result: ComparisonResult.Equal,
       },
       {
+        id: "32",
         browser: browser(Browser.Safari),
         viewport: viewport(400),
         result: ComparisonResult.Equal,
@@ -87,6 +98,7 @@ const paginated = (nodes: StartedBuild["tests"]["nodes"]) => ({
 });
 
 const inProgressBuild: StartedBuild = {
+  __typename: "StartedBuild",
   id: "1",
   number: 1,
   branch: "feature-branch",
@@ -105,7 +117,7 @@ const inProgressBuild: StartedBuild = {
   ),
 };
 
-const passedBuild: Build = {
+const passedBuild: StartedBuild = {
   ...inProgressBuild,
   status: BuildStatus.Passed,
   changeCount: 0,
@@ -122,14 +134,14 @@ const passedBuild: Build = {
   ),
 };
 
-const pendingBuild: Build = {
+const pendingBuild: StartedBuild = {
   ...inProgressBuild,
   status: BuildStatus.Pending,
   changeCount: 3,
   tests: paginated(tests),
 };
 
-const acceptedBuild: Build = {
+const acceptedBuild: StartedBuild = {
   ...pendingBuild,
   status: BuildStatus.Accepted,
   tests: paginated(
@@ -140,7 +152,7 @@ const acceptedBuild: Build = {
   ),
 };
 
-const brokenBuild: Build = {
+const brokenBuild: StartedBuild = {
   ...inProgressBuild,
   status: BuildStatus.Pending,
   changeCount: 3,
@@ -163,24 +175,13 @@ const withGraphQLQuery = (...args: Parameters<typeof graphql.query>) => ({
   },
 });
 
-const withLastBuild = (lastBuild: Build) =>
-  withGraphQLQuery("LastBuild", (req, res, ctx) =>
-    res(
-      ctx.data({
-        project: {
-          id: "123",
-          name: "acme",
-          webUrl: "https://www.chromatic.com/builds?appId=123",
-          lastBuild,
-        },
-      } as LastBuildQuery)
-    )
-  );
+const withBuild = (build: StartedBuild) =>
+  withGraphQLQuery("Build", (req, res, ctx) => res(ctx.data({ build } as BuildQuery)));
 
 const meta = {
   component: VisualTests,
   decorators: [storyWrapper],
-  parameters: withLastBuild(passedBuild),
+  parameters: withBuild(passedBuild),
 } satisfies Meta<typeof VisualTests>;
 
 export default meta;
@@ -188,7 +189,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Loading: Story = {
   parameters: {
-    ...withGraphQLQuery("LastBuild", (req, res, ctx) =>
+    ...withGraphQLQuery("Build", (req, res, ctx) =>
       res(ctx.status(200), ctx.data({}), ctx.delay("infinite"))
     ),
     ...withFigmaDesign(
@@ -199,7 +200,7 @@ export const Loading: Story = {
 
 export const NoChanges: Story = {
   parameters: {
-    ...withLastBuild(passedBuild),
+    ...withBuild(passedBuild),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304933&t=0rxMQnkxsVpVj1qy-4"
     ),
@@ -211,7 +212,7 @@ export const Outdated: Story = {
     isOutdated: true,
   },
   parameters: {
-    ...withLastBuild(passedBuild),
+    ...withBuild(passedBuild),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304922&t=0rxMQnkxsVpVj1qy-4"
     ),
@@ -230,7 +231,7 @@ export const OutdatedRunning: Story = {
 
 export const InProgress: Story = {
   parameters: {
-    ...withLastBuild(inProgressBuild),
+    ...withBuild(inProgressBuild),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304861&t=0rxMQnkxsVpVj1qy-4"
     ),
@@ -239,7 +240,7 @@ export const InProgress: Story = {
 
 export const Pending: Story = {
   parameters: {
-    ...withLastBuild(pendingBuild),
+    ...withBuild(pendingBuild),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304718&t=0rxMQnkxsVpVj1qy-4"
     ),
@@ -248,7 +249,7 @@ export const Pending: Story = {
 
 export const Accepted: Story = {
   parameters: {
-    ...withLastBuild(acceptedBuild),
+    ...withBuild(acceptedBuild),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-305053&t=0rxMQnkxsVpVj1qy-4"
     ),
@@ -257,7 +258,7 @@ export const Accepted: Story = {
 
 export const CaptureError: Story = {
   parameters: {
-    ...withLastBuild(brokenBuild),
+    ...withBuild(brokenBuild),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-305053&t=0rxMQnkxsVpVj1qy-4"
     ),

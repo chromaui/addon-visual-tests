@@ -20,13 +20,13 @@ export const ProgressIcon = styled.div<{ onButton?: boolean }>(
     cursor: "progress",
     transform: "translate3d(0, 0, 0)",
   }),
-  ({ theme, onButton }) =>
+  ({ onButton }) =>
     onButton &&
     css({
       margin: "0 6px 0 0",
       borderWidth: 1,
-      borderLeftColor: theme.color.lightest,
-      borderBottomColor: theme.color.lightest,
-      borderRightColor: theme.color.lightest,
+      borderLeftColor: "currentcolor",
+      borderBottomColor: "currentcolor",
+      borderRightColor: "currentcolor",
     })
 );

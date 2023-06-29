@@ -1,9 +1,8 @@
 import { Loader } from "@storybook/components";
-import { Icon, Input } from "@storybook/design-system";
+import { Icon } from "@storybook/design-system";
 import { formatDistance } from "date-fns";
-import type { DocumentNode } from "graphql";
 import pluralize from "pluralize";
-import React, { ChangeEvent, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useQuery } from "urql";
 
 import { BrowserSelector } from "../../components/BrowserSelector";
@@ -18,67 +17,59 @@ import { SnapshotImage } from "../../components/SnapshotImage";
 import { TooltipMenu } from "../../components/TooltipMenu";
 import { ViewportSelector } from "../../components/ViewportSelector";
 import { graphql } from "../../gql";
-import {
-  LastBuildQuery,
-  LastBuildQueryVariables,
-  TestedBuild,
-  TestResult,
-  TestStatus,
-} from "../../gql/graphql";
+import { BuildQuery, BuildQueryVariables, TestResult, TestStatus } from "../../gql/graphql";
 import { aggregateResult } from "../../utils/aggregateResult";
 import { RenderSettings } from "./RenderSettings";
 import { Warnings } from "./Warnings";
 
 type ComparisonResult = any;
 
-const QueryLastBuild: DocumentNode = graphql(/* GraphQL */ `
-  query LastBuild($projectId: ID!, $branch: String!, $storyId: String!) {
-    project(id: $projectId) {
+export type StartedBuild = Extract<BuildQuery["build"], { __typename: "StartedBuild" }>;
+
+const QueryBuild = graphql(/* GraphQL */ `
+  query Build($buildId: ID!) {
+    build(id: $buildId) {
+      __typename
       id
-      name
-      webUrl
-      lastBuild(branches: [$branch]) {
+      number
+      branch
+      commit
+      status
+      browsers {
         id
-        number
-        branch
-        commit
-        status
-        browsers {
-          id
-          key
-          name
-        }
-        ... on StartedBuild {
-          changeCount: testCount(results: [ADDED, CHANGED, FIXED])
-          startedAt
-          tests(storyId: $storyId) {
-            nodes {
+        key
+        name
+      }
+      ... on StartedBuild {
+        changeCount: testCount(results: [ADDED, CHANGED, FIXED])
+        startedAt
+        tests {
+          nodes {
+            id
+            status
+            result
+            comparisons {
               id
-              status
-              result
-              comparisons {
+              browser {
                 id
-                browser {
-                  id
-                  key
-                  name
-                  version
-                }
-                viewport {
-                  id
-                  name
-                  width
-                  isDefault
-                }
-                result
+                key
+                name
+                version
               }
-              parameters {
-                viewport {
-                  id
-                  name
-                  width
-                  isDefault
-                }
+              viewport {
+                id
+                name
+                width
+                isDefault
+              }
+              result
+            }
+            parameters {
+              viewport {
+                id
+                name
+                width
+                isDefault
               }
             }
           }
@@ -91,32 +82,41 @@ const QueryLastBuild: DocumentNode = graphql(/* GraphQL */ `
 interface VisualTestsProps {
   isOutdated?: boolean;
   isRunning?: boolean;
-  runTests: () => void;
+  lastDevBuildId?: string;
+  runDevBuild: () => void;
   setAccessToken: (accessToken: string | null) => void;
 }
 
 export const VisualTests = ({
   isOutdated,
   isRunning,
-  runTests,
+  lastDevBuildId,
+  runDevBuild,
   setAccessToken,
 }: VisualTestsProps) => {
-  const [projectId, setProjectId] = useState("5fa3f227c1c504002259feba");
+  console.log({ lastDevBuildId });
 
-  const [{ data, fetching, error }, rerun] = useQuery<LastBuildQuery, LastBuildQueryVariables>({
-    query: QueryLastBuild,
+  const [{ data, fetching, error }, rerun] = useQuery<BuildQuery, BuildQueryVariables>({
+    query: QueryBuild,
     variables: {
-      projectId,
-      branch: "test",
-      storyId: "components-tile--donut",
+      buildId: lastDevBuildId,
     },
   });
+
+  console.log({ data });
+
+  useEffect(() => {
+    let interval: any;
+    if (isRunning) interval = setInterval(rerun, 5000);
+    else clearInterval(interval);
+    return () => clearInterval(interval);
+  }, [isRunning, rerun]);
 
   const [diffVisible, setDiffVisible] = useState(true);
   const [settingsVisible, setSettingsVisible] = useState(false);
   const [warningsVisible, setWarningsVisible] = useState(false);
 
-  if (fetching || error || !data?.project) {
+  if (fetching || error || !data?.build) {
     return (
       <Sections>
         <Section grow>
@@ -128,22 +128,6 @@ export const VisualTests = ({
             </Row>
           )}
           {fetching && <Loader />}
-          {!fetching && !data?.project && (
-            <Row>
-              <Col>
-                <Input
-                  id="projectId"
-                  label="Project ID"
-                  value={projectId}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                    e.preventDefault();
-                    setProjectId(e.target.value);
-                  }}
-                />
-                <Button onClick={rerun}>Retry</Button>
-              </Col>
-            </Row>
-          )}
         </Section>
         <Section>
           <Bar>
@@ -177,9 +161,13 @@ export const VisualTests = ({
     );
   }
 
-  const { branch, browsers, startedAt, tests } = data.project.lastBuild as TestedBuild;
+  const { branch, browsers, startedAt, tests } = data.build as StartedBuild;
+  console.log(data.build);
+  if (!tests) return null;
 
-  const startedAgo = formatDistance(new Date(startedAt), new Date(), { addSuffix: true });
+  const startedAgo = formatDistance(new Date(startedAt || 0), new Date(), {
+    addSuffix: true,
+  });
 
   const { changeCount, brokenCount, resultsByBrowser, resultsByViewport, viewportInfoById } = (
     tests.nodes || []
@@ -213,7 +201,7 @@ export const VisualTests = ({
       resultsByViewport: {} as Record<string, ComparisonResult>,
       viewportInfoById: {} as Record<
         string,
-        TestedBuild["tests"]["nodes"][0]["parameters"]["viewport"]
+        StartedBuild["tests"]["nodes"][0]["parameters"]["viewport"]
       >,
     }
   );
@@ -287,7 +275,7 @@ export const VisualTests = ({
           </Col>
           {isOutdated && (
             <Col push>
-              <Button small secondary onClick={runTests} disabled={isRunning}>
+              <Button small secondary onClick={runDevBuild} disabled={isRunning}>
                 {isRunning ? <ProgressIcon onButton /> : <Icon icon="play" />}
                 Run tests
               </Button>

@@ -1,8 +1,10 @@
-import React from "react";
+import { useAddonState, useChannel } from "@storybook/manager-api";
+import React, { useCallback } from "react";
 
-import { PANEL_ID } from "./constants";
+import { ADDON_ID, PANEL_ID, START_BUILD } from "./constants";
 import { Authentication } from "./screens/Authentication/Authentication";
 import { VisualTests } from "./screens/VisualTests/VisualTests";
+import { AddonState } from "./types";
 import { client, Provider, useAccessToken } from "./utils/graphQLClient";
 
 interface PanelProps {
@@ -11,6 +13,15 @@ interface PanelProps {
 
 export const Panel = ({ active }: PanelProps) => {
   const [accessToken, setAccessToken] = useAccessToken();
+  const [{ lastBuildId, running }, setAddonState] = useAddonState<AddonState>(ADDON_ID, {});
+
+  const emit = useChannel({});
+
+  const runDevBuild = useCallback(() => {
+    if (running) return;
+    setAddonState((state: AddonState) => ({ ...state, running: true }));
+    emit(START_BUILD);
+  }, [emit, running, setAddonState]);
 
   // Render a hidden element when the addon panel is not active.
   // Storybook's AddonPanel component does the same but it's not styleable so we don't use it.
@@ -23,8 +34,9 @@ export const Panel = ({ active }: PanelProps) => {
     <Provider key={PANEL_ID} value={client}>
       <VisualTests
         isOutdated={false}
-        isRunning={false}
-        runTests={() => {}}
+        isRunning={running}
+        lastDevBuildId={lastBuildId}
+        runDevBuild={runDevBuild}
         setAccessToken={setAccessToken}
       />
     </Provider>

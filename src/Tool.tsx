@@ -1,31 +1,35 @@
 import { IconButton, Icons } from "@storybook/components";
 import { useAddonState, useChannel } from "@storybook/manager-api";
-import React, { memo, useCallback, useState } from "react";
+import React, { memo, useCallback } from "react";
 
-import { ADDON_ID, BUILD_STARTED, START_BUILD, TOOL_ID } from "./constants";
+import { ProgressIcon } from "./components/icons/ProgressIcon";
+import { ADDON_ID, BUILD_STARTED, DEV_BUILD_ID_KEY, START_BUILD, TOOL_ID } from "./constants";
+import { AddonState } from "./types";
 
-type BuildInfo = { url: string };
+const storedBuildId = localStorage.getItem(DEV_BUILD_ID_KEY);
 
 export const Tool = memo(function MyAddonSelector() {
-  const [running, setRunning] = useState(false);
-  const [, setAddonState] = useAddonState(ADDON_ID);
+  const [{ running }, setAddonState] = useAddonState<AddonState>(ADDON_ID, {
+    lastBuildId: storedBuildId,
+  });
 
   const emit = useChannel({
-    [BUILD_STARTED]: (build: BuildInfo) => {
-      setAddonState({ build });
+    [BUILD_STARTED]: (buildId: string) => {
+      setAddonState((state: AddonState) => ({ ...state, lastBuildId: buildId }));
+      localStorage.setItem(DEV_BUILD_ID_KEY, buildId);
     },
   });
 
-  const onRun = useCallback(async () => {
+  const runDevBuild = useCallback(() => {
     if (running) return;
-
-    setRunning(true);
+    setAddonState((state: AddonState) => ({ ...state, running: true }));
     emit(START_BUILD);
-  }, [running, emit]);
+  }, [emit, running, setAddonState]);
 
   return (
-    <IconButton key={TOOL_ID} active={running} title="Run visual tests" onClick={onRun}>
-      <Icons icon="play" /> Run Tests
+    <IconButton key={TOOL_ID} active={running} title="Run visual tests" onClick={runDevBuild}>
+      {running ? <ProgressIcon onButton /> : <Icons icon="play" style={{ marginRight: 6 }} />}
+      Run tests
     </IconButton>
   );
 });
