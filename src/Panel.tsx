@@ -13,15 +13,24 @@ interface PanelProps {
 
 export const Panel = ({ active }: PanelProps) => {
   const [accessToken, setAccessToken] = useAccessToken();
-  const [{ lastBuildId, running }, setAddonState] = useAddonState<AddonState>(ADDON_ID, {});
+  const [state, setAddonState] = useAddonState<AddonState>(ADDON_ID, { isOutdated: true });
+
+  const setIsOutdated = useCallback(
+    (value: boolean) => setAddonState({ ...state, isOutdated: value }),
+    [state, setAddonState]
+  );
+  const setIsRunning = useCallback(
+    (value: boolean) => setAddonState({ ...state, isRunning: value }),
+    [state, setAddonState]
+  );
 
   const emit = useChannel({});
 
   const runDevBuild = useCallback(() => {
-    if (running) return;
-    setAddonState((state: AddonState) => ({ ...state, running: true }));
+    if (state.isRunning) return;
+    setAddonState({ ...state, isRunning: true });
     emit(START_BUILD);
-  }, [emit, running, setAddonState]);
+  }, [emit, state, setAddonState]);
 
   // Render a hidden element when the addon panel is not active.
   // Storybook's AddonPanel component does the same but it's not styleable so we don't use it.
@@ -33,11 +42,13 @@ export const Panel = ({ active }: PanelProps) => {
   return (
     <Provider key={PANEL_ID} value={client}>
       <VisualTests
-        isOutdated={false}
-        isRunning={running}
-        lastDevBuildId={lastBuildId}
+        isOutdated={state.isOutdated}
+        isRunning={state.isRunning}
+        lastDevBuildId={state.lastBuildId}
         runDevBuild={runDevBuild}
         setAccessToken={setAccessToken}
+        setIsOutdated={setIsOutdated}
+        setIsRunning={setIsRunning}
       />
     </Provider>
   );

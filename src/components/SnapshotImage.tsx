@@ -1,11 +1,11 @@
 import { styled } from "@storybook/theming";
 
-export const SnapshotImage = styled.div({
+export const SnapshotImage = styled.div(({ theme }) => ({
   position: "relative",
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
-  background: "#fff",
+  background: "transparent",
   minHeight: 100,
   margin: 2,
 
@@ -15,4 +15,13 @@ export const SnapshotImage = styled.div({
   "img + img": {
     position: "absolute",
   },
-});
+  div: {
+    color: theme.color.mediumdark,
+    margin: "30px 15px",
+    textAlign: "center",
+    svg: {
+      width: 28,
+      height: 28,
+    },
+  },
+}));

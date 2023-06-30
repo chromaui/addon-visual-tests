@@ -2,12 +2,13 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { findByRole, fireEvent } from "@storybook/testing-library";
 import { graphql } from "msw";
 
-import type { BuildQuery } from "../../gql/graphql";
+import type { BuildQuery, TestFieldsFragment } from "../../gql/graphql";
 import { Browser, BuildStatus, ComparisonResult, TestResult, TestStatus } from "../../gql/graphql";
+import { AnnouncedBuild, PublishedBuild, StartedBuild, TestedBuild } from "../../types";
 import { storyWrapper } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
-import { StartedBuild, VisualTests } from "./VisualTests";
+import { VisualTests } from "./VisualTests";
 
 const browser = (key: Browser) => ({
   id: key,
@@ -85,7 +86,7 @@ const tests = [
   },
 ];
 
-const paginated = (nodes: StartedBuild["tests"]["nodes"]) => ({
+const paginated = (nodes: TestFieldsFragment[]) => ({
   edges: nodes.map((node) => ({ cursor: node.id, node })),
   nodes,
   pageInfo: {
@@ -97,13 +98,25 @@ const paginated = (nodes: StartedBuild["tests"]["nodes"]) => ({
   totalCount: nodes.length,
 });
 
-const inProgressBuild: StartedBuild = {
-  __typename: "StartedBuild",
+const announcedBuild: AnnouncedBuild = {
+  __typename: "AnnouncedBuild",
   id: "1",
   number: 1,
   branch: "feature-branch",
   commit: "1234567",
   browsers: [browser(Browser.Chrome), browser(Browser.Safari)],
+  status: BuildStatus.Announced,
+};
+
+const publishedBuild: PublishedBuild = {
+  ...(announcedBuild as any),
+  __typename: "PublishedBuild",
+  status: BuildStatus.Published,
+};
+
+const inProgressBuild: StartedBuild = {
+  ...(publishedBuild as any),
+  __typename: "StartedBuild",
   startedAt: new Date(Date.now() - 1000 * 60 * 2), // 2 minutes ago
   status: BuildStatus.InProgress,
   changeCount: null,
@@ -117,8 +130,8 @@ const inProgressBuild: StartedBuild = {
   ),
 };
 
-const passedBuild: StartedBuild = {
-  ...inProgressBuild,
+const passedBuild: TestedBuild = {
+  ...(inProgressBuild as any),
   status: BuildStatus.Passed,
   changeCount: 0,
   tests: paginated(
@@ -134,14 +147,14 @@ const passedBuild: StartedBuild = {
   ),
 };
 
-const pendingBuild: StartedBuild = {
-  ...inProgressBuild,
+const pendingBuild: TestedBuild = {
+  ...(inProgressBuild as any),
   status: BuildStatus.Pending,
   changeCount: 3,
   tests: paginated(tests),
 };
 
-const acceptedBuild: StartedBuild = {
+const acceptedBuild: TestedBuild = {
   ...pendingBuild,
   status: BuildStatus.Accepted,
   tests: paginated(
@@ -152,9 +165,9 @@ const acceptedBuild: StartedBuild = {
   ),
 };
 
-const brokenBuild: StartedBuild = {
-  ...inProgressBuild,
-  status: BuildStatus.Pending,
+const brokenBuild: TestedBuild = {
+  ...(inProgressBuild as any),
+  status: BuildStatus.Broken,
   changeCount: 3,
   tests: paginated(
     tests.map((test) => ({
@@ -169,13 +182,18 @@ const brokenBuild: StartedBuild = {
   ),
 };
 
+const failedBuild: PublishedBuild = {
+  ...publishedBuild,
+  status: BuildStatus.Failed,
+};
+
 const withGraphQLQuery = (...args: Parameters<typeof graphql.query>) => ({
   msw: {
     handlers: [graphql.query(...args)],
   },
 });
 
-const withBuild = (build: StartedBuild) =>
+const withBuild = (build: AnnouncedBuild | PublishedBuild | StartedBuild | TestedBuild) =>
   withGraphQLQuery("Build", (req, res, ctx) => res(ctx.data({ build } as BuildQuery)));
 
 const meta = {
@@ -229,6 +247,18 @@ export const OutdatedRunning: Story = {
   },
 };
 
+export const Announced: Story = {
+  parameters: {
+    ...withBuild(announcedBuild),
+  },
+};
+
+export const Published: Story = {
+  parameters: {
+    ...withBuild(publishedBuild),
+  },
+};
+
 export const InProgress: Story = {
   parameters: {
     ...withBuild(inProgressBuild),
@@ -262,6 +292,12 @@ export const CaptureError: Story = {
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-305053&t=0rxMQnkxsVpVj1qy-4"
     ),
+  },
+};
+
+export const InfrastructureError: Story = {
+  parameters: {
+    ...withBuild(failedBuild),
   },
 };
 
