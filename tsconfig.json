@@ -4,6 +4,7 @@
     "baseUrl": ".",
     "esModuleInterop": true,
     "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
     "incremental": false,
     "isolatedModules": true,
     "jsx": "react",

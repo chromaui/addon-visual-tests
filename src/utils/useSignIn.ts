@@ -57,6 +57,7 @@ const pollForAccessToken = async (options: {
       onFailure(data);
     }
   } catch (err) {
+    // eslint-disable-next-line no-console
     console.error(err);
   }
 };
@@ -107,8 +108,10 @@ const signInWithRetry = async (options: {
     onSuccess,
     onFailure(authResp: any) {
       if (betaUserAccessDenied(authResp)) {
+        // eslint-disable-next-line no-alert
         alert("You must be a beta user to use this addon at this time.");
       } else {
+        // eslint-disable-next-line no-console
         console.warn(authResp);
         onFailure();
       }

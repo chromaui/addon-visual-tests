@@ -42,16 +42,15 @@
     "*.d.ts"
   ],
   "scripts": {
-    "chromatic": "chromatic -t 9b39ff142a7f",
     "build": "tsup",
     "build:staging": "CHROMATIC_BASE_URL=https://www.staging-chromatic.com tsup",
     "build:watch": "pnpm run build --watch",
-    "lint": "eslint src",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "run-p build:watch 'storybook --quiet'",
+    "build-storybook": "storybook build",
+    "chromatic": "chromatic -t 9b39ff142a7f",
+    "lint": "eslint src --max-warnings 0 --report-unused-disable-directives",
     "release": "pnpm run build && auto shipit",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "start": "run-p build:watch 'storybook --quiet'",
+    "storybook": "storybook dev -p 6006"
   },
   "dependencies": {
     "@storybook/design-system": "^7.15.11",
