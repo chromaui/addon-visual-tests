@@ -120,6 +120,20 @@ function SelectProject({ onSelectProjectId }: { onSelectProjectId: (id: string) 
 
   const [isSelectingRepository, setSelectingRepository] = useState(false);
 
+  const handleSelectProject = React.useCallback(
+    (projectId: SelectProjectsQueryQuery["accounts"][number]["projects"][number]["id"]) => {
+      setSelectingRepository(true);
+      onSelectProjectId(projectId);
+      console.log("set selected project", projectId)
+      const timer = setTimeout(() => {
+        console.log("resetting timer");
+        setSelectingRepository(false);
+      }, 5000);
+      return () => clearTimeout(timer);
+    },
+    [onSelectProjectId, setSelectingRepository]
+  );
+
   return (
     <Container>
       {fetching && <p>Loading...</p>}
@@ -153,7 +167,7 @@ function SelectProject({ onSelectProjectId }: { onSelectProjectId: (id: string) 
                     key={project.id}
                     title={project.name}
                     right={<Icon icon="add" aria-label={project.name} />}
-                    onClick={() => onSelectProjectId(project.id)}
+                    onClick={() => handleSelectProject(project.id)}
                   />
                 ))}
               </List>
