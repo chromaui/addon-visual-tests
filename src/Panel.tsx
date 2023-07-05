@@ -36,7 +36,7 @@ export const Panel = ({ active }: PanelProps) => {
     emit(START_BUILD);
   }, [emit, state, setAddonState]);
 
-  const [projectId, updateProjectId, projectIdChanged, clearProjectIdChanged] = useProjectId();
+  const [projectId, updateProject, projectIdChanged, clearProjectIdChanged] = useProjectId();
 
   // Render a hidden element when the addon panel is not active.
   // Storybook's AddonPanel component does the same but it's not styleable so we don't use it.
@@ -48,7 +48,7 @@ export const Panel = ({ active }: PanelProps) => {
   if (!projectId)
     return (
       <Provider key={PANEL_ID} value={client}>
-        <LinkProject onUpdateProjectId={updateProjectId} />
+        <LinkProject onUpdateProject={updateProject} />
       </Provider>
     );
 
