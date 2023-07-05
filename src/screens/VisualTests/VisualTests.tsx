@@ -209,6 +209,23 @@ export const VisualTests = ({
     );
   }
 
+  // If there is no lastBuild, show a prompt to run a build. This is a placeholder for now.
+  if (!data.project.lastBuild) {
+    return (
+      <Sections>
+        <Section grow>
+          <Row>
+            <Col>
+              <Text>
+                Your project {data.project.name} does not have any builds yet. Run a build a to
+                begin.
+              </Text>
+            </Col>
+          </Row>
+        </Section>
+      </Sections>
+    );
+  }
   const allTests = ("tests" in build ? build.tests.nodes : []) as TestFieldsFragment[];
   const tests = allTests.filter((test) => test.story?.storyId === storyId);
 
