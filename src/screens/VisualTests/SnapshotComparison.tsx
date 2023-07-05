@@ -91,10 +91,12 @@ export const SnapshotComparison = ({
       {isInProgress && <Loader />}
       {!isInProgress && (
         <SnapshotImage>
-          {test?.comparisons[0]?.headCapture?.imageUrl && (
-            <img src={test.comparisons[0].headCapture.imageUrl} alt="" />
+          {test?.comparisons[0]?.headCapture?.captureImage && (
+            <img src={test.comparisons[0].headCapture.captureImage?.imageUrl} alt="" />
           )}
-          {/* {test && diffVisible && !isOutdated && <img src="/B-comparison.png" alt="" />} */}
+          {diffVisible && !isOutdated && test?.comparisons[0]?.captureDiff?.diffImage && (
+            <img src={test.comparisons[0].captureDiff.diffImage?.imageUrl} alt="" />
+          )}
           {!test && (
             <div>
               <Icons icon="photo" />

@@ -79,8 +79,15 @@ const QueryBuild = graphql(/* GraphQL */ `
         name
         version
       }
+      captureDiff {
+        diffImage {
+          imageUrl
+        }
+      }
       headCapture {
-        imageUrl
+        captureImage {
+          imageUrl
+        }
       }
       viewport {
         id

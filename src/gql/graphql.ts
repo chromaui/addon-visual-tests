@@ -27,7 +27,9 @@ export type Scalars = {
 /** A build that has been pre-announced but not published yet. */
 export type AnnouncedBuild = Build & Node & Temporal & {
   __typename?: 'AnnouncedBuild';
+  /** Git branch name, possibly prefixed with the owner name (in case of a forked repository). */
   branch: Scalars['String']['output'];
+  /** Set of browsers against which the build was executed. */
   browsers: Array<BrowserInfo>;
   /** Git commit hash (unshortened). */
   commit: Scalars['String']['output'];
@@ -39,8 +41,15 @@ export type AnnouncedBuild = Build & Node & Temporal & {
   createdAt: Scalars['DateTime']['output'];
   /** GraphQL node identifier */
   id: Scalars['ID']['output'];
+  /** Whether the build is limited to just representative stories due to insufficient snapshot quota. */
+  isLimited: Scalars['Boolean']['output'];
+  /** Whether the build is reviewable (i.e. not superseded by another build on the same branch). */
+  isReviewable: Scalars['Boolean']['output'];
+  /** Incremental build number. Infrastructure upgrade builds have the same number as the original build. */
   number: Scalars['Int']['output'];
+  /** URL-safe Git repository identifier, consisting of the owner (organization or user) name and the repository name, separated by a slash (/). This is typically part of the Git repository URL. The value originates from the CLI runtime environment, not the linked Git provider / linked repository. */
   slug?: Maybe<Scalars['String']['output']>;
+  /** Current (mutable) status of the build, which changes as the build progresses or changes are reviewed. */
   status: BuildStatus;
   /** When the entity was last updated or created in Chromatic. */
   updatedAt: Scalars['DateTime']['output'];
@@ -66,7 +75,9 @@ export type BrowserInfo = {
 };
 
 export type Build = {
+  /** Git branch name, possibly prefixed with the owner name (in case of a forked repository). */
   branch: Scalars['String']['output'];
+  /** Set of browsers against which the build was executed. */
   browsers: Array<BrowserInfo>;
   /** Git commit hash (unshortened). */
   commit: Scalars['String']['output'];
@@ -78,8 +89,15 @@ export type Build = {
   createdAt: Scalars['DateTime']['output'];
   /** GraphQL node identifier */
   id: Scalars['ID']['output'];
+  /** Whether the build is limited to just representative stories due to insufficient snapshot quota. */
+  isLimited: Scalars['Boolean']['output'];
+  /** Whether the build is reviewable (i.e. not superseded by another build on the same branch). */
+  isReviewable: Scalars['Boolean']['output'];
+  /** Incremental build number. Infrastructure upgrade builds have the same number as the original build. */
   number: Scalars['Int']['output'];
+  /** URL-safe Git repository identifier, consisting of the owner (organization or user) name and the repository name, separated by a slash (/). This is typically part of the Git repository URL. The value originates from the CLI runtime environment, not the linked Git provider / linked repository. */
   slug?: Maybe<Scalars['String']['output']>;
+  /** Current (mutable) status of the build, which changes as the build progresses or changes are reviewed. */
   status: BuildStatus;
   /** When the entity was last updated or created in Chromatic. */
   updatedAt: Scalars['DateTime']['output'];
@@ -123,16 +141,64 @@ export enum BuildStatus {
 
 export type Capture = {
   __typename?: 'Capture';
+  /** Metadata about the error if the capture failed. */
+  captureError?: Maybe<CaptureError>;
+  /** The screenshot capture image. Available if the capture was successful. */
+  captureImage?: Maybe<CaptureImage>;
   /** The ID of the capture. */
   id: Scalars['ID']['output'];
-  /** A URL of the capture image, if we have it */
-  imageUrl?: Maybe<Scalars['String']['output']>;
+  /** Capture regions (bounding boxes) that were ignored when diffing. */
+  ignoredRegions?: Maybe<Array<CaptureRegion>>;
+  /** The result of the capture. Available once the capture is complete. */
+  result?: Maybe<CaptureResult>;
 };
 
-
-export type CaptureImageUrlArgs = {
-  signed?: InputMaybe<Scalars['Boolean']['input']>;
+export type CaptureDiff = {
+  __typename?: 'CaptureDiff';
+  /** The diff overlay image. Available if there are visual changes. */
+  diffImage?: Maybe<Image>;
+  /** The diff focus overlay image. Available if there are visual changes. */
+  focusImage?: Maybe<Image>;
+  /** The ID of the diff. */
+  id: Scalars['ID']['output'];
+  /** The result of comparing this capture against the baseline. */
+  result: CaptureDiffResult;
 };
+
+export enum CaptureDiffResult {
+  /** The two captures were found to have differences. */
+  Changed = 'CHANGED',
+  /** The two captures were found to be equal. */
+  Equal = 'EQUAL',
+  /** The diff failed due to a system error. */
+  SystemError = 'SYSTEM_ERROR'
+}
+
+export type CaptureError = {
+  /** The ID of the capture error. */
+  id: Scalars['ID']['output'];
+  /** The kind of capture error. */
+  kind: CaptureErrorKind;
+};
+
+export enum CaptureErrorKind {
+  /** The component was rendered off screen. */
+  ComponentOffPage = 'COMPONENT_OFF_PAGE',
+  /** A JavaScript error occurred during capture. */
+  FailedJs = 'FAILED_JS',
+  /** The image was too large to capture. */
+  ImageTooLarge = 'IMAGE_TOO_LARGE',
+  /** An interaction failed to complete, or encountered an assertion error. */
+  InteractionFailure = 'INTERACTION_FAILURE',
+  /** A JavaScript error occurred during capture. */
+  JsError = 'JS_ERROR',
+  /** The page took too long to load. */
+  NavigationTimeout = 'NAVIGATION_TIMEOUT',
+  /** The page does not contain (valid) JavaScript. */
+  NoJs = 'NO_JS',
+  /** The story was not found. */
+  StoryMissing = 'STORY_MISSING'
+}
 
 export type CaptureImage = Image & {
   __typename?: 'CaptureImage';
@@ -149,6 +215,31 @@ export type CaptureImage = Image & {
   /** URL of the thumbnail image. */
   thumbnailUrl: Scalars['URL']['output'];
 };
+
+export type CaptureRegion = {
+  __typename?: 'CaptureRegion';
+  /** The height of the bounding box. */
+  height: Scalars['Int']['output'];
+  /** The ID of the capture region. */
+  id: Scalars['String']['output'];
+  /** The left offset of the bounding box. */
+  left: Scalars['Int']['output'];
+  /** The CSS selector used to find the element. */
+  selector?: Maybe<Scalars['String']['output']>;
+  /** The top offset of the bounding box. */
+  top: Scalars['Int']['output'];
+  /** The width of the bounding box. */
+  width: Scalars['Int']['output'];
+};
+
+export enum CaptureResult {
+  /** The capture failed due to a problem with the story. */
+  CaptureError = 'CAPTURE_ERROR',
+  /** The capture succeeded an took a screenshot. */
+  Success = 'SUCCESS',
+  /** The capture failed due to a system error. */
+  SystemError = 'SYSTEM_ERROR'
+}
 
 export enum ComparisonResult {
   /** The head capture succeeded but there is no base capture. */
@@ -223,6 +314,7 @@ export type ComponentEdge = {
 /** Represents a component in a build. */
 export type ComponentRepresentation = {
   __typename?: 'ComponentRepresentation';
+  /** The component represented here. */
   component: Component;
   /** This test is the best representation of the first spec of the component on this build. */
   representativeTest: Test;
@@ -370,7 +462,9 @@ export type PublicAccountInfo = {
 /** A build that has been published but not started testing yet. */
 export type PublishedBuild = Build & Node & Temporal & {
   __typename?: 'PublishedBuild';
+  /** Git branch name, possibly prefixed with the owner name (in case of a forked repository). */
   branch: Scalars['String']['output'];
+  /** Set of browsers against which the build was executed. */
   browsers: Array<BrowserInfo>;
   /** Git commit hash (unshortened). */
   commit: Scalars['String']['output'];
@@ -382,12 +476,19 @@ export type PublishedBuild = Build & Node & Temporal & {
   createdAt: Scalars['DateTime']['output'];
   /** GraphQL node identifier */
   id: Scalars['ID']['output'];
+  /** Whether the build is limited to just representative stories due to insufficient snapshot quota. */
+  isLimited: Scalars['Boolean']['output'];
+  /** Whether the build is reviewable (i.e. not superseded by another build on the same branch). */
+  isReviewable: Scalars['Boolean']['output'];
   /** Link to the published Storybook's canvas (iframe.html). */
   isolatorUrl: Scalars['URL']['output'];
+  /** Incremental build number. Infrastructure upgrade builds have the same number as the original build. */
   number: Scalars['Int']['output'];
   /** When the Storybook was published on Chromatic. */
   publishedAt: Scalars['DateTime']['output'];
+  /** URL-safe Git repository identifier, consisting of the owner (organization or user) name and the repository name, separated by a slash (/). This is typically part of the Git repository URL. The value originates from the CLI runtime environment, not the linked Git provider / linked repository. */
   slug?: Maybe<Scalars['String']['output']>;
+  /** Current (mutable) status of the build, which changes as the build progresses or changes are reviewed. */
   status: BuildStatus;
   /** Link to the published Storybook. */
   storybookUrl: Scalars['URL']['output'];
@@ -438,7 +539,9 @@ export type QueryStorybookArgs = {
 /** A build that has started but not completed testing. */
 export type StartedBuild = Build & Node & Temporal & {
   __typename?: 'StartedBuild';
+  /** Git branch name, possibly prefixed with the owner name (in case of a forked repository). */
   branch: Scalars['String']['output'];
+  /** Set of browsers against which the build was executed. */
   browsers: Array<BrowserInfo>;
   /** Git commit hash (unshortened). */
   commit: Scalars['String']['output'];
@@ -446,7 +549,7 @@ export type StartedBuild = Build & Node & Temporal & {
   commitUrl?: Maybe<Scalars['String']['output']>;
   /** When the commit was created in Git. */
   committedAt: Scalars['DateTime']['output'];
-  /** The number of components in the published Storybook, excluding docsOnly components */
+  /** The number of components in the published Storybook, excluding docsOnly components. */
   componentCount: Scalars['Int']['output'];
   /** When the entity was first created in Chromatic. */
   createdAt: Scalars['DateTime']['output'];
@@ -454,19 +557,23 @@ export type StartedBuild = Build & Node & Temporal & {
   docsCount: Scalars['Int']['output'];
   /** GraphQL node identifier */
   id: Scalars['ID']['output'];
-  interactionTestFailuresCount?: Maybe<Scalars['Int']['output']>;
-  /** Whether the build is reviewable. */
+  /** Whether the build is limited to just representative stories due to insufficient snapshot quota. */
+  isLimited: Scalars['Boolean']['output'];
+  /** Whether the build is reviewable (i.e. not superseded by another build on the same branch). */
   isReviewable: Scalars['Boolean']['output'];
   /** Link to the published Storybook's canvas (iframe.html). */
   isolatorUrl: Scalars['URL']['output'];
+  /** Incremental build number. Infrastructure upgrade builds have the same number as the original build. */
   number: Scalars['Int']['output'];
   /** When the Storybook was published on Chromatic. */
   publishedAt: Scalars['DateTime']['output'];
+  /** URL-safe Git repository identifier, consisting of the owner (organization or user) name and the repository name, separated by a slash (/). This is typically part of the Git repository URL. The value originates from the CLI runtime environment, not the linked Git provider / linked repository. */
   slug?: Maybe<Scalars['String']['output']>;
-  /** The number of stories in the published Storybook, excluding docsOnly stories */
+  /** The number of stories in the published Storybook, excluding docsOnly stories. */
   specCount: Scalars['Int']['output'];
   /** When the build was started in Chromatic. */
   startedAt: Scalars['DateTime']['output'];
+  /** Current (mutable) status of the build, which changes as the build progresses or changes are reviewed. */
   status: BuildStatus;
   /** Link to the published Storybook. */
   storybookUrl: Scalars['URL']['output'];
@@ -475,8 +582,6 @@ export type StartedBuild = Build & Node & Temporal & {
   tests?: Maybe<StartedBuildTestConnection>;
   /** When the entity was last updated or created in Chromatic. */
   updatedAt: Scalars['DateTime']['output'];
-  /** Whether the build was limited to just representative stories due to insufficient snapshot quota. */
-  wasLimited: Scalars['Boolean']['output'];
   /** Link to the build details on Chromatic. */
   webUrl: Scalars['URL']['output'];
 };
@@ -546,6 +651,7 @@ export enum StoriesOrderField {
 
 export type Story = Node & Temporal & {
   __typename?: 'Story';
+  /** Image and snapshot display metadata for this story, if captured. */
   captureImage?: Maybe<CaptureImage>;
   /** Component that contains the story. */
   component?: Maybe<Component>;
@@ -617,30 +723,56 @@ export type Temporal = {
 /** A set of captures for a story at a specific viewport, compared against the baseline. */
 export type Test = Node & Temporal & {
   __typename?: 'Test';
-  comparisons: Array<TestComparisonType>;
+  /** List of snapshot comparisons for this test, one for each tested browser. */
+  comparisons: Array<TestComparison>;
   /** When the entity was first created in Chromatic. */
   createdAt: Scalars['DateTime']['output'];
   /** GraphQL node identifier */
   id: Scalars['ID']['output'];
+  /** What test kinds is this test associated with. */
+  kinds: Array<TestKind>;
+  /** Chromatic parameters configured on the story or automatically determined based on context. */
   parameters: TestParameters;
-  /** A summary of the results of the checks and comparisons on this test. */
+  /** Final (immutable) summary of the results of the comparisons on this test. Only available once the test has completed. */
   result?: Maybe<TestResult>;
-  /** This is the user state of the test; has it been reviewed? */
+  /** Current (mutable) user state of the test; has it been reviewed? */
   status: TestStatus;
+  /** Reference to the story for this test in the published Storybook for this build. */
   story?: Maybe<Story>;
   /** When the entity was last updated or created in Chromatic. */
   updatedAt: Scalars['DateTime']['output'];
 };
 
-export type TestComparisonType = Node & {
-  __typename?: 'TestComparisonType';
+export type TestComparison = Node & {
+  __typename?: 'TestComparison';
+  /** The (head) capture of the baseline test which was compared against, for the same browser. */
+  baseCapture?: Maybe<Capture>;
+  /** The baseline test which was compared against. */
+  baseTest?: Maybe<Test>;
+  /** Browser against which this comparison was captured and compared. */
   browser: BrowserInfo;
+  /** The diff between the baseline and head captures. Only available once the test has completed. */
+  captureDiff?: Maybe<CaptureDiff>;
+  /** The capture of the test this comparison belongs to. */
   headCapture?: Maybe<Capture>;
+  /** The test this comparison belongs to. */
+  headTest: Test;
   /** GraphQL node identifier */
   id: Scalars['ID']['output'];
+  /** The result of comparing this test's (head) capture against the baseline. Only available once the test has completed. */
   result?: Maybe<ComparisonResult>;
+  /** Viewport for which this comparison was captured and compared. */
   viewport: ViewportInfo;
 };
+
+export enum TestKind {
+  /** At least one comparison contains an accessibility test */
+  Accessibility = 'ACCESSIBILITY',
+  /** At least one comparison contains an interaction test */
+  Interaction = 'INTERACTION',
+  /** At least one comparison contains a visual test */
+  Visual = 'VISUAL'
+}
 
 export type TestParameters = {
   __typename?: 'TestParameters';
@@ -707,7 +839,9 @@ export enum TestStatus {
 /** A build that has completed testing. */
 export type TestedBuild = Build & Node & Temporal & {
   __typename?: 'TestedBuild';
+  /** Git branch name, possibly prefixed with the owner name (in case of a forked repository). */
   branch: Scalars['String']['output'];
+  /** Set of browsers against which the build was executed. */
   browsers: Array<BrowserInfo>;
   /** Git commit hash (unshortened). */
   commit: Scalars['String']['output'];
@@ -717,7 +851,7 @@ export type TestedBuild = Build & Node & Temporal & {
   committedAt: Scalars['DateTime']['output'];
   /** When the build was completed in Chromatic. */
   completedAt: Scalars['DateTime']['output'];
-  /** The number of components in the published Storybook, excluding docsOnly components */
+  /** The number of components in the published Storybook, excluding docsOnly components. */
   componentCount: Scalars['Int']['output'];
   componentRepresentations?: Maybe<TestedBuildComponentRepresentationConnection>;
   /** When the entity was first created in Chromatic. */
@@ -726,20 +860,25 @@ export type TestedBuild = Build & Node & Temporal & {
   docsCount: Scalars['Int']['output'];
   /** GraphQL node identifier */
   id: Scalars['ID']['output'];
-  interactionTestFailuresCount?: Maybe<Scalars['Int']['output']>;
-  /** Whether the build is reviewable. */
+  /** Whether the build is limited to just representative stories due to insufficient snapshot quota. */
+  isLimited: Scalars['Boolean']['output'];
+  /** Whether the build is reviewable (i.e. not superseded by another build on the same branch). */
   isReviewable: Scalars['Boolean']['output'];
   /** Link to the published Storybook's canvas (iframe.html). */
   isolatorUrl: Scalars['URL']['output'];
+  /** Incremental build number. Infrastructure upgrade builds have the same number as the original build. */
   number: Scalars['Int']['output'];
   /** When the Storybook was published on Chromatic. */
   publishedAt: Scalars['DateTime']['output'];
+  /** Final (immutable) result of the build / capture process. Only available once the build has completed. */
   result: BuildResult;
+  /** URL-safe Git repository identifier, consisting of the owner (organization or user) name and the repository name, separated by a slash (/). This is typically part of the Git repository URL. The value originates from the CLI runtime environment, not the linked Git provider / linked repository. */
   slug?: Maybe<Scalars['String']['output']>;
-  /** The number of stories in the published Storybook, excluding docsOnly stories */
+  /** The number of stories in the published Storybook, excluding docsOnly stories. */
   specCount: Scalars['Int']['output'];
   /** When the build was started in Chromatic. */
   startedAt: Scalars['DateTime']['output'];
+  /** Current (mutable) status of the build, which changes as the build progresses or changes are reviewed. */
   status: BuildStatus;
   /** Link to the published Storybook. */
   storybookUrl: Scalars['URL']['output'];
@@ -748,8 +887,6 @@ export type TestedBuild = Build & Node & Temporal & {
   tests?: Maybe<TestedBuildTestConnection>;
   /** When the entity was last updated or created in Chromatic. */
   updatedAt: Scalars['DateTime']['output'];
-  /** Whether the build was limited to just representative stories due to insufficient snapshot quota. */
-  wasLimited: Scalars['Boolean']['output'];
   /** Link to the build details on Chromatic. */
   webUrl: Scalars['URL']['output'];
 };
@@ -933,9 +1070,9 @@ type BuildFields_TestedBuild_Fragment = { __typename: 'TestedBuild', result: Bui
 
 export type BuildFieldsFragment = BuildFields_AnnouncedBuild_Fragment | BuildFields_PublishedBuild_Fragment | BuildFields_StartedBuild_Fragment | BuildFields_TestedBuild_Fragment;
 
-export type TestFieldsFragment = { __typename?: 'Test', id: string, status: TestStatus, result?: TestResult | null, comparisons: Array<{ __typename?: 'TestComparisonType', id: string, result?: ComparisonResult | null, browser: { __typename?: 'BrowserInfo', id: string, key: Browser, name: string, version: string }, headCapture?: { __typename?: 'Capture', imageUrl?: string | null } | null, viewport: { __typename?: 'ViewportInfo', id: string, name: string, width: number, isDefault: boolean } }>, parameters: { __typename?: 'TestParameters', viewport: { __typename?: 'ViewportInfo', id: string, name: string, width: number, isDefault: boolean } } } & { ' $fragmentName'?: 'TestFieldsFragment' };
+export type TestFieldsFragment = { __typename?: 'Test', id: string, status: TestStatus, result?: TestResult | null, comparisons: Array<{ __typename?: 'TestComparison', id: string, result?: ComparisonResult | null, browser: { __typename?: 'BrowserInfo', id: string, key: Browser, name: string, version: string }, captureDiff?: { __typename?: 'CaptureDiff', diffImage?: { __typename?: 'CaptureImage', imageUrl: any } | null } | null, headCapture?: { __typename?: 'Capture', captureImage?: { __typename?: 'CaptureImage', imageUrl: any } | null } | null, viewport: { __typename?: 'ViewportInfo', id: string, name: string, width: number, isDefault: boolean } }>, parameters: { __typename?: 'TestParameters', viewport: { __typename?: 'ViewportInfo', id: string, name: string, width: number, isDefault: boolean } } } & { ' $fragmentName'?: 'TestFieldsFragment' };
 
-export const TestFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TestFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Test"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"result"}},{"kind":"Field","name":{"kind":"Name","value":"comparisons"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"result"}},{"kind":"Field","name":{"kind":"Name","value":"browser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"version"}}]}},{"kind":"Field","name":{"kind":"Name","value":"headCapture"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"viewport"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"isDefault"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"parameters"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"viewport"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"isDefault"}}]}}]}}]}}]} as unknown as DocumentNode<TestFieldsFragment, unknown>;
-export const BuildFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"BuildFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Build"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"number"}},{"kind":"Field","name":{"kind":"Name","value":"branch"}},{"kind":"Field","name":{"kind":"Name","value":"commit"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"browsers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"StartedBuild"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"changeCount"},"name":{"kind":"Name","value":"testCount"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"results"},"value":{"kind":"ListValue","values":[{"kind":"EnumValue","value":"ADDED"},{"kind":"EnumValue","value":"CHANGED"},{"kind":"EnumValue","value":"FIXED"}]}}]},{"kind":"Field","name":{"kind":"Name","value":"startedAt"}},{"kind":"Field","name":{"kind":"Name","value":"tests"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TestFields"}}]}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TestedBuild"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"result"}},{"kind":"Field","alias":{"kind":"Name","value":"changeCount"},"name":{"kind":"Name","value":"testCount"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"results"},"value":{"kind":"ListValue","values":[{"kind":"EnumValue","value":"ADDED"},{"kind":"EnumValue","value":"CHANGED"},{"kind":"EnumValue","value":"FIXED"}]}}]},{"kind":"Field","name":{"kind":"Name","value":"startedAt"}},{"kind":"Field","name":{"kind":"Name","value":"tests"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TestFields"}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TestFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Test"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"result"}},{"kind":"Field","name":{"kind":"Name","value":"comparisons"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"result"}},{"kind":"Field","name":{"kind":"Name","value":"browser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"version"}}]}},{"kind":"Field","name":{"kind":"Name","value":"headCapture"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"viewport"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"isDefault"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"parameters"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"viewport"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"isDefault"}}]}}]}}]}}]} as unknown as DocumentNode<BuildFieldsFragment, unknown>;
+export const TestFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TestFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Test"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"result"}},{"kind":"Field","name":{"kind":"Name","value":"comparisons"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"result"}},{"kind":"Field","name":{"kind":"Name","value":"browser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"version"}}]}},{"kind":"Field","name":{"kind":"Name","value":"captureDiff"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"diffImage"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"headCapture"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"captureImage"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"viewport"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"isDefault"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"parameters"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"viewport"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"isDefault"}}]}}]}}]}}]} as unknown as DocumentNode<TestFieldsFragment, unknown>;
+export const BuildFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"BuildFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Build"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"number"}},{"kind":"Field","name":{"kind":"Name","value":"branch"}},{"kind":"Field","name":{"kind":"Name","value":"commit"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"browsers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"StartedBuild"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"changeCount"},"name":{"kind":"Name","value":"testCount"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"results"},"value":{"kind":"ListValue","values":[{"kind":"EnumValue","value":"ADDED"},{"kind":"EnumValue","value":"CHANGED"},{"kind":"EnumValue","value":"FIXED"}]}}]},{"kind":"Field","name":{"kind":"Name","value":"startedAt"}},{"kind":"Field","name":{"kind":"Name","value":"tests"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TestFields"}}]}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TestedBuild"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"result"}},{"kind":"Field","alias":{"kind":"Name","value":"changeCount"},"name":{"kind":"Name","value":"testCount"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"results"},"value":{"kind":"ListValue","values":[{"kind":"EnumValue","value":"ADDED"},{"kind":"EnumValue","value":"CHANGED"},{"kind":"EnumValue","value":"FIXED"}]}}]},{"kind":"Field","name":{"kind":"Name","value":"startedAt"}},{"kind":"Field","name":{"kind":"Name","value":"tests"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TestFields"}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TestFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Test"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"result"}},{"kind":"Field","name":{"kind":"Name","value":"comparisons"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"result"}},{"kind":"Field","name":{"kind":"Name","value":"browser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"version"}}]}},{"kind":"Field","name":{"kind":"Name","value":"captureDiff"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"diffImage"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"headCapture"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"captureImage"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"viewport"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"isDefault"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"parameters"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"viewport"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"isDefault"}}]}}]}}]}}]} as unknown as DocumentNode<BuildFieldsFragment, unknown>;
 export const ProjectQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ProjectQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"project"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"webUrl"}},{"kind":"Field","name":{"kind":"Name","value":"lastBuild"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"branch"}},{"kind":"Field","name":{"kind":"Name","value":"number"}}]}}]}}]}}]} as unknown as DocumentNode<ProjectQueryQuery, ProjectQueryQueryVariables>;
-export const BuildDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Build"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"hasBuildId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"buildId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"branch"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"build"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"buildId"}}}],"directives":[{"kind":"Directive","name":{"kind":"Name","value":"include"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"if"},"value":{"kind":"Variable","name":{"kind":"Name","value":"hasBuildId"}}}]}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"BuildFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"project"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}}}],"directives":[{"kind":"Directive","name":{"kind":"Name","value":"skip"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"if"},"value":{"kind":"Variable","name":{"kind":"Name","value":"hasBuildId"}}}]}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"lastBuild"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"branches"},"value":{"kind":"ListValue","values":[{"kind":"Variable","name":{"kind":"Name","value":"branch"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"BuildFields"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TestFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Test"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"result"}},{"kind":"Field","name":{"kind":"Name","value":"comparisons"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"result"}},{"kind":"Field","name":{"kind":"Name","value":"browser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"version"}}]}},{"kind":"Field","name":{"kind":"Name","value":"headCapture"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"viewport"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"isDefault"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"parameters"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"viewport"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"isDefault"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"BuildFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Build"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"number"}},{"kind":"Field","name":{"kind":"Name","value":"branch"}},{"kind":"Field","name":{"kind":"Name","value":"commit"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"browsers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"StartedBuild"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"changeCount"},"name":{"kind":"Name","value":"testCount"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"results"},"value":{"kind":"ListValue","values":[{"kind":"EnumValue","value":"ADDED"},{"kind":"EnumValue","value":"CHANGED"},{"kind":"EnumValue","value":"FIXED"}]}}]},{"kind":"Field","name":{"kind":"Name","value":"startedAt"}},{"kind":"Field","name":{"kind":"Name","value":"tests"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TestFields"}}]}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TestedBuild"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"result"}},{"kind":"Field","alias":{"kind":"Name","value":"changeCount"},"name":{"kind":"Name","value":"testCount"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"results"},"value":{"kind":"ListValue","values":[{"kind":"EnumValue","value":"ADDED"},{"kind":"EnumValue","value":"CHANGED"},{"kind":"EnumValue","value":"FIXED"}]}}]},{"kind":"Field","name":{"kind":"Name","value":"startedAt"}},{"kind":"Field","name":{"kind":"Name","value":"tests"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TestFields"}}]}}]}}]}}]}}]} as unknown as DocumentNode<BuildQuery, BuildQueryVariables>;
+export const BuildDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Build"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"hasBuildId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"buildId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"branch"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"build"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"buildId"}}}],"directives":[{"kind":"Directive","name":{"kind":"Name","value":"include"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"if"},"value":{"kind":"Variable","name":{"kind":"Name","value":"hasBuildId"}}}]}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"BuildFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"project"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}}}],"directives":[{"kind":"Directive","name":{"kind":"Name","value":"skip"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"if"},"value":{"kind":"Variable","name":{"kind":"Name","value":"hasBuildId"}}}]}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"lastBuild"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"branches"},"value":{"kind":"ListValue","values":[{"kind":"Variable","name":{"kind":"Name","value":"branch"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"BuildFields"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TestFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Test"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"result"}},{"kind":"Field","name":{"kind":"Name","value":"comparisons"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"result"}},{"kind":"Field","name":{"kind":"Name","value":"browser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"version"}}]}},{"kind":"Field","name":{"kind":"Name","value":"captureDiff"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"diffImage"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"headCapture"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"captureImage"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"viewport"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"isDefault"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"parameters"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"viewport"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"isDefault"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"BuildFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Build"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"number"}},{"kind":"Field","name":{"kind":"Name","value":"branch"}},{"kind":"Field","name":{"kind":"Name","value":"commit"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"browsers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"StartedBuild"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"changeCount"},"name":{"kind":"Name","value":"testCount"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"results"},"value":{"kind":"ListValue","values":[{"kind":"EnumValue","value":"ADDED"},{"kind":"EnumValue","value":"CHANGED"},{"kind":"EnumValue","value":"FIXED"}]}}]},{"kind":"Field","name":{"kind":"Name","value":"startedAt"}},{"kind":"Field","name":{"kind":"Name","value":"tests"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TestFields"}}]}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TestedBuild"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"result"}},{"kind":"Field","alias":{"kind":"Name","value":"changeCount"},"name":{"kind":"Name","value":"testCount"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"results"},"value":{"kind":"ListValue","values":[{"kind":"EnumValue","value":"ADDED"},{"kind":"EnumValue","value":"CHANGED"},{"kind":"EnumValue","value":"FIXED"}]}}]},{"kind":"Field","name":{"kind":"Name","value":"startedAt"}},{"kind":"Field","name":{"kind":"Name","value":"tests"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TestFields"}}]}}]}}]}}]}}]} as unknown as DocumentNode<BuildQuery, BuildQueryVariables>;
