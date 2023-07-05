@@ -55,7 +55,7 @@ const QueryBuild = graphql(/* GraphQL */ `
         }
       }
     }
-    ... on TestedBuild {
+    ... on CompletedBuild {
       result
       changeCount: testCount(results: [ADDED, CHANGED, FIXED])
       startedAt

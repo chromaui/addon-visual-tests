@@ -9,4 +9,4 @@ export interface AddonState {
 export type AnnouncedBuild = Extract<BuildFieldsFragment, { __typename: "AnnouncedBuild" }>;
 export type PublishedBuild = Extract<BuildFieldsFragment, { __typename: "PublishedBuild" }>;
 export type StartedBuild = Extract<BuildFieldsFragment, { __typename: "StartedBuild" }>;
-export type TestedBuild = Extract<BuildFieldsFragment, { __typename: "TestedBuild" }>;
+export type CompletedBuild = Extract<BuildFieldsFragment, { __typename: "CompletedBuild" }>;

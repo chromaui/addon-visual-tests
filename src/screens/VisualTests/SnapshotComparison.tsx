@@ -8,7 +8,7 @@ import { Bar, Col } from "../../components/layout";
 import { Placeholder } from "../../components/Placeholder";
 import { SnapshotImage } from "../../components/SnapshotImage";
 import { ViewportSelector } from "../../components/ViewportSelector";
-import { TestFieldsFragment } from "../../gql/graphql";
+import { ComparisonResult, TestFieldsFragment } from "../../gql/graphql";
 
 const Divider = styled.div(({ theme }) => ({
   backgroundColor: theme.appBorderColor,
@@ -20,7 +20,6 @@ interface SnapshotSectionProps {
   test?: TestFieldsFragment;
   changeCount: number;
   isInProgress: boolean;
-  isOutdated: boolean;
   browserResults: ComponentProps<typeof BrowserSelector>["browserResults"];
   viewportResults: ComponentProps<typeof ViewportSelector>["viewportResults"];
 }
@@ -29,11 +28,12 @@ export const SnapshotComparison = ({
   test,
   changeCount,
   isInProgress,
-  isOutdated,
   browserResults,
   viewportResults,
 }: SnapshotSectionProps) => {
   const [diffVisible, setDiffVisible] = useState(true);
+
+  const comparison = test?.comparisons[0];
 
   return (
     <>
@@ -46,7 +46,7 @@ export const SnapshotComparison = ({
         </Bar>
       ) : (
         <Bar>
-          {test && !isOutdated && (
+          {comparison?.result === ComparisonResult.Changed && (
             <Col>
               <IconButton active={diffVisible} onClick={() => setDiffVisible(!diffVisible)}>
                 <Icons icon="contrast" />
@@ -89,15 +89,17 @@ export const SnapshotComparison = ({
       <Divider />
 
       {isInProgress && <Loader />}
-      {!isInProgress && (
+      {!isInProgress && comparison && (
         <SnapshotImage>
-          {test?.comparisons[0]?.headCapture?.captureImage && (
-            <img src={test.comparisons[0].headCapture.captureImage?.imageUrl} alt="" />
+          {comparison.headCapture?.captureImage && (
+            <img src={comparison.headCapture.captureImage?.imageUrl} alt="" />
           )}
-          {diffVisible && !isOutdated && test?.comparisons[0]?.captureDiff?.diffImage && (
-            <img src={test.comparisons[0].captureDiff.diffImage?.imageUrl} alt="" />
-          )}
-          {!test && (
+          {diffVisible &&
+            comparison.result === ComparisonResult.Changed &&
+            comparison.captureDiff?.diffImage && (
+              <img src={comparison.captureDiff.diffImage?.imageUrl} alt="" />
+            )}
+          {comparison.result === ComparisonResult.CaptureError && (
             <div>
               <Icons icon="photo" />
               <p>

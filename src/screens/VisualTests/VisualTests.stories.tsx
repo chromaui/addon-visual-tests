@@ -4,7 +4,7 @@ import { graphql } from "msw";
 
 import type { BuildQuery, TestFieldsFragment } from "../../gql/graphql";
 import { Browser, BuildStatus, ComparisonResult, TestResult, TestStatus } from "../../gql/graphql";
-import { AnnouncedBuild, PublishedBuild, StartedBuild, TestedBuild } from "../../types";
+import { AnnouncedBuild, PublishedBuild, StartedBuild, CompletedBuild } from "../../types";
 import { storyWrapper } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
@@ -130,7 +130,7 @@ const inProgressBuild: StartedBuild = {
   ),
 };
 
-const passedBuild: TestedBuild = {
+const passedBuild: CompletedBuild = {
   ...(inProgressBuild as any),
   status: BuildStatus.Passed,
   changeCount: 0,
@@ -147,14 +147,14 @@ const passedBuild: TestedBuild = {
   ),
 };
 
-const pendingBuild: TestedBuild = {
+const pendingBuild: CompletedBuild = {
   ...(inProgressBuild as any),
   status: BuildStatus.Pending,
   changeCount: 3,
   tests: paginated(tests),
 };
 
-const acceptedBuild: TestedBuild = {
+const acceptedBuild: CompletedBuild = {
   ...pendingBuild,
   status: BuildStatus.Accepted,
   tests: paginated(
@@ -165,7 +165,7 @@ const acceptedBuild: TestedBuild = {
   ),
 };
 
-const brokenBuild: TestedBuild = {
+const brokenBuild: CompletedBuild = {
   ...(inProgressBuild as any),
   status: BuildStatus.Broken,
   changeCount: 3,
@@ -193,7 +193,7 @@ const withGraphQLQuery = (...args: Parameters<typeof graphql.query>) => ({
   },
 });
 
-const withBuild = (build: AnnouncedBuild | PublishedBuild | StartedBuild | TestedBuild) =>
+const withBuild = (build: AnnouncedBuild | PublishedBuild | StartedBuild | CompletedBuild) =>
   withGraphQLQuery("Build", (req, res, ctx) => res(ctx.data({ build } as BuildQuery)));
 
 const meta = {

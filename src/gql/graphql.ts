@@ -156,9 +156,9 @@ export type Capture = {
 export type CaptureDiff = {
   __typename?: 'CaptureDiff';
   /** The diff overlay image. Available if there are visual changes. */
-  diffImage?: Maybe<Image>;
-  /** The diff focus overlay image. Available if there are visual changes. */
-  focusImage?: Maybe<Image>;
+  diffImage?: Maybe<CaptureOverlayImage>;
+  /** The focus overlay image. Available if there are visual changes. */
+  focusImage?: Maybe<CaptureOverlayImage>;
   /** The ID of the diff. */
   id: Scalars['ID']['output'];
   /** The result of comparing this capture against the baseline. */
@@ -216,6 +216,16 @@ export type CaptureImage = Image & {
   thumbnailUrl: Scalars['URL']['output'];
 };
 
+export type CaptureOverlayImage = Image & {
+  __typename?: 'CaptureOverlayImage';
+  /** Pixel height of the image. */
+  imageHeight: Scalars['Int']['output'];
+  /** URL of the image. */
+  imageUrl: Scalars['URL']['output'];
+  /** Pixel width of the image. */
+  imageWidth: Scalars['Int']['output'];
+};
+
 export type CaptureRegion = {
   __typename?: 'CaptureRegion';
   /** The height of the bounding box. */
@@ -256,6 +266,160 @@ export enum ComparisonResult {
   Removed = 'REMOVED',
   /** Either the head capture or the diff failed due to a system error. */
   SystemError = 'SYSTEM_ERROR'
+}
+
+/** A build that has completed testing. */
+export type CompletedBuild = Build & Node & Temporal & {
+  __typename?: 'CompletedBuild';
+  /** Git branch name, possibly prefixed with the owner name (in case of a forked repository). */
+  branch: Scalars['String']['output'];
+  /** Set of browsers against which the build was executed. */
+  browsers: Array<BrowserInfo>;
+  /** Git commit hash (unshortened). */
+  commit: Scalars['String']['output'];
+  /** Link to the commit details at the Git provider linked to the project. */
+  commitUrl?: Maybe<Scalars['String']['output']>;
+  /** When the commit was created in Git. */
+  committedAt: Scalars['DateTime']['output'];
+  /** When the build was completed in Chromatic. */
+  completedAt: Scalars['DateTime']['output'];
+  /** The number of components in the published Storybook, excluding docsOnly components. */
+  componentCount: Scalars['Int']['output'];
+  componentRepresentations?: Maybe<CompletedBuildComponentRepresentationConnection>;
+  /** When the entity was first created in Chromatic. */
+  createdAt: Scalars['DateTime']['output'];
+  /** The number of docsOnly stories in the published Storybook */
+  docsCount: Scalars['Int']['output'];
+  /** GraphQL node identifier */
+  id: Scalars['ID']['output'];
+  /** Whether the build is limited to just representative stories due to insufficient snapshot quota. */
+  isLimited: Scalars['Boolean']['output'];
+  /** Whether the build is reviewable (i.e. not superseded by another build on the same branch). */
+  isReviewable: Scalars['Boolean']['output'];
+  /** Link to the published Storybook's canvas (iframe.html). */
+  isolatorUrl: Scalars['URL']['output'];
+  /** Incremental build number. Infrastructure upgrade builds have the same number as the original build. */
+  number: Scalars['Int']['output'];
+  /** When the build was prepared for testing on Chromatic. */
+  preparedAt: Scalars['DateTime']['output'];
+  /** When the Storybook was published on Chromatic. */
+  publishedAt: Scalars['DateTime']['output'];
+  /** Final (immutable) result of the build / capture process. Only available once the build has completed. */
+  result: BuildResult;
+  /** URL-safe Git repository identifier, consisting of the owner (organization or user) name and the repository name, separated by a slash (/). This is typically part of the Git repository URL. The value originates from the CLI runtime environment, not the linked Git provider / linked repository. */
+  slug?: Maybe<Scalars['String']['output']>;
+  /** The number of stories in the published Storybook, excluding docsOnly stories. */
+  specCount: Scalars['Int']['output'];
+  /** When the build was started in Chromatic. */
+  startedAt: Scalars['DateTime']['output'];
+  /** Current (mutable) status of the build, which changes as the build progresses or changes are reviewed. */
+  status: BuildStatus;
+  /** Link to the published Storybook. */
+  storybookUrl: Scalars['URL']['output'];
+  /** Count the number of tests in the build. All provided filter arguments must match (AND). */
+  testCount: Scalars['Int']['output'];
+  tests?: Maybe<CompletedBuildTestConnection>;
+  /** When the entity was last updated or created in Chromatic. */
+  updatedAt: Scalars['DateTime']['output'];
+  /** Link to the build details on Chromatic. */
+  webUrl: Scalars['URL']['output'];
+};
+
+
+/** A build that has completed testing. */
+export type CompletedBuildComponentRepresentationsArgs = {
+  after?: InputMaybe<Scalars['ID']['input']>;
+  before?: InputMaybe<Scalars['ID']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<CompletedBuildComponentRepresentationsOrder>;
+};
+
+
+/** A build that has completed testing. */
+export type CompletedBuildTestCountArgs = {
+  results?: InputMaybe<Array<TestResult>>;
+  reviewable?: InputMaybe<Scalars['Boolean']['input']>;
+  statuses?: InputMaybe<Array<TestStatus>>;
+};
+
+
+/** A build that has completed testing. */
+export type CompletedBuildTestsArgs = {
+  after?: InputMaybe<Scalars['ID']['input']>;
+  before?: InputMaybe<Scalars['ID']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<CompletedBuildTestsOrder>;
+  storyId?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** Connection to a list of CompletedBuildComponentRepresentation. */
+export type CompletedBuildComponentRepresentationConnection = {
+  __typename?: 'CompletedBuildComponentRepresentationConnection';
+  /** List of edges for CompletedBuildComponentRepresentationConnection. */
+  edges: Array<CompletedBuildComponentRepresentationEdge>;
+  /** List of nodes for CompletedBuildComponentRepresentationConnection. */
+  nodes: Array<ComponentRepresentation>;
+  /** Pagination details for CompletedBuildComponentRepresentationConnection. */
+  pageInfo: PageInfo;
+  /** Total number of items for CompletedBuildComponentRepresentationConnection. */
+  totalCount: Scalars['Int']['output'];
+};
+
+/** The edge type for CompletedBuildComponentRepresentation. */
+export type CompletedBuildComponentRepresentationEdge = {
+  __typename?: 'CompletedBuildComponentRepresentationEdge';
+  /** Cursor to this item. */
+  cursor: Scalars['String']['output'];
+  /** The item at the edge. */
+  node: ComponentRepresentation;
+};
+
+export type CompletedBuildComponentRepresentationsOrder = {
+  direction: OrderDirection;
+  field: CompletedBuildComponentRepresentationsOrderField;
+};
+
+export enum CompletedBuildComponentRepresentationsOrderField {
+  CreatedAt = 'createdAt',
+  ResultOrder = 'resultOrder',
+  StoryOrder = 'storyOrder',
+  UpdatedAt = 'updatedAt'
+}
+
+/** Connection to a list of CompletedBuildTest. */
+export type CompletedBuildTestConnection = {
+  __typename?: 'CompletedBuildTestConnection';
+  /** List of edges for CompletedBuildTestConnection. */
+  edges: Array<CompletedBuildTestEdge>;
+  /** List of nodes for CompletedBuildTestConnection. */
+  nodes: Array<Test>;
+  /** Pagination details for CompletedBuildTestConnection. */
+  pageInfo: PageInfo;
+  /** Total number of items for CompletedBuildTestConnection. */
+  totalCount: Scalars['Int']['output'];
+};
+
+/** The edge type for CompletedBuildTest. */
+export type CompletedBuildTestEdge = {
+  __typename?: 'CompletedBuildTestEdge';
+  /** Cursor to this item. */
+  cursor: Scalars['String']['output'];
+  /** The item at the edge. */
+  node: Test;
+};
+
+export type CompletedBuildTestsOrder = {
+  direction: OrderDirection;
+  field: CompletedBuildTestsOrderField;
+};
+
+export enum CompletedBuildTestsOrderField {
+  CreatedAt = 'createdAt',
+  ResultOrder = 'resultOrder',
+  StoryOrder = 'storyOrder',
+  UpdatedAt = 'updatedAt'
 }
 
 export type Component = Node & Temporal & {
@@ -416,6 +580,107 @@ export type PageInfo = {
   startCursor?: Maybe<Scalars['String']['output']>;
 };
 
+/** A build that has been prepared for testing but not started yet. */
+export type PreparedBuild = Build & Node & Temporal & {
+  __typename?: 'PreparedBuild';
+  /** Git branch name, possibly prefixed with the owner name (in case of a forked repository). */
+  branch: Scalars['String']['output'];
+  /** Set of browsers against which the build was executed. */
+  browsers: Array<BrowserInfo>;
+  /** Git commit hash (unshortened). */
+  commit: Scalars['String']['output'];
+  /** Link to the commit details at the Git provider linked to the project. */
+  commitUrl?: Maybe<Scalars['String']['output']>;
+  /** When the commit was created in Git. */
+  committedAt: Scalars['DateTime']['output'];
+  /** The number of components in the published Storybook, excluding docsOnly components. */
+  componentCount: Scalars['Int']['output'];
+  /** When the entity was first created in Chromatic. */
+  createdAt: Scalars['DateTime']['output'];
+  /** The number of docsOnly stories in the published Storybook */
+  docsCount: Scalars['Int']['output'];
+  /** GraphQL node identifier */
+  id: Scalars['ID']['output'];
+  /** Whether the build is limited to just representative stories due to insufficient snapshot quota. */
+  isLimited: Scalars['Boolean']['output'];
+  /** Whether the build is reviewable (i.e. not superseded by another build on the same branch). */
+  isReviewable: Scalars['Boolean']['output'];
+  /** Link to the published Storybook's canvas (iframe.html). */
+  isolatorUrl: Scalars['URL']['output'];
+  /** Incremental build number. Infrastructure upgrade builds have the same number as the original build. */
+  number: Scalars['Int']['output'];
+  /** When the build was prepared for testing on Chromatic. */
+  preparedAt: Scalars['DateTime']['output'];
+  /** When the Storybook was published on Chromatic. */
+  publishedAt: Scalars['DateTime']['output'];
+  /** URL-safe Git repository identifier, consisting of the owner (organization or user) name and the repository name, separated by a slash (/). This is typically part of the Git repository URL. The value originates from the CLI runtime environment, not the linked Git provider / linked repository. */
+  slug?: Maybe<Scalars['String']['output']>;
+  /** The number of stories in the published Storybook, excluding docsOnly stories. */
+  specCount: Scalars['Int']['output'];
+  /** Current (mutable) status of the build, which changes as the build progresses or changes are reviewed. */
+  status: BuildStatus;
+  /** Link to the published Storybook. */
+  storybookUrl: Scalars['URL']['output'];
+  /** Count the number of tests in the build. All provided filter arguments must match (AND). */
+  testCount: Scalars['Int']['output'];
+  tests?: Maybe<PreparedBuildTestConnection>;
+  /** When the entity was last updated or created in Chromatic. */
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+
+/** A build that has been prepared for testing but not started yet. */
+export type PreparedBuildTestCountArgs = {
+  results?: InputMaybe<Array<TestResult>>;
+  reviewable?: InputMaybe<Scalars['Boolean']['input']>;
+  statuses?: InputMaybe<Array<TestStatus>>;
+};
+
+
+/** A build that has been prepared for testing but not started yet. */
+export type PreparedBuildTestsArgs = {
+  after?: InputMaybe<Scalars['ID']['input']>;
+  before?: InputMaybe<Scalars['ID']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<PreparedBuildTestsOrder>;
+  storyId?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** Connection to a list of PreparedBuildTest. */
+export type PreparedBuildTestConnection = {
+  __typename?: 'PreparedBuildTestConnection';
+  /** List of edges for PreparedBuildTestConnection. */
+  edges: Array<PreparedBuildTestEdge>;
+  /** List of nodes for PreparedBuildTestConnection. */
+  nodes: Array<Test>;
+  /** Pagination details for PreparedBuildTestConnection. */
+  pageInfo: PageInfo;
+  /** Total number of items for PreparedBuildTestConnection. */
+  totalCount: Scalars['Int']['output'];
+};
+
+/** The edge type for PreparedBuildTest. */
+export type PreparedBuildTestEdge = {
+  __typename?: 'PreparedBuildTestEdge';
+  /** Cursor to this item. */
+  cursor: Scalars['String']['output'];
+  /** The item at the edge. */
+  node: Test;
+};
+
+export type PreparedBuildTestsOrder = {
+  direction: OrderDirection;
+  field: PreparedBuildTestsOrderField;
+};
+
+export enum PreparedBuildTestsOrderField {
+  CreatedAt = 'createdAt',
+  ResultOrder = 'resultOrder',
+  StoryOrder = 'storyOrder',
+  UpdatedAt = 'updatedAt'
+}
+
 export type Project = Node & Temporal & {
   __typename?: 'Project';
   /** List of branches for which builds exist in the project. */
@@ -459,7 +724,7 @@ export type PublicAccountInfo = {
   name: Scalars['String']['output'];
 };
 
-/** A build that has been published but not started testing yet. */
+/** A build that has been published but not yet prepared for testing. */
 export type PublishedBuild = Build & Node & Temporal & {
   __typename?: 'PublishedBuild';
   /** Git branch name, possibly prefixed with the owner name (in case of a forked repository). */
@@ -565,6 +830,8 @@ export type StartedBuild = Build & Node & Temporal & {
   isolatorUrl: Scalars['URL']['output'];
   /** Incremental build number. Infrastructure upgrade builds have the same number as the original build. */
   number: Scalars['Int']['output'];
+  /** When the build was prepared for testing on Chromatic. */
+  preparedAt: Scalars['DateTime']['output'];
   /** When the Storybook was published on Chromatic. */
   publishedAt: Scalars['DateTime']['output'];
   /** URL-safe Git repository identifier, consisting of the owner (organization or user) name and the repository name, separated by a slash (/). This is typically part of the Git repository URL. The value originates from the CLI runtime environment, not the linked Git provider / linked repository. */
@@ -836,158 +1103,6 @@ export enum TestStatus {
   Pending = 'PENDING'
 }
 
-/** A build that has completed testing. */
-export type TestedBuild = Build & Node & Temporal & {
-  __typename?: 'TestedBuild';
-  /** Git branch name, possibly prefixed with the owner name (in case of a forked repository). */
-  branch: Scalars['String']['output'];
-  /** Set of browsers against which the build was executed. */
-  browsers: Array<BrowserInfo>;
-  /** Git commit hash (unshortened). */
-  commit: Scalars['String']['output'];
-  /** Link to the commit details at the Git provider linked to the project. */
-  commitUrl?: Maybe<Scalars['String']['output']>;
-  /** When the commit was created in Git. */
-  committedAt: Scalars['DateTime']['output'];
-  /** When the build was completed in Chromatic. */
-  completedAt: Scalars['DateTime']['output'];
-  /** The number of components in the published Storybook, excluding docsOnly components. */
-  componentCount: Scalars['Int']['output'];
-  componentRepresentations?: Maybe<TestedBuildComponentRepresentationConnection>;
-  /** When the entity was first created in Chromatic. */
-  createdAt: Scalars['DateTime']['output'];
-  /** The number of docsOnly stories in the published Storybook */
-  docsCount: Scalars['Int']['output'];
-  /** GraphQL node identifier */
-  id: Scalars['ID']['output'];
-  /** Whether the build is limited to just representative stories due to insufficient snapshot quota. */
-  isLimited: Scalars['Boolean']['output'];
-  /** Whether the build is reviewable (i.e. not superseded by another build on the same branch). */
-  isReviewable: Scalars['Boolean']['output'];
-  /** Link to the published Storybook's canvas (iframe.html). */
-  isolatorUrl: Scalars['URL']['output'];
-  /** Incremental build number. Infrastructure upgrade builds have the same number as the original build. */
-  number: Scalars['Int']['output'];
-  /** When the Storybook was published on Chromatic. */
-  publishedAt: Scalars['DateTime']['output'];
-  /** Final (immutable) result of the build / capture process. Only available once the build has completed. */
-  result: BuildResult;
-  /** URL-safe Git repository identifier, consisting of the owner (organization or user) name and the repository name, separated by a slash (/). This is typically part of the Git repository URL. The value originates from the CLI runtime environment, not the linked Git provider / linked repository. */
-  slug?: Maybe<Scalars['String']['output']>;
-  /** The number of stories in the published Storybook, excluding docsOnly stories. */
-  specCount: Scalars['Int']['output'];
-  /** When the build was started in Chromatic. */
-  startedAt: Scalars['DateTime']['output'];
-  /** Current (mutable) status of the build, which changes as the build progresses or changes are reviewed. */
-  status: BuildStatus;
-  /** Link to the published Storybook. */
-  storybookUrl: Scalars['URL']['output'];
-  /** Count the number of tests in the build. All provided filter arguments must match (AND). */
-  testCount: Scalars['Int']['output'];
-  tests?: Maybe<TestedBuildTestConnection>;
-  /** When the entity was last updated or created in Chromatic. */
-  updatedAt: Scalars['DateTime']['output'];
-  /** Link to the build details on Chromatic. */
-  webUrl: Scalars['URL']['output'];
-};
-
-
-/** A build that has completed testing. */
-export type TestedBuildComponentRepresentationsArgs = {
-  after?: InputMaybe<Scalars['ID']['input']>;
-  before?: InputMaybe<Scalars['ID']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<TestedBuildComponentRepresentationsOrder>;
-};
-
-
-/** A build that has completed testing. */
-export type TestedBuildTestCountArgs = {
-  results?: InputMaybe<Array<TestResult>>;
-  reviewable?: InputMaybe<Scalars['Boolean']['input']>;
-  statuses?: InputMaybe<Array<TestStatus>>;
-};
-
-
-/** A build that has completed testing. */
-export type TestedBuildTestsArgs = {
-  after?: InputMaybe<Scalars['ID']['input']>;
-  before?: InputMaybe<Scalars['ID']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<TestedBuildTestsOrder>;
-  storyId?: InputMaybe<Scalars['String']['input']>;
-};
-
-/** Connection to a list of TestedBuildComponentRepresentation. */
-export type TestedBuildComponentRepresentationConnection = {
-  __typename?: 'TestedBuildComponentRepresentationConnection';
-  /** List of edges for TestedBuildComponentRepresentationConnection. */
-  edges: Array<TestedBuildComponentRepresentationEdge>;
-  /** List of nodes for TestedBuildComponentRepresentationConnection. */
-  nodes: Array<ComponentRepresentation>;
-  /** Pagination details for TestedBuildComponentRepresentationConnection. */
-  pageInfo: PageInfo;
-  /** Total number of items for TestedBuildComponentRepresentationConnection. */
-  totalCount: Scalars['Int']['output'];
-};
-
-/** The edge type for TestedBuildComponentRepresentation. */
-export type TestedBuildComponentRepresentationEdge = {
-  __typename?: 'TestedBuildComponentRepresentationEdge';
-  /** Cursor to this item. */
-  cursor: Scalars['String']['output'];
-  /** The item at the edge. */
-  node: ComponentRepresentation;
-};
-
-export type TestedBuildComponentRepresentationsOrder = {
-  direction: OrderDirection;
-  field: TestedBuildComponentRepresentationsOrderField;
-};
-
-export enum TestedBuildComponentRepresentationsOrderField {
-  CreatedAt = 'createdAt',
-  ResultOrder = 'resultOrder',
-  StoryOrder = 'storyOrder',
-  UpdatedAt = 'updatedAt'
-}
-
-/** Connection to a list of TestedBuildTest. */
-export type TestedBuildTestConnection = {
-  __typename?: 'TestedBuildTestConnection';
-  /** List of edges for TestedBuildTestConnection. */
-  edges: Array<TestedBuildTestEdge>;
-  /** List of nodes for TestedBuildTestConnection. */
-  nodes: Array<Test>;
-  /** Pagination details for TestedBuildTestConnection. */
-  pageInfo: PageInfo;
-  /** Total number of items for TestedBuildTestConnection. */
-  totalCount: Scalars['Int']['output'];
-};
-
-/** The edge type for TestedBuildTest. */
-export type TestedBuildTestEdge = {
-  __typename?: 'TestedBuildTestEdge';
-  /** Cursor to this item. */
-  cursor: Scalars['String']['output'];
-  /** The item at the edge. */
-  node: Test;
-};
-
-export type TestedBuildTestsOrder = {
-  direction: OrderDirection;
-  field: TestedBuildTestsOrderField;
-};
-
-export enum TestedBuildTestsOrderField {
-  CreatedAt = 'createdAt',
-  ResultOrder = 'resultOrder',
-  StoryOrder = 'storyOrder',
-  UpdatedAt = 'updatedAt'
-}
-
 export type User = Node & Temporal & {
   __typename?: 'User';
   avatarUrl?: Maybe<Scalars['URL']['output']>;
@@ -1018,7 +1133,7 @@ export type ProjectQueryQueryVariables = Exact<{
 }>;
 
 
-export type ProjectQueryQuery = { __typename?: 'Query', project?: { __typename?: 'Project', id: string, name: string, webUrl: any, lastBuild?: { __typename?: 'AnnouncedBuild', branch: string, number: number } | { __typename?: 'PublishedBuild', branch: string, number: number } | { __typename?: 'StartedBuild', branch: string, number: number } | { __typename?: 'TestedBuild', branch: string, number: number } | null } | null };
+export type ProjectQueryQuery = { __typename?: 'Query', project?: { __typename?: 'Project', id: string, name: string, webUrl: any, lastBuild?: { __typename?: 'AnnouncedBuild', branch: string, number: number } | { __typename?: 'CompletedBuild', branch: string, number: number } | { __typename?: 'PreparedBuild', branch: string, number: number } | { __typename?: 'PublishedBuild', branch: string, number: number } | { __typename?: 'StartedBuild', branch: string, number: number } | null } | null };
 
 export type BuildQueryVariables = Exact<{
   hasBuildId: Scalars['Boolean']['input'];
@@ -1032,29 +1147,42 @@ export type BuildQuery = { __typename?: 'Query', build?: (
     { __typename?: 'AnnouncedBuild' }
     & { ' $fragmentRefs'?: { 'BuildFields_AnnouncedBuild_Fragment': BuildFields_AnnouncedBuild_Fragment } }
   ) | (
+    { __typename?: 'CompletedBuild' }
+    & { ' $fragmentRefs'?: { 'BuildFields_CompletedBuild_Fragment': BuildFields_CompletedBuild_Fragment } }
+  ) | (
+    { __typename?: 'PreparedBuild' }
+    & { ' $fragmentRefs'?: { 'BuildFields_PreparedBuild_Fragment': BuildFields_PreparedBuild_Fragment } }
+  ) | (
     { __typename?: 'PublishedBuild' }
     & { ' $fragmentRefs'?: { 'BuildFields_PublishedBuild_Fragment': BuildFields_PublishedBuild_Fragment } }
   ) | (
     { __typename?: 'StartedBuild' }
     & { ' $fragmentRefs'?: { 'BuildFields_StartedBuild_Fragment': BuildFields_StartedBuild_Fragment } }
-  ) | (
-    { __typename?: 'TestedBuild' }
-    & { ' $fragmentRefs'?: { 'BuildFields_TestedBuild_Fragment': BuildFields_TestedBuild_Fragment } }
   ) | null, project?: { __typename?: 'Project', lastBuild?: (
       { __typename?: 'AnnouncedBuild' }
       & { ' $fragmentRefs'?: { 'BuildFields_AnnouncedBuild_Fragment': BuildFields_AnnouncedBuild_Fragment } }
+    ) | (
+      { __typename?: 'CompletedBuild' }
+      & { ' $fragmentRefs'?: { 'BuildFields_CompletedBuild_Fragment': BuildFields_CompletedBuild_Fragment } }
+    ) | (
+      { __typename?: 'PreparedBuild' }
+      & { ' $fragmentRefs'?: { 'BuildFields_PreparedBuild_Fragment': BuildFields_PreparedBuild_Fragment } }
     ) | (
       { __typename?: 'PublishedBuild' }
       & { ' $fragmentRefs'?: { 'BuildFields_PublishedBuild_Fragment': BuildFields_PublishedBuild_Fragment } }
     ) | (
       { __typename?: 'StartedBuild' }
       & { ' $fragmentRefs'?: { 'BuildFields_StartedBuild_Fragment': BuildFields_StartedBuild_Fragment } }
-    ) | (
-      { __typename?: 'TestedBuild' }
-      & { ' $fragmentRefs'?: { 'BuildFields_TestedBuild_Fragment': BuildFields_TestedBuild_Fragment } }
     ) | null } | null };
 
 type BuildFields_AnnouncedBuild_Fragment = { __typename: 'AnnouncedBuild', id: string, number: number, branch: string, commit: string, status: BuildStatus, browsers: Array<{ __typename?: 'BrowserInfo', id: string, key: Browser, name: string }> } & { ' $fragmentName'?: 'BuildFields_AnnouncedBuild_Fragment' };
+
+type BuildFields_CompletedBuild_Fragment = { __typename: 'CompletedBuild', result: BuildResult, startedAt: any, id: string, number: number, branch: string, commit: string, status: BuildStatus, changeCount: number, tests?: { __typename?: 'CompletedBuildTestConnection', nodes: Array<(
+      { __typename?: 'Test' }
+      & { ' $fragmentRefs'?: { 'TestFieldsFragment': TestFieldsFragment } }
+    )> } | null, browsers: Array<{ __typename?: 'BrowserInfo', id: string, key: Browser, name: string }> } & { ' $fragmentName'?: 'BuildFields_CompletedBuild_Fragment' };
+
+type BuildFields_PreparedBuild_Fragment = { __typename: 'PreparedBuild', id: string, number: number, branch: string, commit: string, status: BuildStatus, browsers: Array<{ __typename?: 'BrowserInfo', id: string, key: Browser, name: string }> } & { ' $fragmentName'?: 'BuildFields_PreparedBuild_Fragment' };
 
 type BuildFields_PublishedBuild_Fragment = { __typename: 'PublishedBuild', id: string, number: number, branch: string, commit: string, status: BuildStatus, browsers: Array<{ __typename?: 'BrowserInfo', id: string, key: Browser, name: string }> } & { ' $fragmentName'?: 'BuildFields_PublishedBuild_Fragment' };
 
@@ -1063,16 +1191,11 @@ type BuildFields_StartedBuild_Fragment = { __typename: 'StartedBuild', startedAt
       & { ' $fragmentRefs'?: { 'TestFieldsFragment': TestFieldsFragment } }
     )> } | null, browsers: Array<{ __typename?: 'BrowserInfo', id: string, key: Browser, name: string }> } & { ' $fragmentName'?: 'BuildFields_StartedBuild_Fragment' };
 
-type BuildFields_TestedBuild_Fragment = { __typename: 'TestedBuild', result: BuildResult, startedAt: any, id: string, number: number, branch: string, commit: string, status: BuildStatus, changeCount: number, tests?: { __typename?: 'TestedBuildTestConnection', nodes: Array<(
-      { __typename?: 'Test' }
-      & { ' $fragmentRefs'?: { 'TestFieldsFragment': TestFieldsFragment } }
-    )> } | null, browsers: Array<{ __typename?: 'BrowserInfo', id: string, key: Browser, name: string }> } & { ' $fragmentName'?: 'BuildFields_TestedBuild_Fragment' };
+export type BuildFieldsFragment = BuildFields_AnnouncedBuild_Fragment | BuildFields_CompletedBuild_Fragment | BuildFields_PreparedBuild_Fragment | BuildFields_PublishedBuild_Fragment | BuildFields_StartedBuild_Fragment;
 
-export type BuildFieldsFragment = BuildFields_AnnouncedBuild_Fragment | BuildFields_PublishedBuild_Fragment | BuildFields_StartedBuild_Fragment | BuildFields_TestedBuild_Fragment;
-
-export type TestFieldsFragment = { __typename?: 'Test', id: string, status: TestStatus, result?: TestResult | null, comparisons: Array<{ __typename?: 'TestComparison', id: string, result?: ComparisonResult | null, browser: { __typename?: 'BrowserInfo', id: string, key: Browser, name: string, version: string }, captureDiff?: { __typename?: 'CaptureDiff', diffImage?: { __typename?: 'CaptureImage', imageUrl: any } | null } | null, headCapture?: { __typename?: 'Capture', captureImage?: { __typename?: 'CaptureImage', imageUrl: any } | null } | null, viewport: { __typename?: 'ViewportInfo', id: string, name: string, width: number, isDefault: boolean } }>, parameters: { __typename?: 'TestParameters', viewport: { __typename?: 'ViewportInfo', id: string, name: string, width: number, isDefault: boolean } } } & { ' $fragmentName'?: 'TestFieldsFragment' };
+export type TestFieldsFragment = { __typename?: 'Test', id: string, status: TestStatus, result?: TestResult | null, comparisons: Array<{ __typename?: 'TestComparison', id: string, result?: ComparisonResult | null, browser: { __typename?: 'BrowserInfo', id: string, key: Browser, name: string, version: string }, captureDiff?: { __typename?: 'CaptureDiff', diffImage?: { __typename?: 'CaptureOverlayImage', imageUrl: any } | null } | null, headCapture?: { __typename?: 'Capture', captureImage?: { __typename?: 'CaptureImage', imageUrl: any } | null } | null, viewport: { __typename?: 'ViewportInfo', id: string, name: string, width: number, isDefault: boolean } }>, parameters: { __typename?: 'TestParameters', viewport: { __typename?: 'ViewportInfo', id: string, name: string, width: number, isDefault: boolean } } } & { ' $fragmentName'?: 'TestFieldsFragment' };
 
 export const TestFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TestFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Test"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"result"}},{"kind":"Field","name":{"kind":"Name","value":"comparisons"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"result"}},{"kind":"Field","name":{"kind":"Name","value":"browser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"version"}}]}},{"kind":"Field","name":{"kind":"Name","value":"captureDiff"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"diffImage"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"headCapture"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"captureImage"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"viewport"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"isDefault"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"parameters"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"viewport"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"isDefault"}}]}}]}}]}}]} as unknown as DocumentNode<TestFieldsFragment, unknown>;
-export const BuildFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"BuildFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Build"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"number"}},{"kind":"Field","name":{"kind":"Name","value":"branch"}},{"kind":"Field","name":{"kind":"Name","value":"commit"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"browsers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"StartedBuild"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"changeCount"},"name":{"kind":"Name","value":"testCount"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"results"},"value":{"kind":"ListValue","values":[{"kind":"EnumValue","value":"ADDED"},{"kind":"EnumValue","value":"CHANGED"},{"kind":"EnumValue","value":"FIXED"}]}}]},{"kind":"Field","name":{"kind":"Name","value":"startedAt"}},{"kind":"Field","name":{"kind":"Name","value":"tests"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TestFields"}}]}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TestedBuild"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"result"}},{"kind":"Field","alias":{"kind":"Name","value":"changeCount"},"name":{"kind":"Name","value":"testCount"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"results"},"value":{"kind":"ListValue","values":[{"kind":"EnumValue","value":"ADDED"},{"kind":"EnumValue","value":"CHANGED"},{"kind":"EnumValue","value":"FIXED"}]}}]},{"kind":"Field","name":{"kind":"Name","value":"startedAt"}},{"kind":"Field","name":{"kind":"Name","value":"tests"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TestFields"}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TestFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Test"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"result"}},{"kind":"Field","name":{"kind":"Name","value":"comparisons"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"result"}},{"kind":"Field","name":{"kind":"Name","value":"browser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"version"}}]}},{"kind":"Field","name":{"kind":"Name","value":"captureDiff"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"diffImage"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"headCapture"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"captureImage"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"viewport"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"isDefault"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"parameters"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"viewport"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"isDefault"}}]}}]}}]}}]} as unknown as DocumentNode<BuildFieldsFragment, unknown>;
+export const BuildFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"BuildFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Build"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"number"}},{"kind":"Field","name":{"kind":"Name","value":"branch"}},{"kind":"Field","name":{"kind":"Name","value":"commit"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"browsers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"StartedBuild"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"changeCount"},"name":{"kind":"Name","value":"testCount"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"results"},"value":{"kind":"ListValue","values":[{"kind":"EnumValue","value":"ADDED"},{"kind":"EnumValue","value":"CHANGED"},{"kind":"EnumValue","value":"FIXED"}]}}]},{"kind":"Field","name":{"kind":"Name","value":"startedAt"}},{"kind":"Field","name":{"kind":"Name","value":"tests"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TestFields"}}]}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"CompletedBuild"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"result"}},{"kind":"Field","alias":{"kind":"Name","value":"changeCount"},"name":{"kind":"Name","value":"testCount"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"results"},"value":{"kind":"ListValue","values":[{"kind":"EnumValue","value":"ADDED"},{"kind":"EnumValue","value":"CHANGED"},{"kind":"EnumValue","value":"FIXED"}]}}]},{"kind":"Field","name":{"kind":"Name","value":"startedAt"}},{"kind":"Field","name":{"kind":"Name","value":"tests"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TestFields"}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TestFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Test"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"result"}},{"kind":"Field","name":{"kind":"Name","value":"comparisons"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"result"}},{"kind":"Field","name":{"kind":"Name","value":"browser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"version"}}]}},{"kind":"Field","name":{"kind":"Name","value":"captureDiff"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"diffImage"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"headCapture"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"captureImage"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"viewport"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"isDefault"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"parameters"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"viewport"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"isDefault"}}]}}]}}]}}]} as unknown as DocumentNode<BuildFieldsFragment, unknown>;
 export const ProjectQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ProjectQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"project"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"webUrl"}},{"kind":"Field","name":{"kind":"Name","value":"lastBuild"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"branch"}},{"kind":"Field","name":{"kind":"Name","value":"number"}}]}}]}}]}}]} as unknown as DocumentNode<ProjectQueryQuery, ProjectQueryQueryVariables>;
-export const BuildDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Build"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"hasBuildId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"buildId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"branch"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"build"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"buildId"}}}],"directives":[{"kind":"Directive","name":{"kind":"Name","value":"include"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"if"},"value":{"kind":"Variable","name":{"kind":"Name","value":"hasBuildId"}}}]}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"BuildFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"project"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}}}],"directives":[{"kind":"Directive","name":{"kind":"Name","value":"skip"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"if"},"value":{"kind":"Variable","name":{"kind":"Name","value":"hasBuildId"}}}]}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"lastBuild"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"branches"},"value":{"kind":"ListValue","values":[{"kind":"Variable","name":{"kind":"Name","value":"branch"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"BuildFields"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TestFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Test"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"result"}},{"kind":"Field","name":{"kind":"Name","value":"comparisons"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"result"}},{"kind":"Field","name":{"kind":"Name","value":"browser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"version"}}]}},{"kind":"Field","name":{"kind":"Name","value":"captureDiff"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"diffImage"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"headCapture"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"captureImage"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"viewport"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"isDefault"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"parameters"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"viewport"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"isDefault"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"BuildFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Build"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"number"}},{"kind":"Field","name":{"kind":"Name","value":"branch"}},{"kind":"Field","name":{"kind":"Name","value":"commit"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"browsers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"StartedBuild"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"changeCount"},"name":{"kind":"Name","value":"testCount"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"results"},"value":{"kind":"ListValue","values":[{"kind":"EnumValue","value":"ADDED"},{"kind":"EnumValue","value":"CHANGED"},{"kind":"EnumValue","value":"FIXED"}]}}]},{"kind":"Field","name":{"kind":"Name","value":"startedAt"}},{"kind":"Field","name":{"kind":"Name","value":"tests"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TestFields"}}]}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TestedBuild"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"result"}},{"kind":"Field","alias":{"kind":"Name","value":"changeCount"},"name":{"kind":"Name","value":"testCount"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"results"},"value":{"kind":"ListValue","values":[{"kind":"EnumValue","value":"ADDED"},{"kind":"EnumValue","value":"CHANGED"},{"kind":"EnumValue","value":"FIXED"}]}}]},{"kind":"Field","name":{"kind":"Name","value":"startedAt"}},{"kind":"Field","name":{"kind":"Name","value":"tests"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TestFields"}}]}}]}}]}}]}}]} as unknown as DocumentNode<BuildQuery, BuildQueryVariables>;
+export const BuildDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Build"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"hasBuildId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"buildId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"branch"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"build"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"buildId"}}}],"directives":[{"kind":"Directive","name":{"kind":"Name","value":"include"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"if"},"value":{"kind":"Variable","name":{"kind":"Name","value":"hasBuildId"}}}]}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"BuildFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"project"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}}}],"directives":[{"kind":"Directive","name":{"kind":"Name","value":"skip"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"if"},"value":{"kind":"Variable","name":{"kind":"Name","value":"hasBuildId"}}}]}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"lastBuild"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"branches"},"value":{"kind":"ListValue","values":[{"kind":"Variable","name":{"kind":"Name","value":"branch"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"BuildFields"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TestFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Test"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"result"}},{"kind":"Field","name":{"kind":"Name","value":"comparisons"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"result"}},{"kind":"Field","name":{"kind":"Name","value":"browser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"version"}}]}},{"kind":"Field","name":{"kind":"Name","value":"captureDiff"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"diffImage"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"headCapture"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"captureImage"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"viewport"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"isDefault"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"parameters"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"viewport"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"isDefault"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"BuildFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Build"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"number"}},{"kind":"Field","name":{"kind":"Name","value":"branch"}},{"kind":"Field","name":{"kind":"Name","value":"commit"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"browsers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"StartedBuild"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"changeCount"},"name":{"kind":"Name","value":"testCount"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"results"},"value":{"kind":"ListValue","values":[{"kind":"EnumValue","value":"ADDED"},{"kind":"EnumValue","value":"CHANGED"},{"kind":"EnumValue","value":"FIXED"}]}}]},{"kind":"Field","name":{"kind":"Name","value":"startedAt"}},{"kind":"Field","name":{"kind":"Name","value":"tests"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TestFields"}}]}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"CompletedBuild"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"result"}},{"kind":"Field","alias":{"kind":"Name","value":"changeCount"},"name":{"kind":"Name","value":"testCount"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"results"},"value":{"kind":"ListValue","values":[{"kind":"EnumValue","value":"ADDED"},{"kind":"EnumValue","value":"CHANGED"},{"kind":"EnumValue","value":"FIXED"}]}}]},{"kind":"Field","name":{"kind":"Name","value":"startedAt"}},{"kind":"Field","name":{"kind":"Name","value":"tests"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TestFields"}}]}}]}}]}}]}}]} as unknown as DocumentNode<BuildQuery, BuildQueryVariables>;
