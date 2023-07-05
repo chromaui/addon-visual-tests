@@ -92,6 +92,7 @@ export const VisualTests = ({ setAccessToken }: VisualTestsProps) => {
   const [settingsVisible, setSettingsVisible] = useState(false);
   const [warningsVisible, setWarningsVisible] = useState(false);
 
+  // TODO: Remove the project input section of this, as project should always be defined.
   if (fetching || error || !data?.project) {
     return (
       <Sections>
@@ -153,7 +154,25 @@ export const VisualTests = ({ setAccessToken }: VisualTestsProps) => {
     );
   }
 
-  const { branch, browsers, startedAt, tests } = data.project.lastBuild;
+  // If there is no lastBuild, show a prompt to run a build. This is a placeholder for now.
+  if (!data.project.lastBuild) {
+    return (
+      <Sections>
+        <Section grow>
+          <Row>
+            <Col>
+              <Text>
+                Your project {data.project.name} does not have any builds yet. Run a build a to begin.
+              </Text>
+            </Col>
+          </Row>
+        </Section>
+      </Sections>
+    );
+  }
+
+  // If there is a project selected and a build, show the visual tests.
+  const { branch, browsers, startedAt, tests } = data?.project?.lastBuild;
   const startedAgo = formatDistance(new Date(startedAt), new Date(), { addSuffix: true });
 
   const { changeCount, brokenCount, resultsByBrowser, resultsByViewport, viewportInfoById } = (
