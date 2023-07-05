@@ -1,13 +1,13 @@
 import { useChannel, useParameter } from "@storybook/manager-api";
 import React from "react";
 
-import { PROJECT_ID_UPDATED, PROJECT_PARAM_KEY, UPDATE_PROJECT_ID } from "../constants";
+import { PROJECT_PARAM_KEY, PROJECT_UPDATED, UPDATE_PROJECT } from "../constants";
 
 let inMemoryProjectId: string | null = null;
 
 export const useProjectId = (): [
   projectId: string,
-  updateProjectId: (projectId: string) => void,
+  updateProject: (projectId: string, projectToken?: string) => void,
   projectIdChanged: boolean,
   clearProjectIdChanged: () => void
 ] => {
@@ -22,15 +22,14 @@ export const useProjectId = (): [
 
   // TODO: This is where we need to update the main.ts config with the projectId
   const emit = useChannel({
-    [PROJECT_ID_UPDATED]: (selectedProjectId: string) => {
-      // eslint-disable-next-line no-console
+    [PROJECT_UPDATED]: (selectedProjectId: string, projectToken) => {
       console.log("projectId selected from emit", selectedProjectId);
       setProjectId(selectedProjectId);
     },
   });
 
-  const updateProjectId = (id: string) => {
-    emit(UPDATE_PROJECT_ID, id);
+  const updateProject = (id: string, projectToken: string) => {
+    emit(UPDATE_PROJECT, id, projectToken);
     inMemoryProjectId = id;
     setProjectId(inMemoryProjectId);
   };
@@ -44,5 +43,5 @@ export const useProjectId = (): [
     projectId,
     projectIdChanged,
   });
-  return [projectId, updateProjectId, projectIdChanged, () => setClearedProjectIdChanged(true)];
+  return [projectId, updateProject, projectIdChanged, () => setClearedProjectIdChanged(true)];
 };

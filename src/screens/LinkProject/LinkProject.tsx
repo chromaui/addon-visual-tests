@@ -23,6 +23,7 @@ const SelectProjectsQuery = graphql(/* GraphQL */ `
         id
         name
         webUrl
+        code
         lastBuild {
           branch
           number
@@ -46,12 +47,12 @@ const ProjectQuery = gql`
   }
 `;
 
-export const LinkProject = ({ onUpdateProjectId }: { onUpdateProjectId: (v: string) => void }) => {
+export const LinkProject = ({ onUpdateProject }: { onUpdateProject: (projectId: string, projectToken: string) => void }) => {
   const onSelectProjectId = React.useCallback(
-    (selectedProjectId: string) => {
-      onUpdateProjectId(selectedProjectId);
+    async (selectedProjectId: string, projectToken: string) => {
+      await onUpdateProject(selectedProjectId, projectToken);
     },
-    [onUpdateProjectId]
+    [onUpdateProject]
   );
 
   return <SelectProject onSelectProjectId={onSelectProjectId} />;
@@ -104,8 +105,11 @@ const RepositoryOwnerAvatar = styled(Avatar)`
   margin-right: 10px;
 `;
 
-
-function SelectProject({ onSelectProjectId }: { onSelectProjectId: (id: string) => void }) {
+function SelectProject({
+  onSelectProjectId,
+}: {
+  onSelectProjectId: (projectId: string, projectToken: string) => Promise<void>;
+}) {
   const [selectedAccount, setSelectedAccount] =
     useState<SelectProjectsQueryQuery["accounts"][number]>(null);
   const [{ data, fetching, error }] = useQuery<SelectProjectsQueryQuery>({
@@ -121,10 +125,10 @@ function SelectProject({ onSelectProjectId }: { onSelectProjectId: (id: string) 
   const [isSelectingRepository, setSelectingRepository] = useState(false);
 
   const handleSelectProject = React.useCallback(
-    (projectId: SelectProjectsQueryQuery["accounts"][number]["projects"][number]["id"]) => {
+    (project: SelectProjectsQueryQuery["accounts"][number]["projects"][number]) => {
       setSelectingRepository(true);
-      onSelectProjectId(projectId);
-      console.log("set selected project", projectId)
+      const { id: projectId, code: projectToken } = project;
+      onSelectProjectId(projectId, projectToken);
       const timer = setTimeout(() => {
         console.log("resetting timer");
         setSelectingRepository(false);
@@ -138,7 +142,7 @@ function SelectProject({ onSelectProjectId }: { onSelectProjectId: (id: string) 
     <Container>
       {fetching && <p>Loading...</p>}
       {error && <p>{error.message}</p>}
-      {!fetching && data.accounts && (
+      {!fetching && data?.accounts && (
         <>
           <Heading>Select a Project</Heading>
           <Text>Baselines will be used with this project.</Text>
@@ -160,14 +164,13 @@ function SelectProject({ onSelectProjectId }: { onSelectProjectId: (id: string) 
             <Right>
               <ListHeading>Projects</ListHeading>
               <List>
-                {/* {linkPrivateLink} */}
                 {selectedAccount?.projects?.map((project) => (
                   <ListItem
                     appearance="secondary"
                     key={project.id}
                     title={project.name}
                     right={<Icon icon="add" aria-label={project.name} />}
-                    onClick={() => handleSelectProject(project.id)}
+                    onClick={() => handleSelectProject(project)}
                   />
                 ))}
               </List>

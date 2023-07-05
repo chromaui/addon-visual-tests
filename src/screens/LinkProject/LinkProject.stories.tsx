@@ -12,7 +12,7 @@ const meta = {
   component: LinkProject,
   decorators: [storyWrapper],
   args: {
-    onUpdateProjectId: action("setProjectId"),
+    onUpdateProject: action("updateProject"),
   },
   parameters: {
     msw: {
@@ -29,11 +29,13 @@ const meta = {
                       id: "123",
                       name: "optics",
                       webUrl: "https://www.chromatic.com/builds?appId=123",
+                      code: "randomcode",
                     },
                     {
                       id: "456",
                       name: "design-system",
                       webUrl: "https://www.chromatic.com/builds?appId=456",
+                      code: "randomcode",
                     },
                   ],
                 },
@@ -45,6 +47,7 @@ const meta = {
                       id: "789",
                       name: "acme",
                       webUrl: "https://www.chromatic.com/builds?appId=789",
+                      code: "randomcode",
                     },
                   ],
                 },

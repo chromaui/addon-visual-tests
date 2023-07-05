@@ -13,7 +13,7 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
-    "\n  query SelectProjectsQuery {\n    accounts {\n      id\n      name\n      avatarUrl\n      projects {\n        id\n        name\n        webUrl\n        lastBuild {\n          branch\n          number\n        }\n      }\n    }\n  }\n": types.SelectProjectsQueryDocument,
+    "\n  query SelectProjectsQuery {\n    accounts {\n      id\n      name\n      avatarUrl\n      projects {\n        id\n        name\n        webUrl\n        code\n        lastBuild {\n          branch\n          number\n        }\n      }\n    }\n  }\n": types.SelectProjectsQueryDocument,
     "\n  query ProjectQuery($projectId: ID!) {\n    project(id: $projectId) {\n      id\n      name\n      webUrl\n      lastBuild {\n        branch\n        number\n      }\n    }\n  }\n": types.ProjectQueryDocument,
     "\n  query LastBuild($projectId: ID!, $branch: String!, $storyId: String!) {\n    project(id: $projectId) {\n      id\n      name\n      webUrl\n      lastBuild(branches: [$branch]) {\n        id\n        number\n        branch\n        commit\n        status\n        browsers {\n          id\n          key\n          name\n        }\n        ... on TestedBuild {\n          changeCount: testCount(results: [ADDED, CHANGED, FIXED])\n          startedAt\n          tests(storyId: $storyId) {\n            nodes {\n              id\n              result\n              status\n              comparisons {\n                result\n                browser {\n                  id\n                }\n                viewport {\n                  id\n                }\n              }\n              parameters {\n                viewport {\n                  id\n                  name\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n": types.LastBuildDocument,
 };
@@ -35,7 +35,7 @@ export function graphql(source: string): unknown;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query SelectProjectsQuery {\n    accounts {\n      id\n      name\n      avatarUrl\n      projects {\n        id\n        name\n        webUrl\n        lastBuild {\n          branch\n          number\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query SelectProjectsQuery {\n    accounts {\n      id\n      name\n      avatarUrl\n      projects {\n        id\n        name\n        webUrl\n        lastBuild {\n          branch\n          number\n        }\n      }\n    }\n  }\n"];
+export function graphql(source: "\n  query SelectProjectsQuery {\n    accounts {\n      id\n      name\n      avatarUrl\n      projects {\n        id\n        name\n        webUrl\n        code\n        lastBuild {\n          branch\n          number\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query SelectProjectsQuery {\n    accounts {\n      id\n      name\n      avatarUrl\n      projects {\n        id\n        name\n        webUrl\n        code\n        lastBuild {\n          branch\n          number\n        }\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
