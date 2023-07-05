@@ -1,4 +1,4 @@
-import { Header, Icon, ListItem } from "@storybook/design-system";
+import { Avatar, Icon, ListItem } from "@storybook/design-system";
 import { styled } from "@storybook/theming";
 import { set } from "date-fns";
 import React, { useMemo, useState } from "react";
@@ -18,6 +18,7 @@ const SelectProjectsQuery = graphql(/* GraphQL */ `
     accounts {
       id
       name
+      avatarUrl
       projects {
         id
         name
@@ -57,26 +58,52 @@ export const LinkProject = ({ onUpdateProjectId }: { onUpdateProjectId: (v: stri
 };
 
 const ListHeading = styled.div`
-  width: 195px;
-  background-color: ${({ theme }) => theme.background.app};
+  font-size: ${({ theme }) => theme.typography.size.s1}px;
+  font-weight: ${({ theme }) => theme.typography.weight.bold};
+  color: ${({ theme }) => theme.color.dark};
+  background-color: inherit;
   padding: 9px 15px;
-
-  & nth-child(1) {
-    background-color: ${({ theme }) => theme.color.lighter};
-  }
+  border-bottom: 1px solid ${({ theme }) => theme.color.mediumlight};
 `;
 
-const LeftList = styled.div`
-  max-height: 300px;
-  overflow-y: auto;
-  background-color: FFFFFF;
+const ListHeadingText = styled.h1`
+  font-size: ${({ theme }) => theme.typography.size.l2} px;
+  font-weight: ${({ theme }) => theme.typography.weight.bold};
+  color: ${({ theme }) => theme.color.mediumdark};
+  background-color: inherit;
+  padding: 9px 15px;
 `;
 
-const RightList = styled.div`
-  max-height: 300px;
-  overflow-y: auto;
-  background-color: F7FAFC;
+const Left = styled.div`
+  flex: 1;
+  background-color: white;
 `;
+const Right = styled.div`
+  flex: 1;
+  background-color: ${({ theme }) => theme.color.lighter};
+`;
+
+const ProjectPicker = styled.div`
+  background: ${({ theme }) => theme.color.lightest};
+  border-radius: 5px;
+  border: 1px solid ${({ theme }) => theme.color.mediumlight};
+  height: 260px;
+  width: 420px;
+  overflow: hidden;
+  text-align: left;
+  position: relative;
+  display: flex;
+`;
+
+const List = styled.div({
+  height: "100%",
+  overflowY: "auto",
+});
+
+const RepositoryOwnerAvatar = styled(Avatar)`
+  margin-right: 10px;
+`;
+
 
 function SelectProject({ onSelectProjectId }: { onSelectProjectId: (id: string) => void }) {
   const [selectedAccount, setSelectedAccount] =
@@ -91,37 +118,48 @@ function SelectProject({ onSelectProjectId }: { onSelectProjectId: (id: string) 
     [setSelectedAccount]
   );
 
+  const [isSelectingRepository, setSelectingRepository] = useState(false);
+
   return (
     <Container>
       {fetching && <p>Loading...</p>}
       {error && <p>{error.message}</p>}
       {!fetching && data.accounts && (
-        <Row>
-          <div>
-            <ListHeading>Accounts</ListHeading>
-            <LeftList>
-              {data.accounts?.map((account) => (
-                <ListItem
-                  key={account.id}
-                  title={account.name}
-                  onClick={() => onSelectAccount(account)}
-                />
-              ))}
-            </LeftList>
-          </div>
-          <div>
-            <ListHeading>Projects</ListHeading>
-            <RightList>
-              {selectedAccount?.projects?.map((project) => (
-                <ListItem
-                  key={project.id}
-                  title={project.name}
-                  onClick={() => onSelectProjectId(project.id)}
-                />
-              ))}
-            </RightList>
-          </div>
-        </Row>
+        <>
+          <Heading>Select a Project</Heading>
+          <Text>Baselines will be used with this project.</Text>
+          <ProjectPicker>
+            <Left>
+              <ListHeading>Accounts</ListHeading>
+              <List>
+                {data.accounts?.map((account) => (
+                  <ListItem
+                    key={account.id}
+                    title={account.name}
+                    left={<RepositoryOwnerAvatar src={account.avatarUrl} size="tiny" />}
+                    onClick={() => onSelectAccount(account)}
+                    active={selectedAccount?.id === account.id}
+                  />
+                ))}
+              </List>
+            </Left>
+            <Right>
+              <ListHeading>Projects</ListHeading>
+              <List>
+                {/* {linkPrivateLink} */}
+                {selectedAccount?.projects?.map((project) => (
+                  <ListItem
+                    appearance="secondary"
+                    key={project.id}
+                    title={project.name}
+                    right={<Icon icon="add" aria-label={project.name} />}
+                    onClick={() => onSelectProjectId(project.id)}
+                  />
+                ))}
+              </List>
+            </Right>
+          </ProjectPicker>
+        </>
       )}
     </Container>
   );
