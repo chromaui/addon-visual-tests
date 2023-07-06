@@ -127,13 +127,14 @@ export const BuildInfo = ({
             </Button>
           </Col>
         )}
-        {!isOutdated && changeCount > 0 && (
+        {/* Disabled for now until we implement the test screen */}
+        {/* {!isOutdated && changeCount > 0 && (
           <Col push>
             <Button small secondary={isPending} tertiary={!isPending}>
               {isPending ? "Verify changes" : "View changes"}
             </Button>
           </Col>
-        )}
+        )} */}
       </Row>
     </>
   );
