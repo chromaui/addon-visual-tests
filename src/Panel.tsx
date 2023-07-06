@@ -1,4 +1,4 @@
-import { useAddonState, useChannel } from "@storybook/manager-api";
+import { useAddonState, useChannel, useStorybookState } from "@storybook/manager-api";
 import React, { useCallback } from "react";
 
 import { ADDON_ID, PANEL_ID, START_BUILD } from "./constants";
@@ -14,6 +14,7 @@ interface PanelProps {
 export const Panel = ({ active }: PanelProps) => {
   const [accessToken, setAccessToken] = useAccessToken();
   const [state, setAddonState] = useAddonState<AddonState>(ADDON_ID, { isOutdated: true });
+  const { storyId } = useStorybookState();
 
   const setIsOutdated = useCallback(
     (value: boolean) => setAddonState({ ...state, isOutdated: value }),
@@ -49,6 +50,7 @@ export const Panel = ({ active }: PanelProps) => {
         setAccessToken={setAccessToken}
         setIsOutdated={setIsOutdated}
         setIsRunning={setIsRunning}
+        storyId={storyId}
       />
     </Provider>
   );

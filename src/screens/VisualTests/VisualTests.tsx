@@ -70,6 +70,7 @@ const QueryBuild = graphql(/* GraphQL */ `
     id
     status
     result
+    webUrl
     comparisons {
       id
       result
@@ -104,6 +105,9 @@ const QueryBuild = graphql(/* GraphQL */ `
         isDefault
       }
     }
+    story {
+      storyId
+    }
   }
 `);
 
@@ -115,6 +119,7 @@ interface VisualTestsProps {
   setAccessToken: (accessToken: string | null) => void;
   setIsOutdated: (isOutdated: boolean) => void;
   setIsRunning: (isRunning: boolean) => void;
+  storyId: string;
 }
 
 export const VisualTests = ({
@@ -125,6 +130,7 @@ export const VisualTests = ({
   setAccessToken,
   setIsOutdated,
   setIsRunning,
+  storyId,
 }: VisualTestsProps) => {
   const [{ data, fetching, error }, rerun] = useQuery<BuildQuery, BuildQueryVariables>({
     query: QueryBuild,
@@ -200,7 +206,8 @@ export const VisualTests = ({
     );
   }
 
-  const tests = ("tests" in build ? build.tests.nodes : []) as TestFieldsFragment[];
+  const allTests = ("tests" in build ? build.tests.nodes : []) as TestFieldsFragment[];
+  const tests = allTests.filter((test) => test.story?.storyId === storyId);
 
   const { changeCount, brokenCount, resultsByBrowser, resultsByViewport, viewportInfoById } =
     tests.reduce(

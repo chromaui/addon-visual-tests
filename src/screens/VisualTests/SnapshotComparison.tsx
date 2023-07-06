@@ -33,7 +33,9 @@ export const SnapshotComparison = ({
 }: SnapshotSectionProps) => {
   const [diffVisible, setDiffVisible] = useState(true);
 
-  const comparison = test?.comparisons[0];
+  const comparison =
+    test?.comparisons.find(({ result }) => result === ComparisonResult.Changed) ||
+    test?.comparisons[0];
 
   return (
     <>
@@ -90,7 +92,7 @@ export const SnapshotComparison = ({
 
       {isInProgress && <Loader />}
       {!isInProgress && comparison && (
-        <SnapshotImage>
+        <SnapshotImage as="a" href={test.webUrl} target="_blank">
           {comparison.headCapture?.captureImage && (
             <img src={comparison.headCapture.captureImage?.imageUrl} alt="" />
           )}
@@ -109,6 +111,7 @@ export const SnapshotComparison = ({
               </p>
             </div>
           )}
+          <Icons icon="sharealt" />
         </SnapshotImage>
       )}
     </>

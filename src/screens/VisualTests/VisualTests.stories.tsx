@@ -4,7 +4,7 @@ import { graphql } from "msw";
 
 import type { BuildQuery, TestFieldsFragment } from "../../gql/graphql";
 import { Browser, BuildStatus, ComparisonResult, TestResult, TestStatus } from "../../gql/graphql";
-import { AnnouncedBuild, PublishedBuild, StartedBuild, CompletedBuild } from "../../types";
+import { AnnouncedBuild, CompletedBuild, PublishedBuild, StartedBuild } from "../../types";
 import { storyWrapper } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
@@ -23,66 +23,115 @@ const viewport = (width: number) => ({
   isDefault: width === 1200,
 });
 
+const headCapture = {
+  captureImage: {
+    imageUrl: "/public/B.png",
+  },
+};
+const captureDiff = {
+  diffImage: {
+    imageUrl: "/public/B-comparison.png",
+  },
+};
+
 const tests = [
   {
-    id: "1",
+    id: "11",
     status: TestStatus.Passed,
     result: TestResult.Equal,
+    webUrl: "https://www.chromatic.com/test?appId=123&id=11",
     comparisons: [
       {
-        id: "11",
+        id: "111",
         browser: browser(Browser.Chrome),
         viewport: viewport(1200),
         result: ComparisonResult.Equal,
+        headCapture,
       },
       {
-        id: "12",
+        id: "112",
         browser: browser(Browser.Safari),
         viewport: viewport(1200),
         result: ComparisonResult.Equal,
+        headCapture,
       },
     ],
     parameters: { viewport: viewport(1200) },
+    story: { storyId: "button--primary" },
   },
   {
-    id: "2",
+    id: "12",
     status: TestStatus.Pending,
     result: TestResult.Changed,
+    webUrl: "https://www.chromatic.com/test?appId=123&id=12",
     comparisons: [
       {
-        id: "21",
+        id: "121",
         browser: browser(Browser.Chrome),
         viewport: viewport(800),
         result: ComparisonResult.Equal,
+        headCapture,
       },
       {
-        id: "22",
+        id: "122",
         browser: browser(Browser.Safari),
         viewport: viewport(800),
         result: ComparisonResult.Changed,
+        headCapture,
+        captureDiff,
       },
     ],
     parameters: { viewport: viewport(800) },
+    story: { storyId: "button--primary" },
   },
   {
-    id: "3",
+    id: "13",
     status: TestStatus.Passed,
     result: TestResult.Equal,
+    webUrl: "https://www.chromatic.com/test?appId=123&id=13",
     comparisons: [
       {
-        id: "31",
+        id: "131",
         browser: browser(Browser.Chrome),
         viewport: viewport(400),
         result: ComparisonResult.Equal,
+        headCapture,
       },
       {
-        id: "32",
+        id: "132",
         browser: browser(Browser.Safari),
         viewport: viewport(400),
         result: ComparisonResult.Equal,
+        headCapture,
       },
     ],
     parameters: { viewport: viewport(400) },
+    story: { storyId: "button--primary" },
+  },
+
+  {
+    id: "21",
+    status: TestStatus.Passed,
+    result: TestResult.Equal,
+    webUrl: "https://www.chromatic.com/test?appId=123&id=21",
+    comparisons: [
+      {
+        id: "211",
+        browser: browser(Browser.Chrome),
+        viewport: viewport(1200),
+        result: ComparisonResult.Equal,
+        headCapture,
+      },
+      {
+        id: "212",
+        browser: browser(Browser.Safari),
+        viewport: viewport(1200),
+        result: ComparisonResult.Equal,
+        headCapture,
+      },
+    ],
+    parameters: { viewport: viewport(1200) },
+    story: { storyId: "button--secondary" },
   },
 ];
 
@@ -125,7 +174,7 @@ const inProgressBuild: StartedBuild = {
       ...test,
       status: TestStatus.InProgress,
       result: null,
-      comparisons: null,
+      comparisons: [],
     }))
   ),
 };
@@ -200,6 +249,9 @@ const meta = {
   component: VisualTests,
   decorators: [storyWrapper],
   parameters: withBuild(passedBuild),
+  args: {
+    storyId: "button--primary",
+  },
 } satisfies Meta<typeof VisualTests>;
 
 export default meta;
