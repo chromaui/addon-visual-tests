@@ -132,7 +132,12 @@
   "pnpm": {
     "overrides": {
       "react": "^18.0.0",
-      "react-dom": "^18.0.0"
+      "react-dom": "^18.0.0",
+      "@storybook/addon-docs": "^7.1.0-alpha.34",
+      "@storybook/addons": "^7.1.0-alpha.34",
+      "@storybook/api": "^7.1.0-alpha.34",
+      "@storybook/components": "^7.1.0-alpha.34",
+      "@storybook/theming": "^7.1.0-alpha.34"
     }
   },
   "storybook": {
