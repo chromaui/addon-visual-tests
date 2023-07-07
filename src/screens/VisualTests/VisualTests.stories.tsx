@@ -25,12 +25,12 @@ const viewport = (width: number) => ({
 
 const headCapture = {
   captureImage: {
-    imageUrl: "/public/B.png",
+    imageUrl: "/B.png",
   },
 };
 const captureDiff = {
   diffImage: {
-    imageUrl: "/public/B-comparison.png",
+    imageUrl: "/B-comparison.png",
   },
 };
 
