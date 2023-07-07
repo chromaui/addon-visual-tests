@@ -101,16 +101,17 @@ export const SnapshotComparison = ({
             comparison.captureDiff?.diffImage && (
               <img src={comparison.captureDiff.diffImage?.imageUrl} alt="" />
             )}
-          {comparison.result === ComparisonResult.CaptureError && (
-            <div>
-              <Icons icon="photo" />
-              <p>
-                A snapshot couldn’t be captured. This often occurs when a story has a code error.
-                Confirm that this story successfully renders in your local Storybook and run the
-                build again.
-              </p>
-            </div>
-          )}
+          {comparison.result === ComparisonResult.CaptureError &&
+            !comparison.headCapture?.captureImage && (
+              <div>
+                <Icons icon="photo" />
+                <p>
+                  A snapshot couldn’t be captured. This often occurs when a story has a code error.
+                  Confirm that this story successfully renders in your local Storybook and run the
+                  build again.
+                </p>
+              </div>
+            )}
           <Icons icon="sharealt" />
         </SnapshotImage>
       )}
