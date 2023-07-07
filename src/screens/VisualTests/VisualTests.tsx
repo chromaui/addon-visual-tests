@@ -149,7 +149,7 @@ export const VisualTests = ({
     }
   }, [isRunning, setIsOutdated, setIsRunning, data]);
 
-  const build = (data?.build || data?.project.lastBuild) as BuildFieldsFragment;
+  const build = (data?.build || data?.project?.lastBuild) as BuildFieldsFragment;
 
   useEffect(() => {
     let interval: any;
