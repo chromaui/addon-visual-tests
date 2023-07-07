@@ -1,16 +1,11 @@
 # Storybook Addon Visual Tests
+
 Visual Testing addon with Chromatic
 
 ### Development scripts
 
 - `pnpm run start` runs babel in watch mode and starts Storybook
 - `pnpm run build` build and package your addon code
-
-### Switch from TypeScript to JavaScript
-
-Don't want to use TypeScript? We offer a handy eject command: `pnpm run eject-ts`
-
-This will convert all code to JS. It is a destructive process, so we recommended running this before you start writing any code.
 
 ## What's included?
 

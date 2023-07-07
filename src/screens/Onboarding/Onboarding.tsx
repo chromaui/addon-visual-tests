@@ -1,60 +1,52 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { gql, useQuery } from "urql";
 
-import { useSignIn } from "../../utils/useSignIn";
-import { SetSubdomain } from "./SetSubdomain";
-import { SignIn } from "./SignIn";
-import { Verify } from "./Verify";
-import { Welcome } from "./Welcome";
+import { Container } from "../../components/Container";
+import { Heading } from "../../components/Heading";
+import { Stack } from "../../components/Stack";
+import { Text } from "../../components/Text";
 
-interface OnboardingProps {
-  setAccessToken: (token: string) => void;
-}
+const ProjectQuery = gql`
+  query ProjectQuery($projectId: ID!) {
+    project(id: $projectId) {
+      id
+      name
+      webUrl
+      lastBuild {
+        branch
+        number
+      }
+    }
+  }
+`;
 
-type OnboardingScreen = "welcome" | "signin" | "subdomain" | "verify";
-
-export const Onboarding = ({ setAccessToken }: OnboardingProps) => {
-  const [screen, setScreen] = useState<OnboardingScreen>("welcome");
-
-  const [isMounted, setMounted] = useState(true);
-  useEffect(() => () => setMounted(false), []);
-
-  const { onSignIn, userCode, verificationUrl } = useSignIn({
-    isMounted,
-    onSuccess: setAccessToken,
-    onFailure: () => {},
+export const Onboarding = () => {
+  const [{ data, fetching, error }] = useQuery({
+    query: ProjectQuery,
+    variables: { projectId: "5fa3f227c1c504002259feba" },
   });
 
-  switch (screen) {
-    case "welcome":
-      return <Welcome onNext={() => setScreen("signin")} />;
-
-    case "signin":
-      return (
-        <SignIn
-          onBack={() => setScreen("welcome")}
-          onSignIn={() => onSignIn().then(() => setScreen("verify"))}
-          onSignInWithSSO={() => setScreen("subdomain")}
-        />
-      );
-
-    case "subdomain":
-      return (
-        <SetSubdomain
-          onBack={() => setScreen("signin")}
-          onSignIn={(subdomain: string) => onSignIn(subdomain).then(() => setScreen("verify"))}
-        />
-      );
-
-    case "verify":
-      return (
-        <Verify
-          onBack={() => setScreen("signin")}
-          userCode={userCode}
-          verificationUrl={verificationUrl}
-        />
-      );
-
-    default:
-      return null;
-  }
+  return (
+    <Container>
+      <Stack>
+        {fetching && <p>Loading...</p>}
+        {error && <p>{error.message}</p>}
+        {data?.project && (
+          <div>
+            <Heading>Selected project</Heading>
+            <Text>Baselines will be used with this project.</Text>
+            <b>
+              <a href={data.project.webUrl}>{data.project.name}</a>
+            </b>
+            {data.project.lastBuild && (
+              <p>
+                Last build: {data.project.lastBuild.number} on branch{" "}
+                {data.project.lastBuild.branch}
+              </p>
+            )}
+          </div>
+        )}
+      </Stack>
+    </Container>
+  );
 };

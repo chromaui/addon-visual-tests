@@ -2,14 +2,14 @@ import { styled } from "@storybook/theming";
 import React from "react";
 
 import { BackButton } from "../../components/BackButton";
-import { BackIcon } from "../../components/BackIcon";
 import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
 import { Heading } from "../../components/Heading";
+import { BackIcon } from "../../components/icons/BackIcon";
 import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
 
-const Digits = styled.ol({
+const Digits = styled.ol(({ theme }) => ({
   display: "inline-flex",
   listStyle: "none",
   margin: 8,
@@ -20,12 +20,12 @@ const Digits = styled.ol({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    border: `1px dashed #ccc`,
+    border: `1px dashed ${theme.input.border}`,
     borderRadius: 4,
     width: 28,
     height: 32,
   },
-});
+}));
 
 interface VerifyProps {
   onBack: () => void;
@@ -74,7 +74,7 @@ export const Verify = ({ onBack, userCode, verificationUrl }: VerifyProps) => {
             ))}
           </Digits>
         </div>
-        <Button appearance="secondary" onClick={openChromatic}>
+        <Button secondary onClick={openChromatic}>
           Go to Chromatic
         </Button>
       </Stack>

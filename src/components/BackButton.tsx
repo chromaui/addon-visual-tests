@@ -1,12 +1,11 @@
-import { Link } from "@storybook/design-system";
-import { color, styled } from "@storybook/theming";
+import { Link } from "@storybook/components";
+import { styled } from "@storybook/theming";
 import React from "react";
 
 const OpaqueLink = styled(Link)({
   "&&": {
     fontSize: "13px",
     lineHeight: "18px",
-    color: color.mediumdark,
     position: "absolute",
     top: 10,
     left: 10,
@@ -14,7 +13,7 @@ const OpaqueLink = styled(Link)({
 });
 
 export const BackButton = ({ onClick, children }: any) => (
-  <OpaqueLink isButton onClick={onClick}>
+  <OpaqueLink secondary isButton onClick={onClick}>
     {children}
   </OpaqueLink>
 );

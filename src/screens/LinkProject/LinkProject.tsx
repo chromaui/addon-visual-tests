@@ -1,10 +1,10 @@
 import React from "react";
 import { gql, useQuery } from "urql";
 
-import { Container } from "../components/Container";
-import { Heading } from "../components/Heading";
-import { Stack } from "../components/Stack";
-import { Text } from "../components/Text";
+import { Container } from "../../components/Container";
+import { Heading } from "../../components/Heading";
+import { Stack } from "../../components/Stack";
+import { Text } from "../../components/Text";
 
 const ProjectQuery = gql`
   query ProjectQuery($projectId: ID!) {
@@ -20,7 +20,7 @@ const ProjectQuery = gql`
   }
 `;
 
-export const SelectProject = () => {
+export const LinkProject = () => {
   const [{ data, fetching, error }] = useQuery({
     query: ProjectQuery,
     variables: { projectId: "5fa3f227c1c504002259feba" },

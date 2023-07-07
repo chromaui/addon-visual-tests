@@ -30,18 +30,17 @@ const Panels = styled.div<{ orientation: "right" | "bottom" }>(
     flexDirection: orientation === "right" ? "row" : "column",
   }),
   {
-    width: "100vw",
-    height: "100vh",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    gap: 20,
+    gap: 40,
+    margin: 40,
   }
 );
 
 const Panel = styled.div<{ orientation: "right" | "bottom" }>(
   ({ orientation }) => ({
-    width: orientation === "right" ? 420 : 900,
+    width: orientation === "right" ? 420 : 880,
     height: orientation === "right" ? 640 : 300,
     overflow: "auto",
   }),
@@ -75,7 +74,7 @@ export const decorators = [
     return theme === "light" || theme === "dark" ? (
       <ThemeProvider theme={convert(themes[theme])}>
         <Global styles={createReset} />
-        <Global styles={{ "#storybook-root": { height: "100vh" } }}></Global>
+        <Global styles={{ "#storybook-root": { height: "100vh", padding: 0 } }}></Global>
         <ThemedSetRoot />
         <StoryFn />
       </ThemeProvider>
@@ -108,6 +107,9 @@ export const parameters: Preview["parameters"] = {
   },
   backgrounds: {
     disable: true,
+  },
+  chromatic: {
+    viewports: [960],
   },
   controls: {
     matchers: {

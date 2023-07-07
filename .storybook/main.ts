@@ -16,7 +16,7 @@ const config: StorybookConfig = {
     {
       name: "../dist/index.js",
       options: {
-        projectToken: "00baf09dbbe8",
+        projectToken: "chpt_c4206d1157d8947",
       },
     },
   ],

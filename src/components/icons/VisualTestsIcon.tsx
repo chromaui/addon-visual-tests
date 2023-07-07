@@ -1,7 +1,14 @@
 import React from "react";
 
-export const VisualTestsIcon = () => (
-  <svg width="52" height="53" viewBox="0 0 52 53" fill="none" xmlns="http://www.w3.org/2000/svg">
+export const VisualTestsIcon = (props: any) => (
+  <svg
+    width="52"
+    height="53"
+    viewBox="0 0 52 53"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
     <g filter="url(#filter0_dd_304_317945)">
       <g clipPath="url(#clip0_304_317945)">
         <rect x="6" y="2" width="40" height="40" rx="8" fill="#288041" />
