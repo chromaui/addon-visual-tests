@@ -43,8 +43,8 @@ export type AnnouncedBuild = Build & Node & Temporal & {
   id: Scalars['ID']['output'];
   /** Whether the build is limited to just representative stories due to insufficient snapshot quota. */
   isLimited: Scalars['Boolean']['output'];
-  /** Whether the build is reviewable (i.e. not superseded by another build on the same branch). */
-  isReviewable: Scalars['Boolean']['output'];
+  /** Whether there is a newer build on the same branch, and therefore this build can no longer be reviewed. */
+  isSuperseded: Scalars['Boolean']['output'];
   /** Incremental build number. Infrastructure upgrade builds have the same number as the original build. */
   number: Scalars['Int']['output'];
   /** URL-safe Git repository identifier, consisting of the owner (organization or user) name and the repository name, separated by a slash (/). This is typically part of the Git repository URL. The value originates from the CLI runtime environment, not the linked Git provider / linked repository. */
@@ -91,8 +91,8 @@ export type Build = {
   id: Scalars['ID']['output'];
   /** Whether the build is limited to just representative stories due to insufficient snapshot quota. */
   isLimited: Scalars['Boolean']['output'];
-  /** Whether the build is reviewable (i.e. not superseded by another build on the same branch). */
-  isReviewable: Scalars['Boolean']['output'];
+  /** Whether there is a newer build on the same branch, and therefore this build can no longer be reviewed. */
+  isSuperseded: Scalars['Boolean']['output'];
   /** Incremental build number. Infrastructure upgrade builds have the same number as the original build. */
   number: Scalars['Int']['output'];
   /** URL-safe Git repository identifier, consisting of the owner (organization or user) name and the repository name, separated by a slash (/). This is typically part of the Git repository URL. The value originates from the CLI runtime environment, not the linked Git provider / linked repository. */
@@ -147,10 +147,10 @@ export type Capture = {
   captureImage?: Maybe<CaptureImage>;
   /** The ID of the capture. */
   id: Scalars['ID']['output'];
-  /** Capture regions (bounding boxes) that were ignored when diffing. */
+  /** Capture regions (bounding boxes) to ignore while diffing. */
   ignoredRegions?: Maybe<Array<CaptureRegion>>;
-  /** The result of the capture. Available once the capture is complete. */
-  result?: Maybe<CaptureResult>;
+  /** The result of the capture. */
+  result: CaptureResult;
 };
 
 export type CaptureDiff = {
@@ -294,8 +294,8 @@ export type CompletedBuild = Build & Node & Temporal & {
   id: Scalars['ID']['output'];
   /** Whether the build is limited to just representative stories due to insufficient snapshot quota. */
   isLimited: Scalars['Boolean']['output'];
-  /** Whether the build is reviewable (i.e. not superseded by another build on the same branch). */
-  isReviewable: Scalars['Boolean']['output'];
+  /** Whether there is a newer build on the same branch, and therefore this build can no longer be reviewed. */
+  isSuperseded: Scalars['Boolean']['output'];
   /** Link to the published Storybook's canvas (iframe.html). */
   isolatorUrl: Scalars['URL']['output'];
   /** Incremental build number. Infrastructure upgrade builds have the same number as the original build. */
@@ -603,8 +603,8 @@ export type PreparedBuild = Build & Node & Temporal & {
   id: Scalars['ID']['output'];
   /** Whether the build is limited to just representative stories due to insufficient snapshot quota. */
   isLimited: Scalars['Boolean']['output'];
-  /** Whether the build is reviewable (i.e. not superseded by another build on the same branch). */
-  isReviewable: Scalars['Boolean']['output'];
+  /** Whether there is a newer build on the same branch, and therefore this build can no longer be reviewed. */
+  isSuperseded: Scalars['Boolean']['output'];
   /** Link to the published Storybook's canvas (iframe.html). */
   isolatorUrl: Scalars['URL']['output'];
   /** Incremental build number. Infrastructure upgrade builds have the same number as the original build. */
@@ -743,8 +743,8 @@ export type PublishedBuild = Build & Node & Temporal & {
   id: Scalars['ID']['output'];
   /** Whether the build is limited to just representative stories due to insufficient snapshot quota. */
   isLimited: Scalars['Boolean']['output'];
-  /** Whether the build is reviewable (i.e. not superseded by another build on the same branch). */
-  isReviewable: Scalars['Boolean']['output'];
+  /** Whether there is a newer build on the same branch, and therefore this build can no longer be reviewed. */
+  isSuperseded: Scalars['Boolean']['output'];
   /** Link to the published Storybook's canvas (iframe.html). */
   isolatorUrl: Scalars['URL']['output'];
   /** Incremental build number. Infrastructure upgrade builds have the same number as the original build. */
@@ -824,8 +824,8 @@ export type StartedBuild = Build & Node & Temporal & {
   id: Scalars['ID']['output'];
   /** Whether the build is limited to just representative stories due to insufficient snapshot quota. */
   isLimited: Scalars['Boolean']['output'];
-  /** Whether the build is reviewable (i.e. not superseded by another build on the same branch). */
-  isReviewable: Scalars['Boolean']['output'];
+  /** Whether there is a newer build on the same branch, and therefore this build can no longer be reviewed. */
+  isSuperseded: Scalars['Boolean']['output'];
   /** Link to the published Storybook's canvas (iframe.html). */
   isolatorUrl: Scalars['URL']['output'];
   /** Incremental build number. Infrastructure upgrade builds have the same number as the original build. */
@@ -990,6 +990,8 @@ export type Temporal = {
 /** A set of captures for a story at a specific viewport, compared against the baseline. */
 export type Test = Node & Temporal & {
   __typename?: 'Test';
+  /** The baseline test this test was compared against. */
+  baseline?: Maybe<Test>;
   /** List of snapshot comparisons for this test, one for each tested browser. */
   comparisons: Array<TestComparison>;
   /** When the entity was first created in Chromatic. */
@@ -1015,16 +1017,12 @@ export type TestComparison = Node & {
   __typename?: 'TestComparison';
   /** The (head) capture of the baseline test which was compared against, for the same browser. */
   baseCapture?: Maybe<Capture>;
-  /** The baseline test which was compared against. */
-  baseTest?: Maybe<Test>;
   /** Browser against which this comparison was captured and compared. */
   browser: BrowserInfo;
-  /** The diff between the baseline and head captures. Only available once the test has completed. */
+  /** The diff between the baseline and head captures. Available once the diff has completed. */
   captureDiff?: Maybe<CaptureDiff>;
-  /** The capture of the test this comparison belongs to. */
+  /** The capture of the test this comparison belongs to. Available once the capture is complete. */
   headCapture?: Maybe<Capture>;
-  /** The test this comparison belongs to. */
-  headTest: Test;
   /** GraphQL node identifier */
   id: Scalars['ID']['output'];
   /** The result of comparing this test's (head) capture against the baseline. Only available once the test has completed. */

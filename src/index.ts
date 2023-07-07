@@ -20,8 +20,10 @@ async function serverChannel(channel: Channel, { projectToken }: { projectToken:
       },
       options: {
         onTaskComplete(ctx: any) {
+          // eslint-disable-next-line no-console
           console.log(`Completed task '${ctx.title}'`);
           if (ctx.announcedBuild && !sent) {
+            // eslint-disable-next-line no-console
             console.log("emitting", BUILD_STARTED);
             channel.emit(BUILD_STARTED, ctx.announcedBuild.id);
             sent = true;

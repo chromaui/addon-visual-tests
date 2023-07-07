@@ -48,11 +48,10 @@
     "build-storybook": "storybook build",
     "chromatic": "chromatic -t 9b39ff142a7f",
     "codegen": "graphql-codegen",
-    "lint": "eslint src",
+    "lint": "eslint src --max-warnings 0 --report-unused-disable-directives",
     "release": "pnpm run build && auto shipit",
     "start": "run-p build:watch 'storybook --quiet'",
-    "storybook": "storybook dev -p 6006",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "storybook": "storybook dev -p 6006"
   },
   "dependencies": {
     "@storybook/design-system": "^7.15.11",
