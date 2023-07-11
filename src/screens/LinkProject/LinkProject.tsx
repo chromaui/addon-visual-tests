@@ -1,51 +1,35 @@
 import { Avatar, Icon, ListItem } from "@storybook/design-system";
 import { styled } from "@storybook/theming";
-import { set } from "date-fns";
 import React, { useMemo, useState } from "react";
-import { gql, useQuery } from "urql";
+import { useQuery } from "urql";
 
-import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
 import { Heading } from "../../components/Heading";
-import { Row } from "../../components/layout";
-import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
 import { graphql } from "../../gql";
-import { ProjectQueryQuery, SelectProjectsQueryQuery } from "../../gql/graphql";
+import { SelectProjectsQueryQuery } from "../../gql/graphql";
 
 const SelectProjectsQuery = graphql(/* GraphQL */ `
   query SelectProjectsQuery {
-    accounts {
-      id
-      name
-      avatarUrl
-      projects {
+    viewer {
+      accounts {
         id
         name
-        webUrl
-        projectToken
-        lastBuild {
-          branch
-          number
+        avatarUrl
+        projects {
+          id
+          name
+          webUrl
+          projectToken
+          lastBuild {
+            branch
+            number
+          }
         }
       }
     }
   }
 `);
-
-const ProjectQuery = gql`
-  query ProjectQuery($projectId: ID!) {
-    project(id: $projectId) {
-      id
-      name
-      webUrl
-      lastBuild {
-        branch
-        number
-      }
-    }
-  }
-`;
 
 export const LinkProject = ({
   onUpdateProject,
@@ -115,38 +99,38 @@ function SelectProject({
   onSelectProjectId: (projectId: string, projectToken: string) => Promise<void>;
 }) {
   const [selectedAccount, setSelectedAccount] =
-    useState<SelectProjectsQueryQuery["accounts"][number]>(null);
+    useState<SelectProjectsQueryQuery["viewer"]["accounts"][number]>(null);
   const [{ data, fetching, error }] = useQuery<SelectProjectsQueryQuery>({
     query: SelectProjectsQuery,
   });
   const onSelectAccount = React.useCallback(
-    (account: SelectProjectsQueryQuery["accounts"][number]) => {
+    (account: SelectProjectsQueryQuery["viewer"]["accounts"][number]) => {
       setSelectedAccount(account);
     },
     [setSelectedAccount]
   );
 
-  const [isSelectingRepository, setSelectingRepository] = useState(false);
+  const [isSelectingProject, setSelectingProject] = useState(false);
 
   const handleSelectProject = React.useCallback(
-    (project: SelectProjectsQueryQuery["accounts"][number]["projects"][number]) => {
-      setSelectingRepository(true);
+    (project: SelectProjectsQueryQuery["viewer"]["accounts"][number]["projects"][number]) => {
+      setSelectingProject(true);
       const { id: projectId, code: projectToken } = project;
       onSelectProjectId(projectId, projectToken);
       const timer = setTimeout(() => {
         console.log("resetting timer");
-        setSelectingRepository(false);
-      }, 5000);
+        setSelectingProject(false);
+      }, 1000);
       return () => clearTimeout(timer);
     },
-    [onSelectProjectId, setSelectingRepository]
+    [onSelectProjectId, setSelectingProject]
   );
 
   return (
     <Container>
       {fetching && <p>Loading...</p>}
       {error && <p>{error.message}</p>}
-      {!fetching && data?.accounts && (
+      {!fetching && data.viewer?.accounts && (
         <>
           <Heading>Select a Project</Heading>
           <Text>Baselines will be used with this project.</Text>
@@ -154,7 +138,7 @@ function SelectProject({
             <Left>
               <ListHeading>Accounts</ListHeading>
               <List>
-                {data.accounts?.map((account) => (
+                {data.viewer.accounts?.map((account) => (
                   <ListItem
                     key={account.id}
                     title={account.name}
@@ -175,6 +159,7 @@ function SelectProject({
                     title={project.name}
                     right={<Icon icon="add" aria-label={project.name} />}
                     onClick={() => handleSelectProject(project)}
+                    disabled={isSelectingProject}
                   />
                 ))}
               </List>
@@ -185,57 +170,3 @@ function SelectProject({
     </Container>
   );
 }
-
-export const LinkedProject = ({
-  projectId,
-  goToNext,
-}: {
-  projectId: string;
-  goToNext: () => void;
-}) => {
-  const [{ data, fetching, error }] = useQuery<ProjectQueryQuery>({
-    query: ProjectQuery,
-    variables: { projectId },
-  });
-
-  return (
-    <Container>
-      <Stack>
-        {fetching && <p>Loading...</p>}
-        {error && <p>{error.message}</p>}
-        {data?.project && (
-          <Stack>
-            <Icon icon="check" />
-            <Heading>Project linked!</Heading>
-            <p>
-              We added project ID to main.js. The {data.project.name} app ID will be used to
-              reference prior tests. Please commit this change to continue using this addon.
-            </p>
-            <Button secondary onClick={() => goToNext()}>
-              Next
-            </Button>
-            <p>
-              What is the app ID for? <a href="https://www.chromatic.com/docs/cli">Learn More »</a>
-            </p>
-            {data?.project && (
-              <div>
-                <Heading>Selected project</Heading>
-                <Text>Baselines will be used with this project.</Text>
-                <b>
-                  <a href={data.project.webUrl}>{data.project.name}</a>
-                </b>
-              </div>
-            )}
-            {data.project.lastBuild && (
-              <p>
-                Last build: {data.project.lastBuild.number} on branch{" "}
-                {data.project.lastBuild.branch}
-              </p>
-            )}
-          </Stack>
-        )}
-        ;
-      </Stack>
-    </Container>
-  );
-};
