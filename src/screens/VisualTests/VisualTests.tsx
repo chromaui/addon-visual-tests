@@ -30,6 +30,7 @@ const QueryBuild = graphql(/* GraphQL */ `
       ...BuildFields
     }
     project(id: $projectId) @skip(if: $hasBuildId) {
+      name
       lastBuild(branches: [$branch]) {
         ...BuildFields
       }
@@ -113,6 +114,7 @@ const QueryBuild = graphql(/* GraphQL */ `
 `);
 
 interface VisualTestsProps {
+  projectId: string;
   isOutdated?: boolean;
   isRunning?: boolean;
   lastDevBuildId?: string;
@@ -131,16 +133,16 @@ export const VisualTests = ({
   setAccessToken,
   setIsOutdated,
   setIsRunning,
+  projectId,
   storyId,
 }: VisualTestsProps) => {
   // TODO: Replace hardcoded projectId with useProjectId hook and parameters
-  const [projectId, setProjectId, projectIdChanged] = useProjectId();
   const [{ data, fetching, error }, rerun] = useQuery<BuildQuery, BuildQueryVariables>({
     query: QueryBuild,
     variables: {
       hasBuildId: !!lastDevBuildId,
       buildId: lastDevBuildId || "",
-      projectId: "643d59b4f51c48601c1df552",
+      projectId,
       branch: "test",
     },
   });
@@ -152,7 +154,7 @@ export const VisualTests = ({
     }
   }, [isRunning, setIsOutdated, setIsRunning, data]);
 
-  const build = (data?.build || data?.project.lastBuild) as BuildFieldsFragment;
+  const build = (data?.build || data?.project?.lastBuild) as BuildFieldsFragment;
 
   useEffect(() => {
     let interval: any;
@@ -176,6 +178,18 @@ export const VisualTests = ({
             </Row>
           )}
           {fetching && <Loader />}
+          {!build && !fetching && !error && (
+            <Section grow>
+              <Row>
+                <Col>
+                  <Text>
+                    Your project {data.project?.name} does not have any builds yet. Run a build a to
+                    begin.
+                  </Text>
+                </Col>
+              </Row>
+            </Section>
+          )}
         </Section>
         <Section>
           <Bar>
@@ -209,23 +223,6 @@ export const VisualTests = ({
     );
   }
 
-  // If there is no lastBuild, show a prompt to run a build. This is a placeholder for now.
-  if (!data.project.lastBuild) {
-    return (
-      <Sections>
-        <Section grow>
-          <Row>
-            <Col>
-              <Text>
-                Your project {data.project.name} does not have any builds yet. Run a build a to
-                begin.
-              </Text>
-            </Col>
-          </Row>
-        </Section>
-      </Sections>
-    );
-  }
   const allTests = ("tests" in build ? build.tests.nodes : []) as TestFieldsFragment[];
   const tests = allTests.filter((test) => test.story?.storyId === storyId);
 

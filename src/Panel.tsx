@@ -63,6 +63,7 @@ export const Panel = ({ active }: PanelProps) => {
   return (
     <Provider key={PANEL_ID} value={client}>
       <VisualTests
+        projectId={projectId}
         isOutdated={state.isOutdated}
         isRunning={state.isRunning}
         lastDevBuildId={state.lastBuildId}
