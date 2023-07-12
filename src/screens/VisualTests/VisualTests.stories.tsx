@@ -294,6 +294,7 @@ export const OutdatedRunning: Story = {
     ...Outdated.args,
     isRunning: true,
   },
+  argTypes: { updateBuildStatus: { action: "updateBuildStatus" } },
   parameters: {
     ...Outdated.parameters,
   },
