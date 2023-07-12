@@ -15,6 +15,7 @@ import {
   TestResult,
   TestStatus,
 } from "../../gql/graphql";
+import { CompletedBuild, StartedBuild } from "../../types";
 import { aggregateResult } from "../../utils/aggregateResult";
 import { BuildInfo } from "./BuildInfo";
 import { RenderSettings } from "./RenderSettings";
@@ -119,6 +120,7 @@ interface VisualTestsProps {
   setAccessToken: (accessToken: string | null) => void;
   setIsOutdated: (isOutdated: boolean) => void;
   setIsRunning: (isRunning: boolean) => void;
+  updateBuildStatus: (build: StartedBuild | CompletedBuild) => void;
   storyId: string;
 }
 
@@ -130,6 +132,7 @@ export const VisualTests = ({
   setAccessToken,
   setIsOutdated,
   setIsRunning,
+  updateBuildStatus,
   storyId,
 }: VisualTestsProps) => {
   const [{ data, fetching, error }, rerun] = useQuery<BuildQuery, BuildQueryVariables>({
@@ -143,7 +146,13 @@ export const VisualTests = ({
   });
 
   useEffect(() => {
-    if (isRunning && data?.build && "result" in data.build) {
+    if (!isRunning || !data?.build) return;
+
+    if ("tests" in data.build) {
+      updateBuildStatus(data.build as StartedBuild | CompletedBuild);
+    }
+
+    if ("result" in data.build) {
       setIsOutdated(false);
       setIsRunning(false);
     }
