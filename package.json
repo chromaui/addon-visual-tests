@@ -51,7 +51,8 @@
     "lint": "eslint src --max-warnings 0 --report-unused-disable-directives",
     "release": "pnpm run build && auto shipit",
     "start": "run-p build:watch 'storybook --quiet'",
-    "storybook": "storybook dev -p 6006"
+    "storybook": "storybook dev -p 6006",
+    "test": "jest"
   },
   "dependencies": {
     "@storybook/design-system": "^7.15.11",
@@ -63,6 +64,7 @@
   "devDependencies": {
     "@graphql-codegen/cli": "^4.0.1",
     "@graphql-codegen/client-preset": "^4.0.1",
+    "@graphql-typed-document-node/core": "^3.2.0",
     "@storybook/addon-actions": "^7.1.0-alpha.34",
     "@storybook/addon-essentials": "^7.1.0-alpha.34",
     "@storybook/addon-interactions": "^7.1.0-alpha.34",
@@ -73,6 +75,7 @@
     "@storybook/react-vite": "^7.1.0-alpha.34",
     "@storybook/testing-library": "^0.0.14-next.1",
     "@storybook/theming": "^7.1.0-alpha.34",
+    "@types/jest": "^29.5.3",
     "@types/node": "^18.15.0",
     "@types/pluralize": "^0.0.29",
     "@types/react": "^18.0.34",
@@ -98,6 +101,7 @@
     "rimraf": "^3.0.2",
     "storybook": "^7.1.0-alpha.34",
     "storybook-addon-designs": "^7.0.0-beta.2",
+    "ts-jest": "^29.1.1",
     "tsup": "^6.6.3",
     "typescript": "^4.9.5",
     "vite": "^4.1.4",

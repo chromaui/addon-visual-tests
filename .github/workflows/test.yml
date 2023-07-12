@@ -16,6 +16,5 @@ jobs:
       - name: Lint
         run: pnpm lint
 
-      # Currently we don't have any tests written, this is here for when we do
-      # - name: Test
-      # run: pnpm test
+      - name: Test
+        run: pnpm test
