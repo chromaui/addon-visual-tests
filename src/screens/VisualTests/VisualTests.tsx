@@ -156,7 +156,7 @@ export const VisualTests = ({
       setIsOutdated(false);
       setIsRunning(false);
     }
-  }, [isRunning, setIsOutdated, setIsRunning, data]);
+  }, [isRunning, setIsOutdated, setIsRunning, updateBuildStatus, data]);
 
   const build = (data?.build || data?.project.lastBuild) as BuildFieldsFragment;
 
