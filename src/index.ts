@@ -20,7 +20,11 @@ function managerEntries(entry: string[] = []) {
   return [...entry, require.resolve("./manager.mjs")];
 }
 
-async function serverChannel(channel: Channel, { projectToken }: { projectToken: string }) {
+async function serverChannel(
+  channel: Channel,
+  { projectToken: initialProjectToken }: { projectToken: string }
+) {
+  let projectToken = initialProjectToken;
   channel.on(START_BUILD, async () => {
     let sent = false;
     await run({
@@ -42,27 +46,32 @@ async function serverChannel(channel: Channel, { projectToken }: { projectToken:
     });
   });
 
-  channel.on(UPDATE_PROJECT, async ({ projectId, projectToken }: UpdateProjectPayload) => {
-    const mainPath = await findConfig("main");
-    const MainConfig = await readConfig(mainPath);
+  channel.on(
+    UPDATE_PROJECT,
+    async ({ projectId, projectToken: updatedProjectToken }: UpdateProjectPayload) => {
+      projectToken = updatedProjectToken;
 
-    const addonsConfig = MainConfig.getFieldValue(["addons"]);
-    const updatedAddonsConfig = addonsConfig.map(
-      (addonConfig: string | { name: string; options?: Record<string, string> }) => {
-        const fullConfig = typeof addonConfig === "string" ? { name: addonConfig } : addonConfig;
-        if (fullConfig.name === CHROMATIC_ADDON_NAME) {
-          return {
-            ...fullConfig,
-            options: { projectId, projectToken, ...fullConfig.options },
-          };
+      const mainPath = await findConfig("main");
+      const MainConfig = await readConfig(mainPath);
+
+      const addonsConfig = MainConfig.getFieldValue(["addons"]);
+      const updatedAddonsConfig = addonsConfig.map(
+        (addonConfig: string | { name: string; options?: Record<string, string> }) => {
+          const fullConfig = typeof addonConfig === "string" ? { name: addonConfig } : addonConfig;
+          if (fullConfig.name === CHROMATIC_ADDON_NAME) {
+            return {
+              ...fullConfig,
+              options: { projectId, projectToken, ...fullConfig.options },
+            };
+          }
+          return addonConfig;
         }
-        return addonConfig;
-      }
-    );
+      );
 
-    MainConfig.setFieldValue(["addons"], updatedAddonsConfig);
-    await writeConfig(MainConfig);
-  });
+      MainConfig.setFieldValue(["addons"], updatedAddonsConfig);
+      await writeConfig(MainConfig);
+    }
+  );
 
   return channel;
 }
