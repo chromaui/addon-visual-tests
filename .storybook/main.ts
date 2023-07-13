@@ -1,7 +1,4 @@
 import type { StorybookConfig } from "@storybook/react-vite";
-
-const CHROMATIC_BASE_URL = process.env.CHROMATIC_BASE_URL || "https://www.chromatic.com";
-
 const config: StorybookConfig = {
   addons: [
     {
@@ -24,10 +21,6 @@ const config: StorybookConfig = {
   docs: {
     autodocs: "tag",
   },
-  env: (config) => ({
-    ...config,
-    CHROMATIC_BASE_URL,
-  }),
   framework: {
     name: "@storybook/react-vite",
     options: {},
@@ -36,5 +29,4 @@ const config: StorybookConfig = {
   stories: ["../src/**/*.stories.@(js|jsx|ts|tsx)"],
   logLevel: "debug",
 };
-
 export default config;

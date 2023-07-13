@@ -1,10 +1,17 @@
 import type { Channel } from "@storybook/channels";
 import { readConfig, writeConfig } from "@storybook/csf-tools";
+import { exec } from "child_process";
 // eslint-disable-next-line import/no-unresolved
 import { run } from "chromatic/node";
+import { promisify } from "util";
 
-import { BUILD_STARTED, START_BUILD, UPDATE_PROJECT } from "./constants";
+import { BUILD_STARTED, START_BUILD, UPDATE_PROJECT, UpdateProjectPayload } from "./constants";
 import { findConfig } from "./utils/storybook.config.utils";
+
+const {
+  CHROMATIC_BASE_URL = "https://www.chromatic.com",
+  CHROMATIC_ADDON_NAME = "@chromaui/addon-visual-tests",
+} = process.env;
 
 /**
  * to load the built addon in this test Storybook
@@ -35,39 +42,53 @@ async function serverChannel(channel: Channel, { projectToken }: { projectToken:
     });
   });
 
-  channel.on(UPDATE_PROJECT, async (id, token) => {
-
-    // update project id
-    // find config file path
-    const previewPath = await findConfig("preview");
-    // Find config file
-    const PreviewConfig = await readConfig(previewPath);
-
-    // Add parameters to config file
-    const previousProjectId = PreviewConfig.getFieldNode(["parameters", "projectId"]);
-    console.log("updating project id", previousProjectId, id);
-    PreviewConfig.setFieldValue(["parameters", "projectId"], id);
-
-    // Write to config file
-    await writeConfig(PreviewConfig);
-
-
-
-    // update project token in main.ts - this is not currently working, does not select the main.ts section correctly
+  channel.on(UPDATE_PROJECT, async ({ projectId, projectToken }: UpdateProjectPayload) => {
     const mainPath = await findConfig("main");
     const MainConfig = await readConfig(mainPath);
 
-    // TODO: Get the correct field node
-    const addonsConfig = MainConfig.getFieldNode(["addons"]);
-    console.log(addonsConfig);
+    const addonsConfig = MainConfig.getFieldValue(["addons"]);
+    const updatedAddonsConfig = addonsConfig.map(
+      (addonConfig: string | { name: string; options?: Record<string, string> }) => {
+        const fullConfig = typeof addonConfig === "string" ? { name: addonConfig } : addonConfig;
+        if (fullConfig.name === CHROMATIC_ADDON_NAME) {
+          return {
+            ...fullConfig,
+            options: { projectId, projectToken, ...fullConfig.options },
+          };
+        }
+        return addonConfig;
+      }
+    );
 
-    MainConfig.setFieldValue(["addons", "projectToken"], token);
+    MainConfig.setFieldValue(["addons"], updatedAddonsConfig);
+    await writeConfig(MainConfig);
   });
 
   return channel;
 }
 
-module.exports = {
+// TODO: use the chromatic CLI to get this info? Or should we make it core to SB?
+const execPromise = promisify(exec);
+async function getGitInfo() {
+  const branch = (await execPromise("git rev-parse --abbrev-ref HEAD")).stdout.trim();
+  const commit = (await execPromise("git log -n 1 HEAD --format='%H'")).stdout.trim();
+  return { branch, commit };
+}
+
+const config = {
   managerEntries,
   experimental_serverChannel: serverChannel,
+  // FIXME: we should only do this in dev
+  env: async (env: Record<string, string>, { projectId }: { projectId: string }) => {
+    const { branch, commit } = await getGitInfo();
+    return {
+      ...env,
+      CHROMATIC_BASE_URL,
+      CHROMATIC_PROJECT_ID: projectId || "",
+      GIT_BRANCH: branch,
+      GIT_COMMIT: commit,
+    };
+  },
 };
+
+module.exports = config;

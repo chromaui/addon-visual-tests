@@ -115,10 +115,9 @@ function SelectProject({
   const handleSelectProject = React.useCallback(
     (project: SelectProjectsQueryQuery["viewer"]["accounts"][number]["projects"][number]) => {
       setSelectingProject(true);
-      const { id: projectId, code: projectToken } = project;
+      const { id: projectId, projectToken } = project;
       onSelectProjectId(projectId, projectToken);
       const timer = setTimeout(() => {
-        console.log("resetting timer");
         setSelectingProject(false);
       }, 1000);
       return () => clearTimeout(timer);
