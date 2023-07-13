@@ -87,8 +87,12 @@ async function getGitInfo() {
 const config = {
   managerEntries,
   experimental_serverChannel: serverChannel,
-  // FIXME: we should only do this in dev
-  env: async (env: Record<string, string>, { projectId }: { projectId: string }) => {
+  env: async (
+    env: Record<string, string>,
+    { projectId, configType }: { projectId: string; configType: "development" | "production" }
+  ) => {
+    if (configType === "production") return env;
+
     const { branch, commit } = await getGitInfo();
     return {
       ...env,
