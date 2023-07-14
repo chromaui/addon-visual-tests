@@ -8,14 +8,11 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Install dependencies
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
-          run_install: true
+        run: yarn install --ignore-scripts
 
       - name: Lint
-        run: pnpm lint
+        run: yarn lint
 
       # Currently we don't have any tests written, this is here for when we do
       # - name: Test
-      # run: pnpm test
+      # run: yarn test

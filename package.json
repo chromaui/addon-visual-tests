@@ -4,7 +4,7 @@
   "description": "Visual Testing addon with Chromatic",
   "engines": {
     "node": ">=18.0.0",
-    "pnpm": ">=8.6.2"
+    "yarn": ">=1.22.18"
   },
   "keywords": [
     "tests",
@@ -49,7 +49,7 @@
     "chromatic": "chromatic -t 9b39ff142a7f",
     "codegen": "graphql-codegen",
     "lint": "eslint src --max-warnings 0 --report-unused-disable-directives",
-    "release": "pnpm run build && auto shipit",
+    "release": "yarn run build && auto shipit",
     "start": "run-p build:watch 'storybook --quiet'",
     "storybook": "storybook dev -p 6006"
   },
@@ -105,13 +105,13 @@
     "zx": "^1.14.1"
   },
   "peerDependencies": {
-    "@storybook/blocks": "^7.1.0-alpha.34",
-    "@storybook/components": "^7.1.0-alpha.34",
-    "@storybook/core-events": "^7.1.0-alpha.34",
-    "@storybook/manager-api": "^7.1.0-alpha.34",
-    "@storybook/preview-api": "^7.1.0-alpha.34",
-    "@storybook/theming": "^7.1.0-alpha.34",
-    "@storybook/types": "^7.1.0-alpha.34",
+    "@storybook/blocks": "^7.1.0-alpha.32",
+    "@storybook/components": "^7.1.0-alpha.32",
+    "@storybook/core-events": "^7.1.0-alpha.32",
+    "@storybook/manager-api": "^7.1.0-alpha.32",
+    "@storybook/preview-api": "^7.1.0-alpha.32",
+    "@storybook/theming": "^7.1.0-alpha.32",
+    "@storybook/types": "^7.1.0-alpha.32",
     "react": "^16.8.0 || ^17.0.0 || ^18.0.0",
     "react-dom": "^16.8.0 || ^17.0.0 || ^18.0.0"
   },
@@ -129,16 +129,9 @@
   "msw": {
     "workerDirectory": "public"
   },
-  "pnpm": {
-    "overrides": {
-      "react": "^18.0.0",
-      "react-dom": "^18.0.0",
-      "@storybook/addon-docs": "^7.1.0-alpha.34",
-      "@storybook/addons": "^7.1.0-alpha.34",
-      "@storybook/api": "^7.1.0-alpha.34",
-      "@storybook/components": "^7.1.0-alpha.34",
-      "@storybook/theming": "^7.1.0-alpha.34"
-    }
+  "overrides": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
   },
   "storybook": {
     "displayName": "Visual Tests",

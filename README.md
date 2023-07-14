@@ -4,8 +4,8 @@ Visual Testing addon with Chromatic
 
 ### Development scripts
 
-- `pnpm run start` runs babel in watch mode and starts Storybook
-- `pnpm run build` build and package your addon code
+- `yarn start` runs babel in watch mode and starts Storybook
+- `yarn build` build and package your addon code
 
 ## What's included?
 
@@ -76,7 +76,7 @@ Go to `Settings > Secrets`, click `New repository secret`, and add your `NPM_TOK
 To create a release locally you can run the following command, otherwise the GitHub action will make the release for you.
 
 ```sh
-pnpm run release
+yarn release
 ```
 
 That will:
