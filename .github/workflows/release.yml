@@ -14,7 +14,7 @@ jobs:
         run: yarn install --ignore-scripts
 
       - name: Create Release
-        run: yarnb run release
+        run: yarn run release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
