@@ -148,7 +148,7 @@ export const VisualTests = ({
       buildId: lastDevBuildId || "",
       projectId,
       branch: branch || "",
-      // slug: slug || "",
+      ...(slug ? { slug } : {}),
     },
   });
 

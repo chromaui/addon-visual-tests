@@ -81,10 +81,13 @@ const execPromise = promisify(exec);
 async function getGitInfo() {
   const branch = (await execPromise("git rev-parse --abbrev-ref HEAD")).stdout.trim();
   const commit = (await execPromise("git log -n 1 HEAD --format='%H'")).stdout.trim();
-  const result = (await execPromise("git config --get remote.origin.url")).stdout.trim();
-  const downcasedResult = result.toLowerCase();
-  const [, slug] = downcasedResult.match(/([^/:]+\/[^/]+?)(\.git)?$/) || [];
-  return { branch, commit, slug };
+  const origin = (await execPromise("git config --get remote.origin.url")).stdout.trim();
+
+  const [, slug] = origin.toLowerCase().match(/([^/:]+\/[^/]+?)(\.git)?$/) || [];
+  const [ownerName, repoName, ...rest] = slug ? slug.split("/") : [];
+  const isValidSlug = !!ownerName && !!repoName && !rest.length;
+
+  return { branch, commit, slug: isValidSlug ? slug : "" };
 }
 
 const config = {
