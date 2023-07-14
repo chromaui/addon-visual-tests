@@ -24,6 +24,7 @@ initialize({
     }
   },
 });
+
 const Panels = styled.div<{ orientation: "right" | "bottom" }>(
   ({ orientation }) => ({
     flexDirection: orientation === "right" ? "row" : "column",
@@ -36,6 +37,7 @@ const Panels = styled.div<{ orientation: "right" | "bottom" }>(
     margin: 40,
   }
 );
+
 const Panel = styled.div<{ orientation: "right" | "bottom" }>(
   ({ orientation }) => ({
     width: orientation === "right" ? 420 : 880,
@@ -50,6 +52,7 @@ const Panel = styled.div<{ orientation: "right" | "bottom" }>(
     fontSize: theme.typography.size.s2 - 1,
   })
 );
+
 const ThemedSetRoot = () => {
   const theme = useTheme();
   React.useEffect(() => {
@@ -59,9 +62,11 @@ const ThemedSetRoot = () => {
   });
   return null;
 };
+
 export const decorators = [
   // Provide the MSW addon decorator globally
   mswDecorator,
+
   // Render two panels side-by-side or stacked, depending on selected orientation
   // Note this assumes any play functions are equipped to deal with multiple canvases
   (StoryFn, { globals, parameters }) => {
@@ -95,6 +100,7 @@ export const decorators = [
     );
   },
 ];
+
 export const parameters: Preview["parameters"] = {
   actions: {
     argTypesRegex: "^on[A-Z].*",
@@ -113,6 +119,7 @@ export const parameters: Preview["parameters"] = {
   },
   layout: "fullscreen",
 };
+
 export const globalTypes = {
   theme: {
     name: "Theme",
