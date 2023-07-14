@@ -10,6 +10,8 @@ export const START_BUILD = `${ADDON_ID}/startBuild`;
 export const BUILD_STARTED = `${ADDON_ID}/buildStarted`;
 
 export const UPDATE_PROJECT = `${ADDON_ID}/updateProject`;
+export const READ_PROJECT = `${ADDON_ID}/readProject`;
+export const RESPOND_PROJECT = `${ADDON_ID}/respondProject`;
 export type UpdateProjectPayload = {
   projectId: string;
   projectToken: string;

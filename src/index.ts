@@ -1,11 +1,19 @@
 import type { Channel } from "@storybook/channels";
 import { readConfig, writeConfig } from "@storybook/csf-tools";
+import { StorybookConfig } from "@storybook/types";
 import { exec } from "child_process";
 // eslint-disable-next-line import/no-unresolved
 import { run } from "chromatic/node";
 import { promisify } from "util";
 
-import { BUILD_STARTED, START_BUILD, UPDATE_PROJECT, UpdateProjectPayload } from "./constants";
+import {
+  BUILD_STARTED,
+  READ_PROJECT,
+  RESPOND_PROJECT,
+  START_BUILD,
+  UPDATE_PROJECT,
+  UpdateProjectPayload,
+} from "./constants";
 import { findConfig } from "./utils/storybook.config.utils";
 
 const {
@@ -72,6 +80,23 @@ async function serverChannel(
       await writeConfig(MainConfig);
     }
   );
+
+  channel.on(READ_PROJECT, async () => {
+    const mainPath = await findConfig("main");
+    const MainConfig = await readConfig(mainPath);
+
+    const addonsConfig: StorybookConfig["addons"] = MainConfig.getFieldValue(["addons"]);
+    const chromaticAddon = addonsConfig.find((addonConfig) => {
+      const fullConfig = typeof addonConfig === "string" ? { name: addonConfig } : addonConfig;
+      return fullConfig.name === CHROMATIC_ADDON_NAME;
+    });
+
+    const projectId =
+      chromaticAddon && typeof chromaticAddon !== "string"
+        ? chromaticAddon?.options?.projectId
+        : null;
+    channel.emit(RESPOND_PROJECT, { projectId });
+  });
 
   return channel;
 }
