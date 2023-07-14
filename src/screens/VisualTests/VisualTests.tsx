@@ -116,6 +116,7 @@ const QueryBuild = graphql(/* GraphQL */ `
 interface VisualTestsProps {
   projectId: string;
   branch?: string;
+  slug?: string;
   isOutdated?: boolean;
   isRunning?: boolean;
   lastDevBuildId?: string;
@@ -136,6 +137,7 @@ export const VisualTests = ({
   setIsRunning,
   projectId,
   branch,
+  slug,
   storyId,
 }: VisualTestsProps) => {
   // TODO: Replace hardcoded projectId with useProjectId hook and parameters
@@ -146,6 +148,7 @@ export const VisualTests = ({
       buildId: lastDevBuildId || "",
       projectId,
       branch: branch || "",
+      // slug: slug || "",
     },
   });
 

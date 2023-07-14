@@ -14,7 +14,7 @@ interface PanelProps {
   active: boolean;
 }
 
-const { GIT_BRANCH } = process.env;
+const { GIT_BRANCH, GIT_SLUG } = process.env;
 
 export const Panel = ({ active }: PanelProps) => {
   const [accessToken, setAccessToken] = useAccessToken();
@@ -67,6 +67,7 @@ export const Panel = ({ active }: PanelProps) => {
       <VisualTests
         projectId={projectId}
         branch={GIT_BRANCH}
+        slug={GIT_SLUG}
         isOutdated={state.isOutdated}
         isRunning={state.isRunning}
         lastDevBuildId={state.lastBuildId}

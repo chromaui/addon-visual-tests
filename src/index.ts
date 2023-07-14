@@ -76,12 +76,15 @@ async function serverChannel(
   return channel;
 }
 
-// TODO: use the chromatic CLI to get this info? Or should we make it core to SB?
+// TODO: use the chromatic CLI to get this info?
 const execPromise = promisify(exec);
 async function getGitInfo() {
   const branch = (await execPromise("git rev-parse --abbrev-ref HEAD")).stdout.trim();
   const commit = (await execPromise("git log -n 1 HEAD --format='%H'")).stdout.trim();
-  return { branch, commit };
+  const result = (await execPromise("git config --get remote.origin.url")).stdout.trim();
+  const downcasedResult = result.toLowerCase();
+  const [, slug] = downcasedResult.match(/([^/:]+\/[^/]+?)(\.git)?$/) || [];
+  return { branch, commit, slug };
 }
 
 const config = {
@@ -93,13 +96,14 @@ const config = {
   ) => {
     if (configType === "production") return env;
 
-    const { branch, commit } = await getGitInfo();
+    const { branch, commit, slug } = await getGitInfo();
     return {
       ...env,
       CHROMATIC_BASE_URL,
       CHROMATIC_PROJECT_ID: projectId || "",
       GIT_BRANCH: branch,
       GIT_COMMIT: commit,
+      GIT_SLUG: slug,
     };
   },
 };
