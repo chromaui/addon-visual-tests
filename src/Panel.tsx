@@ -55,7 +55,7 @@ export const Panel = ({ active }: PanelProps) => {
       </Provider>
     );
 
-  if (projectId && projectIdChanged) {
+  if (projectIdChanged) {
     return (
       <Provider key={PANEL_ID} value={client}>
         <LinkedProject projectId={projectId} goToNext={clearProjectIdChanged} />
