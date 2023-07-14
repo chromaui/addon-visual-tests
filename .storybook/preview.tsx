@@ -24,9 +24,7 @@ initialize({
     }
   },
 });
-const Panels = styled.div<{
-  orientation: "right" | "bottom";
-}>(
+const Panels = styled.div<{ orientation: "right" | "bottom" }>(
   ({ orientation }) => ({
     flexDirection: orientation === "right" ? "row" : "column",
   }),
@@ -38,9 +36,7 @@ const Panels = styled.div<{
     margin: 40,
   }
 );
-const Panel = styled.div<{
-  orientation: "right" | "bottom";
-}>(
+const Panel = styled.div<{ orientation: "right" | "bottom" }>(
   ({ orientation }) => ({
     width: orientation === "right" ? 420 : 880,
     height: orientation === "right" ? 640 : 300,
@@ -73,14 +69,7 @@ export const decorators = [
     return theme === "light" || theme === "dark" ? (
       <ThemeProvider theme={convert(themes[theme])}>
         <Global styles={createReset} />
-        <Global
-          styles={{
-            "#storybook-root": {
-              height: "100vh",
-              padding: 0,
-            },
-          }}
-        ></Global>
+        <Global styles={{ "#storybook-root": { height: "100vh", padding: 0 } }}></Global>
         <ThemedSetRoot />
         <StoryFn />
       </ThemeProvider>
@@ -132,26 +121,10 @@ export const globalTypes = {
       icon: "sidebaralt",
       title: "Theme",
       items: [
-        {
-          value: "light",
-          icon: "circlehollow",
-          title: "Light",
-        },
-        {
-          value: "dark",
-          icon: "circle",
-          title: "Dark",
-        },
-        {
-          value: "right",
-          icon: "sidebaralt",
-          title: "Right 2-up",
-        },
-        {
-          value: "bottom",
-          icon: "bottombar",
-          title: "Bottom 2-up",
-        },
+        { value: "light", icon: "circlehollow", title: "Light" },
+        { value: "dark", icon: "circle", title: "Dark" },
+        { value: "right", icon: "sidebaralt", title: "Right 2-up" },
+        { value: "bottom", icon: "bottombar", title: "Bottom 2-up" },
       ],
     },
   },
