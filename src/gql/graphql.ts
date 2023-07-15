@@ -158,6 +158,12 @@ export enum BuildStatus {
   Published = 'PUBLISHED'
 }
 
+export type BuildSupersededError = UserError & {
+  __typename?: 'BuildSupersededError';
+  build: Build;
+  message: Scalars['String']['output'];
+};
+
 export type Capture = {
   __typename?: 'Capture';
   /** Metadata about the error if the capture failed. */
@@ -550,6 +556,7 @@ export type Mutation = {
   bulkRemoveFigmaMetadata: Array<FigmaMetadata>;
   createFigmaMetadata?: Maybe<FigmaMetadata>;
   removeFigmaMetadata?: Maybe<FigmaMetadata>;
+  reviewTest?: Maybe<ReviewTestPayload>;
 };
 
 
@@ -572,6 +579,11 @@ export type MutationCreateFigmaMetadataArgs = {
 
 export type MutationRemoveFigmaMetadataArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type MutationReviewTestArgs = {
+  input: ReviewTestInput;
 };
 
 export type Node = {
@@ -829,6 +841,40 @@ export type QueryStorybookArgs = {
   url: Scalars['URL']['input'];
 };
 
+export enum ReviewTestBatch {
+  Build = 'BUILD',
+  Component = 'COMPONENT',
+  Spec = 'SPEC'
+}
+
+export type ReviewTestError = BuildSupersededError | TestNotFoundError | TestUnreviewableError;
+
+export type ReviewTestInput = {
+  /** Apply review to all tests for the same story, component, or the whole build. */
+  batch?: InputMaybe<ReviewTestBatch>;
+  /** The new status of the test. */
+  status: ReviewTestInputStatus;
+  /** The ID of the test to review. */
+  testId: Scalars['ID']['input'];
+};
+
+export enum ReviewTestInputStatus {
+  /** Accept the changes on the test. */
+  Accepted = 'ACCEPTED',
+  /** Deny the changes on the test. */
+  Denied = 'DENIED',
+  /** Reset the test back to unreviewed. */
+  Pending = 'PENDING'
+}
+
+export type ReviewTestPayload = {
+  __typename?: 'ReviewTestPayload';
+  /** The test(s) that were updated, if succesful. */
+  updatedTests?: Maybe<Array<Test>>;
+  /** User errors preventing the test from being reviewed. Empty if successful. */
+  userErrors: Array<ReviewTestError>;
+};
+
 /** A build that has started but not completed testing. */
 export type StartedBuild = Build & Node & Temporal & {
   __typename?: 'StartedBuild';
@@ -1068,6 +1114,11 @@ export enum TestKind {
   Visual = 'VISUAL'
 }
 
+export type TestNotFoundError = UserError & {
+  __typename?: 'TestNotFoundError';
+  message: Scalars['String']['output'];
+};
+
 export type TestParameters = {
   __typename?: 'TestParameters';
   /** Delay in milliseconds before taking the snapshot. */
@@ -1130,6 +1181,12 @@ export enum TestStatus {
   Pending = 'PENDING'
 }
 
+export type TestUnreviewableError = UserError & {
+  __typename?: 'TestUnreviewableError';
+  message: Scalars['String']['output'];
+  test: Test;
+};
+
 export type User = Node & {
   __typename?: 'User';
   accounts: Array<Account>;
@@ -1142,6 +1199,11 @@ export type User = Node & {
   /** When the entity was last updated or created in Chromatic. */
   updatedAt: Scalars['DateTime']['output'];
   username: Scalars['String']['output'];
+};
+
+export type UserError = {
+  /** A message describing the error. */
+  message: Scalars['String']['output'];
 };
 
 export type ViewportInfo = {

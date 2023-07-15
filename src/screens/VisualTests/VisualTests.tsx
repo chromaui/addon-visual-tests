@@ -6,9 +6,8 @@ import { useQuery } from "urql";
 import { IconButton } from "../../components/IconButton";
 import { Bar, Col, Row, Section, Sections, Text } from "../../components/layout";
 import { TooltipMenu } from "../../components/TooltipMenu";
-import { graphql } from "../../gql";
+import { getFragment, graphql } from "../../gql";
 import {
-  BuildFieldsFragment,
   BuildQuery,
   BuildQueryVariables,
   TestFieldsFragment,
@@ -36,6 +35,9 @@ const QueryBuild = graphql(/* GraphQL */ `
       }
     }
   }
+`);
+
+const FragmentBuildFields = graphql(/* GraphQL */ `
   fragment BuildFields on Build {
     __typename
     id
@@ -68,6 +70,8 @@ const QueryBuild = graphql(/* GraphQL */ `
       }
     }
   }
+`);
+const FragmentTestFields = graphql(/* GraphQL */ `
   fragment TestFields on Test {
     id
     status
@@ -159,7 +163,7 @@ export const VisualTests = ({
     }
   }, [isRunning, setIsOutdated, setIsRunning, data]);
 
-  const build = (data?.build || data?.project?.lastBuild) as BuildFieldsFragment;
+  const build = getFragment(FragmentBuildFields, data?.build || data?.project?.lastBuild);
 
   useEffect(() => {
     let interval: any;
@@ -228,7 +232,7 @@ export const VisualTests = ({
     );
   }
 
-  const allTests = ("tests" in build ? build.tests.nodes : []) as TestFieldsFragment[];
+  const allTests = getFragment(FragmentTestFields, "tests" in build ? build.tests.nodes : []);
   const tests = allTests.filter((test) => test.story?.storyId === storyId);
 
   const { changeCount, brokenCount, resultsByBrowser, resultsByViewport, viewportInfoById } =
