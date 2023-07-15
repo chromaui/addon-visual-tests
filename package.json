@@ -65,6 +65,7 @@
   "devDependencies": {
     "@graphql-codegen/cli": "^4.0.1",
     "@graphql-codegen/client-preset": "^4.0.1",
+    "@graphql-typed-document-node/core": "^3.2.0",
     "@storybook/addon-actions": "^7.1.0-alpha.34",
     "@storybook/addon-essentials": "^7.1.0-alpha.34",
     "@storybook/addon-interactions": "^7.1.0-alpha.34",
