@@ -15,6 +15,7 @@ import {
   TestStatus,
 } from "../../gql/graphql";
 import { aggregateResult } from "../../utils/aggregateResult";
+import { useProjectId } from "../../utils/useProjectId";
 import { BuildInfo } from "./BuildInfo";
 import { RenderSettings } from "./RenderSettings";
 import { SnapshotComparison } from "./SnapshotComparison";
@@ -28,6 +29,7 @@ const QueryBuild = graphql(/* GraphQL */ `
       ...BuildFields
     }
     project(id: $projectId) @skip(if: $hasBuildId) {
+      name
       lastBuild(branches: [$branch]) {
         ...BuildFields
       }
@@ -116,6 +118,9 @@ const FragmentTestFields = graphql(/* GraphQL */ `
 `);
 
 interface VisualTestsProps {
+  projectId: string;
+  branch?: string;
+  slug?: string;
   isOutdated?: boolean;
   isRunning?: boolean;
   lastDevBuildId?: string;
@@ -134,15 +139,20 @@ export const VisualTests = ({
   setAccessToken,
   setIsOutdated,
   setIsRunning,
+  projectId,
+  branch,
+  slug,
   storyId,
 }: VisualTestsProps) => {
+  // TODO: Replace hardcoded projectId with useProjectId hook and parameters
   const [{ data, fetching, error }, rerun] = useQuery<BuildQuery, BuildQueryVariables>({
     query: QueryBuild,
     variables: {
       hasBuildId: !!lastDevBuildId,
       buildId: lastDevBuildId || "",
-      projectId: "643d59b4f51c48601c1df552",
-      branch: "test",
+      projectId,
+      branch: branch || "",
+      ...(slug ? { slug } : {}),
     },
   });
 
@@ -153,7 +163,7 @@ export const VisualTests = ({
     }
   }, [isRunning, setIsOutdated, setIsRunning, data]);
 
-  const build = getFragment(FragmentBuildFields, data?.build || data?.project.lastBuild);
+  const build = getFragment(FragmentBuildFields, data?.build || data?.project?.lastBuild);
 
   useEffect(() => {
     let interval: any;
@@ -177,6 +187,18 @@ export const VisualTests = ({
             </Row>
           )}
           {fetching && <Loader />}
+          {!build && !fetching && !error && (
+            <Section grow>
+              <Row>
+                <Col>
+                  <Text>
+                    Your project {data.project?.name} does not have any builds yet. Run a build a to
+                    begin.
+                  </Text>
+                </Col>
+              </Row>
+            </Section>
+          )}
         </Section>
         <Section>
           <Bar>

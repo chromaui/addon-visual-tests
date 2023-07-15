@@ -251,6 +251,7 @@ const meta = {
   parameters: withBuild(passedBuild),
   args: {
     storyId: "button--primary",
+    projectId: "Project:id123",
   },
 } satisfies Meta<typeof VisualTests>;
 
@@ -274,6 +275,14 @@ export const NoChanges: Story = {
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304933&t=0rxMQnkxsVpVj1qy-4"
     ),
+  },
+};
+
+export const NoBuild: Story = {
+  parameters: {
+    ...withGraphQLQuery("Build", (req, res, ctx) => res(ctx.data({ build: null } as BuildQuery))),
+    // No design for this state
+    // ...withFigmaDesign(""),
   },
 };
 
