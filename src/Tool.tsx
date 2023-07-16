@@ -39,7 +39,7 @@ export const Tool = () => {
       onClick={runDevBuild}
     >
       {state.isRunning ? (
-        <ProgressIcon onButton />
+        <ProgressIcon onButton="IconButton" style={{ marginRight: 6 }} />
       ) : (
         <Icons icon="play" style={{ marginRight: 6 }} />
       )}
