@@ -9,18 +9,24 @@ import React, { useCallback } from "react";
 import { ADDON_ID, PANEL_ID, START_BUILD } from "./constants";
 import { TestFieldsFragment } from "./gql/graphql";
 import { Authentication } from "./screens/Authentication/Authentication";
+import { LinkedProject } from "./screens/LinkProject/LinkedProject";
+import { LinkProject } from "./screens/LinkProject/LinkProject";
 import { VisualTests } from "./screens/VisualTests/VisualTests";
 import { AddonState, CompletedBuild, StartedBuild } from "./types";
 import { client, Provider, useAccessToken } from "./utils/graphQLClient";
 import { testsToStatusUpdate } from "./utils/testsToStatusUpdate";
+import { useProjectId } from "./utils/useProjectId";
 
 interface PanelProps {
   active: boolean;
 }
 
+const { GIT_BRANCH, GIT_SLUG } = process.env;
+
 export const Panel = ({ active }: PanelProps) => {
   const api = useStorybookApi();
   const [accessToken, setAccessToken] = useAccessToken();
+
   const [state, setAddonState] = useAddonState<AddonState>(ADDON_ID, { isOutdated: true });
   const { storyId } = useStorybookState();
 
@@ -50,6 +56,7 @@ export const Panel = ({ active }: PanelProps) => {
     },
     [api]
   );
+  const [projectId, updateProject, projectIdChanged, clearProjectIdChanged] = useProjectId();
 
   // Render a hidden element when the addon panel is not active.
   // Storybook's AddonPanel component does the same but it's not styleable so we don't use it.
@@ -58,9 +65,26 @@ export const Panel = ({ active }: PanelProps) => {
   // Render the Authentication flow if the user is not signed in.
   if (!accessToken) return <Authentication key={PANEL_ID} setAccessToken={setAccessToken} />;
 
+  if (!projectId)
+    return (
+      <Provider key={PANEL_ID} value={client}>
+        <LinkProject onUpdateProject={updateProject} />
+      </Provider>
+    );
+
+  if (projectIdChanged) {
+    return (
+      <Provider key={PANEL_ID} value={client}>
+        <LinkedProject projectId={projectId} goToNext={clearProjectIdChanged} />
+      </Provider>
+    );
+  }
   return (
     <Provider key={PANEL_ID} value={client}>
       <VisualTests
+        projectId={projectId}
+        branch={GIT_BRANCH}
+        slug={GIT_SLUG}
         isOutdated={state.isOutdated}
         isRunning={state.isRunning}
         lastDevBuildId={state.lastBuildId}

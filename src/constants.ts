@@ -8,3 +8,11 @@ export const DEV_BUILD_ID_KEY = `${ADDON_ID}/dev-build-id`;
 
 export const START_BUILD = `${ADDON_ID}/startBuild`;
 export const BUILD_STARTED = `${ADDON_ID}/buildStarted`;
+
+export const UPDATE_PROJECT = `${ADDON_ID}/updateProject`;
+export type UpdateProjectPayload = {
+  projectId: string;
+  projectToken: string;
+};
+
+export const PROJECT_UPDATED = `${ADDON_ID}/projectUpdated`;

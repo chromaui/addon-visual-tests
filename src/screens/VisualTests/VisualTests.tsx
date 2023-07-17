@@ -6,9 +6,8 @@ import { useQuery } from "urql";
 import { IconButton } from "../../components/IconButton";
 import { Bar, Col, Row, Section, Sections, Text } from "../../components/layout";
 import { TooltipMenu } from "../../components/TooltipMenu";
-import { graphql } from "../../gql";
+import { getFragment, graphql } from "../../gql";
 import {
-  BuildFieldsFragment,
   BuildQuery,
   BuildQueryVariables,
   TestFieldsFragment,
@@ -17,6 +16,7 @@ import {
 } from "../../gql/graphql";
 import { CompletedBuild, StartedBuild } from "../../types";
 import { aggregateResult } from "../../utils/aggregateResult";
+import { useProjectId } from "../../utils/useProjectId";
 import { BuildInfo } from "./BuildInfo";
 import { RenderSettings } from "./RenderSettings";
 import { SnapshotComparison } from "./SnapshotComparison";
@@ -30,11 +30,15 @@ const QueryBuild = graphql(/* GraphQL */ `
       ...BuildFields
     }
     project(id: $projectId) @skip(if: $hasBuildId) {
+      name
       lastBuild(branches: [$branch]) {
         ...BuildFields
       }
     }
   }
+`);
+
+const FragmentBuildFields = graphql(/* GraphQL */ `
   fragment BuildFields on Build {
     __typename
     id
@@ -67,6 +71,8 @@ const QueryBuild = graphql(/* GraphQL */ `
       }
     }
   }
+`);
+const FragmentTestFields = graphql(/* GraphQL */ `
   fragment TestFields on Test {
     id
     status
@@ -113,6 +119,9 @@ const QueryBuild = graphql(/* GraphQL */ `
 `);
 
 interface VisualTestsProps {
+  projectId: string;
+  branch?: string;
+  slug?: string;
   isOutdated?: boolean;
   isRunning?: boolean;
   lastDevBuildId?: string;
@@ -133,15 +142,20 @@ export const VisualTests = ({
   setIsOutdated,
   setIsRunning,
   updateBuildStatus,
+  projectId,
+  branch,
+  slug,
   storyId,
 }: VisualTestsProps) => {
+  // TODO: Replace hardcoded projectId with useProjectId hook and parameters
   const [{ data, fetching, error }, rerun] = useQuery<BuildQuery, BuildQueryVariables>({
     query: QueryBuild,
     variables: {
       hasBuildId: !!lastDevBuildId,
       buildId: lastDevBuildId || "",
-      projectId: "643d59b4f51c48601c1df552",
-      branch: "test",
+      projectId,
+      branch: branch || "",
+      ...(slug ? { slug } : {}),
     },
   });
 
@@ -158,7 +172,7 @@ export const VisualTests = ({
     }
   }, [isRunning, setIsOutdated, setIsRunning, updateBuildStatus, data]);
 
-  const build = (data?.build || data?.project.lastBuild) as BuildFieldsFragment;
+  const build = getFragment(FragmentBuildFields, data?.build || data?.project?.lastBuild);
 
   useEffect(() => {
     let interval: any;
@@ -182,6 +196,18 @@ export const VisualTests = ({
             </Row>
           )}
           {fetching && <Loader />}
+          {!build && !fetching && !error && (
+            <Section grow>
+              <Row>
+                <Col>
+                  <Text>
+                    Your project {data.project?.name} does not have any builds yet. Run a build a to
+                    begin.
+                  </Text>
+                </Col>
+              </Row>
+            </Section>
+          )}
         </Section>
         <Section>
           <Bar>
@@ -215,7 +241,7 @@ export const VisualTests = ({
     );
   }
 
-  const allTests = ("tests" in build ? build.tests.nodes : []) as TestFieldsFragment[];
+  const allTests = getFragment(FragmentTestFields, "tests" in build ? build.tests.nodes : []);
   const tests = allTests.filter((test) => test.story?.storyId === storyId);
 
   const { changeCount, brokenCount, resultsByBrowser, resultsByViewport, viewportInfoById } =
