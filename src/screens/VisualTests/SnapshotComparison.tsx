@@ -111,7 +111,7 @@ export const SnapshotComparison = ({
                   {(active) => (
                     <IconButton secondary active={active}>
                       {isAccepting ? (
-                        <ProgressIcon onButton="IconButton" />
+                        <ProgressIcon parentComponent="IconButton" />
                       ) : (
                         <Icons icon="batchaccept" />
                       )}

@@ -115,7 +115,7 @@ export const BuildInfo = ({
           <Col push>
             <Button small secondary onClick={runDevBuild} disabled={isRunning}>
               {isRunning ? (
-                <ProgressIcon onButton style={{ marginRight: 6 }} />
+                <ProgressIcon parentComponent="Button" style={{ marginRight: 6 }} />
               ) : (
                 <Icons icon="play" />
               )}
@@ -127,7 +127,7 @@ export const BuildInfo = ({
           <Col push>
             <Button small secondary onClick={runDevBuild} disabled={isRunning}>
               {isRunning ? (
-                <ProgressIcon onButton style={{ marginRight: 6 }} />
+                <ProgressIcon parentComponent="Button" style={{ marginRight: 6 }} />
               ) : (
                 <Icons icon="play" />
               )}

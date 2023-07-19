@@ -3,7 +3,7 @@ import { css, styled } from "@storybook/theming";
 
 const { rotate360 } = animation;
 
-export const ProgressIcon = styled.div<{ onButton?: boolean | "IconButton" }>(
+export const ProgressIcon = styled.div<{ parentComponent?: "Button" | "IconButton" }>(
   ({ theme }) => ({
     width: 12,
     height: 12,
@@ -20,10 +20,10 @@ export const ProgressIcon = styled.div<{ onButton?: boolean | "IconButton" }>(
     cursor: "progress",
     transform: "translate3d(0, 0, 0)",
   }),
-  ({ onButton }) =>
-    onButton &&
+  ({ parentComponent }) =>
+    parentComponent &&
     css({
-      margin: onButton === "IconButton" ? 1 : 0,
+      margin: parentComponent === "IconButton" ? 1 : 0,
       borderWidth: 1,
       borderLeftColor: "currentcolor",
       borderBottomColor: "currentcolor",
