@@ -4,11 +4,13 @@ import React, { ComponentProps, useState } from "react";
 
 import { BrowserSelector } from "../../components/BrowserSelector";
 import { IconButton } from "../../components/IconButton";
+import { ProgressIcon } from "../../components/icons/ProgressIcon";
 import { Bar, Col } from "../../components/layout";
 import { Placeholder } from "../../components/Placeholder";
 import { SnapshotImage } from "../../components/SnapshotImage";
+import { TooltipMenu } from "../../components/TooltipMenu";
 import { ViewportSelector } from "../../components/ViewportSelector";
-import { ComparisonResult, TestFieldsFragment } from "../../gql/graphql";
+import { ComparisonResult, ReviewTestBatch, TestFieldsFragment } from "../../gql/graphql";
 
 const Divider = styled.div(({ theme }) => ({
   backgroundColor: theme.appBorderColor,
@@ -19,17 +21,21 @@ const Divider = styled.div(({ theme }) => ({
 interface SnapshotSectionProps {
   test?: TestFieldsFragment;
   changeCount: number;
+  isAccepting: boolean;
   isInProgress: boolean;
   browserResults: ComponentProps<typeof BrowserSelector>["browserResults"];
   viewportResults: ComponentProps<typeof ViewportSelector>["viewportResults"];
+  onAccept: (testId: TestFieldsFragment["id"], batch?: ReviewTestBatch) => void;
 }
 
 export const SnapshotComparison = ({
   test,
   changeCount,
+  isAccepting,
   isInProgress,
   browserResults,
   viewportResults,
+  onAccept,
 }: SnapshotSectionProps) => {
   const [diffVisible, setDiffVisible] = useState(true);
 
@@ -76,12 +82,42 @@ export const SnapshotComparison = ({
           {changeCount > 0 && (
             <>
               <Col push>
-                <IconButton secondary>Accept</IconButton>
+                <IconButton secondary onClick={() => onAccept(test.id)}>
+                  Accept
+                </IconButton>
               </Col>
               <Col>
-                <IconButton secondary>
-                  <Icons icon="batchaccept" />
-                </IconButton>
+                <TooltipMenu
+                  placement="bottom"
+                  links={[
+                    {
+                      id: "logout",
+                      title: "Accept all viewports",
+                      center: "Accept all unreviewed changes to this story",
+                      onClick: () => onAccept(test.id, ReviewTestBatch.Spec),
+                      disabled: isAccepting,
+                      loading: isAccepting,
+                    },
+                    {
+                      id: "learn",
+                      title: "Accept this component",
+                      center: "Accept all unreviewed changes for this component",
+                      onClick: () => onAccept(test.id, ReviewTestBatch.Component),
+                      disabled: isAccepting,
+                      loading: isAccepting,
+                    },
+                  ]}
+                >
+                  {(active) => (
+                    <IconButton secondary active={active}>
+                      {isAccepting ? (
+                        <ProgressIcon parentComponent="IconButton" />
+                      ) : (
+                        <Icons icon="batchaccept" />
+                      )}
+                    </IconButton>
+                  )}
+                </TooltipMenu>
               </Col>
             </>
           )}

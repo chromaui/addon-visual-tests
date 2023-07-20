@@ -114,7 +114,11 @@ export const BuildInfo = ({
         {isOutdated && (
           <Col push>
             <Button small secondary onClick={runDevBuild} disabled={isRunning}>
-              {isRunning ? <ProgressIcon onButton /> : <Icons icon="play" />}
+              {isRunning ? (
+                <ProgressIcon parentComponent="Button" style={{ marginRight: 6 }} />
+              ) : (
+                <Icons icon="play" />
+              )}
               Run tests
             </Button>
           </Col>
@@ -122,7 +126,11 @@ export const BuildInfo = ({
         {status === BuildStatus.Failed && (
           <Col push>
             <Button small secondary onClick={runDevBuild} disabled={isRunning}>
-              {isRunning ? <ProgressIcon onButton /> : <Icons icon="play" />}
+              {isRunning ? (
+                <ProgressIcon parentComponent="Button" style={{ marginRight: 6 }} />
+              ) : (
+                <Icons icon="play" />
+              )}
               Rerun tests
             </Button>
           </Col>
