@@ -51,9 +51,11 @@
     "lint": "eslint src --max-warnings 0 --report-unused-disable-directives",
     "release": "yarn run build && auto shipit",
     "start": "run-p build:watch 'storybook --quiet'",
-    "storybook": "storybook dev -p 6006"
+    "prerelease": "zx scripts/prepublish-checks.mjs",
+    "storybook": "CHROMATIC_ADDON_NAME='../dist/index.js' storybook dev -p 6006"
   },
   "dependencies": {
+    "@storybook/csf-tools": "^7.1.0-alpha.34",
     "@storybook/design-system": "^7.15.11",
     "chromatic": "^6.19.8",
     "date-fns": "^2.30.0",
@@ -63,6 +65,7 @@
   "devDependencies": {
     "@graphql-codegen/cli": "^4.0.1",
     "@graphql-codegen/client-preset": "^4.0.1",
+    "@graphql-typed-document-node/core": "^3.2.0",
     "@storybook/addon-actions": "^7.1.0-alpha.34",
     "@storybook/addon-essentials": "^7.1.0-alpha.34",
     "@storybook/addon-interactions": "^7.1.0-alpha.34",

@@ -1,7 +1,4 @@
 import type { StorybookConfig } from "@storybook/react-vite";
-
-const CHROMATIC_BASE_URL = process.env.CHROMATIC_BASE_URL || "https://www.chromatic.com";
-
 const config: StorybookConfig = {
   addons: [
     {
@@ -17,16 +14,13 @@ const config: StorybookConfig = {
       name: "../dist/index.js",
       options: {
         projectToken: "chpt_c4206d1157d8947",
+        projectId: "6480e1b0042842f149cfd74c", // Default to the the production project of this addon - WILL BE MOVED TO preview.tsx since we can't access options in the manager.
       },
     },
   ],
   docs: {
     autodocs: "tag",
   },
-  env: (config) => ({
-    ...config,
-    CHROMATIC_BASE_URL,
-  }),
   framework: {
     name: "@storybook/react-vite",
     options: {},
@@ -35,5 +29,4 @@ const config: StorybookConfig = {
   stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|ts|tsx)"],
   logLevel: "debug",
 };
-
 export default config;

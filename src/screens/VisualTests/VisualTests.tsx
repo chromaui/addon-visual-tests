@@ -1,21 +1,23 @@
 import { Loader } from "@storybook/components";
 import { Icon } from "@storybook/design-system";
-import React, { useEffect, useState } from "react";
-import { useQuery } from "urql";
+import React, { useCallback, useEffect, useState } from "react";
+import { useMutation, useQuery } from "urql";
 
 import { IconButton } from "../../components/IconButton";
 import { Bar, Col, Row, Section, Sections, Text } from "../../components/layout";
 import { TooltipMenu } from "../../components/TooltipMenu";
-import { graphql } from "../../gql";
+import { getFragment, graphql } from "../../gql";
 import {
-  BuildFieldsFragment,
   BuildQuery,
   BuildQueryVariables,
+  ReviewTestBatch,
+  ReviewTestInputStatus,
   TestFieldsFragment,
   TestResult,
   TestStatus,
 } from "../../gql/graphql";
 import { aggregateResult } from "../../utils/aggregateResult";
+import { useProjectId } from "../../utils/useProjectId";
 import { BuildInfo } from "./BuildInfo";
 import { RenderSettings } from "./RenderSettings";
 import { SnapshotComparison } from "./SnapshotComparison";
@@ -29,11 +31,15 @@ const QueryBuild = graphql(/* GraphQL */ `
       ...BuildFields
     }
     project(id: $projectId) @skip(if: $hasBuildId) {
+      name
       lastBuild(branches: [$branch]) {
         ...BuildFields
       }
     }
   }
+`);
+
+const FragmentBuildFields = graphql(/* GraphQL */ `
   fragment BuildFields on Build {
     __typename
     id
@@ -66,6 +72,8 @@ const QueryBuild = graphql(/* GraphQL */ `
       }
     }
   }
+`);
+const FragmentTestFields = graphql(/* GraphQL */ `
   fragment TestFields on Test {
     id
     status
@@ -111,7 +119,37 @@ const QueryBuild = graphql(/* GraphQL */ `
   }
 `);
 
+const MutationReviewTest = graphql(/* GraphQL */ `
+  mutation ReviewTest($input: ReviewTestInput!) {
+    reviewTest(input: $input) {
+      updatedTests {
+        id
+        status
+      }
+      userErrors {
+        ... on UserError {
+          __typename
+          message
+        }
+        ... on BuildSupersededError {
+          build {
+            id
+          }
+        }
+        ... on TestUnreviewableError {
+          test {
+            id
+          }
+        }
+      }
+    }
+  }
+`);
+
 interface VisualTestsProps {
+  projectId: string;
+  branch?: string;
+  slug?: string;
   isOutdated?: boolean;
   isRunning?: boolean;
   lastDevBuildId?: string;
@@ -130,17 +168,30 @@ export const VisualTests = ({
   setAccessToken,
   setIsOutdated,
   setIsRunning,
+  projectId,
+  branch,
+  slug,
   storyId,
 }: VisualTestsProps) => {
+  // TODO: Replace hardcoded projectId with useProjectId hook and parameters
   const [{ data, fetching, error }, rerun] = useQuery<BuildQuery, BuildQueryVariables>({
     query: QueryBuild,
     variables: {
       hasBuildId: !!lastDevBuildId,
       buildId: lastDevBuildId || "",
-      projectId: "643d59b4f51c48601c1df552",
-      branch: "test",
+      projectId,
+      branch: branch || "",
+      ...(slug ? { slug } : {}),
     },
   });
+
+  const [{ fetching: isAccepting }, reviewTest] = useMutation(MutationReviewTest);
+
+  const onAccept = useCallback(
+    (testId: string, batch: ReviewTestBatch) =>
+      reviewTest({ input: { testId, status: ReviewTestInputStatus.Accepted, batch } }),
+    [reviewTest]
+  );
 
   useEffect(() => {
     if (isRunning && data?.build && "result" in data.build) {
@@ -149,7 +200,7 @@ export const VisualTests = ({
     }
   }, [isRunning, setIsOutdated, setIsRunning, data]);
 
-  const build = (data?.build || data?.project.lastBuild) as BuildFieldsFragment;
+  const build = getFragment(FragmentBuildFields, data?.build || data?.project?.lastBuild);
 
   useEffect(() => {
     let interval: any;
@@ -173,6 +224,18 @@ export const VisualTests = ({
             </Row>
           )}
           {fetching && <Loader />}
+          {!build && !fetching && !error && (
+            <Section grow>
+              <Row>
+                <Col>
+                  <Text>
+                    Your project {data.project?.name} does not have any builds yet. Run a build a to
+                    begin.
+                  </Text>
+                </Col>
+              </Row>
+            </Section>
+          )}
         </Section>
         <Section>
           <Bar>
@@ -206,7 +269,7 @@ export const VisualTests = ({
     );
   }
 
-  const allTests = ("tests" in build ? build.tests.nodes : []) as TestFieldsFragment[];
+  const allTests = getFragment(FragmentTestFields, "tests" in build ? build.tests.nodes : []);
   const tests = allTests.filter((test) => test.story?.storyId === storyId);
 
   const { changeCount, brokenCount, resultsByBrowser, resultsByViewport, viewportInfoById } =
@@ -283,10 +346,12 @@ export const VisualTests = ({
           {...{
             test,
             changeCount,
+            isAccepting,
             isInProgress,
             isOutdated,
             browserResults,
             viewportResults,
+            onAccept,
           }}
         />
       </Section>
