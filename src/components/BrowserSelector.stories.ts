@@ -25,7 +25,7 @@ const browserSafari = {
   name: "Safari",
 };
 
-export const WithSingleViewportChanged: Story = {
+export const WithSingleBrowserChanged: Story = {
   args: {
     browserResults: [
       {
@@ -36,7 +36,7 @@ export const WithSingleViewportChanged: Story = {
   },
 };
 
-export const WithSingleViewportEqual: Story = {
+export const WithSingleBrowserEqual: Story = {
   args: {
     browserResults: [
       {
@@ -47,7 +47,7 @@ export const WithSingleViewportEqual: Story = {
   },
 };
 
-export const WithSingleViewportError: Story = {
+export const WithSingleBrowserError: Story = {
   args: {
     browserResults: [
       {
@@ -58,7 +58,7 @@ export const WithSingleViewportError: Story = {
   },
 };
 
-export const WithManyViewportsEqual: Story = {
+export const WithManyBrowsersEqual: Story = {
   args: {
     browserResults: [
       {
@@ -73,7 +73,7 @@ export const WithManyViewportsEqual: Story = {
   },
 };
 
-export const WithManyViewportsVaried: Story = {
+export const WithManyBrowsersVaried: Story = {
   args: {
     browserResults: [
       {
