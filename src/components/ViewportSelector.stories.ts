@@ -1,8 +1,8 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import { ComparisonResult } from "../gql/graphql";
-
-import { ViewportSelector } from "./ViewportSelector";
 import { action } from "@storybook/addon-actions";
+import type { Meta, StoryObj } from "@storybook/react";
+
+import { ComparisonResult } from "../gql/graphql";
+import { ViewportSelector } from "./ViewportSelector";
 
 const meta = {
   component: ViewportSelector,
