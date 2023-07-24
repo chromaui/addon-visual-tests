@@ -16,9 +16,8 @@ import {
   TestResult,
   TestStatus,
 } from "../../gql/graphql";
-import { CompletedBuild, StartedBuild } from "../../types";
+import { BuildWithTests } from "../../types";
 import { aggregateResult } from "../../utils/aggregateResult";
-import { useProjectId } from "../../utils/useProjectId";
 import { BuildInfo } from "./BuildInfo";
 import { RenderSettings } from "./RenderSettings";
 import { SnapshotComparison } from "./SnapshotComparison";
@@ -158,7 +157,7 @@ interface VisualTestsProps {
   setAccessToken: (accessToken: string | null) => void;
   setIsOutdated: (isOutdated: boolean) => void;
   setIsRunning: (isRunning: boolean) => void;
-  updateBuildStatus: (build: StartedBuild | CompletedBuild) => void;
+  updateBuildStatus: (build: BuildWithTests) => void;
   storyId: string;
 }
 

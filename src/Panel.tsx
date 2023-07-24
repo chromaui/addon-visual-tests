@@ -13,7 +13,7 @@ import { Authentication } from "./screens/Authentication/Authentication";
 import { LinkedProject } from "./screens/LinkProject/LinkedProject";
 import { LinkProject } from "./screens/LinkProject/LinkProject";
 import { VisualTests } from "./screens/VisualTests/VisualTests";
-import { AddonState, CompletedBuild, StartedBuild } from "./types";
+import { AddonState, BuildWithTests } from "./types";
 import { client, Provider, useAccessToken } from "./utils/graphQLClient";
 import { StatusUpdate, testsToStatusUpdate } from "./utils/testsToStatusUpdate";
 import { useProjectId } from "./utils/useProjectId";
@@ -59,7 +59,7 @@ export const Panel = ({ active }: PanelProps) => {
   }, [emit, state, setAddonState]);
 
   const updateBuildStatus = useCallback(
-    (build: StartedBuild | CompletedBuild) => {
+    (build: BuildWithTests) => {
       updateStatusMemoized(api, testsToStatusUpdate(build.tests.nodes as TestFieldsFragment[]));
     },
     [api]
