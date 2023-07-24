@@ -1,32 +1,34 @@
 import {
   Browser,
+  BrowserInfo,
   ComparisonResult,
   TestFieldsFragment,
   TestResult,
   TestStatus,
+  ViewportInfo,
 } from "../gql/graphql";
 
-export const makeBrowserInfo = (key: Browser) => ({
+export const makeBrowserInfo = (key: Browser): BrowserInfo => ({
   id: key,
   key,
   name: key.slice(0, 1) + key.slice(1).toLowerCase(),
   version: "<unknown>",
 });
 
-export const makeViewportInfo = (width: number) => ({
+export const makeViewportInfo = (width: number): ViewportInfo => ({
   id: `_${width}`,
   name: `${width}px`,
   width,
   isDefault: width === 1200,
 });
 
-export const headCapture = {
+export const headCapture: TestFieldsFragment["comparisons"][number]["headCapture"] = {
   captureImage: {
     imageUrl: "/B.png",
   },
 };
 
-export const captureDiff = {
+export const captureDiff: TestFieldsFragment["comparisons"][number]["captureDiff"] = {
   diffImage: {
     imageUrl: "/B-comparison.png",
   },
@@ -37,7 +39,7 @@ export function makeComparison(options: {
   browser?: Browser;
   viewport?: number;
   result?: ComparisonResult;
-}) {
+}): TestFieldsFragment["comparisons"][number] {
   return {
     id: options.id || "111",
     browser: makeBrowserInfo(options.browser || Browser.Chrome),
