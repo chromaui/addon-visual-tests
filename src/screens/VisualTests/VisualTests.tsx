@@ -1,7 +1,7 @@
 import { Loader } from "@storybook/components";
 import { Icon } from "@storybook/design-system";
-import React, { useEffect, useState } from "react";
-import { useQuery } from "urql";
+import React, { useCallback, useEffect, useState } from "react";
+import { useMutation, useQuery } from "urql";
 
 import { IconButton } from "../../components/IconButton";
 import { Bar, Col, Row, Section, Sections, Text } from "../../components/layout";
@@ -10,6 +10,8 @@ import { getFragment, graphql } from "../../gql";
 import {
   BuildQuery,
   BuildQueryVariables,
+  ReviewTestBatch,
+  ReviewTestInputStatus,
   TestFieldsFragment,
   TestResult,
   TestStatus,
@@ -118,6 +120,33 @@ const FragmentTestFields = graphql(/* GraphQL */ `
   }
 `);
 
+const MutationReviewTest = graphql(/* GraphQL */ `
+  mutation ReviewTest($input: ReviewTestInput!) {
+    reviewTest(input: $input) {
+      updatedTests {
+        id
+        status
+      }
+      userErrors {
+        ... on UserError {
+          __typename
+          message
+        }
+        ... on BuildSupersededError {
+          build {
+            id
+          }
+        }
+        ... on TestUnreviewableError {
+          test {
+            id
+          }
+        }
+      }
+    }
+  }
+`);
+
 interface VisualTestsProps {
   projectId: string;
   branch?: string;
@@ -158,6 +187,14 @@ export const VisualTests = ({
       ...(slug ? { slug } : {}),
     },
   });
+
+  const [{ fetching: isAccepting }, reviewTest] = useMutation(MutationReviewTest);
+
+  const onAccept = useCallback(
+    (testId: string, batch: ReviewTestBatch) =>
+      reviewTest({ input: { testId, status: ReviewTestInputStatus.Accepted, batch } }),
+    [reviewTest]
+  );
 
   useEffect(() => {
     if (!isRunning || !data?.build) return;
@@ -318,10 +355,12 @@ export const VisualTests = ({
           {...{
             test,
             changeCount,
+            isAccepting,
             isInProgress,
             isOutdated,
             browserResults,
             viewportResults,
+            onAccept,
           }}
         />
       </Section>

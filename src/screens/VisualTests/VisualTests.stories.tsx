@@ -242,6 +242,12 @@ const withGraphQLQuery = (...args: Parameters<typeof graphql.query>) => ({
   },
 });
 
+const withGraphQLMutation = (...args: Parameters<typeof graphql.mutation>) => ({
+  msw: {
+    handlers: [graphql.mutation(...args)],
+  },
+});
+
 const withBuild = (build: AnnouncedBuild | PublishedBuild | StartedBuild | CompletedBuild) =>
   withGraphQLQuery("Build", (req, res, ctx) => res(ctx.data({ build } as BuildQuery)));
 
@@ -337,6 +343,26 @@ export const Pending: Story = {
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304718&t=0rxMQnkxsVpVj1qy-4"
     ),
   },
+};
+
+export const Accepting: Story = {
+  parameters: {
+    msw: {
+      handlers: [
+        ...withBuild(pendingBuild).msw.handlers,
+        ...withGraphQLMutation("ReviewTest", (req, res, ctx) =>
+          res(ctx.status(200), ctx.data({}), ctx.delay("infinite"))
+        ).msw.handlers,
+      ],
+    },
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304718&t=0rxMQnkxsVpVj1qy-4"
+    ),
+  },
+  play: playAll(async ({ canvasElement }) => {
+    const button = await findByRole(canvasElement, "button", { name: "Accept" });
+    await fireEvent.click(button);
+  }),
 };
 
 export const Accepted: Story = {
