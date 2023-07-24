@@ -2,12 +2,12 @@ import { action } from "@storybook/addon-actions";
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { Browser, ComparisonResult, TestResult, TestStatus } from "../../gql/graphql";
-import { comparison, test } from "../../utils/storyData";
+import { makeComparison, makeTest } from "../../utils/storyData";
 import { SnapshotComparison } from "./SnapshotComparison";
 
 const browsers = [Browser.Chrome, Browser.Safari];
 const tests = [
-  test({
+  makeTest({
     id: "11",
     status: TestStatus.Passed,
     result: TestResult.Equal,
@@ -15,18 +15,18 @@ const tests = [
     viewport: 1200,
     storyId: "button--primary",
   }),
-  test({
+  makeTest({
     id: "11",
     status: TestStatus.Pending,
     result: TestResult.Changed,
     comparisons: [
-      comparison({
+      makeComparison({
         id: "112",
         browser: Browser.Chrome,
         viewport: 800,
         result: ComparisonResult.Equal,
       }),
-      comparison({
+      makeComparison({
         id: "112",
         browser: Browser.Safari,
         viewport: 800,
@@ -36,7 +36,7 @@ const tests = [
     viewport: 800,
     storyId: "button--primary",
   }),
-  test({
+  makeTest({
     id: "13",
     status: TestStatus.Passed,
     result: TestResult.Equal,

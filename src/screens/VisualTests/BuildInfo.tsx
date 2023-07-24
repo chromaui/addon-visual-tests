@@ -70,8 +70,8 @@ export const BuildInfo = ({
           {build.brokenCount ? `, ${pluralize("error", build.brokenCount, true)}` : null}
         </b>
         <StatusIcon
-          // eslint-disable-next-line no-nested-ternary
           icon={
+            // eslint-disable-next-line no-nested-ternary
             build.brokenCount ? "failed" : status === BuildStatus.Pending ? "changed" : "passed"
           }
         />

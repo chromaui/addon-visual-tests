@@ -7,7 +7,7 @@ import { Browser, BuildStatus, ComparisonResult, TestResult, TestStatus } from "
 import { AnnouncedBuild, CompletedBuild, PublishedBuild, StartedBuild } from "../../types";
 import { storyWrapper } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
-import { browser, headCapture, test, viewport } from "../../utils/storyData";
+import { headCapture, makeBrowserInfo, makeTest, makeViewportInfo } from "../../utils/storyData";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
 import * as SnapshotComparisonStories from "./SnapshotComparison.stories";
 import { VisualTests } from "./VisualTests";
@@ -16,7 +16,7 @@ const { tests: primaryTests } = SnapshotComparisonStories.default.args;
 const browsers = [Browser.Chrome, Browser.Safari];
 const tests = [
   ...primaryTests,
-  test({
+  makeTest({
     id: "21",
     status: TestStatus.Passed,
     result: TestResult.Equal,
@@ -44,7 +44,7 @@ const announcedBuild: AnnouncedBuild = {
   number: 1,
   branch: "feature-branch",
   commit: "1234567",
-  browsers: [browser(Browser.Chrome), browser(Browser.Safari)],
+  browsers: [makeBrowserInfo(Browser.Chrome), makeBrowserInfo(Browser.Safari)],
   status: BuildStatus.Announced,
 };
 

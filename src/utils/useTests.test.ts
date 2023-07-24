@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import { Browser, ComparisonResult, TestResult, TestStatus } from "../gql/graphql";
-import { browser, comparison, test } from "./storyData";
+import { makeBrowserInfo, makeComparison, makeTest } from "./storyData";
 import { useTests } from "./useTests";
 
 jest.mock("react", () => ({
@@ -10,39 +10,39 @@ jest.mock("react", () => ({
 }));
 
 const tests = [
-  test({
+  makeTest({
     id: "11",
     status: TestStatus.Passed,
     result: TestResult.Equal,
     browsers: [Browser.Chrome, Browser.Safari],
   }),
-  test({
+  makeTest({
     id: "12",
     status: TestStatus.Broken,
     result: TestResult.CaptureError,
     viewport: 800,
     browsers: [Browser.Chrome, Browser.Safari],
   }),
-  test({
+  makeTest({
     id: "13",
     status: TestStatus.Pending,
     result: TestResult.Changed,
     viewport: 480,
     browsers: [Browser.Chrome, Browser.Safari],
   }),
-  test({
+  makeTest({
     id: "14",
     status: TestStatus.InProgress,
     result: null,
     viewport: 1600,
     comparisons: [
-      comparison({
+      makeComparison({
         id: "141",
         browser: Browser.Chrome,
         viewport: 1600,
         result: null,
       }),
-      comparison({
+      makeComparison({
         id: "142",
         browser: Browser.Safari,
         viewport: 1600,

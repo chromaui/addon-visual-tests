@@ -6,14 +6,14 @@ import {
   TestStatus,
 } from "../gql/graphql";
 
-export const browser = (key: Browser) => ({
+export const makeBrowserInfo = (key: Browser) => ({
   id: key,
   key,
   name: key.slice(0, 1) + key.slice(1).toLowerCase(),
   version: "<unknown>",
 });
 
-export const viewport = (width: number) => ({
+export const makeViewportInfo = (width: number) => ({
   id: `_${width}`,
   name: `${width}px`,
   width,
@@ -32,7 +32,7 @@ export const captureDiff = {
   },
 };
 
-export function comparison(options: {
+export function makeComparison(options: {
   id?: string;
   browser?: Browser;
   viewport?: number;
@@ -40,8 +40,8 @@ export function comparison(options: {
 }) {
   return {
     id: options.id || "111",
-    browser: browser(options.browser || Browser.Chrome),
-    viewport: viewport(options.viewport || 1200),
+    browser: makeBrowserInfo(options.browser || Browser.Chrome),
+    viewport: makeViewportInfo(options.viewport || 1200),
     result: options.result || ComparisonResult.Equal,
     headCapture,
   };
@@ -58,7 +58,7 @@ const testResultToComparisonResult: Record<TestResult, ComparisonResult> = {
   [TestResult.SystemError]: ComparisonResult.SystemError,
 };
 
-export function test(options: {
+export function makeTest(options: {
   id?: string;
   status?: TestStatus;
   result?: TestResult;
@@ -74,7 +74,7 @@ export function test(options: {
   const comparisons =
     options.comparisons ||
     (options.browsers || [Browser.Chrome]).map((browserKey, index) =>
-      comparison({
+      makeComparison({
         id: `id${index}`,
         browser: browserKey,
         viewport: viewportWidth,
@@ -87,7 +87,7 @@ export function test(options: {
     result,
     webUrl: `https://www.chromatic.com/test?appId=123&id=${id}`,
     comparisons,
-    parameters: { viewport: viewport(viewportWidth) },
+    parameters: { viewport: makeViewportInfo(viewportWidth) },
     story: { storyId: options.storyId || "button--primary" },
   };
 }
