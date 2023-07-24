@@ -13,7 +13,7 @@ export default defineConfig((options) => [
     },
     treeshake: true,
     sourcemap: true,
-    clean: true,
+    clean: !options.watch,
     platform: "node",
     esbuildOptions(options) {
       options.conditions = ["module"];
@@ -32,7 +32,7 @@ export default defineConfig((options) => [
     },
     treeshake: true,
     sourcemap: true,
-    clean: true,
+    clean: !options.watch,
     platform: "browser",
     esbuildOptions(options) {
       options.conditions = ["module"];
