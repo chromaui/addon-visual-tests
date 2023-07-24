@@ -208,7 +208,7 @@ export const VisualTests = ({
     if ("result" in build && isRunning) {
       setIsRunning(false);
     }
-  }, [setIsOutdated, setIsRunning, updateBuildStatus, build]);
+  }, [setIsOutdated, setIsRunning, updateBuildStatus, isRunning, build]);
 
   useEffect(() => {
     let interval: any;

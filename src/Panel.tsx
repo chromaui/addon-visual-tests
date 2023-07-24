@@ -1,11 +1,10 @@
+import type { API } from "@storybook/manager-api";
 import {
-  API,
   useAddonState,
   useChannel,
   useStorybookApi,
   useStorybookState,
 } from "@storybook/manager-api";
-import memoize from "memoizerific";
 import React, { useCallback } from "react";
 
 import { ADDON_ID, PANEL_ID, START_BUILD } from "./constants";
