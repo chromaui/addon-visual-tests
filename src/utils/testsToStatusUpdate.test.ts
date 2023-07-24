@@ -15,7 +15,7 @@ it("handles single test", () => {
     {
       "story--id": {
         "description": "Chromatic Visual Tests",
-        "status": "success",
+        "status": null,
         "title": "Visual Tests",
       },
     }
