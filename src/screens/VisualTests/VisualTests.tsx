@@ -196,20 +196,20 @@ export const VisualTests = ({
     [reviewTest]
   );
 
-  useEffect(() => {
-    if (!isRunning || !data?.build) return;
+  const build = getFragment(FragmentBuildFields, data?.build || data?.project?.lastBuild);
 
-    if ("tests" in data.build) {
-      updateBuildStatus(data.build as StartedBuild | CompletedBuild);
+  useEffect(() => {
+    if (!build) return;
+
+    if ("tests" in build) {
+      updateBuildStatus(build);
     }
 
-    if ("result" in data.build) {
+    if ("result" in build) {
       setIsOutdated(false);
       setIsRunning(false);
     }
-  }, [isRunning, setIsOutdated, setIsRunning, updateBuildStatus, data]);
-
-  const build = getFragment(FragmentBuildFields, data?.build || data?.project?.lastBuild);
+  }, [setIsOutdated, setIsRunning, updateBuildStatus, build]);
 
   useEffect(() => {
     let interval: any;
