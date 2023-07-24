@@ -33,9 +33,15 @@ export const BuildInfo = ({
     "startedAt" in build &&
     formatDistance(new Date(build.startedAt), new Date(), { addSuffix: true });
   const browserCount = browsers.length;
+  const inProgress = [
+    BuildStatus.InProgress,
+    BuildStatus.Announced,
+    BuildStatus.Prepared,
+    BuildStatus.Published,
+  ].includes(status);
 
   let statusText;
-  if (status === BuildStatus.InProgress) {
+  if (inProgress) {
     statusText = (
       <>
         <b>Running tests...</b>
@@ -93,8 +99,8 @@ export const BuildInfo = ({
           {pluralize("browser", browserCount, true)}
         </span>
         {" • "}
-        {status === BuildStatus.InProgress && <span>Test in progress...</span>}
-        {status !== BuildStatus.InProgress && "startedAt" in build && (
+        {inProgress && <span>Test in progress...</span>}
+        {inProgress && "startedAt" in build && (
           <span title={new Date(build.startedAt).toUTCString()}>{startedAgo}</span>
         )}
       </small>
@@ -113,13 +119,8 @@ export const BuildInfo = ({
         </Col>
         {isOutdated && (
           <Col push>
-            <Button
-              small
-              secondary
-              onClick={runDevBuild}
-              disabled={status === BuildStatus.InProgress}
-            >
-              {status === BuildStatus.InProgress ? (
+            <Button small secondary onClick={runDevBuild} disabled={inProgress}>
+              {inProgress ? (
                 <ProgressIcon parentComponent="Button" style={{ marginRight: 6 }} />
               ) : (
                 <Icons icon="play" />
