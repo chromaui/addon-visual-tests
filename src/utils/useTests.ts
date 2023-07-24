@@ -13,6 +13,10 @@ import { aggregateResult } from "./aggregateResult";
 type ViewportData = Pick<ViewportInfo, "id" | "name">;
 type BrowserData = Pick<BrowserInfo, "id" | "key" | "name">;
 
+/**
+ * Pick a single test+comparison (by viewport+browser) from a set of tests
+ * for the same story.
+ */
 export function useTests(tests: TestFieldsFragment[]) {
   const [selectedTest, onSelectTest] = useState<TestFieldsFragment>(tests[0]);
   const [selectedBrowserId, onSelectBrowserId] = useState<BrowserInfo["id"]>(

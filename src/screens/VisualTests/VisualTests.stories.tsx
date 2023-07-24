@@ -7,38 +7,23 @@ import { Browser, BuildStatus, ComparisonResult, TestResult, TestStatus } from "
 import { AnnouncedBuild, CompletedBuild, PublishedBuild, StartedBuild } from "../../types";
 import { storyWrapper } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
-import { browser, headCapture, viewport } from "../../utils/storyData";
+import { browser, headCapture, test, viewport } from "../../utils/storyData";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
 import * as SnapshotComparisonStories from "./SnapshotComparison.stories";
 import { VisualTests } from "./VisualTests";
 
 const { tests: primaryTests } = SnapshotComparisonStories.default.args;
+const browsers = [Browser.Chrome, Browser.Safari];
 const tests = [
   ...primaryTests,
-  {
+  test({
     id: "21",
     status: TestStatus.Passed,
     result: TestResult.Equal,
-    webUrl: "https://www.chromatic.com/test?appId=123&id=21",
-    comparisons: [
-      {
-        id: "211",
-        browser: browser(Browser.Chrome),
-        viewport: viewport(1200),
-        result: ComparisonResult.Equal,
-        headCapture,
-      },
-      {
-        id: "212",
-        browser: browser(Browser.Safari),
-        viewport: viewport(1200),
-        result: ComparisonResult.Equal,
-        headCapture,
-      },
-    ],
-    parameters: { viewport: viewport(1200) },
-    story: { storyId: "button--secondary" },
-  },
+    browsers,
+    viewport: 1200,
+    storyId: "button--secondary",
+  }),
 ];
 
 const paginated = (nodes: TestFieldsFragment[]) => ({

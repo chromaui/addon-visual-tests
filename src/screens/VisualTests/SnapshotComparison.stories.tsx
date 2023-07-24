@@ -2,83 +2,48 @@ import { action } from "@storybook/addon-actions";
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { Browser, ComparisonResult, TestResult, TestStatus } from "../../gql/graphql";
-import { browser, captureDiff, headCapture, viewport } from "../../utils/storyData";
+import { comparison, test } from "../../utils/storyData";
 import { SnapshotComparison } from "./SnapshotComparison";
 
+const browsers = [Browser.Chrome, Browser.Safari];
 const tests = [
-  {
+  test({
     id: "11",
     status: TestStatus.Passed,
     result: TestResult.Equal,
-    webUrl: "https://www.chromatic.com/test?appId=123&id=11",
-    comparisons: [
-      {
-        id: "111",
-        browser: browser(Browser.Chrome),
-        viewport: viewport(1200),
-        result: ComparisonResult.Equal,
-        headCapture,
-      },
-      {
-        id: "112",
-        browser: browser(Browser.Safari),
-        viewport: viewport(1200),
-        result: ComparisonResult.Equal,
-        headCapture,
-      },
-    ],
-    parameters: { viewport: viewport(1200) },
-    story: { storyId: "button--primary" },
-  },
-  {
-    id: "12",
+    browsers,
+    viewport: 1200,
+    storyId: "button--primary",
+  }),
+  test({
+    id: "11",
     status: TestStatus.Pending,
     result: TestResult.Changed,
-    webUrl: "https://www.chromatic.com/test?appId=123&id=12",
     comparisons: [
-      {
-        id: "121",
-        browser: browser(Browser.Chrome),
-        viewport: viewport(800),
+      comparison({
+        id: "112",
+        browser: Browser.Chrome,
+        viewport: 800,
         result: ComparisonResult.Equal,
-        headCapture,
-      },
-      {
-        id: "122",
-        browser: browser(Browser.Safari),
-        viewport: viewport(800),
+      }),
+      comparison({
+        id: "112",
+        browser: Browser.Safari,
+        viewport: 800,
         result: ComparisonResult.Changed,
-        headCapture,
-        captureDiff,
-      },
+      }),
     ],
-    parameters: { viewport: viewport(800) },
-    story: { storyId: "button--primary" },
-  },
-  {
+    viewport: 800,
+    storyId: "button--primary",
+  }),
+  test({
     id: "13",
     status: TestStatus.Passed,
     result: TestResult.Equal,
-    webUrl: "https://www.chromatic.com/test?appId=123&id=13",
-    comparisons: [
-      {
-        id: "131",
-        browser: browser(Browser.Chrome),
-        viewport: viewport(400),
-        result: ComparisonResult.Equal,
-        headCapture,
-      },
-      {
-        id: "132",
-        browser: browser(Browser.Safari),
-        viewport: viewport(400),
-        result: ComparisonResult.Equal,
-        headCapture,
-      },
-    ],
-    parameters: { viewport: viewport(400) },
-    story: { storyId: "button--primary" },
-  },
+    browsers,
+    viewport: 400,
+    storyId: "button--primary",
+  }),
 ];
 
 const meta = {
