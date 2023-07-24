@@ -31,7 +31,7 @@ async function serverChannel(
       flags: {
         projectToken,
         // We might want to drop this later and instead record "uncommitted hashes" on builds
-        forceRebuild: '',
+        forceRebuild: "",
       },
       options: {
         onTaskComplete(ctx: any) {
