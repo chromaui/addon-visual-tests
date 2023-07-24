@@ -205,8 +205,7 @@ export const VisualTests = ({
       updateBuildStatus(build);
     }
 
-    if ("result" in build) {
-      setIsOutdated(false);
+    if ("result" in build && isRunning) {
       setIsRunning(false);
     }
   }, [setIsOutdated, setIsRunning, updateBuildStatus, build]);

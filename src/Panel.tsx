@@ -1,9 +1,11 @@
 import {
+  API,
   useAddonState,
   useChannel,
   useStorybookApi,
   useStorybookState,
 } from "@storybook/manager-api";
+import memoize from "memoizerific";
 import React, { useCallback } from "react";
 
 import { ADDON_ID, PANEL_ID, START_BUILD } from "./constants";
@@ -14,7 +16,7 @@ import { LinkProject } from "./screens/LinkProject/LinkProject";
 import { VisualTests } from "./screens/VisualTests/VisualTests";
 import { AddonState, CompletedBuild, StartedBuild } from "./types";
 import { client, Provider, useAccessToken } from "./utils/graphQLClient";
-import { testsToStatusUpdate } from "./utils/testsToStatusUpdate";
+import { StatusUpdate, testsToStatusUpdate } from "./utils/testsToStatusUpdate";
 import { useProjectId } from "./utils/useProjectId";
 
 interface PanelProps {
@@ -23,11 +25,21 @@ interface PanelProps {
 
 const { GIT_BRANCH, GIT_SLUG } = process.env;
 
+let lastUpdateStr: string;
+const i = 0;
+const updateStatusMemoized = (api: API, statusUpdate: StatusUpdate) => {
+  const updateStr = JSON.stringify(statusUpdate);
+  if (updateStr !== lastUpdateStr) {
+    lastUpdateStr = updateStr;
+    api.experimental_updateStatus(ADDON_ID, statusUpdate);
+  }
+};
+
 export const Panel = ({ active }: PanelProps) => {
   const api = useStorybookApi();
   const [accessToken, setAccessToken] = useAccessToken();
 
-  const [state, setAddonState] = useAddonState<AddonState>(ADDON_ID, { isOutdated: true });
+  const [state, setAddonState] = useAddonState<AddonState>(ADDON_ID, { isOutdated: false });
   const { storyId } = useStorybookState();
 
   const setIsOutdated = useCallback(
@@ -49,10 +61,7 @@ export const Panel = ({ active }: PanelProps) => {
 
   const updateBuildStatus = useCallback(
     (build: StartedBuild | CompletedBuild) => {
-      api.experimental_updateStatus(
-        ADDON_ID,
-        testsToStatusUpdate(build.tests.nodes as TestFieldsFragment[])
-      );
+      updateStatusMemoized(api, testsToStatusUpdate(build.tests.nodes as TestFieldsFragment[]));
     },
     [api]
   );

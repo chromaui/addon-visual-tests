@@ -3,7 +3,7 @@ import type { StoryId } from "@storybook/types";
 
 import type { TestFieldsFragment, TestStatus, ViewportInfo } from "../gql/graphql";
 
-type StatusUpdate = Parameters<API["experimental_updateStatus"]>[1];
+export type StatusUpdate = Parameters<API["experimental_updateStatus"]>[1];
 type StoryStatus = StatusUpdate[any]["status"];
 
 const statusMap: Record<TestStatus, StoryStatus> = {
