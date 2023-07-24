@@ -16,8 +16,8 @@ import {
   TestResult,
   TestStatus,
 } from "../../gql/graphql";
-import { BuildWithTests } from "../../types";
 import { aggregateResult } from "../../utils/aggregateResult";
+import { StatusUpdate, testsToStatusUpdate } from "../../utils/testsToStatusUpdate";
 import { BuildInfo } from "./BuildInfo";
 import { RenderSettings } from "./RenderSettings";
 import { SnapshotComparison } from "./SnapshotComparison";
@@ -157,17 +157,17 @@ interface VisualTestsProps {
   setAccessToken: (accessToken: string | null) => void;
   setIsOutdated: (isOutdated: boolean) => void;
   setIsRunning: (isRunning: boolean) => void;
-  updateBuildStatus: (build: BuildWithTests) => void;
+  updateBuildStatus: (update: StatusUpdate) => void;
   storyId: string;
 }
 
+let last: any;
 export const VisualTests = ({
   isOutdated,
   isRunning,
   lastDevBuildId,
   runDevBuild,
   setAccessToken,
-  setIsOutdated,
   setIsRunning,
   updateBuildStatus,
   projectId,
@@ -197,17 +197,31 @@ export const VisualTests = ({
 
   const build = getFragment(FragmentBuildFields, data?.build || data?.project?.lastBuild);
 
+  const buildComplete = build && "result" in build;
+  const buildStatusUpdate =
+    build &&
+    "tests" in build &&
+    testsToStatusUpdate(getFragment(FragmentTestFields, build.tests.nodes));
+
   useEffect(() => {
-    if (!build) return;
-
-    if ("tests" in build) {
-      updateBuildStatus(build);
-    }
-
-    if ("result" in build && isRunning) {
+    if (buildComplete && isRunning) {
       setIsRunning(false);
     }
-  }, [setIsOutdated, setIsRunning, updateBuildStatus, isRunning, build]);
+  }, [buildComplete, isRunning, setIsRunning]);
+
+  useEffect(() => {
+    console.log(last?.buildStatusUpdate === buildStatusUpdate);
+    console.log(last?.string === JSON.stringify(buildStatusUpdate));
+    last = {
+      buildStatusUpdate,
+      string: JSON.stringify(buildStatusUpdate),
+    };
+    if (buildStatusUpdate) {
+      updateBuildStatus(buildStatusUpdate);
+    }
+    // We use the stringified version of buildStatusUpdate to do a deep diff
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(buildStatusUpdate), updateBuildStatus]);
 
   useEffect(() => {
     let interval: any;
@@ -278,7 +292,6 @@ export const VisualTests = ({
 
   const allTests = getFragment(FragmentTestFields, "tests" in build ? build.tests.nodes : []);
   const tests = allTests.filter((test) => test.story?.storyId === storyId);
-
   const { changeCount, brokenCount, resultsByBrowser, resultsByViewport, viewportInfoById } =
     tests.reduce(
       (acc, test) => {

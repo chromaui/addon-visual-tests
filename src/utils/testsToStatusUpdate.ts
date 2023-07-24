@@ -26,7 +26,7 @@ function chooseWorseStatus(status: StoryStatus, oldStatus: StoryStatus | null) {
   return statusOrder[Math.max(statusOrder.indexOf(status), statusOrder.indexOf(oldStatus))];
 }
 
-export function testsToStatusUpdate<T extends ReducedTest>(tests: T[]): StatusUpdate {
+export function testsToStatusUpdate<T extends ReducedTest>(tests: readonly T[]): StatusUpdate {
   const storyIdToStatus: Record<StoryId, StoryStatus> = {};
   tests.forEach((test) => {
     storyIdToStatus[test.story.storyId] = chooseWorseStatus(

@@ -1,4 +1,3 @@
-import type { API } from "@storybook/manager-api";
 import {
   useAddonState,
   useChannel,
@@ -8,14 +7,13 @@ import {
 import React, { useCallback } from "react";
 
 import { ADDON_ID, PANEL_ID, START_BUILD } from "./constants";
-import { TestFieldsFragment } from "./gql/graphql";
 import { Authentication } from "./screens/Authentication/Authentication";
 import { LinkedProject } from "./screens/LinkProject/LinkedProject";
 import { LinkProject } from "./screens/LinkProject/LinkProject";
 import { VisualTests } from "./screens/VisualTests/VisualTests";
-import { AddonState, BuildWithTests } from "./types";
+import { AddonState } from "./types";
 import { client, Provider, useAccessToken } from "./utils/graphQLClient";
-import { StatusUpdate, testsToStatusUpdate } from "./utils/testsToStatusUpdate";
+import { StatusUpdate } from "./utils/testsToStatusUpdate";
 import { useProjectId } from "./utils/useProjectId";
 
 interface PanelProps {
@@ -23,16 +21,6 @@ interface PanelProps {
 }
 
 const { GIT_BRANCH, GIT_SLUG } = process.env;
-
-let lastUpdateStr: string;
-const i = 0;
-const updateStatusMemoized = (api: API, statusUpdate: StatusUpdate) => {
-  const updateStr = JSON.stringify(statusUpdate);
-  if (updateStr !== lastUpdateStr) {
-    lastUpdateStr = updateStr;
-    api.experimental_updateStatus(ADDON_ID, statusUpdate);
-  }
-};
 
 export const Panel = ({ active }: PanelProps) => {
   const api = useStorybookApi();
@@ -59,8 +47,8 @@ export const Panel = ({ active }: PanelProps) => {
   }, [emit, state, setAddonState]);
 
   const updateBuildStatus = useCallback(
-    (build: BuildWithTests) => {
-      updateStatusMemoized(api, testsToStatusUpdate(build.tests.nodes as TestFieldsFragment[]));
+    (update: StatusUpdate) => {
+      api.experimental_updateStatus(ADDON_ID, update);
     },
     [api]
   );
