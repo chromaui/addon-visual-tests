@@ -8,8 +8,8 @@ type StoryStatus = StatusUpdate[any]["status"];
 
 const statusMap: Record<TestStatus, StoryStatus> = {
   IN_PROGRESS: "pending",
-  PASSED: "success",
-  ACCEPTED: "success",
+  PASSED: null,
+  ACCEPTED: null,
   PENDING: "warn",
   FAILED: "error",
   DENIED: "error",
