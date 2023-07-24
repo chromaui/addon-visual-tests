@@ -10,21 +10,16 @@ import { TooltipMenu } from "./TooltipMenu";
 type ViewportData = Pick<ViewportInfo, "id" | "name">;
 
 interface ViewportSelectorProps {
-  viewportResults: { viewport: ViewportData; result: ComparisonResult }[];
+  selectedViewport: ViewportData;
   onSelectViewport: (viewport: ViewportData) => void;
+  viewportResults: { viewport: ViewportData; result: ComparisonResult }[];
 }
 
-export const ViewportSelector = ({ viewportResults, onSelectViewport }: ViewportSelectorProps) => {
-  const [selected, setSelected] = React.useState(viewportResults[0].viewport);
-
-  const handleSelect = React.useCallback(
-    (viewport: ViewportData) => {
-      setSelected(viewport);
-      onSelectViewport(viewport);
-    },
-    [onSelectViewport]
-  );
-
+export const ViewportSelector = ({
+  selectedViewport,
+  viewportResults,
+  onSelectViewport,
+}: ViewportSelectorProps) => {
   const aggregate = aggregateResult(viewportResults.map(({ result }) => result));
   if (!aggregate) return null;
 
@@ -35,8 +30,8 @@ export const ViewportSelector = ({ viewportResults, onSelectViewport }: Viewport
         id: viewport.id,
         title: viewport.name,
         right: result !== ComparisonResult.Equal && <StatusDot status={result} />,
-        onClick: () => handleSelect(viewport),
-        active: selected === viewport,
+        onClick: () => onSelectViewport(viewport),
+        active: selectedViewport === viewport,
       }))}
     >
       {aggregate === ComparisonResult.Equal ? (
@@ -46,7 +41,7 @@ export const ViewportSelector = ({ viewportResults, onSelectViewport }: Viewport
           <Icon icon="grow" />
         </StatusDotWrapper>
       )}
-      {selected.name}
+      {selectedViewport.name}
       <ArrowIcon icon="arrowdown" />
     </TooltipMenu>
   );

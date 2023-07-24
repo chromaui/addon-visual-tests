@@ -12,18 +12,11 @@ import {
   BuildQueryVariables,
   ReviewTestBatch,
   ReviewTestInputStatus,
-  TestFieldsFragment,
-  TestResult,
-  TestStatus,
 } from "../../gql/graphql";
-import { aggregateResult } from "../../utils/aggregateResult";
-import { useProjectId } from "../../utils/useProjectId";
 import { BuildInfo } from "./BuildInfo";
 import { RenderSettings } from "./RenderSettings";
 import { SnapshotComparison } from "./SnapshotComparison";
 import { Warnings } from "./Warnings";
-
-type ComparisonResult = any;
 
 const QueryBuild = graphql(/* GraphQL */ `
   query Build($hasBuildId: Boolean!, $buildId: ID!, $projectId: ID!, $branch: String!) {
@@ -54,6 +47,7 @@ const FragmentBuildFields = graphql(/* GraphQL */ `
     }
     ... on StartedBuild {
       changeCount: testCount(results: [ADDED, CHANGED, FIXED])
+      brokenCount: testCount(results: [CAPTURE_ERROR])
       startedAt
       tests {
         nodes {
@@ -64,6 +58,7 @@ const FragmentBuildFields = graphql(/* GraphQL */ `
     ... on CompletedBuild {
       result
       changeCount: testCount(results: [ADDED, CHANGED, FIXED])
+      brokenCount: testCount(results: [CAPTURE_ERROR])
       startedAt
       tests {
         nodes {
@@ -73,6 +68,7 @@ const FragmentBuildFields = graphql(/* GraphQL */ `
     }
   }
 `);
+
 const FragmentTestFields = graphql(/* GraphQL */ `
   fragment TestFields on Test {
     id
@@ -173,7 +169,6 @@ export const VisualTests = ({
   slug,
   storyId,
 }: VisualTestsProps) => {
-  // TODO: Replace hardcoded projectId with useProjectId hook and parameters
   const [{ data, fetching, error }, rerun] = useQuery<BuildQuery, BuildQueryVariables>({
     query: QueryBuild,
     variables: {
@@ -272,88 +267,14 @@ export const VisualTests = ({
   const allTests = getFragment(FragmentTestFields, "tests" in build ? build.tests.nodes : []);
   const tests = allTests.filter((test) => test.story?.storyId === storyId);
 
-  const { changeCount, brokenCount, resultsByBrowser, resultsByViewport, viewportInfoById } =
-    tests.reduce(
-      (acc, test) => {
-        if (test.result === TestResult.Changed) {
-          acc.changeCount += 1;
-        }
-        if (test.result === TestResult.CaptureError || test.result === TestResult.SystemError) {
-          acc.brokenCount += 1;
-        }
-        test.comparisons?.forEach(({ browser, result }) => {
-          acc.resultsByBrowser[browser.id] = aggregateResult([
-            result,
-            acc.resultsByBrowser[browser.id],
-          ]);
-        });
-        test.comparisons?.forEach(({ viewport, result }) => {
-          acc.resultsByViewport[viewport.id] = aggregateResult([
-            result,
-            acc.resultsByViewport[viewport.id],
-          ]);
-        });
-        acc.viewportInfoById[test.parameters.viewport.id] = test.parameters.viewport;
-        return acc;
-      },
-      {
-        changeCount: 0,
-        brokenCount: 0,
-        resultsByBrowser: {} as Record<string, ComparisonResult>,
-        resultsByViewport: {} as Record<string, ComparisonResult>,
-        viewportInfoById: {} as Record<string, TestFieldsFragment["parameters"]["viewport"]>,
-      }
-    );
-
-  const test = tests.find(({ result }) => result === TestResult.Changed) || tests[0];
-  const isPending = test?.status === TestStatus.Pending;
-  const isInProgress = tests.some(({ status }) => status === TestStatus.InProgress);
-
-  const browserCount = build.browsers.length;
-  const viewportCount = Object.keys(viewportInfoById).length;
-
-  const browserInfoById = Object.fromEntries(
-    build.browsers.map((browser) => [browser.id, browser])
-  );
-  const browserResults = Object.entries(resultsByBrowser).map(([id, result]) => ({
-    browser: browserInfoById[id],
-    result,
-  }));
-  const viewportResults = Object.entries(resultsByViewport).map(([id, result]) => ({
-    viewport: viewportInfoById[id],
-    result,
-  }));
-
+  const viewportCount = new Set(allTests.map((t) => t.parameters.viewport)).size;
   return (
     <Sections>
       <Section grow hidden={settingsVisible || warningsVisible}>
-        <BuildInfo
-          {...{
-            status: build.status,
-            startedAt: "startedAt" in build && build.startedAt,
-            brokenCount,
-            browserCount,
-            changeCount,
-            viewportCount,
-            isInProgress,
-            isOutdated,
-            isPending,
-            isRunning,
-            runDevBuild,
-          }}
-        />
-        <SnapshotComparison
-          {...{
-            test,
-            changeCount,
-            isAccepting,
-            isInProgress,
-            isOutdated,
-            browserResults,
-            viewportResults,
-            onAccept,
-          }}
-        />
+        <BuildInfo {...{ build, viewportCount, isOutdated, runDevBuild }} />
+        {tests.length > 0 && (
+          <SnapshotComparison {...{ tests, isAccepting, isOutdated, onAccept }} />
+        )}
       </Section>
 
       <Section grow hidden={!settingsVisible}>

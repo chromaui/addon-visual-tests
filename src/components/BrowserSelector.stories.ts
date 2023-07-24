@@ -27,6 +27,7 @@ const browserSafari = {
 
 export const WithSingleBrowserChanged: Story = {
   args: {
+    selectedBrowser: browserChrome,
     browserResults: [
       {
         browser: browserChrome,
@@ -38,6 +39,7 @@ export const WithSingleBrowserChanged: Story = {
 
 export const WithSingleBrowserEqual: Story = {
   args: {
+    selectedBrowser: browserChrome,
     browserResults: [
       {
         browser: browserChrome,
@@ -49,6 +51,7 @@ export const WithSingleBrowserEqual: Story = {
 
 export const WithSingleBrowserError: Story = {
   args: {
+    selectedBrowser: browserChrome,
     browserResults: [
       {
         browser: browserChrome,
@@ -60,6 +63,23 @@ export const WithSingleBrowserError: Story = {
 
 export const WithManyBrowsersEqual: Story = {
   args: {
+    selectedBrowser: browserChrome,
+    browserResults: [
+      {
+        browser: browserChrome,
+        result: ComparisonResult.Equal,
+      },
+      {
+        browser: browserSafari,
+        result: ComparisonResult.Equal,
+      },
+    ],
+  },
+};
+
+export const WithManyBrowsersSecondSelected: Story = {
+  args: {
+    selectedBrowser: browserSafari,
     browserResults: [
       {
         browser: browserChrome,
@@ -75,6 +95,7 @@ export const WithManyBrowsersEqual: Story = {
 
 export const WithManyBrowsersVaried: Story = {
   args: {
+    selectedBrowser: browserChrome,
     browserResults: [
       {
         browser: browserChrome,

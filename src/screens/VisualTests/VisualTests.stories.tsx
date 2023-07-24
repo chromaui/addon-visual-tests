@@ -7,108 +7,14 @@ import { Browser, BuildStatus, ComparisonResult, TestResult, TestStatus } from "
 import { AnnouncedBuild, CompletedBuild, PublishedBuild, StartedBuild } from "../../types";
 import { storyWrapper } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
+import { browser, headCapture, viewport } from "../../utils/storyData";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
+import * as SnapshotComparisonStories from "./SnapshotComparison.stories";
 import { VisualTests } from "./VisualTests";
 
-const browser = (key: Browser) => ({
-  id: key,
-  key,
-  name: key.slice(0, 1) + key.slice(1).toLowerCase(),
-  version: "<unknown>",
-});
-const viewport = (width: number) => ({
-  id: `_${width}`,
-  name: `${width}px`,
-  width,
-  isDefault: width === 1200,
-});
-
-const headCapture = {
-  captureImage: {
-    imageUrl: "/B.png",
-  },
-};
-const captureDiff = {
-  diffImage: {
-    imageUrl: "/B-comparison.png",
-  },
-};
-
+const { tests: primaryTests } = SnapshotComparisonStories.default.args;
 const tests = [
-  {
-    id: "11",
-    status: TestStatus.Passed,
-    result: TestResult.Equal,
-    webUrl: "https://www.chromatic.com/test?appId=123&id=11",
-    comparisons: [
-      {
-        id: "111",
-        browser: browser(Browser.Chrome),
-        viewport: viewport(1200),
-        result: ComparisonResult.Equal,
-        headCapture,
-      },
-      {
-        id: "112",
-        browser: browser(Browser.Safari),
-        viewport: viewport(1200),
-        result: ComparisonResult.Equal,
-        headCapture,
-      },
-    ],
-    parameters: { viewport: viewport(1200) },
-    story: { storyId: "button--primary" },
-  },
-  {
-    id: "12",
-    status: TestStatus.Pending,
-    result: TestResult.Changed,
-    webUrl: "https://www.chromatic.com/test?appId=123&id=12",
-    comparisons: [
-      {
-        id: "121",
-        browser: browser(Browser.Chrome),
-        viewport: viewport(800),
-        result: ComparisonResult.Equal,
-        headCapture,
-      },
-      {
-        id: "122",
-        browser: browser(Browser.Safari),
-        viewport: viewport(800),
-        result: ComparisonResult.Changed,
-        headCapture,
-        captureDiff,
-      },
-    ],
-    parameters: { viewport: viewport(800) },
-    story: { storyId: "button--primary" },
-  },
-  {
-    id: "13",
-    status: TestStatus.Passed,
-    result: TestResult.Equal,
-    webUrl: "https://www.chromatic.com/test?appId=123&id=13",
-    comparisons: [
-      {
-        id: "131",
-        browser: browser(Browser.Chrome),
-        viewport: viewport(400),
-        result: ComparisonResult.Equal,
-        headCapture,
-      },
-      {
-        id: "132",
-        browser: browser(Browser.Safari),
-        viewport: viewport(400),
-        result: ComparisonResult.Equal,
-        headCapture,
-      },
-    ],
-    parameters: { viewport: viewport(400) },
-    story: { storyId: "button--primary" },
-  },
-
+  ...primaryTests,
   {
     id: "21",
     status: TestStatus.Passed,
@@ -169,14 +75,7 @@ const inProgressBuild: StartedBuild = {
   startedAt: new Date(Date.now() - 1000 * 60 * 2), // 2 minutes ago
   status: BuildStatus.InProgress,
   changeCount: null,
-  tests: paginated(
-    tests.map((test) => ({
-      ...test,
-      status: TestStatus.InProgress,
-      result: null,
-      comparisons: [],
-    }))
-  ),
+  tests: paginated(SnapshotComparisonStories.InProgress.args.tests),
 };
 
 const passedBuild: CompletedBuild = {
