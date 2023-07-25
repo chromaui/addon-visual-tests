@@ -51,7 +51,14 @@ export function useTests(tests: TestFieldsFragment[]) {
     resultsByBrowser,
     resultsByViewport,
     viewportInfoById,
-  } = tests.reduce(
+  } = tests.reduce<{
+    isInProgress: boolean;
+    changeCount: number;
+    brokenCount: number;
+    resultsByBrowser: Record<string, ComparisonResult>;
+    resultsByViewport: Record<string, ComparisonResult>;
+    viewportInfoById: Record<string, TestFieldsFragment["parameters"]["viewport"]>;
+  }>(
     (acc, test) => {
       if (test.status === TestStatus.InProgress) {
         acc.isInProgress = true;
@@ -81,9 +88,9 @@ export function useTests(tests: TestFieldsFragment[]) {
       isInProgress: false,
       changeCount: 0,
       brokenCount: 0,
-      resultsByBrowser: {} as Record<string, ComparisonResult>,
-      resultsByViewport: {} as Record<string, ComparisonResult>,
-      viewportInfoById: {} as Record<string, TestFieldsFragment["parameters"]["viewport"]>,
+      resultsByBrowser: {},
+      resultsByViewport: {},
+      viewportInfoById: {},
     }
   );
 
