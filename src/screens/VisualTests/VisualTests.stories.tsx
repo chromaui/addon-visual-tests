@@ -102,7 +102,8 @@ const acceptedBuild: CompletedBuild = {
 const brokenBuild: CompletedBuild = {
   ...(inProgressBuild as any),
   status: BuildStatus.Broken,
-  changeCount: 3,
+  changeCount: 0,
+  brokenCount: 3,
   tests: paginated(
     tests.map((test) => ({
       ...test,
@@ -190,16 +191,17 @@ export const Outdated: Story = {
   },
 };
 
-export const OutdatedRunning: Story = {
-  args: {
-    ...Outdated.args,
-    isRunning: true,
-  },
-  argTypes: { updateBuildStatus: { action: "updateBuildStatus" } },
-  parameters: {
-    ...Outdated.parameters,
-  },
-};
+// This story doesn't really make sense because if the build is running it should be `IN_PROGRESS` or similar
+// export const OutdatedRunning: Story = {
+//   args: {
+//     ...Outdated.args,
+//     isRunning: true,
+//   },
+//   argTypes: { updateBuildStatus: { action: "updateBuildStatus" } },
+//   parameters: {
+//     ...Outdated.parameters,
+//   },
+// };
 
 export const Announced: Story = {
   parameters: {
