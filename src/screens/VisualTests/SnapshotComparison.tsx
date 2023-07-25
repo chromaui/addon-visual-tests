@@ -10,7 +10,12 @@ import { Placeholder } from "../../components/Placeholder";
 import { SnapshotImage } from "../../components/SnapshotImage";
 import { TooltipMenu } from "../../components/TooltipMenu";
 import { ViewportSelector } from "../../components/ViewportSelector";
-import { ComparisonResult, ReviewTestBatch, TestFieldsFragment } from "../../gql/graphql";
+import {
+  ComparisonResult,
+  ReviewTestBatch,
+  TestFieldsFragment,
+  TestStatus,
+} from "../../gql/graphql";
 import { useTests } from "../../utils/useTests";
 
 const Divider = styled.div(({ theme }) => ({
@@ -74,7 +79,7 @@ export const SnapshotComparison = ({ tests, isAccepting, onAccept }: SnapshotSec
               />
             </Col>
           )}
-          {changeCount > 0 && (
+          {changeCount > 0 && selectedTest.status !== TestStatus.Accepted && (
             <>
               <Col push>
                 <IconButton secondary onClick={() => onAccept(selectedTest.id)}>

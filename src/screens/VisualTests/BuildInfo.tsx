@@ -100,7 +100,7 @@ export const BuildInfo = ({
         </span>
         {" • "}
         {inProgress && <span>Test in progress...</span>}
-        {inProgress && "startedAt" in build && (
+        {!inProgress && "startedAt" in build && (
           <span title={new Date(build.startedAt).toUTCString()}>{startedAgo}</span>
         )}
       </small>
@@ -130,7 +130,7 @@ export const BuildInfo = ({
           </Col>
         )}
         {/* This code needs to be adjusted to make sense while the next build is running */}
-        {/* {status === BuildStatus.Failed && (
+        {[BuildStatus.Failed, BuildStatus.Broken].includes(status) && (
           <Col push>
             <Button
               small
@@ -138,15 +138,11 @@ export const BuildInfo = ({
               onClick={runDevBuild}
               disabled={status === BuildStatus.InProgress}
             >
-              {status === BuildStatus.InProgress ? (
-                <ProgressIcon parentComponent="Button" style={{ marginRight: 6 }} />
-              ) : (
-                <Icons icon="play" />
-              )}
+              <Icons icon="play" />
               Rerun tests
             </Button>
           </Col>
-        )} */}
+        )}
         {/* Disabled for now until we implement the test screen */}
         {/* {!isOutdated && changeCount > 0 && (
           <Col push>

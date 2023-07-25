@@ -40,12 +40,14 @@ export function makeComparison(options: {
   viewport?: number;
   result?: ComparisonResult;
 }): TestFieldsFragment["comparisons"][number] {
+  const result = options.result || ComparisonResult.Equal;
   return {
     id: options.id || "111",
     browser: makeBrowserInfo(options.browser || Browser.Chrome),
     viewport: makeViewportInfo(options.viewport || 1200),
-    result: options.result || ComparisonResult.Equal,
+    result,
     headCapture,
+    ...(result === ComparisonResult.Changed && { captureDiff }),
   };
 }
 

@@ -287,7 +287,7 @@ export const VisualTests = ({
   const allTests = getFragment(FragmentTestFields, "tests" in build ? build.tests.nodes : []);
   const tests = allTests.filter((test) => test.story?.storyId === storyId);
 
-  const viewportCount = new Set(allTests.map((t) => t.parameters.viewport)).size;
+  const viewportCount = new Set(allTests.map((t) => t.parameters.viewport.id)).size;
   return (
     <Sections>
       <Section grow hidden={settingsVisible || warningsVisible}>
