@@ -8,40 +8,40 @@ import { AlertIcon } from "../../components/icons/AlertIcon";
 import { ProgressIcon } from "../../components/icons/ProgressIcon";
 import { StatusIcon } from "../../components/icons/StatusIcon";
 import { Col, Row, Text } from "../../components/layout";
-import { BuildStatus } from "../../gql/graphql";
+import { BuildFieldsFragment, BuildStatus } from "../../gql/graphql";
 
 interface BuildInfoSectionProps {
-  status: BuildStatus;
-  startedAt: string;
-  brokenCount: number;
-  browserCount: number;
-  changeCount: number;
+  build:
+    | Pick<BuildFieldsFragment, "status" | "browsers">
+    | Pick<
+        Extract<BuildFieldsFragment, { startedAt: any }>,
+        "status" | "browsers" | "startedAt" | "brokenCount" | "changeCount"
+      >;
   viewportCount: number;
-  isInProgress: boolean;
   isOutdated: boolean;
-  isPending: boolean;
-  isRunning: boolean;
   runDevBuild: () => void;
 }
 
 export const BuildInfo = ({
-  status,
-  startedAt,
-  brokenCount,
-  browserCount,
-  changeCount,
+  build,
   viewportCount,
-  isInProgress,
   isOutdated,
-  isPending,
-  isRunning,
   runDevBuild,
 }: BuildInfoSectionProps) => {
+  const { status, browsers } = build;
   const startedAgo =
-    startedAt && formatDistance(new Date(startedAt), new Date(), { addSuffix: true });
+    "startedAt" in build &&
+    formatDistance(new Date(build.startedAt), new Date(), { addSuffix: true });
+  const browserCount = browsers.length;
+  const inProgress = [
+    BuildStatus.InProgress,
+    BuildStatus.Announced,
+    BuildStatus.Prepared,
+    BuildStatus.Published,
+  ].includes(status);
 
   let statusText;
-  if (status === BuildStatus.InProgress) {
+  if (inProgress) {
     statusText = (
       <>
         <b>Running tests...</b>
@@ -56,6 +56,8 @@ export const BuildInfo = ({
       </>
     );
   } else {
+    if (!("startedAt" in build)) throw new Error(`No startedAt field on started build`);
+
     statusText = isOutdated ? (
       <>
         <b>Snapshots outdated</b>
@@ -64,11 +66,15 @@ export const BuildInfo = ({
     ) : (
       <>
         <b>
-          {changeCount ? pluralize("change", changeCount, true) : "No changes"}
-          {brokenCount ? `, ${pluralize("error", brokenCount, true)}` : null}
+          {build.changeCount ? pluralize("change", build.changeCount, true) : "No changes"}
+          {build.brokenCount ? `, ${pluralize("error", build.brokenCount, true)}` : null}
         </b>
-        {/* eslint-disable-next-line no-nested-ternary */}
-        <StatusIcon icon={brokenCount ? "failed" : isPending ? "changed" : "passed"} />
+        <StatusIcon
+          icon={
+            // eslint-disable-next-line no-nested-ternary
+            build.brokenCount ? "failed" : status === BuildStatus.Pending ? "changed" : "passed"
+          }
+        />
       </>
     );
   }
@@ -93,9 +99,9 @@ export const BuildInfo = ({
           {pluralize("browser", browserCount, true)}
         </span>
         {" • "}
-        {isInProgress && <span>Test in progress...</span>}
-        {!isInProgress && startedAt && (
-          <span title={new Date(startedAt).toUTCString()}>{startedAgo}</span>
+        {inProgress && <span>Test in progress...</span>}
+        {!inProgress && "startedAt" in build && (
+          <span title={new Date(build.startedAt).toUTCString()}>{startedAgo}</span>
         )}
       </small>
     );
@@ -113,8 +119,8 @@ export const BuildInfo = ({
         </Col>
         {isOutdated && (
           <Col push>
-            <Button small secondary onClick={runDevBuild} disabled={isRunning}>
-              {isRunning ? (
+            <Button small secondary onClick={runDevBuild} disabled={inProgress}>
+              {inProgress ? (
                 <ProgressIcon parentComponent="Button" style={{ marginRight: 6 }} />
               ) : (
                 <Icons icon="play" />
@@ -123,14 +129,10 @@ export const BuildInfo = ({
             </Button>
           </Col>
         )}
-        {status === BuildStatus.Failed && (
+        {BuildStatus.Failed === status && (
           <Col push>
-            <Button small secondary onClick={runDevBuild} disabled={isRunning}>
-              {isRunning ? (
-                <ProgressIcon parentComponent="Button" style={{ marginRight: 6 }} />
-              ) : (
-                <Icons icon="play" />
-              )}
+            <Button small secondary onClick={runDevBuild}>
+              <Icons icon="play" />
               Rerun tests
             </Button>
           </Col>

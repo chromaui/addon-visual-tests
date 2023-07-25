@@ -1,6 +1,6 @@
 import { Icons, Loader } from "@storybook/components";
 import { styled } from "@storybook/theming";
-import React, { ComponentProps, useState } from "react";
+import React, { useState } from "react";
 
 import { BrowserSelector } from "../../components/BrowserSelector";
 import { IconButton } from "../../components/IconButton";
@@ -10,7 +10,13 @@ import { Placeholder } from "../../components/Placeholder";
 import { SnapshotImage } from "../../components/SnapshotImage";
 import { TooltipMenu } from "../../components/TooltipMenu";
 import { ViewportSelector } from "../../components/ViewportSelector";
-import { ComparisonResult, ReviewTestBatch, TestFieldsFragment } from "../../gql/graphql";
+import {
+  ComparisonResult,
+  ReviewTestBatch,
+  TestFieldsFragment,
+  TestStatus,
+} from "../../gql/graphql";
+import { useTests } from "../../utils/useTests";
 
 const Divider = styled.div(({ theme }) => ({
   backgroundColor: theme.appBorderColor,
@@ -19,29 +25,23 @@ const Divider = styled.div(({ theme }) => ({
 }));
 
 interface SnapshotSectionProps {
-  test?: TestFieldsFragment;
-  changeCount: number;
+  tests: TestFieldsFragment[];
   isAccepting: boolean;
-  isInProgress: boolean;
-  browserResults: ComponentProps<typeof BrowserSelector>["browserResults"];
-  viewportResults: ComponentProps<typeof ViewportSelector>["viewportResults"];
   onAccept: (testId: TestFieldsFragment["id"], batch?: ReviewTestBatch) => void;
 }
 
-export const SnapshotComparison = ({
-  test,
-  changeCount,
-  isAccepting,
-  isInProgress,
-  browserResults,
-  viewportResults,
-  onAccept,
-}: SnapshotSectionProps) => {
+export const SnapshotComparison = ({ tests, isAccepting, onAccept }: SnapshotSectionProps) => {
+  const {
+    selectedTest,
+    selectedComparison,
+    isInProgress,
+    changeCount,
+    browserResults,
+    onSelectBrowser,
+    viewportResults,
+    onSelectViewport,
+  } = useTests(tests);
   const [diffVisible, setDiffVisible] = useState(true);
-
-  const comparison =
-    test?.comparisons.find(({ result }) => result === ComparisonResult.Changed) ||
-    test?.comparisons[0];
 
   return (
     <>
@@ -54,7 +54,7 @@ export const SnapshotComparison = ({
         </Bar>
       ) : (
         <Bar>
-          {comparison?.result === ComparisonResult.Changed && (
+          {selectedComparison?.result === ComparisonResult.Changed && (
             <Col>
               <IconButton active={diffVisible} onClick={() => setDiffVisible(!diffVisible)}>
                 <Icons icon="contrast" />
@@ -64,25 +64,25 @@ export const SnapshotComparison = ({
           {viewportResults.length > 0 && (
             <Col>
               <ViewportSelector
+                selectedViewport={selectedTest.parameters.viewport}
                 viewportResults={viewportResults}
-                // eslint-disable-next-line no-console
-                onSelectViewport={console.log}
+                onSelectViewport={onSelectViewport}
               />
             </Col>
           )}
           {browserResults.length > 0 && (
             <Col>
               <BrowserSelector
+                selectedBrowser={selectedComparison.browser}
                 browserResults={browserResults}
-                // eslint-disable-next-line no-console
-                onSelectBrowser={console.log}
+                onSelectBrowser={onSelectBrowser}
               />
             </Col>
           )}
-          {changeCount > 0 && (
+          {changeCount > 0 && selectedTest.status !== TestStatus.Accepted && (
             <>
               <Col push>
-                <IconButton secondary onClick={() => onAccept(test.id)}>
+                <IconButton secondary onClick={() => onAccept(selectedTest.id)}>
                   Accept
                 </IconButton>
               </Col>
@@ -94,7 +94,7 @@ export const SnapshotComparison = ({
                       id: "logout",
                       title: "Accept all viewports",
                       center: "Accept all unreviewed changes to this story",
-                      onClick: () => onAccept(test.id, ReviewTestBatch.Spec),
+                      onClick: () => onAccept(selectedTest.id, ReviewTestBatch.Spec),
                       disabled: isAccepting,
                       loading: isAccepting,
                     },
@@ -102,7 +102,7 @@ export const SnapshotComparison = ({
                       id: "learn",
                       title: "Accept this component",
                       center: "Accept all unreviewed changes for this component",
-                      onClick: () => onAccept(test.id, ReviewTestBatch.Component),
+                      onClick: () => onAccept(selectedTest.id, ReviewTestBatch.Component),
                       disabled: isAccepting,
                       loading: isAccepting,
                     },
@@ -127,18 +127,18 @@ export const SnapshotComparison = ({
       <Divider />
 
       {isInProgress && <Loader />}
-      {!isInProgress && comparison && (
-        <SnapshotImage as="a" href={test.webUrl} target="_blank">
-          {comparison.headCapture?.captureImage && (
-            <img src={comparison.headCapture.captureImage?.imageUrl} alt="" />
+      {!isInProgress && selectedComparison && (
+        <SnapshotImage as="a" href={selectedTest.webUrl} target="_blank">
+          {selectedComparison.headCapture?.captureImage && (
+            <img src={selectedComparison.headCapture.captureImage?.imageUrl} alt="" />
           )}
           {diffVisible &&
-            comparison.result === ComparisonResult.Changed &&
-            comparison.captureDiff?.diffImage && (
-              <img src={comparison.captureDiff.diffImage?.imageUrl} alt="" />
+            selectedComparison.result === ComparisonResult.Changed &&
+            selectedComparison.captureDiff?.diffImage && (
+              <img src={selectedComparison.captureDiff.diffImage?.imageUrl} alt="" />
             )}
-          {comparison.result === ComparisonResult.CaptureError &&
-            !comparison.headCapture?.captureImage && (
+          {selectedComparison.result === ComparisonResult.CaptureError &&
+            !selectedComparison.headCapture?.captureImage && (
               <div>
                 <Icons icon="photo" />
                 <p>

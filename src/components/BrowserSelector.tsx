@@ -20,27 +20,22 @@ const browserIcons = {
 type BrowserData = Pick<BrowserInfo, "id" | "key" | "name">;
 
 interface BrowserSelectorProps {
+  selectedBrowser: BrowserData;
   browserResults: { browser: BrowserData; result: ComparisonResult }[];
   onSelectBrowser: (browser: BrowserData) => void;
 }
 
-export const BrowserSelector = ({ browserResults, onSelectBrowser }: BrowserSelectorProps) => {
-  const [selected, setSelected] = React.useState(browserResults[0].browser);
-
-  const handleSelect = React.useCallback(
-    (browser: BrowserData) => {
-      setSelected(browser);
-      onSelectBrowser(browser);
-    },
-    [onSelectBrowser]
-  );
-
+export const BrowserSelector = ({
+  selectedBrowser,
+  browserResults,
+  onSelectBrowser,
+}: BrowserSelectorProps) => {
   const links = browserResults
     .filter(({ browser }) => browser.key in browserIcons)
     .map(({ browser, result }) => ({
-      active: selected === browser,
+      active: selectedBrowser === browser,
       id: browser.id,
-      onClick: () => handleSelect(browser),
+      onClick: () => onSelectBrowser(browser),
       right: result !== ComparisonResult.Equal && <StatusDot status={result} />,
       title: browser.name,
     }));
@@ -48,7 +43,7 @@ export const BrowserSelector = ({ browserResults, onSelectBrowser }: BrowserSele
   const aggregate = aggregateResult(browserResults.map(({ result }) => result));
   if (!aggregate) return null;
 
-  const icon = browserIcons[selected.key];
+  const icon = browserIcons[selectedBrowser.key];
   return (
     <TooltipMenu placement="bottom" links={links}>
       {aggregate === ComparisonResult.Equal ? (
