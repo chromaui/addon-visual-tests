@@ -293,7 +293,7 @@ export const VisualTests = ({
       <Section grow hidden={settingsVisible || warningsVisible}>
         <BuildInfo {...{ build, viewportCount, isOutdated, runDevBuild }} />
         {tests.length > 0 && (
-          <SnapshotComparison {...{ tests, isAccepting, isOutdated, onAccept }} />
+          <SnapshotComparison key={storyId} {...{ tests, isAccepting, isOutdated, onAccept }} />
         )}
       </Section>
 
