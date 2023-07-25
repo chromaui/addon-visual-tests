@@ -129,15 +129,9 @@ export const BuildInfo = ({
             </Button>
           </Col>
         )}
-        {/* This code needs to be adjusted to make sense while the next build is running */}
-        {[BuildStatus.Failed, BuildStatus.Broken].includes(status) && (
+        {BuildStatus.Failed === status && (
           <Col push>
-            <Button
-              small
-              secondary
-              onClick={runDevBuild}
-              disabled={status === BuildStatus.InProgress}
-            >
+            <Button small secondary onClick={runDevBuild}>
               <Icons icon="play" />
               Rerun tests
             </Button>
