@@ -10,7 +10,7 @@ const storedBuildId = localStorage.getItem(DEV_BUILD_ID_KEY);
 
 export const Tool = () => {
   const [state, setAddonState] = useAddonState<AddonState>(ADDON_ID, {
-    isOutdated: true,
+    isOutdated: false,
     lastBuildId: storedBuildId,
   });
 

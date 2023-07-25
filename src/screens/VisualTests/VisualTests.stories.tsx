@@ -1,3 +1,4 @@
+import { action } from "@storybook/addon-actions";
 import type { Meta, StoryObj } from "@storybook/react";
 import { findByRole, fireEvent } from "@storybook/testing-library";
 import { graphql } from "msw";
@@ -142,6 +143,7 @@ const meta = {
   args: {
     storyId: "button--primary",
     projectId: "Project:id123",
+    updateBuildStatus: action("updateBuildStatus"),
   },
 } satisfies Meta<typeof VisualTests>;
 
@@ -193,6 +195,7 @@ export const OutdatedRunning: Story = {
     ...Outdated.args,
     isRunning: true,
   },
+  argTypes: { updateBuildStatus: { action: "updateBuildStatus" } },
   parameters: {
     ...Outdated.parameters,
   },
