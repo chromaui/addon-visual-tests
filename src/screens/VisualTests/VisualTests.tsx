@@ -210,8 +210,6 @@ export const VisualTests = ({
   }, [buildComplete, isRunning, setIsRunning]);
 
   useEffect(() => {
-    console.log(last?.buildStatusUpdate === buildStatusUpdate);
-    console.log(last?.string === JSON.stringify(buildStatusUpdate));
     last = {
       buildStatusUpdate,
       string: JSON.stringify(buildStatusUpdate),
