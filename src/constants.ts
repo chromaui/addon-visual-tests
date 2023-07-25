@@ -1,6 +1,6 @@
 export const { CHROMATIC_BASE_URL } = process.env;
 
-export const ADDON_ID = "chromaui/storybook-visual-tests";
+export const ADDON_ID = "chromaui/addon-visual-tests";
 export const TOOL_ID = `${ADDON_ID}/tool`;
 export const PANEL_ID = `${ADDON_ID}/panel`;
 export const ACCESS_TOKEN_KEY = `${ADDON_ID}/access-token/${CHROMATIC_BASE_URL}`;
