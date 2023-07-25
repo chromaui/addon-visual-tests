@@ -1,4 +1,9 @@
-import { useAddonState, useChannel, useStorybookState } from "@storybook/manager-api";
+import {
+  useAddonState,
+  useChannel,
+  useStorybookApi,
+  useStorybookState,
+} from "@storybook/manager-api";
 import React, { useCallback } from "react";
 
 import { ADDON_ID, PANEL_ID, START_BUILD } from "./constants";
@@ -8,6 +13,7 @@ import { LinkProject } from "./screens/LinkProject/LinkProject";
 import { VisualTests } from "./screens/VisualTests/VisualTests";
 import { AddonState } from "./types";
 import { client, Provider, useAccessToken } from "./utils/graphQLClient";
+import { StatusUpdate } from "./utils/testsToStatusUpdate";
 import { useProjectId } from "./utils/useProjectId";
 
 interface PanelProps {
@@ -17,9 +23,10 @@ interface PanelProps {
 const { GIT_BRANCH, GIT_SLUG } = process.env;
 
 export const Panel = ({ active }: PanelProps) => {
+  const api = useStorybookApi();
   const [accessToken, setAccessToken] = useAccessToken();
 
-  const [state, setAddonState] = useAddonState<AddonState>(ADDON_ID, { isOutdated: true });
+  const [state, setAddonState] = useAddonState<AddonState>(ADDON_ID, { isOutdated: false });
   const { storyId } = useStorybookState();
 
   const setIsOutdated = useCallback(
@@ -39,6 +46,12 @@ export const Panel = ({ active }: PanelProps) => {
     emit(START_BUILD);
   }, [emit, state, setAddonState]);
 
+  const updateBuildStatus = useCallback(
+    (update: StatusUpdate) => {
+      api.experimental_updateStatus(ADDON_ID, update);
+    },
+    [api]
+  );
   const [projectId, updateProject, projectIdChanged, clearProjectIdChanged] = useProjectId();
 
   // Render a hidden element when the addon panel is not active.
@@ -75,6 +88,7 @@ export const Panel = ({ active }: PanelProps) => {
         setAccessToken={setAccessToken}
         setIsOutdated={setIsOutdated}
         setIsRunning={setIsRunning}
+        updateBuildStatus={updateBuildStatus}
         storyId={storyId}
       />
     </Provider>

@@ -746,6 +746,7 @@ export type ProjectLastBuildArgs = {
   branches?: InputMaybe<Array<Scalars['String']['input']>>;
   defaultBranch?: InputMaybe<Scalars['Boolean']['input']>;
   results?: InputMaybe<Array<BuildResult>>;
+  slug?: InputMaybe<Scalars['String']['input']>;
   statuses?: InputMaybe<Array<BuildStatus>>;
 };
 
