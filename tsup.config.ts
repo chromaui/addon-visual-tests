@@ -1,7 +1,5 @@
 import { defineConfig } from "tsup";
 
-const CHROMATIC_BASE_URL = process.env.CHROMATIC_BASE_URL || "https://www.chromatic.com";
-
 export default defineConfig((options) => [
   {
     entry: ["src/index.ts"],
@@ -17,9 +15,6 @@ export default defineConfig((options) => [
     platform: "node",
     esbuildOptions(options) {
       options.conditions = ["module"];
-      options.define = {
-        "process.env.CHROMATIC_BASE_URL": JSON.stringify(CHROMATIC_BASE_URL),
-      };
     },
   },
   {
@@ -36,9 +31,6 @@ export default defineConfig((options) => [
     platform: "browser",
     esbuildOptions(options) {
       options.conditions = ["module"];
-      options.define = {
-        "process.env.CHROMATIC_BASE_URL": JSON.stringify(CHROMATIC_BASE_URL),
-      };
     },
   },
 ]);
