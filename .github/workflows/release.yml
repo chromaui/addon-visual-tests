@@ -9,6 +9,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+
+      - name: Prepare repository
+        # Fetch full git history and tags
+        run: git fetch --unshallow --tags
 
       - name: Install dependencies
         run: yarn install --ignore-scripts
