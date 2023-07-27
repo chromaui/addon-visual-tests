@@ -63,10 +63,10 @@ export function useTests(tests: TestFieldsFragment[]) {
       if (test.status === TestStatus.InProgress) {
         acc.isInProgress = true;
       }
-      if (test.result === TestResult.Changed) {
+      if ([TestResult.Changed, TestResult.Added].includes(test.result)) {
         acc.changeCount += 1;
       }
-      if (test.result === TestResult.CaptureError || test.result === TestResult.SystemError) {
+      if ([TestResult.CaptureError, TestResult.SystemError].includes(test.result)) {
         acc.brokenCount += 1;
       }
       test.comparisons?.forEach(({ browser, result }) => {
