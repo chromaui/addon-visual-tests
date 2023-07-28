@@ -8,8 +8,8 @@ import { Bar, Col, Row, Section, Sections, Text } from "../../components/layout"
 import { TooltipMenu } from "../../components/TooltipMenu";
 import { getFragment, graphql } from "../../gql";
 import {
-  BuildQuery,
-  BuildQueryVariables,
+  AddonVisualTestsBuildQuery as BuildQuery,
+  AddonVisualTestsBuildQueryVariables as BuildQueryVariables,
   ReviewTestBatch,
   ReviewTestInputStatus,
 } from "../../gql/graphql";
@@ -20,7 +20,12 @@ import { SnapshotComparison } from "./SnapshotComparison";
 import { Warnings } from "./Warnings";
 
 const QueryBuild = graphql(/* GraphQL */ `
-  query Build($hasBuildId: Boolean!, $buildId: ID!, $projectId: ID!, $branch: String!) {
+  query AddonVisualTestsBuild(
+    $hasBuildId: Boolean!
+    $buildId: ID!
+    $projectId: ID!
+    $branch: String!
+  ) {
     build(id: $buildId) @include(if: $hasBuildId) {
       ...BuildFields
     }
