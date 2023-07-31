@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { findByRole, fireEvent } from "@storybook/testing-library";
 import { graphql } from "msw";
 
-import type { BuildQuery, TestFieldsFragment } from "../../gql/graphql";
+import type { AddonVisualTestsBuildQuery, TestFieldsFragment } from "../../gql/graphql";
 import { Browser, BuildStatus, ComparisonResult, TestResult, TestStatus } from "../../gql/graphql";
 import { AnnouncedBuild, CompletedBuild, PublishedBuild, StartedBuild } from "../../types";
 import { storyWrapper } from "../../utils/graphQLClient";
@@ -135,7 +135,9 @@ const withGraphQLMutation = (...args: Parameters<typeof graphql.mutation>) => ({
 });
 
 const withBuild = (build: AnnouncedBuild | PublishedBuild | StartedBuild | CompletedBuild) =>
-  withGraphQLQuery("Build", (req, res, ctx) => res(ctx.data({ build } as BuildQuery)));
+  withGraphQLQuery("AddonVisualTestsBuild", (req, res, ctx) =>
+    res(ctx.data({ build } as AddonVisualTestsBuildQuery))
+  );
 
 const meta = {
   component: VisualTests,
@@ -153,7 +155,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Loading: Story = {
   parameters: {
-    ...withGraphQLQuery("Build", (req, res, ctx) =>
+    ...withGraphQLQuery("AddonVisualTestsBuild", (req, res, ctx) =>
       res(ctx.status(200), ctx.data({}), ctx.delay("infinite"))
     ),
     ...withFigmaDesign(
@@ -173,7 +175,9 @@ export const NoChanges: Story = {
 
 export const NoBuild: Story = {
   parameters: {
-    ...withGraphQLQuery("Build", (req, res, ctx) => res(ctx.data({ build: null } as BuildQuery))),
+    ...withGraphQLQuery("AddonVisualTestsBuild", (req, res, ctx) =>
+      res(ctx.data({ build: null } as AddonVisualTestsBuildQuery))
+    ),
     // No design for this state
     // ...withFigmaDesign(""),
   },
