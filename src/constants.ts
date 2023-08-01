@@ -1,4 +1,8 @@
-export const { CHROMATIC_BASE_URL } = process.env;
+export const {
+  CHROMATIC_INDEX_URL,
+  CHROMATIC_BASE_URL = CHROMATIC_INDEX_URL || "https://www.chromatic.com",
+  CHROMATIC_ADDON_NAME = "@chromaui/addon-visual-tests",
+} = process.env;
 
 export const ADDON_ID = "chromaui/addon-visual-tests";
 export const TOOL_ID = `${ADDON_ID}/tool`;

@@ -5,13 +5,15 @@ import { exec } from "child_process";
 import { run } from "chromatic/node";
 import { promisify } from "util";
 
-import { BUILD_STARTED, START_BUILD, UPDATE_PROJECT, UpdateProjectPayload } from "./constants";
+import {
+  BUILD_STARTED,
+  CHROMATIC_ADDON_NAME,
+  CHROMATIC_BASE_URL,
+  START_BUILD,
+  UPDATE_PROJECT,
+  UpdateProjectPayload,
+} from "./constants";
 import { findConfig } from "./utils/storybook.config.utils";
-
-const {
-  CHROMATIC_BASE_URL = "https://www.chromatic.com",
-  CHROMATIC_ADDON_NAME = "@chromaui/addon-visual-tests",
-} = process.env;
 
 /**
  * to load the built addon in this test Storybook
