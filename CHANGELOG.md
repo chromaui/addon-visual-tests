@@ -1,3 +1,15 @@
+# v0.0.16 (Tue Aug 01 2023)
+
+#### 🐛 Bug Fix
+
+- Show reviewing errors in browser console and improve dev setup [#21](https://github.com/chromaui/addon-visual-tests/pull/21) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.15 (Thu Jul 27 2023)
 
 #### 🐛 Bug Fix
