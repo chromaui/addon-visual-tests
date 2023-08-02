@@ -5,7 +5,8 @@ module.exports = {
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "eslint-comments/disable-enable-pair": "off",
     "simple-import-sort/imports": "error",
-    "simple-import-sort/exports": "error"
+    "simple-import-sort/exports": "error",
+    "import/order": "off",
   },
   parser: "@typescript-eslint/parser",
   parserOptions: {
