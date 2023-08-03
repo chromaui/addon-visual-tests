@@ -116,6 +116,12 @@ function SelectProject({
     [setSelectedAccount]
   );
 
+  React.useEffect(() => {
+    if (data?.viewer?.accounts) {
+      onSelectAccount(data.viewer.accounts[0]);
+    }
+  }, [data])
+
   const [isSelectingProject, setSelectingProject] = useState(false);
 
   const handleSelectProject = React.useCallback(
