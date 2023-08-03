@@ -73,6 +73,8 @@ const Left = styled.div`
 const Right = styled.div`
   flex: 1;
   background-color: ${({ theme }) => theme.color.lighter};
+  display: flex;
+  flex-direction: column;
 `;
 
 const ProjectPicker = styled.div`
