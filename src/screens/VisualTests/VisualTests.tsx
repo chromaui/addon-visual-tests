@@ -152,6 +152,7 @@ interface VisualTestsProps {
   lastDevBuildId?: string;
   runDevBuild: () => void;
   setAccessToken: (accessToken: string | null) => void;
+  // eslint-disable-next-line react/no-unused-prop-types
   setIsOutdated: (isOutdated: boolean) => void;
   setIsRunning: (isRunning: boolean) => void;
   updateBuildStatus: (update: StatusUpdate) => void;
