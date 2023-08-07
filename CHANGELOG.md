@@ -1,3 +1,15 @@
+# v0.0.17 (Mon Aug 07 2023)
+
+#### 🐛 Bug Fix
+
+- upgrade storybook [#23](https://github.com/chromaui/addon-visual-tests/pull/23) ([@ndelangen](https://github.com/ndelangen))
+
+#### Authors: 1
+
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+
+---
+
 # v0.0.16 (Tue Aug 01 2023)
 
 #### 🐛 Bug Fix
