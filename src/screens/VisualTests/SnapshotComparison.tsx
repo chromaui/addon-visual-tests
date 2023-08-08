@@ -148,7 +148,6 @@ export const SnapshotComparison = ({ tests, isAccepting, onAccept }: SnapshotSec
                 </p>
               </div>
             )}
-          <Icons icon="sharealt" />
         </SnapshotImage>
       )}
     </>
