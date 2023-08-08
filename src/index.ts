@@ -30,12 +30,14 @@ async function serverChannel(
   channel.on(START_BUILD, async () => {
     let sent = false;
     await run({
-      flags: {
-        projectToken,
-        // We might want to drop this later and instead record "uncommitted hashes" on builds
-        forceRebuild: "",
-      },
+      // Currently we have to have this flag. We should move the check to after flags have been
+      // parsed into options.
+      flags: { projectToken },
       options: {
+        // We might want to drop this later and instead record "uncommitted hashes" on builds
+        forceRebuild: true,
+        // Builds initiated from the addon are always considered local
+        isLocalBuild: true,
         onTaskComplete(ctx: any) {
           // eslint-disable-next-line no-console
           console.log(`Completed task '${ctx.title}'`);

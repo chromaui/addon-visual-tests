@@ -5299,10 +5299,10 @@ chownr@^2.0.0:
   resolved "https://registry.yarnpkg.com/chownr/-/chownr-2.0.0.tgz#15bfbe53d2eab4cf70f18a8cd68ebe5b3cb1dece"
   integrity sha512-bIomtDF5KGpdogkLd9VspvFzk9KfpyyGlS8YFVZl7TGPBHL5snIOnxeshwVgPteQ9b4Eydl+pVbIyE1DcvCWgQ==
 
-chromatic@^6.19.8:
-  version "6.20.0"
-  resolved "https://registry.yarnpkg.com/chromatic/-/chromatic-6.20.0.tgz#28dcbcc254e51bcb887d9b5203b3a11dd5ff890a"
-  integrity sha512-PN00MNAg++kXl9HM4JgTHJAMiJQ+nZYhtmKF+viZ6N//CLN5sZrHK5x5TSj/0z/cMhx2gGtbwgRhLHGGqxpj5w==
+chromatic@6.22.0-canary.0:
+  version "6.22.0-canary.0"
+  resolved "https://registry.yarnpkg.com/chromatic/-/chromatic-6.22.0-canary.0.tgz#53a5bf12ccfc2f296279883f3f0fc4fb0a3aa5e5"
+  integrity sha512-TI2KtEZEUOJgQjUfUaZ0U8+l734spheW74/a+csMQ+gcATxYsI3TnoB1sHrszMGeTiTx5dbxPunG3OP6ThEsVw==
 
 ci-info@^3.2.0:
   version "3.8.0"
