@@ -20,13 +20,19 @@ import { SnapshotComparison } from "./SnapshotComparison";
 import { Warnings } from "./Warnings";
 
 const QueryBuild = graphql(/* GraphQL */ `
-  query Build($hasBuildId: Boolean!, $buildId: ID!, $projectId: ID!, $branch: String!) {
+  query Build(
+    $hasBuildId: Boolean!
+    $buildId: ID!
+    $projectId: ID!
+    $branch: String!
+    $creatorEmail: String!
+  ) {
     build(id: $buildId) @include(if: $hasBuildId) {
       ...BuildFields
     }
     project(id: $projectId) @skip(if: $hasBuildId) {
       name
-      lastBuild(branches: [$branch]) {
+      lastBuild(branches: [$branch], creatorEmail: $creatorEmail) {
         ...BuildFields
       }
     }
@@ -145,8 +151,9 @@ const MutationReviewTest = graphql(/* GraphQL */ `
 
 interface VisualTestsProps {
   projectId: string;
-  branch?: string;
-  slug?: string;
+  userGitEmail: string;
+  branch: string;
+  slug: string;
   isOutdated?: boolean;
   isRunning?: boolean;
   lastDevBuildId?: string;
@@ -169,6 +176,7 @@ export const VisualTests = ({
   setIsRunning,
   updateBuildStatus,
   projectId,
+  userGitEmail,
   branch,
   slug,
   storyId,
@@ -181,6 +189,7 @@ export const VisualTests = ({
       projectId,
       branch: branch || "",
       ...(slug ? { slug } : {}),
+      creatorEmail: userGitEmail,
     },
   });
 

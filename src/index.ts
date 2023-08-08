@@ -1,9 +1,7 @@
 import type { Channel } from "@storybook/channels";
 import { readConfig, writeConfig } from "@storybook/csf-tools";
-import { exec } from "child_process";
 // eslint-disable-next-line import/no-unresolved
-import { run } from "chromatic/node";
-import { promisify } from "util";
+import { getGitInfo, GitInfo, run } from "chromatic/node";
 
 import {
   BUILD_STARTED,
@@ -82,20 +80,6 @@ async function serverChannel(
   return channel;
 }
 
-// TODO: use the chromatic CLI to get this info?
-const execPromise = promisify(exec);
-async function getGitInfo() {
-  const branch = (await execPromise("git rev-parse --abbrev-ref HEAD")).stdout.trim();
-  const commit = (await execPromise("git log -n 1 HEAD --format='%H'")).stdout.trim();
-  const origin = (await execPromise("git config --get remote.origin.url")).stdout.trim();
-
-  const [, slug] = origin.toLowerCase().match(/([^/:]+\/[^/]+?)(\.git)?$/) || [];
-  const [ownerName, repoName, ...rest] = slug ? slug.split("/") : [];
-  const isValidSlug = !!ownerName && !!repoName && !rest.length;
-
-  return { branch, commit, slug: isValidSlug ? slug : "" };
-}
-
 const config = {
   managerEntries,
   experimental_serverChannel: serverChannel,
@@ -105,11 +89,12 @@ const config = {
   ) => {
     if (configType === "production") return env;
 
-    const { branch, commit, slug } = await getGitInfo();
+    const { userEmail, branch, commit, slug } = await getGitInfo();
     return {
       ...env,
       CHROMATIC_BASE_URL,
       CHROMATIC_PROJECT_ID: projectId || "",
+      GIT_USER_EMAIL: userEmail,
       GIT_BRANCH: branch,
       GIT_COMMIT: commit,
       GIT_SLUG: slug,

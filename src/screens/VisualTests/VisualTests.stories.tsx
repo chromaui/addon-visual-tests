@@ -145,6 +145,9 @@ const meta = {
     storyId: "button--primary",
     projectId: "Project:id123",
     updateBuildStatus: action("updateBuildStatus"),
+    userGitEmail: "user@email.com",
+    branch: "branch",
+    slug: "",
   },
 } satisfies Meta<typeof VisualTests>;
 
