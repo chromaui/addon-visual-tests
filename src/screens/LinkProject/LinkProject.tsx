@@ -122,7 +122,7 @@ function SelectProject({
     if (data?.viewer?.accounts) {
       onSelectAccount(data.viewer.accounts[0]);
     }
-  }, [data])
+  }, [data, onSelectAccount]);
 
   const [isSelectingProject, setSelectingProject] = useState(false);
 
