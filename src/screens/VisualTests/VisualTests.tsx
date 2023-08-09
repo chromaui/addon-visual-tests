@@ -3,9 +3,9 @@ import { Icon } from "@storybook/design-system";
 import React, { useCallback, useEffect, useState } from "react";
 import { useMutation, useQuery } from "urql";
 
+import { FooterMenu } from "../../components/FooterMenu";
 import { IconButton } from "../../components/IconButton";
 import { Bar, Col, Row, Section, Sections, Text } from "../../components/layout";
-import { TooltipMenu } from "../../components/TooltipMenu";
 import { getFragment, graphql } from "../../gql";
 import {
   BuildQuery,
@@ -272,25 +272,7 @@ export const VisualTests = ({
               <Text style={{ marginLeft: 5 }}>Loading...</Text>
             </Col>
             <Col push>
-              <TooltipMenu
-                placement="top"
-                links={[
-                  {
-                    id: "logout",
-                    title: "Log out",
-                    icon: "user",
-                    onClick: () => setAccessToken(null),
-                  },
-                  {
-                    id: "learn",
-                    title: "Learn about this addon",
-                    icon: "question",
-                    href: "https://www.chromatic.com/docs/test",
-                  },
-                ]}
-              >
-                <Icon icon="ellipsis" />
-              </TooltipMenu>
+              <FooterMenu setAccessToken={setAccessToken} />
             </Col>
           </Bar>
         </Section>
@@ -349,25 +331,7 @@ export const VisualTests = ({
             </IconButton>
           </Col>
           <Col>
-            <TooltipMenu
-              placement="top"
-              links={[
-                {
-                  id: "logout",
-                  title: "Log out",
-                  icon: "user",
-                  onClick: () => setAccessToken(null),
-                },
-                {
-                  id: "learn",
-                  title: "Learn about this addon",
-                  icon: "question",
-                  href: "https://www.chromatic.com/docs/test",
-                },
-              ]}
-            >
-              <Icon icon="ellipsis" />
-            </TooltipMenu>
+            <FooterMenu setAccessToken={setAccessToken} />
           </Col>
         </Bar>
       </Section>
