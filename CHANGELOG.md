@@ -1,3 +1,15 @@
+# v0.0.18 (Wed Aug 09 2023)
+
+#### 🐛 Bug Fix
+
+- Update OAuth Client ID [#28](https://github.com/chromaui/addon-visual-tests/pull/28) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v0.0.17 (Mon Aug 07 2023)
 
 #### 🐛 Bug Fix
