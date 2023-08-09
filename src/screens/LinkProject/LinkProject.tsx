@@ -69,6 +69,8 @@ const ListHeadingText = styled.h1`
 const Left = styled.div`
   flex: 1;
   background-color: white;
+  display: flex;
+  flex-direction: column;
 `;
 const Right = styled.div`
   flex: 1;
