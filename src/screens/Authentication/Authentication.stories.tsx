@@ -22,9 +22,9 @@ const meta = {
             ctx.json({
               device_code: "chdc_95a7123d17a84851abcdefc869ec0741",
               user_code: "123 123",
-              verification_uri: "https://www.chromatic.com/connect/storybook-visual-tests",
+              verification_uri: "https://www.chromatic.com/connect/chromaui:addon-visual-tests",
               verification_uri_complete:
-                "https://www.chromatic.com/connect/storybook-visual-tests?code=123123",
+                "https://www.chromatic.com/connect/chromaui:addon-visual-tests?code=123123",
               expires_in: 300,
               interval: 5,
             })

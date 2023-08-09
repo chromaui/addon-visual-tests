@@ -83,7 +83,7 @@ const signInWithRetry = async (options: {
       "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
     },
     body: encodeParams({
-      client_id: "storybook-visual-tests",
+      client_id: "chromaui:addon-visual-tests",
       code_challenge: challenge,
     }),
   });
@@ -117,7 +117,7 @@ const signInWithRetry = async (options: {
       }
     },
     requestBody: encodeParams({
-      client_id: "storybook-visual-tests",
+      client_id: "chromaui:addon-visual-tests",
       grant_type: "urn:ietf:params:oauth:grant-type:device_code",
       device_code,
       code_verifier: verifier,
