@@ -10,11 +10,12 @@ import {
   BUILD_STARTED,
   CHROMATIC_ADDON_NAME,
   CHROMATIC_BASE_URL,
-  GIT_STATE_CHANGED,
+  GIT_INFO,
   START_BUILD,
   UPDATE_PROJECT,
   UpdateProjectPayload,
 } from "./constants";
+import { GitInfo } from "./types";
 import { findConfig } from "./utils/storybook.config.utils";
 
 /**
@@ -24,9 +25,29 @@ function managerEntries(entry: string[] = []) {
   return [...entry, require.resolve("./manager.mjs")];
 }
 
-// TODO: use the chromatic CLI to get this info?
 const execPromise = promisify(exec);
-async function getGitInfo() {
+
+// Retrieve the hash of all uncommitted files, which includes staged, unstaged, and untracked files,
+// excluding deleted files (which can't be hashed) and ignored files. There is no one single Git
+// command to reliably get this information, so we use a combination of commands grouped together.
+const getUncommittedHash = async () => {
+  const listStagedFiles = "git diff --name-only --diff-filter=d --cached";
+  const listUnstagedFiles = "git diff --name-only --diff-filter=d";
+  const listUntrackedFiles = "git ls-files --others --exclude-standard";
+  const listUncommittedFiles = [listStagedFiles, listUnstagedFiles, listUntrackedFiles].join(";");
+
+  return (
+    await execPromise(
+      // Pass the combined list of filenames to hash-object to retrieve a list of hashes. Then pass
+      // the list of hashes to hash-object again to retrieve a single hash of all hashes. We use
+      // stdin to avoid the limit on command line arguments.
+      `(${listUncommittedFiles}) | git hash-object --stdin-paths | git hash-object --stdin`
+    )
+  ).stdout.trim();
+};
+
+// TODO: use the chromatic CLI to get this info?
+const getGitInfo = async (): Promise<GitInfo> => {
   const branch = (await execPromise("git rev-parse --abbrev-ref HEAD")).stdout.trim();
   const commit = (await execPromise("git log -n 1 HEAD --format='%H'")).stdout.trim();
   const origin = (await execPromise("git config --get remote.origin.url")).stdout.trim();
@@ -35,24 +56,26 @@ async function getGitInfo() {
   const [ownerName, repoName, ...rest] = slug ? slug.split("/") : [];
   const isValidSlug = !!ownerName && !!repoName && !rest.length;
 
-  return { branch, commit, slug: isValidSlug ? slug : "" };
-}
+  const uncommittedHash = await getUncommittedHash();
+  return { branch, commit, slug: isValidSlug ? slug : "", uncommittedHash };
+};
 
-// Retrieve the hash of the last commit + all uncommitted files, which includes staged, unstaged,
-// and untracked files, excluding deleted files (which can't be hashed) and ignored files. There is
-// no one single Git command to reliably get this information, so we use a combination of commands
-// grouped together.
-const getGitStateHash = async () => {
-  const listStagedFiles = "git diff --name-only --diff-filter=d --cached";
-  const listUnstagedFiles = "git diff --name-only --diff-filter=d";
-  const listUntrackedFiles = "git ls-files --others --exclude-standard";
-  const listUncommittedFiles = [listStagedFiles, listUnstagedFiles, listUntrackedFiles].join(";");
+// Polls for changes to the Git state and invokes the callback when it changes.
+// Uses a recursive setTimeout instead of setInterval to avoid overlapping async calls.
+const observeGitInfo = async (interval: number, callback: (info: GitInfo) => void) => {
+  let prev: GitInfo;
+  let timer: NodeJS.Timeout | null = null;
+  const act = async () => {
+    const gitInfo = await getGitInfo();
+    if (Object.entries(gitInfo).some(([key, value]) => prev?.[key as keyof GitInfo] !== value)) {
+      callback(gitInfo);
+    }
+    prev = gitInfo;
+    timer = setTimeout(act, interval);
+  };
+  act();
 
-  // Pass the combined list of filenames to hash-object to retrieve a list of hashes.
-  // Then pass the list of hashes plus the head commit hash to hash-object again to retrieve
-  // a single hash of all hashes. We use stdin to avoid the limit on command line arguments.
-  const getHashes = `((${listUncommittedFiles}) | git hash-object --stdin-paths; git rev-parse HEAD)`;
-  return (await execPromise(`${getHashes} | git hash-object --stdin`)).stdout.trim();
+  return () => clearTimeout(timer);
 };
 
 async function serverChannel(
@@ -108,20 +131,7 @@ async function serverChannel(
     }
   );
 
-  let lastGitStateHash: string | undefined;
-  setInterval(() => {
-    getGitStateHash()
-      .then((hash) => {
-        if (hash === lastGitStateHash) return;
-        lastGitStateHash = hash;
-        console.debug("emitting", GIT_STATE_CHANGED, hash);
-        channel.emit(GIT_STATE_CHANGED, lastGitStateHash);
-      })
-      .catch((e) => {
-        console.warn("Failed to retrieve git state hash");
-        console.debug(e);
-      });
-  }, 5000);
+  observeGitInfo(5000, (info) => channel.emit(GIT_INFO, info));
 
   return channel;
 }

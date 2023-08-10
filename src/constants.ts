@@ -11,6 +11,7 @@ export const ACCESS_TOKEN_KEY = `${ADDON_ID}/access-token/${CHROMATIC_BASE_URL}`
 export const DEV_BUILD_ID_KEY = `${ADDON_ID}/dev-build-id`;
 
 export const START_BUILD = `${ADDON_ID}/startBuild`;
+export const GIT_INFO = `${ADDON_ID}/gitInfo`;
 export const BUILD_STARTED = `${ADDON_ID}/buildStarted`;
 
 export const UPDATE_PROJECT = `${ADDON_ID}/updateProject`;
@@ -20,4 +21,3 @@ export type UpdateProjectPayload = {
 };
 
 export const PROJECT_UPDATED = `${ADDON_ID}/projectUpdated`;
-export const GIT_STATE_CHANGED = `${ADDON_ID}/gitStateChanged`;

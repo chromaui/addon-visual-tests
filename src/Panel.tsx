@@ -6,12 +6,12 @@ import {
 } from "@storybook/manager-api";
 import React, { useCallback } from "react";
 
-import { ADDON_ID, GIT_STATE_CHANGED, PANEL_ID, START_BUILD } from "./constants";
+import { ADDON_ID, GIT_INFO, PANEL_ID, START_BUILD } from "./constants";
 import { Authentication } from "./screens/Authentication/Authentication";
 import { LinkedProject } from "./screens/LinkProject/LinkedProject";
 import { LinkProject } from "./screens/LinkProject/LinkProject";
 import { VisualTests } from "./screens/VisualTests/VisualTests";
-import { AddonState } from "./types";
+import { AddonState, GitInfo } from "./types";
 import { client, Provider, useAccessToken } from "./utils/graphQLClient";
 import { StatusUpdate } from "./utils/testsToStatusUpdate";
 import { useProjectId } from "./utils/useProjectId";
@@ -20,13 +20,16 @@ interface PanelProps {
   active: boolean;
 }
 
-const { GIT_BRANCH, GIT_SLUG } = process.env;
+const { GIT_BRANCH, GIT_SLUG, GIT_COMMIT } = process.env;
 
 export const Panel = ({ active }: PanelProps) => {
   const api = useStorybookApi();
   const [accessToken, setAccessToken] = useAccessToken();
 
-  const [state, setAddonState] = useAddonState<AddonState>(ADDON_ID, { isOutdated: false });
+  const [state, setAddonState] = useAddonState<AddonState>(ADDON_ID, {
+    isOutdated: false,
+    gitInfo: { branch: GIT_BRANCH, commit: GIT_COMMIT, slug: GIT_SLUG },
+  });
   const { storyId } = useStorybookState();
 
   const setIsOutdated = useCallback(
@@ -38,12 +41,17 @@ export const Panel = ({ active }: PanelProps) => {
     [state, setAddonState]
   );
 
-  const emit = useChannel({
-    [GIT_STATE_CHANGED]: (hash) => {
-      console.log(GIT_STATE_CHANGED, hash);
-      setIsOutdated(true);
+  const emit = useChannel(
+    {
+      [GIT_INFO]: (gitInfo: GitInfo) => {
+        setAddonState({ ...state, gitInfo });
+        if (gitInfo.uncommittedHash !== state.gitInfo.uncommittedHash) {
+          setIsOutdated(true);
+        }
+      },
     },
-  });
+    [state, setAddonState, setIsOutdated]
+  );
 
   const runDevBuild = useCallback(() => {
     if (state.isRunning) return;
@@ -84,8 +92,8 @@ export const Panel = ({ active }: PanelProps) => {
     <Provider key={PANEL_ID} value={client}>
       <VisualTests
         projectId={projectId}
-        branch={GIT_BRANCH}
-        slug={GIT_SLUG}
+        branch={state.gitInfo.branch}
+        slug={state.gitInfo.slug}
         isOutdated={state.isOutdated}
         isRunning={state.isRunning}
         lastDevBuildId={state.lastBuildId}

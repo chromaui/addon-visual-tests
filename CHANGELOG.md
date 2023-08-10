@@ -1,3 +1,15 @@
+# v0.0.19 (Thu Aug 10 2023)
+
+#### 🐛 Bug Fix
+
+- Realtime git info [#24](https://github.com/chromaui/addon-visual-tests/pull/24) ([@ndelangen](https://github.com/ndelangen))
+
+#### Authors: 1
+
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+
+---
+
 # v0.0.18 (Wed Aug 09 2023)
 
 #### 🐛 Bug Fix
