@@ -4,8 +4,9 @@ import { findByTestId } from "@storybook/testing-library";
 import { graphql } from "msw";
 import React from "react";
 
-import { Build, ProjectQueryQuery, SelectProjectsQueryQuery } from "../../gql/graphql";
+import { ProjectQueryQuery, SelectProjectsQueryQuery } from "../../gql/graphql";
 import { storyWrapper } from "../../utils/graphQLClient";
+import { playAll } from "../../utils/playAll";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
 import { LinkedProject } from "./LinkedProject";
 import { LinkProject } from "./LinkProject";
@@ -229,14 +230,14 @@ export const SelectProjectManyProjects: Story = {
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-317038&mode=design&t=P9IPi8sOGNpjCeNs-4"
     ),
   },
-  play: async ({ canvasElement }) => {
+  play: playAll(async ({ canvasElement }) => {
     const rightDiv = await findByTestId(canvasElement, "right-list");
     const leftDiv = await findByTestId(canvasElement, "left-list");
 
     // scroll to the bottom of each div
     await rightDiv.scroll({ top: rightDiv.scrollHeight });
     await leftDiv.scroll({ top: leftDiv.scrollHeight });
-  },
+  }),
 };
 export const Linked: Story = {
   render: () => (
