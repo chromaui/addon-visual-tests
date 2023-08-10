@@ -6,7 +6,7 @@ import {
 } from "@storybook/manager-api";
 import React, { useCallback } from "react";
 
-import { ADDON_ID, PANEL_ID, START_BUILD } from "./constants";
+import { ADDON_ID, GIT_STATE_CHANGED, PANEL_ID, START_BUILD } from "./constants";
 import { Authentication } from "./screens/Authentication/Authentication";
 import { LinkedProject } from "./screens/LinkProject/LinkedProject";
 import { LinkProject } from "./screens/LinkProject/LinkProject";
@@ -38,7 +38,12 @@ export const Panel = ({ active }: PanelProps) => {
     [state, setAddonState]
   );
 
-  const emit = useChannel({});
+  const emit = useChannel({
+    [GIT_STATE_CHANGED]: (hash) => {
+      console.log(GIT_STATE_CHANGED, hash);
+      setIsOutdated(true);
+    },
+  });
 
   const runDevBuild = useCallback(() => {
     if (state.isRunning) return;

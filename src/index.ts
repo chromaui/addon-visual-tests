@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import type { Channel } from "@storybook/channels";
 import { readConfig, writeConfig } from "@storybook/csf-tools";
 import { exec } from "child_process";
@@ -9,6 +10,7 @@ import {
   BUILD_STARTED,
   CHROMATIC_ADDON_NAME,
   CHROMATIC_BASE_URL,
+  GIT_STATE_CHANGED,
   START_BUILD,
   UPDATE_PROJECT,
   UpdateProjectPayload,
@@ -21,6 +23,37 @@ import { findConfig } from "./utils/storybook.config.utils";
 function managerEntries(entry: string[] = []) {
   return [...entry, require.resolve("./manager.mjs")];
 }
+
+// TODO: use the chromatic CLI to get this info?
+const execPromise = promisify(exec);
+async function getGitInfo() {
+  const branch = (await execPromise("git rev-parse --abbrev-ref HEAD")).stdout.trim();
+  const commit = (await execPromise("git log -n 1 HEAD --format='%H'")).stdout.trim();
+  const origin = (await execPromise("git config --get remote.origin.url")).stdout.trim();
+
+  const [, slug] = origin.toLowerCase().match(/([^/:]+\/[^/]+?)(\.git)?$/) || [];
+  const [ownerName, repoName, ...rest] = slug ? slug.split("/") : [];
+  const isValidSlug = !!ownerName && !!repoName && !rest.length;
+
+  return { branch, commit, slug: isValidSlug ? slug : "" };
+}
+
+// Retrieve the hash of the last commit + all uncommitted files, which includes staged, unstaged,
+// and untracked files, excluding deleted files (which can't be hashed) and ignored files. There is
+// no one single Git command to reliably get this information, so we use a combination of commands
+// grouped together.
+const getGitStateHash = async () => {
+  const listStagedFiles = "git diff --name-only --diff-filter=d --cached";
+  const listUnstagedFiles = "git diff --name-only --diff-filter=d";
+  const listUntrackedFiles = "git ls-files --others --exclude-standard";
+  const listUncommittedFiles = [listStagedFiles, listUnstagedFiles, listUntrackedFiles].join(";");
+
+  // Pass the combined list of filenames to hash-object to retrieve a list of hashes.
+  // Then pass the list of hashes plus the head commit hash to hash-object again to retrieve
+  // a single hash of all hashes. We use stdin to avoid the limit on command line arguments.
+  const getHashes = `((${listUncommittedFiles}) | git hash-object --stdin-paths; git rev-parse HEAD)`;
+  return (await execPromise(`${getHashes} | git hash-object --stdin`)).stdout.trim();
+};
 
 async function serverChannel(
   channel: Channel,
@@ -37,11 +70,9 @@ async function serverChannel(
       },
       options: {
         onTaskComplete(ctx: any) {
-          // eslint-disable-next-line no-console
           console.log(`Completed task '${ctx.title}'`);
           if (ctx.announcedBuild && !sent) {
-            // eslint-disable-next-line no-console
-            console.log("emitting", BUILD_STARTED);
+            console.debug("emitting", BUILD_STARTED, ctx.announcedBuild.id);
             channel.emit(BUILD_STARTED, ctx.announcedBuild.id);
             sent = true;
           }
@@ -77,21 +108,22 @@ async function serverChannel(
     }
   );
 
+  let lastGitStateHash: string | undefined;
+  setInterval(() => {
+    getGitStateHash()
+      .then((hash) => {
+        if (hash === lastGitStateHash) return;
+        lastGitStateHash = hash;
+        console.debug("emitting", GIT_STATE_CHANGED, hash);
+        channel.emit(GIT_STATE_CHANGED, lastGitStateHash);
+      })
+      .catch((e) => {
+        console.warn("Failed to retrieve git state hash");
+        console.debug(e);
+      });
+  }, 5000);
+
   return channel;
-}
-
-// TODO: use the chromatic CLI to get this info?
-const execPromise = promisify(exec);
-async function getGitInfo() {
-  const branch = (await execPromise("git rev-parse --abbrev-ref HEAD")).stdout.trim();
-  const commit = (await execPromise("git log -n 1 HEAD --format='%H'")).stdout.trim();
-  const origin = (await execPromise("git config --get remote.origin.url")).stdout.trim();
-
-  const [, slug] = origin.toLowerCase().match(/([^/:]+\/[^/]+?)(\.git)?$/) || [];
-  const [ownerName, repoName, ...rest] = slug ? slug.split("/") : [];
-  const isValidSlug = !!ownerName && !!repoName && !rest.length;
-
-  return { branch, commit, slug: isValidSlug ? slug : "" };
 }
 
 const config = {

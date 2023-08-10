@@ -20,3 +20,4 @@ export type UpdateProjectPayload = {
 };
 
 export const PROJECT_UPDATED = `${ADDON_ID}/projectUpdated`;
+export const GIT_STATE_CHANGED = `${ADDON_ID}/gitStateChanged`;
