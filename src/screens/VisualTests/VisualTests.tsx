@@ -1,7 +1,6 @@
 import { Loader } from "@storybook/components";
 import { Icon } from "@storybook/design-system";
 import React, { useCallback, useEffect, useState } from "react";
-import { emailHash } from "src/utils/emailHash";
 import { useMutation, useQuery } from "urql";
 
 import { IconButton } from "../../components/IconButton";
@@ -152,7 +151,7 @@ const MutationReviewTest = graphql(/* GraphQL */ `
 
 interface VisualTestsProps {
   projectId: string;
-  userGitEmail: string;
+  gitUserEmailHash: string;
   branch: string;
   slug: string;
   isOutdated?: boolean;
@@ -177,7 +176,7 @@ export const VisualTests = ({
   setIsRunning,
   updateBuildStatus,
   projectId,
-  userGitEmail,
+  gitUserEmailHash,
   branch,
   slug,
   storyId,
@@ -190,7 +189,7 @@ export const VisualTests = ({
       projectId,
       branch: branch || "",
       ...(slug ? { slug } : {}),
-      gitUserEmailHash: emailHash(userGitEmail),
+      gitUserEmailHash,
     },
   });
 

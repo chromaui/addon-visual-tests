@@ -20,7 +20,7 @@ interface PanelProps {
   active: boolean;
 }
 
-const { GIT_USER_EMAIL, GIT_BRANCH, GIT_SLUG } = process.env;
+const { GIT_USER_EMAIL_HASH, GIT_BRANCH, GIT_SLUG } = process.env;
 
 export const Panel = ({ active }: PanelProps) => {
   const api = useStorybookApi();
@@ -79,7 +79,7 @@ export const Panel = ({ active }: PanelProps) => {
     <Provider key={PANEL_ID} value={client}>
       <VisualTests
         projectId={projectId}
-        userGitEmail={GIT_USER_EMAIL}
+        gitUserEmailHash={GIT_USER_EMAIL_HASH}
         branch={GIT_BRANCH}
         slug={GIT_SLUG}
         isOutdated={state.isOutdated}

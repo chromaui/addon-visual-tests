@@ -89,12 +89,13 @@ const config = {
   ) => {
     if (configType === "production") return env;
 
-    const { userEmail, branch, commit, slug } = await getGitInfo();
+    const { userEmail, userEmailHash, branch, commit, slug } = await getGitInfo();
     return {
       ...env,
       CHROMATIC_BASE_URL,
       CHROMATIC_PROJECT_ID: projectId || "",
       GIT_USER_EMAIL: userEmail,
+      GIT_USER_EMAIL_HASH: userEmailHash,
       GIT_BRANCH: branch,
       GIT_COMMIT: commit,
       GIT_SLUG: slug,
