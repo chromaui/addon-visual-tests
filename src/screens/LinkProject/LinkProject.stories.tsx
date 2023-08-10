@@ -1,5 +1,6 @@
 import { action } from "@storybook/addon-actions";
 import type { Meta, StoryObj } from "@storybook/react";
+import { findByTestId } from "@storybook/testing-library";
 import { graphql } from "msw";
 import React from "react";
 
@@ -8,7 +9,6 @@ import { storyWrapper } from "../../utils/graphQLClient";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
 import { LinkedProject } from "./LinkedProject";
 import { LinkProject } from "./LinkProject";
-import { findByTestId, within } from "@storybook/testing-library";
 
 const meta = {
   component: LinkProject,
@@ -53,7 +53,7 @@ const fewProjects = {
       },
     ],
   },
-} satisfies SelectProjectsQueryQuery
+} satisfies SelectProjectsQueryQuery;
 
 const manyProjects = {
   viewer: {
@@ -197,10 +197,9 @@ const manyProjects = {
           },
         ],
       },
-    ]
-  }
-} satisfies SelectProjectsQueryQuery
-
+    ],
+  },
+} satisfies SelectProjectsQueryQuery;
 
 const withGraphQLQuery = (...args: Parameters<typeof graphql.query>) => ({
   msw: {
@@ -208,9 +207,8 @@ const withGraphQLQuery = (...args: Parameters<typeof graphql.query>) => ({
   },
 });
 
-const withSelectProjectsQuery = (projectResult: SelectProjectsQueryQuery) => withGraphQLQuery("SelectProjectsQuery", (req, res, ctx) =>
-  res(ctx.data(projectResult)));
-
+const withSelectProjectsQuery = (projectResult: SelectProjectsQueryQuery) =>
+  withGraphQLQuery("SelectProjectsQuery", (req, res, ctx) => res(ctx.data(projectResult)));
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -221,14 +219,15 @@ export const SelectProject: Story = {
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318196&t=3EAIRe8423CpOQWY-4"
     ),
-  }
+  },
 };
-
 
 export const SelectProjectManyProjects: Story = {
   parameters: {
     ...withSelectProjectsQuery(manyProjects),
-    ...withFigmaDesign("https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-317038&mode=design&t=P9IPi8sOGNpjCeNs-4")
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-317038&mode=design&t=P9IPi8sOGNpjCeNs-4"
+    ),
   },
   play: async ({ canvasElement }) => {
     const rightDiv = await findByTestId(canvasElement, "right-list");
@@ -237,10 +236,8 @@ export const SelectProjectManyProjects: Story = {
     // scroll to the bottom of each div
     await rightDiv.scroll({ top: rightDiv.scrollHeight });
     await leftDiv.scroll({ top: leftDiv.scrollHeight });
-
-  }
-
-}
+  },
+};
 export const Linked: Story = {
   render: () => (
     <LinkedProject
@@ -263,7 +260,8 @@ export const Linked: Story = {
             },
           },
         } satisfies ProjectQueryQuery)
-      )),
+      )
+    ),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=330-472759&t=3EAIRe8423CpOQWY-4"
     ),
@@ -276,14 +274,14 @@ export const EmptyNoAccounts: Story = {
       viewer: {
         id: "viewer:123",
         name: "John Doe",
-        accounts: [
-        ],
-      }
+        accounts: [],
+      },
     }),
-    ...withFigmaDesign("https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-317038&mode=design&t=P9IPi8sOGNpjCeNs-4"),
-  }
-}
-
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-317038&mode=design&t=P9IPi8sOGNpjCeNs-4"
+    ),
+  },
+};
 
 export const EmptyNoProjects: Story = {
   parameters: {
@@ -296,19 +294,23 @@ export const EmptyNoProjects: Story = {
             id: "account:123",
             name: "acme corp",
             projects: [],
-          }
+          },
         ],
-      }
+      },
     }),
-    ...withFigmaDesign("https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-317038&mode=design&t=P9IPi8sOGNpjCeNs-4"),
-  }
-}
-
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-317038&mode=design&t=P9IPi8sOGNpjCeNs-4"
+    ),
+  },
+};
 
 export const Loading: Story = {
   parameters: {
     ...withGraphQLQuery("SelectProjectsQuery", (req, res, ctx) =>
-      res(ctx.status(200), ctx.data({}), ctx.delay("infinite"))),
-    ...withFigmaDesign("https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-317038&mode=design&t=P9IPi8sOGNpjCeNs-4"),
+      res(ctx.status(200), ctx.data({}), ctx.delay("infinite"))
+    ),
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-317038&mode=design&t=P9IPi8sOGNpjCeNs-4"
+    ),
   },
-}
+};

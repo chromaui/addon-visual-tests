@@ -153,7 +153,7 @@ function SelectProject({
             <ProjectPicker>
               <Left>
                 <ListHeading>Accounts</ListHeading>
-                <List>
+                <List data-testid="left-list">
                   {data.viewer.accounts?.map((account) => (
                     <ListItem
                       key={account.id}
@@ -167,7 +167,7 @@ function SelectProject({
               </Left>
               <Right>
                 <ListHeading>Projects</ListHeading>
-                <List>
+                <List data-testid="right-list">
                   {selectedAccount?.projects?.map((project) => (
                     <ListItem
                       appearance="secondary"
