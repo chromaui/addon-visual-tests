@@ -1,6 +1,7 @@
 import { Loader } from "@storybook/components";
 import { Icon } from "@storybook/design-system";
 import React, { useCallback, useEffect, useState } from "react";
+import { emailHash } from "src/utils/emailHash";
 import { useMutation, useQuery } from "urql";
 
 import { IconButton } from "../../components/IconButton";
@@ -25,14 +26,14 @@ const QueryBuild = graphql(/* GraphQL */ `
     $buildId: ID!
     $projectId: ID!
     $branch: String!
-    $creatorEmail: String!
+    $gitUserEmailHash: String!
   ) {
     build(id: $buildId) @include(if: $hasBuildId) {
       ...BuildFields
     }
     project(id: $projectId) @skip(if: $hasBuildId) {
       name
-      lastBuild(branches: [$branch], creatorEmail: $creatorEmail) {
+      lastBuild(branches: [$branch], localBuilds: { localBuildEmailHash: $gitUserEmailHash }) {
         ...BuildFields
       }
     }
@@ -189,7 +190,7 @@ export const VisualTests = ({
       projectId,
       branch: branch || "",
       ...(slug ? { slug } : {}),
-      creatorEmail: userGitEmail,
+      gitUserEmailHash: emailHash(userGitEmail),
     },
   });
 
