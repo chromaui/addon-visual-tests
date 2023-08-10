@@ -8,6 +8,7 @@ import { storyWrapper } from "../../utils/graphQLClient";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
 import { LinkedProject } from "./LinkedProject";
 import { LinkProject } from "./LinkProject";
+import { findByTestId, within } from "@storybook/testing-library";
 
 const meta = {
   component: LinkProject,
@@ -228,6 +229,15 @@ export const SelectProjectManyProjects: Story = {
   parameters: {
     ...withSelectProjectsQuery(manyProjects),
     ...withFigmaDesign("https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-317038&mode=design&t=P9IPi8sOGNpjCeNs-4")
+  },
+  play: async ({ canvasElement }) => {
+    const rightDiv = await findByTestId(canvasElement, "right-list");
+    const leftDiv = await findByTestId(canvasElement, "left-list");
+
+    // scroll to the bottom of each div
+    await rightDiv.scroll({ top: rightDiv.scrollHeight });
+    await leftDiv.scroll({ top: leftDiv.scrollHeight });
+
   }
 
 }
