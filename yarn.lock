@@ -2963,6 +2963,13 @@
     lodash "^4.17.21"
     ts-dedent "^2.0.0"
 
+"@storybook/addon-designs@^7.0.1":
+  version "7.0.1"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-designs/-/addon-designs-7.0.1.tgz#41c37f0d7c382cdb0159e3035cef5eef9dbebbc5"
+  integrity sha512-bp7eoOYnoKp48H7tx0nkhhi9y7qUBr2YE9pd2DdxlS+4s2REglVeh1bNbBEYg9QUKPeKgUoWLMonLMTuCUyLoQ==
+  dependencies:
+    "@figspec/react" "^1.0.0"
+
 "@storybook/addon-docs@7.2.0":
   version "7.2.0"
   resolved "https://registry.yarnpkg.com/@storybook/addon-docs/-/addon-docs-7.2.0.tgz#249b8b0752fd93ca732f4bfc57aa642373d49cb1"
@@ -11671,13 +11678,6 @@ store2@^2.14.2:
   version "2.14.2"
   resolved "https://registry.yarnpkg.com/store2/-/store2-2.14.2.tgz#56138d200f9fe5f582ad63bc2704dbc0e4a45068"
   integrity sha512-siT1RiqlfQnGqgT/YzXVUNsom9S0H1OX+dpdGN1xkyYATo4I6sep5NmsRD/40s3IIOvlCq6akxkqG82urIZW1w==
-
-storybook-addon-designs@^7.0.0-beta.2:
-  version "7.0.0-beta.2"
-  resolved "https://registry.yarnpkg.com/storybook-addon-designs/-/storybook-addon-designs-7.0.0-beta.2.tgz#a742c0a378a022e4913660c624b241ffc9957ce9"
-  integrity sha512-ljBNmyCJdPTXhiBSfA1S+GBxtMooW2M7nxlt49OoCRH7jcxZOYQdiI8JYQiMF5Ur0MGakbSci0Xm+JzAvcm02g==
-  dependencies:
-    "@figspec/react" "^1.0.0"
 
 storybook@^7.2.0:
   version "7.2.0"
