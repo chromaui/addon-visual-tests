@@ -1,3 +1,6 @@
+// eslint-disable-next-line import/no-unresolved
+import { GitInfo } from "chromatic/node";
+
 import { BuildFieldsFragment } from "./gql/graphql";
 
 export interface AddonState {
@@ -13,10 +16,3 @@ export type StartedBuild = Extract<BuildFieldsFragment, { __typename: "StartedBu
 export type CompletedBuild = Extract<BuildFieldsFragment, { __typename: "CompletedBuild" }>;
 
 export type BuildWithTests = StartedBuild | CompletedBuild;
-
-export type GitInfo = {
-  branch: string;
-  commit: string;
-  slug: string;
-  uncommittedHash?: string;
-};

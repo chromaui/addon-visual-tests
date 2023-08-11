@@ -4,6 +4,8 @@ import {
   useStorybookApi,
   useStorybookState,
 } from "@storybook/manager-api";
+// eslint-disable-next-line import/no-unresolved
+import { GitInfo } from "chromatic/node";
 import React, { useCallback } from "react";
 
 import { ADDON_ID, GIT_INFO, PANEL_ID, START_BUILD } from "./constants";
@@ -11,7 +13,7 @@ import { Authentication } from "./screens/Authentication/Authentication";
 import { LinkedProject } from "./screens/LinkProject/LinkedProject";
 import { LinkProject } from "./screens/LinkProject/LinkProject";
 import { VisualTests } from "./screens/VisualTests/VisualTests";
-import { AddonState, GitInfo } from "./types";
+import { AddonState } from "./types";
 import { client, Provider, useAccessToken } from "./utils/graphQLClient";
 import { StatusUpdate } from "./utils/testsToStatusUpdate";
 import { useProjectId } from "./utils/useProjectId";
@@ -28,7 +30,7 @@ export const Panel = ({ active }: PanelProps) => {
 
   const [state, setAddonState] = useAddonState<AddonState>(ADDON_ID, {
     isOutdated: false,
-    gitInfo: { branch: GIT_BRANCH, commit: GIT_COMMIT, slug: GIT_SLUG },
+    gitInfo: { branch: GIT_BRANCH, commit: GIT_COMMIT, slug: GIT_SLUG, uncommittedHash: "" },
   });
   const { storyId } = useStorybookState();
 
@@ -43,11 +45,9 @@ export const Panel = ({ active }: PanelProps) => {
 
   const emit = useChannel(
     {
-      [GIT_INFO]: (gitInfo: GitInfo) => {
+      [GIT_INFO]: (gitInfo: GitInfo, prevInfo: GitInfo) => {
         setAddonState({ ...state, gitInfo });
-        if (gitInfo.uncommittedHash !== state.gitInfo.uncommittedHash) {
-          setIsOutdated(true);
-        }
+        if (prevInfo) setIsOutdated(true); // Ignore the first GIT_INFO event
       },
     },
     [state, setAddonState, setIsOutdated]
