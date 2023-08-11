@@ -157,6 +157,7 @@ interface VisualTestsProps {
   lastDevBuildId?: string;
   runDevBuild: () => void;
   setAccessToken: (accessToken: string | null) => void;
+  // eslint-disable-next-line react/no-unused-prop-types
   setIsOutdated: (isOutdated: boolean) => void;
   setIsRunning: (isRunning: boolean) => void;
   updateBuildStatus: (update: StatusUpdate) => void;
@@ -191,8 +192,21 @@ export const VisualTests = ({
   const [{ fetching: isAccepting }, reviewTest] = useMutation(MutationReviewTest);
 
   const onAccept = useCallback(
-    (testId: string, batch: ReviewTestBatch) =>
-      reviewTest({ input: { testId, status: ReviewTestInputStatus.Accepted, batch } }),
+    async (testId: string, batch: ReviewTestBatch) => {
+      try {
+        const { error: reviewError } = await reviewTest({
+          input: { testId, status: ReviewTestInputStatus.Accepted, batch },
+        });
+
+        if (reviewError) throw reviewError;
+      } catch (err) {
+        // https://linear.app/chromaui/issue/AP-3279/error-handling
+        // eslint-disable-next-line no-console
+        console.log("Failed to accept changes:");
+        // eslint-disable-next-line no-console
+        console.log(err);
+      }
+    },
     [reviewTest]
   );
 

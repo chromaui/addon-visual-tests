@@ -5,13 +5,17 @@ import { exec } from "child_process";
 import { run } from "chromatic/node";
 import { promisify } from "util";
 
-import { BUILD_STARTED, START_BUILD, UPDATE_PROJECT, UpdateProjectPayload } from "./constants";
+import {
+  BUILD_STARTED,
+  CHROMATIC_ADDON_NAME,
+  CHROMATIC_BASE_URL,
+  GIT_INFO,
+  START_BUILD,
+  UPDATE_PROJECT,
+  UpdateProjectPayload,
+} from "./constants";
+import { GitInfo } from "./types";
 import { findConfig } from "./utils/storybook.config.utils";
-
-const {
-  CHROMATIC_BASE_URL = "https://www.chromatic.com",
-  CHROMATIC_ADDON_NAME = "@chromaui/addon-visual-tests",
-} = process.env;
 
 /**
  * to load the built addon in this test Storybook
@@ -75,12 +79,38 @@ async function serverChannel(
     }
   );
 
+  observeGitInfo((info) => {
+    channel.emit(GIT_INFO, info);
+  });
+
   return channel;
 }
 
+const observeGitInfo = async (callback: (info: GitInfo) => void) => {
+  // use a looping setTimeout over setInterval to avoid overlapping calls because of the async nature of the function
+  let timer: NodeJS.Timeout | null = null;
+  const existing = await getGitInfo();
+  const act = async () => {
+    const latest = await getGitInfo();
+    if (
+      latest.branch !== existing.branch ||
+      latest.commit !== existing.commit ||
+      latest.slug !== existing.slug
+    ) {
+      callback(latest);
+    }
+
+    timer = setTimeout(act, 1000);
+  };
+
+  timer = setTimeout(act, 1000);
+
+  return () => clearTimeout(timer);
+};
+
 // TODO: use the chromatic CLI to get this info?
 const execPromise = promisify(exec);
-async function getGitInfo() {
+async function getGitInfo(): Promise<GitInfo> {
   const branch = (await execPromise("git rev-parse --abbrev-ref HEAD")).stdout.trim();
   const commit = (await execPromise("git log -n 1 HEAD --format='%H'")).stdout.trim();
   const origin = (await execPromise("git config --get remote.origin.url")).stdout.trim();

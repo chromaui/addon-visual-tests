@@ -1,3 +1,51 @@
+# v0.0.19 (Thu Aug 10 2023)
+
+#### 🐛 Bug Fix
+
+- Realtime git info [#24](https://github.com/chromaui/addon-visual-tests/pull/24) ([@ndelangen](https://github.com/ndelangen))
+
+#### Authors: 1
+
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+
+---
+
+# v0.0.18 (Wed Aug 09 2023)
+
+#### 🐛 Bug Fix
+
+- Update OAuth Client ID [#28](https://github.com/chromaui/addon-visual-tests/pull/28) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.17 (Mon Aug 07 2023)
+
+#### 🐛 Bug Fix
+
+- upgrade storybook [#23](https://github.com/chromaui/addon-visual-tests/pull/23) ([@ndelangen](https://github.com/ndelangen))
+
+#### Authors: 1
+
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+
+---
+
+# v0.0.16 (Tue Aug 01 2023)
+
+#### 🐛 Bug Fix
+
+- Show reviewing errors in browser console and improve dev setup [#21](https://github.com/chromaui/addon-visual-tests/pull/21) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.15 (Thu Jul 27 2023)
 
 #### 🐛 Bug Fix

@@ -1,4 +1,8 @@
-export const { CHROMATIC_BASE_URL } = process.env;
+export const {
+  CHROMATIC_INDEX_URL,
+  CHROMATIC_BASE_URL = CHROMATIC_INDEX_URL || "https://www.chromatic.com",
+  CHROMATIC_ADDON_NAME = "@chromaui/addon-visual-tests",
+} = process.env;
 
 export const ADDON_ID = "chromaui/addon-visual-tests";
 export const TOOL_ID = `${ADDON_ID}/tool`;
@@ -7,6 +11,7 @@ export const ACCESS_TOKEN_KEY = `${ADDON_ID}/access-token/${CHROMATIC_BASE_URL}`
 export const DEV_BUILD_ID_KEY = `${ADDON_ID}/dev-build-id`;
 
 export const START_BUILD = `${ADDON_ID}/startBuild`;
+export const GIT_INFO = `${ADDON_ID}/gitInfo`;
 export const BUILD_STARTED = `${ADDON_ID}/buildStarted`;
 
 export const UPDATE_PROJECT = `${ADDON_ID}/updateProject`;
