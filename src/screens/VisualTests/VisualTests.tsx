@@ -8,8 +8,8 @@ import { Bar, Col, Row, Section, Sections, Text } from "../../components/layout"
 import { TooltipMenu } from "../../components/TooltipMenu";
 import { getFragment, graphql } from "../../gql";
 import {
-  AddonVisualTestsBuildQuery as BuildQuery,
-  AddonVisualTestsBuildQueryVariables as BuildQueryVariables,
+  AddonVisualTestsBuildQuery,
+  AddonVisualTestsBuildQueryVariables,
   ReviewTestBatch,
   ReviewTestInputStatus,
 } from "../../gql/graphql";
@@ -178,7 +178,10 @@ export const VisualTests = ({
   slug,
   storyId,
 }: VisualTestsProps) => {
-  const [{ data, fetching, error }, rerun] = useQuery<BuildQuery, BuildQueryVariables>({
+  const [{ data, fetching, error }, rerun] = useQuery<
+    AddonVisualTestsBuildQuery,
+    AddonVisualTestsBuildQueryVariables
+  >({
     query: QueryBuild,
     variables: {
       hasBuildId: !!lastDevBuildId,
