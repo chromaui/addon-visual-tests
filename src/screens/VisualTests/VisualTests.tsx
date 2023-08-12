@@ -1,5 +1,7 @@
 import { Loader } from "@storybook/components";
 import { Icon } from "@storybook/design-system";
+// eslint-disable-next-line import/no-unresolved
+import { GitInfo } from "chromatic/node";
 import React, { useCallback, useEffect, useState } from "react";
 import { useMutation, useQuery } from "urql";
 
@@ -146,15 +148,11 @@ const MutationReviewTest = graphql(/* GraphQL */ `
 
 interface VisualTestsProps {
   projectId: string;
-  branch?: string;
-  slug?: string;
-  isOutdated?: boolean;
+  gitInfo: GitInfo;
   isRunning?: boolean;
   lastDevBuildId?: string;
   runDevBuild: () => void;
   setAccessToken: (accessToken: string | null) => void;
-  // eslint-disable-next-line react/no-unused-prop-types
-  setIsOutdated: (isOutdated: boolean) => void;
   setIsRunning: (isRunning: boolean) => void;
   updateBuildStatus: (update: StatusUpdate) => void;
   storyId: string;
@@ -162,7 +160,6 @@ interface VisualTestsProps {
 
 let last: any;
 export const VisualTests = ({
-  isOutdated,
   isRunning,
   lastDevBuildId,
   runDevBuild,
@@ -170,8 +167,7 @@ export const VisualTests = ({
   setIsRunning,
   updateBuildStatus,
   projectId,
-  branch,
-  slug,
+  gitInfo,
   storyId,
 }: VisualTestsProps) => {
   const [{ data, fetching, error }, rerun] = useQuery<BuildQuery, BuildQueryVariables>({
@@ -180,8 +176,8 @@ export const VisualTests = ({
       hasBuildId: !!lastDevBuildId,
       buildId: lastDevBuildId || "",
       projectId,
-      branch: branch || "",
-      ...(slug ? { slug } : {}),
+      branch: gitInfo.branch || "",
+      ...(gitInfo.slug ? { slug: gitInfo.slug } : {}),
     },
   });
 
@@ -213,6 +209,8 @@ export const VisualTests = ({
     build &&
     "tests" in build &&
     testsToStatusUpdate(getFragment(FragmentTestFields, build.tests.nodes));
+
+  const isOutdated = build && build.uncommittedHash !== gitInfo.uncommittedHash;
 
   useEffect(() => {
     if (buildComplete && isRunning) {

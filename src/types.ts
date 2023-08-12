@@ -7,7 +7,7 @@ export interface AddonState {
   isOutdated?: boolean;
   isRunning?: boolean;
   lastBuildId?: string;
-  gitInfo?: GitInfo;
+  gitInfo: GitInfo;
 }
 
 export type AnnouncedBuild = Extract<BuildFieldsFragment, { __typename: "AnnouncedBuild" }>;

@@ -29,28 +29,18 @@ export const Panel = ({ active }: PanelProps) => {
   const [accessToken, setAccessToken] = useAccessToken();
 
   const [state, setAddonState] = useAddonState<AddonState>(ADDON_ID, {
-    isOutdated: false,
     gitInfo: { branch: GIT_BRANCH, commit: GIT_COMMIT, slug: GIT_SLUG, uncommittedHash: "" },
   });
   const { storyId } = useStorybookState();
 
-  const setIsOutdated = useCallback(
-    (value: boolean) => setAddonState({ ...state, isOutdated: value }),
-    [state, setAddonState]
-  );
   const setIsRunning = useCallback(
     (value: boolean) => setAddonState({ ...state, isRunning: value }),
     [state, setAddonState]
   );
 
   const emit = useChannel(
-    {
-      [GIT_INFO]: (gitInfo: GitInfo, prevInfo: GitInfo) => {
-        setAddonState({ ...state, gitInfo });
-        if (prevInfo) setIsOutdated(true); // Ignore the first GIT_INFO event
-      },
-    },
-    [state, setAddonState, setIsOutdated]
+    { [GIT_INFO]: (gitInfo: GitInfo) => setAddonState({ ...state, gitInfo }) },
+    [state, setAddonState]
   );
 
   const runDevBuild = useCallback(() => {
@@ -92,14 +82,11 @@ export const Panel = ({ active }: PanelProps) => {
     <Provider key={PANEL_ID} value={client}>
       <VisualTests
         projectId={projectId}
-        branch={state.gitInfo.branch}
-        slug={state.gitInfo.slug}
-        isOutdated={state.isOutdated}
+        gitInfo={state.gitInfo}
         isRunning={state.isRunning}
         lastDevBuildId={state.lastBuildId}
         runDevBuild={runDevBuild}
         setAccessToken={setAccessToken}
-        setIsOutdated={setIsOutdated}
         setIsRunning={setIsRunning}
         updateBuildStatus={updateBuildStatus}
         storyId={storyId}
