@@ -1,3 +1,15 @@
+# v0.0.20 (Mon Aug 14 2023)
+
+#### 🐛 Bug Fix
+
+- Add footer menu to link project screen [#29](https://github.com/chromaui/addon-visual-tests/pull/29) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v0.0.19 (Thu Aug 10 2023)
 
 #### 🐛 Bug Fix
