@@ -117,7 +117,7 @@ export const BuildInfo = ({
             {subText}
           </Text>
         </Col>
-        {isOutdated && (
+        {(isOutdated || status === BuildStatus.Failed) && (
           <Col push>
             <Button small secondary onClick={runDevBuild} disabled={inProgress}>
               {inProgress ? (
@@ -125,15 +125,7 @@ export const BuildInfo = ({
               ) : (
                 <Icons icon="play" />
               )}
-              Run tests
-            </Button>
-          </Col>
-        )}
-        {BuildStatus.Failed === status && (
-          <Col push>
-            <Button small secondary onClick={runDevBuild}>
-              <Icons icon="play" />
-              Rerun tests
+              {BuildStatus.Failed === status ? "Rerun" : "Run"} tests
             </Button>
           </Col>
         )}
