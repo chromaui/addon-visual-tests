@@ -142,8 +142,17 @@ const meta = {
   decorators: [storyWrapper],
   parameters: withBuild(passedBuild),
   args: {
+    gitInfo: {
+      branch: "feature-branch",
+      commit: "d67f31d1eb82c8b4e5ff770f1e631913d1c1b964",
+      slug: "chromaui/addon-visual-tests",
+      uncommittedHash: "",
+    },
     storyId: "button--primary",
     projectId: "Project:id123",
+    runDevBuild: action("runDevBuild"),
+    setAccessToken: action("setAccessToken"),
+    setIsRunning: action("setIsRunning"),
     updateBuildStatus: action("updateBuildStatus"),
   },
 } satisfies Meta<typeof VisualTests>;
