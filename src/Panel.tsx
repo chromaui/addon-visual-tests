@@ -67,14 +67,18 @@ export const Panel = ({ active }: PanelProps) => {
   if (!projectId)
     return (
       <Provider key={PANEL_ID} value={client}>
-        <LinkProject onUpdateProject={updateProject} />
+        <LinkProject onUpdateProject={updateProject} setAccessToken={setAccessToken} />
       </Provider>
     );
 
   if (projectIdChanged) {
     return (
       <Provider key={PANEL_ID} value={client}>
-        <LinkedProject projectId={projectId} goToNext={clearProjectIdChanged} />
+        <LinkedProject
+          projectId={projectId}
+          goToNext={clearProjectIdChanged}
+          setAccessToken={setAccessToken}
+        />
       </Provider>
     );
   }
