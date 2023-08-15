@@ -6,7 +6,7 @@ import {
 } from "@storybook/manager-api";
 // eslint-disable-next-line import/no-unresolved
 import { GitInfo } from "chromatic/node";
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 
 import { ADDON_ID, GIT_INFO, PANEL_ID, START_BUILD } from "./constants";
 import { Authentication } from "./screens/Authentication/Authentication";
@@ -27,27 +27,31 @@ const { GIT_BRANCH, GIT_SLUG, GIT_COMMIT } = process.env;
 export const Panel = ({ active }: PanelProps) => {
   const api = useStorybookApi();
   const [accessToken, setAccessToken] = useAccessToken();
-
-  const [state, setAddonState] = useAddonState<AddonState>(ADDON_ID, {
-    gitInfo: { branch: GIT_BRANCH, commit: GIT_COMMIT, slug: GIT_SLUG, uncommittedHash: "" },
-  });
   const { storyId } = useStorybookState();
 
+  const [{ isRunning, lastBuildId }, setAddonState] = useAddonState<AddonState>(ADDON_ID, {
+    isRunning: false,
+  });
+
   const setIsRunning = useCallback(
-    (value: boolean) => setAddonState({ ...state, isRunning: value }),
-    [state, setAddonState]
+    (value: boolean) => setAddonState({ isRunning: value, lastBuildId }),
+    [lastBuildId, setAddonState]
   );
 
-  const emit = useChannel(
-    { [GIT_INFO]: (gitInfo: GitInfo) => setAddonState({ ...state, gitInfo }) },
-    [state, setAddonState]
-  );
+  const [gitInfo, setGitInfo] = useState<GitInfo>({
+    branch: GIT_BRANCH,
+    commit: GIT_COMMIT,
+    slug: GIT_SLUG,
+    uncommittedHash: "",
+  });
+
+  const emit = useChannel({ [GIT_INFO]: (info: GitInfo) => setGitInfo(info) }, [setGitInfo]);
 
   const runDevBuild = useCallback(() => {
-    if (state.isRunning) return;
-    setAddonState({ ...state, isRunning: true });
+    if (isRunning) return;
+    setAddonState({ isRunning: true, lastBuildId });
     emit(START_BUILD);
-  }, [emit, state, setAddonState]);
+  }, [emit, isRunning, lastBuildId, setAddonState]);
 
   const updateBuildStatus = useCallback(
     (update: StatusUpdate) => {
@@ -86,9 +90,9 @@ export const Panel = ({ active }: PanelProps) => {
     <Provider key={PANEL_ID} value={client}>
       <VisualTests
         projectId={projectId}
-        gitInfo={state.gitInfo}
-        isRunning={state.isRunning}
-        lastDevBuildId={state.lastBuildId}
+        gitInfo={gitInfo}
+        isRunning={isRunning}
+        lastDevBuildId={lastBuildId}
         runDevBuild={runDevBuild}
         setAccessToken={setAccessToken}
         setIsRunning={setIsRunning}
