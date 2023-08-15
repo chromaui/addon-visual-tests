@@ -1,13 +1,18 @@
-import { Loader } from "@storybook/components";
+import { Icons, Loader } from "@storybook/components";
 import { Icon } from "@storybook/design-system";
 // eslint-disable-next-line import/no-unresolved
 import { GitInfo } from "chromatic/node";
 import React, { useCallback, useEffect, useState } from "react";
 import { useMutation, useQuery } from "urql";
 
+import { Button } from "../../components/Button";
+import { Container } from "../../components/Container";
 import { FooterMenu } from "../../components/FooterMenu";
+import { Heading } from "../../components/Heading";
 import { IconButton } from "../../components/IconButton";
+import { ProgressIcon } from "../../components/icons/ProgressIcon";
 import { Bar, Col, Row, Section, Sections, Text } from "../../components/layout";
+import { Text as CenterText } from "../../components/Text";
 import { getFragment, graphql } from "../../gql";
 import {
   BuildQuery,
@@ -22,13 +27,19 @@ import { SnapshotComparison } from "./SnapshotComparison";
 import { Warnings } from "./Warnings";
 
 const QueryBuild = graphql(/* GraphQL */ `
-  query Build($hasBuildId: Boolean!, $buildId: ID!, $projectId: ID!, $branch: String!) {
+  query Build(
+    $hasBuildId: Boolean!
+    $buildId: ID!
+    $projectId: ID!
+    $branch: String!
+    $slug: String
+  ) {
     build(id: $buildId) @include(if: $hasBuildId) {
       ...BuildFields
     }
     project(id: $projectId) @skip(if: $hasBuildId) {
       name
-      lastBuild(branches: [$branch]) {
+      lastBuild(branches: [$branch], slug: $slug) {
         ...BuildFields
       }
     }
@@ -253,22 +264,30 @@ export const VisualTests = ({
           )}
           {fetching && <Loader />}
           {!build && !fetching && !error && (
-            <Section grow>
-              <Row>
-                <Col>
-                  <Text>
-                    Your project {data.project?.name} does not have any builds yet. Run a build a to
-                    begin.
-                  </Text>
-                </Col>
-              </Row>
-            </Section>
+            <Container>
+              <Heading>Create a test baseline</Heading>
+              <CenterText>
+                Take an image snapshot of each story to save their &quot;last known good state&quot;
+                as test baselines.
+              </CenterText>
+              <br />
+              <Button small secondary onClick={runDevBuild} disabled={isRunning}>
+                {isRunning ? (
+                  <ProgressIcon parentComponent="Button" style={{ marginRight: 6 }} />
+                ) : (
+                  <Icons icon="play" />
+                )}
+                Take snapshots
+              </Button>
+            </Container>
           )}
         </Section>
         <Section>
           <Bar>
             <Col>
-              <Text style={{ marginLeft: 5 }}>Loading...</Text>
+              <Text style={{ marginLeft: 5 }}>
+                {fetching ? "Loading..." : `Waiting for build on ${gitInfo.branch}`}
+              </Text>
             </Col>
             <Col push>
               <FooterMenu setAccessToken={setAccessToken} />

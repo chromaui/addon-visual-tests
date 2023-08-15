@@ -45,6 +45,7 @@ const announcedBuild: AnnouncedBuild = {
   number: 1,
   branch: "feature-branch",
   commit: "1234567",
+  uncommittedHash: "",
   browsers: [makeBrowserInfo(Browser.Chrome), makeBrowserInfo(Browser.Safari)],
   status: BuildStatus.Announced,
 };
@@ -171,6 +172,14 @@ export const Loading: Story = {
   },
 };
 
+export const NoBuild: Story = {
+  parameters: {
+    ...withGraphQLQuery("Build", (req, res, ctx) => res(ctx.data({ build: null } as BuildQuery))),
+    // No design for this state
+    // ...withFigmaDesign(""),
+  },
+};
+
 export const NoChanges: Story = {
   parameters: {
     ...withBuild(passedBuild),
@@ -180,17 +189,12 @@ export const NoChanges: Story = {
   },
 };
 
-export const NoBuild: Story = {
-  parameters: {
-    ...withGraphQLQuery("Build", (req, res, ctx) => res(ctx.data({ build: null } as BuildQuery))),
-    // No design for this state
-    // ...withFigmaDesign(""),
-  },
-};
-
 export const Outdated: Story = {
   args: {
-    isOutdated: true,
+    gitInfo: {
+      ...meta.args.gitInfo,
+      uncommittedHash: "1234abc",
+    },
   },
   parameters: {
     ...withBuild(passedBuild),

@@ -39,6 +39,7 @@ export const BuildInfo = ({
     BuildStatus.Prepared,
     BuildStatus.Published,
   ].includes(status);
+  const isErrored = [BuildStatus.Broken, BuildStatus.Failed].includes(status);
 
   let statusText;
   if (inProgress) {
@@ -93,12 +94,14 @@ export const BuildInfo = ({
       </small>
     ) : (
       <small>
-        <span>
-          {pluralize("viewport", viewportCount, true)}
-          {", "}
-          {pluralize("browser", browserCount, true)}
-        </span>
-        {" • "}
+        {viewportCount > 0 && (
+          <span>
+            {pluralize("viewport", viewportCount, true)}
+            {", "}
+            {pluralize("browser", browserCount, true)}
+          </span>
+        )}
+        {viewportCount > 0 && " • "}
         {inProgress && <span>Test in progress...</span>}
         {!inProgress && "startedAt" in build && (
           <span title={new Date(build.startedAt).toUTCString()}>{startedAgo}</span>
@@ -117,7 +120,7 @@ export const BuildInfo = ({
             {subText}
           </Text>
         </Col>
-        {(isOutdated || status === BuildStatus.Failed) && (
+        {(isOutdated || isErrored) && (
           <Col push>
             <Button small secondary onClick={runDevBuild} disabled={inProgress}>
               {inProgress ? (
@@ -125,7 +128,7 @@ export const BuildInfo = ({
               ) : (
                 <Icons icon="play" />
               )}
-              {BuildStatus.Failed === status ? "Rerun" : "Run"} tests
+              {isErrored ? "Rerun" : "Run"} tests
             </Button>
           </Col>
         )}
