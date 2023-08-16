@@ -12,6 +12,7 @@ export const DEV_BUILD_ID_KEY = `${ADDON_ID}/dev-build-id`;
 
 export const GIT_INFO = `${ADDON_ID}/gitInfo`;
 export const START_BUILD = `${ADDON_ID}/startBuild`;
+export const BUILD_ANNOUNCED = `${ADDON_ID}/buildAnnounced`;
 export const BUILD_STARTED = `${ADDON_ID}/buildStarted`;
 
 export const UPDATE_PROJECT = `${ADDON_ID}/updateProject`;

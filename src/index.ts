@@ -5,6 +5,7 @@ import { readConfig, writeConfig } from "@storybook/csf-tools";
 import { getGitInfo, GitInfo, run } from "chromatic/node";
 
 import {
+  BUILD_ANNOUNCED,
   BUILD_STARTED,
   CHROMATIC_ADDON_NAME,
   CHROMATIC_BASE_URL,
@@ -49,7 +50,8 @@ async function serverChannel(
 ) {
   let projectToken = initialProjectToken;
   channel.on(START_BUILD, async () => {
-    let sent = false;
+    let announced = false;
+    let started = false;
     await run({
       flags: {
         projectToken,
@@ -59,10 +61,15 @@ async function serverChannel(
       options: {
         onTaskComplete(ctx: any) {
           console.log(`Completed task '${ctx.title}'`);
-          if (ctx.announcedBuild && !sent) {
-            console.debug("emitting", BUILD_STARTED, ctx.announcedBuild.id);
-            channel.emit(BUILD_STARTED, ctx.announcedBuild.id);
-            sent = true;
+          if (ctx.announcedBuild && !announced) {
+            console.debug("emitting", BUILD_ANNOUNCED, ctx.announcedBuild.id);
+            channel.emit(BUILD_ANNOUNCED, ctx.announcedBuild.id);
+            announced = true;
+          }
+          if (ctx.build && !started) {
+            console.debug("emitting", BUILD_STARTED, ctx.build.status);
+            channel.emit(BUILD_STARTED, ctx.build.status);
+            started = true;
           }
         },
       } as any,

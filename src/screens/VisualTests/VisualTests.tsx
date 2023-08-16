@@ -247,7 +247,7 @@ export const VisualTests = ({
   const [settingsVisible, setSettingsVisible] = useState(false);
   const [warningsVisible, setWarningsVisible] = useState(false);
 
-  if (fetching || error || !build) {
+  if (!build || error) {
     return (
       <Sections>
         <Section grow>

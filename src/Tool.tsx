@@ -8,10 +8,13 @@ import { BUILD_STARTED, START_BUILD, TOOL_ID } from "./constants";
 export const Tool = () => {
   const [isStarting, setIsStarting] = useState(false);
 
-  const emit = useChannel({
-    [START_BUILD]: () => setIsStarting(true),
-    [BUILD_STARTED]: () => setIsStarting(false),
-  });
+  const emit = useChannel(
+    {
+      [START_BUILD]: () => setIsStarting(true),
+      [BUILD_STARTED]: () => setIsStarting(false),
+    },
+    []
+  );
 
   return (
     <IconButton

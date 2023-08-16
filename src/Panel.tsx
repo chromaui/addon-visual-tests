@@ -11,6 +11,7 @@ import React, { useCallback, useState } from "react";
 
 import {
   ADDON_ID,
+  BUILD_ANNOUNCED,
   BUILD_STARTED,
   DEV_BUILD_ID_KEY,
   GIT_INFO,
@@ -53,8 +54,8 @@ export const Panel = ({ active }: PanelProps) => {
   const emit = useChannel(
     {
       [START_BUILD]: () => setIsStarting(true),
-      [BUILD_STARTED]: (buildId: string) => {
-        setIsStarting(false);
+      [BUILD_STARTED]: () => setIsStarting(false),
+      [BUILD_ANNOUNCED]: (buildId: string) => {
         setLastBuildId(buildId);
         localStorage.setItem(DEV_BUILD_ID_KEY, buildId);
       },
@@ -63,7 +64,7 @@ export const Panel = ({ active }: PanelProps) => {
         logger.debug("Updated Git info:", info);
       },
     },
-    [setGitInfo]
+    []
   );
 
   const updateBuildStatus = useCallback(
