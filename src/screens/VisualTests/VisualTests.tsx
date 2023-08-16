@@ -180,7 +180,7 @@ export const VisualTests = ({
   gitInfo,
   storyId,
 }: VisualTestsProps) => {
-  const [{ data, fetching, error }, rerun] = useQuery<BuildQuery, BuildQueryVariables>({
+  const [{ data, error }, rerun] = useQuery<BuildQuery, BuildQueryVariables>({
     query: QueryBuild,
     variables: {
       hasBuildId: !!lastDevBuildId,
@@ -193,7 +193,6 @@ export const VisualTests = ({
 
   // Poll for updates
   useEffect(() => {
-    console.log("Polling for build updates...");
     const interval = setInterval(rerun, 5000);
     return () => clearInterval(interval);
   }, [rerun]);
@@ -229,10 +228,6 @@ export const VisualTests = ({
   const isOutdated = build && build.uncommittedHash !== gitInfo.uncommittedHash;
 
   useEffect(() => {
-    console.log({ build });
-  }, [build]);
-
-  useEffect(() => {
     last = {
       buildStatusUpdate,
       string: JSON.stringify(buildStatusUpdate),
@@ -258,8 +253,8 @@ export const VisualTests = ({
               </Col>
             </Row>
           )}
-          {fetching && <Loader />}
-          {!build && !fetching && !error && (
+          {!data && <Loader />}
+          {data && !build && !error && (
             <Container>
               <Heading>Create a test baseline</Heading>
               <CenterText>
@@ -282,7 +277,7 @@ export const VisualTests = ({
           <Bar>
             <Col>
               <Text style={{ marginLeft: 5 }}>
-                {fetching ? "Loading..." : `Waiting for build on ${gitInfo.branch}`}
+                {data ? `Waiting for build on ${gitInfo.branch}` : "Loading..."}
               </Text>
             </Col>
             <Col push>
