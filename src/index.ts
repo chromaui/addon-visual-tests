@@ -103,7 +103,7 @@ async function serverChannel(
     }
   );
 
-  observeGitInfo(5000, (info) => channel.emit(GIT_INFO, info));
+  observeGitInfo(5000, (info, prevInfo) => channel.emit(GIT_INFO, info, prevInfo));
 
   return channel;
 }

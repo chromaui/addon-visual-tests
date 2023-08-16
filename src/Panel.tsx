@@ -35,7 +35,7 @@ const initialGitInfo: GitInfo = {
 
 logger.debug("Initial Git info:", initialGitInfo);
 
-const storedBuildId = localStorage.getItem(DEV_BUILD_ID_KEY);
+const storedBuildId = localStorage.getItem(`${DEV_BUILD_ID_KEY}:${GIT_BRANCH}`);
 
 export const Panel = ({ active }: PanelProps) => {
   const api = useStorybookApi();
@@ -52,11 +52,14 @@ export const Panel = ({ active }: PanelProps) => {
       [BUILD_STARTED]: () => setIsStarting(false),
       [BUILD_ANNOUNCED]: (buildId: string) => {
         setLastBuildId(buildId);
-        localStorage.setItem(DEV_BUILD_ID_KEY, buildId);
+        localStorage.setItem(`${DEV_BUILD_ID_KEY}:${gitInfo.branch}`, buildId);
       },
-      [GIT_INFO]: (info: GitInfo) => {
-        setGitInfo(info);
+      [GIT_INFO]: (info: GitInfo, prevInfo: GitInfo) => {
         logger.debug("Updated Git info:", info);
+        setGitInfo(info);
+        if (info.branch !== prevInfo.branch) {
+          setLastBuildId(localStorage.getItem(`${DEV_BUILD_ID_KEY}:${info.branch}`));
+        }
       },
     },
     []
