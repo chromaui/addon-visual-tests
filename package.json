@@ -58,7 +58,7 @@
   "dependencies": {
     "@storybook/csf-tools": "^7.3.0",
     "@storybook/design-system": "^7.15.15",
-    "chromatic": "^6.19.8",
+    "chromatic": "^6.22.0",
     "date-fns": "^2.30.0",
     "pluralize": "^8.0.0",
     "urql": "^4.0.3"
@@ -72,6 +72,7 @@
     "@storybook/addon-interactions": "^7.3.0",
     "@storybook/addon-mdx-gfm": "^7.3.0",
     "@storybook/channels": "^7.3.0",
+    "@storybook/client-logger": "^7.3.0",
     "@storybook/eslint-config-storybook": "^3.1.2",
     "@storybook/manager-api": "^7.3.0",
     "@storybook/react": "^7.3.0",
@@ -114,6 +115,7 @@
   },
   "peerDependencies": {
     "@storybook/blocks": "^7.2.0",
+    "@storybook/client-logger": "^7.2.0",
     "@storybook/components": "^7.2.0",
     "@storybook/core-events": "^7.2.0",
     "@storybook/manager-api": "^7.2.0",

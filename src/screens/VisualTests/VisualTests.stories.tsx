@@ -45,6 +45,7 @@ const announcedBuild: AnnouncedBuild = {
   number: 1,
   branch: "feature-branch",
   commit: "1234567",
+  uncommittedHash: "",
   browsers: [makeBrowserInfo(Browser.Chrome), makeBrowserInfo(Browser.Safari)],
   status: BuildStatus.Announced,
 };
@@ -142,8 +143,17 @@ const meta = {
   decorators: [storyWrapper],
   parameters: withBuild(passedBuild),
   args: {
+    gitInfo: {
+      branch: "feature-branch",
+      commit: "d67f31d1eb82c8b4e5ff770f1e631913d1c1b964",
+      slug: "chromaui/addon-visual-tests",
+      uncommittedHash: "",
+    },
     storyId: "button--primary",
     projectId: "Project:id123",
+    runDevBuild: action("runDevBuild"),
+    setAccessToken: action("setAccessToken"),
+    setIsRunning: action("setIsRunning"),
     updateBuildStatus: action("updateBuildStatus"),
   },
 } satisfies Meta<typeof VisualTests>;
@@ -162,6 +172,14 @@ export const Loading: Story = {
   },
 };
 
+export const NoBuild: Story = {
+  parameters: {
+    ...withGraphQLQuery("Build", (req, res, ctx) => res(ctx.data({ build: null } as BuildQuery))),
+    // No design for this state
+    // ...withFigmaDesign(""),
+  },
+};
+
 export const NoChanges: Story = {
   parameters: {
     ...withBuild(passedBuild),
@@ -171,17 +189,12 @@ export const NoChanges: Story = {
   },
 };
 
-export const NoBuild: Story = {
-  parameters: {
-    ...withGraphQLQuery("Build", (req, res, ctx) => res(ctx.data({ build: null } as BuildQuery))),
-    // No design for this state
-    // ...withFigmaDesign(""),
-  },
-};
-
 export const Outdated: Story = {
   args: {
-    isOutdated: true,
+    gitInfo: {
+      ...meta.args.gitInfo,
+      uncommittedHash: "1234abc",
+    },
   },
   parameters: {
     ...withBuild(passedBuild),
