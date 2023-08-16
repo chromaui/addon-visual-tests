@@ -1,3 +1,15 @@
+# v0.0.22 (Wed Aug 16 2023)
+
+#### 🐛 Bug Fix
+
+- Poll for Git repository hash and set `isOutdated` when it changes [#31](https://github.com/chromaui/addon-visual-tests/pull/31) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v0.0.21 (Wed Aug 16 2023)
 
 #### 🐛 Bug Fix
