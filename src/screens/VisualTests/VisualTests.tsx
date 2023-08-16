@@ -1,3 +1,4 @@
+import { logger } from "@storybook/client-logger";
 import { Icons, Loader } from "@storybook/components";
 import { Icon } from "@storybook/design-system";
 // eslint-disable-next-line import/no-unresolved
@@ -160,22 +161,20 @@ const MutationReviewTest = graphql(/* GraphQL */ `
 interface VisualTestsProps {
   projectId: string;
   gitInfo: GitInfo;
-  isRunning?: boolean;
+  isStarting: boolean;
   lastDevBuildId?: string;
-  runDevBuild: () => void;
+  startDevBuild: () => void;
   setAccessToken: (accessToken: string | null) => void;
-  setIsRunning: (isRunning: boolean) => void;
   updateBuildStatus: (update: StatusUpdate) => void;
   storyId: string;
 }
 
 let last: any;
 export const VisualTests = ({
-  isRunning,
+  isStarting,
   lastDevBuildId,
-  runDevBuild,
+  startDevBuild,
   setAccessToken,
-  setIsRunning,
   updateBuildStatus,
   projectId,
   gitInfo,
@@ -191,6 +190,13 @@ export const VisualTests = ({
       ...(gitInfo.slug ? { slug: gitInfo.slug } : {}),
     },
   });
+
+  // Poll for updates
+  useEffect(() => {
+    console.log("Polling for build updates...");
+    const interval = setInterval(rerun, 5000);
+    return () => clearInterval(interval);
+  }, [rerun]);
 
   const [{ fetching: isAccepting }, reviewTest] = useMutation(MutationReviewTest);
 
@@ -215,7 +221,6 @@ export const VisualTests = ({
 
   const build = getFragment(FragmentBuildFields, data?.build || data?.project?.lastBuild);
 
-  const buildComplete = build && "result" in build;
   const buildStatusUpdate =
     build &&
     "tests" in build &&
@@ -224,10 +229,8 @@ export const VisualTests = ({
   const isOutdated = build && build.uncommittedHash !== gitInfo.uncommittedHash;
 
   useEffect(() => {
-    if (buildComplete && isRunning) {
-      setIsRunning(false);
-    }
-  }, [buildComplete, isRunning, setIsRunning]);
+    console.log({ build });
+  }, [build]);
 
   useEffect(() => {
     last = {
@@ -240,13 +243,6 @@ export const VisualTests = ({
     // We use the stringified version of buildStatusUpdate to do a deep diff
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(buildStatusUpdate), updateBuildStatus]);
-
-  useEffect(() => {
-    let interval: any;
-    if (isRunning) interval = setInterval(rerun, 5000);
-    else clearInterval(interval);
-    return () => clearInterval(interval);
-  }, [isRunning, rerun]);
 
   const [settingsVisible, setSettingsVisible] = useState(false);
   const [warningsVisible, setWarningsVisible] = useState(false);
@@ -271,8 +267,8 @@ export const VisualTests = ({
                 as test baselines.
               </CenterText>
               <br />
-              <Button small secondary onClick={runDevBuild} disabled={isRunning}>
-                {isRunning ? (
+              <Button small secondary onClick={startDevBuild} disabled={isStarting}>
+                {isStarting ? (
                   <ProgressIcon parentComponent="Button" style={{ marginRight: 6 }} />
                 ) : (
                   <Icons icon="play" />
@@ -305,7 +301,7 @@ export const VisualTests = ({
   return (
     <Sections>
       <Section grow hidden={settingsVisible || warningsVisible}>
-        <BuildInfo {...{ build, viewportCount, isOutdated, runDevBuild }} />
+        <BuildInfo {...{ build, viewportCount, isOutdated, isStarting, startDevBuild }} />
         {/* The key here is to ensure the useTests helper gets to reset each time we change story */}
         {tests.length > 0 && (
           <SnapshotComparison key={storyId} {...{ tests, isAccepting, isOutdated, onAccept }} />

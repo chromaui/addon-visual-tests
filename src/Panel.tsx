@@ -1,3 +1,4 @@
+import { logger } from "@storybook/client-logger";
 import {
   useAddonState,
   useChannel,
@@ -8,12 +9,18 @@ import {
 import { GitInfo } from "chromatic/node";
 import React, { useCallback, useState } from "react";
 
-import { ADDON_ID, GIT_INFO, PANEL_ID, START_BUILD } from "./constants";
+import {
+  ADDON_ID,
+  BUILD_STARTED,
+  DEV_BUILD_ID_KEY,
+  GIT_INFO,
+  PANEL_ID,
+  START_BUILD,
+} from "./constants";
 import { Authentication } from "./screens/Authentication/Authentication";
 import { LinkedProject } from "./screens/LinkProject/LinkedProject";
 import { LinkProject } from "./screens/LinkProject/LinkProject";
 import { VisualTests } from "./screens/VisualTests/VisualTests";
-import { AddonState } from "./types";
 import { client, Provider, useAccessToken } from "./utils/graphQLClient";
 import { StatusUpdate } from "./utils/testsToStatusUpdate";
 import { useProjectId } from "./utils/useProjectId";
@@ -22,36 +29,42 @@ interface PanelProps {
   active: boolean;
 }
 
-const { GIT_BRANCH, GIT_SLUG, GIT_COMMIT } = process.env;
+const { GIT_BRANCH, GIT_SLUG, GIT_COMMIT, GIT_UNCOMMITTED_HASH } = process.env;
+const initialGitInfo: GitInfo = {
+  branch: GIT_BRANCH,
+  commit: GIT_COMMIT,
+  slug: GIT_SLUG,
+  uncommittedHash: GIT_UNCOMMITTED_HASH,
+};
+
+logger.debug("Initial Git info:", initialGitInfo);
+
+const storedBuildId = localStorage.getItem(DEV_BUILD_ID_KEY);
 
 export const Panel = ({ active }: PanelProps) => {
   const api = useStorybookApi();
   const [accessToken, setAccessToken] = useAccessToken();
   const { storyId } = useStorybookState();
 
-  const [{ isRunning, lastBuildId }, setAddonState] = useAddonState<AddonState>(ADDON_ID, {
-    isRunning: false,
-  });
+  const [isStarting, setIsStarting] = useState<boolean>(false);
+  const [lastBuildId, setLastBuildId] = useState<string>(storedBuildId);
+  const [gitInfo, setGitInfo] = useState<GitInfo>(initialGitInfo);
 
-  const setIsRunning = useCallback(
-    (value: boolean) => setAddonState({ isRunning: value, lastBuildId }),
-    [lastBuildId, setAddonState]
+  const emit = useChannel(
+    {
+      [START_BUILD]: () => setIsStarting(true),
+      [BUILD_STARTED]: (buildId: string) => {
+        setIsStarting(false);
+        setLastBuildId(buildId);
+        localStorage.setItem(DEV_BUILD_ID_KEY, buildId);
+      },
+      [GIT_INFO]: (info: GitInfo) => {
+        setGitInfo(info);
+        logger.debug("Updated Git info:", info);
+      },
+    },
+    [setGitInfo]
   );
-
-  const [gitInfo, setGitInfo] = useState<GitInfo>({
-    branch: GIT_BRANCH,
-    commit: GIT_COMMIT,
-    slug: GIT_SLUG,
-    uncommittedHash: "",
-  });
-
-  const emit = useChannel({ [GIT_INFO]: (info: GitInfo) => setGitInfo(info) }, [setGitInfo]);
-
-  const runDevBuild = useCallback(() => {
-    if (isRunning) return;
-    setAddonState({ isRunning: true, lastBuildId });
-    emit(START_BUILD);
-  }, [emit, isRunning, lastBuildId, setAddonState]);
 
   const updateBuildStatus = useCallback(
     (update: StatusUpdate) => {
@@ -91,11 +104,10 @@ export const Panel = ({ active }: PanelProps) => {
       <VisualTests
         projectId={projectId}
         gitInfo={gitInfo}
-        isRunning={isRunning}
+        isStarting={isStarting}
         lastDevBuildId={lastBuildId}
-        runDevBuild={runDevBuild}
+        startDevBuild={() => isStarting || emit(START_BUILD)}
         setAccessToken={setAccessToken}
-        setIsRunning={setIsRunning}
         updateBuildStatus={updateBuildStatus}
         storyId={storyId}
       />

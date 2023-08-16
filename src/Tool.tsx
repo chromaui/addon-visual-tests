@@ -1,44 +1,27 @@
 import { IconButton, Icons } from "@storybook/components";
-import { useAddonState, useChannel } from "@storybook/manager-api";
-import React, { useCallback } from "react";
+import { useChannel } from "@storybook/manager-api";
+import React, { useState } from "react";
 
 import { ProgressIcon } from "./components/icons/ProgressIcon";
-import { ADDON_ID, BUILD_STARTED, DEV_BUILD_ID_KEY, START_BUILD, TOOL_ID } from "./constants";
-import { AddonState } from "./types";
-
-const storedBuildId = localStorage.getItem(DEV_BUILD_ID_KEY);
+import { BUILD_STARTED, START_BUILD, TOOL_ID } from "./constants";
 
 export const Tool = () => {
-  const [state, setAddonState] = useAddonState<AddonState>(ADDON_ID, {
-    isRunning: false,
-    lastBuildId: storedBuildId,
+  const [isStarting, setIsStarting] = useState(false);
+
+  const emit = useChannel({
+    [START_BUILD]: () => setIsStarting(true),
+    [BUILD_STARTED]: () => setIsStarting(false),
   });
-
-  const emit = useChannel(
-    {
-      [BUILD_STARTED]: (buildId: string) => {
-        setAddonState({ ...state, lastBuildId: buildId });
-        localStorage.setItem(DEV_BUILD_ID_KEY, buildId);
-      },
-    },
-    [state, setAddonState]
-  );
-
-  const runDevBuild = useCallback(() => {
-    if (state.isRunning) return;
-    setAddonState({ ...state, isRunning: true });
-    emit(START_BUILD);
-  }, [emit, state, setAddonState]);
 
   return (
     <IconButton
-      active={state.isRunning}
-      disabled={state.isRunning}
+      active={isStarting}
+      disabled={isStarting}
       key={TOOL_ID}
       title="Run visual tests"
-      onClick={runDevBuild}
+      onClick={() => emit(START_BUILD)}
     >
-      {state.isRunning ? (
+      {isStarting ? (
         <ProgressIcon parentComponent="IconButton" style={{ marginRight: 6 }} />
       ) : (
         <Icons icon="play" style={{ marginRight: 6 }} />

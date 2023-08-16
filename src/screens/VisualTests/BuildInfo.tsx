@@ -1,4 +1,4 @@
-import { Icons } from "@storybook/components";
+import { Icons, TooltipNote, WithTooltip } from "@storybook/components";
 import { formatDistance } from "date-fns";
 import pluralize from "pluralize";
 import React from "react";
@@ -19,14 +19,16 @@ interface BuildInfoSectionProps {
       >;
   viewportCount: number;
   isOutdated: boolean;
-  runDevBuild: () => void;
+  isStarting: boolean;
+  startDevBuild: () => void;
 }
 
 export const BuildInfo = ({
   build,
   viewportCount,
   isOutdated,
-  runDevBuild,
+  isStarting,
+  startDevBuild,
 }: BuildInfoSectionProps) => {
   const { status, browsers } = build;
   const startedAgo =
@@ -62,7 +64,13 @@ export const BuildInfo = ({
     statusText = isOutdated ? (
       <>
         <b>Snapshots outdated</b>
-        <AlertIcon />
+        <WithTooltip
+          tooltip={<TooltipNote note="Some files have changed since the last build" />}
+          trigger="hover"
+          hasChrome={false}
+        >
+          <AlertIcon />
+        </WithTooltip>
       </>
     ) : (
       <>
@@ -122,8 +130,8 @@ export const BuildInfo = ({
         </Col>
         {(isOutdated || isErrored) && (
           <Col push>
-            <Button small secondary onClick={runDevBuild} disabled={inProgress}>
-              {inProgress ? (
+            <Button small secondary onClick={startDevBuild} disabled={isStarting}>
+              {isStarting ? (
                 <ProgressIcon parentComponent="Button" style={{ marginRight: 6 }} />
               ) : (
                 <Icons icon="play" />

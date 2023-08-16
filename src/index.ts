@@ -110,7 +110,7 @@ const config = {
   ) => {
     if (configType === "production") return env;
 
-    const { branch, commit, slug } = await getGitInfo();
+    const { branch, commit, slug, uncommittedHash } = await getGitInfo();
     return {
       ...env,
       CHROMATIC_BASE_URL,
@@ -118,6 +118,7 @@ const config = {
       GIT_BRANCH: branch,
       GIT_COMMIT: commit,
       GIT_SLUG: slug,
+      GIT_UNCOMMITTED_HASH: uncommittedHash,
     };
   },
 };
