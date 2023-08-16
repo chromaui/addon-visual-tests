@@ -1,10 +1,5 @@
 import { logger } from "@storybook/client-logger";
-import {
-  useAddonState,
-  useChannel,
-  useStorybookApi,
-  useStorybookState,
-} from "@storybook/manager-api";
+import { useChannel, useStorybookApi, useStorybookState } from "@storybook/manager-api";
 // eslint-disable-next-line import/no-unresolved
 import { GitInfo } from "chromatic/node";
 import React, { useCallback, useState } from "react";
@@ -47,9 +42,9 @@ export const Panel = ({ active }: PanelProps) => {
   const [accessToken, setAccessToken] = useAccessToken();
   const { storyId } = useStorybookState();
 
-  const [isStarting, setIsStarting] = useState<boolean>(false);
-  const [lastBuildId, setLastBuildId] = useState<string>(storedBuildId);
-  const [gitInfo, setGitInfo] = useState<GitInfo>(initialGitInfo);
+  const [isStarting, setIsStarting] = useState(false);
+  const [lastBuildId, setLastBuildId] = useState(storedBuildId);
+  const [gitInfo, setGitInfo] = useState(initialGitInfo);
 
   const emit = useChannel(
     {

@@ -1,4 +1,3 @@
-import { logger } from "@storybook/client-logger";
 import { Icons, Loader } from "@storybook/components";
 import { Icon } from "@storybook/design-system";
 // eslint-disable-next-line import/no-unresolved
