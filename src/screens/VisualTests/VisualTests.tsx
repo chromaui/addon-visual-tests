@@ -35,6 +35,7 @@ const QueryBuild = graphql(/* GraphQL */ `
     $projectId: ID!
     $branch: String!
     $slug: String
+    $storyId: String!
   ) {
     build(id: $buildId) @include(if: $hasBuildId) {
       ...BuildFields
@@ -66,7 +67,7 @@ const FragmentBuildFields = graphql(/* GraphQL */ `
       changeCount: testCount(results: [ADDED, CHANGED, FIXED])
       brokenCount: testCount(results: [CAPTURE_ERROR])
       startedAt
-      tests {
+      tests(storyId: $storyId) {
         nodes {
           ...TestFields
         }
@@ -77,7 +78,7 @@ const FragmentBuildFields = graphql(/* GraphQL */ `
       changeCount: testCount(results: [ADDED, CHANGED, FIXED])
       brokenCount: testCount(results: [CAPTURE_ERROR])
       startedAt
-      tests {
+      tests(storyId: $storyId) {
         nodes {
           ...TestFields
         }
@@ -187,6 +188,7 @@ export const VisualTests = ({
       hasBuildId: !!lastDevBuildId,
       buildId: lastDevBuildId || "",
       projectId,
+      storyId,
       branch: gitInfo.branch || "",
       ...(gitInfo.slug ? { slug: gitInfo.slug } : {}),
     },
@@ -290,12 +292,7 @@ export const VisualTests = ({
     );
   }
 
-  let tests: TestFieldsFragment[] | undefined;
-  if ("tests" in build) {
-    tests = getFragment(FragmentTestFields, build.tests.nodes).filter(
-      (test) => test.story?.storyId === storyId
-    );
-  }
+  const tests = "tests" in build ? [...getFragment(FragmentTestFields, build.tests.nodes)] : [];
 
   const startedAt = "startedAt" in build && build.startedAt;
   const isBuildFailed = build.status === BuildStatus.Failed;
