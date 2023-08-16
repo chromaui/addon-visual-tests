@@ -1,3 +1,15 @@
+# v0.0.21 (Wed Aug 16 2023)
+
+#### 🐛 Bug Fix
+
+- Upgrade to SB7.3 [#32](https://github.com/chromaui/addon-visual-tests/pull/32) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.20 (Mon Aug 14 2023)
 
 #### 🐛 Bug Fix
