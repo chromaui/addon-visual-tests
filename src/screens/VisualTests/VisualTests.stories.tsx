@@ -25,6 +25,14 @@ const tests = [
     viewport: 1200,
     storyId: "button--secondary",
   }),
+  makeTest({
+    id: "31",
+    status: TestStatus.Passed,
+    result: TestResult.Skipped,
+    browsers,
+    viewport: 1200,
+    storyId: "button--tertiary",
+  }),
 ];
 
 const paginated = (nodes: TestFieldsFragment[]) => ({
@@ -259,6 +267,18 @@ export const Accepted: Story = {
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-305053&t=0rxMQnkxsVpVj1qy-4"
     ),
+  },
+};
+
+export const Skipped: Story = {
+  args: {
+    storyId: "button--tertiary",
+  },
+  parameters: {
+    ...withBuild(pendingBuild),
+    // ...withFigmaDesign(
+    //   "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-305053&t=0rxMQnkxsVpVj1qy-4"
+    // ),
   },
 };
 

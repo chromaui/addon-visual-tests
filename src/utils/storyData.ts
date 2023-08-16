@@ -75,16 +75,19 @@ export function makeTest(options: {
   const result = options.result || TestResult.Equal;
 
   const viewportWidth = options.viewport || 1200;
-  const comparisons =
-    options.comparisons ||
-    (options.browsers || [Browser.Chrome]).map((browserKey, index) =>
-      makeComparison({
-        id: `id${index}`,
-        browser: browserKey,
-        viewport: viewportWidth,
-        result: testResultToComparisonResult[result],
-      })
-    );
+  let comparisons: TestFieldsFragment["comparisons"] = [];
+  if (result !== TestResult.Skipped) {
+    comparisons =
+      options.comparisons ||
+      (options.browsers || [Browser.Chrome]).map((browserKey, index) =>
+        makeComparison({
+          id: `id${index}`,
+          browser: browserKey,
+          viewport: viewportWidth,
+          result: testResultToComparisonResult[result],
+        })
+      );
+  }
   return {
     id,
     status: options.status || TestStatus.Passed,

@@ -289,7 +289,7 @@ export const VisualTests = ({
       <Section grow hidden={settingsVisible || warningsVisible}>
         <BuildInfo {...{ build, viewportCount, isOutdated, runDevBuild }} />
         {/* The key here is to ensure the useTests helper gets to reset each time we change story */}
-        {tests.length > 0 && (
+        {tests.length && tests[0].comparisons.length > 0 && (
           <SnapshotComparison key={storyId} {...{ tests, isAccepting, isOutdated, onAccept }} />
         )}
       </Section>
