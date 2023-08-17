@@ -20,9 +20,9 @@ import {
   BuildStatus,
   ReviewTestBatch,
   ReviewTestInputStatus,
-  TestFieldsFragment,
+  TestStatus,
 } from "../../gql/graphql";
-import { StatusUpdate, testsToStatusUpdate } from "../../utils/testsToStatusUpdate";
+import { statusMap, StatusUpdate, testsToStatusUpdate } from "../../utils/testsToStatusUpdate";
 import { RenderSettings } from "./RenderSettings";
 import { SnapshotComparison } from "./SnapshotComparison";
 import { StoryInfo } from "./StoryInfo";
@@ -36,6 +36,7 @@ const QueryBuild = graphql(/* GraphQL */ `
     $branch: String!
     $slug: String
     $storyId: String!
+    $testStatuses: [TestStatus!]!
   ) {
     build(id: $buildId) @include(if: $hasBuildId) {
       ...BuildFields
@@ -67,9 +68,14 @@ const FragmentBuildFields = graphql(/* GraphQL */ `
       changeCount: testCount(results: [ADDED, CHANGED, FIXED])
       brokenCount: testCount(results: [CAPTURE_ERROR])
       startedAt
-      tests(storyId: $storyId) {
+      testsForStatus: tests(first: 1000, statuses: $testStatuses) {
         nodes {
-          ...TestFields
+          ...StatusTestFields
+        }
+      }
+      testsForStory: tests(storyId: $storyId) {
+        nodes {
+          ...StoryTestFields
         }
       }
     }
@@ -78,17 +84,32 @@ const FragmentBuildFields = graphql(/* GraphQL */ `
       changeCount: testCount(results: [ADDED, CHANGED, FIXED])
       brokenCount: testCount(results: [CAPTURE_ERROR])
       startedAt
-      tests(storyId: $storyId) {
+      testsForStatus: tests(statuses: $testStatuses) {
         nodes {
-          ...TestFields
+          ...StatusTestFields
+        }
+      }
+      testsForStory: tests(storyId: $storyId) {
+        nodes {
+          ...StoryTestFields
         }
       }
     }
   }
 `);
 
-const FragmentTestFields = graphql(/* GraphQL */ `
-  fragment TestFields on Test {
+const FragmentStatusTestFields = graphql(/* GraphQL */ `
+  fragment StatusTestFields on Test {
+    id
+    status
+    story {
+      storyId
+    }
+  }
+`);
+
+const FragmentStoryTestFields = graphql(/* GraphQL */ `
+  fragment StoryTestFields on Test {
     id
     status
     result
@@ -189,6 +210,7 @@ export const VisualTests = ({
       buildId: lastDevBuildId || "",
       projectId,
       storyId,
+      testStatuses: Object.keys(statusMap) as any as TestStatus[],
       branch: gitInfo.branch || "",
       ...(gitInfo.slug ? { slug: gitInfo.slug } : {}),
     },
@@ -222,13 +244,12 @@ export const VisualTests = ({
   );
 
   const build = getFragment(FragmentBuildFields, data?.build || data?.project?.lastBuild);
+  const isOutdated = build && build.uncommittedHash !== gitInfo.uncommittedHash;
 
   const buildStatusUpdate =
     build &&
-    "tests" in build &&
-    testsToStatusUpdate(getFragment(FragmentTestFields, build.tests.nodes));
-
-  const isOutdated = build && build.uncommittedHash !== gitInfo.uncommittedHash;
+    "testsForStatus" in build &&
+    testsToStatusUpdate(getFragment(FragmentStatusTestFields, build.testsForStatus.nodes));
 
   useEffect(() => {
     last = {
@@ -292,8 +313,12 @@ export const VisualTests = ({
     );
   }
 
-  const tests = "tests" in build ? [...getFragment(FragmentTestFields, build.tests.nodes)] : [];
-
+  const tests = [
+    ...getFragment(
+      FragmentStoryTestFields,
+      "testsForStory" in build ? build.testsForStory.nodes : []
+    ),
+  ];
   const startedAt = "startedAt" in build && build.startedAt;
   const isBuildFailed = build.status === BuildStatus.Failed;
 
