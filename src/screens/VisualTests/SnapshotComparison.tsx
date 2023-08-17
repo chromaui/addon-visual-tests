@@ -28,10 +28,16 @@ const Divider = styled.div(({ theme }) => ({
 interface SnapshotSectionProps {
   tests: StoryTestFieldsFragment[];
   isAccepting: boolean;
+  baselineImageVisible: boolean;
   onAccept: (testId: StoryTestFieldsFragment["id"], batch?: ReviewTestBatch) => void;
 }
 
-export const SnapshotComparison = ({ tests, isAccepting, onAccept }: SnapshotSectionProps) => {
+export const SnapshotComparison = ({
+  tests,
+  isAccepting,
+  onAccept,
+  baselineImageVisible,
+}: SnapshotSectionProps) => {
   const [diffVisible, setDiffVisible] = useState(true);
 
   const { selectedTest, selectedComparison, onSelectBrowser, onSelectViewport } = useTests(tests);
@@ -50,7 +56,11 @@ export const SnapshotComparison = ({ tests, isAccepting, onAccept }: SnapshotSec
         <Bar>
           {selectedComparison?.result === ComparisonResult.Changed && (
             <Col>
-              <IconButton active={diffVisible} onClick={() => setDiffVisible(!diffVisible)}>
+              <IconButton
+                data-testid="button-diff-visible"
+                active={diffVisible}
+                onClick={() => setDiffVisible(!diffVisible)}
+              >
                 <Icons icon="contrast" />
               </IconButton>
             </Col>
@@ -123,9 +133,13 @@ export const SnapshotComparison = ({ tests, isAccepting, onAccept }: SnapshotSec
       {isInProgress && <Loader />}
       {!isInProgress && selectedComparison && (
         <SnapshotImage as="a" href={selectedTest.webUrl} target="_blank">
-          {selectedComparison.headCapture?.captureImage && (
-            <img src={selectedComparison.headCapture.captureImage?.imageUrl} alt="" />
-          )}
+          {baselineImageVisible
+            ? selectedComparison.headCapture?.captureImage && (
+                <img src={selectedComparison.baseCapture.captureImage?.imageUrl} alt="" />
+              )
+            : selectedComparison.headCapture?.captureImage && (
+                <img src={selectedComparison.headCapture.captureImage?.imageUrl} alt="" />
+              )}
           {diffVisible &&
             selectedComparison.result === ComparisonResult.Changed &&
             selectedComparison.captureDiff?.diffImage && (

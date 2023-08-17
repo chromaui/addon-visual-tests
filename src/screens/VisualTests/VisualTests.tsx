@@ -1,4 +1,5 @@
 import { Icons, Loader } from "@storybook/components";
+import { Icon } from "@storybook/design-system";
 // eslint-disable-next-line import/no-unresolved
 import { GitInfo } from "chromatic/node";
 import React, { useCallback, useEffect, useState } from "react";
@@ -8,6 +9,7 @@ import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
 import { FooterMenu } from "../../components/FooterMenu";
 import { Heading } from "../../components/Heading";
+import { IconButton } from "../../components/IconButton";
 import { ProgressIcon } from "../../components/icons/ProgressIcon";
 import { Bar, Col, Row, Section, Sections, Text } from "../../components/layout";
 import { Text as CenterText } from "../../components/Text";
@@ -133,6 +135,11 @@ const FragmentStoryTestFields = graphql(/* GraphQL */ `
         }
       }
       headCapture {
+        captureImage {
+          imageUrl
+        }
+      }
+      baseCapture {
         captureImage {
           imageUrl
         }
@@ -273,6 +280,8 @@ export const VisualTests = ({
 
   const [settingsVisible, setSettingsVisible] = useState(false);
   const [warningsVisible, setWarningsVisible] = useState(false);
+  const [baselineImageVisible, setBaselineImageVisible] = useState(false);
+  const toggleBaselineImage = () => setBaselineImageVisible(!baselineImageVisible);
 
   if (!build || error) {
     return (
@@ -381,7 +390,20 @@ export const VisualTests = ({
       <Section>
         <Bar>
           <Col>
-            <Text style={{ marginLeft: 5 }}>Latest snapshot on {build.branch}</Text>
+            <IconButton data-testid="button-toggle-snapshot" onClick={() => toggleBaselineImage()}>
+              <Icon icon="transfer" />
+            </IconButton>
+          </Col>
+          <Col style={{ overflow: "hidden", whiteSpace: "nowrap" }}>
+            {baselineImageVisible ? (
+              <Text style={{ marginLeft: 5, width: "100%" }}>
+                <b>Baseline</b> Build {build.number} on {build.branch}
+              </Text>
+            ) : (
+              <Text style={{ marginLeft: 5, width: "100%" }}>
+                <b>Latest</b> Build {build.number} on {build.branch}
+              </Text>
+            )}
           </Col>
           {/* <Col push>
             <IconButton

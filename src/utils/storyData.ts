@@ -22,6 +22,12 @@ export const makeViewportInfo = (width: number): ViewportInfo => ({
   isDefault: width === 1200,
 });
 
+export const baseCapture: StoryTestFieldsFragment["comparisons"][number]["baseCapture"] = {
+  captureImage: {
+    imageUrl: "/A.png",
+  },
+};
+
 export const headCapture: StoryTestFieldsFragment["comparisons"][number]["headCapture"] = {
   captureImage: {
     imageUrl: "/B.png",
@@ -46,6 +52,7 @@ export function makeComparison(options: {
     browser: makeBrowserInfo(options.browser || Browser.Chrome),
     viewport: makeViewportInfo(options.viewport || 1200),
     result,
+    baseCapture,
     headCapture,
     ...(result === ComparisonResult.Changed && { captureDiff }),
   };
