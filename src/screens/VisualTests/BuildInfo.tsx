@@ -1,4 +1,4 @@
-import { Icons } from "@storybook/components";
+import { Icons, TooltipNote, WithTooltip } from "@storybook/components";
 import { formatDistance } from "date-fns";
 import pluralize from "pluralize";
 import React from "react";
@@ -19,14 +19,16 @@ interface BuildInfoSectionProps {
       >;
   viewportCount: number;
   isOutdated: boolean;
-  runDevBuild: () => void;
+  isStarting: boolean;
+  startDevBuild: () => void;
 }
 
 export const BuildInfo = ({
   build,
   viewportCount,
   isOutdated,
-  runDevBuild,
+  isStarting,
+  startDevBuild,
 }: BuildInfoSectionProps) => {
   const { status, browsers } = build;
   const startedAgo =
@@ -39,6 +41,7 @@ export const BuildInfo = ({
     BuildStatus.Prepared,
     BuildStatus.Published,
   ].includes(status);
+  const isErrored = [BuildStatus.Broken, BuildStatus.Failed].includes(status);
 
   let statusText;
   if (inProgress) {
@@ -61,7 +64,13 @@ export const BuildInfo = ({
     statusText = isOutdated ? (
       <>
         <b>Snapshots outdated</b>
-        <AlertIcon />
+        <WithTooltip
+          tooltip={<TooltipNote note="Some files have changed since the last build" />}
+          trigger="hover"
+          hasChrome={false}
+        >
+          <AlertIcon />
+        </WithTooltip>
       </>
     ) : (
       <>
@@ -93,12 +102,14 @@ export const BuildInfo = ({
       </small>
     ) : (
       <small>
-        <span>
-          {pluralize("viewport", viewportCount, true)}
-          {", "}
-          {pluralize("browser", browserCount, true)}
-        </span>
-        {" • "}
+        {viewportCount > 0 && (
+          <span>
+            {pluralize("viewport", viewportCount, true)}
+            {", "}
+            {pluralize("browser", browserCount, true)}
+          </span>
+        )}
+        {viewportCount > 0 && " • "}
         {inProgress && <span>Test in progress...</span>}
         {!inProgress && "startedAt" in build && (
           <span title={new Date(build.startedAt).toUTCString()}>{startedAgo}</span>
@@ -117,23 +128,15 @@ export const BuildInfo = ({
             {subText}
           </Text>
         </Col>
-        {isOutdated && (
+        {(isOutdated || isErrored) && (
           <Col push>
-            <Button small secondary onClick={runDevBuild} disabled={inProgress}>
-              {inProgress ? (
+            <Button small secondary onClick={startDevBuild} disabled={isStarting}>
+              {isStarting ? (
                 <ProgressIcon parentComponent="Button" style={{ marginRight: 6 }} />
               ) : (
                 <Icons icon="play" />
               )}
-              Run tests
-            </Button>
-          </Col>
-        )}
-        {BuildStatus.Failed === status && (
-          <Col push>
-            <Button small secondary onClick={runDevBuild}>
-              <Icons icon="play" />
-              Rerun tests
+              {isErrored ? "Rerun" : "Run"} tests
             </Button>
           </Col>
         )}

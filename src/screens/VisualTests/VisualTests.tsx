@@ -1,11 +1,18 @@
-import { Loader } from "@storybook/components";
+import { Icons, Loader } from "@storybook/components";
 import { Icon } from "@storybook/design-system";
+// eslint-disable-next-line import/no-unresolved
+import { GitInfo } from "chromatic/node";
 import React, { useCallback, useEffect, useState } from "react";
 import { useMutation, useQuery } from "urql";
 
+import { Button } from "../../components/Button";
+import { Container } from "../../components/Container";
+import { FooterMenu } from "../../components/FooterMenu";
+import { Heading } from "../../components/Heading";
 import { IconButton } from "../../components/IconButton";
+import { ProgressIcon } from "../../components/icons/ProgressIcon";
 import { Bar, Col, Row, Section, Sections, Text } from "../../components/layout";
-import { TooltipMenu } from "../../components/TooltipMenu";
+import { Text as CenterText } from "../../components/Text";
 import { getFragment, graphql } from "../../gql";
 import {
   BuildQuery,
@@ -26,13 +33,18 @@ const QueryBuild = graphql(/* GraphQL */ `
     $projectId: ID!
     $branch: String!
     $gitUserEmailHash: String!
+    $slug: String
   ) {
     build(id: $buildId) @include(if: $hasBuildId) {
       ...BuildFields
     }
     project(id: $projectId) @skip(if: $hasBuildId) {
       name
-      lastBuild(branches: [$branch], localBuilds: { localBuildEmailHash: $gitUserEmailHash }) {
+      lastBuild(
+        branches: [$branch]
+        slug: $slug
+        localBuilds: { localBuildEmailHash: $gitUserEmailHash }
+      ) {
         ...BuildFields
       }
     }
@@ -46,6 +58,7 @@ const FragmentBuildFields = graphql(/* GraphQL */ `
     number
     branch
     commit
+    uncommittedHash
     status
     browsers {
       id
@@ -151,47 +164,43 @@ const MutationReviewTest = graphql(/* GraphQL */ `
 
 interface VisualTestsProps {
   projectId: string;
-  gitUserEmailHash: string;
-  branch: string;
-  slug: string;
-  isOutdated?: boolean;
-  isRunning?: boolean;
+  gitInfo: GitInfo;
+  isStarting: boolean;
   lastDevBuildId?: string;
-  runDevBuild: () => void;
+  startDevBuild: () => void;
   setAccessToken: (accessToken: string | null) => void;
-  // eslint-disable-next-line react/no-unused-prop-types
-  setIsOutdated: (isOutdated: boolean) => void;
-  setIsRunning: (isRunning: boolean) => void;
   updateBuildStatus: (update: StatusUpdate) => void;
   storyId: string;
 }
 
 let last: any;
 export const VisualTests = ({
-  isOutdated,
-  isRunning,
+  isStarting,
   lastDevBuildId,
-  runDevBuild,
+  startDevBuild,
   setAccessToken,
-  setIsRunning,
   updateBuildStatus,
   projectId,
-  gitUserEmailHash,
-  branch,
-  slug,
+  gitInfo,
   storyId,
 }: VisualTestsProps) => {
-  const [{ data, fetching, error }, rerun] = useQuery<BuildQuery, BuildQueryVariables>({
+  const [{ data, error }, rerun] = useQuery<BuildQuery, BuildQueryVariables>({
     query: QueryBuild,
     variables: {
       hasBuildId: !!lastDevBuildId,
       buildId: lastDevBuildId || "",
       projectId,
-      branch: branch || "",
-      ...(slug ? { slug } : {}),
-      gitUserEmailHash,
+      branch: gitInfo.branch || "",
+      ...(gitInfo.slug ? { slug: gitInfo.slug } : {}),
+      gitUserEmailHash: gitInfo.userEmailHash,
     },
   });
+
+  // Poll for updates
+  useEffect(() => {
+    const interval = setInterval(rerun, 5000);
+    return () => clearInterval(interval);
+  }, [rerun]);
 
   const [{ fetching: isAccepting }, reviewTest] = useMutation(MutationReviewTest);
 
@@ -216,17 +225,12 @@ export const VisualTests = ({
 
   const build = getFragment(FragmentBuildFields, data?.build || data?.project?.lastBuild);
 
-  const buildComplete = build && "result" in build;
   const buildStatusUpdate =
     build &&
     "tests" in build &&
     testsToStatusUpdate(getFragment(FragmentTestFields, build.tests.nodes));
 
-  useEffect(() => {
-    if (buildComplete && isRunning) {
-      setIsRunning(false);
-    }
-  }, [buildComplete, isRunning, setIsRunning]);
+  const isOutdated = build && build.uncommittedHash !== gitInfo.uncommittedHash;
 
   useEffect(() => {
     last = {
@@ -240,17 +244,10 @@ export const VisualTests = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(buildStatusUpdate), updateBuildStatus]);
 
-  useEffect(() => {
-    let interval: any;
-    if (isRunning) interval = setInterval(rerun, 5000);
-    else clearInterval(interval);
-    return () => clearInterval(interval);
-  }, [isRunning, rerun]);
-
   const [settingsVisible, setSettingsVisible] = useState(false);
   const [warningsVisible, setWarningsVisible] = useState(false);
 
-  if (fetching || error || !build) {
+  if (!build || error) {
     return (
       <Sections>
         <Section grow>
@@ -261,45 +258,35 @@ export const VisualTests = ({
               </Col>
             </Row>
           )}
-          {fetching && <Loader />}
-          {!build && !fetching && !error && (
-            <Section grow>
-              <Row>
-                <Col>
-                  <Text>
-                    Your project {data.project?.name} does not have any builds yet. Run a build a to
-                    begin.
-                  </Text>
-                </Col>
-              </Row>
-            </Section>
+          {!data && <Loader />}
+          {data && !build && !error && (
+            <Container>
+              <Heading>Create a test baseline</Heading>
+              <CenterText>
+                Take an image snapshot of each story to save their &quot;last known good state&quot;
+                as test baselines.
+              </CenterText>
+              <br />
+              <Button small secondary onClick={startDevBuild} disabled={isStarting}>
+                {isStarting ? (
+                  <ProgressIcon parentComponent="Button" style={{ marginRight: 6 }} />
+                ) : (
+                  <Icons icon="play" />
+                )}
+                Take snapshots
+              </Button>
+            </Container>
           )}
         </Section>
         <Section>
           <Bar>
             <Col>
-              <Text style={{ marginLeft: 5 }}>Loading...</Text>
+              <Text style={{ marginLeft: 5 }}>
+                {data ? `Waiting for build on ${gitInfo.branch}` : "Loading..."}
+              </Text>
             </Col>
             <Col push>
-              <TooltipMenu
-                placement="top"
-                links={[
-                  {
-                    id: "logout",
-                    title: "Log out",
-                    icon: "user",
-                    onClick: () => setAccessToken(null),
-                  },
-                  {
-                    id: "learn",
-                    title: "Learn about this addon",
-                    icon: "question",
-                    href: "https://www.chromatic.com/docs/test",
-                  },
-                ]}
-              >
-                <Icon icon="ellipsis" />
-              </TooltipMenu>
+              <FooterMenu setAccessToken={setAccessToken} />
             </Col>
           </Bar>
         </Section>
@@ -314,7 +301,7 @@ export const VisualTests = ({
   return (
     <Sections>
       <Section grow hidden={settingsVisible || warningsVisible}>
-        <BuildInfo {...{ build, viewportCount, isOutdated, runDevBuild }} />
+        <BuildInfo {...{ build, viewportCount, isOutdated, isStarting, startDevBuild }} />
         {/* The key here is to ensure the useTests helper gets to reset each time we change story */}
         {tests.length > 0 && (
           <SnapshotComparison key={storyId} {...{ tests, isAccepting, isOutdated, onAccept }} />
@@ -358,25 +345,7 @@ export const VisualTests = ({
             </IconButton>
           </Col>
           <Col>
-            <TooltipMenu
-              placement="top"
-              links={[
-                {
-                  id: "logout",
-                  title: "Log out",
-                  icon: "user",
-                  onClick: () => setAccessToken(null),
-                },
-                {
-                  id: "learn",
-                  title: "Learn about this addon",
-                  icon: "question",
-                  href: "https://www.chromatic.com/docs/test",
-                },
-              ]}
-            >
-              <Icon icon="ellipsis" />
-            </TooltipMenu>
+            <FooterMenu setAccessToken={setAccessToken} />
           </Col>
         </Bar>
       </Section>

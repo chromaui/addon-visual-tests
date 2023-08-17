@@ -1,17 +1,22 @@
-import {
-  useAddonState,
-  useChannel,
-  useStorybookApi,
-  useStorybookState,
-} from "@storybook/manager-api";
-import React, { useCallback } from "react";
+import { logger } from "@storybook/client-logger";
+import { useChannel, useStorybookApi, useStorybookState } from "@storybook/manager-api";
+// eslint-disable-next-line import/no-unresolved
+import { GitInfo } from "chromatic/node";
+import React, { useCallback, useState } from "react";
 
-import { ADDON_ID, PANEL_ID, START_BUILD } from "./constants";
+import {
+  ADDON_ID,
+  BUILD_ANNOUNCED,
+  BUILD_STARTED,
+  DEV_BUILD_ID_KEY,
+  GIT_INFO,
+  PANEL_ID,
+  START_BUILD,
+} from "./constants";
 import { Authentication } from "./screens/Authentication/Authentication";
 import { LinkedProject } from "./screens/LinkProject/LinkedProject";
 import { LinkProject } from "./screens/LinkProject/LinkProject";
 import { VisualTests } from "./screens/VisualTests/VisualTests";
-import { AddonState } from "./types";
 import { client, Provider, useAccessToken } from "./utils/graphQLClient";
 import { StatusUpdate } from "./utils/testsToStatusUpdate";
 import { useProjectId } from "./utils/useProjectId";
@@ -20,31 +25,51 @@ interface PanelProps {
   active: boolean;
 }
 
-const { GIT_USER_EMAIL_HASH, GIT_BRANCH, GIT_SLUG } = process.env;
+const {
+  GIT_USER_EMAIL,
+  GIT_USER_EMAIL_HASH,
+  GIT_BRANCH,
+  GIT_SLUG,
+  GIT_COMMIT,
+  GIT_UNCOMMITTED_HASH,
+} = process.env;
+const initialGitInfo: GitInfo = {
+  userEmail: GIT_USER_EMAIL,
+  userEmailHash: GIT_USER_EMAIL_HASH,
+  branch: GIT_BRANCH,
+  commit: GIT_COMMIT,
+  slug: GIT_SLUG,
+  uncommittedHash: GIT_UNCOMMITTED_HASH,
+};
+
+logger.debug("Initial Git info:", initialGitInfo);
+
+const storedBuildId = localStorage.getItem(DEV_BUILD_ID_KEY);
 
 export const Panel = ({ active }: PanelProps) => {
   const api = useStorybookApi();
   const [accessToken, setAccessToken] = useAccessToken();
-
-  const [state, setAddonState] = useAddonState<AddonState>(ADDON_ID, { isOutdated: false });
   const { storyId } = useStorybookState();
 
-  const setIsOutdated = useCallback(
-    (value: boolean) => setAddonState({ ...state, isOutdated: value }),
-    [state, setAddonState]
-  );
-  const setIsRunning = useCallback(
-    (value: boolean) => setAddonState({ ...state, isRunning: value }),
-    [state, setAddonState]
-  );
+  const [isStarting, setIsStarting] = useState(false);
+  const [lastBuildId, setLastBuildId] = useState(storedBuildId);
+  const [gitInfo, setGitInfo] = useState(initialGitInfo);
 
-  const emit = useChannel({});
-
-  const runDevBuild = useCallback(() => {
-    if (state.isRunning) return;
-    setAddonState({ ...state, isRunning: true });
-    emit(START_BUILD);
-  }, [emit, state, setAddonState]);
+  const emit = useChannel(
+    {
+      [START_BUILD]: () => setIsStarting(true),
+      [BUILD_STARTED]: () => setIsStarting(false),
+      [BUILD_ANNOUNCED]: (buildId: string) => {
+        setLastBuildId(buildId);
+        localStorage.setItem(DEV_BUILD_ID_KEY, buildId);
+      },
+      [GIT_INFO]: (info: GitInfo) => {
+        setGitInfo(info);
+        logger.debug("Updated Git info:", info);
+      },
+    },
+    []
+  );
 
   const updateBuildStatus = useCallback(
     (update: StatusUpdate) => {
@@ -64,14 +89,18 @@ export const Panel = ({ active }: PanelProps) => {
   if (!projectId)
     return (
       <Provider key={PANEL_ID} value={client}>
-        <LinkProject onUpdateProject={updateProject} />
+        <LinkProject onUpdateProject={updateProject} setAccessToken={setAccessToken} />
       </Provider>
     );
 
   if (projectIdChanged) {
     return (
       <Provider key={PANEL_ID} value={client}>
-        <LinkedProject projectId={projectId} goToNext={clearProjectIdChanged} />
+        <LinkedProject
+          projectId={projectId}
+          goToNext={clearProjectIdChanged}
+          setAccessToken={setAccessToken}
+        />
       </Provider>
     );
   }
@@ -79,16 +108,11 @@ export const Panel = ({ active }: PanelProps) => {
     <Provider key={PANEL_ID} value={client}>
       <VisualTests
         projectId={projectId}
-        gitUserEmailHash={GIT_USER_EMAIL_HASH}
-        branch={GIT_BRANCH}
-        slug={GIT_SLUG}
-        isOutdated={state.isOutdated}
-        isRunning={state.isRunning}
-        lastDevBuildId={state.lastBuildId}
-        runDevBuild={runDevBuild}
+        gitInfo={gitInfo}
+        isStarting={isStarting}
+        lastDevBuildId={lastBuildId}
+        startDevBuild={() => isStarting || emit(START_BUILD)}
         setAccessToken={setAccessToken}
-        setIsOutdated={setIsOutdated}
-        setIsRunning={setIsRunning}
         updateBuildStatus={updateBuildStatus}
         storyId={storyId}
       />
