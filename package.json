@@ -53,7 +53,8 @@
     "start": "run-p build:watch 'storybook --quiet'",
     "prerelease": "zx scripts/prepublish-checks.mjs",
     "storybook": "CHROMATIC_ADDON_NAME='../dist/index.js' storybook dev -p 6006",
-    "test": "jest"
+    "test": "jest",
+    "typecheck": "tsc --noemit"
   },
   "dependencies": {
     "@storybook/csf-tools": "^7.3.0",
