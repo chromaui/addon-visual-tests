@@ -9,7 +9,8 @@ const meta = {
   component: BuildInfo,
   args: {
     isOutdated: false,
-    runDevBuild: action("runDevBuild"),
+    startDevBuild: action("startDevBuild"),
+    isStarting: false,
   },
 } satisfies Meta<typeof BuildInfo>;
 

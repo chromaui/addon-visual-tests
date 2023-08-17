@@ -151,9 +151,9 @@ const meta = {
     },
     storyId: "button--primary",
     projectId: "Project:id123",
-    runDevBuild: action("runDevBuild"),
+    startDevBuild: action("startDevBuild"),
+    isStarting: false,
     setAccessToken: action("setAccessToken"),
-    setIsRunning: action("setIsRunning"),
     updateBuildStatus: action("updateBuildStatus"),
   },
 } satisfies Meta<typeof VisualTests>;

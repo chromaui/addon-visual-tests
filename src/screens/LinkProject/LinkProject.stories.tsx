@@ -88,7 +88,13 @@ export const SelectProject: Story = {
 };
 
 export const Linked: Story = {
-  render: () => <LinkedProject projectId="789" goToNext={action("goToNext")} />,
+  render: () => (
+    <LinkedProject
+      projectId="789"
+      goToNext={action("goToNext")}
+      setAccessToken={action("setAccessToken")}
+    />
+  ),
   parameters: {
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=330-472759&t=3EAIRe8423CpOQWY-4"
