@@ -8,50 +8,39 @@ import { AlertIcon } from "../../components/icons/AlertIcon";
 import { ProgressIcon } from "../../components/icons/ProgressIcon";
 import { StatusIcon } from "../../components/icons/StatusIcon";
 import { Col, Row, Text } from "../../components/layout";
-import { BuildFieldsFragment, BuildStatus } from "../../gql/graphql";
+import { TestFieldsFragment, TestStatus } from "../../gql/graphql";
+import { summarizeTests } from "../../utils/summarizeTests";
 
-interface BuildInfoSectionProps {
-  build:
-    | Pick<BuildFieldsFragment, "status" | "browsers">
-    | Pick<
-        Extract<BuildFieldsFragment, { startedAt: any }>,
-        "status" | "browsers" | "startedAt" | "brokenCount" | "changeCount"
-      >;
-  viewportCount: number;
-  isOutdated: boolean;
+interface StoryInfoSectionProps {
+  tests: TestFieldsFragment[];
+  startedAt: Date;
   isStarting: boolean;
   startDevBuild: () => void;
+  isOutdated: boolean;
 }
 
-export const BuildInfo = ({
-  build,
-  viewportCount,
-  isOutdated,
+export const StoryInfo = ({
+  tests,
+  startedAt,
   isStarting,
   startDevBuild,
-}: BuildInfoSectionProps) => {
-  const { status, browsers } = build;
-  const startedAgo =
-    "startedAt" in build &&
-    formatDistance(new Date(build.startedAt), new Date(), { addSuffix: true });
-  const browserCount = browsers.length;
-  const inProgress = [
-    BuildStatus.InProgress,
-    BuildStatus.Announced,
-    BuildStatus.Prepared,
-    BuildStatus.Published,
-  ].includes(status);
-  const isErrored = [BuildStatus.Broken, BuildStatus.Failed].includes(status);
+  isOutdated,
+}: StoryInfoSectionProps) => {
+  const { status, isInProgress, changeCount, brokenCount, viewportResults, browserResults } =
+    summarizeTests(tests);
+
+  const startedAgo = formatDistance(new Date(startedAt), new Date(), { addSuffix: true });
+  const isErrored = [TestStatus.Broken, TestStatus.Failed].includes(status);
 
   let statusText;
-  if (inProgress) {
+  if (isInProgress) {
     statusText = (
       <>
         <b>Running tests...</b>
         <ProgressIcon />
       </>
     );
-  } else if (status === BuildStatus.Failed) {
+  } else if (status === TestStatus.Failed) {
     statusText = (
       <>
         <b>Build failed</b>
@@ -59,8 +48,6 @@ export const BuildInfo = ({
       </>
     );
   } else {
-    if (!("startedAt" in build)) throw new Error(`No startedAt field on started build`);
-
     statusText = isOutdated ? (
       <>
         <b>Snapshots outdated</b>
@@ -75,13 +62,13 @@ export const BuildInfo = ({
     ) : (
       <>
         <b>
-          {build.changeCount ? pluralize("change", build.changeCount, true) : "No changes"}
-          {build.brokenCount ? `, ${pluralize("error", build.brokenCount, true)}` : null}
+          {changeCount ? pluralize("change", changeCount, true) : "No changes"}
+          {brokenCount ? `, ${pluralize("error", brokenCount, true)}` : null}
         </b>
         <StatusIcon
           icon={
             // eslint-disable-next-line no-nested-ternary
-            build.brokenCount ? "failed" : status === BuildStatus.Pending ? "changed" : "passed"
+            brokenCount ? "failed" : status === TestStatus.Pending ? "changed" : "passed"
           }
         />
       </>
@@ -89,7 +76,7 @@ export const BuildInfo = ({
   }
 
   let subText;
-  if (status === BuildStatus.Failed) {
+  if (status === TestStatus.Failed) {
     subText = (
       <small>
         <span>An infrastructure error occured</span>
@@ -102,18 +89,16 @@ export const BuildInfo = ({
       </small>
     ) : (
       <small>
-        {viewportCount > 0 && (
+        {viewportResults.length > 0 && (
           <span>
-            {pluralize("viewport", viewportCount, true)}
+            {pluralize("viewport", viewportResults.length, true)}
             {", "}
-            {pluralize("browser", browserCount, true)}
+            {pluralize("browser", browserResults.length, true)}
           </span>
         )}
-        {viewportCount > 0 && " • "}
-        {inProgress && <span>Test in progress...</span>}
-        {!inProgress && "startedAt" in build && (
-          <span title={new Date(build.startedAt).toUTCString()}>{startedAgo}</span>
-        )}
+        {viewportResults.length > 0 && " • "}
+        {isInProgress && <span>Test in progress...</span>}
+        {!isInProgress && <span title={new Date(startedAt).toUTCString()}>{startedAgo}</span>}
       </small>
     );
   }

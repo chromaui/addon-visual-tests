@@ -24,6 +24,7 @@ import { StatusUpdate, testsToStatusUpdate } from "../../utils/testsToStatusUpda
 import { BuildInfo } from "./BuildInfo";
 import { RenderSettings } from "./RenderSettings";
 import { SnapshotComparison } from "./SnapshotComparison";
+import { StoryInfo } from "./StoryInfo";
 import { Warnings } from "./Warnings";
 
 const QueryBuild = graphql(/* GraphQL */ `
@@ -291,14 +292,14 @@ export const VisualTests = ({
   const allTests = getFragment(FragmentTestFields, "tests" in build ? build.tests.nodes : []);
   const tests = allTests.filter((test) => test.story?.storyId === storyId);
 
-  const viewportCount = new Set(allTests.map((t) => t.parameters.viewport.id)).size;
+  const startedAt = "startedAt" in build && build.startedAt;
+
   return (
     <Sections>
       <Section grow hidden={settingsVisible || warningsVisible}>
-        <BuildInfo {...{ build, viewportCount, isOutdated, isStarting, startDevBuild }} />
-        {/* The key here is to ensure the useTests helper gets to reset each time we change story */}
+        <StoryInfo {...{ tests, isOutdated, startedAt, isStarting, startDevBuild }} />
         {tests.length > 0 && (
-          <SnapshotComparison key={storyId} {...{ tests, isAccepting, isOutdated, onAccept }} />
+          <SnapshotComparison {...{ tests, isAccepting, isOutdated, onAccept }} />
         )}
       </Section>
 
