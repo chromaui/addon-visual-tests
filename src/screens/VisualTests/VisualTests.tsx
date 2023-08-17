@@ -1,4 +1,4 @@
-import { Icons, Loader } from "@storybook/components";
+import { Icons, Loader, TooltipNote, WithTooltip } from "@storybook/components";
 import { Icon } from "@storybook/design-system";
 // eslint-disable-next-line import/no-unresolved
 import { GitInfo } from "chromatic/node";
@@ -377,7 +377,9 @@ export const VisualTests = ({
           {...{ tests, isOutdated, startedAt, isStarting, startDevBuild, isBuildFailed }}
         />
         {!isStarting && tests && tests.length > 0 && (
-          <SnapshotComparison {...{ tests, isAccepting, isOutdated, onAccept }} />
+          <SnapshotComparison
+            {...{ tests, isAccepting, isOutdated, onAccept, baselineImageVisible }}
+          />
         )}
       </Section>
 
@@ -390,9 +392,18 @@ export const VisualTests = ({
       <Section>
         <Bar>
           <Col>
-            <IconButton data-testid="button-toggle-snapshot" onClick={() => toggleBaselineImage()}>
-              <Icon icon="transfer" />
-            </IconButton>
+            <WithTooltip
+              tooltip={<TooltipNote note="Switch snapshot" />}
+              trigger="hover"
+              hasChrome={false}
+            >
+              <IconButton
+                data-testid="button-toggle-snapshot"
+                onClick={() => toggleBaselineImage()}
+              >
+                <Icon icon="transfer" />
+              </IconButton>
+            </WithTooltip>
           </Col>
           <Col style={{ overflow: "hidden", whiteSpace: "nowrap" }}>
             {baselineImageVisible ? (
@@ -406,6 +417,11 @@ export const VisualTests = ({
             )}
           </Col>
           {/* <Col push>
+            <WithTooltip
+              tooltip={<TooltipNote note="Render settings" />}
+              trigger="hover"
+              hasChrome={false}
+            >
             <IconButton
               active={settingsVisible}
               aria-label={`${settingsVisible ? "Hide" : "Show"} render settings`}
@@ -416,21 +432,29 @@ export const VisualTests = ({
             >
               <Icons icon="controls" />
             </IconButton>
+          </WithTooltip>
           </Col>
           <Col>
-            <IconButton
-              active={warningsVisible}
-              aria-label={`${warningsVisible ? "Hide" : "Show"} warnings`}
-              onClick={() => {
-                setWarningsVisible(!warningsVisible);
-                setSettingsVisible(false);
-              }}
-              status="warning"
+            <WithTooltip
+              tooltip={<TooltipNote note="View warnings" />}
+              trigger="hover"
+              hasChrome={false}
             >
-              <Icons icon="alert" />2
-            </IconButton>
+              <IconButton
+                active={warningsVisible}
+                aria-label={`${warningsVisible ? "Hide" : "Show"} warnings`}
+                onClick={() => {
+                  setWarningsVisible(!warningsVisible);
+                  setSettingsVisible(false);
+                }}
+                status="warning"
+              >
+                <Icons icon="alert" />2
+              </IconButton>
+
+            </WithTooltip>
           </Col> */}
-          <Col push>
+          <Col>
             <FooterMenu setAccessToken={setAccessToken} />
           </Col>
         </Bar>

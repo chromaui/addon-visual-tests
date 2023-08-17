@@ -1,4 +1,4 @@
-import { Icons, Loader } from "@storybook/components";
+import { Icons, Loader, TooltipNote, WithTooltip } from "@storybook/components";
 import { styled } from "@storybook/theming";
 import React, { useState } from "react";
 
@@ -54,41 +54,65 @@ export const SnapshotComparison = ({
         </Bar>
       ) : (
         <Bar>
-          {selectedComparison?.result === ComparisonResult.Changed && (
-            <Col>
-              <IconButton
-                data-testid="button-diff-visible"
-                active={diffVisible}
-                onClick={() => setDiffVisible(!diffVisible)}
-              >
-                <Icons icon="contrast" />
-              </IconButton>
-            </Col>
-          )}
           {viewportResults.length > 0 && (
             <Col>
-              <ViewportSelector
-                selectedViewport={selectedTest.parameters.viewport}
-                viewportResults={viewportResults}
-                onSelectViewport={onSelectViewport}
-              />
+              <WithTooltip
+                tooltip={<TooltipNote note="Switch viewport" />}
+                trigger="hover"
+                hasChrome={false}
+              >
+                <ViewportSelector
+                  selectedViewport={selectedTest.parameters.viewport}
+                  viewportResults={viewportResults}
+                  onSelectViewport={onSelectViewport}
+                />
+              </WithTooltip>
             </Col>
           )}
           {browserResults.length > 0 && (
             <Col>
-              <BrowserSelector
-                selectedBrowser={selectedComparison.browser}
-                browserResults={browserResults}
-                onSelectBrowser={onSelectBrowser}
-              />
+              <WithTooltip
+                tooltip={<TooltipNote note="Switch browser" />}
+                trigger="hover"
+                hasChrome={false}
+              >
+                <BrowserSelector
+                  selectedBrowser={selectedComparison.browser}
+                  browserResults={browserResults}
+                  onSelectBrowser={onSelectBrowser}
+                />
+              </WithTooltip>
+            </Col>
+          )}
+          {selectedComparison?.result === ComparisonResult.Changed && (
+            <Col>
+              <WithTooltip
+                tooltip={<TooltipNote note="Toggle diff" />}
+                trigger="hover"
+                hasChrome={false}
+              >
+                <IconButton
+                  data-testid="button-diff-visible"
+                  active={diffVisible}
+                  onClick={() => setDiffVisible(!diffVisible)}
+                >
+                  <Icons icon="contrast" />
+                </IconButton>
+              </WithTooltip>
             </Col>
           )}
           {changeCount > 0 && selectedTest.status !== TestStatus.Accepted && (
             <>
               <Col push>
-                <IconButton secondary onClick={() => onAccept(selectedTest.id)}>
-                  Accept
-                </IconButton>
+                <WithTooltip
+                  tooltip={<TooltipNote note="Accept this snapshot" />}
+                  trigger="hover"
+                  hasChrome={false}
+                >
+                  <IconButton secondary onClick={() => onAccept(selectedTest.id)}>
+                    Accept
+                  </IconButton>
+                </WithTooltip>
               </Col>
               <Col>
                 <TooltipMenu
