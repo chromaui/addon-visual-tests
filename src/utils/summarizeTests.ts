@@ -74,9 +74,9 @@ export function summarizeTests(tests: TestFieldsFragment[]) {
   // All tests have the same browsers so we can just look at the first
   // TODO -- it's inefficient to get this data on every test when we only need the first.
   // Instead, let's just get it on the build and pass it in
-  const browserInfoById = Object.fromEntries(
-    tests[0].comparisons.map((c) => [c.browser.id, c.browser])
-  );
+  const browserInfoById = tests.length
+    ? Object.fromEntries(tests[0].comparisons.map((c) => [c.browser.id, c.browser]))
+    : {};
 
   const browserResults = Object.entries(resultsByBrowser).map(([id, result]) => ({
     browser: browserInfoById[id],

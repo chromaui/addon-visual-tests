@@ -17,11 +17,12 @@ import { getFragment, graphql } from "../../gql";
 import {
   BuildQuery,
   BuildQueryVariables,
+  BuildStatus,
   ReviewTestBatch,
   ReviewTestInputStatus,
+  TestFieldsFragment,
 } from "../../gql/graphql";
 import { StatusUpdate, testsToStatusUpdate } from "../../utils/testsToStatusUpdate";
-import { BuildInfo } from "./BuildInfo";
 import { RenderSettings } from "./RenderSettings";
 import { SnapshotComparison } from "./SnapshotComparison";
 import { StoryInfo } from "./StoryInfo";
@@ -289,16 +290,23 @@ export const VisualTests = ({
     );
   }
 
-  const allTests = getFragment(FragmentTestFields, "tests" in build ? build.tests.nodes : []);
-  const tests = allTests.filter((test) => test.story?.storyId === storyId);
+  let tests: TestFieldsFragment[] | undefined;
+  if ("tests" in build) {
+    tests = getFragment(FragmentTestFields, build.tests.nodes).filter(
+      (test) => test.story?.storyId === storyId
+    );
+  }
 
   const startedAt = "startedAt" in build && build.startedAt;
+  const isBuildFailed = build.status === BuildStatus.Failed;
 
   return (
     <Sections>
       <Section grow hidden={settingsVisible || warningsVisible}>
-        <StoryInfo {...{ tests, isOutdated, startedAt, isStarting, startDevBuild }} />
-        {tests.length > 0 && (
+        <StoryInfo
+          {...{ tests, isOutdated, startedAt, isStarting, startDevBuild, isBuildFailed }}
+        />
+        {!isStarting && tests && tests.length > 0 && (
           <SnapshotComparison {...{ tests, isAccepting, isOutdated, onAccept }} />
         )}
       </Section>

@@ -8,25 +8,37 @@ import { StoryInfo } from "./StoryInfo";
 const meta = {
   component: StoryInfo,
   args: {
-    startedAt: new Date(Date.now() - 1000 * 60 * 2), // 2 minutes ago
     isStarting: false,
+    startedAt: new Date(Date.now() - 1000 * 60 * 2), // 2 minutes ago
     startDevBuild: action("startDevBuild"),
     isOutdated: false,
+    isBuildFailed: false,
   },
 } satisfies Meta<typeof StoryInfo>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const InProgressUnstarted: Story = {
-  args: {
-    tests: [],
-  },
+export const Starting: Story = {};
+
+// Announced -> Prepared are indistiguishable from Starting currently
+export const Announced: Story = {};
+
+// The build failed before the test had stories
+export const FailedAnnounced: Story = {
+  args: { isBuildFailed: true },
 };
 
 export const InProgress: Story = {
   args: {
     tests: [makeTest({ status: TestStatus.InProgress })],
+  },
+};
+
+export const InProgressOutdated: Story = {
+  args: {
+    tests: [makeTest({ status: TestStatus.InProgress })],
+    isOutdated: true,
   },
 };
 
@@ -36,16 +48,25 @@ export const Pending: Story = {
   },
 };
 
-export const Passed: Story = {
+export const PendingOutdated: Story = {
+  ...Pending,
   args: {
-    tests: [makeTest({ status: TestStatus.Passed })],
+    ...Pending.args,
+    isOutdated: true,
   },
 };
 
-export const PassedOutdated: Story = {
+export const PendingOutdatedStarting: Story = {
+  ...PendingOutdated,
+  args: {
+    ...PendingOutdated.args,
+    isStarting: true,
+  },
+};
+
+export const Passed: Story = {
   args: {
     tests: [makeTest({ status: TestStatus.Passed })],
-    isOutdated: true,
   },
 };
 
@@ -61,6 +82,7 @@ export const Broken: Story = {
   },
 };
 
+// The story itself failed
 export const Failed: Story = {
   args: {
     tests: [makeTest({ status: TestStatus.Failed })],

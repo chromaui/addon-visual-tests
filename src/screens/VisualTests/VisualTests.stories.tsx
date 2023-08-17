@@ -8,7 +8,7 @@ import { Browser, BuildStatus, ComparisonResult, TestResult, TestStatus } from "
 import { AnnouncedBuild, CompletedBuild, PublishedBuild, StartedBuild } from "../../types";
 import { storyWrapper } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
-import { headCapture, makeBrowserInfo, makeTest, makeViewportInfo } from "../../utils/storyData";
+import { makeBrowserInfo, makeTest } from "../../utils/storyData";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
 import * as SnapshotComparisonStories from "./SnapshotComparison.stories";
 import { VisualTests } from "./VisualTests";
@@ -175,8 +175,12 @@ export const Loading: Story = {
 export const NoBuild: Story = {
   parameters: {
     ...withGraphQLQuery("Build", (req, res, ctx) => res(ctx.data({ build: null } as BuildQuery))),
-    // No design for this state
-    // ...withFigmaDesign(""),
+  },
+};
+export const NoBuildStarting: Story = {
+  ...NoBuild,
+  args: {
+    isStarting: true,
   },
 };
 
@@ -204,17 +208,13 @@ export const Outdated: Story = {
   },
 };
 
-// This story doesn't really make sense because if the build is running it should be `IN_PROGRESS` or similar
-// export const OutdatedRunning: Story = {
-//   args: {
-//     ...Outdated.args,
-//     isRunning: true,
-//   },
-//   argTypes: { updateBuildStatus: { action: "updateBuildStatus" } },
-//   parameters: {
-//     ...Outdated.parameters,
-//   },
-// };
+export const OutdatedStarting: Story = {
+  ...Outdated,
+  args: {
+    ...Outdated.args,
+    isStarting: true,
+  },
+};
 
 export const Announced: Story = {
   parameters: {

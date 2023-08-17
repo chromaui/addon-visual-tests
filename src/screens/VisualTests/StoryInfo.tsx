@@ -12,39 +12,54 @@ import { TestFieldsFragment, TestStatus } from "../../gql/graphql";
 import { summarizeTests } from "../../utils/summarizeTests";
 
 interface StoryInfoSectionProps {
-  tests: TestFieldsFragment[];
-  startedAt: Date;
+  /** A new build has been started but not yet announced. The current build is now out of date */
   isStarting: boolean;
+  /** Once the test has reached the started status, this is the tests of this story */
+  tests?: TestFieldsFragment[];
+  /** Once the test has reached the started status, this is start time of the build */
+  startedAt?: Date;
+  /** Start a new build */
   startDevBuild: () => void;
+  /** Could the build be outdated (as per git) */
   isOutdated: boolean;
+  /** Did the build fail entirely? */
+  isBuildFailed: boolean;
 }
 
 export const StoryInfo = ({
+  isStarting,
   tests,
   startedAt,
-  isStarting,
   startDevBuild,
   isOutdated,
+  isBuildFailed,
 }: StoryInfoSectionProps) => {
+  // isInProgress means we have tests but they are still unfinished
   const { status, isInProgress, changeCount, brokenCount, viewportResults, browserResults } =
-    summarizeTests(tests);
+    summarizeTests(tests ?? []);
 
-  const startedAgo = formatDistance(new Date(startedAt), new Date(), { addSuffix: true });
-  const isErrored = [TestStatus.Broken, TestStatus.Failed].includes(status);
+  const startedAgo =
+    !isStarting && formatDistance(new Date(startedAt), new Date(), { addSuffix: true });
+  // isRunning means either we have no tests or they are unfinished
+  const isRunning = isStarting || isInProgress;
+  // isFailed means either the whole build failed or the story did
+  const isFailed = isBuildFailed || status === TestStatus.Failed;
+  // isErrored means there's a problem with the story
+  const isErrored = isBuildFailed || status === TestStatus.Broken;
 
   let statusText;
-  if (isInProgress) {
-    statusText = (
-      <>
-        <b>Running tests...</b>
-        <ProgressIcon />
-      </>
-    );
-  } else if (status === TestStatus.Failed) {
+  if (isFailed) {
     statusText = (
       <>
         <b>Build failed</b>
         <AlertIcon />
+      </>
+    );
+  } else if (isRunning) {
+    statusText = (
+      <>
+        <b>Running tests...</b>
+        <ProgressIcon />
       </>
     );
   } else {
@@ -76,7 +91,7 @@ export const StoryInfo = ({
   }
 
   let subText;
-  if (status === TestStatus.Failed) {
+  if (isFailed) {
     subText = (
       <small>
         <span>An infrastructure error occured</span>
@@ -115,8 +130,8 @@ export const StoryInfo = ({
         </Col>
         {(isOutdated || isErrored) && (
           <Col push>
-            <Button small secondary onClick={startDevBuild} disabled={isStarting}>
-              {isStarting ? (
+            <Button small secondary onClick={startDevBuild} disabled={isRunning && !isFailed}>
+              {isRunning && !isFailed ? (
                 <ProgressIcon parentComponent="Button" style={{ marginRight: 6 }} />
               ) : (
                 <Icons icon="play" />
