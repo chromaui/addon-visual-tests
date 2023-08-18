@@ -19,16 +19,27 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Starting: Story = {};
+export const Starting: Story = {
+  args: { isStarting: true, startedAt: null },
+};
 
 // Announced -> Prepared are indistiguishable from Starting currently
-export const Announced: Story = {};
+export const Announced: Story = {
+  args: { isStarting: true, startedAt: null },
+};
+
+// The build hasn't start properly yet but is already out of date
+export const AnnouncedOutdated: Story = {
+  ...Announced,
+  args: { ...Announced.args, isOutdated: true },
+};
 
 // The build failed before the test had stories
 export const FailedAnnounced: Story = {
   args: { isBuildFailed: true },
 };
 
+// The build hasn't finished yet but is already out of date
 export const InProgress: Story = {
   args: {
     tests: [makeTest({ status: TestStatus.InProgress })],
@@ -56,6 +67,7 @@ export const PendingOutdated: Story = {
   },
 };
 
+// Immediately after clicking "Run tests" in the story above
 export const PendingOutdatedStarting: Story = {
   ...PendingOutdated,
   args: {

@@ -4,7 +4,7 @@ import { findByRole, fireEvent } from "@storybook/testing-library";
 import { graphql } from "msw";
 
 import type {
-  BuildQuery,
+  AddonVisualTestsBuildQuery,
   StatusTestFieldsFragment,
   StoryTestFieldsFragment,
 } from "../../gql/graphql";
@@ -140,7 +140,9 @@ const withGraphQLMutation = (...args: Parameters<typeof graphql.mutation>) => ({
 });
 
 const withBuild = (build: AnnouncedBuild | PublishedBuild | StartedBuild | CompletedBuild) =>
-  withGraphQLQuery("Build", (req, res, ctx) => res(ctx.data({ build } as BuildQuery)));
+  withGraphQLQuery("AddonVisualTestsBuild", (req, res, ctx) =>
+    res(ctx.data({ build } as AddonVisualTestsBuildQuery))
+  );
 
 const meta = {
   component: VisualTests,
@@ -167,7 +169,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Loading: Story = {
   parameters: {
-    ...withGraphQLQuery("Build", (req, res, ctx) =>
+    ...withGraphQLQuery("AddonVisualTestsBuild", (req, res, ctx) =>
       res(ctx.status(200), ctx.data({}), ctx.delay("infinite"))
     ),
     ...withFigmaDesign(
@@ -178,13 +180,20 @@ export const Loading: Story = {
 
 export const NoBuild: Story = {
   parameters: {
-    ...withGraphQLQuery("Build", (req, res, ctx) => res(ctx.data({ build: null } as BuildQuery))),
+    ...withGraphQLQuery("AddonVisualTestsBuild", (req, res, ctx) =>
+      res(ctx.data({ build: null } as AddonVisualTestsBuildQuery))
+    ),
   },
 };
 export const NoBuildStarting: Story = {
   ...NoBuild,
   args: {
     isStarting: true,
+    ...withGraphQLQuery("AddonVisualTestsBuild", (req, res, ctx) =>
+      res(ctx.data({ build: null } as AddonVisualTestsBuildQuery))
+    ),
+    // No design for this state
+    // ...withFigmaDesign(""),
   },
 };
 

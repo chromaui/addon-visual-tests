@@ -45,26 +45,37 @@ export const StoryInfo = ({
   // isFailed means either the whole build failed or the story did
   const isFailed = isBuildFailed || status === TestStatus.Failed;
   // isErrored means there's a problem with the story
-  const isErrored = isBuildFailed || status === TestStatus.Broken;
+  const isErrored = isFailed || status === TestStatus.Broken;
 
-  let statusText;
+  const showButton = (isOutdated || isErrored) && !isRunning;
+  const buttonInProgress = isRunning && !isFailed;
+
+  let details;
   if (isFailed) {
-    statusText = (
-      <>
+    details = (
+      <Text>
         <b>Build failed</b>
         <AlertIcon />
-      </>
+        <br />
+        <small>
+          <span>An infrastructure error occured</span>
+        </small>
+      </Text>
     );
   } else if (isRunning) {
-    statusText = (
-      <>
+    details = (
+      <Text>
         <b>Running tests...</b>
         <ProgressIcon />
-      </>
+        <br />
+        <small>
+          <span>Test in progress...</span>
+        </small>
+      </Text>
     );
-  } else {
-    statusText = isOutdated ? (
-      <>
+  } else if (isOutdated) {
+    details = (
+      <Text>
         <b>Snapshots outdated</b>
         <WithTooltip
           tooltip={<TooltipNote note="Some files have changed since the last build" />}
@@ -73,9 +84,13 @@ export const StoryInfo = ({
         >
           <AlertIcon />
         </WithTooltip>
-      </>
-    ) : (
-      <>
+        <br />
+        <span>Run tests to see what changed</span>
+      </Text>
+    );
+  } else {
+    details = (
+      <Text>
         <b>
           {changeCount ? pluralize("change", changeCount, true) : "No changes"}
           {brokenCount ? `, ${pluralize("error", brokenCount, true)}` : null}
@@ -86,52 +101,30 @@ export const StoryInfo = ({
             brokenCount ? "failed" : status === TestStatus.Pending ? "changed" : "passed"
           }
         />
-      </>
+        <br />
+        <small>
+          {viewportResults.length > 0 && (
+            <span>
+              {pluralize("viewport", viewportResults.length, true)}
+              {", "}
+              {pluralize("browser", browserResults.length, true)}
+            </span>
+          )}
+          {viewportResults.length > 0 && " • "}
+          {isInProgress && <span>Test in progress...</span>}
+          {!isInProgress && <span title={new Date(startedAt).toUTCString()}>{startedAgo}</span>}
+        </small>
+      </Text>
     );
   }
-
-  let subText;
-  if (isFailed) {
-    subText = (
-      <small>
-        <span>An infrastructure error occured</span>
-      </small>
-    );
-  } else {
-    subText = isOutdated ? (
-      <small>
-        <span>Run tests to see what changed</span>
-      </small>
-    ) : (
-      <small>
-        {viewportResults.length > 0 && (
-          <span>
-            {pluralize("viewport", viewportResults.length, true)}
-            {", "}
-            {pluralize("browser", browserResults.length, true)}
-          </span>
-        )}
-        {viewportResults.length > 0 && " • "}
-        {isInProgress && <span>Test in progress...</span>}
-        {!isInProgress && <span title={new Date(startedAt).toUTCString()}>{startedAgo}</span>}
-      </small>
-    );
-  }
-
   return (
     <>
       <Row>
-        <Col>
-          <Text>
-            {statusText}
-            <br />
-            {subText}
-          </Text>
-        </Col>
-        {(isOutdated || isErrored) && (
+        <Col>{details}</Col>
+        {showButton && (
           <Col push>
-            <Button small secondary onClick={startDevBuild} disabled={isRunning && !isFailed}>
-              {isRunning && !isFailed ? (
+            <Button small secondary onClick={startDevBuild} disabled={buttonInProgress}>
+              {buttonInProgress ? (
                 <ProgressIcon parentComponent="Button" style={{ marginRight: 6 }} />
               ) : (
                 <Icons icon="play" />
