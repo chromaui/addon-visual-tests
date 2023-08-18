@@ -2,7 +2,7 @@ import {
   Browser,
   BrowserInfo,
   ComparisonResult,
-  TestFieldsFragment,
+  StoryTestFieldsFragment,
   TestResult,
   TestStatus,
   ViewportInfo,
@@ -22,13 +22,13 @@ export const makeViewportInfo = (width: number): ViewportInfo => ({
   isDefault: width === 1200,
 });
 
-export const headCapture: TestFieldsFragment["comparisons"][number]["headCapture"] = {
+export const headCapture: StoryTestFieldsFragment["comparisons"][number]["headCapture"] = {
   captureImage: {
     imageUrl: "/B.png",
   },
 };
 
-export const captureDiff: TestFieldsFragment["comparisons"][number]["captureDiff"] = {
+export const captureDiff: StoryTestFieldsFragment["comparisons"][number]["captureDiff"] = {
   diffImage: {
     imageUrl: "/B-comparison.png",
   },
@@ -39,7 +39,7 @@ export function makeComparison(options: {
   browser?: Browser;
   viewport?: number;
   result?: ComparisonResult;
-}): TestFieldsFragment["comparisons"][number] {
+}): StoryTestFieldsFragment["comparisons"][number] {
   const result = options.result || ComparisonResult.Equal;
   return {
     id: options.id || "111",
@@ -79,12 +79,12 @@ export function makeTest(options: {
   id?: string;
   status?: TestStatus;
   result?: TestResult;
-  comparisons?: TestFieldsFragment["comparisons"];
+  comparisons?: StoryTestFieldsFragment["comparisons"];
   comparisonResults?: ComparisonResult[];
   browsers?: Browser[];
   viewport?: number;
   storyId?: string;
-}): TestFieldsFragment {
+}): StoryTestFieldsFragment {
   const id = options.id || "11";
   const status = options.status || TestStatus.Passed;
   const result = options.result || testStatusToTestResult[status];
@@ -131,7 +131,7 @@ export function makeTests(options: {
     viewport?: number;
     status?: TestStatus;
     result?: TestResult;
-    comparisons?: TestFieldsFragment["comparisons"];
+    comparisons?: StoryTestFieldsFragment["comparisons"];
     comparisonResults?: ComparisonResult[];
   }[];
 }) {

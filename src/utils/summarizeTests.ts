@@ -1,4 +1,4 @@
-import { ComparisonResult, TestFieldsFragment, TestResult, TestStatus } from "../gql/graphql";
+import { ComparisonResult, StoryTestFieldsFragment, TestResult, TestStatus } from "../gql/graphql";
 import { aggregateResult } from "./aggregateResult";
 
 function pickStatus(statusCounts: { [K in TestStatus]?: number }) {
@@ -15,7 +15,7 @@ function pickStatus(statusCounts: { [K in TestStatus]?: number }) {
  * Given a list of tests (typically a set of tests across modes for the one story),
  * summarize the vital statistics.
  */
-export function summarizeTests(tests: TestFieldsFragment[]) {
+export function summarizeTests(tests: StoryTestFieldsFragment[]) {
   const {
     statusCounts,
     isInProgress,
@@ -31,7 +31,7 @@ export function summarizeTests(tests: TestFieldsFragment[]) {
     brokenCount: number;
     resultsByBrowser: Record<string, ComparisonResult>;
     resultsByViewport: Record<string, ComparisonResult>;
-    viewportInfoById: Record<string, TestFieldsFragment["parameters"]["viewport"]>;
+    viewportInfoById: Record<string, StoryTestFieldsFragment["parameters"]["viewport"]>;
   }>(
     (acc, test) => {
       acc.statusCounts[test.status] = (acc.statusCounts[test.status] || 0) + 1;

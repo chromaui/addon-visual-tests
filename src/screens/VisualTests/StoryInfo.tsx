@@ -8,14 +8,14 @@ import { AlertIcon } from "../../components/icons/AlertIcon";
 import { ProgressIcon } from "../../components/icons/ProgressIcon";
 import { StatusIcon } from "../../components/icons/StatusIcon";
 import { Col, Row, Text } from "../../components/layout";
-import { TestFieldsFragment, TestStatus } from "../../gql/graphql";
+import { StoryTestFieldsFragment, TestStatus } from "../../gql/graphql";
 import { summarizeTests } from "../../utils/summarizeTests";
 
 interface StoryInfoSectionProps {
   /** A new build has been started but not yet announced. The current build is now out of date */
   isStarting: boolean;
   /** Once the test has reached the started status, this is the tests of this story */
-  tests?: TestFieldsFragment[];
+  tests?: StoryTestFieldsFragment[];
   /** Once the test has reached the started status, this is start time of the build */
   startedAt?: Date;
   /** Start a new build */

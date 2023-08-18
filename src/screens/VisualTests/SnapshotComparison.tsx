@@ -13,7 +13,7 @@ import { ViewportSelector } from "../../components/ViewportSelector";
 import {
   ComparisonResult,
   ReviewTestBatch,
-  TestFieldsFragment,
+  StoryTestFieldsFragment,
   TestStatus,
 } from "../../gql/graphql";
 import { summarizeTests } from "../../utils/summarizeTests";
@@ -26,9 +26,9 @@ const Divider = styled.div(({ theme }) => ({
 }));
 
 interface SnapshotSectionProps {
-  tests: TestFieldsFragment[];
+  tests: StoryTestFieldsFragment[];
   isAccepting: boolean;
-  onAccept: (testId: TestFieldsFragment["id"], batch?: ReviewTestBatch) => void;
+  onAccept: (testId: StoryTestFieldsFragment["id"], batch?: ReviewTestBatch) => void;
 }
 
 export const SnapshotComparison = ({ tests, isAccepting, onAccept }: SnapshotSectionProps) => {

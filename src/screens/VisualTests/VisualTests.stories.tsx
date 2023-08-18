@@ -3,7 +3,11 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { findByRole, fireEvent } from "@storybook/testing-library";
 import { graphql } from "msw";
 
-import type { BuildQuery, TestFieldsFragment } from "../../gql/graphql";
+import type {
+  BuildQuery,
+  StatusTestFieldsFragment,
+  StoryTestFieldsFragment,
+} from "../../gql/graphql";
 import { Browser, BuildStatus, ComparisonResult, TestResult, TestStatus } from "../../gql/graphql";
 import { AnnouncedBuild, CompletedBuild, PublishedBuild, StartedBuild } from "../../types";
 import { storyWrapper } from "../../utils/graphQLClient";
@@ -27,7 +31,7 @@ const tests = [
   }),
 ];
 
-const paginated = (nodes: TestFieldsFragment[]) => ({
+const paginated = (nodes: StatusTestFieldsFragment[] | StoryTestFieldsFragment[]) => ({
   edges: nodes.map((node) => ({ cursor: node.id, node })),
   nodes,
   pageInfo: {
@@ -62,14 +66,14 @@ const inProgressBuild: StartedBuild = {
   startedAt: new Date(Date.now() - 1000 * 60 * 2), // 2 minutes ago
   status: BuildStatus.InProgress,
   changeCount: null,
-  tests: paginated(SnapshotComparisonStories.InProgress.args.tests),
+  testsForStory: paginated(SnapshotComparisonStories.InProgress.args.tests),
 };
 
 const passedBuild: CompletedBuild = {
   ...(inProgressBuild as any),
   status: BuildStatus.Passed,
   changeCount: 0,
-  tests: paginated(
+  testsForStory: paginated(
     tests.map((test) => ({
       ...test,
       status: TestStatus.Passed,
@@ -86,13 +90,13 @@ const pendingBuild: CompletedBuild = {
   ...(inProgressBuild as any),
   status: BuildStatus.Pending,
   changeCount: 3,
-  tests: paginated(tests),
+  testsForStory: paginated(tests),
 };
 
 const acceptedBuild: CompletedBuild = {
   ...pendingBuild,
   status: BuildStatus.Accepted,
-  tests: paginated(
+  testsForStory: paginated(
     tests.map((test) => ({
       ...test,
       status: TestStatus.Accepted,
@@ -105,7 +109,7 @@ const brokenBuild: CompletedBuild = {
   status: BuildStatus.Broken,
   changeCount: 0,
   brokenCount: 3,
-  tests: paginated(
+  testsForStory: paginated(
     tests.map((test) => ({
       ...test,
       status: TestStatus.Broken,
@@ -217,12 +221,18 @@ export const OutdatedStarting: Story = {
 };
 
 export const Announced: Story = {
+  args: {
+    isStarting: true,
+  },
   parameters: {
     ...withBuild(announcedBuild),
   },
 };
 
 export const Published: Story = {
+  args: {
+    isStarting: true,
+  },
   parameters: {
     ...withBuild(publishedBuild),
   },
