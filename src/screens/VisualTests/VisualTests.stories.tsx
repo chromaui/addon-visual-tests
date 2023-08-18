@@ -8,7 +8,7 @@ import { Browser, BuildStatus, ComparisonResult, TestResult, TestStatus } from "
 import { AnnouncedBuild, CompletedBuild, PublishedBuild, StartedBuild } from "../../types";
 import { storyWrapper } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
-import { headCapture, makeBrowserInfo, makeTest, makeViewportInfo } from "../../utils/storyData";
+import { makeBrowserInfo, makeTest } from "../../utils/storyData";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
 import * as SnapshotComparisonStories from "./SnapshotComparison.stories";
 import { VisualTests } from "./VisualTests";
@@ -45,6 +45,7 @@ const announcedBuild: AnnouncedBuild = {
   number: 1,
   branch: "feature-branch",
   commit: "1234567",
+  uncommittedHash: "",
   browsers: [makeBrowserInfo(Browser.Chrome), makeBrowserInfo(Browser.Safari)],
   status: BuildStatus.Announced,
 };
@@ -144,8 +145,19 @@ const meta = {
   decorators: [storyWrapper],
   parameters: withBuild(passedBuild),
   args: {
+    gitInfo: {
+      userEmail: "tom@chromatic.com",
+      userEmailHash: "xzy123",
+      branch: "feature-branch",
+      commit: "d67f31d1eb82c8b4e5ff770f1e631913d1c1b964",
+      slug: "chromaui/addon-visual-tests",
+      uncommittedHash: "",
+    },
     storyId: "button--primary",
     projectId: "Project:id123",
+    startDevBuild: action("startDevBuild"),
+    isStarting: false,
+    setAccessToken: action("setAccessToken"),
     updateBuildStatus: action("updateBuildStatus"),
   },
 } satisfies Meta<typeof VisualTests>;
@@ -164,15 +176,6 @@ export const Loading: Story = {
   },
 };
 
-export const NoChanges: Story = {
-  parameters: {
-    ...withBuild(passedBuild),
-    ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304933&t=0rxMQnkxsVpVj1qy-4"
-    ),
-  },
-};
-
 export const NoBuild: Story = {
   parameters: {
     ...withGraphQLQuery("AddonVisualTestsBuild", (req, res, ctx) =>
@@ -183,9 +186,21 @@ export const NoBuild: Story = {
   },
 };
 
+export const NoChanges: Story = {
+  parameters: {
+    ...withBuild(passedBuild),
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304933&t=0rxMQnkxsVpVj1qy-4"
+    ),
+  },
+};
+
 export const Outdated: Story = {
   args: {
-    isOutdated: true,
+    gitInfo: {
+      ...meta.args.gitInfo,
+      uncommittedHash: "1234abc",
+    },
   },
   parameters: {
     ...withBuild(passedBuild),
