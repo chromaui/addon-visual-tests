@@ -15,8 +15,8 @@ import { Bar, Col, Row, Section, Sections, Text } from "../../components/layout"
 import { Text as CenterText } from "../../components/Text";
 import { getFragment, graphql } from "../../gql";
 import {
-  BuildQuery,
-  BuildQueryVariables,
+  AddonVisualTestsBuildQuery,
+  AddonVisualTestsBuildQueryVariables,
   ReviewTestBatch,
   ReviewTestInputStatus,
 } from "../../gql/graphql";
@@ -27,7 +27,7 @@ import { SnapshotComparison } from "./SnapshotComparison";
 import { Warnings } from "./Warnings";
 
 const QueryBuild = graphql(/* GraphQL */ `
-  query Build(
+  query AddonVisualTestsBuild(
     $hasBuildId: Boolean!
     $buildId: ID!
     $projectId: ID!
@@ -179,7 +179,10 @@ export const VisualTests = ({
   gitInfo,
   storyId,
 }: VisualTestsProps) => {
-  const [{ data, error }, rerun] = useQuery<BuildQuery, BuildQueryVariables>({
+  const [{ data, error }, rerun] = useQuery<
+    AddonVisualTestsBuildQuery,
+    AddonVisualTestsBuildQueryVariables
+  >({
     query: QueryBuild,
     variables: {
       hasBuildId: !!lastDevBuildId,
