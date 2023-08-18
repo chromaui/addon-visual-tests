@@ -67,6 +67,10 @@ export const StoryInfo = ({
       <Text>
         <b>Running tests...</b>
         <ProgressIcon />
+        <br />
+        <small>
+          <span>Test in progress...</span>
+        </small>
       </Text>
     );
   } else if (isOutdated) {
