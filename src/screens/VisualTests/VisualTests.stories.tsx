@@ -226,12 +226,18 @@ export const OutdatedStarting: Story = {
 };
 
 export const Announced: Story = {
+  args: {
+    isStarting: true,
+  },
   parameters: {
     ...withBuild(announcedBuild),
   },
 };
 
 export const Published: Story = {
+  args: {
+    isStarting: true,
+  },
   parameters: {
     ...withBuild(publishedBuild),
   },
