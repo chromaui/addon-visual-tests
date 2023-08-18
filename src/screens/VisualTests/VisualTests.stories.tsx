@@ -289,9 +289,9 @@ export const Skipped: Story = {
   },
   parameters: {
     ...withBuild(pendingBuild),
-    // ...withFigmaDesign(
-    //   "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-305053&t=0rxMQnkxsVpVj1qy-4"
-    // ),
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2255-42087&t=a8NRPgQk3kXMyxqZ-0"
+    ),
   },
 };
 

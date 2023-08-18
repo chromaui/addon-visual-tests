@@ -19,6 +19,7 @@ import {
   BuildQueryVariables,
   ReviewTestBatch,
   ReviewTestInputStatus,
+  TestResult,
 } from "../../gql/graphql";
 import { StatusUpdate, testsToStatusUpdate } from "../../utils/testsToStatusUpdate";
 import { BuildInfo } from "./BuildInfo";
@@ -291,13 +292,43 @@ export const VisualTests = ({
   const allTests = getFragment(FragmentTestFields, "tests" in build ? build.tests.nodes : []);
   const tests = allTests.filter((test) => test.story?.storyId === storyId);
 
+  // It shouldn't be possible for one test to be skipped but not all of them
+  const isSkipped = !!tests.find((t) => t.result === TestResult.Skipped);
+  if (isSkipped) {
+    return (
+      <Sections>
+        <Section grow>
+          <Container>
+            <Heading>This story was skipped</Heading>
+            <CenterText>
+              If you would like to resume testing it, comment out or remove
+              `parameters.chromatic.disableSnapshot = true` from the CSF file.
+            </CenterText>
+            <Button
+              small
+              tertiary
+              containsIcon
+              // @ts-expect-error Button component is not quite typed properly
+              target="_new"
+              isLink
+              href="https://www.chromatic.com/docs/ignoring-elements#ignore-stories"
+            >
+              <Icons icon="document" />
+              View Docs
+            </Button>
+          </Container>
+        </Section>
+      </Sections>
+    );
+  }
+
   const viewportCount = new Set(allTests.map((t) => t.parameters.viewport.id)).size;
   return (
     <Sections>
       <Section grow hidden={settingsVisible || warningsVisible}>
         <BuildInfo {...{ build, viewportCount, isOutdated, isStarting, startDevBuild }} />
         {/* The key here is to ensure the useTests helper gets to reset each time we change story */}
-        {tests.length && tests[0].comparisons.length > 0 && (
+        {tests.length > 0 && (
           <SnapshotComparison key={storyId} {...{ tests, isAccepting, isOutdated, onAccept }} />
         )}
       </Section>
