@@ -1,3 +1,15 @@
+# v0.0.24 (Fri Aug 18 2023)
+
+#### 🐛 Bug Fix
+
+- Send a sessionId on graphql requests [#22](https://github.com/chromaui/addon-visual-tests/pull/22) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.23 (Thu Aug 17 2023)
 
 #### 🐛 Bug Fix
