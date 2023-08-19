@@ -25,12 +25,14 @@ export const makeViewportInfo = (width: number): ViewportInfo => ({
 export const headCapture: TestFieldsFragment["comparisons"][number]["headCapture"] = {
   captureImage: {
     imageUrl: "/B.png",
+    imageWidth: 880,
   },
 };
 
 export const captureDiff: TestFieldsFragment["comparisons"][number]["captureDiff"] = {
   diffImage: {
     imageUrl: "/B-comparison.png",
+    imageWidth: 880,
   },
 };
 

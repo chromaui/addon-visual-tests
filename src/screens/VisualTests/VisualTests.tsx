@@ -102,11 +102,13 @@ const FragmentTestFields = graphql(/* GraphQL */ `
       captureDiff {
         diffImage {
           imageUrl
+          imageWidth
         }
       }
       headCapture {
         captureImage {
           imageUrl
+          imageWidth
         }
       }
       viewport {
