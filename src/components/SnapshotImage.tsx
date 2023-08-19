@@ -15,8 +15,6 @@ export const Container = styled.div<{ href?: string; target?: string }>(
     img: {
       maxWidth: "100%",
       transition: "filter 0.1s ease-in-out",
-      objectFit: "contain",
-      objectPosition: "0 0",
     },
     "img + img": {
       position: "absolute",
