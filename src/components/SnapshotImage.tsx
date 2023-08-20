@@ -7,10 +7,10 @@ import { CaptureImage, CaptureOverlayImage, ComparisonResult } from "../gql/grap
 export const Container = styled.div<{ href?: string; target?: string }>(
   ({ theme }) => ({
     position: "relative",
-    display: "inline-flex",
+    display: "flex",
     background: "transparent",
-    margin: 2,
     overflow: "hidden",
+    padding: 2,
 
     img: {
       maxWidth: "100%",
@@ -22,9 +22,16 @@ export const Container = styled.div<{ href?: string; target?: string }>(
       pointerEvents: "none",
     },
     div: {
-      color: theme.color.mediumdark,
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      width: "100%",
       margin: "30px 15px",
-      textAlign: "center",
+      color: theme.color.mediumdark,
+      p: {
+        maxWidth: 380,
+        textAlign: "center",
+      },
       svg: {
         width: 28,
         height: 28,
