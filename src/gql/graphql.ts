@@ -382,6 +382,7 @@ export type CompletedBuildTestsArgs = {
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<CompletedBuildTestsOrder>;
+  statuses?: InputMaybe<Array<TestStatus>>;
   storyId?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -556,6 +557,13 @@ export type Image = {
   imageWidth: Scalars['Int']['output'];
 };
 
+export type LocalBuildsSpecifierInput = {
+  /** If set, only return builds with isLocalBuild set to this value */
+  isLocalBuild?: InputMaybe<Scalars['Boolean']['input']>;
+  /** If set, return all global builds, and only local builds from this email hash */
+  localBuildEmailHash?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   bulkCreateFigmaMetadata: Array<FigmaMetadata>;
@@ -683,6 +691,7 @@ export type PreparedBuildTestsArgs = {
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<PreparedBuildTestsOrder>;
+  statuses?: InputMaybe<Array<TestStatus>>;
   storyId?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -753,6 +762,7 @@ export type ProjectBranchNamesArgs = {
 export type ProjectLastBuildArgs = {
   branches?: InputMaybe<Array<Scalars['String']['input']>>;
   defaultBranch?: InputMaybe<Scalars['Boolean']['input']>;
+  localBuilds?: InputMaybe<LocalBuildsSpecifierInput>;
   results?: InputMaybe<Array<BuildResult>>;
   slug?: InputMaybe<Scalars['String']['input']>;
   statuses?: InputMaybe<Array<BuildStatus>>;
@@ -956,6 +966,7 @@ export type StartedBuildTestsArgs = {
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<StartedBuildTestsOrder>;
+  statuses?: InputMaybe<Array<TestStatus>>;
   storyId?: InputMaybe<Scalars['String']['input']>;
 };
 
