@@ -17,17 +17,17 @@ export const useProjectId = (): [
   configDir: string,
   updateProject: (projectId: string, projectToken?: string) => void,
   projectUpdatingFailed: boolean,
-  projectIdChanged: boolean,
-  clearProjectIdChanged: () => void
+  projectIdUpdated: boolean,
+  clearProjectIdUpdated: () => void
 ] => {
   const [projectId, setProjectId] = React.useState<string | null>(CHROMATIC_PROJECT_ID);
   const [projectToken, setProjectToken] = React.useState<string | null>();
-  const [projectIdChanged, setProjectIdChanged] = React.useState(false);
+  const [projectIdUpdated, setProjectIdUpdated] = React.useState(false);
   const [projectUpdatingFailed, setProjectUpdatingFailed] = React.useState(false);
   const [configDir, setConfigDir] = React.useState<string | null>();
 
   const emit = useChannel({
-    [PROJECT_UPDATED]: () => setProjectIdChanged(true),
+    [PROJECT_UPDATED]: () => setProjectIdUpdated(true),
     [PROJECT_UPDATING_FAILED]: (payload: ProjectUpdatingFailedPayload) => {
       setProjectUpdatingFailed(true);
       setConfigDir(payload.configDir);
@@ -48,7 +48,7 @@ export const useProjectId = (): [
     configDir,
     updateProject,
     projectUpdatingFailed,
-    projectIdChanged,
-    () => setProjectIdChanged(false),
+    projectIdUpdated,
+    () => setProjectIdUpdated(false),
   ];
 };

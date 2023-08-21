@@ -75,8 +75,8 @@ export const Panel = ({ active }: PanelProps) => {
     configDir,
     updateProject,
     updatingProjectFailed,
-    projectIdChanged,
-    clearProjectIdChanged,
+    projectIdUpdated,
+    clearProjectIdUpdated,
   ] = useProjectId();
 
   // Render a hidden element when the addon panel is not active.
@@ -103,12 +103,12 @@ export const Panel = ({ active }: PanelProps) => {
     );
   }
 
-  if (projectIdChanged) {
+  if (projectIdUpdated) {
     return (
       <Provider key={PANEL_ID} value={client}>
         <LinkedProject
           projectId={projectId}
-          goToNext={clearProjectIdChanged}
+          goToNext={clearProjectIdUpdated}
           setAccessToken={setAccessToken}
         />
       </Provider>

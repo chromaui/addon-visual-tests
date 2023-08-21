@@ -2,6 +2,7 @@
 import type { Channel } from "@storybook/channels";
 // eslint-disable-next-line import/no-unresolved
 import { getGitInfo, GitInfo, run } from "chromatic/node";
+import { relative } from "path";
 
 import {
   BUILD_ANNOUNCED,
@@ -83,11 +84,14 @@ async function serverChannel(
       projectToken = updatedProjectToken;
 
       try {
-        updateMain({ projectId, projectToken });
+        await updateMain({ projectId, projectToken });
         channel.emit(PROJECT_UPDATED);
       } catch (err) {
-        console.log(`Failed to update your config:\n\n: ${err}`);
-        channel.emit(PROJECT_UPDATING_FAILED, { configDir } satisfies ProjectUpdatingFailedPayload);
+        console.warn(`Failed to update your main configuration:\n\n ${err}`);
+        const relativeConfigDir = relative(process.cwd(), configDir);
+        channel.emit(PROJECT_UPDATING_FAILED, {
+          configDir: relativeConfigDir,
+        } satisfies ProjectUpdatingFailedPayload);
       }
     }
   );
