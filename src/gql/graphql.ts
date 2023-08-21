@@ -382,6 +382,7 @@ export type CompletedBuildTestsArgs = {
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<CompletedBuildTestsOrder>;
+  statuses?: InputMaybe<Array<TestStatus>>;
   storyId?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -683,6 +684,7 @@ export type PreparedBuildTestsArgs = {
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<PreparedBuildTestsOrder>;
+  statuses?: InputMaybe<Array<TestStatus>>;
   storyId?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -956,6 +958,7 @@ export type StartedBuildTestsArgs = {
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<StartedBuildTestsOrder>;
+  statuses?: InputMaybe<Array<TestStatus>>;
   storyId?: InputMaybe<Scalars['String']['input']>;
 };
 
