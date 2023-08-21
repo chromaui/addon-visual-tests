@@ -179,6 +179,15 @@ export const NoBuild: Story = {
     ...withGraphQLQuery("AddonVisualTestsBuild", (req, res, ctx) =>
       res(ctx.data({ build: null } as AddonVisualTestsBuildQuery))
     ),
+  },
+};
+export const NoBuildStarting: Story = {
+  ...NoBuild,
+  args: {
+    isStarting: true,
+    ...withGraphQLQuery("AddonVisualTestsBuild", (req, res, ctx) =>
+      res(ctx.data({ build: null } as AddonVisualTestsBuildQuery))
+    ),
     // No design for this state
     // ...withFigmaDesign(""),
   },
@@ -208,25 +217,27 @@ export const Outdated: Story = {
   },
 };
 
-// This story doesn't really make sense because if the build is running it should be `IN_PROGRESS` or similar
-// export const OutdatedRunning: Story = {
-//   args: {
-//     ...Outdated.args,
-//     isRunning: true,
-//   },
-//   argTypes: { updateBuildStatus: { action: "updateBuildStatus" } },
-//   parameters: {
-//     ...Outdated.parameters,
-//   },
-// };
+export const OutdatedStarting: Story = {
+  ...Outdated,
+  args: {
+    ...Outdated.args,
+    isStarting: true,
+  },
+};
 
 export const Announced: Story = {
+  args: {
+    isStarting: true,
+  },
   parameters: {
     ...withBuild(announcedBuild),
   },
 };
 
 export const Published: Story = {
+  args: {
+    isStarting: true,
+  },
   parameters: {
     ...withBuild(publishedBuild),
   },

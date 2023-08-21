@@ -17,13 +17,15 @@ import { getFragment, graphql } from "../../gql";
 import {
   AddonVisualTestsBuildQuery,
   AddonVisualTestsBuildQueryVariables,
+  BuildStatus,
   ReviewTestBatch,
   ReviewTestInputStatus,
+  TestFieldsFragment,
 } from "../../gql/graphql";
 import { StatusUpdate, testsToStatusUpdate } from "../../utils/testsToStatusUpdate";
-import { BuildInfo } from "./BuildInfo";
 import { RenderSettings } from "./RenderSettings";
 import { SnapshotComparison } from "./SnapshotComparison";
+import { StoryInfo } from "./StoryInfo";
 import { Warnings } from "./Warnings";
 
 const QueryBuild = graphql(/* GraphQL */ `
@@ -291,17 +293,24 @@ export const VisualTests = ({
     );
   }
 
-  const allTests = getFragment(FragmentTestFields, "tests" in build ? build.tests.nodes : []);
-  const tests = allTests.filter((test) => test.story?.storyId === storyId);
+  let tests: TestFieldsFragment[] | undefined;
+  if ("tests" in build) {
+    tests = getFragment(FragmentTestFields, build.tests.nodes).filter(
+      (test) => test.story?.storyId === storyId
+    );
+  }
 
-  const viewportCount = new Set(allTests.map((t) => t.parameters.viewport.id)).size;
+  const startedAt = "startedAt" in build && build.startedAt;
+  const isBuildFailed = build.status === BuildStatus.Failed;
+
   return (
     <Sections>
       <Section grow hidden={settingsVisible || warningsVisible}>
-        <BuildInfo {...{ build, viewportCount, isOutdated, isStarting, startDevBuild }} />
-        {/* The key here is to ensure the useTests helper gets to reset each time we change story */}
-        {tests.length > 0 && (
-          <SnapshotComparison key={storyId} {...{ tests, isAccepting, isOutdated, onAccept }} />
+        <StoryInfo
+          {...{ tests, isOutdated, startedAt, isStarting, startDevBuild, isBuildFailed }}
+        />
+        {!isStarting && tests && tests.length > 0 && (
+          <SnapshotComparison {...{ tests, isAccepting, isOutdated, onAccept }} />
         )}
       </Section>
 
