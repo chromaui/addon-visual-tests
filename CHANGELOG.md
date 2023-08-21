@@ -1,3 +1,15 @@
+# v0.0.25 (Mon Aug 21 2023)
+
+#### 🐛 Bug Fix
+
+- Refactor `BuildInfo` -> `StoryInfo` [#36](https://github.com/chromaui/addon-visual-tests/pull/36) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.24 (Fri Aug 18 2023)
 
 #### 🐛 Bug Fix
