@@ -10,11 +10,14 @@ import {
   CHROMATIC_ADDON_NAME,
   CHROMATIC_BASE_URL,
   GIT_INFO,
+  PROJECT_UPDATED,
+  PROJECT_UPDATING_FAILED,
   START_BUILD,
   UPDATE_PROJECT,
   UpdateProjectPayload,
 } from "./constants";
 import { findConfig } from "./utils/storybook.config.utils";
+import { updateMain } from "./utils/updateMain";
 
 /**
  * to load the built addon in this test Storybook
@@ -81,25 +84,13 @@ async function serverChannel(
     async ({ projectId, projectToken: updatedProjectToken }: UpdateProjectPayload) => {
       projectToken = updatedProjectToken;
 
-      const mainPath = await findConfig("main");
-      const MainConfig = await readConfig(mainPath);
-
-      const addonsConfig = MainConfig.getFieldValue(["addons"]);
-      const updatedAddonsConfig = addonsConfig.map(
-        (addonConfig: string | { name: string; options?: Record<string, string> }) => {
-          const fullConfig = typeof addonConfig === "string" ? { name: addonConfig } : addonConfig;
-          if (fullConfig.name === CHROMATIC_ADDON_NAME) {
-            return {
-              ...fullConfig,
-              options: { projectId, projectToken, ...fullConfig.options },
-            };
-          }
-          return addonConfig;
-        }
-      );
-
-      MainConfig.setFieldValue(["addons"], updatedAddonsConfig);
-      await writeConfig(MainConfig);
+      try {
+        updateMain({ projectId, projectToken });
+        channel.emit(PROJECT_UPDATED);
+      } catch (err) {
+        console.log(`Failed to update your config:\n\n: ${err}`);
+        channel.emit(PROJECT_UPDATING_FAILED);
+      }
     }
   );
 
