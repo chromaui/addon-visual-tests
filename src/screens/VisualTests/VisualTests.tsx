@@ -1,5 +1,4 @@
 import { Icons, Loader } from "@storybook/components";
-import { Icon } from "@storybook/design-system";
 // eslint-disable-next-line import/no-unresolved
 import { GitInfo } from "chromatic/node";
 import React, { useCallback, useEffect, useState } from "react";
@@ -325,7 +324,7 @@ export const VisualTests = ({
           <Col>
             <Text style={{ marginLeft: 5 }}>Latest snapshot on {build.branch}</Text>
           </Col>
-          <Col push>
+          {/* <Col push>
             <IconButton
               active={settingsVisible}
               aria-label={`${settingsVisible ? "Hide" : "Show"} render settings`}
@@ -334,7 +333,7 @@ export const VisualTests = ({
                 setWarningsVisible(false);
               }}
             >
-              <Icon icon="controls" />
+              <Icons icon="controls" />
             </IconButton>
           </Col>
           <Col>
@@ -347,10 +346,10 @@ export const VisualTests = ({
               }}
               status="warning"
             >
-              <Icon icon="alert" />2
+              <Icons icon="alert" />2
             </IconButton>
-          </Col>
-          <Col>
+          </Col> */}
+          <Col push>
             <FooterMenu setAccessToken={setAccessToken} />
           </Col>
         </Bar>
