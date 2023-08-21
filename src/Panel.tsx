@@ -15,6 +15,7 @@ import {
 } from "./constants";
 import { Authentication } from "./screens/Authentication/Authentication";
 import { LinkedProject } from "./screens/LinkProject/LinkedProject";
+import { LinkingProjectFailed } from "./screens/LinkProject/LinkingProjectFailed";
 import { LinkProject } from "./screens/LinkProject/LinkProject";
 import { VisualTests } from "./screens/VisualTests/VisualTests";
 import { client, Provider, useAccessToken } from "./utils/graphQLClient";
@@ -68,7 +69,15 @@ export const Panel = ({ active }: PanelProps) => {
     },
     [api]
   );
-  const [projectId, updateProject, projectIdChanged, clearProjectIdChanged] = useProjectId();
+  const [
+    projectId,
+    projectToken,
+    configDir,
+    updateProject,
+    updatingProjectFailed,
+    projectIdChanged,
+    clearProjectIdChanged,
+  ] = useProjectId();
 
   // Render a hidden element when the addon panel is not active.
   // Storybook's AddonPanel component does the same but it's not styleable so we don't use it.
@@ -83,6 +92,16 @@ export const Panel = ({ active }: PanelProps) => {
         <LinkProject onUpdateProject={updateProject} setAccessToken={setAccessToken} />
       </Provider>
     );
+
+  if (updatingProjectFailed) {
+    return (
+      <LinkingProjectFailed
+        projectId={projectId}
+        projectToken={projectToken}
+        configDir={configDir}
+      />
+    );
+  }
 
   if (projectIdChanged) {
     return (

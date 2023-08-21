@@ -1,22 +1,20 @@
 /* eslint-disable no-console */
 import type { Channel } from "@storybook/channels";
-import { readConfig, writeConfig } from "@storybook/csf-tools";
 // eslint-disable-next-line import/no-unresolved
 import { getGitInfo, GitInfo, run } from "chromatic/node";
 
 import {
   BUILD_ANNOUNCED,
   BUILD_STARTED,
-  CHROMATIC_ADDON_NAME,
   CHROMATIC_BASE_URL,
   GIT_INFO,
   PROJECT_UPDATED,
   PROJECT_UPDATING_FAILED,
+  ProjectUpdatingFailedPayload,
   START_BUILD,
   UPDATE_PROJECT,
   UpdateProjectPayload,
 } from "./constants";
-import { findConfig } from "./utils/storybook.config.utils";
 import { updateMain } from "./utils/updateMain";
 
 /**
@@ -49,7 +47,7 @@ const observeGitInfo = async (
 
 async function serverChannel(
   channel: Channel,
-  { projectToken: initialProjectToken }: { projectToken: string }
+  { projectToken: initialProjectToken, configDir }: { projectToken: string; configDir: string }
 ) {
   let projectToken = initialProjectToken;
   channel.on(START_BUILD, async () => {
@@ -89,7 +87,7 @@ async function serverChannel(
         channel.emit(PROJECT_UPDATED);
       } catch (err) {
         console.log(`Failed to update your config:\n\n: ${err}`);
-        channel.emit(PROJECT_UPDATING_FAILED);
+        channel.emit(PROJECT_UPDATING_FAILED, { configDir } satisfies ProjectUpdatingFailedPayload);
       }
     }
   );
