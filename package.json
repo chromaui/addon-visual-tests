@@ -59,7 +59,7 @@
   "dependencies": {
     "@storybook/csf-tools": "^7.3.0",
     "@storybook/design-system": "^7.15.15",
-    "chromatic": "6.23.0-canary.0",
+    "chromatic": "6.23.0",
     "date-fns": "^2.30.0",
     "pluralize": "^8.0.0",
     "urql": "^4.0.3"
