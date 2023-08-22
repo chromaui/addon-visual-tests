@@ -1,3 +1,18 @@
+# v0.0.27 (Tue Aug 22 2023)
+
+#### 🐛 Bug Fix
+
+- Mark all builds from the addon as local [#25](https://github.com/chromaui/addon-visual-tests/pull/25) ([@tmeasday](https://github.com/tmeasday))
+- Filter `Project.lastBuild` query by `localBuilds: { localBuildEmailHash }` so we don't see others' local builds [#26](https://github.com/chromaui/addon-visual-tests/pull/26) ([@ndelangen](https://github.com/ndelangen) [@tmeasday](https://github.com/tmeasday) [@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 3
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.26 (Tue Aug 22 2023)
 
 #### 🐛 Bug Fix
