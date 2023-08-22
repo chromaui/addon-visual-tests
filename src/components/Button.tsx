@@ -40,7 +40,8 @@ export const Button = styled(BaseButton)<{
     css({
       "&&:hover": { boxShadow: "none" },
     }),
-  ({ belowText }) => ({
-    "margin-top": "7px",
-  })
+  ({ belowText }) =>
+    belowText && {
+      "margin-top": "7px",
+    }
 );
