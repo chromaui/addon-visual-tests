@@ -35,6 +35,7 @@ const QueryBuild = graphql(/* GraphQL */ `
     $buildId: ID!
     $projectId: ID!
     $branch: String!
+    $gitUserEmailHash: String!
     $slug: String
   ) {
     build(id: $buildId) @include(if: $hasBuildId) {
@@ -42,7 +43,11 @@ const QueryBuild = graphql(/* GraphQL */ `
     }
     project(id: $projectId) @skip(if: $hasBuildId) {
       name
-      lastBuild(branches: [$branch], slug: $slug) {
+      lastBuild(
+        branches: [$branch]
+        slug: $slug
+        localBuilds: { localBuildEmailHash: $gitUserEmailHash }
+      ) {
         ...BuildFields
       }
     }
@@ -193,6 +198,7 @@ export const VisualTests = ({
       projectId,
       branch: gitInfo.branch || "",
       ...(gitInfo.slug ? { slug: gitInfo.slug } : {}),
+      gitUserEmailHash: gitInfo.userEmailHash,
     },
   });
 

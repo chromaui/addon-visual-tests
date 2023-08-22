@@ -25,8 +25,17 @@ interface PanelProps {
   active: boolean;
 }
 
-const { GIT_BRANCH, GIT_SLUG, GIT_COMMIT, GIT_UNCOMMITTED_HASH } = process.env;
+const {
+  GIT_USER_EMAIL,
+  GIT_USER_EMAIL_HASH,
+  GIT_BRANCH,
+  GIT_SLUG,
+  GIT_COMMIT,
+  GIT_UNCOMMITTED_HASH,
+} = process.env;
 const initialGitInfo: GitInfo = {
+  userEmail: GIT_USER_EMAIL,
+  userEmailHash: GIT_USER_EMAIL_HASH,
   branch: GIT_BRANCH,
   commit: GIT_COMMIT,
   slug: GIT_SLUG,
