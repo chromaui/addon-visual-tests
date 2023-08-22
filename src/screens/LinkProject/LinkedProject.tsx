@@ -61,9 +61,9 @@ export const LinkedProject = ({
                 <CheckIcon icon="check" />
                 <Heading>Project linked!</Heading>
                 <Text style={{ maxWidth: 380 }}>
-                  Your Storybook&apos;s <code>main.js</code> has been updated to include the{" "}
-                  <code>projectId</code> of {data.project.name}. This project will be used to
-                  reference prior tests. Please commit this change to continue using this addon.
+                  The <code>projectId</code> for {data.project.name} has been added to this
+                  Storybook&apos;s <code>main.js</code>. This will be used to sync with Chromatic.
+                  Please commit this change to continue using this addon.
                 </Text>
                 <Button secondary onClick={() => goToNext()}>
                   Catch a UI change
