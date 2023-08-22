@@ -305,7 +305,7 @@ export const VisualTests = ({
   const isBuildFailed = build.status === BuildStatus.Failed;
 
   // It shouldn't be possible for one test to be skipped but not all of them
-  const isSkipped = !!tests.find((t) => t.result === TestResult.Skipped);
+  const isSkipped = !!tests?.find((t) => t.result === TestResult.Skipped);
   if (isSkipped) {
     return (
       <Sections>
