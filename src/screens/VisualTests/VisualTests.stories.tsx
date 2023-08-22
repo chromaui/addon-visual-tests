@@ -1,6 +1,7 @@
 import { action } from "@storybook/addon-actions";
+import { expect } from "@storybook/jest";
 import type { Meta, StoryObj } from "@storybook/react";
-import { findByRole, fireEvent } from "@storybook/testing-library";
+import { findByRole, fireEvent, waitFor } from "@storybook/testing-library";
 import { graphql } from "msw";
 
 import type {
@@ -288,6 +289,17 @@ export const Pending: Story = {
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304718&t=0rxMQnkxsVpVj1qy-4"
     ),
+  },
+  play: ({ args }) => {
+    waitFor(() => {
+      expect(args.updateBuildStatus).toHaveBeenCalledWith({
+        "button--primary": {
+          status: "warn",
+          title: "Visual Tests",
+          description: "Chromatic Visual Tests",
+        },
+      });
+    });
   },
 };
 
