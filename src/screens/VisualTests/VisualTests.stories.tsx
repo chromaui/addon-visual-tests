@@ -144,6 +144,8 @@ const meta = {
   parameters: withBuild(passedBuild),
   args: {
     gitInfo: {
+      userEmail: "user@email.com",
+      userEmailHash: "abc123",
       branch: "feature-branch",
       commit: "d67f31d1eb82c8b4e5ff770f1e631913d1c1b964",
       slug: "chromaui/addon-visual-tests",
@@ -155,9 +157,6 @@ const meta = {
     isStarting: false,
     setAccessToken: action("setAccessToken"),
     updateBuildStatus: action("updateBuildStatus"),
-    userGitEmail: "user@email.com",
-    branch: "branch",
-    slug: "",
   },
 } satisfies Meta<typeof VisualTests>;
 
