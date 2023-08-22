@@ -1,3 +1,15 @@
+# v0.0.28 (Tue Aug 22 2023)
+
+#### 🐛 Bug Fix
+
+- Remove/hide render settings and warnings screens for now [#43](https://github.com/chromaui/addon-visual-tests/pull/43) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v0.0.27 (Tue Aug 22 2023)
 
 #### 🐛 Bug Fix
