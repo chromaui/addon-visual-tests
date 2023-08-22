@@ -21,6 +21,7 @@ import {
   ReviewTestBatch,
   ReviewTestInputStatus,
   TestFieldsFragment,
+  TestResult,
 } from "../../gql/graphql";
 import { StatusUpdate, testsToStatusUpdate } from "../../utils/testsToStatusUpdate";
 import { RenderSettings } from "./RenderSettings";
@@ -302,6 +303,37 @@ export const VisualTests = ({
 
   const startedAt = "startedAt" in build && build.startedAt;
   const isBuildFailed = build.status === BuildStatus.Failed;
+
+  // It shouldn't be possible for one test to be skipped but not all of them
+  const isSkipped = !!tests?.find((t) => t.result === TestResult.Skipped);
+  if (isSkipped) {
+    return (
+      <Sections>
+        <Section grow>
+          <Container>
+            <Heading>This story was skipped</Heading>
+            <CenterText>
+              If you would like to resume testing it, comment out or remove
+              `parameters.chromatic.disableSnapshot = true` from the CSF file.
+            </CenterText>
+            <Button
+              belowText
+              small
+              tertiary
+              containsIcon
+              // @ts-expect-error Button component is not quite typed properly
+              target="_new"
+              isLink
+              href="https://www.chromatic.com/docs/ignoring-elements#ignore-stories"
+            >
+              <Icons icon="document" />
+              View Docs
+            </Button>
+          </Container>
+        </Section>
+      </Sections>
+    );
+  }
 
   return (
     <Sections>

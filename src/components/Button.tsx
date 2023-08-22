@@ -1,7 +1,11 @@
 import { Button as BaseButton } from "@storybook/components";
 import { css, styled } from "@storybook/theming";
 
-export const Button = styled(BaseButton)<{ link?: boolean; tertiary?: boolean }>(
+export const Button = styled(BaseButton)<{
+  link?: boolean;
+  tertiary?: boolean;
+  belowText?: boolean;
+}>(
   {
     "&&": {
       display: "inline-flex",
@@ -35,5 +39,9 @@ export const Button = styled(BaseButton)<{ link?: boolean; tertiary?: boolean }>
     tertiary &&
     css({
       "&&:hover": { boxShadow: "none" },
-    })
+    }),
+  ({ belowText }) =>
+    belowText && {
+      "margin-top": "7px",
+    }
 );

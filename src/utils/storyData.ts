@@ -92,6 +92,10 @@ export function makeTest(options: {
   const viewportWidth = options.viewport || 1200;
 
   function generateComparisons() {
+    if (result === TestResult.Skipped) {
+      return [];
+    }
+
     const browsers = options.browsers || [Browser.Chrome];
 
     if (options.comparisonResults && options.comparisonResults.length !== browsers.length) {
