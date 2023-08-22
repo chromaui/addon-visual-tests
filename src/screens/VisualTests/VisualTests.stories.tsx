@@ -29,6 +29,14 @@ const tests = [
     viewport: 1200,
     storyId: "button--secondary",
   }),
+  makeTest({
+    id: "31",
+    status: TestStatus.Passed,
+    result: TestResult.Skipped,
+    browsers,
+    viewport: 1200,
+    storyId: "button--tertiary",
+  }),
 ];
 
 const paginated = (nodes: StatusTestFieldsFragment[] | StoryTestFieldsFragment[]) => ({
@@ -150,6 +158,8 @@ const meta = {
   parameters: withBuild(passedBuild),
   args: {
     gitInfo: {
+      userEmail: "user@email.com",
+      userEmailHash: "abc123",
       branch: "feature-branch",
       commit: "d67f31d1eb82c8b4e5ff770f1e631913d1c1b964",
       slug: "chromaui/addon-visual-tests",
@@ -294,6 +304,18 @@ export const Accepted: Story = {
   },
 };
 
+export const Skipped: Story = {
+  args: {
+    storyId: "button--tertiary",
+  },
+  parameters: {
+    ...withBuild(pendingBuild),
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2255-42087&t=a8NRPgQk3kXMyxqZ-0"
+    ),
+  },
+};
+
 export const CaptureError: Story = {
   parameters: {
     ...withBuild(brokenBuild),
@@ -309,26 +331,26 @@ export const InfrastructureError: Story = {
   },
 };
 
-export const RenderSettings: Story = {
-  parameters: {
-    ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-525764&t=18c1zI1SMe76dWYk-4"
-    ),
-  },
-  play: playAll(async ({ canvasElement }) => {
-    const button = await findByRole(canvasElement, "button", { name: "Show render settings" });
-    await fireEvent.click(button);
-  }),
-};
+// export const RenderSettings: Story = {
+//   parameters: {
+//     ...withFigmaDesign(
+//       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-525764&t=18c1zI1SMe76dWYk-4"
+//     ),
+//   },
+//   play: playAll(async ({ canvasElement }) => {
+//     const button = await findByRole(canvasElement, "button", { name: "Show render settings" });
+//     await fireEvent.click(button);
+//   }),
+// };
 
-export const Warnings: Story = {
-  parameters: {
-    ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=516-672810&t=18c1zI1SMe76dWYk-4"
-    ),
-  },
-  play: playAll(async ({ canvasElement }) => {
-    const button = await findByRole(canvasElement, "button", { name: "Show warnings" });
-    await fireEvent.click(button);
-  }),
-};
+// export const Warnings: Story = {
+//   parameters: {
+//     ...withFigmaDesign(
+//       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=516-672810&t=18c1zI1SMe76dWYk-4"
+//     ),
+//   },
+//   play: playAll(async ({ canvasElement }) => {
+//     const button = await findByRole(canvasElement, "button", { name: "Show warnings" });
+//     await fireEvent.click(button);
+//   }),
+// };

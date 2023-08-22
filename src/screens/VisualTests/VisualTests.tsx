@@ -1,5 +1,4 @@
 import { Icons, Loader } from "@storybook/components";
-import { Icon } from "@storybook/design-system";
 // eslint-disable-next-line import/no-unresolved
 import { GitInfo } from "chromatic/node";
 import React, { useCallback, useEffect, useState } from "react";
@@ -9,7 +8,6 @@ import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
 import { FooterMenu } from "../../components/FooterMenu";
 import { Heading } from "../../components/Heading";
-import { IconButton } from "../../components/IconButton";
 import { ProgressIcon } from "../../components/icons/ProgressIcon";
 import { Bar, Col, Row, Section, Sections, Text } from "../../components/layout";
 import { Text as CenterText } from "../../components/Text";
@@ -20,6 +18,7 @@ import {
   BuildStatus,
   ReviewTestBatch,
   ReviewTestInputStatus,
+  TestResult,
   TestStatus,
 } from "../../gql/graphql";
 import { statusMap, StatusUpdate, testsToStatusUpdate } from "../../utils/testsToStatusUpdate";
@@ -34,6 +33,7 @@ const QueryBuild = graphql(/* GraphQL */ `
     $buildId: ID!
     $projectId: ID!
     $branch: String!
+    $gitUserEmailHash: String!
     $slug: String
     $storyId: String!
     $testStatuses: [TestStatus!]!
@@ -43,7 +43,11 @@ const QueryBuild = graphql(/* GraphQL */ `
     }
     project(id: $projectId) @skip(if: $hasBuildId) {
       name
-      lastBuild(branches: [$branch], slug: $slug) {
+      lastBuild(
+        branches: [$branch]
+        slug: $slug
+        localBuilds: { localBuildEmailHash: $gitUserEmailHash }
+      ) {
         ...BuildFields
       }
     }
@@ -216,6 +220,7 @@ export const VisualTests = ({
       testStatuses: Object.keys(statusMap) as any as TestStatus[],
       branch: gitInfo.branch || "",
       ...(gitInfo.slug ? { slug: gitInfo.slug } : {}),
+      gitUserEmailHash: gitInfo.userEmailHash,
     },
   });
 
@@ -325,6 +330,37 @@ export const VisualTests = ({
   const startedAt = "startedAt" in build && build.startedAt;
   const isBuildFailed = build.status === BuildStatus.Failed;
 
+  // It shouldn't be possible for one test to be skipped but not all of them
+  const isSkipped = !!tests?.find((t) => t.result === TestResult.Skipped);
+  if (isSkipped) {
+    return (
+      <Sections>
+        <Section grow>
+          <Container>
+            <Heading>This story was skipped</Heading>
+            <CenterText>
+              If you would like to resume testing it, comment out or remove
+              `parameters.chromatic.disableSnapshot = true` from the CSF file.
+            </CenterText>
+            <Button
+              belowText
+              small
+              tertiary
+              containsIcon
+              // @ts-expect-error Button component is not quite typed properly
+              target="_new"
+              isLink
+              href="https://www.chromatic.com/docs/ignoring-elements#ignore-stories"
+            >
+              <Icons icon="document" />
+              View Docs
+            </Button>
+          </Container>
+        </Section>
+      </Sections>
+    );
+  }
+
   return (
     <Sections>
       <Section grow hidden={settingsVisible || warningsVisible}>
@@ -347,7 +383,7 @@ export const VisualTests = ({
           <Col>
             <Text style={{ marginLeft: 5 }}>Latest snapshot on {build.branch}</Text>
           </Col>
-          <Col push>
+          {/* <Col push>
             <IconButton
               active={settingsVisible}
               aria-label={`${settingsVisible ? "Hide" : "Show"} render settings`}
@@ -356,7 +392,7 @@ export const VisualTests = ({
                 setWarningsVisible(false);
               }}
             >
-              <Icon icon="controls" />
+              <Icons icon="controls" />
             </IconButton>
           </Col>
           <Col>
@@ -369,10 +405,10 @@ export const VisualTests = ({
               }}
               status="warning"
             >
-              <Icon icon="alert" />2
+              <Icons icon="alert" />2
             </IconButton>
-          </Col>
-          <Col>
+          </Col> */}
+          <Col push>
             <FooterMenu setAccessToken={setAccessToken} />
           </Col>
         </Bar>
