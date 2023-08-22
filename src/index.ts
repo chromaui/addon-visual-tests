@@ -1,14 +1,15 @@
+/* eslint-disable no-console */
 import type { Channel } from "@storybook/channels";
 import { readConfig, writeConfig } from "@storybook/csf-tools";
-import { exec } from "child_process";
 // eslint-disable-next-line import/no-unresolved
-import { run } from "chromatic/node";
-import { promisify } from "util";
+import { getGitInfo, GitInfo, run } from "chromatic/node";
 
 import {
+  BUILD_ANNOUNCED,
   BUILD_STARTED,
   CHROMATIC_ADDON_NAME,
   CHROMATIC_BASE_URL,
+  GIT_INFO,
   START_BUILD,
   UPDATE_PROJECT,
   UpdateProjectPayload,
@@ -22,13 +23,35 @@ function managerEntries(entry: string[] = []) {
   return [...entry, require.resolve("./manager.mjs")];
 }
 
+// Polls for changes to the Git state and invokes the callback when it changes.
+// Uses a recursive setTimeout instead of setInterval to avoid overlapping async calls.
+const observeGitInfo = async (
+  interval: number,
+  callback: (info: GitInfo, prevInfo: GitInfo) => void
+) => {
+  let prev: GitInfo;
+  let timer: NodeJS.Timeout | null = null;
+  const act = async () => {
+    const gitInfo = await getGitInfo();
+    if (Object.entries(gitInfo).some(([key, value]) => prev?.[key as keyof GitInfo] !== value)) {
+      callback(gitInfo, prev);
+    }
+    prev = gitInfo;
+    timer = setTimeout(act, interval);
+  };
+  act();
+
+  return () => clearTimeout(timer);
+};
+
 async function serverChannel(
   channel: Channel,
   { projectToken: initialProjectToken }: { projectToken: string }
 ) {
   let projectToken = initialProjectToken;
   channel.on(START_BUILD, async () => {
-    let sent = false;
+    let announced = false;
+    let started = false;
     await run({
       // Currently we have to have this flag. We should move the check to after flags have been
       // parsed into options.
@@ -39,13 +62,16 @@ async function serverChannel(
         // Builds initiated from the addon are always considered local
         isLocalBuild: true,
         onTaskComplete(ctx: any) {
-          // eslint-disable-next-line no-console
           console.log(`Completed task '${ctx.title}'`);
-          if (ctx.announcedBuild && !sent) {
-            // eslint-disable-next-line no-console
-            console.log("emitting", BUILD_STARTED);
-            channel.emit(BUILD_STARTED, ctx.announcedBuild.id);
-            sent = true;
+          if (ctx.announcedBuild && !announced) {
+            console.debug("emitting", BUILD_ANNOUNCED, ctx.announcedBuild.id);
+            channel.emit(BUILD_ANNOUNCED, ctx.announcedBuild.id);
+            announced = true;
+          }
+          if (ctx.build && !started) {
+            console.debug("emitting", BUILD_STARTED, ctx.build.status);
+            channel.emit(BUILD_STARTED, ctx.build.status);
+            started = true;
           }
         },
       } as any,
@@ -79,21 +105,9 @@ async function serverChannel(
     }
   );
 
+  observeGitInfo(5000, (info) => channel.emit(GIT_INFO, info));
+
   return channel;
-}
-
-// TODO: use the chromatic CLI to get this info?
-const execPromise = promisify(exec);
-async function getGitInfo() {
-  const branch = (await execPromise("git rev-parse --abbrev-ref HEAD")).stdout.trim();
-  const commit = (await execPromise("git log -n 1 HEAD --format='%H'")).stdout.trim();
-  const origin = (await execPromise("git config --get remote.origin.url")).stdout.trim();
-
-  const [, slug] = origin.toLowerCase().match(/([^/:]+\/[^/]+?)(\.git)?$/) || [];
-  const [ownerName, repoName, ...rest] = slug ? slug.split("/") : [];
-  const isValidSlug = !!ownerName && !!repoName && !rest.length;
-
-  return { branch, commit, slug: isValidSlug ? slug : "" };
 }
 
 const config = {
@@ -105,14 +119,17 @@ const config = {
   ) => {
     if (configType === "production") return env;
 
-    const { branch, commit, slug } = await getGitInfo();
+    const { userEmail, userEmailHash, branch, commit, slug, uncommittedHash } = await getGitInfo();
     return {
       ...env,
       CHROMATIC_BASE_URL,
       CHROMATIC_PROJECT_ID: projectId || "",
+      GIT_USER_EMAIL: userEmail,
+      GIT_USER_EMAIL_HASH: userEmailHash,
       GIT_BRANCH: branch,
       GIT_COMMIT: commit,
       GIT_SLUG: slug,
+      GIT_UNCOMMITTED_HASH: uncommittedHash,
     };
   },
 };

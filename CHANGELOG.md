@@ -1,3 +1,75 @@
+# v0.0.23 (Thu Aug 17 2023)
+
+#### 🐛 Bug Fix
+
+- Ensure we actually typecheck [#35](https://github.com/chromaui/addon-visual-tests/pull/35) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.22 (Wed Aug 16 2023)
+
+#### 🐛 Bug Fix
+
+- Poll for Git repository hash and set `isOutdated` when it changes [#31](https://github.com/chromaui/addon-visual-tests/pull/31) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.21 (Wed Aug 16 2023)
+
+#### 🐛 Bug Fix
+
+- Upgrade to SB7.3 [#32](https://github.com/chromaui/addon-visual-tests/pull/32) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.20 (Mon Aug 14 2023)
+
+#### 🐛 Bug Fix
+
+- Add footer menu to link project screen [#29](https://github.com/chromaui/addon-visual-tests/pull/29) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.19 (Thu Aug 10 2023)
+
+#### 🐛 Bug Fix
+
+- Realtime git info [#24](https://github.com/chromaui/addon-visual-tests/pull/24) ([@ndelangen](https://github.com/ndelangen))
+
+#### Authors: 1
+
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+
+---
+
+# v0.0.18 (Wed Aug 09 2023)
+
+#### 🐛 Bug Fix
+
+- Update OAuth Client ID [#28](https://github.com/chromaui/addon-visual-tests/pull/28) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v0.0.17 (Mon Aug 07 2023)
 
 #### 🐛 Bug Fix
