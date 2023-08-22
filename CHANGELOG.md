@@ -1,3 +1,15 @@
+# v0.0.29 (Tue Aug 22 2023)
+
+#### 🐛 Bug Fix
+
+- Query `testsForStory` and `testsForStatus` separately to avoid pagination [#37](https://github.com/chromaui/addon-visual-tests/pull/37) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v0.0.28 (Tue Aug 22 2023)
 
 #### 🐛 Bug Fix
