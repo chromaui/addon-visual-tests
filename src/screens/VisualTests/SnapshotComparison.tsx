@@ -16,6 +16,7 @@ import {
   TestFieldsFragment,
   TestStatus,
 } from "../../gql/graphql";
+import { summarizeTests } from "../../utils/summarizeTests";
 import { useTests } from "../../utils/useTests";
 
 const Divider = styled.div(({ theme }) => ({
@@ -31,17 +32,10 @@ interface SnapshotSectionProps {
 }
 
 export const SnapshotComparison = ({ tests, isAccepting, onAccept }: SnapshotSectionProps) => {
-  const {
-    selectedTest,
-    selectedComparison,
-    isInProgress,
-    changeCount,
-    browserResults,
-    onSelectBrowser,
-    viewportResults,
-    onSelectViewport,
-  } = useTests(tests);
   const [diffVisible, setDiffVisible] = useState(true);
+
+  const { selectedTest, selectedComparison, onSelectBrowser, onSelectViewport } = useTests(tests);
+  const { isInProgress, changeCount, browserResults, viewportResults } = summarizeTests(tests);
 
   return (
     <>

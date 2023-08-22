@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Client, fetchExchange, Provider } from "urql";
+import { v4 as uuid } from "uuid";
 
 import { ACCESS_TOKEN_KEY, CHROMATIC_BASE_URL } from "../constants";
 
@@ -20,6 +21,8 @@ export const useAccessToken = () => {
   return [token, updateToken] as const;
 };
 
+const sessionId = uuid();
+
 export const client = new Client({
   url: `${CHROMATIC_BASE_URL}/api`,
   exchanges: [fetchExchange], // no cacheExchange to prevent sharing data between stories
@@ -27,6 +30,7 @@ export const client = new Client({
     headers: {
       accept: "*/*", // workaround for https://github.com/mswjs/msw/issues/1593
       authorization: currentToken ? `Bearer ${currentToken}` : "",
+      "x-chromatic-session-id": sessionId,
     },
   }),
 });

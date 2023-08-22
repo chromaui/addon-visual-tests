@@ -15,20 +15,22 @@ import { Bar, Col, Row, Section, Sections, Text } from "../../components/layout"
 import { Text as CenterText } from "../../components/Text";
 import { getFragment, graphql } from "../../gql";
 import {
-  BuildQuery,
-  BuildQueryVariables,
+  AddonVisualTestsBuildQuery,
+  AddonVisualTestsBuildQueryVariables,
+  BuildStatus,
   ReviewTestBatch,
   ReviewTestInputStatus,
+  TestFieldsFragment,
   TestResult,
 } from "../../gql/graphql";
 import { StatusUpdate, testsToStatusUpdate } from "../../utils/testsToStatusUpdate";
-import { BuildInfo } from "./BuildInfo";
 import { RenderSettings } from "./RenderSettings";
 import { SnapshotComparison } from "./SnapshotComparison";
+import { StoryInfo } from "./StoryInfo";
 import { Warnings } from "./Warnings";
 
 const QueryBuild = graphql(/* GraphQL */ `
-  query Build(
+  query AddonVisualTestsBuild(
     $hasBuildId: Boolean!
     $buildId: ID!
     $projectId: ID!
@@ -180,7 +182,10 @@ export const VisualTests = ({
   gitInfo,
   storyId,
 }: VisualTestsProps) => {
-  const [{ data, error }, rerun] = useQuery<BuildQuery, BuildQueryVariables>({
+  const [{ data, error }, rerun] = useQuery<
+    AddonVisualTestsBuildQuery,
+    AddonVisualTestsBuildQueryVariables
+  >({
     query: QueryBuild,
     variables: {
       hasBuildId: !!lastDevBuildId,
@@ -289,8 +294,15 @@ export const VisualTests = ({
     );
   }
 
-  const allTests = getFragment(FragmentTestFields, "tests" in build ? build.tests.nodes : []);
-  const tests = allTests.filter((test) => test.story?.storyId === storyId);
+  let tests: TestFieldsFragment[] | undefined;
+  if ("tests" in build) {
+    tests = getFragment(FragmentTestFields, build.tests.nodes).filter(
+      (test) => test.story?.storyId === storyId
+    );
+  }
+
+  const startedAt = "startedAt" in build && build.startedAt;
+  const isBuildFailed = build.status === BuildStatus.Failed;
 
   // It shouldn't be possible for one test to be skipped but not all of them
   const isSkipped = !!tests.find((t) => t.result === TestResult.Skipped);
@@ -323,14 +335,14 @@ export const VisualTests = ({
     );
   }
 
-  const viewportCount = new Set(allTests.map((t) => t.parameters.viewport.id)).size;
   return (
     <Sections>
       <Section grow hidden={settingsVisible || warningsVisible}>
-        <BuildInfo {...{ build, viewportCount, isOutdated, isStarting, startDevBuild }} />
-        {/* The key here is to ensure the useTests helper gets to reset each time we change story */}
-        {tests.length > 0 && (
-          <SnapshotComparison key={storyId} {...{ tests, isAccepting, isOutdated, onAccept }} />
+        <StoryInfo
+          {...{ tests, isOutdated, startedAt, isStarting, startDevBuild, isBuildFailed }}
+        />
+        {!isStarting && tests && tests.length > 0 && (
+          <SnapshotComparison {...{ tests, isAccepting, isOutdated, onAccept }} />
         )}
       </Section>
 
