@@ -9,7 +9,13 @@ import type {
   StoryTestFieldsFragment,
 } from "../../gql/graphql";
 import { Browser, BuildStatus, ComparisonResult, TestResult, TestStatus } from "../../gql/graphql";
-import { AnnouncedBuild, CompletedBuild, PublishedBuild, StartedBuild } from "../../types";
+import {
+  AnnouncedBuild,
+  BuildWithTests,
+  CompletedBuild,
+  PublishedBuild,
+  StartedBuild,
+} from "../../types";
 import { storyWrapper } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
 import { makeBrowserInfo, makeTest } from "../../utils/storyData";
@@ -51,6 +57,12 @@ const paginated = (nodes: StatusTestFieldsFragment[] | StoryTestFieldsFragment[]
   totalCount: nodes.length,
 });
 
+const withTests = <T extends BuildWithTests>(build: T, fullTests: StoryTestFieldsFragment[]) => ({
+  ...build,
+  testsForStatus: paginated(fullTests),
+  testsForStory: paginated(fullTests),
+});
+
 const announcedBuild: AnnouncedBuild = {
   __typename: "AnnouncedBuild",
   id: "1",
@@ -68,67 +80,71 @@ const publishedBuild: PublishedBuild = {
   status: BuildStatus.Published,
 };
 
-const inProgressBuild: StartedBuild = {
-  ...(publishedBuild as any),
-  __typename: "StartedBuild",
-  startedAt: new Date(Date.now() - 1000 * 60 * 2), // 2 minutes ago
-  status: BuildStatus.InProgress,
-  changeCount: null,
-  testsForStory: paginated(SnapshotComparisonStories.InProgress.args.tests),
-};
+const inProgressBuild: StartedBuild = withTests(
+  {
+    ...(publishedBuild as any),
+    __typename: "StartedBuild",
+    startedAt: new Date(Date.now() - 1000 * 60 * 2), // 2 minutes ago
+    status: BuildStatus.InProgress,
+    changeCount: null,
+  },
+  SnapshotComparisonStories.InProgress.args.tests
+);
 
-const passedBuild: CompletedBuild = {
-  ...(inProgressBuild as any),
-  status: BuildStatus.Passed,
-  changeCount: 0,
-  testsForStory: paginated(
-    tests.map((test) => ({
-      ...test,
-      status: TestStatus.Passed,
-      result: TestResult.Equal,
-      comparisons: test.comparisons.map((comparison) => ({
-        ...comparison,
-        result: ComparisonResult.Equal,
-      })),
-    }))
-  ),
-};
+const passedBuild: CompletedBuild = withTests(
+  {
+    ...(inProgressBuild as any),
+    status: BuildStatus.Passed,
+    changeCount: 0,
+  },
+  primaryTests.map((test) => ({
+    ...test,
+    status: TestStatus.Passed,
+    result: TestResult.Equal,
+    comparisons: test.comparisons.map((comparison) => ({
+      ...comparison,
+      result: ComparisonResult.Equal,
+    })),
+  }))
+);
 
-const pendingBuild: CompletedBuild = {
-  ...(inProgressBuild as any),
-  status: BuildStatus.Pending,
-  changeCount: 3,
-  testsForStory: paginated(tests),
-};
+const pendingBuild: CompletedBuild = withTests(
+  {
+    ...(inProgressBuild as any),
+    status: BuildStatus.Pending,
+    changeCount: 3,
+  },
+  primaryTests
+);
 
-const acceptedBuild: CompletedBuild = {
-  ...pendingBuild,
-  status: BuildStatus.Accepted,
-  testsForStory: paginated(
-    tests.map((test) => ({
-      ...test,
-      status: TestStatus.Accepted,
-    }))
-  ),
-};
+const acceptedBuild: CompletedBuild = withTests(
+  {
+    ...pendingBuild,
+    status: BuildStatus.Accepted,
+  },
+  primaryTests.map((test) => ({
+    ...test,
+    status: TestStatus.Accepted,
+  }))
+);
 
-const brokenBuild: CompletedBuild = {
-  ...(inProgressBuild as any),
-  status: BuildStatus.Broken,
-  changeCount: 0,
-  brokenCount: 3,
-  testsForStory: paginated(
-    tests.map((test) => ({
-      ...test,
-      status: TestStatus.Broken,
-      result: TestResult.CaptureError,
-      comparisons: test.comparisons.map((comparison) => ({
-        ...comparison,
-        result: ComparisonResult.CaptureError,
-      })),
-    }))
-  ),
-};
+const brokenBuild: CompletedBuild = withTests(
+  {
+    ...(inProgressBuild as any),
+    status: BuildStatus.Broken,
+    changeCount: 0,
+    brokenCount: 3,
+  },
+  primaryTests.map((test) => ({
+    ...test,
+    status: TestStatus.Broken,
+    result: TestResult.CaptureError,
+    comparisons: test.comparisons.map((comparison) => ({
+      ...comparison,
+      result: ComparisonResult.CaptureError,
+    })),
+  }))
+);
 
 const failedBuild: PublishedBuild = {
   ...publishedBuild,
@@ -309,7 +325,12 @@ export const Skipped: Story = {
     storyId: "button--tertiary",
   },
   parameters: {
-    ...withBuild(pendingBuild),
+    ...withBuild(
+      withTests(
+        pendingBuild,
+        tests.filter(({ story }) => story.storyId === "button--tertiary")
+      )
+    ),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2255-42087&t=a8NRPgQk3kXMyxqZ-0"
     ),
