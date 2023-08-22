@@ -53,20 +53,22 @@ async function serverChannel(
     let announced = false;
     let started = false;
     await run({
-      flags: {
-        projectToken,
-        // We might want to drop this later and instead record "uncommitted hashes" on builds
-        forceRebuild: "",
-      },
+      // Currently we have to have this flag. We should move the check to after flags have been
+      // parsed into options.
+      flags: { projectToken },
       options: {
+        // We might want to drop this later and instead record "uncommitted hashes" on builds
+        forceRebuild: true,
+        // Builds initiated from the addon are always considered local
+        isLocalBuild: true,
         onTaskComplete(ctx: any) {
           console.log(`Completed task '${ctx.title}'`);
-          if (ctx.announcedBuild && !announced) {
+          if (!announced && ctx.announcedBuild) {
             console.debug("emitting", BUILD_ANNOUNCED, ctx.announcedBuild.id);
             channel.emit(BUILD_ANNOUNCED, ctx.announcedBuild.id);
             announced = true;
           }
-          if (ctx.build && !started) {
+          if (announced && !started && ctx.build) {
             console.debug("emitting", BUILD_STARTED, ctx.build.status);
             channel.emit(BUILD_STARTED, ctx.build.status);
             started = true;
@@ -117,11 +119,13 @@ const config = {
   ) => {
     if (configType === "production") return env;
 
-    const { branch, commit, slug, uncommittedHash } = await getGitInfo();
+    const { userEmail, userEmailHash, branch, commit, slug, uncommittedHash } = await getGitInfo();
     return {
       ...env,
       CHROMATIC_BASE_URL,
       CHROMATIC_PROJECT_ID: projectId || "",
+      GIT_USER_EMAIL: userEmail,
+      GIT_USER_EMAIL_HASH: userEmailHash,
       GIT_BRANCH: branch,
       GIT_COMMIT: commit,
       GIT_SLUG: slug,

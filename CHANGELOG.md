@@ -1,3 +1,54 @@
+# v0.0.28 (Tue Aug 22 2023)
+
+#### 🐛 Bug Fix
+
+- Remove/hide render settings and warnings screens for now [#43](https://github.com/chromaui/addon-visual-tests/pull/43) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.27 (Tue Aug 22 2023)
+
+#### 🐛 Bug Fix
+
+- Mark all builds from the addon as local [#25](https://github.com/chromaui/addon-visual-tests/pull/25) ([@tmeasday](https://github.com/tmeasday))
+- Filter `Project.lastBuild` query by `localBuilds: { localBuildEmailHash }` so we don't see others' local builds [#26](https://github.com/chromaui/addon-visual-tests/pull/26) ([@ndelangen](https://github.com/ndelangen) [@tmeasday](https://github.com/tmeasday) [@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 3
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.26 (Tue Aug 22 2023)
+
+#### 🐛 Bug Fix
+
+- Don't show the `SnapshotComparison` for skipped stories [#33](https://github.com/chromaui/addon-visual-tests/pull/33) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.25 (Mon Aug 21 2023)
+
+#### 🐛 Bug Fix
+
+- Refactor `BuildInfo` -> `StoryInfo` [#36](https://github.com/chromaui/addon-visual-tests/pull/36) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.24 (Fri Aug 18 2023)
 
 #### 🐛 Bug Fix

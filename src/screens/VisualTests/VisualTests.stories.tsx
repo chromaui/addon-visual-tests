@@ -1,11 +1,22 @@
 import { action } from "@storybook/addon-actions";
+import { expect } from "@storybook/jest";
 import type { Meta, StoryObj } from "@storybook/react";
-import { findByRole, fireEvent } from "@storybook/testing-library";
+import { findByRole, fireEvent, waitFor } from "@storybook/testing-library";
 import { graphql } from "msw";
 
-import type { AddonVisualTestsBuildQuery, TestFieldsFragment } from "../../gql/graphql";
+import type {
+  AddonVisualTestsBuildQuery,
+  StatusTestFieldsFragment,
+  StoryTestFieldsFragment,
+} from "../../gql/graphql";
 import { Browser, BuildStatus, ComparisonResult, TestResult, TestStatus } from "../../gql/graphql";
-import { AnnouncedBuild, CompletedBuild, PublishedBuild, StartedBuild } from "../../types";
+import {
+  AnnouncedBuild,
+  BuildWithTests,
+  CompletedBuild,
+  PublishedBuild,
+  StartedBuild,
+} from "../../types";
 import { storyWrapper } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
 import { makeBrowserInfo, makeTest } from "../../utils/storyData";
@@ -25,9 +36,17 @@ const tests = [
     viewport: 1200,
     storyId: "button--secondary",
   }),
+  makeTest({
+    id: "31",
+    status: TestStatus.Passed,
+    result: TestResult.Skipped,
+    browsers,
+    viewport: 1200,
+    storyId: "button--tertiary",
+  }),
 ];
 
-const paginated = (nodes: TestFieldsFragment[]) => ({
+const paginated = (nodes: StatusTestFieldsFragment[] | StoryTestFieldsFragment[]) => ({
   edges: nodes.map((node) => ({ cursor: node.id, node })),
   nodes,
   pageInfo: {
@@ -37,6 +56,12 @@ const paginated = (nodes: TestFieldsFragment[]) => ({
     endCursor: nodes.at(-1).id,
   },
   totalCount: nodes.length,
+});
+
+const withTests = <T extends BuildWithTests>(build: T, fullTests: StoryTestFieldsFragment[]) => ({
+  ...build,
+  testsForStatus: paginated(fullTests),
+  testsForStory: paginated(fullTests),
 });
 
 const announcedBuild: AnnouncedBuild = {
@@ -56,67 +81,71 @@ const publishedBuild: PublishedBuild = {
   status: BuildStatus.Published,
 };
 
-const inProgressBuild: StartedBuild = {
-  ...(publishedBuild as any),
-  __typename: "StartedBuild",
-  startedAt: new Date(Date.now() - 1000 * 60 * 2), // 2 minutes ago
-  status: BuildStatus.InProgress,
-  changeCount: null,
-  tests: paginated(SnapshotComparisonStories.InProgress.args.tests),
-};
+const inProgressBuild: StartedBuild = withTests(
+  {
+    ...(publishedBuild as any),
+    __typename: "StartedBuild",
+    startedAt: new Date(Date.now() - 1000 * 60 * 2), // 2 minutes ago
+    status: BuildStatus.InProgress,
+    changeCount: null,
+  },
+  SnapshotComparisonStories.InProgress.args.tests
+);
 
-const passedBuild: CompletedBuild = {
-  ...(inProgressBuild as any),
-  status: BuildStatus.Passed,
-  changeCount: 0,
-  tests: paginated(
-    tests.map((test) => ({
-      ...test,
-      status: TestStatus.Passed,
-      result: TestResult.Equal,
-      comparisons: test.comparisons.map((comparison) => ({
-        ...comparison,
-        result: ComparisonResult.Equal,
-      })),
-    }))
-  ),
-};
+const passedBuild: CompletedBuild = withTests(
+  {
+    ...(inProgressBuild as any),
+    status: BuildStatus.Passed,
+    changeCount: 0,
+  },
+  primaryTests.map((test) => ({
+    ...test,
+    status: TestStatus.Passed,
+    result: TestResult.Equal,
+    comparisons: test.comparisons.map((comparison) => ({
+      ...comparison,
+      result: ComparisonResult.Equal,
+    })),
+  }))
+);
 
-const pendingBuild: CompletedBuild = {
-  ...(inProgressBuild as any),
-  status: BuildStatus.Pending,
-  changeCount: 3,
-  tests: paginated(tests),
-};
+const pendingBuild: CompletedBuild = withTests(
+  {
+    ...(inProgressBuild as any),
+    status: BuildStatus.Pending,
+    changeCount: 3,
+  },
+  primaryTests
+);
 
-const acceptedBuild: CompletedBuild = {
-  ...pendingBuild,
-  status: BuildStatus.Accepted,
-  tests: paginated(
-    tests.map((test) => ({
-      ...test,
-      status: TestStatus.Accepted,
-    }))
-  ),
-};
+const acceptedBuild: CompletedBuild = withTests(
+  {
+    ...pendingBuild,
+    status: BuildStatus.Accepted,
+  },
+  primaryTests.map((test) => ({
+    ...test,
+    status: TestStatus.Accepted,
+  }))
+);
 
-const brokenBuild: CompletedBuild = {
-  ...(inProgressBuild as any),
-  status: BuildStatus.Broken,
-  changeCount: 0,
-  brokenCount: 3,
-  tests: paginated(
-    tests.map((test) => ({
-      ...test,
-      status: TestStatus.Broken,
-      result: TestResult.CaptureError,
-      comparisons: test.comparisons.map((comparison) => ({
-        ...comparison,
-        result: ComparisonResult.CaptureError,
-      })),
-    }))
-  ),
-};
+const brokenBuild: CompletedBuild = withTests(
+  {
+    ...(inProgressBuild as any),
+    status: BuildStatus.Broken,
+    changeCount: 0,
+    brokenCount: 3,
+  },
+  primaryTests.map((test) => ({
+    ...test,
+    status: TestStatus.Broken,
+    result: TestResult.CaptureError,
+    comparisons: test.comparisons.map((comparison) => ({
+      ...comparison,
+      result: ComparisonResult.CaptureError,
+    })),
+  }))
+);
 
 const failedBuild: PublishedBuild = {
   ...publishedBuild,
@@ -146,6 +175,8 @@ const meta = {
   parameters: withBuild(passedBuild),
   args: {
     gitInfo: {
+      userEmail: "user@email.com",
+      userEmailHash: "abc123",
       branch: "feature-branch",
       commit: "d67f31d1eb82c8b4e5ff770f1e631913d1c1b964",
       slug: "chromaui/addon-visual-tests",
@@ -179,6 +210,15 @@ export const NoBuild: Story = {
     ...withGraphQLQuery("AddonVisualTestsBuild", (req, res, ctx) =>
       res(ctx.data({ build: null } as AddonVisualTestsBuildQuery))
     ),
+  },
+};
+export const NoBuildStarting: Story = {
+  ...NoBuild,
+  args: {
+    isStarting: true,
+    ...withGraphQLQuery("AddonVisualTestsBuild", (req, res, ctx) =>
+      res(ctx.data({ build: null } as AddonVisualTestsBuildQuery))
+    ),
     // No design for this state
     // ...withFigmaDesign(""),
   },
@@ -208,25 +248,27 @@ export const Outdated: Story = {
   },
 };
 
-// This story doesn't really make sense because if the build is running it should be `IN_PROGRESS` or similar
-// export const OutdatedRunning: Story = {
-//   args: {
-//     ...Outdated.args,
-//     isRunning: true,
-//   },
-//   argTypes: { updateBuildStatus: { action: "updateBuildStatus" } },
-//   parameters: {
-//     ...Outdated.parameters,
-//   },
-// };
+export const OutdatedStarting: Story = {
+  ...Outdated,
+  args: {
+    ...Outdated.args,
+    isStarting: true,
+  },
+};
 
 export const Announced: Story = {
+  args: {
+    isStarting: true,
+  },
   parameters: {
     ...withBuild(announcedBuild),
   },
 };
 
 export const Published: Story = {
+  args: {
+    isStarting: true,
+  },
   parameters: {
     ...withBuild(publishedBuild),
   },
@@ -247,6 +289,17 @@ export const Pending: Story = {
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304718&t=0rxMQnkxsVpVj1qy-4"
     ),
+  },
+  play: ({ args }) => {
+    waitFor(() => {
+      expect(args.updateBuildStatus).toHaveBeenCalledWith({
+        "button--primary": {
+          status: "warn",
+          title: "Visual Tests",
+          description: "Chromatic Visual Tests",
+        },
+      });
+    });
   },
 };
 
@@ -279,6 +332,23 @@ export const Accepted: Story = {
   },
 };
 
+export const Skipped: Story = {
+  args: {
+    storyId: "button--tertiary",
+  },
+  parameters: {
+    ...withBuild(
+      withTests(
+        pendingBuild,
+        tests.filter(({ story }) => story.storyId === "button--tertiary")
+      )
+    ),
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2255-42087&t=a8NRPgQk3kXMyxqZ-0"
+    ),
+  },
+};
+
 export const CaptureError: Story = {
   parameters: {
     ...withBuild(brokenBuild),
@@ -294,26 +364,26 @@ export const InfrastructureError: Story = {
   },
 };
 
-export const RenderSettings: Story = {
-  parameters: {
-    ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-525764&t=18c1zI1SMe76dWYk-4"
-    ),
-  },
-  play: playAll(async ({ canvasElement }) => {
-    const button = await findByRole(canvasElement, "button", { name: "Show render settings" });
-    await fireEvent.click(button);
-  }),
-};
+// export const RenderSettings: Story = {
+//   parameters: {
+//     ...withFigmaDesign(
+//       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-525764&t=18c1zI1SMe76dWYk-4"
+//     ),
+//   },
+//   play: playAll(async ({ canvasElement }) => {
+//     const button = await findByRole(canvasElement, "button", { name: "Show render settings" });
+//     await fireEvent.click(button);
+//   }),
+// };
 
-export const Warnings: Story = {
-  parameters: {
-    ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=516-672810&t=18c1zI1SMe76dWYk-4"
-    ),
-  },
-  play: playAll(async ({ canvasElement }) => {
-    const button = await findByRole(canvasElement, "button", { name: "Show warnings" });
-    await fireEvent.click(button);
-  }),
-};
+// export const Warnings: Story = {
+//   parameters: {
+//     ...withFigmaDesign(
+//       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=516-672810&t=18c1zI1SMe76dWYk-4"
+//     ),
+//   },
+//   play: playAll(async ({ canvasElement }) => {
+//     const button = await findByRole(canvasElement, "button", { name: "Show warnings" });
+//     await fireEvent.click(button);
+//   }),
+// };
