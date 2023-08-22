@@ -113,6 +113,17 @@ export function makeTest(options: {
     );
   }
 
+  function generateStory(storyId: string) {
+    const [rawComponentName, rawStoryName] = storyId.split("--");
+    return {
+      storyId,
+      name: rawStoryName[0].toUpperCase() + rawStoryName.slice(1),
+      component: {
+        name: rawComponentName[0].toUpperCase() + rawComponentName.slice(1),
+      },
+    };
+  }
+
   const comparisons = options.comparisons || generateComparisons();
 
   return {
@@ -122,7 +133,7 @@ export function makeTest(options: {
     webUrl: `https://www.chromatic.com/test?appId=123&id=${id}`,
     comparisons,
     parameters: { viewport: makeViewportInfo(viewportWidth) },
-    story: { storyId: options.storyId || "button--primary" },
+    story: generateStory(options.storyId || "button--primary"),
   };
 }
 

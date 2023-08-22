@@ -2,12 +2,13 @@ import { Icons } from "@storybook/components";
 import { styled } from "@storybook/theming";
 import React, { ComponentProps } from "react";
 
-import { CaptureImage, CaptureOverlayImage, ComparisonResult } from "../gql/graphql";
+import { CaptureImage, CaptureOverlayImage, ComparisonResult, Test } from "../gql/graphql";
+import { Text } from "./Text";
 
 export const Container = styled.div<{ href?: string; target?: string }>(
   ({ theme }) => ({
     position: "relative",
-    display: "inline-flex",
+    display: "flex",
     background: "transparent",
     overflow: "hidden",
     margin: 2,
@@ -51,6 +52,7 @@ export const Container = styled.div<{ href?: string; target?: string }>(
   }),
   ({ href }) =>
     href && {
+      display: "inline-flex",
       "&:hover": {
         "& > svg": {
           opacity: 1,
@@ -63,6 +65,9 @@ export const Container = styled.div<{ href?: string; target?: string }>(
 );
 
 interface SnapshotImageProps {
+  componentName: Test["story"]["component"]["name"];
+  storyName: Test["story"]["name"];
+  testUrl: Test["webUrl"];
   comparisonResult: ComparisonResult;
   captureImage?: Pick<CaptureImage, "imageUrl" | "imageWidth">;
   diffImage?: Pick<CaptureOverlayImage, "imageUrl" | "imageWidth">;
@@ -72,6 +77,9 @@ interface SnapshotImageProps {
 }
 
 export const SnapshotImage = ({
+  componentName,
+  storyName,
+  testUrl,
   comparisonResult,
   captureImage,
   diffImage,
@@ -80,38 +88,43 @@ export const SnapshotImage = ({
   focusVisible,
   ...props
 }: SnapshotImageProps & ComponentProps<typeof Container>) => {
+  const hasDiff = captureImage && diffImage && comparisonResult === ComparisonResult.Changed;
+  const hasError = comparisonResult === ComparisonResult.CaptureError;
+  const containerProps = hasDiff ? { as: "a" as any, href: testUrl, target: "_blank" } : {};
+
   return (
-    <Container {...props}>
-      {captureImage && <img src={captureImage.imageUrl} alt="" />}
-      {diffImage && diffVisible && comparisonResult === ComparisonResult.Changed && (
+    <Container {...props} {...containerProps}>
+      {captureImage && (
         <img
+          alt={`Snapshot for the '${storyName}' story of the '${componentName}' component`}
+          src={captureImage.imageUrl}
+        />
+      )}
+      {hasDiff && diffVisible && (
+        <img
+          alt=""
           src={diffImage.imageUrl}
-          alt=""
-          style={{
-            maxWidth: `${(diffImage.imageWidth / captureImage.imageWidth) * 100}%`,
-          }}
+          style={{ maxWidth: `${(diffImage.imageWidth / captureImage.imageWidth) * 100}%` }}
         />
       )}
-      {focusImage && focusVisible && comparisonResult === ComparisonResult.Changed && (
+      {hasDiff && focusImage && focusVisible && (
         <img
-          src={focusImage.imageUrl}
           alt=""
-          style={{
-            maxWidth: `${(focusImage.imageWidth / captureImage.imageWidth) * 100}%`,
-          }}
+          src={focusImage.imageUrl}
+          style={{ maxWidth: `${(focusImage.imageWidth / captureImage.imageWidth) * 100}%` }}
         />
       )}
-      {!captureImage && comparisonResult === ComparisonResult.CaptureError && (
+      {hasDiff && <Icons icon="sharealt" />}
+      {hasError && !captureImage && (
         <div>
           <Icons icon="photo" />
-          <p>
+          <Text>
             A snapshot couldn’t be captured. This often occurs when a story has a code error.
             Confirm that this story successfully renders in your local Storybook and run the build
             again.
-          </p>
+          </Text>
         </div>
       )}
-      <Icons icon="sharealt" />
     </Container>
   );
 };

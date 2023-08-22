@@ -142,6 +142,7 @@ const brokenBuild: CompletedBuild = withTests(
     result: TestResult.CaptureError,
     comparisons: test.comparisons.map((comparison) => ({
       ...comparison,
+      headCapture: null,
       result: ComparisonResult.CaptureError,
     })),
   }))

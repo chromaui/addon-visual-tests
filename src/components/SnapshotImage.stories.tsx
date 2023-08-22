@@ -6,6 +6,8 @@ import { SnapshotImage } from "./SnapshotImage";
 const meta = {
   component: SnapshotImage,
   args: {
+    componentName: "Shapes",
+    storyName: "Primary",
     captureImage: { imageUrl: "/B.png", imageWidth: 880 },
     diffImage: { imageUrl: "/B-comparison.png", imageWidth: 880 },
     focusImage: { imageUrl: "/B-focus.png", imageWidth: 880 },

@@ -124,9 +124,9 @@ export const SnapshotComparison = ({ tests, isAccepting, onAccept }: SnapshotSec
       {isInProgress && <Loader />}
       {!isInProgress && selectedComparison && (
         <SnapshotImage
-          as="a"
-          href={selectedTest.webUrl}
-          target="_blank"
+          componentName={selectedTest.story.component.name}
+          storyName={selectedTest.story.name}
+          testUrl={selectedTest.webUrl}
           comparisonResult={selectedComparison.result}
           captureImage={selectedComparison.headCapture?.captureImage}
           diffImage={selectedComparison.captureDiff?.diffImage}

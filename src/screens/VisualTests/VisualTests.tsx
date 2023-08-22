@@ -156,6 +156,10 @@ const FragmentStoryTestFields = graphql(/* GraphQL */ `
     }
     story {
       storyId
+      name
+      component {
+        name
+      }
     }
   }
 `);
