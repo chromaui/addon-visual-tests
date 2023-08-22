@@ -1,3 +1,15 @@
+# v0.0.26 (Tue Aug 22 2023)
+
+#### 🐛 Bug Fix
+
+- Don't show the `SnapshotComparison` for skipped stories [#33](https://github.com/chromaui/addon-visual-tests/pull/33) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.25 (Mon Aug 21 2023)
 
 #### 🐛 Bug Fix
