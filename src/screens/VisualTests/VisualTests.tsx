@@ -305,6 +305,7 @@ export const VisualTests = ({
               `parameters.chromatic.disableSnapshot = true` from the CSF file.
             </CenterText>
             <Button
+              belowText
               small
               tertiary
               containsIcon
