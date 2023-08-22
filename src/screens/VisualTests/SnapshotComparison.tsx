@@ -33,6 +33,7 @@ interface SnapshotSectionProps {
 
 export const SnapshotComparison = ({ tests, isAccepting, onAccept }: SnapshotSectionProps) => {
   const [diffVisible, setDiffVisible] = useState(true);
+  const [focusVisible, setFocusVisible] = useState(false);
 
   const { selectedTest, selectedComparison, onSelectBrowser, onSelectViewport } = useTests(tests);
   const { isInProgress, changeCount, browserResults, viewportResults } = summarizeTests(tests);
@@ -130,6 +131,7 @@ export const SnapshotComparison = ({ tests, isAccepting, onAccept }: SnapshotSec
           captureImage={selectedComparison.headCapture?.captureImage}
           diffImage={selectedComparison.captureDiff?.diffImage}
           diffVisible={diffVisible}
+          focusVisible={focusVisible}
         />
       )}
     </>
