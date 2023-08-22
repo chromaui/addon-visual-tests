@@ -273,8 +273,6 @@ export const EmptyNoAccounts: Story = {
   parameters: {
     ...withSelectProjectsQuery({
       viewer: {
-        id: "viewer:123",
-        name: "John Doe",
         accounts: [],
       },
     }),
@@ -288,8 +286,6 @@ export const EmptyNoProjects: Story = {
   parameters: {
     ...withSelectProjectsQuery({
       viewer: {
-        id: "viewer:123",
-        name: "John Doe",
         accounts: [
           {
             id: "account:123",
