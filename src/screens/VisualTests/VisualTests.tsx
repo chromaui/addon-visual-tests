@@ -1,5 +1,5 @@
-import { Icons, Loader, TooltipNote, WithTooltip } from "@storybook/components";
-import { Icon } from "@storybook/design-system";
+import { Icons, Loader } from "@storybook/components";
+import { Icon, TooltipNote, WithTooltip } from "@storybook/design-system";
 // eslint-disable-next-line import/no-unresolved
 import { GitInfo } from "chromatic/node";
 import React, { useCallback, useEffect, useState } from "react";
