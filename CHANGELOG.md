@@ -1,3 +1,15 @@
+# v0.0.30 (Tue Aug 22 2023)
+
+#### 🐛 Bug Fix
+
+- Implement UI for 'project linked' screen [#42](https://github.com/chromaui/addon-visual-tests/pull/42) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v0.0.29 (Tue Aug 22 2023)
 
 #### 🐛 Bug Fix
