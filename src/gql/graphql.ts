@@ -761,11 +761,13 @@ export type ProjectBranchNamesArgs = {
 
 export type ProjectLastBuildArgs = {
   branches?: InputMaybe<Array<Scalars['String']['input']>>;
+  commit?: InputMaybe<Scalars['String']['input']>;
   defaultBranch?: InputMaybe<Scalars['Boolean']['input']>;
   localBuilds?: InputMaybe<LocalBuildsSpecifierInput>;
   results?: InputMaybe<Array<BuildResult>>;
   slug?: InputMaybe<Scalars['String']['input']>;
   statuses?: InputMaybe<Array<BuildStatus>>;
+  uncommittedHash?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type PublicAccountInfo = {
