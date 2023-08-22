@@ -3,12 +3,12 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { findByRole, fireEvent } from "@storybook/testing-library";
 import { graphql } from "msw";
 
-import type { BuildQuery, TestFieldsFragment } from "../../gql/graphql";
+import type { AddonVisualTestsBuildQuery, TestFieldsFragment } from "../../gql/graphql";
 import { Browser, BuildStatus, ComparisonResult, TestResult, TestStatus } from "../../gql/graphql";
 import { AnnouncedBuild, CompletedBuild, PublishedBuild, StartedBuild } from "../../types";
 import { storyWrapper } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
-import { headCapture, makeBrowserInfo, makeTest, makeViewportInfo } from "../../utils/storyData";
+import { makeBrowserInfo, makeTest } from "../../utils/storyData";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
 import * as SnapshotComparisonStories from "./SnapshotComparison.stories";
 import { VisualTests } from "./VisualTests";
@@ -24,6 +24,14 @@ const tests = [
     browsers,
     viewport: 1200,
     storyId: "button--secondary",
+  }),
+  makeTest({
+    id: "31",
+    status: TestStatus.Passed,
+    result: TestResult.Skipped,
+    browsers,
+    viewport: 1200,
+    storyId: "button--tertiary",
   }),
 ];
 
@@ -136,7 +144,9 @@ const withGraphQLMutation = (...args: Parameters<typeof graphql.mutation>) => ({
 });
 
 const withBuild = (build: AnnouncedBuild | PublishedBuild | StartedBuild | CompletedBuild) =>
-  withGraphQLQuery("Build", (req, res, ctx) => res(ctx.data({ build } as BuildQuery)));
+  withGraphQLQuery("AddonVisualTestsBuild", (req, res, ctx) =>
+    res(ctx.data({ build } as AddonVisualTestsBuildQuery))
+  );
 
 const meta = {
   component: VisualTests,
@@ -165,7 +175,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Loading: Story = {
   parameters: {
-    ...withGraphQLQuery("Build", (req, res, ctx) =>
+    ...withGraphQLQuery("AddonVisualTestsBuild", (req, res, ctx) =>
       res(ctx.status(200), ctx.data({}), ctx.delay("infinite"))
     ),
     ...withFigmaDesign(
@@ -176,7 +186,18 @@ export const Loading: Story = {
 
 export const NoBuild: Story = {
   parameters: {
-    ...withGraphQLQuery("Build", (req, res, ctx) => res(ctx.data({ build: null } as BuildQuery))),
+    ...withGraphQLQuery("AddonVisualTestsBuild", (req, res, ctx) =>
+      res(ctx.data({ build: null } as AddonVisualTestsBuildQuery))
+    ),
+  },
+};
+export const NoBuildStarting: Story = {
+  ...NoBuild,
+  args: {
+    isStarting: true,
+    ...withGraphQLQuery("AddonVisualTestsBuild", (req, res, ctx) =>
+      res(ctx.data({ build: null } as AddonVisualTestsBuildQuery))
+    ),
     // No design for this state
     // ...withFigmaDesign(""),
   },
@@ -206,25 +227,27 @@ export const Outdated: Story = {
   },
 };
 
-// This story doesn't really make sense because if the build is running it should be `IN_PROGRESS` or similar
-// export const OutdatedRunning: Story = {
-//   args: {
-//     ...Outdated.args,
-//     isRunning: true,
-//   },
-//   argTypes: { updateBuildStatus: { action: "updateBuildStatus" } },
-//   parameters: {
-//     ...Outdated.parameters,
-//   },
-// };
+export const OutdatedStarting: Story = {
+  ...Outdated,
+  args: {
+    ...Outdated.args,
+    isStarting: true,
+  },
+};
 
 export const Announced: Story = {
+  args: {
+    isStarting: true,
+  },
   parameters: {
     ...withBuild(announcedBuild),
   },
 };
 
 export const Published: Story = {
+  args: {
+    isStarting: true,
+  },
   parameters: {
     ...withBuild(publishedBuild),
   },
@@ -273,6 +296,18 @@ export const Accepted: Story = {
     ...withBuild(acceptedBuild),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-305053&t=0rxMQnkxsVpVj1qy-4"
+    ),
+  },
+};
+
+export const Skipped: Story = {
+  args: {
+    storyId: "button--tertiary",
+  },
+  parameters: {
+    ...withBuild(pendingBuild),
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2255-42087&t=a8NRPgQk3kXMyxqZ-0"
     ),
   },
 };

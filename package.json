@@ -1,6 +1,6 @@
 {
   "name": "@chromaui/addon-visual-tests",
-  "version": "0.0.23",
+  "version": "0.0.26",
   "description": "Visual Testing addon with Chromatic",
   "engines": {
     "node": ">=16.0.0",
@@ -62,7 +62,8 @@
     "chromatic": "6.23.0",
     "date-fns": "^2.30.0",
     "pluralize": "^8.0.0",
-    "urql": "^4.0.3"
+    "urql": "^4.0.3",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^4.0.1",
