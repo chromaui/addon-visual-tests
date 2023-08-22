@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 
-import { BrowserInfo, TestFieldsFragment, ViewportInfo } from "../gql/graphql";
+import { BrowserInfo, StoryTestFieldsFragment, ViewportInfo } from "../gql/graphql";
 
 type ViewportData = Pick<ViewportInfo, "id" | "name">;
 type BrowserData = Pick<BrowserInfo, "id" | "key" | "name">;
@@ -9,8 +9,8 @@ type BrowserData = Pick<BrowserInfo, "id" | "key" | "name">;
  * Pick a single test+comparison (by viewport+browser) from a set of tests
  * for the same story.
  */
-export function useTests(tests: TestFieldsFragment[]) {
-  const [selectedTest, onSelectTest] = useState<TestFieldsFragment>(tests[0]);
+export function useTests(tests: StoryTestFieldsFragment[]) {
+  const [selectedTest, onSelectTest] = useState<StoryTestFieldsFragment>(tests[0]);
   const [selectedBrowserId, onSelectBrowserId] = useState<BrowserInfo["id"]>(
     selectedTest.comparisons[0].browser.id
   );

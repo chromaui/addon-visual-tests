@@ -63,12 +63,12 @@ async function serverChannel(
         isLocalBuild: true,
         onTaskComplete(ctx: any) {
           console.log(`Completed task '${ctx.title}'`);
-          if (ctx.announcedBuild && !announced) {
+          if (!announced && ctx.announcedBuild) {
             console.debug("emitting", BUILD_ANNOUNCED, ctx.announcedBuild.id);
             channel.emit(BUILD_ANNOUNCED, ctx.announcedBuild.id);
             announced = true;
           }
-          if (ctx.build && !started) {
+          if (announced && !started && ctx.build) {
             console.debug("emitting", BUILD_STARTED, ctx.build.status);
             channel.emit(BUILD_STARTED, ctx.build.status);
             started = true;
