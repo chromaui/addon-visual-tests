@@ -1,3 +1,15 @@
+# v0.0.31 (Wed Aug 23 2023)
+
+#### 🐛 Bug Fix
+
+- Fix bug that hid the last project in the list [#27](https://github.com/chromaui/addon-visual-tests/pull/27) ([@weeksling](https://github.com/weeksling))
+
+#### Authors: 1
+
+- Matthew Weeks ([@weeksling](https://github.com/weeksling))
+
+---
+
 # v0.0.30 (Tue Aug 22 2023)
 
 #### 🐛 Bug Fix
