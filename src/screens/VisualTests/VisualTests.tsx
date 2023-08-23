@@ -56,7 +56,6 @@ const FragmentBuildFields = graphql(/* GraphQL */ `
     number
     branch
     commit
-    committedAt
     uncommittedHash
     status
     browsers {
