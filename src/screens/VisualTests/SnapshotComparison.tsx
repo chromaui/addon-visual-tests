@@ -1,4 +1,4 @@
-import { Icons, Loader } from "@storybook/components";
+import { Icons, Loader, TooltipNote, WithTooltip } from "@storybook/components";
 import { styled } from "@storybook/theming";
 import React, { useState } from "react";
 
@@ -28,10 +28,16 @@ const Divider = styled.div(({ theme }) => ({
 interface SnapshotSectionProps {
   tests: StoryTestFieldsFragment[];
   isAccepting: boolean;
+  baselineImageVisible: boolean;
   onAccept: (testId: StoryTestFieldsFragment["id"], batch?: ReviewTestBatch) => void;
 }
 
-export const SnapshotComparison = ({ tests, isAccepting, onAccept }: SnapshotSectionProps) => {
+export const SnapshotComparison = ({
+  tests,
+  isAccepting,
+  onAccept,
+  baselineImageVisible,
+}: SnapshotSectionProps) => {
   const [diffVisible, setDiffVisible] = useState(true);
   const [focusVisible, setFocusVisible] = useState(false);
 
@@ -49,37 +55,65 @@ export const SnapshotComparison = ({ tests, isAccepting, onAccept }: SnapshotSec
         </Bar>
       ) : (
         <Bar>
-          {selectedComparison?.result === ComparisonResult.Changed && (
-            <Col>
-              <IconButton active={diffVisible} onClick={() => setDiffVisible(!diffVisible)}>
-                <Icons icon="contrast" />
-              </IconButton>
-            </Col>
-          )}
           {viewportResults.length > 0 && (
             <Col>
-              <ViewportSelector
-                selectedViewport={selectedTest.parameters.viewport}
-                viewportResults={viewportResults}
-                onSelectViewport={onSelectViewport}
-              />
+              <WithTooltip
+                tooltip={<TooltipNote note="Switch viewport" />}
+                trigger="hover"
+                hasChrome={false}
+              >
+                <ViewportSelector
+                  selectedViewport={selectedTest.parameters.viewport}
+                  viewportResults={viewportResults}
+                  onSelectViewport={onSelectViewport}
+                />
+              </WithTooltip>
             </Col>
           )}
           {browserResults.length > 0 && (
             <Col>
-              <BrowserSelector
-                selectedBrowser={selectedComparison.browser}
-                browserResults={browserResults}
-                onSelectBrowser={onSelectBrowser}
-              />
+              <WithTooltip
+                tooltip={<TooltipNote note="Switch browser" />}
+                trigger="hover"
+                hasChrome={false}
+              >
+                <BrowserSelector
+                  selectedBrowser={selectedComparison.browser}
+                  browserResults={browserResults}
+                  onSelectBrowser={onSelectBrowser}
+                />
+              </WithTooltip>
+            </Col>
+          )}
+          {selectedComparison?.result === ComparisonResult.Changed && (
+            <Col>
+              <WithTooltip
+                tooltip={<TooltipNote note="Toggle diff" />}
+                trigger="hover"
+                hasChrome={false}
+              >
+                <IconButton
+                  data-testid="button-diff-visible"
+                  active={diffVisible}
+                  onClick={() => setDiffVisible(!diffVisible)}
+                >
+                  <Icons icon="contrast" />
+                </IconButton>
+              </WithTooltip>
             </Col>
           )}
           {changeCount > 0 && selectedTest.status !== TestStatus.Accepted && (
             <>
               <Col push>
-                <IconButton secondary onClick={() => onAccept(selectedTest.id)}>
-                  Accept
-                </IconButton>
+                <WithTooltip
+                  tooltip={<TooltipNote note="Accept this snapshot" />}
+                  trigger="hover"
+                  hasChrome={false}
+                >
+                  <IconButton secondary onClick={() => onAccept(selectedTest.id)}>
+                    Accept
+                  </IconButton>
+                </WithTooltip>
               </Col>
               <Col>
                 <TooltipMenu
@@ -128,7 +162,11 @@ export const SnapshotComparison = ({ tests, isAccepting, onAccept }: SnapshotSec
           storyName={selectedTest.story.name}
           testUrl={selectedTest.webUrl}
           comparisonResult={selectedComparison.result}
-          captureImage={selectedComparison.headCapture?.captureImage}
+          captureImage={
+            baselineImageVisible
+              ? selectedComparison.baseCapture?.captureImage
+              : selectedComparison.headCapture?.captureImage
+          }
           diffImage={selectedComparison.captureDiff?.diffImage}
           diffVisible={diffVisible}
           focusVisible={focusVisible}

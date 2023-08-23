@@ -1,4 +1,5 @@
 import { Icons, Loader } from "@storybook/components";
+import { Icon, TooltipNote, WithTooltip } from "@storybook/design-system";
 // eslint-disable-next-line import/no-unresolved
 import { GitInfo } from "chromatic/node";
 import React, { useCallback, useEffect, useState } from "react";
@@ -8,6 +9,7 @@ import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
 import { FooterMenu } from "../../components/FooterMenu";
 import { Heading } from "../../components/Heading";
+import { IconButton } from "../../components/IconButton";
 import { ProgressIcon } from "../../components/icons/ProgressIcon";
 import { Bar, Col, Row, Section, Sections, Text } from "../../components/layout";
 import { Text as CenterText } from "../../components/Text";
@@ -134,6 +136,12 @@ const FragmentStoryTestFields = graphql(/* GraphQL */ `
         }
       }
       headCapture {
+        captureImage {
+          imageUrl
+          imageWidth
+        }
+      }
+      baseCapture {
         captureImage {
           imageUrl
           imageWidth
@@ -279,6 +287,8 @@ export const VisualTests = ({
 
   const [settingsVisible, setSettingsVisible] = useState(false);
   const [warningsVisible, setWarningsVisible] = useState(false);
+  const [baselineImageVisible, setBaselineImageVisible] = useState(false);
+  const toggleBaselineImage = () => setBaselineImageVisible(!baselineImageVisible);
 
   if (!build || error) {
     return (
@@ -374,7 +384,9 @@ export const VisualTests = ({
           {...{ tests, isOutdated, startedAt, isStarting, startDevBuild, isBuildFailed }}
         />
         {!isStarting && tests && tests.length > 0 && (
-          <SnapshotComparison {...{ tests, isAccepting, isOutdated, onAccept }} />
+          <SnapshotComparison
+            {...{ tests, isAccepting, isOutdated, onAccept, baselineImageVisible }}
+          />
         )}
       </Section>
 
@@ -387,9 +399,36 @@ export const VisualTests = ({
       <Section>
         <Bar>
           <Col>
-            <Text style={{ marginLeft: 5 }}>Latest snapshot on {build.branch}</Text>
+            <WithTooltip
+              tooltip={<TooltipNote note="Switch snapshot" />}
+              trigger="hover"
+              hasChrome={false}
+            >
+              <IconButton
+                data-testid="button-toggle-snapshot"
+                onClick={() => toggleBaselineImage()}
+              >
+                <Icon icon="transfer" />
+              </IconButton>
+            </WithTooltip>
+          </Col>
+          <Col style={{ overflow: "hidden", whiteSpace: "nowrap" }}>
+            {baselineImageVisible ? (
+              <Text style={{ marginLeft: 5, width: "100%" }}>
+                <b>Baseline</b> Build {build.number} on {build.branch}
+              </Text>
+            ) : (
+              <Text style={{ marginLeft: 5, width: "100%" }}>
+                <b>Latest</b> Build {build.number} on {build.branch}
+              </Text>
+            )}
           </Col>
           {/* <Col push>
+            <WithTooltip
+              tooltip={<TooltipNote note="Render settings" />}
+              trigger="hover"
+              hasChrome={false}
+            >
             <IconButton
               active={settingsVisible}
               aria-label={`${settingsVisible ? "Hide" : "Show"} render settings`}
@@ -400,19 +439,27 @@ export const VisualTests = ({
             >
               <Icons icon="controls" />
             </IconButton>
+          </WithTooltip>
           </Col>
           <Col>
-            <IconButton
-              active={warningsVisible}
-              aria-label={`${warningsVisible ? "Hide" : "Show"} warnings`}
-              onClick={() => {
-                setWarningsVisible(!warningsVisible);
-                setSettingsVisible(false);
-              }}
-              status="warning"
+            <WithTooltip
+              tooltip={<TooltipNote note="View warnings" />}
+              trigger="hover"
+              hasChrome={false}
             >
-              <Icons icon="alert" />2
-            </IconButton>
+              <IconButton
+                active={warningsVisible}
+                aria-label={`${warningsVisible ? "Hide" : "Show"} warnings`}
+                onClick={() => {
+                  setWarningsVisible(!warningsVisible);
+                  setSettingsVisible(false);
+                }}
+                status="warning"
+              >
+                <Icons icon="alert" />2
+              </IconButton>
+
+            </WithTooltip>
           </Col> */}
           <Col push>
             <FooterMenu setAccessToken={setAccessToken} />
