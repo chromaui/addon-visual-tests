@@ -197,7 +197,6 @@ interface VisualTestsProps {
   storyId: string;
 }
 
-let last: any;
 export const VisualTests = ({
   isStarting,
   startDevBuild,
@@ -258,13 +257,7 @@ export const VisualTests = ({
     testsToStatusUpdate(getFragment(FragmentStatusTestFields, build.testsForStatus.nodes));
 
   useEffect(() => {
-    last = {
-      buildStatusUpdate,
-      string: JSON.stringify(buildStatusUpdate),
-    };
-    if (buildStatusUpdate) {
-      updateBuildStatus(buildStatusUpdate);
-    }
+    if (buildStatusUpdate) updateBuildStatus(buildStatusUpdate);
     // We use the stringified version of buildStatusUpdate to do a deep diff
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(buildStatusUpdate), updateBuildStatus]);
