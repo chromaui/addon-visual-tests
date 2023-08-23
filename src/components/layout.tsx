@@ -44,6 +44,12 @@ export const Text = styled.div(({ theme }) => ({
   b: {
     color: theme.color.defaultText,
   },
+  code: {
+    fontSize: theme.typography.size.s1,
+    border: `1px solid ${theme.color.border}`,
+    borderRadius: 3,
+    padding: "0 3px",
+  },
   small: {
     fontSize: theme.typography.size.s1,
   },

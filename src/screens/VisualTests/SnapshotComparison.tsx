@@ -39,6 +39,7 @@ export const SnapshotComparison = ({
   baselineImageVisible,
 }: SnapshotSectionProps) => {
   const [diffVisible, setDiffVisible] = useState(true);
+  const [focusVisible, setFocusVisible] = useState(false);
 
   const { selectedTest, selectedComparison, onSelectBrowser, onSelectViewport } = useTests(tests);
   const { isInProgress, changeCount, browserResults, viewportResults } = summarizeTests(tests);
@@ -156,32 +157,20 @@ export const SnapshotComparison = ({
 
       {isInProgress && <Loader />}
       {!isInProgress && selectedComparison && (
-        <SnapshotImage as="a" href={selectedTest.webUrl} target="_blank">
-          {baselineImageVisible
-            ? selectedComparison.headCapture?.captureImage && (
-                <img src={selectedComparison.baseCapture.captureImage?.imageUrl} alt="" />
-              )
-            : selectedComparison.headCapture?.captureImage && (
-                <img src={selectedComparison.headCapture.captureImage?.imageUrl} alt="" />
-              )}
-          {diffVisible &&
-            selectedComparison.result === ComparisonResult.Changed &&
-            selectedComparison.captureDiff?.diffImage && (
-              <img src={selectedComparison.captureDiff.diffImage?.imageUrl} alt="" />
-            )}
-          {selectedComparison.result === ComparisonResult.CaptureError &&
-            !selectedComparison.headCapture?.captureImage && (
-              <div>
-                <Icons icon="photo" />
-                <p>
-                  A snapshot couldn’t be captured. This often occurs when a story has a code error.
-                  Confirm that this story successfully renders in your local Storybook and run the
-                  build again.
-                </p>
-              </div>
-            )}
-          <Icons icon="sharealt" />
-        </SnapshotImage>
+        <SnapshotImage
+          componentName={selectedTest.story.component.name}
+          storyName={selectedTest.story.name}
+          testUrl={selectedTest.webUrl}
+          comparisonResult={selectedComparison.result}
+          captureImage={
+            baselineImageVisible
+              ? selectedComparison.baseCapture?.captureImage
+              : selectedComparison.headCapture?.captureImage
+          }
+          diffImage={selectedComparison.captureDiff?.diffImage}
+          diffVisible={diffVisible}
+          focusVisible={focusVisible}
+        />
       )}
     </>
   );
