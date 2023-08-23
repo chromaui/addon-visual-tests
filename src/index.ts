@@ -46,22 +46,29 @@ const observeGitInfo = async (
 
 async function serverChannel(
   channel: Channel,
-  { projectToken: initialProjectToken }: { projectToken: string }
+  {
+    projectToken: initialProjectToken,
+    buildScriptName,
+  }: { projectToken?: string; buildScriptName?: string }
 ) {
+  console.log({ initialProjectToken, buildScriptName });
   let projectToken = initialProjectToken;
   channel.on(START_BUILD, async () => {
     let announced = false;
     let started = false;
     await run({
-      // Currently we have to have this flag. We should move the check to after flags have been
-      // parsed into options.
-      flags: { projectToken },
+      // Currently we have to have these flags.
+      // We should move the checks to after flags have been parsed into options.
+      flags: {
+        projectToken,
+        buildScriptName,
+      },
       options: {
         // We might want to drop this later and instead record "uncommitted hashes" on builds
         forceRebuild: true,
         // Builds initiated from the addon are always considered local
         isLocalBuild: true,
-        onTaskComplete(ctx: any) {
+        onTaskComplete(ctx) {
           console.log(`Completed task '${ctx.title}'`);
           if (!announced && ctx.announcedBuild) {
             console.debug("emitting", BUILD_ANNOUNCED, ctx.announcedBuild.id);
@@ -74,7 +81,8 @@ async function serverChannel(
             started = true;
           }
         },
-      } as any,
+        // as any due to CLI mistyping: https://github.com/chromaui/chromatic-cli/pull/800
+      } as Partial<Parameters<typeof run>[0]["options"]> as any,
     });
   });
 
