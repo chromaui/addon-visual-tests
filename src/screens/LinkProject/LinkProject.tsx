@@ -7,6 +7,7 @@ import { Container } from "../../components/Container";
 import { FooterMenu } from "../../components/FooterMenu";
 import { Heading } from "../../components/Heading";
 import { Bar, Col, Section, Sections, Text } from "../../components/layout";
+import { Stack } from "../../components/Stack";
 import { graphql } from "../../gql";
 import { SelectProjectsQueryQuery } from "../../gql/graphql";
 
@@ -58,21 +59,17 @@ const ListHeading = styled.div`
   border-bottom: 1px solid ${({ theme }) => theme.color.mediumlight};
 `;
 
-const ListHeadingText = styled.h1`
-  font-size: ${({ theme }) => theme.typography.size.l2} px;
-  font-weight: ${({ theme }) => theme.typography.weight.bold};
-  color: ${({ theme }) => theme.color.mediumdark};
-  background-color: inherit;
-  padding: 9px 15px;
-`;
-
 const Left = styled.div`
   flex: 1;
   background-color: white;
+  display: flex;
+  flex-direction: column;
 `;
 const Right = styled.div`
   flex: 1;
   background-color: ${({ theme }) => theme.color.lighter};
+  display: flex;
+  flex-direction: column;
 `;
 
 const ProjectPicker = styled.div`
@@ -116,6 +113,12 @@ function SelectProject({
     [setSelectedAccount]
   );
 
+  React.useEffect(() => {
+    if (data?.viewer?.accounts) {
+      onSelectAccount(data.viewer.accounts[0]);
+    }
+  }, [data, onSelectAccount]);
+
   const [isSelectingProject, setSelectingProject] = useState(false);
 
   const handleSelectProject = React.useCallback(
@@ -133,47 +136,51 @@ function SelectProject({
 
   return (
     <Sections>
-      {fetching && <p>Loading...</p>}
-      {error && <p>{error.message}</p>}
-      {!fetching && data.viewer?.accounts && (
-        <Section grow>
-          <Container>
-            <Heading>Select a Project</Heading>
-            <Text>Baselines will be used with this project.</Text>
-            <ProjectPicker>
-              <Left>
-                <ListHeading>Accounts</ListHeading>
-                <List>
-                  {data.viewer.accounts?.map((account) => (
-                    <ListItem
-                      key={account.id}
-                      title={account.name}
-                      left={<RepositoryOwnerAvatar src={account.avatarUrl} size="tiny" />}
-                      onClick={() => onSelectAccount(account)}
-                      active={selectedAccount?.id === account.id}
-                    />
-                  ))}
-                </List>
-              </Left>
-              <Right>
-                <ListHeading>Projects</ListHeading>
-                <List>
-                  {selectedAccount?.projects?.map((project) => (
-                    <ListItem
-                      appearance="secondary"
-                      key={project.id}
-                      title={project.name}
-                      right={<Icon icon="add" aria-label={project.name} />}
-                      onClick={() => handleSelectProject(project)}
-                      disabled={isSelectingProject}
-                    />
-                  ))}
-                </List>
-              </Right>
-            </ProjectPicker>
-          </Container>
-        </Section>
-      )}
+      <Section grow>
+        <Container>
+          <Stack>
+            {fetching && <p>Loading...</p>}
+            {error && <p>{error.message}</p>}
+            {!fetching && data.viewer?.accounts && (
+              <>
+                <Heading>Select a Project</Heading>
+                <Text>Baselines will be used with this project.</Text>
+                <ProjectPicker>
+                  <Left>
+                    <ListHeading>Accounts</ListHeading>
+                    <List data-testid="left-list">
+                      {data.viewer.accounts?.map((account) => (
+                        <ListItem
+                          key={account.id}
+                          title={account.name}
+                          left={<RepositoryOwnerAvatar src={account.avatarUrl} size="tiny" />}
+                          onClick={() => onSelectAccount(account)}
+                          active={selectedAccount?.id === account.id}
+                        />
+                      ))}
+                    </List>
+                  </Left>
+                  <Right>
+                    <ListHeading>Projects</ListHeading>
+                    <List data-testid="right-list">
+                      {selectedAccount?.projects?.map((project) => (
+                        <ListItem
+                          appearance="secondary"
+                          key={project.id}
+                          title={project.name}
+                          right={<Icon icon="add" aria-label={project.name} />}
+                          onClick={() => handleSelectProject(project)}
+                          disabled={isSelectingProject}
+                        />
+                      ))}
+                    </List>
+                  </Right>
+                </ProjectPicker>
+              </>
+            )}
+          </Stack>
+        </Container>
+      </Section>
       <Section>
         <Bar>
           <Col push />
