@@ -1,3 +1,15 @@
+# v0.0.34 (Wed Aug 23 2023)
+
+#### 🐛 Bug Fix
+
+- add story for baselineImageVisible: true on SnapshotComparison [#47](https://github.com/chromaui/addon-visual-tests/pull/47) ([@weeksling](https://github.com/weeksling))
+
+#### Authors: 1
+
+- Matthew Weeks ([@weeksling](https://github.com/weeksling))
+
+---
+
 # v0.0.33 (Wed Aug 23 2023)
 
 #### 🐛 Bug Fix
