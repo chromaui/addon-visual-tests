@@ -190,6 +190,7 @@ interface VisualTestsProps {
   projectId: string;
   gitInfo: GitInfo;
   isStarting: boolean;
+  lastDevBuildId?: string;
   startDevBuild: () => void;
   setAccessToken: (accessToken: string | null) => void;
   updateBuildStatus: (update: StatusUpdate) => void;
@@ -198,6 +199,7 @@ interface VisualTestsProps {
 
 export const VisualTests = ({
   isStarting,
+  lastDevBuildId,
   startDevBuild,
   setAccessToken,
   updateBuildStatus,
