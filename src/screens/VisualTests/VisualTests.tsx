@@ -461,7 +461,7 @@ export const VisualTests = ({
 
             </WithTooltip>
           </Col> */}
-          <Col>
+          <Col push>
             <FooterMenu setAccessToken={setAccessToken} />
           </Col>
         </Bar>
