@@ -25,6 +25,7 @@ export const makeViewportInfo = (width: number): ViewportInfo => ({
 export const baseCapture: StoryTestFieldsFragment["comparisons"][number]["baseCapture"] = {
   captureImage: {
     imageUrl: "/A.png",
+    imageWidth: 880,
   },
 };
 
