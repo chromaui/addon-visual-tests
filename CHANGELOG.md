@@ -1,3 +1,15 @@
+# v0.0.33 (Wed Aug 23 2023)
+
+#### 🐛 Bug Fix
+
+- Add toggle to show baseline snapshot image [#38](https://github.com/chromaui/addon-visual-tests/pull/38) ([@weeksling](https://github.com/weeksling))
+
+#### Authors: 1
+
+- Matthew Weeks ([@weeksling](https://github.com/weeksling))
+
+---
+
 # v0.0.32 (Wed Aug 23 2023)
 
 #### 🐛 Bug Fix
