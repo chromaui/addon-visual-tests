@@ -29,8 +29,6 @@ import { Warnings } from "./Warnings";
 
 const QueryBuild = graphql(/* GraphQL */ `
   query AddonVisualTestsBuild(
-    $hasBuildId: Boolean!
-    $buildId: ID!
     $projectId: ID!
     $branch: String!
     $gitUserEmailHash: String!
@@ -38,10 +36,7 @@ const QueryBuild = graphql(/* GraphQL */ `
     $storyId: String!
     $testStatuses: [TestStatus!]!
   ) {
-    build(id: $buildId) @include(if: $hasBuildId) {
-      ...BuildFields
-    }
-    project(id: $projectId) @skip(if: $hasBuildId) {
+    project(id: $projectId) {
       name
       lastBuild(
         branches: [$branch]
@@ -61,6 +56,7 @@ const FragmentBuildFields = graphql(/* GraphQL */ `
     number
     branch
     commit
+    committedAt
     uncommittedHash
     status
     browsers {
@@ -195,7 +191,6 @@ interface VisualTestsProps {
   projectId: string;
   gitInfo: GitInfo;
   isStarting: boolean;
-  lastDevBuildId?: string;
   startDevBuild: () => void;
   setAccessToken: (accessToken: string | null) => void;
   updateBuildStatus: (update: StatusUpdate) => void;
@@ -205,7 +200,6 @@ interface VisualTestsProps {
 let last: any;
 export const VisualTests = ({
   isStarting,
-  lastDevBuildId,
   startDevBuild,
   setAccessToken,
   updateBuildStatus,
@@ -219,8 +213,6 @@ export const VisualTests = ({
   >({
     query: QueryBuild,
     variables: {
-      hasBuildId: !!lastDevBuildId,
-      buildId: lastDevBuildId || "",
       projectId,
       storyId,
       testStatuses: Object.keys(statusMap) as any as TestStatus[],
@@ -257,7 +249,7 @@ export const VisualTests = ({
     [reviewTest]
   );
 
-  const build = getFragment(FragmentBuildFields, data?.build || data?.project?.lastBuild);
+  const build = getFragment(FragmentBuildFields, data?.project?.lastBuild);
   const isOutdated = build && build.uncommittedHash !== gitInfo.uncommittedHash;
 
   const buildStatusUpdate =
