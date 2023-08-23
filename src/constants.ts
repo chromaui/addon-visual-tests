@@ -7,6 +7,7 @@ export const {
 export const ADDON_ID = "chromaui/addon-visual-tests";
 export const TOOL_ID = `${ADDON_ID}/tool`;
 export const PANEL_ID = `${ADDON_ID}/panel`;
+export const SIDEBAR_BOTTOM_ID = `${ADDON_ID}/sidebarBottom`;
 export const ACCESS_TOKEN_KEY = `${ADDON_ID}/access-token/${CHROMATIC_BASE_URL}`;
 export const DEV_BUILD_ID_KEY = `${ADDON_ID}/dev-build-id`;
 
