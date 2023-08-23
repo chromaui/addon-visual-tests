@@ -82,3 +82,10 @@ export const WithSingleTestAccepted: Story = {
     tests: [makeTest({ status: TestStatus.Accepted })],
   },
 };
+
+export const WithSingleTestShowingBaseline: Story = {
+  args: {
+    tests: [makeTest({ status: TestStatus.Pending })],
+    baselineImageVisible: true,
+  },
+};
