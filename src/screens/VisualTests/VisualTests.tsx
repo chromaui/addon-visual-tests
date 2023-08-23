@@ -130,11 +130,13 @@ const FragmentStoryTestFields = graphql(/* GraphQL */ `
       captureDiff {
         diffImage {
           imageUrl
+          imageWidth
         }
       }
       headCapture {
         captureImage {
           imageUrl
+          imageWidth
         }
       }
       viewport {
@@ -154,6 +156,10 @@ const FragmentStoryTestFields = graphql(/* GraphQL */ `
     }
     story {
       storyId
+      name
+      component {
+        name
+      }
     }
   }
 `);
