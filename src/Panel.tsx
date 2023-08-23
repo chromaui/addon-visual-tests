@@ -65,6 +65,8 @@ export const Panel = ({ active }: PanelProps) => {
       },
       [GIT_INFO]: (info: GitInfo) => {
         setGitInfo(info);
+        // Reset the build ID when the Git info changes.
+        localStorage.removeItem(DEV_BUILD_ID_KEY);
         logger.debug("Updated Git info:", info);
       },
     },
