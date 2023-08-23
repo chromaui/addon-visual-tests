@@ -1,3 +1,15 @@
+# v0.0.32 (Wed Aug 23 2023)
+
+#### 🐛 Bug Fix
+
+- Refactor `SnapshotImage` to handle overlay images and scaling [#40](https://github.com/chromaui/addon-visual-tests/pull/40) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v0.0.31 (Wed Aug 23 2023)
 
 #### 🐛 Bug Fix
