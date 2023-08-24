@@ -1,3 +1,15 @@
+# v0.0.36 (Thu Aug 24 2023)
+
+#### 🐛 Bug Fix
+
+- Always show last (potentially local) build on branch [#46](https://github.com/chromaui/addon-visual-tests/pull/46) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v0.0.35 (Thu Aug 24 2023)
 
 #### 🐛 Bug Fix
