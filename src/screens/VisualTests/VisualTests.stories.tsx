@@ -167,7 +167,7 @@ const withGraphQLMutation = (...args: Parameters<typeof graphql.mutation>) => ({
 
 const withBuild = (build: AnnouncedBuild | PublishedBuild | StartedBuild | CompletedBuild) =>
   withGraphQLQuery("AddonVisualTestsBuild", (req, res, ctx) =>
-    res(ctx.data({ build } as AddonVisualTestsBuildQuery))
+    res(ctx.data({ project: { name: "acme", lastBuild: build } } as AddonVisualTestsBuildQuery))
   );
 
 const meta = {
