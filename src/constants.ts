@@ -2,6 +2,7 @@ export const {
   CHROMATIC_INDEX_URL,
   CHROMATIC_BASE_URL = CHROMATIC_INDEX_URL || "https://www.chromatic.com",
   CHROMATIC_ADDON_NAME = "@chromaui/addon-visual-tests",
+  CHROMATIC_API_URL = `${CHROMATIC_BASE_URL}/api`,
 } = process.env;
 
 export const ADDON_ID = "chromaui/addon-visual-tests";
