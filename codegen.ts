@@ -1,7 +1,7 @@
 import { CodegenConfig } from "@graphql-codegen/cli";
 
 const config: CodegenConfig = {
-  schema: "https://www.dev-chromatic.com/api",
+  schema: "src/gql/public-schema.graphql",
   documents: ["src/**/*.tsx"],
   ignoreNoDocuments: true, // for better experience with the watcher
   generates: {
