@@ -22,6 +22,7 @@ const meta = {
     }),
     isAccepting: false,
     onAccept: action("onAccept"),
+    baselineImageVisible: false,
   },
 } satisfies Meta<typeof SnapshotComparison>;
 
@@ -79,5 +80,12 @@ export const WithSingleTestAccepting: Story = {
 export const WithSingleTestAccepted: Story = {
   args: {
     tests: [makeTest({ status: TestStatus.Accepted })],
+  },
+};
+
+export const WithSingleTestShowingBaseline: Story = {
+  args: {
+    tests: [makeTest({ status: TestStatus.Pending })],
+    baselineImageVisible: true,
   },
 };
