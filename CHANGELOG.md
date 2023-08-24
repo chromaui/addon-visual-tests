@@ -1,3 +1,15 @@
+# v0.0.35 (Thu Aug 24 2023)
+
+#### 🐛 Bug Fix
+
+- Read configDir and use for `main.js` location [#39](https://github.com/chromaui/addon-visual-tests/pull/39) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.34 (Wed Aug 23 2023)
 
 #### 🐛 Bug Fix
