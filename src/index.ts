@@ -47,9 +47,10 @@ const observeGitInfo = async (
 async function serverChannel(
   channel: Channel,
   {
+    configDir,
     projectToken: initialProjectToken,
     buildScriptName,
-  }: { projectToken?: string; buildScriptName?: string }
+  }: { configDir: string; projectToken: string; buildScriptName?: string }
 ) {
   let projectToken = initialProjectToken;
   channel.on(START_BUILD, async () => {
@@ -90,7 +91,7 @@ async function serverChannel(
     async ({ projectId, projectToken: updatedProjectToken }: UpdateProjectPayload) => {
       projectToken = updatedProjectToken;
 
-      const mainPath = await findConfig("main");
+      const mainPath = await findConfig(configDir, "main");
       const MainConfig = await readConfig(mainPath);
 
       const addonsConfig = MainConfig.getFieldValue(["addons"]);

@@ -1,3 +1,63 @@
+# v0.0.36 (Thu Aug 24 2023)
+
+#### 🐛 Bug Fix
+
+- Always show last (potentially local) build on branch [#46](https://github.com/chromaui/addon-visual-tests/pull/46) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.35 (Thu Aug 24 2023)
+
+#### 🐛 Bug Fix
+
+- Read configDir and use for `main.js` location [#39](https://github.com/chromaui/addon-visual-tests/pull/39) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.34 (Wed Aug 23 2023)
+
+#### 🐛 Bug Fix
+
+- add story for baselineImageVisible: true on SnapshotComparison [#47](https://github.com/chromaui/addon-visual-tests/pull/47) ([@weeksling](https://github.com/weeksling))
+
+#### Authors: 1
+
+- Matthew Weeks ([@weeksling](https://github.com/weeksling))
+
+---
+
+# v0.0.33 (Wed Aug 23 2023)
+
+#### 🐛 Bug Fix
+
+- Add toggle to show baseline snapshot image [#38](https://github.com/chromaui/addon-visual-tests/pull/38) ([@weeksling](https://github.com/weeksling))
+
+#### Authors: 1
+
+- Matthew Weeks ([@weeksling](https://github.com/weeksling))
+
+---
+
+# v0.0.32 (Wed Aug 23 2023)
+
+#### 🐛 Bug Fix
+
+- Refactor `SnapshotImage` to handle overlay images and scaling [#40](https://github.com/chromaui/addon-visual-tests/pull/40) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v0.0.31 (Wed Aug 23 2023)
 
 #### 🐛 Bug Fix

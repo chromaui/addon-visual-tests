@@ -1,7 +1,7 @@
 import { action } from "@storybook/addon-actions";
 import { expect } from "@storybook/jest";
 import type { Meta, StoryObj } from "@storybook/react";
-import { findByRole, fireEvent, waitFor } from "@storybook/testing-library";
+import { findByRole, findByTestId, fireEvent, waitFor } from "@storybook/testing-library";
 import { graphql } from "msw";
 
 import type {
@@ -142,6 +142,7 @@ const brokenBuild: CompletedBuild = withTests(
     result: TestResult.CaptureError,
     comparisons: test.comparisons.map((comparison) => ({
       ...comparison,
+      headCapture: null,
       result: ComparisonResult.CaptureError,
     })),
   }))
@@ -166,7 +167,7 @@ const withGraphQLMutation = (...args: Parameters<typeof graphql.mutation>) => ({
 
 const withBuild = (build: AnnouncedBuild | PublishedBuild | StartedBuild | CompletedBuild) =>
   withGraphQLQuery("AddonVisualTestsBuild", (req, res, ctx) =>
-    res(ctx.data({ build } as AddonVisualTestsBuildQuery))
+    res(ctx.data({ project: { name: "acme", lastBuild: build } } as AddonVisualTestsBuildQuery))
   );
 
 const meta = {
@@ -301,6 +302,19 @@ export const Pending: Story = {
       });
     });
   },
+};
+
+export const ToggleSnapshot: Story = {
+  parameters: {
+    ...withBuild(pendingBuild),
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=1782%3A446732&mode=design&t=krpUfPW0tIoADqu5-1"
+    ),
+  },
+  play: playAll(async ({ canvasElement }) => {
+    const button = await findByTestId(canvasElement, "button-toggle-snapshot");
+    await fireEvent.click(button);
+  }),
 };
 
 export const Accepting: Story = {
