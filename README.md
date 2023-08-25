@@ -15,6 +15,11 @@ yarn add --dev @chromaui/visual-tests
 "addons": ["@chromaui/visual-tests"]
 ```
 
+### Updating GraphQL schema
+
+The addon uses the Chromatic public GraphQL API. We rely on its schema to generate type definitions. The schema needs to be manually updated whenever it changes.
+To update, take https://github.com/chromaui/chromatic/blob/main/lib/schema/public-schema.graphql and save it under `src/gql/public-schema.graphql`.
+
 ### Troubleshooting
 
 If you see:
