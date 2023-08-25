@@ -196,7 +196,7 @@ const MutationReviewTest = graphql(/* GraphQL */ `
 
 interface VisualTestsProps {
   projectId: string;
-  gitInfo: GitInfo;
+  gitInfo: Pick<GitInfo, "branch" | "slug" | "userEmailHash" | "uncommittedHash">;
   isStarting: boolean;
   lastDevBuildId?: string;
   startDevBuild: () => void;
