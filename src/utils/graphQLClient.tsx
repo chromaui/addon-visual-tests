@@ -1,15 +1,17 @@
-import React, { useState } from "react";
+import React from "react";
 import { Client, fetchExchange, Provider } from "urql";
 import { v4 as uuid } from "uuid";
 
-import { ACCESS_TOKEN_KEY, CHROMATIC_API_URL } from "../constants";
+import { ACCESS_TOKEN_KEY, ADDON_ID, CHROMATIC_API_URL } from "../constants";
+import { useSharedState } from "./useSharedState";
 
 export { Provider };
 
 let currentToken: string = localStorage.getItem(ACCESS_TOKEN_KEY);
+const accessTokenSharedStateKey = `${ADDON_ID}/accessToken`;
 
 export const useAccessToken = () => {
-  const [token, setToken] = useState(currentToken);
+  const [token, setToken] = useSharedState<string>(accessTokenSharedStateKey, currentToken);
 
   const updateToken = (newToken: string) => {
     currentToken = newToken;
