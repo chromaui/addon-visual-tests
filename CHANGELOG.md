@@ -1,3 +1,27 @@
+# v0.0.37 (Fri Aug 25 2023)
+
+#### 🐛 Bug Fix
+
+- Allow passing `buildScriptName` as addon option [#44](https://github.com/chromaui/addon-visual-tests/pull/44) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.36 (Thu Aug 24 2023)
+
+#### 🐛 Bug Fix
+
+- Always show last (potentially local) build on branch [#46](https://github.com/chromaui/addon-visual-tests/pull/46) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v0.0.35 (Thu Aug 24 2023)
 
 #### 🐛 Bug Fix

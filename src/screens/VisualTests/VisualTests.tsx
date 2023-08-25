@@ -31,8 +31,6 @@ import { Warnings } from "./Warnings";
 
 const QueryBuild = graphql(/* GraphQL */ `
   query AddonVisualTestsBuild(
-    $hasBuildId: Boolean!
-    $buildId: ID!
     $projectId: ID!
     $branch: String!
     $gitUserEmailHash: String!
@@ -40,10 +38,7 @@ const QueryBuild = graphql(/* GraphQL */ `
     $storyId: String!
     $testStatuses: [TestStatus!]!
   ) {
-    build(id: $buildId) @include(if: $hasBuildId) {
-      ...BuildFields
-    }
-    project(id: $projectId) @skip(if: $hasBuildId) {
+    project(id: $projectId) {
       name
       lastBuild(
         branches: [$branch]
@@ -201,7 +196,7 @@ const MutationReviewTest = graphql(/* GraphQL */ `
 
 interface VisualTestsProps {
   projectId: string;
-  gitInfo: GitInfo;
+  gitInfo: Pick<GitInfo, "branch" | "slug" | "userEmailHash" | "uncommittedHash">;
   isStarting: boolean;
   lastDevBuildId?: string;
   startDevBuild: () => void;
@@ -210,7 +205,6 @@ interface VisualTestsProps {
   storyId: string;
 }
 
-let last: any;
 export const VisualTests = ({
   isStarting,
   lastDevBuildId,
@@ -227,8 +221,6 @@ export const VisualTests = ({
   >({
     query: QueryBuild,
     variables: {
-      hasBuildId: !!lastDevBuildId,
-      buildId: lastDevBuildId || "",
       projectId,
       storyId,
       testStatuses: Object.keys(statusMap) as any as TestStatus[],
@@ -265,7 +257,7 @@ export const VisualTests = ({
     [reviewTest]
   );
 
-  const build = getFragment(FragmentBuildFields, data?.build || data?.project?.lastBuild);
+  const build = getFragment(FragmentBuildFields, data?.project?.lastBuild);
   const isOutdated = build && build.uncommittedHash !== gitInfo.uncommittedHash;
 
   const buildStatusUpdate =
@@ -274,13 +266,7 @@ export const VisualTests = ({
     testsToStatusUpdate(getFragment(FragmentStatusTestFields, build.testsForStatus.nodes));
 
   useEffect(() => {
-    last = {
-      buildStatusUpdate,
-      string: JSON.stringify(buildStatusUpdate),
-    };
-    if (buildStatusUpdate) {
-      updateBuildStatus(buildStatusUpdate);
-    }
+    if (buildStatusUpdate) updateBuildStatus(buildStatusUpdate);
     // We use the stringified version of buildStatusUpdate to do a deep diff
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(buildStatusUpdate), updateBuildStatus]);
