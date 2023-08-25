@@ -10,6 +10,7 @@ import {
   CHROMATIC_ADDON_NAME,
   CHROMATIC_BASE_URL,
   GIT_INFO,
+  GitInfoPayload,
   START_BUILD,
   UPDATE_PROJECT,
   UpdateProjectPayload,
@@ -113,7 +114,7 @@ async function serverChannel(
     }
   );
 
-  observeGitInfo(5000, (info) => channel.emit(GIT_INFO, info));
+  observeGitInfo(5000, (info) => channel.emit(GIT_INFO, info as GitInfoPayload));
 
   return channel;
 }

@@ -10,6 +10,7 @@ import {
   BUILD_STARTED,
   DEV_BUILD_ID_KEY,
   GIT_INFO,
+  GitInfoPayload,
   PANEL_ID,
   START_BUILD,
 } from "./constants";
@@ -33,7 +34,7 @@ const {
   GIT_COMMIT,
   GIT_UNCOMMITTED_HASH,
 } = process.env;
-const initialGitInfo: GitInfo = {
+const initialGitInfo: GitInfoPayload = {
   userEmail: GIT_USER_EMAIL,
   userEmailHash: GIT_USER_EMAIL_HASH,
   branch: GIT_BRANCH,
@@ -63,7 +64,7 @@ export const Panel = ({ active }: PanelProps) => {
         setLastBuildId(buildId);
         localStorage.setItem(DEV_BUILD_ID_KEY, buildId);
       },
-      [GIT_INFO]: (info: GitInfo) => {
+      [GIT_INFO]: (info: GitInfoPayload) => {
         setGitInfo(info);
         logger.debug("Updated Git info:", info);
       },
