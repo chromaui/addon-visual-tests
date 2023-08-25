@@ -51,7 +51,6 @@ async function serverChannel(
     buildScriptName,
   }: { projectToken?: string; buildScriptName?: string }
 ) {
-  console.log({ initialProjectToken, buildScriptName });
   let projectToken = initialProjectToken;
   channel.on(START_BUILD, async () => {
     let announced = false;
