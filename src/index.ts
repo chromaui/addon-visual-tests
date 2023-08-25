@@ -82,7 +82,7 @@ async function serverChannel(
           }
         },
         // as any due to CLI mistyping: https://github.com/chromaui/chromatic-cli/pull/800
-      } as Partial<Parameters<typeof run>[0]["options"]> as any,
+      },
     });
   });
 
