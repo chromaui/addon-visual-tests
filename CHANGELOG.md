@@ -1,3 +1,15 @@
+# v0.0.38 (Fri Aug 25 2023)
+
+#### 🐛 Bug Fix
+
+- Use local schema file for graphql-codegen [#49](https://github.com/chromaui/addon-visual-tests/pull/49) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v0.0.37 (Fri Aug 25 2023)
 
 #### 🐛 Bug Fix
