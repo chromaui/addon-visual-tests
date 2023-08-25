@@ -74,7 +74,7 @@ export const Panel = ({ active }: PanelProps) => {
     projectToken,
     configDir,
     updateProject,
-    updatingProjectFailed,
+    projectUpdatingFailed,
     projectIdUpdated,
     clearProjectIdUpdated,
   ] = useProjectId();
@@ -93,7 +93,7 @@ export const Panel = ({ active }: PanelProps) => {
       </Provider>
     );
 
-  if (updatingProjectFailed) {
+  if (projectUpdatingFailed) {
     return (
       <LinkingProjectFailed
         projectId={projectId}
