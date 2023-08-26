@@ -49,14 +49,24 @@ const SuffixOverlay = ({
   </SuffixWrapper>
 );
 
-interface SuffixInputProps extends Omit<ComponentProps<typeof Input>, "label"> {
+interface SuffixInputProps
+  extends Omit<ComponentProps<typeof Input>, "label" | "crossOrigin" | "enterKeyHint"> {
   suffix: string;
 }
 
 export const SuffixInput = ({ id, value, placeholder, suffix, ...props }: SuffixInputProps) => {
   return (
     <InputWrapper>
-      <Input id={id} hideLabel label="" value={value} placeholder={placeholder} {...props} />
+      <Input
+        id={id}
+        hideLabel
+        label=""
+        value={value}
+        placeholder={placeholder}
+        crossOrigin={undefined}
+        enterKeyHint={undefined}
+        {...props}
+      />
       <SuffixOverlay value={value} placeholder={placeholder} suffix={suffix} />
     </InputWrapper>
   );
