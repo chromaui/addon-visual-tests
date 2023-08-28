@@ -1,3 +1,27 @@
+# v0.0.40 (Sat Aug 26 2023)
+
+#### 🐛 Bug Fix
+
+- Add SidebarBottom to toggle sidebar filtering based on story status [#45](https://github.com/chromaui/addon-visual-tests/pull/45) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.39 (Sat Aug 26 2023)
+
+#### 🐛 Bug Fix
+
+- Update `selectedTest` whenever tests change (e.g. when switching stories) [#51](https://github.com/chromaui/addon-visual-tests/pull/51) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v0.0.38 (Fri Aug 25 2023)
 
 #### 🐛 Bug Fix
