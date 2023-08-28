@@ -1,5 +1,6 @@
 import { logger } from "@storybook/client-logger";
-import { useChannel, useStorybookApi, useStorybookState } from "@storybook/manager-api";
+import type { API } from "@storybook/manager-api";
+import { useChannel, useStorybookState } from "@storybook/manager-api";
 // eslint-disable-next-line import/no-unresolved
 import { GitInfo } from "chromatic/node";
 import React, { useCallback, useState } from "react";
@@ -24,6 +25,7 @@ import { useProjectId } from "./utils/useProjectId";
 
 interface PanelProps {
   active: boolean;
+  api: API;
 }
 
 const {
@@ -47,8 +49,7 @@ logger.debug("Initial Git info:", initialGitInfo);
 
 const storedBuildId = localStorage.getItem(DEV_BUILD_ID_KEY);
 
-export const Panel = ({ active }: PanelProps) => {
-  const api = useStorybookApi();
+export const Panel = ({ active, api }: PanelProps) => {
   const [accessToken, setAccessToken] = useAccessToken();
   const { storyId } = useStorybookState();
 

@@ -7,7 +7,6 @@ export type StatusUpdate = Parameters<API["experimental_updateStatus"]>[1];
 type StoryStatus = StatusUpdate[any]["status"];
 
 export const statusMap: Partial<Record<TestStatus, StoryStatus>> = {
-  [TestStatus.InProgress]: "pending",
   [TestStatus.Pending]: "warn",
   [TestStatus.Failed]: "error",
   [TestStatus.Denied]: "error",
