@@ -11,7 +11,7 @@ export const Tool = () => {
   const emit = useChannel(
     {
       [START_BUILD]: () => setIsStarting(true),
-      [BUILD_PROGRESS]: ({ step, id }: BuildProgressPayload) => {
+      [BUILD_PROGRESS]: ({ step }: BuildProgressPayload) => {
         if (step === "snapshot" || step === "complete") {
           setIsStarting(false);
         }
