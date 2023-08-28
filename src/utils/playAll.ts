@@ -10,7 +10,9 @@ export function playAll<Story extends StoryObj>(
     await Promise.all(
       sequence.flatMap((storyOrPlay) =>
         typeof storyOrPlay === "function"
-          ? canvasElements.map((canvasElement) => storyOrPlay({ ...context, canvasElement }))
+          ? canvasElements.map((canvasElement, canvasIndex) =>
+              storyOrPlay({ ...context, canvasElement, canvasIndex })
+            )
           : storyOrPlay?.play?.(context)
       )
     );

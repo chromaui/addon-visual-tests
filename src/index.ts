@@ -9,6 +9,7 @@ import {
   BUILD_STARTED,
   CHROMATIC_BASE_URL,
   GIT_INFO,
+  GitInfoPayload,
   PROJECT_UPDATED,
   PROJECT_UPDATING_FAILED,
   ProjectUpdatingFailedPayload,
@@ -48,33 +49,43 @@ const observeGitInfo = async (
 
 async function serverChannel(
   channel: Channel,
-  { projectToken: initialProjectToken, configDir }: { projectToken: string; configDir: string }
+  {
+    configDir,
+    projectToken: initialProjectToken,
+    buildScriptName,
+  }: { configDir: string; projectToken: string; buildScriptName?: string }
 ) {
   let projectToken = initialProjectToken;
   channel.on(START_BUILD, async () => {
     let announced = false;
     let started = false;
     await run({
+      // Currently we have to have these flags.
+      // We should move the checks to after flags have been parsed into options.
       flags: {
         projectToken,
-        // We might want to drop this later and instead record "uncommitted hashes" on builds
-        forceRebuild: "",
+        buildScriptName,
       },
       options: {
-        onTaskComplete(ctx: any) {
+        // We might want to drop this later and instead record "uncommitted hashes" on builds
+        forceRebuild: true,
+        // Builds initiated from the addon are always considered local
+        isLocalBuild: true,
+        onTaskComplete(ctx) {
           console.log(`Completed task '${ctx.title}'`);
-          if (ctx.announcedBuild && !announced) {
+          if (!announced && ctx.announcedBuild) {
             console.debug("emitting", BUILD_ANNOUNCED, ctx.announcedBuild.id);
             channel.emit(BUILD_ANNOUNCED, ctx.announcedBuild.id);
             announced = true;
           }
-          if (ctx.build && !started) {
+          if (announced && !started && ctx.build) {
             console.debug("emitting", BUILD_STARTED, ctx.build.status);
             channel.emit(BUILD_STARTED, ctx.build.status);
             started = true;
           }
         },
-      } as any,
+        // as any due to CLI mistyping: https://github.com/chromaui/chromatic-cli/pull/800
+      },
     });
   });
 
@@ -84,7 +95,7 @@ async function serverChannel(
       projectToken = updatedProjectToken;
 
       try {
-        await updateMain({ projectId, projectToken });
+        await updateMain({ configDir, projectId, projectToken });
         channel.emit(PROJECT_UPDATED);
       } catch (err) {
         console.warn(`Failed to update your main configuration:\n\n ${err}`);
@@ -96,7 +107,7 @@ async function serverChannel(
     }
   );
 
-  observeGitInfo(5000, (info) => channel.emit(GIT_INFO, info));
+  observeGitInfo(5000, (info) => channel.emit(GIT_INFO, info as GitInfoPayload));
 
   return channel;
 }
@@ -110,11 +121,13 @@ const config = {
   ) => {
     if (configType === "production") return env;
 
-    const { branch, commit, slug, uncommittedHash } = await getGitInfo();
+    const { userEmail, userEmailHash, branch, commit, slug, uncommittedHash } = await getGitInfo();
     return {
       ...env,
       CHROMATIC_BASE_URL,
       CHROMATIC_PROJECT_ID: projectId || "",
+      GIT_USER_EMAIL: userEmail,
+      GIT_USER_EMAIL_HASH: userEmailHash,
       GIT_BRANCH: branch,
       GIT_COMMIT: commit,
       GIT_SLUG: slug,

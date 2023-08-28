@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Client, fetchExchange, Provider } from "urql";
 import { v4 as uuid } from "uuid";
 
-import { ACCESS_TOKEN_KEY, CHROMATIC_BASE_URL } from "../constants";
+import { ACCESS_TOKEN_KEY, CHROMATIC_API_URL } from "../constants";
 
 export { Provider };
 
@@ -24,7 +24,7 @@ export const useAccessToken = () => {
 const sessionId = uuid();
 
 export const client = new Client({
-  url: `${CHROMATIC_BASE_URL}/api`,
+  url: CHROMATIC_API_URL,
   exchanges: [fetchExchange], // no cacheExchange to prevent sharing data between stories
   fetchOptions: () => ({
     headers: {
