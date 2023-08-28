@@ -3,7 +3,7 @@ import { useChannel } from "@storybook/manager-api";
 import React, { useState } from "react";
 
 import { ProgressIcon } from "./components/icons/ProgressIcon";
-import { BUILD_STARTED, START_BUILD, TOOL_ID } from "./constants";
+import { BUILD_PROGRESS, BuildProgressPayload, START_BUILD, TOOL_ID } from "./constants";
 
 export const Tool = () => {
   const [isStarting, setIsStarting] = useState(false);
@@ -11,7 +11,11 @@ export const Tool = () => {
   const emit = useChannel(
     {
       [START_BUILD]: () => setIsStarting(true),
-      [BUILD_STARTED]: () => setIsStarting(false),
+      [BUILD_PROGRESS]: ({ step, id }: BuildProgressPayload) => {
+        if (step === "snapshot" || step === "complete") {
+          setIsStarting(false);
+        }
+      },
     },
     []
   );

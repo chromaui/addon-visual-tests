@@ -5,8 +5,8 @@ import { readConfig, writeConfig } from "@storybook/csf-tools";
 import { getGitInfo, GitInfo, run } from "chromatic/node";
 
 import {
-  BUILD_ANNOUNCED,
-  BUILD_STARTED,
+  BUILD_PROGRESS,
+  BuildProgressPayload,
   CHROMATIC_ADDON_NAME,
   CHROMATIC_BASE_URL,
   GIT_INFO,
@@ -55,8 +55,7 @@ async function serverChannel(
 ) {
   let projectToken = initialProjectToken;
   channel.on(START_BUILD, async () => {
-    let announced = false;
-    let started = false;
+    let step: BuildProgressPayload["step"] = "initialize";
     await run({
       // Currently we have to have these flags.
       // We should move the checks to after flags have been parsed into options.
@@ -70,19 +69,42 @@ async function serverChannel(
         // Builds initiated from the addon are always considered local
         isLocalBuild: true,
         onTaskComplete(ctx) {
-          console.log(`Completed task '${ctx.title}'`);
-          if (!announced && ctx.announcedBuild) {
-            console.debug("emitting", BUILD_ANNOUNCED, ctx.announcedBuild.id);
-            channel.emit(BUILD_ANNOUNCED, ctx.announcedBuild.id);
-            announced = true;
+          let newStep: BuildProgressPayload["step"];
+          if (step === "initialize" && ctx.announcedBuild) {
+            newStep = "build";
           }
-          if (announced && !started && ctx.build) {
-            console.debug("emitting", BUILD_STARTED, ctx.build.status);
-            channel.emit(BUILD_STARTED, ctx.build.status);
-            started = true;
+          if (step === "upload" && ctx.isolatorUrl) {
+            newStep = "verify";
+          }
+          if (["build", "upload"].includes(step) && ctx.build) {
+            newStep = "snapshot";
+          }
+          if (ctx.build?.status !== "IN_PROGRESS") {
+            newStep = "complete";
+          }
+
+          if (newStep !== step) {
+            step = newStep;
+            channel.emit(BUILD_PROGRESS, {
+              step,
+              id: ctx.announcedBuild.id,
+            } satisfies BuildProgressPayload);
           }
         },
-        // as any due to CLI mistyping: https://github.com/chromaui/chromatic-cli/pull/800
+        onTaskProgress(ctx, { progress, total, unit }) {
+          if (unit === "bytes") {
+            step = "upload";
+          } else {
+            step = "snapshot";
+          }
+
+          channel.emit(BUILD_PROGRESS, {
+            step,
+            id: ctx.announcedBuild.id,
+            progress,
+            total,
+          } satisfies BuildProgressPayload);
+        },
       },
     });
   });

@@ -16,9 +16,20 @@ export const DEV_BUILD_ID_KEY = `${ADDON_ID}/dev-build-id`;
 
 export const GIT_INFO = `${ADDON_ID}/gitInfo`;
 export type GitInfoPayload = Omit<GitInfo, "committedAt" | "committerEmail" | "committerName">;
+
 export const START_BUILD = `${ADDON_ID}/startBuild`;
-export const BUILD_ANNOUNCED = `${ADDON_ID}/buildAnnounced`;
-export const BUILD_STARTED = `${ADDON_ID}/buildStarted`;
+export const BUILD_PROGRESS = `${ADDON_ID}/buildProgress`;
+export type BuildProgressPayload = {
+  // Possibly this should be a type exported by the CLI -- these correspond to tasks
+  /** The step of the build process we have reached */
+  step: "initialize" | "build" | "upload" | "verify" | "snapshot" | "complete";
+  /** The id of the build, available after the initialize step */
+  id?: string;
+  /** progress pertains to the current step, and may not be set */
+  progress?: number;
+  /** total pertains to the current step, and may not be set */
+  total?: number;
+};
 
 export const UPDATE_PROJECT = `${ADDON_ID}/updateProject`;
 export type UpdateProjectPayload = {

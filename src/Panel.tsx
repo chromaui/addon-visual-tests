@@ -7,8 +7,8 @@ import React, { useCallback, useState } from "react";
 
 import {
   ADDON_ID,
-  BUILD_ANNOUNCED,
-  BUILD_STARTED,
+  BUILD_PROGRESS,
+  BuildProgressPayload,
   DEV_BUILD_ID_KEY,
   GIT_INFO,
   GitInfoPayload,
@@ -60,10 +60,14 @@ export const Panel = ({ active, api }: PanelProps) => {
   const emit = useChannel(
     {
       [START_BUILD]: () => setIsStarting(true),
-      [BUILD_STARTED]: () => setIsStarting(false),
-      [BUILD_ANNOUNCED]: (buildId: string) => {
-        setLastBuildId(buildId);
-        localStorage.setItem(DEV_BUILD_ID_KEY, buildId);
+      [BUILD_PROGRESS]: ({ step, id }: BuildProgressPayload) => {
+        if (step === "build") {
+          setLastBuildId(id);
+          localStorage.setItem(DEV_BUILD_ID_KEY, id);
+        }
+        if (step === "snapshot" || step === "complete") {
+          setIsStarting(false);
+        }
       },
       [GIT_INFO]: (info: GitInfoPayload) => {
         setGitInfo(info);
