@@ -6,11 +6,13 @@ import { findConfig } from "./storybook.config.utils";
 export async function updateMain({
   projectId,
   projectToken,
+  configDir,
 }: {
   projectId: string;
   projectToken: string;
+  configDir: string;
 }) {
-  const mainPath = await findConfig("main");
+  const mainPath = await findConfig(configDir, "main");
   const MainConfig = await readConfig(mainPath);
 
   const addonsConfig = MainConfig.getFieldValue(["addons"]);
