@@ -17,6 +17,7 @@ const meta = {
   component: LinkedProject,
   args: {
     projectId: "Project:abc123",
+    mainPath: "main.ts",
     goToNext: action("goToNext"),
     setAccessToken: action("setAccessToken"),
   },

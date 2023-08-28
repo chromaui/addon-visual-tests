@@ -2,7 +2,7 @@
 import type { Channel } from "@storybook/channels";
 // eslint-disable-next-line import/no-unresolved
 import { getGitInfo, GitInfo, run } from "chromatic/node";
-import { relative } from "path";
+import { basename, relative } from "path";
 
 import {
   BUILD_ANNOUNCED,
@@ -102,13 +102,13 @@ async function serverChannel(
         mainPath = await findConfig(configDir, "main");
         await updateMain({ mainPath, projectId, projectToken });
         channel.emit(PROJECT_UPDATED, {
-          mainPath,
+          mainPath: basename(mainPath),
           configDir: relativeConfigDir,
         } satisfies ProjectUpdatedPayload);
       } catch (err) {
         console.warn(`Failed to update your main configuration:\n\n ${err}`);
         channel.emit(PROJECT_UPDATING_FAILED, {
-          mainPath,
+          mainPath: basename(mainPath),
           configDir: relativeConfigDir,
         } satisfies ProjectUpdatingFailedPayload);
       }
