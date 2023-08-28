@@ -108,7 +108,7 @@ async function serverChannel(
       } catch (err) {
         console.warn(`Failed to update your main configuration:\n\n ${err}`);
         channel.emit(PROJECT_UPDATING_FAILED, {
-          mainPath: basename(mainPath),
+          mainPath: mainPath && basename(mainPath),
           configDir: relativeConfigDir,
         } satisfies ProjectUpdatingFailedPayload);
       }
