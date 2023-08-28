@@ -10,42 +10,25 @@ The Visual testing addon enables you to run visual tests on your stories and com
 
 ## Getting Started
 
-1. Install this addon by adding the `@chromaui/addon-visual-tests` dependency:
+Run the following command to install the addon and automatically configure it for your project via Storybook's CLI:
 
 ```shell
-yarn add --dev @chromaui/addon-visual-tests
+npx storybook@latest add @chromaui/addon-visual-tests
 ```
 
-2. Update your Storybook configuration file (e.g., `.storybook/main.js|ts`) to include the addon:
+Start Storybook and navigate to the Visual Tests panel to run your first visual test with Chromatic!
 
-```ts
-// .storybook/main.ts
-
-// Replace your-framework with the framework you are using (e.g., react-webpack5, vue3-vite)
-import type { StorybookConfig } from '@storybook/your-framework';
-
-const config: StorybookConfig = {
-  framework: '@storybook/your-framework',
-  stories: ['../src/**/*.mdx', '../src/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
-  addons: [
-    // Other Storybook addons
-    '@chromaui/addon-visual-tests',
-  ],
-};
-
-export default config;
-```
-
-3. Start Storybook and navigate to the Visual Tests panel to run your first visual test with Chromatic!
-
-### Configuration
+## Configuration
 
 By default, the addon offers zero-config support to run visual tests with Storybook and Chromatic. However, you can extend your Storybook configuration file (i.e., `.storybook/main.js|ts`) and provide additional options to control how tests are run. Listed below are the available options and examples of how to use them.
 
 
-| Option            | Description                                                                                                                      |
-| ----------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| `buildScriptName` | Optional. Defines the custom Storybook build script <br/> `options: { buildScriptName: 'deploy-storybook' }`                     |
+| Option            | Description                                                                                                                          |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `buildScriptName` | Optional. Defines the custom Storybook build script <br/> `options: { buildScriptName: 'deploy-storybook' }`                         |
+| `projectId`       | Automatically configured. Sets the value for the project identifier <br/> `options: { projectId: Project:64cbcde96f99841e8b007d75 }` |
+| `projectToken`    | Automatically configured. Sets the value for the project token <br/> `options: { projectToken: 'chpt_b2ae83517a0a706' }`             |
+
 
 ```ts
 // .storybook/main.ts
@@ -62,8 +45,11 @@ const config: StorybookConfig = {
      {
       name: '@chromaui/addon-visual-tests',
       options: {
+        projectId: 'Project:64cbcde96f99841e8b007d75',
+        projectToken: 'chpt_b2ae83517a0a706',
         buildScriptName: 'deploy-storybook',
       },
+     }
   ],
 };
 
