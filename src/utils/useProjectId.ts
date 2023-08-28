@@ -1,8 +1,7 @@
-import { useChannel } from "@storybook/manager-api";
+import { useAddonState, useChannel } from "@storybook/manager-api";
 import React from "react";
 
 import { ADDON_ID, UPDATE_PROJECT, UpdateProjectPayload } from "../constants";
-import { useSharedState } from "./useSharedState";
 
 const { CHROMATIC_PROJECT_ID } = process.env;
 
@@ -14,7 +13,7 @@ export const useProjectId = (): [
   projectIdChanged: boolean,
   clearProjectIdChanged: () => void
 ] => {
-  const [projectId, setProjectId] = useSharedState<string | null>(
+  const [projectId, setProjectId] = useAddonState<string | null>(
     projectIdSharedStateKey,
     CHROMATIC_PROJECT_ID
   );
