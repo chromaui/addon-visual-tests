@@ -1,6 +1,6 @@
 # Storybook Visual Testing addon
 
-The Visual testing addon enables you to run visual tests on your stories and compare changes with the latest baselines across multiple viewports and browsers to catch UI regressions early in development without leaving Storybook.
+The Visual Testing addon enables you to run visual tests on your stories and compare changes with the latest baselines across multiple viewports and browsers to catch UI regressions early in development without leaving Storybook.
 
 
 ## Prerequisites
@@ -55,6 +55,11 @@ const config: StorybookConfig = {
 
 export default config;
 ```
+
+### Updating the GraphQL schema
+
+The addon uses the Chromatic public GraphQL API. We rely on its schema to generate type definitions. The schema needs to be manually updated whenever it changes.
+To update, take https://github.com/chromaui/chromatic/blob/main/lib/schema/public-schema.graphql and save it under `src/gql/public-schema.graphql`.
 
 ## Troubleshooting
 

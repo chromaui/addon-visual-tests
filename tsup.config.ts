@@ -18,7 +18,7 @@ export default defineConfig((options) => [
     },
   },
   {
-    entry: ["src/manager.ts"],
+    entry: ["src/manager.tsx"],
     splitting: false,
     minify: !options.watch,
     format: ["esm"],

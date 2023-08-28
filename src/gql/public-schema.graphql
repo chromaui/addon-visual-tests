@@ -1,0 +1,1574 @@
+"""A build that has been pre-announced but not published yet."""
+type AnnouncedBuild implements Node & Temporal & Build {
+  """GraphQL node identifier"""
+  id: ID!
+
+  """
+  Incremental build number. Infrastructure upgrade builds have the same number as the original build.
+  """
+  number: Int!
+
+  """
+  Current (mutable) status of the build, which changes as the build progresses or changes are reviewed.
+  """
+  status: BuildStatus!
+
+  """
+  Whether the build is limited to just representative stories due to insufficient snapshot quota.
+  """
+  isLimited: Boolean!
+
+  """
+  Whether there is a newer build on the same branch, and therefore this build can no longer be reviewed.
+  """
+  isSuperseded: Boolean!
+
+  """Set of browsers against which the build was executed."""
+  browsers: [BrowserInfo!]!
+
+  """
+  URL-safe Git repository identifier, consisting of the owner (organization or user) name and the repository name, separated by a slash (/). This is typically part of the Git repository URL. The value originates from the CLI runtime environment, not the linked Git provider / linked repository.
+  """
+  slug: String
+
+  """
+  Git branch name, possibly prefixed with the owner name (in case of a forked repository).
+  """
+  branch: String!
+
+  """Git commit hash (unshortened)."""
+  commit: String!
+
+  """Hash of uncommitted changes, or empty string for no changes."""
+  uncommittedHash: String
+
+  """Link to the commit details at the Git provider linked to the project."""
+  commitUrl: String
+
+  """When the entity was first created in Chromatic."""
+  createdAt: DateTime!
+
+  """When the entity was last updated or created in Chromatic."""
+  updatedAt: DateTime!
+
+  """When the commit was created in Git."""
+  committedAt: DateTime!
+}
+
+interface Node {
+  """GraphQL node identifier"""
+  id: ID!
+}
+
+"""Entity which tracks creation and update date/time."""
+interface Temporal {
+  """When the entity was first created in Chromatic."""
+  createdAt: DateTime!
+
+  """When the entity was last updated or created in Chromatic."""
+  updatedAt: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar DateTime
+
+interface Build implements Node & Temporal {
+  """GraphQL node identifier"""
+  id: ID!
+
+  """
+  Incremental build number. Infrastructure upgrade builds have the same number as the original build.
+  """
+  number: Int!
+
+  """
+  Current (mutable) status of the build, which changes as the build progresses or changes are reviewed.
+  """
+  status: BuildStatus!
+
+  """
+  Whether the build is limited to just representative stories due to insufficient snapshot quota.
+  """
+  isLimited: Boolean!
+
+  """
+  Whether there is a newer build on the same branch, and therefore this build can no longer be reviewed.
+  """
+  isSuperseded: Boolean!
+
+  """Set of browsers against which the build was executed."""
+  browsers: [BrowserInfo!]!
+
+  """
+  URL-safe Git repository identifier, consisting of the owner (organization or user) name and the repository name, separated by a slash (/). This is typically part of the Git repository URL. The value originates from the CLI runtime environment, not the linked Git provider / linked repository.
+  """
+  slug: String
+
+  """
+  Git branch name, possibly prefixed with the owner name (in case of a forked repository).
+  """
+  branch: String!
+
+  """Git commit hash (unshortened)."""
+  commit: String!
+
+  """Hash of uncommitted changes, or empty string for no changes."""
+  uncommittedHash: String
+
+  """Link to the commit details at the Git provider linked to the project."""
+  commitUrl: String
+
+  """When the entity was first created in Chromatic."""
+  createdAt: DateTime!
+
+  """When the entity was last updated or created in Chromatic."""
+  updatedAt: DateTime!
+
+  """When the commit was created in Git."""
+  committedAt: DateTime!
+}
+
+enum BuildStatus {
+  """The build is announced but not yet published."""
+  ANNOUNCED
+
+  """The build is published but not yet ready for testing."""
+  PUBLISHED
+
+  """The build is ready for testing but not yet started."""
+  PREPARED
+
+  """The build is awaiting a result."""
+  IN_PROGRESS
+
+  """All tests passed without changes."""
+  PASSED
+
+  """At least one test has unaccepted changes."""
+  PENDING
+
+  """All test changes were accepted."""
+  ACCEPTED
+
+  """At least one test change was denied."""
+  DENIED
+
+  """There was a user (permanent) problem completing the build."""
+  BROKEN
+
+  """There was a system (temporary) problem completing the build."""
+  FAILED
+
+  """The build was cancelled before it could complete."""
+  CANCELLED
+}
+
+type BrowserInfo {
+  """Identifier for this browser."""
+  id: ID!
+
+  """Stable key for this browser."""
+  key: Browser!
+
+  """Browser display name."""
+  name: String!
+
+  """Browser version."""
+  version: String!
+}
+
+enum Browser {
+  CHROME
+  EDGE
+  FIREFOX
+  SAFARI
+}
+
+"""A build that has been published but not yet prepared for testing."""
+type PublishedBuild implements Node & Temporal & Build {
+  """GraphQL node identifier"""
+  id: ID!
+
+  """
+  Incremental build number. Infrastructure upgrade builds have the same number as the original build.
+  """
+  number: Int!
+
+  """
+  Current (mutable) status of the build, which changes as the build progresses or changes are reviewed.
+  """
+  status: BuildStatus!
+
+  """
+  Whether the build is limited to just representative stories due to insufficient snapshot quota.
+  """
+  isLimited: Boolean!
+
+  """
+  Whether there is a newer build on the same branch, and therefore this build can no longer be reviewed.
+  """
+  isSuperseded: Boolean!
+
+  """Set of browsers against which the build was executed."""
+  browsers: [BrowserInfo!]!
+
+  """
+  URL-safe Git repository identifier, consisting of the owner (organization or user) name and the repository name, separated by a slash (/). This is typically part of the Git repository URL. The value originates from the CLI runtime environment, not the linked Git provider / linked repository.
+  """
+  slug: String
+
+  """
+  Git branch name, possibly prefixed with the owner name (in case of a forked repository).
+  """
+  branch: String!
+
+  """Git commit hash (unshortened)."""
+  commit: String!
+
+  """Hash of uncommitted changes, or empty string for no changes."""
+  uncommittedHash: String
+
+  """Link to the commit details at the Git provider linked to the project."""
+  commitUrl: String
+
+  """Link to the published Storybook's canvas (iframe.html)."""
+  isolatorUrl: URL!
+
+  """Link to the published Storybook."""
+  storybookUrl: URL!
+
+  """When the entity was first created in Chromatic."""
+  createdAt: DateTime!
+
+  """When the entity was last updated or created in Chromatic."""
+  updatedAt: DateTime!
+
+  """When the commit was created in Git."""
+  committedAt: DateTime!
+
+  """When the Storybook was published on Chromatic."""
+  publishedAt: DateTime!
+}
+
+"""
+A field whose value conforms to the standard URL format as specified in RFC3986: https://www.ietf.org/rfc/rfc3986.txt.
+"""
+scalar URL
+
+"""A build that has been prepared for testing but not started yet."""
+type PreparedBuild implements Node & Temporal & Build {
+  """GraphQL node identifier"""
+  id: ID!
+
+  """
+  Incremental build number. Infrastructure upgrade builds have the same number as the original build.
+  """
+  number: Int!
+
+  """
+  Current (mutable) status of the build, which changes as the build progresses or changes are reviewed.
+  """
+  status: BuildStatus!
+
+  """
+  Whether the build is limited to just representative stories due to insufficient snapshot quota.
+  """
+  isLimited: Boolean!
+
+  """
+  Whether there is a newer build on the same branch, and therefore this build can no longer be reviewed.
+  """
+  isSuperseded: Boolean!
+
+  """Set of browsers against which the build was executed."""
+  browsers: [BrowserInfo!]!
+
+  """
+  URL-safe Git repository identifier, consisting of the owner (organization or user) name and the repository name, separated by a slash (/). This is typically part of the Git repository URL. The value originates from the CLI runtime environment, not the linked Git provider / linked repository.
+  """
+  slug: String
+
+  """
+  Git branch name, possibly prefixed with the owner name (in case of a forked repository).
+  """
+  branch: String!
+
+  """Git commit hash (unshortened)."""
+  commit: String!
+
+  """Hash of uncommitted changes, or empty string for no changes."""
+  uncommittedHash: String
+
+  """Link to the commit details at the Git provider linked to the project."""
+  commitUrl: String
+
+  """Link to the published Storybook's canvas (iframe.html)."""
+  isolatorUrl: URL!
+
+  """Link to the published Storybook."""
+  storybookUrl: URL!
+
+  """
+  The number of components in the published Storybook, excluding docsOnly components.
+  """
+  componentCount: Int!
+
+  """
+  The number of stories in the published Storybook, excluding docsOnly stories.
+  """
+  specCount: Int!
+
+  """The number of docsOnly stories in the published Storybook"""
+  docsCount: Int!
+
+  """
+  Count the number of tests in the build. All provided filter arguments must match (AND).
+  """
+  testCount(
+    """Only consider tests which match one of these statuses."""
+    statuses: [TestStatus!]
+
+    """Only consider tests which match one of these results."""
+    results: [TestResult!]
+
+    """Only consider tests which are reviewable."""
+    reviewable: Boolean
+  ): Int!
+  tests(
+    """Only return tests which match one of these statuses."""
+    statuses: [TestStatus!]
+
+    """Only return tests (one for each viewport) for this CSF Story ID."""
+    storyId: String
+
+    """Number of items to paginate forwards (use with `after`)."""
+    first: Int
+
+    """Number of items to paginate backwards (use with `before`)."""
+    last: Int
+
+    """Cursor for forward pagination (use with `first`)."""
+    after: ID
+
+    """Cursor for backward pagination (use with `last`)."""
+    before: ID
+    orderBy: PreparedBuildTestsOrder
+  ): PreparedBuildTestConnection
+
+  """When the entity was first created in Chromatic."""
+  createdAt: DateTime!
+
+  """When the entity was last updated or created in Chromatic."""
+  updatedAt: DateTime!
+
+  """When the commit was created in Git."""
+  committedAt: DateTime!
+
+  """When the Storybook was published on Chromatic."""
+  publishedAt: DateTime!
+
+  """When the build was prepared for testing on Chromatic."""
+  preparedAt: DateTime!
+}
+
+enum TestStatus {
+  """We are waiting on comparisons."""
+  IN_PROGRESS
+
+  """All comparisons were visually equal."""
+  PASSED
+
+  """The comparison succeeded with unconfirmed changes."""
+  PENDING
+
+  """The comparison succeeded and the changes have been accepted."""
+  ACCEPTED
+
+  """The comparison succeeded and the changes have been denied."""
+  DENIED
+
+  """Encountered a Storybook runtime error while testing."""
+  BROKEN
+
+  """Encountered a (temporary) system error while testing."""
+  FAILED
+}
+
+enum TestResult {
+  """Checks passed and all snapshots are equal to their baselines."""
+  EQUAL
+
+  """Checks passed and at least one comparison was fixed."""
+  FIXED
+
+  """Checks passed and no baseline was found."""
+  ADDED
+
+  """Checks passed, but at least one comparison had a visual change."""
+  CHANGED
+
+  """Currently unused. Here for future use."""
+  REMOVED
+
+  """At least one comparison had a (user) error."""
+  CAPTURE_ERROR
+
+  """At least one comparison had a system error."""
+  SYSTEM_ERROR
+
+  """This test was skipped."""
+  SKIPPED
+}
+
+"""Connection to a list of PreparedBuildTest."""
+type PreparedBuildTestConnection {
+  """List of edges for PreparedBuildTestConnection."""
+  edges: [PreparedBuildTestEdge!]!
+
+  """List of nodes for PreparedBuildTestConnection."""
+  nodes: [Test!]!
+
+  """Pagination details for PreparedBuildTestConnection."""
+  pageInfo: PageInfo!
+
+  """Total number of items for PreparedBuildTestConnection."""
+  totalCount: Int!
+}
+
+"""The edge type for PreparedBuildTest."""
+type PreparedBuildTestEdge {
+  """Cursor to this item."""
+  cursor: String!
+
+  """The item at the edge."""
+  node: Test!
+}
+
+"""
+A set of captures for a story at a specific viewport, compared against the baseline.
+"""
+type Test implements Node & Temporal {
+  """GraphQL node identifier"""
+  id: ID!
+
+  """Current (mutable) user state of the test; has it been reviewed?"""
+  status: TestStatus!
+
+  """
+  Final (immutable) summary of the results of the comparisons on this test. Only available once the test has completed.
+  """
+  result: TestResult
+
+  """The baseline test this test was compared against."""
+  baseline: Test
+
+  """
+  List of snapshot comparisons for this test, one for each tested browser.
+  """
+  comparisons: [TestComparison!]!
+
+  """What test kinds is this test associated with."""
+  kinds: [TestKind!]!
+
+  """
+  Chromatic parameters configured on the story or automatically determined based on context.
+  """
+  parameters: TestParameters!
+
+  """
+  Reference to the story for this test in the published Storybook for this build.
+  """
+  story: Story
+  webUrl: URL!
+
+  """When the entity was first created in Chromatic."""
+  createdAt: DateTime!
+
+  """When the entity was last updated or created in Chromatic."""
+  updatedAt: DateTime!
+}
+
+type TestComparison implements Node {
+  """GraphQL node identifier"""
+  id: ID!
+
+  """
+  The result of comparing this test's (head) capture against the baseline. Only available once the test has completed.
+  """
+  result: ComparisonResult
+
+  """Browser against which this comparison was captured and compared."""
+  browser: BrowserInfo!
+
+  """Viewport for which this comparison was captured and compared."""
+  viewport: ViewportInfo!
+
+  """
+  The (head) capture of the baseline test which was compared against, for the same browser.
+  """
+  baseCapture: Capture
+
+  """
+  The capture of the test this comparison belongs to. Available once the capture is complete.
+  """
+  headCapture: Capture
+
+  """
+  The diff between the baseline and head captures. Available once the diff has completed.
+  """
+  captureDiff: CaptureDiff
+}
+
+enum ComparisonResult {
+  """The head capture succeeded but there is no base capture."""
+  ADDED
+
+  """The head and base captures succeeded but are different."""
+  CHANGED
+
+  """The head capture succeeded and was equal to the base capture."""
+  EQUAL
+
+  """The base capture had an error but the head capture succeeded."""
+  FIXED
+
+  """There was a base capture, but no head capture."""
+  REMOVED
+
+  """The head capture failed because the story is broken."""
+  CAPTURE_ERROR
+
+  """Either the head capture or the diff failed due to a system error."""
+  SYSTEM_ERROR
+}
+
+type ViewportInfo {
+  """Identifier for this viewport."""
+  id: ID!
+
+  """Viewport display name."""
+  name: String!
+
+  """Viewport width in pixels."""
+  width: Int!
+
+  """Whether this is the default viewport."""
+  isDefault: Boolean!
+}
+
+type Capture {
+  """The ID of the capture."""
+  id: ID!
+
+  """The result of the capture."""
+  result: CaptureResult!
+
+  """The screenshot capture image. Available if the capture was successful."""
+  captureImage: CaptureImage
+
+  """Metadata about the error if the capture failed."""
+  captureError: CaptureError
+
+  """Capture regions (bounding boxes) to ignore while diffing."""
+  ignoredRegions: [CaptureRegion!]
+}
+
+enum CaptureResult {
+  """The capture succeeded an took a screenshot."""
+  SUCCESS
+
+  """The capture failed due to a problem with the story."""
+  CAPTURE_ERROR
+
+  """The capture failed due to a system error."""
+  SYSTEM_ERROR
+}
+
+type CaptureImage implements Image {
+  """Pixel width of the image."""
+  imageWidth: Int!
+
+  """Pixel height of the image."""
+  imageHeight: Int!
+
+  """URL of the image."""
+  imageUrl: URL!
+
+  """URL of the thumbnail image."""
+  thumbnailUrl: URL!
+
+  """Computed CSS background color of the captured HTML body."""
+  backgroundColor: String
+
+  """Computed CSS text direction of the captured root element."""
+  textDirection: String
+}
+
+interface Image {
+  """Pixel width of the image."""
+  imageWidth: Int!
+
+  """Pixel height of the image."""
+  imageHeight: Int!
+
+  """URL of the image."""
+  imageUrl: URL!
+}
+
+interface CaptureError {
+  """The ID of the capture error."""
+  id: ID!
+
+  """The kind of capture error."""
+  kind: CaptureErrorKind!
+}
+
+enum CaptureErrorKind {
+  """A JavaScript error occurred during capture."""
+  JS_ERROR
+
+  """The image was too large to capture."""
+  IMAGE_TOO_LARGE
+
+  """The page took too long to load."""
+  NAVIGATION_TIMEOUT
+
+  """The page does not contain (valid) JavaScript."""
+  NO_JS
+
+  """A JavaScript error occurred during capture."""
+  FAILED_JS
+
+  """The story was not found."""
+  STORY_MISSING
+
+  """An interaction failed to complete, or encountered an assertion error."""
+  INTERACTION_FAILURE
+
+  """The component was rendered off screen."""
+  COMPONENT_OFF_PAGE
+}
+
+type CaptureRegion {
+  """The ID of the capture region."""
+  id: String!
+
+  """The top offset of the bounding box."""
+  top: Int!
+
+  """The left offset of the bounding box."""
+  left: Int!
+
+  """The width of the bounding box."""
+  width: Int!
+
+  """The height of the bounding box."""
+  height: Int!
+
+  """The CSS selector used to find the element."""
+  selector: String
+}
+
+type CaptureDiff {
+  """The ID of the diff."""
+  id: ID!
+
+  """The result of comparing this capture against the baseline."""
+  result: CaptureDiffResult!
+
+  """The diff overlay image. Available if there are visual changes."""
+  diffImage: CaptureOverlayImage
+
+  """The focus overlay image. Available if there are visual changes."""
+  focusImage: CaptureOverlayImage
+}
+
+enum CaptureDiffResult {
+  """The two captures were found to be equal."""
+  EQUAL
+
+  """The two captures were found to have differences."""
+  CHANGED
+
+  """The diff failed due to a system error."""
+  SYSTEM_ERROR
+}
+
+type CaptureOverlayImage implements Image {
+  """Pixel width of the image."""
+  imageWidth: Int!
+
+  """Pixel height of the image."""
+  imageHeight: Int!
+
+  """URL of the image."""
+  imageUrl: URL!
+}
+
+enum TestKind {
+  """At least one comparison contains an accessibility test"""
+  ACCESSIBILITY
+
+  """At least one comparison contains an interaction test"""
+  INTERACTION
+
+  """At least one comparison contains a visual test"""
+  VISUAL
+}
+
+type TestParameters {
+  """Viewport information."""
+  viewport: ViewportInfo!
+
+  """Delay in milliseconds before taking the snapshot."""
+  delay: Int
+
+  """Disallow scrolling in order to take a full page screenshot."""
+  noScroll: Boolean
+
+  """Threshold before a snapshot is considered visually different (0-1)."""
+  diffThreshold: Float
+
+  """If true, disables detecting and ignoring anti-aliased pixels."""
+  diffIncludeAntiAliasing: Boolean
+
+  """Reverse CSS animations so snapshots show the end state."""
+  pauseAnimationAtEnd: Boolean
+
+  """
+  Set the `prefers-reduced-motion` media feature when capturing the story.
+  """
+  prefersReducedMotion: String
+
+  """Set the `forced-colors` media feature when capturing the story."""
+  forcedColors: String
+
+  """Set the media used when capturing the story."""
+  media: String
+
+  """This test applies to a docs page."""
+  docsOnly: Boolean
+
+  """This test only contains representative snapshots."""
+  representativeOnly: Boolean
+}
+
+type Story implements Node & Temporal {
+  """GraphQL node identifier"""
+  id: ID!
+
+  """Story ID as generated by Storybook, including componentId prefix."""
+  storyId: String!
+
+  """Same as storyId, but guaranteed to be unique within the project."""
+  csfId: String
+
+  """Story name as displayed in Storybook."""
+  name: String!
+
+  """Permalink to the story in the published Storybook."""
+  storybookUrl: URL
+
+  """Image and snapshot display metadata for this story, if captured."""
+  captureImage: CaptureImage
+
+  """Component that contains the story."""
+  component: Component
+
+  """When the entity was first created in Chromatic."""
+  createdAt: DateTime!
+
+  """When the entity was last updated or created in Chromatic."""
+  updatedAt: DateTime!
+}
+
+type Component implements Node & Temporal {
+  """GraphQL node identifier"""
+  id: ID!
+
+  """Story metadata `id` (default export) or slugified version of `title`."""
+  componentId: String!
+
+  """Same as componentId, but guaranteed to be unique within the project."""
+  csfId: String
+
+  """
+  Title (hierarchy path) as specified on story metadata (default export) or autogenerated based on file path.
+  """
+  title: String!
+
+  """Display name of the component (last section of the title)."""
+  name: String!
+
+  """Normalized hierarchy path, including component name as last item."""
+  path: [String!]!
+  representativeStory: Story
+  stories(
+    """Number of items to paginate forwards (use with `after`)."""
+    first: Int
+
+    """Number of items to paginate backwards (use with `before`)."""
+    last: Int
+
+    """Cursor for forward pagination (use with `first`)."""
+    after: ID
+
+    """Cursor for backward pagination (use with `last`)."""
+    before: ID
+    orderBy: StoriesOrder
+  ): StoryConnection
+
+  """When the entity was first created in Chromatic."""
+  createdAt: DateTime!
+
+  """When the entity was last updated or created in Chromatic."""
+  updatedAt: DateTime!
+}
+
+"""Connection to a list of Story."""
+type StoryConnection {
+  """List of edges for StoryConnection."""
+  edges: [StoryEdge!]!
+
+  """List of nodes for StoryConnection."""
+  nodes: [Story!]!
+
+  """Pagination details for StoryConnection."""
+  pageInfo: PageInfo!
+
+  """Total number of items for StoryConnection."""
+  totalCount: Int!
+}
+
+"""The edge type for Story."""
+type StoryEdge {
+  """Cursor to this item."""
+  cursor: String!
+
+  """The item at the edge."""
+  node: Story!
+}
+
+"""Information about pagination in a connection."""
+type PageInfo {
+  """When paginating forwards, are there more items?"""
+  hasNextPage: Boolean!
+
+  """When paginating backwards, are there more items?"""
+  hasPreviousPage: Boolean!
+
+  """When paginating backwards, the cursor to continue."""
+  startCursor: String
+
+  """When paginating forwards, the cursor to continue."""
+  endCursor: String
+}
+
+input StoriesOrder {
+  direction: OrderDirection!
+  field: StoriesOrderField!
+}
+
+enum OrderDirection {
+  """Ascending"""
+  ASC
+
+  """Descending"""
+  DESC
+}
+
+enum StoriesOrderField {
+  createdAt
+  updatedAt
+}
+
+input PreparedBuildTestsOrder {
+  direction: OrderDirection!
+  field: PreparedBuildTestsOrderField!
+}
+
+enum PreparedBuildTestsOrderField {
+  createdAt
+  updatedAt
+  storyOrder
+  resultOrder
+}
+
+"""A build that has started but not completed testing."""
+type StartedBuild implements Node & Temporal & Build {
+  """GraphQL node identifier"""
+  id: ID!
+
+  """
+  Incremental build number. Infrastructure upgrade builds have the same number as the original build.
+  """
+  number: Int!
+
+  """
+  Current (mutable) status of the build, which changes as the build progresses or changes are reviewed.
+  """
+  status: BuildStatus!
+
+  """
+  Whether the build is limited to just representative stories due to insufficient snapshot quota.
+  """
+  isLimited: Boolean!
+
+  """
+  Whether there is a newer build on the same branch, and therefore this build can no longer be reviewed.
+  """
+  isSuperseded: Boolean!
+
+  """Set of browsers against which the build was executed."""
+  browsers: [BrowserInfo!]!
+
+  """
+  URL-safe Git repository identifier, consisting of the owner (organization or user) name and the repository name, separated by a slash (/). This is typically part of the Git repository URL. The value originates from the CLI runtime environment, not the linked Git provider / linked repository.
+  """
+  slug: String
+
+  """
+  Git branch name, possibly prefixed with the owner name (in case of a forked repository).
+  """
+  branch: String!
+
+  """Git commit hash (unshortened)."""
+  commit: String!
+
+  """Hash of uncommitted changes, or empty string for no changes."""
+  uncommittedHash: String
+
+  """Link to the commit details at the Git provider linked to the project."""
+  commitUrl: String
+
+  """Link to the published Storybook's canvas (iframe.html)."""
+  isolatorUrl: URL!
+
+  """Link to the published Storybook."""
+  storybookUrl: URL!
+
+  """Link to the build details on Chromatic."""
+  webUrl: URL!
+
+  """
+  The number of components in the published Storybook, excluding docsOnly components.
+  """
+  componentCount: Int!
+
+  """
+  The number of stories in the published Storybook, excluding docsOnly stories.
+  """
+  specCount: Int!
+
+  """The number of docsOnly stories in the published Storybook"""
+  docsCount: Int!
+
+  """
+  Count the number of tests in the build. All provided filter arguments must match (AND).
+  """
+  testCount(
+    """Only consider tests which match one of these statuses."""
+    statuses: [TestStatus!]
+
+    """Only consider tests which match one of these results."""
+    results: [TestResult!]
+
+    """Only consider tests which are reviewable."""
+    reviewable: Boolean
+  ): Int!
+  tests(
+    """Only return tests which match one of these statuses."""
+    statuses: [TestStatus!]
+
+    """Only return tests (one for each viewport) for this CSF Story ID."""
+    storyId: String
+
+    """Number of items to paginate forwards (use with `after`)."""
+    first: Int
+
+    """Number of items to paginate backwards (use with `before`)."""
+    last: Int
+
+    """Cursor for forward pagination (use with `first`)."""
+    after: ID
+
+    """Cursor for backward pagination (use with `last`)."""
+    before: ID
+    orderBy: StartedBuildTestsOrder
+  ): StartedBuildTestConnection
+
+  """When the entity was first created in Chromatic."""
+  createdAt: DateTime!
+
+  """When the entity was last updated or created in Chromatic."""
+  updatedAt: DateTime!
+
+  """When the commit was created in Git."""
+  committedAt: DateTime!
+
+  """When the Storybook was published on Chromatic."""
+  publishedAt: DateTime!
+
+  """When the build was prepared for testing on Chromatic."""
+  preparedAt: DateTime!
+
+  """When the build was started in Chromatic."""
+  startedAt: DateTime!
+}
+
+"""Connection to a list of StartedBuildTest."""
+type StartedBuildTestConnection {
+  """List of edges for StartedBuildTestConnection."""
+  edges: [StartedBuildTestEdge!]!
+
+  """List of nodes for StartedBuildTestConnection."""
+  nodes: [Test!]!
+
+  """Pagination details for StartedBuildTestConnection."""
+  pageInfo: PageInfo!
+
+  """Total number of items for StartedBuildTestConnection."""
+  totalCount: Int!
+}
+
+"""The edge type for StartedBuildTest."""
+type StartedBuildTestEdge {
+  """Cursor to this item."""
+  cursor: String!
+
+  """The item at the edge."""
+  node: Test!
+}
+
+input StartedBuildTestsOrder {
+  direction: OrderDirection!
+  field: StartedBuildTestsOrderField!
+}
+
+enum StartedBuildTestsOrderField {
+  createdAt
+  updatedAt
+  storyOrder
+  resultOrder
+}
+
+"""A build that has completed testing."""
+type CompletedBuild implements Node & Temporal & Build {
+  """GraphQL node identifier"""
+  id: ID!
+
+  """
+  Incremental build number. Infrastructure upgrade builds have the same number as the original build.
+  """
+  number: Int!
+
+  """
+  Current (mutable) status of the build, which changes as the build progresses or changes are reviewed.
+  """
+  status: BuildStatus!
+
+  """
+  Final (immutable) result of the build / capture process. Only available once the build has completed.
+  """
+  result: BuildResult!
+
+  """
+  Whether the build is limited to just representative stories due to insufficient snapshot quota.
+  """
+  isLimited: Boolean!
+
+  """
+  Whether there is a newer build on the same branch, and therefore this build can no longer be reviewed.
+  """
+  isSuperseded: Boolean!
+
+  """Set of browsers against which the build was executed."""
+  browsers: [BrowserInfo!]!
+
+  """
+  URL-safe Git repository identifier, consisting of the owner (organization or user) name and the repository name, separated by a slash (/). This is typically part of the Git repository URL. The value originates from the CLI runtime environment, not the linked Git provider / linked repository.
+  """
+  slug: String
+
+  """
+  Git branch name, possibly prefixed with the owner name (in case of a forked repository).
+  """
+  branch: String!
+
+  """Git commit hash (unshortened)."""
+  commit: String!
+
+  """Hash of uncommitted changes, or empty string for no changes."""
+  uncommittedHash: String
+
+  """Link to the commit details at the Git provider linked to the project."""
+  commitUrl: String
+
+  """Link to the published Storybook's canvas (iframe.html)."""
+  isolatorUrl: URL!
+
+  """Link to the published Storybook."""
+  storybookUrl: URL!
+
+  """Link to the build details on Chromatic."""
+  webUrl: URL!
+
+  """
+  The number of components in the published Storybook, excluding docsOnly components.
+  """
+  componentCount: Int!
+
+  """
+  The number of stories in the published Storybook, excluding docsOnly stories.
+  """
+  specCount: Int!
+
+  """The number of docsOnly stories in the published Storybook"""
+  docsCount: Int!
+
+  """
+  Count the number of tests in the build. All provided filter arguments must match (AND).
+  """
+  testCount(
+    """Only consider tests which match one of these statuses."""
+    statuses: [TestStatus!]
+
+    """Only consider tests which match one of these results."""
+    results: [TestResult!]
+
+    """Only consider tests which are reviewable."""
+    reviewable: Boolean
+  ): Int!
+  tests(
+    """Only return tests which match one of these statuses."""
+    statuses: [TestStatus!]
+
+    """Only return tests (one for each viewport) for this CSF Story ID."""
+    storyId: String
+
+    """Number of items to paginate forwards (use with `after`)."""
+    first: Int
+
+    """Number of items to paginate backwards (use with `before`)."""
+    last: Int
+
+    """Cursor for forward pagination (use with `first`)."""
+    after: ID
+
+    """Cursor for backward pagination (use with `last`)."""
+    before: ID
+    orderBy: CompletedBuildTestsOrder
+  ): CompletedBuildTestConnection
+  componentRepresentations(
+    """Number of items to paginate forwards (use with `after`)."""
+    first: Int
+
+    """Number of items to paginate backwards (use with `before`)."""
+    last: Int
+
+    """Cursor for forward pagination (use with `first`)."""
+    after: ID
+
+    """Cursor for backward pagination (use with `last`)."""
+    before: ID
+    orderBy: CompletedBuildComponentRepresentationsOrder
+  ): CompletedBuildComponentRepresentationConnection
+
+  """When the entity was first created in Chromatic."""
+  createdAt: DateTime!
+
+  """When the entity was last updated or created in Chromatic."""
+  updatedAt: DateTime!
+
+  """When the commit was created in Git."""
+  committedAt: DateTime!
+
+  """When the Storybook was published on Chromatic."""
+  publishedAt: DateTime!
+
+  """When the build was prepared for testing on Chromatic."""
+  preparedAt: DateTime!
+
+  """When the build was started in Chromatic."""
+  startedAt: DateTime!
+
+  """When the build was completed in Chromatic."""
+  completedAt: DateTime!
+}
+
+enum BuildResult {
+  """The build successfully completed every test."""
+  SUCCESS
+
+  """At least one test on the build had a (user) error."""
+  CAPTURE_ERROR
+
+  """At least one test on the build had a system error."""
+  SYSTEM_ERROR
+
+  """The build did not complete in time."""
+  TIMEOUT
+}
+
+"""Connection to a list of CompletedBuildTest."""
+type CompletedBuildTestConnection {
+  """List of edges for CompletedBuildTestConnection."""
+  edges: [CompletedBuildTestEdge!]!
+
+  """List of nodes for CompletedBuildTestConnection."""
+  nodes: [Test!]!
+
+  """Pagination details for CompletedBuildTestConnection."""
+  pageInfo: PageInfo!
+
+  """Total number of items for CompletedBuildTestConnection."""
+  totalCount: Int!
+}
+
+"""The edge type for CompletedBuildTest."""
+type CompletedBuildTestEdge {
+  """Cursor to this item."""
+  cursor: String!
+
+  """The item at the edge."""
+  node: Test!
+}
+
+input CompletedBuildTestsOrder {
+  direction: OrderDirection!
+  field: CompletedBuildTestsOrderField!
+}
+
+enum CompletedBuildTestsOrderField {
+  createdAt
+  updatedAt
+  storyOrder
+  resultOrder
+}
+
+"""Connection to a list of CompletedBuildComponentRepresentation."""
+type CompletedBuildComponentRepresentationConnection {
+  """List of edges for CompletedBuildComponentRepresentationConnection."""
+  edges: [CompletedBuildComponentRepresentationEdge!]!
+
+  """List of nodes for CompletedBuildComponentRepresentationConnection."""
+  nodes: [ComponentRepresentation!]!
+
+  """
+  Pagination details for CompletedBuildComponentRepresentationConnection.
+  """
+  pageInfo: PageInfo!
+
+  """
+  Total number of items for CompletedBuildComponentRepresentationConnection.
+  """
+  totalCount: Int!
+}
+
+"""The edge type for CompletedBuildComponentRepresentation."""
+type CompletedBuildComponentRepresentationEdge {
+  """Cursor to this item."""
+  cursor: String!
+
+  """The item at the edge."""
+  node: ComponentRepresentation!
+}
+
+"""Represents a component in a build."""
+type ComponentRepresentation {
+  """The component represented here."""
+  component: Component!
+
+  """
+  This test is the best representation of the first spec of the component on this build.
+  """
+  representativeTest: Test!
+}
+
+input CompletedBuildComponentRepresentationsOrder {
+  direction: OrderDirection!
+  field: CompletedBuildComponentRepresentationsOrderField!
+}
+
+enum CompletedBuildComponentRepresentationsOrderField {
+  createdAt
+  updatedAt
+  storyOrder
+  resultOrder
+}
+
+type Query {
+  account(id: ID!): Account
+  build(id: ID!): Build
+  figmaMetadata(key: String): FigmaMetadata
+  bulkFigmaMetadata(keys: [String!]!): [FigmaMetadata]
+  figmaMetadataById(id: ObjID!): FigmaMetadata
+  project(id: ID!): Project
+  storybook(url: URL!): Storybook
+  viewer: User
+}
+
+type Account implements Node & Temporal {
+  """GraphQL node identifier"""
+  id: ID!
+  avatarUrl: String
+
+  """Account name, typically the repository owner."""
+  name: String!
+  projects(limit: Int): [Project]
+
+  """When the entity was first created in Chromatic."""
+  createdAt: DateTime!
+
+  """When the entity was last updated or created in Chromatic."""
+  updatedAt: DateTime!
+}
+
+type Project implements Node & Temporal {
+  """GraphQL node identifier"""
+  id: ID!
+
+  """Project name, typically the repository name."""
+  name: String!
+
+  """Account information which does not require the `account` scope."""
+  publicAccountInfo: PublicAccountInfo!
+
+  """Link to the project on Chromatic."""
+  webUrl: URL!
+
+  """Project token to start builds with Chromatic CLI."""
+  projectToken: String!
+
+  """List of branches for which builds exist in the project."""
+  branchNames(limit: Int = 10): [String!]!
+
+  """
+  Retrieve the last build for the project which matches the (optionally) provided filters. All filter arguments must match (AND).
+  """
+  lastBuild(
+    """
+    Build must be for the default branch configured for the linked repository.
+    """
+    defaultBranch: Boolean
+
+    """Build must match one of these branches."""
+    branches: [String!]
+
+    """Build must match one of these statuses."""
+    statuses: [BuildStatus!]
+
+    """Build must match one of these results."""
+    results: [BuildResult!]
+
+    """Build must match this repository slug."""
+    slug: String
+
+    """Include or exclude local builds according to the specifier."""
+    localBuilds: LocalBuildsSpecifierInput = {isLocalBuild: false}
+  ): Build
+
+  """
+  This token is the Figma OAuth2 accessToken of whichever user assigned their Figma credentials to the project.
+  """
+  figmaToken: String
+
+  """When the entity was first created in Chromatic."""
+  createdAt: DateTime!
+
+  """When the entity was last updated or created in Chromatic."""
+  updatedAt: DateTime!
+}
+
+type PublicAccountInfo {
+  """Login name of the repository owner or token holder."""
+  name: String!
+
+  """Avatar URL of the repository owner or token holder."""
+  avatarUrl: URL
+}
+
+input LocalBuildsSpecifierInput {
+  """If set, only return builds with isLocalBuild set to this value"""
+  isLocalBuild: Boolean
+
+  """
+  If set, return all global builds, and only local builds from this email hash
+  """
+  localBuildEmailHash: String
+}
+
+type FigmaMetadata implements Node & Temporal {
+  """GraphQL node identifier"""
+  id: ID!
+  key: String!
+  metadata: JSONObject!
+  owner: User
+  url: String
+  project: Project
+  story: Story
+
+  """When the entity was first created in Chromatic."""
+  createdAt: DateTime!
+
+  """When the entity was last updated or created in Chromatic."""
+  updatedAt: DateTime!
+}
+
+"""
+The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSONObject @specifiedBy(url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf")
+
+type User implements Node {
+  """GraphQL node identifier"""
+  id: ID!
+  name: String!
+  username: String!
+  avatarUrl: URL
+  accounts: [Account!]!
+
+  """When the entity was first created in Chromatic."""
+  createdAt: DateTime!
+
+  """When the entity was last updated or created in Chromatic."""
+  updatedAt: DateTime!
+}
+
+"""A MongoDB ObjectId."""
+scalar ObjID
+
+type Storybook {
+  """Link to the build on Chromatic."""
+  buildUrl: URL!
+
+  """Permalink to the published Storybook."""
+  storybookUrl: URL!
+
+  """List of components in the published Storybook."""
+  components(
+    """Number of items to paginate forwards (use with `after`)."""
+    first: Int
+
+    """Number of items to paginate backwards (use with `before`)."""
+    last: Int
+
+    """Cursor for forward pagination (use with `first`)."""
+    after: ID
+
+    """Cursor for backward pagination (use with `last`)."""
+    before: ID
+    orderBy: ComponentsOrder
+  ): ComponentConnection!
+}
+
+"""Connection to a list of Component."""
+type ComponentConnection {
+  """List of edges for ComponentConnection."""
+  edges: [ComponentEdge!]!
+
+  """List of nodes for ComponentConnection."""
+  nodes: [Component!]!
+
+  """Pagination details for ComponentConnection."""
+  pageInfo: PageInfo!
+
+  """Total number of items for ComponentConnection."""
+  totalCount: Int!
+}
+
+"""The edge type for Component."""
+type ComponentEdge {
+  """Cursor to this item."""
+  cursor: String!
+
+  """The item at the edge."""
+  node: Component!
+}
+
+input ComponentsOrder {
+  direction: OrderDirection!
+  field: ComponentsOrderField!
+}
+
+enum ComponentsOrderField {
+  createdAt
+  updatedAt
+}
+
+type Mutation {
+  createFigmaMetadata(key: String!, url: String!, metadata: JSONObject!): FigmaMetadata
+  bulkCreateFigmaMetadata(input: [CreateFigmaMetadataInput!]!): [FigmaMetadata!]!
+  removeFigmaMetadata(id: ID!): FigmaMetadata
+  bulkRemoveFigmaMetadata(ids: [ID!]!): [FigmaMetadata!]!
+  reviewTest(input: ReviewTestInput!): ReviewTestPayload
+}
+
+input CreateFigmaMetadataInput {
+  key: String!
+  url: String!
+  metadata: JSONObject!
+}
+
+type ReviewTestPayload {
+  """The test(s) that were updated, if succesful."""
+  updatedTests: [Test!]
+
+  """
+  User errors preventing the test from being reviewed. Empty if successful.
+  """
+  userErrors: [ReviewTestError!]!
+}
+
+union ReviewTestError = BuildSupersededError | TestNotFoundError | TestUnreviewableError
+
+type BuildSupersededError implements UserError {
+  message: String!
+  build: Build!
+}
+
+interface UserError {
+  """A message describing the error."""
+  message: String!
+}
+
+type TestNotFoundError implements UserError {
+  message: String!
+}
+
+type TestUnreviewableError implements UserError {
+  message: String!
+  test: Test!
+}
+
+input ReviewTestInput {
+  """The ID of the test to review."""
+  testId: ID!
+
+  """The new status of the test."""
+  status: ReviewTestInputStatus!
+
+  """
+  Apply review to all tests for the same story, component, or the whole build.
+  """
+  batch: ReviewTestBatch
+}
+
+enum ReviewTestInputStatus {
+  """Accept the changes on the test."""
+  ACCEPTED
+
+  """Deny the changes on the test."""
+  DENIED
+
+  """Reset the test back to unreviewed."""
+  PENDING
+}
+
+enum ReviewTestBatch {
+  BUILD
+  COMPONENT
+  SPEC
+}

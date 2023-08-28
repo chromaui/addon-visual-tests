@@ -22,15 +22,24 @@ export const makeViewportInfo = (width: number): ViewportInfo => ({
   isDefault: width === 1200,
 });
 
+export const baseCapture: StoryTestFieldsFragment["comparisons"][number]["baseCapture"] = {
+  captureImage: {
+    imageUrl: "/A.png",
+    imageWidth: 880,
+  },
+};
+
 export const headCapture: StoryTestFieldsFragment["comparisons"][number]["headCapture"] = {
   captureImage: {
     imageUrl: "/B.png",
+    imageWidth: 880,
   },
 };
 
 export const captureDiff: StoryTestFieldsFragment["comparisons"][number]["captureDiff"] = {
   diffImage: {
     imageUrl: "/B-comparison.png",
+    imageWidth: 880,
   },
 };
 
@@ -46,6 +55,7 @@ export function makeComparison(options: {
     browser: makeBrowserInfo(options.browser || Browser.Chrome),
     viewport: makeViewportInfo(options.viewport || 1200),
     result,
+    baseCapture,
     headCapture,
     ...(result === ComparisonResult.Changed && { captureDiff }),
   };
@@ -111,6 +121,17 @@ export function makeTest(options: {
     );
   }
 
+  function generateStory(storyId: string) {
+    const [rawComponentName, rawStoryName] = storyId.split("--");
+    return {
+      storyId,
+      name: rawStoryName[0].toUpperCase() + rawStoryName.slice(1),
+      component: {
+        name: rawComponentName[0].toUpperCase() + rawComponentName.slice(1),
+      },
+    };
+  }
+
   const comparisons = options.comparisons || generateComparisons();
 
   return {
@@ -120,7 +141,7 @@ export function makeTest(options: {
     webUrl: `https://www.chromatic.com/test?appId=123&id=${id}`,
     comparisons,
     parameters: { viewport: makeViewportInfo(viewportWidth) },
-    story: { storyId: options.storyId || "button--primary" },
+    story: generateStory(options.storyId || "button--primary"),
   };
 }
 
