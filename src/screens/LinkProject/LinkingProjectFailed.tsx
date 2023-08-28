@@ -27,8 +27,8 @@ export function LinkingProjectFailed({
         <Container>
           <CenterText>
             <Heading>Add the Project ID to your Storybook config</Heading>
-            The Project ID will be used to reference prior tests. Please commit this change to
-            continue using this addon.
+            The <code>projectId</code> will be used to reference prior tests. Please commit this
+            change to continue using this addon.
           </CenterText>
           <Code>
             {dedent`
@@ -51,8 +51,8 @@ export function LinkingProjectFailed({
           </Code>
           <CenterText>
             What is this for?{" "}
-            <Link target="_new" href={configureDocsLink}>
-              Learn more ≫
+            <Link withArrow target="_new" href={configureDocsLink}>
+              Learn more
             </Link>
           </CenterText>
         </Container>
