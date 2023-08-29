@@ -7,21 +7,18 @@ import { ProgressIcon } from "./icons/ProgressIcon";
 export function RunTestsButton({
   isStarting,
   projectId,
-  accessToken,
+  isLoggedIn,
   startBuild,
-  key,
 }: {
   isStarting: boolean;
   projectId: string;
-  accessToken: string;
+  isLoggedIn: boolean;
   startBuild: () => void;
-  key: string;
 }) {
-  return projectId && accessToken ? (
+  return projectId && isLoggedIn ? (
     <IconButton
       active={isStarting}
       disabled={isStarting}
-      key={key}
       title="Run visual tests"
       onClick={() => startBuild}
     >

@@ -1,7 +1,6 @@
 import { useChannel } from "@storybook/manager-api";
 import React, { useState } from "react";
 
-import { ProgressIcon } from "./components/icons/ProgressIcon";
 import { RunTestsButton } from "./components/RunTestsButton";
 import { BUILD_STARTED, START_BUILD, TOOL_ID } from "./constants";
 import { useAccessToken } from "./utils/graphQLClient";
@@ -11,6 +10,7 @@ export const Tool = () => {
   const [isStarting, setIsStarting] = useState(false);
   const [projectId] = useProjectId();
   const [accessToken] = useAccessToken();
+  const isLoggedIn = !!accessToken;
 
   const emit = useChannel(
     {
@@ -24,5 +24,5 @@ export const Tool = () => {
     emit(START_BUILD);
   };
 
-  return <RunTestsButton key={TOOL_ID} {...{ isStarting, projectId, accessToken, startBuild }} />;
+  return <RunTestsButton key={TOOL_ID} {...{ isStarting, projectId, isLoggedIn, startBuild }} />;
 };
