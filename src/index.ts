@@ -87,7 +87,7 @@ async function serverChannel(
             step = newStep;
             channel.emit(BUILD_PROGRESS, {
               step,
-              id: ctx.announcedBuild.id,
+              id: ctx.announcedBuild?.id,
             } satisfies BuildProgressPayload);
           }
         },
