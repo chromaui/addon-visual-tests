@@ -1,3 +1,19 @@
+# v0.0.42 (Tue Aug 29 2023)
+
+#### 🐛 Bug Fix
+
+- Remove the run tests button if user is not logged in or the projectId is not set. [#52](https://github.com/chromaui/addon-visual-tests/pull/52) ([@weeksling](https://github.com/weeksling) [@ndelangen](https://github.com/ndelangen) [@tmeasday](https://github.com/tmeasday))
+- use mswLoader instead of decorator [#30](https://github.com/chromaui/addon-visual-tests/pull/30) ([@yannbf](https://github.com/yannbf) [@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 4
+
+- Matthew Weeks ([@weeksling](https://github.com/weeksling))
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+- Yann Braga ([@yannbf](https://github.com/yannbf))
+
+---
+
 # v0.0.41 (Tue Aug 29 2023)
 
 #### 🐛 Bug Fix
