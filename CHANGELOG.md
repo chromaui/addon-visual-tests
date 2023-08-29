@@ -1,3 +1,15 @@
+# v0.0.44 (Tue Aug 29 2023)
+
+#### 🐛 Bug Fix
+
+- Add a couple more useful options [#58](https://github.com/chromaui/addon-visual-tests/pull/58) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.43 (Tue Aug 29 2023)
 
 #### 🐛 Bug Fix
