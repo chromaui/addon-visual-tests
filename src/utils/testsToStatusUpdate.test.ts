@@ -5,6 +5,7 @@ it("handles single test", () => {
   expect(
     testsToStatusUpdate([
       {
+        id: "1",
         status: TestStatus.Passed,
         story: {
           storyId: "story--id",
@@ -15,7 +16,7 @@ it("handles single test", () => {
     {
       "story--id": {
         "description": "Chromatic Visual Tests",
-        "status": null,
+        "status": undefined,
         "title": "Visual Tests",
       },
     }
@@ -26,12 +27,14 @@ it("handles multiple tests", () => {
   expect(
     testsToStatusUpdate([
       {
+        id: "1",
         status: TestStatus.Pending,
         story: {
           storyId: "story--id",
         },
       },
       {
+        id: "2",
         status: TestStatus.Denied,
         story: {
           storyId: "story2--id",
@@ -58,12 +61,14 @@ it("handles multiple viewports", () => {
   expect(
     testsToStatusUpdate([
       {
+        id: "1",
         status: TestStatus.Broken,
         story: {
           storyId: "story--id",
         },
       },
       {
+        id: "2",
         status: TestStatus.Pending,
         story: {
           storyId: "story--id",
@@ -85,12 +90,14 @@ it("handles multiple viewports, reverse order", () => {
   expect(
     testsToStatusUpdate([
       {
+        id: "1",
         status: TestStatus.Pending,
         story: {
           storyId: "story--id",
         },
       },
       {
+        id: "2",
         status: TestStatus.Broken,
         story: {
           storyId: "story--id",

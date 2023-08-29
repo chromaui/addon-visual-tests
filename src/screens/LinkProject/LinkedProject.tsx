@@ -1,14 +1,25 @@
-import { Icon } from "@storybook/design-system";
+import { Icons, Link } from "@storybook/components";
+import { styled } from "@storybook/theming";
 import React from "react";
 import { useQuery } from "urql";
 
 import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
+import { FooterMenu } from "../../components/FooterMenu";
 import { Heading } from "../../components/Heading";
+import { Bar, Col, Section, Sections, Text } from "../../components/layout";
 import { Stack } from "../../components/Stack";
-import { Text } from "../../components/Text";
 import { graphql } from "../../gql";
 import { ProjectQueryQuery } from "../../gql/graphql";
+
+const CheckIcon = styled(Icons)(({ theme }) => ({
+  width: 40,
+  height: 40,
+  padding: 10,
+  background: theme.color.positive,
+  borderRadius: "100%",
+  color: "white",
+}));
 
 const ProjectQuery = graphql(/* GraphQL */ `
   query ProjectQuery($projectId: ID!) {
@@ -27,9 +38,11 @@ const ProjectQuery = graphql(/* GraphQL */ `
 export const LinkedProject = ({
   projectId,
   goToNext,
+  setAccessToken,
 }: {
   projectId: string;
   goToNext: () => void;
+  setAccessToken: (accessToken: string | null) => void;
 }) => {
   const [{ data, fetching, error }] = useQuery<ProjectQueryQuery>({
     query: ProjectQuery,
@@ -37,43 +50,48 @@ export const LinkedProject = ({
   });
 
   return (
-    <Container>
-      <Stack>
-        {fetching && <p>Loading...</p>}
-        {error && <p>{error.message}</p>}
-        {data?.project && (
+    <Sections>
+      <Section grow>
+        <Container>
           <Stack>
-            <Icon icon="check" />
-            <Heading>Project linked!</Heading>
-            <p>
-              We added project ID to main.js. The {data.project.name} app ID will be used to
-              reference prior tests. Please commit this change to continue using this addon.
-            </p>
-            <Button secondary onClick={() => goToNext()}>
-              Next
-            </Button>
-            <p>
-              What is the app ID for? <a href="https://www.chromatic.com/docs/cli">Learn More »</a>
-            </p>
+            {fetching && <p>Loading...</p>}
+            {error && <p>{error.message}</p>}
             {data?.project && (
-              <div>
-                <Heading>Selected project</Heading>
-                <Text>Baselines will be used with this project.</Text>
-                <b>
-                  <a href={data.project.webUrl}>{data.project.name}</a>
-                </b>
-              </div>
-            )}
-            {data.project.lastBuild && (
-              <p>
-                Last build: {data.project.lastBuild.number} on branch{" "}
-                {data.project.lastBuild.branch}
-              </p>
+              <Stack>
+                <CheckIcon icon="check" />
+                <Heading>Project linked!</Heading>
+                <Text style={{ maxWidth: 380 }}>
+                  The <code>projectId</code> for {data.project.name} has been added to this
+                  Storybook&apos;s <code>main.js</code>. This will be used to sync with Chromatic.
+                  Please commit this change to continue using this addon.
+                </Text>
+                <Button secondary onClick={() => goToNext()}>
+                  Catch a UI change
+                </Button>
+                <Text>
+                  Why do we need a project ID?{" "}
+                  <Link href="https://www.chromatic.com/docs/cli">Learn More »</Link>
+                </Text>
+              </Stack>
             )}
           </Stack>
-        )}
-        ;
-      </Stack>
-    </Container>
+        </Container>
+      </Section>
+      <Section>
+        <Bar>
+          <Col>
+            {data?.project?.lastBuild && (
+              <Text style={{ marginLeft: 5 }}>
+                Last build: {data.project.lastBuild.number} on branch{" "}
+                {data.project.lastBuild.branch}
+              </Text>
+            )}
+          </Col>
+          <Col push>
+            <FooterMenu setAccessToken={setAccessToken} />
+          </Col>
+        </Bar>
+      </Section>
+    </Sections>
   );
 };

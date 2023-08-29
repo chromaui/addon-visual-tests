@@ -1,32 +1,50 @@
-import { Loader } from "@storybook/components";
-import { Icon } from "@storybook/design-system";
+import { Icons, Loader } from "@storybook/components";
+import { Icon, TooltipNote, WithTooltip } from "@storybook/design-system";
+// eslint-disable-next-line import/no-unresolved
+import { GitInfo } from "chromatic/node";
 import React, { useCallback, useEffect, useState } from "react";
 import { useMutation, useQuery } from "urql";
 
+import { Button } from "../../components/Button";
+import { Container } from "../../components/Container";
+import { FooterMenu } from "../../components/FooterMenu";
+import { Heading } from "../../components/Heading";
 import { IconButton } from "../../components/IconButton";
+import { ProgressIcon } from "../../components/icons/ProgressIcon";
 import { Bar, Col, Row, Section, Sections, Text } from "../../components/layout";
-import { TooltipMenu } from "../../components/TooltipMenu";
+import { Text as CenterText } from "../../components/Text";
 import { getFragment, graphql } from "../../gql";
 import {
-  BuildQuery,
-  BuildQueryVariables,
+  AddonVisualTestsBuildQuery,
+  AddonVisualTestsBuildQueryVariables,
+  BuildStatus,
   ReviewTestBatch,
   ReviewTestInputStatus,
+  TestResult,
+  TestStatus,
 } from "../../gql/graphql";
-import { StatusUpdate, testsToStatusUpdate } from "../../utils/testsToStatusUpdate";
-import { BuildInfo } from "./BuildInfo";
+import { statusMap, StatusUpdate, testsToStatusUpdate } from "../../utils/testsToStatusUpdate";
 import { RenderSettings } from "./RenderSettings";
 import { SnapshotComparison } from "./SnapshotComparison";
+import { StoryInfo } from "./StoryInfo";
 import { Warnings } from "./Warnings";
 
 const QueryBuild = graphql(/* GraphQL */ `
-  query Build($hasBuildId: Boolean!, $buildId: ID!, $projectId: ID!, $branch: String!) {
-    build(id: $buildId) @include(if: $hasBuildId) {
-      ...BuildFields
-    }
-    project(id: $projectId) @skip(if: $hasBuildId) {
+  query AddonVisualTestsBuild(
+    $projectId: ID!
+    $branch: String!
+    $gitUserEmailHash: String!
+    $slug: String
+    $storyId: String!
+    $testStatuses: [TestStatus!]!
+  ) {
+    project(id: $projectId) {
       name
-      lastBuild(branches: [$branch]) {
+      lastBuild(
+        branches: [$branch]
+        slug: $slug
+        localBuilds: { localBuildEmailHash: $gitUserEmailHash }
+      ) {
         ...BuildFields
       }
     }
@@ -40,6 +58,7 @@ const FragmentBuildFields = graphql(/* GraphQL */ `
     number
     branch
     commit
+    uncommittedHash
     status
     browsers {
       id
@@ -50,9 +69,14 @@ const FragmentBuildFields = graphql(/* GraphQL */ `
       changeCount: testCount(results: [ADDED, CHANGED, FIXED])
       brokenCount: testCount(results: [CAPTURE_ERROR])
       startedAt
-      tests {
+      testsForStatus: tests(first: 1000, statuses: $testStatuses) {
         nodes {
-          ...TestFields
+          ...StatusTestFields
+        }
+      }
+      testsForStory: tests(storyId: $storyId) {
+        nodes {
+          ...StoryTestFields
         }
       }
     }
@@ -61,17 +85,32 @@ const FragmentBuildFields = graphql(/* GraphQL */ `
       changeCount: testCount(results: [ADDED, CHANGED, FIXED])
       brokenCount: testCount(results: [CAPTURE_ERROR])
       startedAt
-      tests {
+      testsForStatus: tests(statuses: $testStatuses) {
         nodes {
-          ...TestFields
+          ...StatusTestFields
+        }
+      }
+      testsForStory: tests(storyId: $storyId) {
+        nodes {
+          ...StoryTestFields
         }
       }
     }
   }
 `);
 
-const FragmentTestFields = graphql(/* GraphQL */ `
-  fragment TestFields on Test {
+const FragmentStatusTestFields = graphql(/* GraphQL */ `
+  fragment StatusTestFields on Test {
+    id
+    status
+    story {
+      storyId
+    }
+  }
+`);
+
+const FragmentStoryTestFields = graphql(/* GraphQL */ `
+  fragment StoryTestFields on Test {
     id
     status
     result
@@ -88,11 +127,19 @@ const FragmentTestFields = graphql(/* GraphQL */ `
       captureDiff {
         diffImage {
           imageUrl
+          imageWidth
         }
       }
       headCapture {
         captureImage {
           imageUrl
+          imageWidth
+        }
+      }
+      baseCapture {
+        captureImage {
+          imageUrl
+          imageWidth
         }
       }
       viewport {
@@ -112,6 +159,10 @@ const FragmentTestFields = graphql(/* GraphQL */ `
     }
     story {
       storyId
+      name
+      component {
+        name
+      }
     }
   }
 `);
@@ -145,44 +196,45 @@ const MutationReviewTest = graphql(/* GraphQL */ `
 
 interface VisualTestsProps {
   projectId: string;
-  branch?: string;
-  slug?: string;
-  isOutdated?: boolean;
-  isRunning?: boolean;
+  gitInfo: Pick<GitInfo, "branch" | "slug" | "userEmailHash" | "uncommittedHash">;
+  isStarting: boolean;
   lastDevBuildId?: string;
-  runDevBuild: () => void;
+  startDevBuild: () => void;
   setAccessToken: (accessToken: string | null) => void;
-  // eslint-disable-next-line react/no-unused-prop-types
-  setIsOutdated: (isOutdated: boolean) => void;
-  setIsRunning: (isRunning: boolean) => void;
   updateBuildStatus: (update: StatusUpdate) => void;
   storyId: string;
 }
 
-let last: any;
 export const VisualTests = ({
-  isOutdated,
-  isRunning,
+  isStarting,
   lastDevBuildId,
-  runDevBuild,
+  startDevBuild,
   setAccessToken,
-  setIsRunning,
   updateBuildStatus,
   projectId,
-  branch,
-  slug,
+  gitInfo,
   storyId,
 }: VisualTestsProps) => {
-  const [{ data, fetching, error }, rerun] = useQuery<BuildQuery, BuildQueryVariables>({
+  const [{ data, error }, rerun] = useQuery<
+    AddonVisualTestsBuildQuery,
+    AddonVisualTestsBuildQueryVariables
+  >({
     query: QueryBuild,
     variables: {
-      hasBuildId: !!lastDevBuildId,
-      buildId: lastDevBuildId || "",
       projectId,
-      branch: branch || "",
-      ...(slug ? { slug } : {}),
+      storyId,
+      testStatuses: Object.keys(statusMap) as any as TestStatus[],
+      branch: gitInfo.branch || "",
+      ...(gitInfo.slug ? { slug: gitInfo.slug } : {}),
+      gitUserEmailHash: gitInfo.userEmailHash,
     },
   });
+
+  // Poll for updates
+  useEffect(() => {
+    const interval = setInterval(rerun, 5000);
+    return () => clearInterval(interval);
+  }, [rerun]);
 
   const [{ fetching: isAccepting }, reviewTest] = useMutation(MutationReviewTest);
 
@@ -205,43 +257,26 @@ export const VisualTests = ({
     [reviewTest]
   );
 
-  const build = getFragment(FragmentBuildFields, data?.build || data?.project?.lastBuild);
+  const build = getFragment(FragmentBuildFields, data?.project?.lastBuild);
+  const isOutdated = build && build.uncommittedHash !== gitInfo.uncommittedHash;
 
-  const buildComplete = build && "result" in build;
   const buildStatusUpdate =
     build &&
-    "tests" in build &&
-    testsToStatusUpdate(getFragment(FragmentTestFields, build.tests.nodes));
+    "testsForStatus" in build &&
+    testsToStatusUpdate(getFragment(FragmentStatusTestFields, build.testsForStatus.nodes));
 
   useEffect(() => {
-    if (buildComplete && isRunning) {
-      setIsRunning(false);
-    }
-  }, [buildComplete, isRunning, setIsRunning]);
-
-  useEffect(() => {
-    last = {
-      buildStatusUpdate,
-      string: JSON.stringify(buildStatusUpdate),
-    };
-    if (buildStatusUpdate) {
-      updateBuildStatus(buildStatusUpdate);
-    }
+    if (buildStatusUpdate) updateBuildStatus(buildStatusUpdate);
     // We use the stringified version of buildStatusUpdate to do a deep diff
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(buildStatusUpdate), updateBuildStatus]);
 
-  useEffect(() => {
-    let interval: any;
-    if (isRunning) interval = setInterval(rerun, 5000);
-    else clearInterval(interval);
-    return () => clearInterval(interval);
-  }, [isRunning, rerun]);
-
   const [settingsVisible, setSettingsVisible] = useState(false);
   const [warningsVisible, setWarningsVisible] = useState(false);
+  const [baselineImageVisible, setBaselineImageVisible] = useState(false);
+  const toggleBaselineImage = () => setBaselineImageVisible(!baselineImageVisible);
 
-  if (fetching || error || !build) {
+  if (!build || error) {
     return (
       <Sections>
         <Section grow>
@@ -252,45 +287,35 @@ export const VisualTests = ({
               </Col>
             </Row>
           )}
-          {fetching && <Loader />}
-          {!build && !fetching && !error && (
-            <Section grow>
-              <Row>
-                <Col>
-                  <Text>
-                    Your project {data.project?.name} does not have any builds yet. Run a build a to
-                    begin.
-                  </Text>
-                </Col>
-              </Row>
-            </Section>
+          {!data && <Loader />}
+          {data && !build && !error && (
+            <Container>
+              <Heading>Create a test baseline</Heading>
+              <CenterText>
+                Take an image snapshot of each story to save their &quot;last known good state&quot;
+                as test baselines.
+              </CenterText>
+              <br />
+              <Button small secondary onClick={startDevBuild} disabled={isStarting}>
+                {isStarting ? (
+                  <ProgressIcon parentComponent="Button" style={{ marginRight: 6 }} />
+                ) : (
+                  <Icons icon="play" />
+                )}
+                Take snapshots
+              </Button>
+            </Container>
           )}
         </Section>
         <Section>
           <Bar>
             <Col>
-              <Text style={{ marginLeft: 5 }}>Loading...</Text>
+              <Text style={{ marginLeft: 5 }}>
+                {data ? `Waiting for build on ${gitInfo.branch}` : "Loading..."}
+              </Text>
             </Col>
             <Col push>
-              <TooltipMenu
-                placement="top"
-                links={[
-                  {
-                    id: "logout",
-                    title: "Log out",
-                    icon: "user",
-                    onClick: () => setAccessToken(null),
-                  },
-                  {
-                    id: "learn",
-                    title: "Learn about this addon",
-                    icon: "question",
-                    href: "https://www.chromatic.com/docs/test",
-                  },
-                ]}
-              >
-                <Icon icon="ellipsis" />
-              </TooltipMenu>
+              <FooterMenu setAccessToken={setAccessToken} />
             </Col>
           </Bar>
         </Section>
@@ -298,17 +323,56 @@ export const VisualTests = ({
     );
   }
 
-  const allTests = getFragment(FragmentTestFields, "tests" in build ? build.tests.nodes : []);
-  const tests = allTests.filter((test) => test.story?.storyId === storyId);
+  const tests = [
+    ...getFragment(
+      FragmentStoryTestFields,
+      "testsForStory" in build ? build.testsForStory.nodes : []
+    ),
+  ];
+  const startedAt = "startedAt" in build && build.startedAt;
+  const isBuildFailed = build.status === BuildStatus.Failed;
 
-  const viewportCount = new Set(allTests.map((t) => t.parameters.viewport.id)).size;
+  // It shouldn't be possible for one test to be skipped but not all of them
+  const isSkipped = !!tests?.find((t) => t.result === TestResult.Skipped);
+  if (isSkipped) {
+    return (
+      <Sections>
+        <Section grow>
+          <Container>
+            <Heading>This story was skipped</Heading>
+            <CenterText>
+              If you would like to resume testing it, comment out or remove
+              `parameters.chromatic.disableSnapshot = true` from the CSF file.
+            </CenterText>
+            <Button
+              belowText
+              small
+              tertiary
+              containsIcon
+              // @ts-expect-error Button component is not quite typed properly
+              target="_new"
+              isLink
+              href="https://www.chromatic.com/docs/ignoring-elements#ignore-stories"
+            >
+              <Icons icon="document" />
+              View Docs
+            </Button>
+          </Container>
+        </Section>
+      </Sections>
+    );
+  }
+
   return (
     <Sections>
       <Section grow hidden={settingsVisible || warningsVisible}>
-        <BuildInfo {...{ build, viewportCount, isOutdated, runDevBuild }} />
-        {/* The key here is to ensure the useTests helper gets to reset each time we change story */}
-        {tests.length > 0 && (
-          <SnapshotComparison key={storyId} {...{ tests, isAccepting, isOutdated, onAccept }} />
+        <StoryInfo
+          {...{ tests, isOutdated, startedAt, isStarting, startDevBuild, isBuildFailed }}
+        />
+        {!isStarting && tests && tests.length > 0 && (
+          <SnapshotComparison
+            {...{ tests, isAccepting, isOutdated, onAccept, baselineImageVisible }}
+          />
         )}
       </Section>
 
@@ -321,9 +385,36 @@ export const VisualTests = ({
       <Section>
         <Bar>
           <Col>
-            <Text style={{ marginLeft: 5 }}>Latest snapshot on {build.branch}</Text>
+            <WithTooltip
+              tooltip={<TooltipNote note="Switch snapshot" />}
+              trigger="hover"
+              hasChrome={false}
+            >
+              <IconButton
+                data-testid="button-toggle-snapshot"
+                onClick={() => toggleBaselineImage()}
+              >
+                <Icon icon="transfer" />
+              </IconButton>
+            </WithTooltip>
           </Col>
-          <Col push>
+          <Col style={{ overflow: "hidden", whiteSpace: "nowrap" }}>
+            {baselineImageVisible ? (
+              <Text style={{ marginLeft: 5, width: "100%" }}>
+                <b>Baseline</b> Build {build.number} on {build.branch}
+              </Text>
+            ) : (
+              <Text style={{ marginLeft: 5, width: "100%" }}>
+                <b>Latest</b> Build {build.number} on {build.branch}
+              </Text>
+            )}
+          </Col>
+          {/* <Col push>
+            <WithTooltip
+              tooltip={<TooltipNote note="Render settings" />}
+              trigger="hover"
+              hasChrome={false}
+            >
             <IconButton
               active={settingsVisible}
               aria-label={`${settingsVisible ? "Hide" : "Show"} render settings`}
@@ -332,42 +423,32 @@ export const VisualTests = ({
                 setWarningsVisible(false);
               }}
             >
-              <Icon icon="controls" />
+              <Icons icon="controls" />
             </IconButton>
+          </WithTooltip>
           </Col>
           <Col>
-            <IconButton
-              active={warningsVisible}
-              aria-label={`${warningsVisible ? "Hide" : "Show"} warnings`}
-              onClick={() => {
-                setWarningsVisible(!warningsVisible);
-                setSettingsVisible(false);
-              }}
-              status="warning"
+            <WithTooltip
+              tooltip={<TooltipNote note="View warnings" />}
+              trigger="hover"
+              hasChrome={false}
             >
-              <Icon icon="alert" />2
-            </IconButton>
-          </Col>
-          <Col>
-            <TooltipMenu
-              placement="top"
-              links={[
-                {
-                  id: "logout",
-                  title: "Log out",
-                  icon: "user",
-                  onClick: () => setAccessToken(null),
-                },
-                {
-                  id: "learn",
-                  title: "Learn about this addon",
-                  icon: "question",
-                  href: "https://www.chromatic.com/docs/test",
-                },
-              ]}
-            >
-              <Icon icon="ellipsis" />
-            </TooltipMenu>
+              <IconButton
+                active={warningsVisible}
+                aria-label={`${warningsVisible ? "Hide" : "Show"} warnings`}
+                onClick={() => {
+                  setWarningsVisible(!warningsVisible);
+                  setSettingsVisible(false);
+                }}
+                status="warning"
+              >
+                <Icons icon="alert" />2
+              </IconButton>
+
+            </WithTooltip>
+          </Col> */}
+          <Col push>
+            <FooterMenu setAccessToken={setAccessToken} />
           </Col>
         </Bar>
       </Section>

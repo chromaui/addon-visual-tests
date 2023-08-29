@@ -1,3 +1,282 @@
+# v0.0.41 (Tue Aug 29 2023)
+
+#### 🐛 Bug Fix
+
+- Show instructional UI if main.js updating fails [#41](https://github.com/chromaui/addon-visual-tests/pull/41) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.40 (Sat Aug 26 2023)
+
+#### 🐛 Bug Fix
+
+- Add SidebarBottom to toggle sidebar filtering based on story status [#45](https://github.com/chromaui/addon-visual-tests/pull/45) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.39 (Sat Aug 26 2023)
+
+#### 🐛 Bug Fix
+
+- Update `selectedTest` whenever tests change (e.g. when switching stories) [#51](https://github.com/chromaui/addon-visual-tests/pull/51) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.38 (Fri Aug 25 2023)
+
+#### 🐛 Bug Fix
+
+- Use local schema file for graphql-codegen [#49](https://github.com/chromaui/addon-visual-tests/pull/49) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.37 (Fri Aug 25 2023)
+
+#### 🐛 Bug Fix
+
+- Allow passing `buildScriptName` as addon option [#44](https://github.com/chromaui/addon-visual-tests/pull/44) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.36 (Thu Aug 24 2023)
+
+#### 🐛 Bug Fix
+
+- Always show last (potentially local) build on branch [#46](https://github.com/chromaui/addon-visual-tests/pull/46) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.35 (Thu Aug 24 2023)
+
+#### 🐛 Bug Fix
+
+- Read configDir and use for `main.js` location [#39](https://github.com/chromaui/addon-visual-tests/pull/39) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.34 (Wed Aug 23 2023)
+
+#### 🐛 Bug Fix
+
+- add story for baselineImageVisible: true on SnapshotComparison [#47](https://github.com/chromaui/addon-visual-tests/pull/47) ([@weeksling](https://github.com/weeksling))
+
+#### Authors: 1
+
+- Matthew Weeks ([@weeksling](https://github.com/weeksling))
+
+---
+
+# v0.0.33 (Wed Aug 23 2023)
+
+#### 🐛 Bug Fix
+
+- Add toggle to show baseline snapshot image [#38](https://github.com/chromaui/addon-visual-tests/pull/38) ([@weeksling](https://github.com/weeksling))
+
+#### Authors: 1
+
+- Matthew Weeks ([@weeksling](https://github.com/weeksling))
+
+---
+
+# v0.0.32 (Wed Aug 23 2023)
+
+#### 🐛 Bug Fix
+
+- Refactor `SnapshotImage` to handle overlay images and scaling [#40](https://github.com/chromaui/addon-visual-tests/pull/40) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.31 (Wed Aug 23 2023)
+
+#### 🐛 Bug Fix
+
+- Fix bug that hid the last project in the list [#27](https://github.com/chromaui/addon-visual-tests/pull/27) ([@weeksling](https://github.com/weeksling))
+
+#### Authors: 1
+
+- Matthew Weeks ([@weeksling](https://github.com/weeksling))
+
+---
+
+# v0.0.30 (Tue Aug 22 2023)
+
+#### 🐛 Bug Fix
+
+- Implement UI for 'project linked' screen [#42](https://github.com/chromaui/addon-visual-tests/pull/42) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.29 (Tue Aug 22 2023)
+
+#### 🐛 Bug Fix
+
+- Query `testsForStory` and `testsForStatus` separately to avoid pagination [#37](https://github.com/chromaui/addon-visual-tests/pull/37) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.28 (Tue Aug 22 2023)
+
+#### 🐛 Bug Fix
+
+- Remove/hide render settings and warnings screens for now [#43](https://github.com/chromaui/addon-visual-tests/pull/43) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.27 (Tue Aug 22 2023)
+
+#### 🐛 Bug Fix
+
+- Mark all builds from the addon as local [#25](https://github.com/chromaui/addon-visual-tests/pull/25) ([@tmeasday](https://github.com/tmeasday))
+- Filter `Project.lastBuild` query by `localBuilds: { localBuildEmailHash }` so we don't see others' local builds [#26](https://github.com/chromaui/addon-visual-tests/pull/26) ([@ndelangen](https://github.com/ndelangen) [@tmeasday](https://github.com/tmeasday) [@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 3
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.26 (Tue Aug 22 2023)
+
+#### 🐛 Bug Fix
+
+- Don't show the `SnapshotComparison` for skipped stories [#33](https://github.com/chromaui/addon-visual-tests/pull/33) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.25 (Mon Aug 21 2023)
+
+#### 🐛 Bug Fix
+
+- Refactor `BuildInfo` -> `StoryInfo` [#36](https://github.com/chromaui/addon-visual-tests/pull/36) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.24 (Fri Aug 18 2023)
+
+#### 🐛 Bug Fix
+
+- Send a sessionId on graphql requests [#22](https://github.com/chromaui/addon-visual-tests/pull/22) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.23 (Thu Aug 17 2023)
+
+#### 🐛 Bug Fix
+
+- Ensure we actually typecheck [#35](https://github.com/chromaui/addon-visual-tests/pull/35) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.22 (Wed Aug 16 2023)
+
+#### 🐛 Bug Fix
+
+- Poll for Git repository hash and set `isOutdated` when it changes [#31](https://github.com/chromaui/addon-visual-tests/pull/31) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.21 (Wed Aug 16 2023)
+
+#### 🐛 Bug Fix
+
+- Upgrade to SB7.3 [#32](https://github.com/chromaui/addon-visual-tests/pull/32) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.20 (Mon Aug 14 2023)
+
+#### 🐛 Bug Fix
+
+- Add footer menu to link project screen [#29](https://github.com/chromaui/addon-visual-tests/pull/29) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.19 (Thu Aug 10 2023)
+
+#### 🐛 Bug Fix
+
+- Realtime git info [#24](https://github.com/chromaui/addon-visual-tests/pull/24) ([@ndelangen](https://github.com/ndelangen))
+
+#### Authors: 1
+
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+
+---
+
 # v0.0.18 (Wed Aug 09 2023)
 
 #### 🐛 Bug Fix

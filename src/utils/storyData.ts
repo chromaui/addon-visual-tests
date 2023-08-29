@@ -2,7 +2,7 @@ import {
   Browser,
   BrowserInfo,
   ComparisonResult,
-  TestFieldsFragment,
+  StoryTestFieldsFragment,
   TestResult,
   TestStatus,
   ViewportInfo,
@@ -22,15 +22,24 @@ export const makeViewportInfo = (width: number): ViewportInfo => ({
   isDefault: width === 1200,
 });
 
-export const headCapture: TestFieldsFragment["comparisons"][number]["headCapture"] = {
+export const baseCapture: StoryTestFieldsFragment["comparisons"][number]["baseCapture"] = {
   captureImage: {
-    imageUrl: "/B.png",
+    imageUrl: "/A.png",
+    imageWidth: 880,
   },
 };
 
-export const captureDiff: TestFieldsFragment["comparisons"][number]["captureDiff"] = {
+export const headCapture: StoryTestFieldsFragment["comparisons"][number]["headCapture"] = {
+  captureImage: {
+    imageUrl: "/B.png",
+    imageWidth: 880,
+  },
+};
+
+export const captureDiff: StoryTestFieldsFragment["comparisons"][number]["captureDiff"] = {
   diffImage: {
     imageUrl: "/B-comparison.png",
+    imageWidth: 880,
   },
 };
 
@@ -39,13 +48,14 @@ export function makeComparison(options: {
   browser?: Browser;
   viewport?: number;
   result?: ComparisonResult;
-}): TestFieldsFragment["comparisons"][number] {
+}): StoryTestFieldsFragment["comparisons"][number] {
   const result = options.result || ComparisonResult.Equal;
   return {
     id: options.id || "111",
     browser: makeBrowserInfo(options.browser || Browser.Chrome),
     viewport: makeViewportInfo(options.viewport || 1200),
     result,
+    baseCapture,
     headCapture,
     ...(result === ComparisonResult.Changed && { captureDiff }),
   };
@@ -62,36 +72,100 @@ const testResultToComparisonResult: Record<TestResult, ComparisonResult> = {
   [TestResult.SystemError]: ComparisonResult.SystemError,
 };
 
+const testStatusToTestResult: Record<TestStatus, TestResult> = {
+  [TestStatus.Failed]: TestResult.SystemError,
+  [TestStatus.Broken]: TestResult.CaptureError,
+  [TestStatus.Accepted]: TestResult.Changed,
+  [TestStatus.Denied]: TestResult.Changed,
+  [TestStatus.Pending]: TestResult.Changed,
+  [TestStatus.Passed]: TestResult.Equal,
+  [TestStatus.InProgress]: null,
+};
+
+/**
+ * Make a single test with some shorthands to map across browsers
+ */
 export function makeTest(options: {
   id?: string;
   status?: TestStatus;
   result?: TestResult;
-  comparisons?: TestFieldsFragment["comparisons"];
+  comparisons?: StoryTestFieldsFragment["comparisons"];
+  comparisonResults?: ComparisonResult[];
   browsers?: Browser[];
   viewport?: number;
   storyId?: string;
-}): TestFieldsFragment {
+}): StoryTestFieldsFragment {
   const id = options.id || "11";
-  const result = options.result || TestResult.Equal;
+  const status = options.status || TestStatus.Passed;
+  const result = options.result || testStatusToTestResult[status];
 
   const viewportWidth = options.viewport || 1200;
-  const comparisons =
-    options.comparisons ||
-    (options.browsers || [Browser.Chrome]).map((browserKey, index) =>
+
+  function generateComparisons() {
+    if (result === TestResult.Skipped) {
+      return [];
+    }
+
+    const browsers = options.browsers || [Browser.Chrome];
+
+    if (options.comparisonResults && options.comparisonResults.length !== browsers.length) {
+      throw new Error(`You supplied an inconsistent number of browsers/comparisonResults`);
+    }
+    return browsers.map((browserKey, index) =>
       makeComparison({
         id: `id${index}`,
         browser: browserKey,
         viewport: viewportWidth,
-        result: testResultToComparisonResult[result],
+        result: options.comparisonResults?.[index] ?? testResultToComparisonResult[result],
       })
     );
+  }
+
+  function generateStory(storyId: string) {
+    const [rawComponentName, rawStoryName] = storyId.split("--");
+    return {
+      storyId,
+      name: rawStoryName[0].toUpperCase() + rawStoryName.slice(1),
+      component: {
+        name: rawComponentName[0].toUpperCase() + rawComponentName.slice(1),
+      },
+    };
+  }
+
+  const comparisons = options.comparisons || generateComparisons();
+
   return {
     id,
-    status: options.status || TestStatus.Passed,
+    status,
     result,
     webUrl: `https://www.chromatic.com/test?appId=123&id=${id}`,
     comparisons,
     parameters: { viewport: makeViewportInfo(viewportWidth) },
-    story: { storyId: options.storyId || "button--primary" },
+    story: generateStory(options.storyId || "button--primary"),
   };
+}
+
+/**
+ * Make a set of tests across viewports for a single story
+ */
+export function makeTests(options: {
+  id?: string;
+  storyId?: string;
+  browsers?: Browser[];
+  viewports: {
+    viewport?: number;
+    status?: TestStatus;
+    result?: TestResult;
+    comparisons?: StoryTestFieldsFragment["comparisons"];
+    comparisonResults?: ComparisonResult[];
+  }[];
+}) {
+  return options.viewports.map((viewportOptions, index) =>
+    makeTest({
+      id: `${options.id || "1"}${index}`,
+      storyId: options.storyId || "button--primary",
+      browsers: options.browsers || [Browser.Chrome],
+      ...viewportOptions,
+    })
+  );
 }

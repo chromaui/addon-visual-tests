@@ -1,5 +1,5 @@
 import type { StorybookConfig } from "@storybook/react-vite";
-import { CHROMATIC_INDEX_URL } from "../src/constants";
+import { CHROMATIC_BASE_URL } from "../src/constants";
 
 const prodConfig = {
   projectToken: "chpt_5a1a378a1392c49",
@@ -37,7 +37,7 @@ const config: StorybookConfig = {
     "@storybook/addon-designs",
     {
       name: "../dist/index.js",
-      options: CHROMATIC_INDEX_URL ? addonOptionsMap[CHROMATIC_INDEX_URL] : prodConfig,
+      options: addonOptionsMap[CHROMATIC_BASE_URL],
     },
   ],
   docs: {

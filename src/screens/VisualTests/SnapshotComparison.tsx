@@ -1,4 +1,4 @@
-import { Icons, Loader } from "@storybook/components";
+import { Icons, Loader, TooltipNote, WithTooltip } from "@storybook/components";
 import { styled } from "@storybook/theming";
 import React, { useState } from "react";
 
@@ -13,9 +13,10 @@ import { ViewportSelector } from "../../components/ViewportSelector";
 import {
   ComparisonResult,
   ReviewTestBatch,
-  TestFieldsFragment,
+  StoryTestFieldsFragment,
   TestStatus,
 } from "../../gql/graphql";
+import { summarizeTests } from "../../utils/summarizeTests";
 import { useTests } from "../../utils/useTests";
 
 const Divider = styled.div(({ theme }) => ({
@@ -25,23 +26,23 @@ const Divider = styled.div(({ theme }) => ({
 }));
 
 interface SnapshotSectionProps {
-  tests: TestFieldsFragment[];
+  tests: StoryTestFieldsFragment[];
   isAccepting: boolean;
-  onAccept: (testId: TestFieldsFragment["id"], batch?: ReviewTestBatch) => void;
+  baselineImageVisible: boolean;
+  onAccept: (testId: StoryTestFieldsFragment["id"], batch?: ReviewTestBatch) => void;
 }
 
-export const SnapshotComparison = ({ tests, isAccepting, onAccept }: SnapshotSectionProps) => {
-  const {
-    selectedTest,
-    selectedComparison,
-    isInProgress,
-    changeCount,
-    browserResults,
-    onSelectBrowser,
-    viewportResults,
-    onSelectViewport,
-  } = useTests(tests);
+export const SnapshotComparison = ({
+  tests,
+  isAccepting,
+  onAccept,
+  baselineImageVisible,
+}: SnapshotSectionProps) => {
   const [diffVisible, setDiffVisible] = useState(true);
+  const [focusVisible, setFocusVisible] = useState(false);
+
+  const { selectedTest, selectedComparison, onSelectBrowser, onSelectViewport } = useTests(tests);
+  const { isInProgress, changeCount, browserResults, viewportResults } = summarizeTests(tests);
 
   return (
     <>
@@ -54,37 +55,65 @@ export const SnapshotComparison = ({ tests, isAccepting, onAccept }: SnapshotSec
         </Bar>
       ) : (
         <Bar>
-          {selectedComparison?.result === ComparisonResult.Changed && (
-            <Col>
-              <IconButton active={diffVisible} onClick={() => setDiffVisible(!diffVisible)}>
-                <Icons icon="contrast" />
-              </IconButton>
-            </Col>
-          )}
           {viewportResults.length > 0 && (
             <Col>
-              <ViewportSelector
-                selectedViewport={selectedTest.parameters.viewport}
-                viewportResults={viewportResults}
-                onSelectViewport={onSelectViewport}
-              />
+              <WithTooltip
+                tooltip={<TooltipNote note="Switch viewport" />}
+                trigger="hover"
+                hasChrome={false}
+              >
+                <ViewportSelector
+                  selectedViewport={selectedTest.parameters.viewport}
+                  viewportResults={viewportResults}
+                  onSelectViewport={onSelectViewport}
+                />
+              </WithTooltip>
             </Col>
           )}
           {browserResults.length > 0 && (
             <Col>
-              <BrowserSelector
-                selectedBrowser={selectedComparison.browser}
-                browserResults={browserResults}
-                onSelectBrowser={onSelectBrowser}
-              />
+              <WithTooltip
+                tooltip={<TooltipNote note="Switch browser" />}
+                trigger="hover"
+                hasChrome={false}
+              >
+                <BrowserSelector
+                  selectedBrowser={selectedComparison.browser}
+                  browserResults={browserResults}
+                  onSelectBrowser={onSelectBrowser}
+                />
+              </WithTooltip>
+            </Col>
+          )}
+          {selectedComparison?.result === ComparisonResult.Changed && (
+            <Col>
+              <WithTooltip
+                tooltip={<TooltipNote note="Toggle diff" />}
+                trigger="hover"
+                hasChrome={false}
+              >
+                <IconButton
+                  data-testid="button-diff-visible"
+                  active={diffVisible}
+                  onClick={() => setDiffVisible(!diffVisible)}
+                >
+                  <Icons icon="contrast" />
+                </IconButton>
+              </WithTooltip>
             </Col>
           )}
           {changeCount > 0 && selectedTest.status !== TestStatus.Accepted && (
             <>
               <Col push>
-                <IconButton secondary onClick={() => onAccept(selectedTest.id)}>
-                  Accept
-                </IconButton>
+                <WithTooltip
+                  tooltip={<TooltipNote note="Accept this snapshot" />}
+                  trigger="hover"
+                  hasChrome={false}
+                >
+                  <IconButton secondary onClick={() => onAccept(selectedTest.id)}>
+                    Accept
+                  </IconButton>
+                </WithTooltip>
               </Col>
               <Col>
                 <TooltipMenu
@@ -128,28 +157,20 @@ export const SnapshotComparison = ({ tests, isAccepting, onAccept }: SnapshotSec
 
       {isInProgress && <Loader />}
       {!isInProgress && selectedComparison && (
-        <SnapshotImage as="a" href={selectedTest.webUrl} target="_blank">
-          {selectedComparison.headCapture?.captureImage && (
-            <img src={selectedComparison.headCapture.captureImage?.imageUrl} alt="" />
-          )}
-          {diffVisible &&
-            selectedComparison.result === ComparisonResult.Changed &&
-            selectedComparison.captureDiff?.diffImage && (
-              <img src={selectedComparison.captureDiff.diffImage?.imageUrl} alt="" />
-            )}
-          {selectedComparison.result === ComparisonResult.CaptureError &&
-            !selectedComparison.headCapture?.captureImage && (
-              <div>
-                <Icons icon="photo" />
-                <p>
-                  A snapshot couldn’t be captured. This often occurs when a story has a code error.
-                  Confirm that this story successfully renders in your local Storybook and run the
-                  build again.
-                </p>
-              </div>
-            )}
-          <Icons icon="sharealt" />
-        </SnapshotImage>
+        <SnapshotImage
+          componentName={selectedTest.story.component.name}
+          storyName={selectedTest.story.name}
+          testUrl={selectedTest.webUrl}
+          comparisonResult={selectedComparison.result}
+          captureImage={
+            baselineImageVisible
+              ? selectedComparison.baseCapture?.captureImage
+              : selectedComparison.headCapture?.captureImage
+          }
+          diffImage={selectedComparison.captureDiff?.diffImage}
+          diffVisible={diffVisible}
+          focusVisible={focusVisible}
+        />
       )}
     </>
   );

@@ -1,8 +1,6 @@
-import { useState } from "react";
-
 import { Browser, ComparisonResult, TestResult, TestStatus } from "../gql/graphql";
-import { makeBrowserInfo, makeComparison, makeTest } from "./storyData";
-import { useTests } from "./useTests";
+import { makeComparison, makeTest } from "./storyData";
+import { summarizeTests } from "./summarizeTests";
 
 jest.mock("react", () => ({
   useState: jest.fn((x: any) => [x, jest.fn()]),
@@ -53,10 +51,11 @@ const tests = [
 ];
 
 it("Calculates static information correctly", () => {
-  const { isInProgress, changeCount, brokenCount, browserResults, viewportResults } =
-    useTests(tests);
+  const { status, isInProgress, changeCount, brokenCount, browserResults, viewportResults } =
+    summarizeTests(tests);
 
   expect({
+    status,
     isInProgress,
     changeCount,
     brokenCount,
@@ -87,6 +86,7 @@ it("Calculates static information correctly", () => {
       ],
       "changeCount": 1,
       "isInProgress": true,
+      "status": "BROKEN",
       "viewportResults": [
         {
           "result": "EQUAL",
@@ -127,42 +127,4 @@ it("Calculates static information correctly", () => {
       ],
     }
   `);
-});
-
-it("Picks and updates selectedTest when choosing viewport", () => {
-  const onSelectTest = jest.fn((x) => {});
-  jest.mocked(useState).mockImplementationOnce(((x: any) => [x, onSelectTest]) as any);
-  const { selectedTest, onSelectViewport } = useTests(tests);
-
-  expect(selectedTest).toEqual(tests[0]);
-
-  onSelectViewport(tests[1].parameters.viewport);
-  expect(onSelectTest).toHaveBeenCalledWith(tests[1]);
-});
-
-it("Picks and updates selectedComparison when choosing browser", () => {
-  const useSelectedTestState = (x: any) => [x, jest.fn()];
-  jest.mocked(useState).mockImplementationOnce(useSelectedTestState as any);
-
-  // Mocked implementation of useState, is there a better way to do this?
-  let browserId: string;
-  const useBrowserIdState = ((initialBrowserId: string) => {
-    browserId ??= initialBrowserId;
-    return [
-      browserId,
-      jest.fn((newBrowserId) => {
-        browserId = newBrowserId;
-      }),
-    ];
-  }) as any;
-  jest.mocked(useState).mockImplementationOnce(useBrowserIdState as any);
-
-  const { selectedComparison, onSelectBrowser } = useTests(tests);
-  expect(selectedComparison).toEqual(tests[0].comparisons[0]);
-
-  onSelectBrowser(tests[0].comparisons[1].browser);
-
-  jest.mocked(useState).mockImplementationOnce(useSelectedTestState as any);
-  jest.mocked(useState).mockImplementationOnce(useBrowserIdState as any);
-  expect(useTests(tests).selectedComparison).toEqual(tests[0].comparisons[1]);
 });
