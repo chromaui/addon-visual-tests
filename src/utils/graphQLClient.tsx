@@ -11,13 +11,18 @@ let currentToken: string = localStorage.getItem(ACCESS_TOKEN_KEY);
 const accessTokenSharedStateKey = `${ADDON_ID}/accessToken`;
 
 export const useAccessToken = () => {
-  const [token, setToken] = useAddonState<string>(accessTokenSharedStateKey, currentToken);
+  const [{ token }, setToken] = useAddonState<{ token: string | null }>(accessTokenSharedStateKey, {
+    token: currentToken,
+  });
 
   const updateToken = (newToken: string) => {
     currentToken = newToken;
-    if (currentToken) localStorage.setItem(ACCESS_TOKEN_KEY, currentToken);
-    else localStorage.removeItem(ACCESS_TOKEN_KEY);
-    setToken(newToken);
+    if (currentToken) {
+      localStorage.setItem(ACCESS_TOKEN_KEY, currentToken);
+    } else {
+      localStorage.removeItem(ACCESS_TOKEN_KEY);
+    }
+    setToken({ token: newToken });
   };
 
   return [token, updateToken] as const;

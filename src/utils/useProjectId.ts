@@ -27,7 +27,6 @@ export const useProjectId = (): [
     projectIdSharedStateKey,
     CHROMATIC_PROJECT_ID
   );
-  console.log({ projectId });
   const [projectToken, setProjectToken] = React.useState<string | null>();
   const [projectIdUpdated, setProjectIdUpdated] = React.useState(false);
   const [projectUpdatingFailed, setProjectUpdatingFailed] = React.useState(false);
