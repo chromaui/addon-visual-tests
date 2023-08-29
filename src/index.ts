@@ -129,9 +129,9 @@ const config = {
   experimental_serverChannel: serverChannel,
   env: async (
     env: Record<string, string>,
-    { projectId, configType }: { projectId: string; configType: "development" | "production" }
+    { projectId, configType }: { projectId: string; configType: "DEVELOPMENT" | "PRODUCTION" }
   ) => {
-    if (configType === "production") return env;
+    if (configType === "PRODUCTION") return env;
 
     const { userEmail, userEmailHash, branch, commit, slug, uncommittedHash } = await getGitInfo();
     return {
