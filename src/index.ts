@@ -1,21 +1,23 @@
 /* eslint-disable no-console */
 import type { Channel } from "@storybook/channels";
-import { readConfig, writeConfig } from "@storybook/csf-tools";
 // eslint-disable-next-line import/no-unresolved
 import { getGitInfo, GitInfo, run } from "chromatic/node";
+import { relative } from "path";
 
 import {
   BUILD_ANNOUNCED,
   BUILD_STARTED,
-  CHROMATIC_ADDON_NAME,
   CHROMATIC_BASE_URL,
   GIT_INFO,
   GitInfoPayload,
+  PROJECT_UPDATED,
+  PROJECT_UPDATING_FAILED,
+  ProjectUpdatingFailedPayload,
   START_BUILD,
   UPDATE_PROJECT,
   UpdateProjectPayload,
 } from "./constants";
-import { findConfig } from "./utils/storybook.config.utils";
+import { updateMain } from "./utils/updateMain";
 
 /**
  * to load the built addon in this test Storybook
@@ -92,25 +94,16 @@ async function serverChannel(
     async ({ projectId, projectToken: updatedProjectToken }: UpdateProjectPayload) => {
       projectToken = updatedProjectToken;
 
-      const mainPath = await findConfig(configDir, "main");
-      const MainConfig = await readConfig(mainPath);
-
-      const addonsConfig = MainConfig.getFieldValue(["addons"]);
-      const updatedAddonsConfig = addonsConfig.map(
-        (addonConfig: string | { name: string; options?: Record<string, string> }) => {
-          const fullConfig = typeof addonConfig === "string" ? { name: addonConfig } : addonConfig;
-          if (fullConfig.name === CHROMATIC_ADDON_NAME) {
-            return {
-              ...fullConfig,
-              options: { projectId, projectToken, ...fullConfig.options },
-            };
-          }
-          return addonConfig;
-        }
-      );
-
-      MainConfig.setFieldValue(["addons"], updatedAddonsConfig);
-      await writeConfig(MainConfig);
+      try {
+        await updateMain({ configDir, projectId, projectToken });
+        channel.emit(PROJECT_UPDATED);
+      } catch (err) {
+        console.warn(`Failed to update your main configuration:\n\n ${err}`);
+        const relativeConfigDir = relative(process.cwd(), configDir);
+        channel.emit(PROJECT_UPDATING_FAILED, {
+          configDir: relativeConfigDir,
+        } satisfies ProjectUpdatingFailedPayload);
+      }
     }
   );
 

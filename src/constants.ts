@@ -27,3 +27,7 @@ export type UpdateProjectPayload = {
 };
 
 export const PROJECT_UPDATED = `${ADDON_ID}/projectUpdated`;
+export const PROJECT_UPDATING_FAILED = `${ADDON_ID}/projectUpdatingFailed`;
+export type ProjectUpdatingFailedPayload = {
+  configDir: string;
+};
