@@ -1,3 +1,19 @@
+# v0.0.46 (Tue Aug 29 2023)
+
+#### 🐛 Bug Fix
+
+- Fix: Updates the the link to the Visual Testing addon  documentation [#61](https://github.com/chromaui/addon-visual-tests/pull/61) ([@jonniebigodes](https://github.com/jonniebigodes))
+
+#### 📝 Documentation
+
+- Docs: Minor documentation improvements [#50](https://github.com/chromaui/addon-visual-tests/pull/50) ([@jonniebigodes](https://github.com/jonniebigodes))
+
+#### Authors: 1
+
+- [@jonniebigodes](https://github.com/jonniebigodes)
+
+---
+
 # v0.0.45 (Tue Aug 29 2023)
 
 #### 🐛 Bug Fix
