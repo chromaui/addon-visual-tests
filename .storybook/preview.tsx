@@ -8,7 +8,7 @@ import {
   useTheme,
 } from "@storybook/theming";
 import type { Preview } from "@storybook/react";
-import { initialize, mswDecorator } from "msw-storybook-addon";
+import { initialize, mswLoader } from "msw-storybook-addon";
 import React from "react";
 
 // Initialize MSW
@@ -63,76 +63,76 @@ const ThemedSetRoot = () => {
   return null;
 };
 
-export const decorators = [
-  // Provide the MSW addon decorator globally
-  mswDecorator,
-
-  // Render two panels side-by-side or stacked, depending on selected orientation
-  // Note this assumes any play functions are equipped to deal with multiple canvases
-  (StoryFn, { globals, parameters }) => {
-    const theme = globals.theme || parameters.theme || "right";
-    return theme === "light" || theme === "dark" ? (
-      <ThemeProvider theme={convert(themes[theme])}>
+// Render two panels side-by-side or stacked, depending on selected orientation
+// Note this assumes any play functions are equipped to deal with multiple canvases
+const withTheme = (StoryFn, { globals, parameters }) => {
+  const theme = globals.theme || parameters.theme || "right";
+  return theme === "light" || theme === "dark" ? (
+    <ThemeProvider theme={convert(themes[theme])}>
+      <Global styles={createReset} />
+      <Global styles={{ "#storybook-root": { height: "100vh", padding: 0 } }}></Global>
+      <ThemedSetRoot />
+      <StoryFn />
+    </ThemeProvider>
+  ) : (
+    <>
+      <ThemeProvider theme={convert(themes.light)}>
         <Global styles={createReset} />
-        <Global styles={{ "#storybook-root": { height: "100vh", padding: 0 } }}></Global>
         <ThemedSetRoot />
-        <StoryFn />
       </ThemeProvider>
-    ) : (
-      <>
+      <Panels orientation={theme}>
         <ThemeProvider theme={convert(themes.light)}>
-          <Global styles={createReset} />
-          <ThemedSetRoot />
+          <Panel orientation={theme} data-canvas={theme}>
+            <StoryFn />
+          </Panel>
         </ThemeProvider>
-        <Panels orientation={theme}>
-          <ThemeProvider theme={convert(themes.light)}>
-            <Panel orientation={theme} data-canvas={theme}>
-              <StoryFn />
-            </Panel>
-          </ThemeProvider>
-          <ThemeProvider theme={convert(themes.dark)}>
-            <Panel orientation={theme} data-canvas={theme}>
-              <StoryFn />
-            </Panel>
-          </ThemeProvider>
-        </Panels>
-      </>
-    );
-  },
-];
+        <ThemeProvider theme={convert(themes.dark)}>
+          <Panel orientation={theme} data-canvas={theme}>
+            <StoryFn />
+          </Panel>
+        </ThemeProvider>
+      </Panels>
+    </>
+  );
+}
 
-export const parameters: Preview["parameters"] = {
-  actions: {
-    argTypesRegex: "^on[A-Z].*",
-  },
-  backgrounds: {
-    disable: true,
-  },
-  chromatic: {
-    viewports: [960],
-  },
-  controls: {
-    matchers: {
-      color: /(background|color)$/i,
-      date: /Date$/,
+const preview: Preview = {
+  decorators: [withTheme],
+  loaders: [mswLoader],
+  parameters: {
+    actions: {
+      argTypesRegex: "^on[A-Z].*",
     },
+    backgrounds: {
+      disable: true,
+    },
+    chromatic: {
+      viewports: [960],
+    },
+    controls: {
+      matchers: {
+        color: /(background|color)$/i,
+        date: /Date$/,
+      },
+    },
+    layout: "fullscreen",
   },
-  layout: "fullscreen",
-};
+  globalTypes: {
+    theme: {
+      name: "Theme",
+      description: "Panel theme",
+      toolbar: {
+        icon: "sidebaralt",
+        title: "Theme",
+        items: [
+          { value: "light", icon: "circlehollow", title: "Light" },
+          { value: "dark", icon: "circle", title: "Dark" },
+          { value: "right", icon: "sidebaralt", title: "Right 2-up" },
+          { value: "bottom", icon: "bottombar", title: "Bottom 2-up" },
+        ],
+      },
+    },
+  }
+}
 
-export const globalTypes = {
-  theme: {
-    name: "Theme",
-    description: "Panel theme",
-    toolbar: {
-      icon: "sidebaralt",
-      title: "Theme",
-      items: [
-        { value: "light", icon: "circlehollow", title: "Light" },
-        { value: "dark", icon: "circle", title: "Dark" },
-        { value: "right", icon: "sidebaralt", title: "Right 2-up" },
-        { value: "bottom", icon: "bottombar", title: "Bottom 2-up" },
-      ],
-    },
-  },
-};
+export default preview;
