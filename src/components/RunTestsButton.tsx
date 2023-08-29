@@ -20,7 +20,7 @@ export function RunTestsButton({
       active={isStarting}
       disabled={isStarting}
       title="Run visual tests"
-      onClick={() => startBuild}
+      onClick={() => startBuild()}
     >
       {isStarting ? (
         <ProgressIcon parentComponent="IconButton" style={{ marginRight: 6 }} />
