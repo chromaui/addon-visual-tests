@@ -1,3 +1,15 @@
+# v0.0.41 (Tue Aug 29 2023)
+
+#### 🐛 Bug Fix
+
+- Show instructional UI if main.js updating fails [#41](https://github.com/chromaui/addon-visual-tests/pull/41) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.40 (Sat Aug 26 2023)
 
 #### 🐛 Bug Fix
