@@ -302,6 +302,17 @@ export const Pending: Story = {
   },
 };
 
+export const PendingWithSecondBuildInProgress: Story = {
+  ...Pending,
+  args: {
+    buildProgress: {
+      step: "upload",
+      progress: 1000,
+      total: 2000,
+    },
+  },
+};
+
 export const ToggleSnapshot: Story = {
   parameters: {
     ...withBuild(pendingBuild),

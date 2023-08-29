@@ -56,11 +56,14 @@ export const Panel = ({ active, api }: PanelProps) => {
   const [isStarting, setIsStarting] = useState(false);
   const [lastBuildId, setLastBuildId] = useState(storedBuildId);
   const [gitInfo, setGitInfo] = useState(initialGitInfo);
+  const [buildProgress, setBuildProgress] = useState<BuildProgressPayload | null>();
 
   const emit = useChannel(
     {
       [START_BUILD]: () => setIsStarting(true),
-      [BUILD_PROGRESS]: ({ step, id }: BuildProgressPayload) => {
+      [BUILD_PROGRESS]: (nextBuildProgress: BuildProgressPayload) => {
+        setBuildProgress(nextBuildProgress);
+        const { step, id } = nextBuildProgress;
         if (step === "build") {
           setLastBuildId(id);
           localStorage.setItem(DEV_BUILD_ID_KEY, id);
@@ -116,6 +119,7 @@ export const Panel = ({ active, api }: PanelProps) => {
         projectId={projectId}
         gitInfo={gitInfo}
         isStarting={isStarting}
+        buildProgress={buildProgress}
         lastDevBuildId={lastBuildId}
         startDevBuild={() => isStarting || emit(START_BUILD)}
         setAccessToken={setAccessToken}

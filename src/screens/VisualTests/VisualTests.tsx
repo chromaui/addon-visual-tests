@@ -13,6 +13,7 @@ import { IconButton } from "../../components/IconButton";
 import { ProgressIcon } from "../../components/icons/ProgressIcon";
 import { Bar, Col, Row, Section, Sections, Text } from "../../components/layout";
 import { Text as CenterText } from "../../components/Text";
+import { BuildProgressPayload } from "../../constants";
 import { getFragment, graphql } from "../../gql";
 import {
   AddonVisualTestsBuildQuery,
@@ -24,6 +25,7 @@ import {
   TestStatus,
 } from "../../gql/graphql";
 import { statusMap, StatusUpdate, testsToStatusUpdate } from "../../utils/testsToStatusUpdate";
+import { BuildProgress } from "./BuildProgress";
 import { RenderSettings } from "./RenderSettings";
 import { SnapshotComparison } from "./SnapshotComparison";
 import { StoryInfo } from "./StoryInfo";
@@ -198,6 +200,7 @@ interface VisualTestsProps {
   projectId: string;
   gitInfo: Pick<GitInfo, "branch" | "slug" | "userEmailHash" | "uncommittedHash">;
   isStarting: boolean;
+  buildProgress?: BuildProgressPayload;
   lastDevBuildId?: string;
   startDevBuild: () => void;
   setAccessToken: (accessToken: string | null) => void;
@@ -207,6 +210,7 @@ interface VisualTestsProps {
 
 export const VisualTests = ({
   isStarting,
+  buildProgress,
   lastDevBuildId,
   startDevBuild,
   setAccessToken,
@@ -323,6 +327,9 @@ export const VisualTests = ({
     );
   }
 
+  // TODO -- we need to drop this when the build is selected
+  const buildStatus = buildProgress && <BuildProgress buildProgress={buildProgress} />;
+
   const tests = [
     ...getFragment(
       FragmentStoryTestFields,
@@ -337,6 +344,7 @@ export const VisualTests = ({
   if (isSkipped) {
     return (
       <Sections>
+        {buildStatus}
         <Section grow>
           <Container>
             <Heading>This story was skipped</Heading>
@@ -365,6 +373,8 @@ export const VisualTests = ({
 
   return (
     <Sections>
+      {buildStatus}
+
       <Section grow hidden={settingsVisible || warningsVisible}>
         <StoryInfo
           {...{ tests, isOutdated, startedAt, isStarting, startDevBuild, isBuildFailed }}
