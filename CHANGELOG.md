@@ -1,3 +1,15 @@
+# v0.0.45 (Tue Aug 29 2023)
+
+#### 🐛 Bug Fix
+
+- Proper short circuit for prod [#59](https://github.com/chromaui/addon-visual-tests/pull/59) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.44 (Tue Aug 29 2023)
 
 #### 🐛 Bug Fix
