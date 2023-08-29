@@ -1,6 +1,6 @@
 {
   "name": "@chromaui/addon-visual-tests",
-  "version": "0.0.40",
+  "version": "0.0.44",
   "description": "Visual Testing addon with Chromatic",
   "engines": {
     "node": ">=16.0.0",
@@ -62,6 +62,7 @@
     "chromatic": "6.24.0",
     "date-fns": "^2.30.0",
     "pluralize": "^8.0.0",
+    "ts-dedent": "^2.2.0",
     "urql": "^4.0.3",
     "uuid": "^9.0.0"
   },
@@ -108,7 +109,7 @@
     "react-dom": "^16.14.0",
     "rimraf": "^3.0.2",
     "storybook": "7.4.0-alpha.2",
-    "storybook-addon-designs": "^7.0.0-beta.2",
+    "@storybook/addon-designs": "^7.0.1",
     "ts-jest": "^29.1.1",
     "tsup": "^6.6.3",
     "typescript": "^4.9.5",

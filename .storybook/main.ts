@@ -34,7 +34,7 @@ const config: StorybookConfig = {
       },
     },
     "@storybook/addon-interactions",
-    "storybook-addon-designs",
+    "@storybook/addon-designs",
     {
       name: "../dist/index.js",
       options: addonOptionsMap[CHROMATIC_BASE_URL],

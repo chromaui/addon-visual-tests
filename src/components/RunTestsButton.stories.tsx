@@ -1,7 +1,6 @@
 import { action } from "@storybook/addon-actions";
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { TOOL_ID } from "../constants";
 import { RunTestsButton } from "./RunTestsButton";
 
 const meta = {
@@ -9,9 +8,8 @@ const meta = {
   args: {
     isStarting: false,
     projectId: "projectId",
-    accessToken: "accessToken",
+    isLoggedIn: true,
     startBuild: action("startBuild"),
-    key: TOOL_ID,
   },
 } satisfies Meta<typeof RunTestsButton>;
 
@@ -24,7 +22,7 @@ export const IsStarting: Story = {
   args: { isStarting: true },
 };
 export const NoUser: Story = {
-  args: { accessToken: undefined },
+  args: { isLoggedIn: false },
 };
 export const NoProject: Story = {
   args: { projectId: undefined },

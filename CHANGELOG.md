@@ -1,3 +1,55 @@
+# v0.0.44 (Tue Aug 29 2023)
+
+#### 🐛 Bug Fix
+
+- Add a couple more useful options [#58](https://github.com/chromaui/addon-visual-tests/pull/58) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.43 (Tue Aug 29 2023)
+
+#### 🐛 Bug Fix
+
+- Fix issue with run tests button [#57](https://github.com/chromaui/addon-visual-tests/pull/57) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.42 (Tue Aug 29 2023)
+
+#### 🐛 Bug Fix
+
+- Remove the run tests button if user is not logged in or the projectId is not set. [#52](https://github.com/chromaui/addon-visual-tests/pull/52) ([@weeksling](https://github.com/weeksling) [@ndelangen](https://github.com/ndelangen) [@tmeasday](https://github.com/tmeasday))
+- use mswLoader instead of decorator [#30](https://github.com/chromaui/addon-visual-tests/pull/30) ([@yannbf](https://github.com/yannbf) [@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 4
+
+- Matthew Weeks ([@weeksling](https://github.com/weeksling))
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+- Yann Braga ([@yannbf](https://github.com/yannbf))
+
+---
+
+# v0.0.41 (Tue Aug 29 2023)
+
+#### 🐛 Bug Fix
+
+- Show instructional UI if main.js updating fails [#41](https://github.com/chromaui/addon-visual-tests/pull/41) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.40 (Sat Aug 26 2023)
 
 #### 🐛 Bug Fix
