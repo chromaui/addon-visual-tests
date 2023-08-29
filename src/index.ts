@@ -52,8 +52,18 @@ async function serverChannel(
   {
     configDir,
     projectToken: initialProjectToken,
+
+    // This is a small subset of the flags available to the CLI.
     buildScriptName,
-  }: { configDir: string; projectToken: string; buildScriptName?: string }
+    debug,
+    zip,
+  }: {
+    configDir: string;
+    projectToken: string;
+    buildScriptName?: string;
+    debug?: boolean;
+    zip?: boolean;
+  }
 ) {
   let projectToken = initialProjectToken;
   channel.on(START_BUILD, async () => {
@@ -65,6 +75,8 @@ async function serverChannel(
       flags: {
         projectToken,
         buildScriptName,
+        debug,
+        zip,
       },
       options: {
         // We might want to drop this later and instead record "uncommitted hashes" on builds
