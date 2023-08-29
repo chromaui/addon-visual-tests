@@ -2,7 +2,7 @@
 import type { Channel } from "@storybook/channels";
 // eslint-disable-next-line import/no-unresolved
 import { getGitInfo, GitInfo, run } from "chromatic/node";
-import { relative } from "path";
+import { basename, relative } from "path";
 
 import {
   BUILD_ANNOUNCED,
@@ -12,11 +12,13 @@ import {
   GitInfoPayload,
   PROJECT_UPDATED,
   PROJECT_UPDATING_FAILED,
+  ProjectUpdatedPayload,
   ProjectUpdatingFailedPayload,
   START_BUILD,
   UPDATE_PROJECT,
   UpdateProjectPayload,
 } from "./constants";
+import { findConfig } from "./utils/storybook.config.utils";
 import { updateMain } from "./utils/updateMain";
 
 /**
@@ -94,13 +96,19 @@ async function serverChannel(
     async ({ projectId, projectToken: updatedProjectToken }: UpdateProjectPayload) => {
       projectToken = updatedProjectToken;
 
+      const relativeConfigDir = relative(process.cwd(), configDir);
+      let mainPath: string;
       try {
-        await updateMain({ configDir, projectId, projectToken });
-        channel.emit(PROJECT_UPDATED);
+        mainPath = await findConfig(configDir, "main");
+        await updateMain({ mainPath, projectId, projectToken });
+        channel.emit(PROJECT_UPDATED, {
+          mainPath: basename(mainPath),
+          configDir: relativeConfigDir,
+        } satisfies ProjectUpdatedPayload);
       } catch (err) {
         console.warn(`Failed to update your main configuration:\n\n ${err}`);
-        const relativeConfigDir = relative(process.cwd(), configDir);
         channel.emit(PROJECT_UPDATING_FAILED, {
+          mainPath: mainPath && basename(mainPath),
           configDir: relativeConfigDir,
         } satisfies ProjectUpdatingFailedPayload);
       }
