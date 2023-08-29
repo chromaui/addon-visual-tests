@@ -11,6 +11,7 @@ let currentToken: string = localStorage.getItem(ACCESS_TOKEN_KEY);
 const accessTokenSharedStateKey = `${ADDON_ID}/accessToken`;
 
 export const useAccessToken = () => {
+  // We use an object rather than a straight boolean here due to https://github.com/storybookjs/storybook/pull/23991
   const [{ token }, setToken] = useAddonState<{ token: string | null }>(accessTokenSharedStateKey, {
     token: currentToken,
   });
