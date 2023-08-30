@@ -17,6 +17,7 @@ export function RunTestsButton({
 }) {
   return projectId && isLoggedIn ? (
     <IconButton
+      style={{ marginTop: 6 }}
       active={isStarting}
       disabled={isStarting}
       title="Run visual tests"
