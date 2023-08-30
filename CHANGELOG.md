@@ -1,3 +1,16 @@
+# v0.0.48 (Wed Aug 30 2023)
+
+#### 🐛 Bug Fix
+
+- Storybook API: use `useAddonState` from `manager-api` [#54](https://github.com/chromaui/addon-visual-tests/pull/54) ([@ndelangen](https://github.com/ndelangen) [@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 2
+
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.47 (Wed Aug 30 2023)
 
 #### 🐛 Bug Fix
