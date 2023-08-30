@@ -1,3 +1,15 @@
+# v0.0.47 (Wed Aug 30 2023)
+
+#### 🐛 Bug Fix
+
+- fix: center run button [#60](https://github.com/chromaui/addon-visual-tests/pull/60) ([@weeksling](https://github.com/weeksling))
+
+#### Authors: 1
+
+- Matthew Weeks ([@weeksling](https://github.com/weeksling))
+
+---
+
 # v0.0.46 (Tue Aug 29 2023)
 
 #### 🐛 Bug Fix
