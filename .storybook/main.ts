@@ -18,6 +18,8 @@ const devConfig = {
   projectId: process.env.CHROMATIC_PROJECT_ID || "Project:64c0b64ef4c47fe31e1262f5",
 };
 
+const useDistVersion = process.env.CHROMATIC_USE_DIST_VERSION === "true";
+
 const addonOptionsMap = {
   "https://www.chromatic.com": prodConfig,
   "https://www.staging-chromatic.com": stagingConfig,
@@ -36,7 +38,7 @@ const config: StorybookConfig = {
     "@storybook/addon-interactions",
     "@storybook/addon-designs",
     {
-      name: "../dist/index.js",
+      name: useDistVersion ? "../dist/index.js" : "../src/dev.ts",
       options: addonOptionsMap[CHROMATIC_BASE_URL],
     },
   ],
