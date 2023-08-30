@@ -1,3 +1,15 @@
+# v0.0.49 (Wed Aug 30 2023)
+
+#### 🐛 Bug Fix
+
+- upgrade storybook & make development easier [#62](https://github.com/chromaui/addon-visual-tests/pull/62) ([@ndelangen](https://github.com/ndelangen))
+
+#### Authors: 1
+
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+
+---
+
 # v0.0.48 (Wed Aug 30 2023)
 
 #### 🐛 Bug Fix
