@@ -186,7 +186,7 @@ const meta = {
     startDevBuild: action("startDevBuild"),
     isStarting: false,
     setAccessToken: action("setAccessToken"),
-    updateBuildStatus: action("updateBuildStatus"),
+    updateBuildStatus: action("updateBuildStatus") as any,
   },
 } satisfies Meta<typeof VisualTests>;
 
