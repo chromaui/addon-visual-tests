@@ -25,7 +25,8 @@ import {
   TestResult,
   TestStatus,
 } from "../../gql/graphql";
-import { statusMap, StatusUpdate, testsToStatusUpdate } from "../../utils/testsToStatusUpdate";
+import { UpdateStatusFunction } from "../../types";
+import { statusMap, testsToStatusUpdate } from "../../utils/testsToStatusUpdate";
 import { RenderSettings } from "./RenderSettings";
 import { SnapshotComparison } from "./SnapshotComparison";
 import { StoryInfo } from "./StoryInfo";
@@ -196,7 +197,9 @@ const MutationReviewTest = graphql(/* GraphQL */ `
   }
 `);
 
-type StoryStatusUpdater = Parameters<API["experimental_updateStatus"]>[1];
+const createEmptyStoryStatusUpdate = (state: API_StatusState) => {
+  return Object.fromEntries(Object.entries(state).map(([id, update]) => [id, null]));
+};
 
 interface VisualTestsProps {
   projectId: string;
@@ -205,7 +208,7 @@ interface VisualTestsProps {
   lastDevBuildId?: string;
   startDevBuild: () => void;
   setAccessToken: (accessToken: string | null) => void;
-  updateBuildStatus: (update: StoryStatusUpdater) => ReturnType<API["experimental_updateStatus"]>;
+  updateBuildStatus: UpdateStatusFunction;
   storyId: string;
 }
 
@@ -270,13 +273,13 @@ export const VisualTests = ({
     testsToStatusUpdate(getFragment(FragmentStatusTestFields, build.testsForStatus.nodes));
 
   useEffect(() => {
-    const createEmpty = (state: API_StatusState) => {
-      return Object.fromEntries(Object.entries(state).map(([id, update]) => [id, null]));
-    };
     if (buildStatusUpdate) {
-      updateBuildStatus((state) => ({ ...createEmpty(state), ...buildStatusUpdate }));
+      updateBuildStatus((state) => ({
+        ...createEmptyStoryStatusUpdate(state),
+        ...buildStatusUpdate,
+      }));
     } else {
-      updateBuildStatus(createEmpty);
+      updateBuildStatus(createEmptyStoryStatusUpdate);
     }
     // We use the stringified version of buildStatusUpdate to do a deep diff
     // eslint-disable-next-line react-hooks/exhaustive-deps
