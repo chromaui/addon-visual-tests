@@ -1,4 +1,4 @@
-export const getValue = `experimental_useAddonState_setValue`;
+export const getValue = `experimental_useAddonState_getValue`;
 export type GetValuePayload = {
   key: string;
 };

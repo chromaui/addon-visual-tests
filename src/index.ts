@@ -17,6 +17,7 @@ import {
   UPDATE_PROJECT,
   UpdateProjectPayload,
 } from "./constants";
+import { useAddonState } from "./useAddonState/server";
 import { updateMain } from "./utils/updateMain";
 
 /**
@@ -119,7 +120,11 @@ async function serverChannel(
     }
   );
 
-  observeGitInfo(5000, (info) => channel.emit(GIT_INFO, info as GitInfoPayload));
+  const gitInfoState = useAddonState<GitInfoPayload>(channel, GIT_INFO);
+
+  observeGitInfo(5000, (info) => {
+    gitInfoState.value = info;
+  });
 
   return channel;
 }
@@ -133,17 +138,10 @@ const config = {
   ) => {
     if (configType === "PRODUCTION") return env;
 
-    const { userEmail, userEmailHash, branch, commit, slug, uncommittedHash } = await getGitInfo();
     return {
       ...env,
       CHROMATIC_BASE_URL,
       CHROMATIC_PROJECT_ID: projectId || "",
-      GIT_USER_EMAIL: userEmail,
-      GIT_USER_EMAIL_HASH: userEmailHash,
-      GIT_BRANCH: branch,
-      GIT_COMMIT: commit,
-      GIT_SLUG: slug,
-      GIT_UNCOMMITTED_HASH: uncommittedHash,
     };
   },
 };

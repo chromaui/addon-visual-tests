@@ -8,21 +8,20 @@ class AddonState {
   private listeners: Record<string, ((value: any) => null)[]> = {};
 
   get(key: string) {
-    return this.values[key]
+    return this.values[key];
   }
 
   set(key: string, value: any) {
     this.values[key] = value;
-    (this.listeners[key] || []).forEach(l => l(value))
+    (this.listeners[key] || []).forEach((l) => l(value));
   }
 
   listen<T>(key: string, cb: (value: T) => null) {
-    this.listeners[key] = [...this.listeners[key] || [], cb];
+    this.listeners[key] = [...(this.listeners[key] || []), cb];
   }
 }
 
 const addonState = new AddonState();
-
 
 let listening = false;
 function ensureListening(channel: Channel) {
@@ -53,7 +52,7 @@ function apiGetAddonState<T>(channel: Channel, key: string) {
 
 function apiSetAddonState<T>(channel: Channel, key: string, value: T) {
   addonState.set(key, value);
-  
+
   channel.emit(setValue, { key, value } as SetValuePayload);
 }
 
@@ -62,17 +61,17 @@ export function useAddonState<T>(channel: Channel, key: string) {
 
   return {
     get value() {
-      return apiGetAddonState(channel, key),
+      return apiGetAddonState(channel, key);
     },
 
     set value(newValue: T) {
-      apiSetAddonState(channel, key, newValue)
+      apiSetAddonState(channel, key, newValue);
     },
 
-    on(event:string, callback: (value:T) => null) {
-      if (event !== 'change') throw new Error('unsupported event');
+    on(event: string, callback: (value: T) => null) {
+      if (event !== "change") throw new Error("unsupported event");
 
-      addonState.listen(key, callback)
-    }
+      addonState.listen(key, callback);
+    },
   };
 }

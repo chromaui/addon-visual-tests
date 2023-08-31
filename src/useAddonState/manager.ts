@@ -48,7 +48,7 @@ export function useAddonState<T>(key: string) {
   ensureListening(api);
 
   return [
-    apiGetAddonState(api, key),
+    apiGetAddonState<T>(api, key),
     useCallback((value: T) => apiSetAddonState(api, key, value), [api, key]),
-  ];
+  ] as const;
 }

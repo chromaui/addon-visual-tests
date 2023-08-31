@@ -1,8 +1,7 @@
-import { logger } from "@storybook/client-logger";
+import { Spinner } from "@storybook/design-system";
 import type { API } from "@storybook/manager-api";
-import { useChannel, useStorybookState } from "@storybook/manager-api";
+import { useChannel, useStorybookApi, useStorybookState } from "@storybook/manager-api";
 // eslint-disable-next-line import/no-unresolved
-import { GitInfo } from "chromatic/node";
 import React, { useCallback, useState } from "react";
 
 import {
@@ -20,6 +19,7 @@ import { LinkedProject } from "./screens/LinkProject/LinkedProject";
 import { LinkingProjectFailed } from "./screens/LinkProject/LinkingProjectFailed";
 import { LinkProject } from "./screens/LinkProject/LinkProject";
 import { VisualTests } from "./screens/VisualTests/VisualTests";
+import { useAddonState } from "./useAddonState/manager";
 import { client, Provider, useAccessToken } from "./utils/graphQLClient";
 import { StatusUpdate } from "./utils/testsToStatusUpdate";
 import { useProjectId } from "./utils/useProjectId";
@@ -46,8 +46,6 @@ const initialGitInfo: GitInfoPayload = {
   uncommittedHash: GIT_UNCOMMITTED_HASH,
 };
 
-logger.debug("Initial Git info:", initialGitInfo);
-
 const storedBuildId = localStorage.getItem(DEV_BUILD_ID_KEY);
 
 export const Panel = ({ active, api }: PanelProps) => {
@@ -56,7 +54,8 @@ export const Panel = ({ active, api }: PanelProps) => {
 
   const [isStarting, setIsStarting] = useState(false);
   const [lastBuildId, setLastBuildId] = useState(storedBuildId);
-  const [gitInfo, setGitInfo] = useState(initialGitInfo);
+  const [gitInfo] = useAddonState<GitInfoPayload>(GIT_INFO);
+  console.log({ gitInfo });
 
   const emit = useChannel(
     {
@@ -65,10 +64,6 @@ export const Panel = ({ active, api }: PanelProps) => {
       [BUILD_ANNOUNCED]: (buildId: string) => {
         setLastBuildId(buildId);
         localStorage.setItem(DEV_BUILD_ID_KEY, buildId);
-      },
-      [GIT_INFO]: (info: GitInfoPayload) => {
-        setGitInfo(info);
-        logger.debug("Updated Git info:", info);
       },
     },
     []
@@ -125,6 +120,11 @@ export const Panel = ({ active, api }: PanelProps) => {
       </Provider>
     );
   }
+
+  if (!gitInfo) {
+    return <Spinner />;
+  }
+
   return (
     <Provider key={PANEL_ID} value={client}>
       <VisualTests
