@@ -1,5 +1,7 @@
 import { Icons, Loader } from "@storybook/components";
 import { Icon, TooltipNote, WithTooltip } from "@storybook/design-system";
+import { API } from "@storybook/manager-api";
+import { API_StatusState } from "@storybook/types";
 // eslint-disable-next-line import/no-unresolved
 import { GitInfo } from "chromatic/node";
 import React, { useCallback, useEffect, useState } from "react";
@@ -194,6 +196,8 @@ const MutationReviewTest = graphql(/* GraphQL */ `
   }
 `);
 
+type StoryStatusUpdater = Parameters<API["experimental_updateStatus"]>[1];
+
 interface VisualTestsProps {
   projectId: string;
   gitInfo: Pick<GitInfo, "branch" | "slug" | "userEmailHash" | "uncommittedHash">;
@@ -201,7 +205,7 @@ interface VisualTestsProps {
   lastDevBuildId?: string;
   startDevBuild: () => void;
   setAccessToken: (accessToken: string | null) => void;
-  updateBuildStatus: (update: StatusUpdate) => void;
+  updateBuildStatus: (update: StoryStatusUpdater) => ReturnType<API["experimental_updateStatus"]>;
   storyId: string;
 }
 
@@ -266,7 +270,14 @@ export const VisualTests = ({
     testsToStatusUpdate(getFragment(FragmentStatusTestFields, build.testsForStatus.nodes));
 
   useEffect(() => {
-    if (buildStatusUpdate) updateBuildStatus(buildStatusUpdate);
+    const createEmpty = (state: API_StatusState) => {
+      return Object.fromEntries(Object.entries(state).map(([id, update]) => [id, null]));
+    };
+    if (buildStatusUpdate) {
+      updateBuildStatus((state) => ({ ...createEmpty(state), ...buildStatusUpdate }));
+    } else {
+      updateBuildStatus(createEmpty);
+    }
     // We use the stringified version of buildStatusUpdate to do a deep diff
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(buildStatusUpdate), updateBuildStatus]);
