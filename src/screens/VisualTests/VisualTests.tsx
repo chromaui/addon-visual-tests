@@ -1,7 +1,7 @@
 import { Icons, Loader } from "@storybook/components";
 import { Icon, TooltipNote, WithTooltip } from "@storybook/design-system";
-import { API } from "@storybook/manager-api";
-import { API_StatusState } from "@storybook/types";
+import type { API } from "@storybook/manager-api";
+import type { API_StatusState } from "@storybook/types";
 // eslint-disable-next-line import/no-unresolved
 import { GitInfo } from "chromatic/node";
 import React, { useCallback, useEffect, useState } from "react";
