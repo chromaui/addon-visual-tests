@@ -38,11 +38,15 @@ export const RUNNING_BUILD = `${ADDON_ID}/runningBuild`;
 export type RunningBuildPayload = {
   // Possibly this should be a type exported by the CLI -- these correspond to tasks
   /** The step of the build process we have reached */
-  step: KnownTask | "complete";
+  step: KnownTask | "error" | "complete";
   /** The id of the build, available after the initialize step */
   id?: string;
   /** progress pertains to the current step, and may not be set */
   progress?: number;
   /** total pertains to the current step, and may not be set */
   total?: number;
+  /** The error message formatted to display in CLI */
+  formattedError?: string;
+  /** The original error without formatting */
+  originalError?: Error | Error[];
 };
