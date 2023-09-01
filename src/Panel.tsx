@@ -1,7 +1,6 @@
 import { Spinner } from "@storybook/design-system";
 import type { API } from "@storybook/manager-api";
-import { useChannel, useStorybookApi, useStorybookState } from "@storybook/manager-api";
-// eslint-disable-next-line import/no-unresolved
+import { useChannel, useStorybookState } from "@storybook/manager-api";
 import React, { useCallback, useState } from "react";
 
 import {
@@ -29,23 +28,6 @@ interface PanelProps {
   api: API;
 }
 
-const {
-  GIT_USER_EMAIL,
-  GIT_USER_EMAIL_HASH,
-  GIT_BRANCH,
-  GIT_SLUG,
-  GIT_COMMIT,
-  GIT_UNCOMMITTED_HASH,
-} = process.env;
-const initialGitInfo: GitInfoPayload = {
-  userEmail: GIT_USER_EMAIL,
-  userEmailHash: GIT_USER_EMAIL_HASH,
-  branch: GIT_BRANCH,
-  commit: GIT_COMMIT,
-  slug: GIT_SLUG,
-  uncommittedHash: GIT_UNCOMMITTED_HASH,
-};
-
 const storedBuildId = localStorage.getItem(DEV_BUILD_ID_KEY);
 
 export const Panel = ({ active, api }: PanelProps) => {
@@ -55,7 +37,6 @@ export const Panel = ({ active, api }: PanelProps) => {
   const [isStarting, setIsStarting] = useState(false);
   const [lastBuildId, setLastBuildId] = useState(storedBuildId);
   const [gitInfo] = useAddonState<GitInfoPayload>(GIT_INFO);
-  console.log({ gitInfo });
 
   const emit = useChannel(
     {
@@ -76,6 +57,7 @@ export const Panel = ({ active, api }: PanelProps) => {
     [api]
   );
   const {
+    loading: projectInfoLoading,
     projectId,
     projectToken,
     configDir,
@@ -92,6 +74,11 @@ export const Panel = ({ active, api }: PanelProps) => {
 
   // Render the Authentication flow if the user is not signed in.
   if (!accessToken) return <Authentication key={PANEL_ID} setAccessToken={setAccessToken} />;
+
+  // Momentarily wait on addonState (should be very fast)
+  if (projectInfoLoading || !gitInfo) {
+    return <Spinner />;
+  }
 
   if (!projectId)
     return (
@@ -122,10 +109,6 @@ export const Panel = ({ active, api }: PanelProps) => {
         />
       </Provider>
     );
-  }
-
-  if (!gitInfo) {
-    return <Spinner />;
   }
 
   return (

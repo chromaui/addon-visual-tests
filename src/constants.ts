@@ -16,23 +16,16 @@ export const DEV_BUILD_ID_KEY = `${ADDON_ID}/dev-build-id`;
 
 export const GIT_INFO = `${ADDON_ID}/gitInfo`;
 export type GitInfoPayload = Omit<GitInfo, "committedAt" | "committerEmail" | "committerName">;
+
+export const PROJECT_INFO = `${ADDON_ID}/projectInfo`;
+export type ProjectInfoPayload = {
+  projectId?: string;
+  projectToken?: string;
+  written?: boolean;
+  configDir?: string;
+  mainPath?: string;
+};
+
 export const START_BUILD = `${ADDON_ID}/startBuild`;
 export const BUILD_ANNOUNCED = `${ADDON_ID}/buildAnnounced`;
 export const BUILD_STARTED = `${ADDON_ID}/buildStarted`;
-
-export const UPDATE_PROJECT = `${ADDON_ID}/updateProject`;
-export type UpdateProjectPayload = {
-  projectId: string;
-  projectToken: string;
-};
-
-export const PROJECT_UPDATED = `${ADDON_ID}/projectUpdated`;
-export type ProjectUpdatedPayload = {
-  mainPath: string;
-  configDir: string;
-};
-export const PROJECT_UPDATING_FAILED = `${ADDON_ID}/projectUpdatingFailed`;
-export type ProjectUpdatingFailedPayload = {
-  mainPath?: string;
-  configDir: string;
-};

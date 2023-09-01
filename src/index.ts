@@ -10,8 +10,10 @@ import {
   CHROMATIC_BASE_URL,
   GIT_INFO,
   GitInfoPayload,
+  PROJECT_INFO,
   PROJECT_UPDATED,
   PROJECT_UPDATING_FAILED,
+  ProjectInfoPayload,
   ProjectUpdatedPayload,
   ProjectUpdatingFailedPayload,
   START_BUILD,
@@ -54,6 +56,7 @@ async function serverChannel(
   channel: Channel,
   {
     configDir,
+    projectId: initialProjectId,
     projectToken: initialProjectToken,
 
     // This is a small subset of the flags available to the CLI.
@@ -62,6 +65,7 @@ async function serverChannel(
     zip,
   }: {
     configDir: string;
+    projectId: string;
     projectToken: string;
     buildScriptName?: string;
     debug?: boolean;
@@ -104,32 +108,42 @@ async function serverChannel(
     });
   });
 
-  channel.on(
-    UPDATE_PROJECT,
-    async ({ projectId, projectToken: updatedProjectToken }: UpdateProjectPayload) => {
-      projectToken = updatedProjectToken;
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const projectInfoState = useAddonState<ProjectInfoPayload>(channel, PROJECT_INFO);
+  projectInfoState.value = initialProjectId
+    ? { projectId: initialProjectId, projectToken: initialProjectToken }
+    : {};
 
-      const relativeConfigDir = relative(process.cwd(), configDir);
-      let mainPath: string;
-      try {
-        mainPath = await findConfig(configDir, "main");
-        await updateMain({ mainPath, projectId, projectToken });
-        channel.emit(PROJECT_UPDATED, {
-          mainPath: basename(mainPath),
-          configDir: relativeConfigDir,
-        } satisfies ProjectUpdatedPayload);
-      } catch (err) {
-        console.warn(`Failed to update your main configuration:\n\n ${err}`);
-        channel.emit(PROJECT_UPDATING_FAILED, {
-          mainPath: mainPath && basename(mainPath),
-          configDir: relativeConfigDir,
-        } satisfies ProjectUpdatingFailedPayload);
-      }
+  projectInfoState.on("change", async ({ projectId, projectToken: updatedProjectToken }) => {
+    if (projectToken === updatedProjectToken) return;
+    projectToken = updatedProjectToken;
+
+    const relativeConfigDir = relative(process.cwd(), configDir);
+    let mainPath: string;
+    try {
+      mainPath = await findConfig(configDir, "main");
+      await updateMain({ mainPath, projectId, projectToken });
+
+      projectInfoState.value = {
+        ...projectInfoState.value,
+        written: true,
+        mainPath: basename(mainPath),
+        configDir: relativeConfigDir,
+      };
+    } catch (err) {
+      console.warn(`Failed to update your main configuration:\n\n ${err}`);
+
+      projectInfoState.value = {
+        ...projectInfoState.value,
+        written: false,
+        mainPath: mainPath && basename(mainPath),
+        configDir: relativeConfigDir,
+      };
     }
-  );
+  });
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const gitInfoState = useAddonState<GitInfoPayload>(channel, GIT_INFO);
-
   observeGitInfo(5000, (info) => {
     gitInfoState.value = info;
   });
@@ -142,14 +156,13 @@ const config = {
   experimental_serverChannel: serverChannel,
   env: async (
     env: Record<string, string>,
-    { projectId, configType }: { projectId: string; configType: "DEVELOPMENT" | "PRODUCTION" }
+    { configType }: { configType: "DEVELOPMENT" | "PRODUCTION" }
   ) => {
     if (configType === "PRODUCTION") return env;
 
     return {
       ...env,
       CHROMATIC_BASE_URL,
-      CHROMATIC_PROJECT_ID: projectId || "",
     };
   },
 };

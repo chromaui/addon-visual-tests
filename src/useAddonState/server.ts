@@ -5,7 +5,7 @@ import { getValue, GetValuePayload, setValue, SetValuePayload } from "./common";
 class AddonState {
   private values: Record<string, any> = {};
 
-  private listeners: Record<string, ((value: any) => null)[]> = {};
+  private listeners: Record<string, ((value: any) => unknown)[]> = {};
 
   get(key: string) {
     return this.values[key];
@@ -16,7 +16,7 @@ class AddonState {
     (this.listeners[key] || []).forEach((l) => l(value));
   }
 
-  listen<T>(key: string, cb: (value: T) => null) {
+  listen<T>(key: string, cb: (value: T) => unknown) {
     this.listeners[key] = [...(this.listeners[key] || []), cb];
   }
 
@@ -79,7 +79,7 @@ export function useAddonState<T>(channel: Pick<Channel, "emit" | "on">, key: str
       apiSetAddonState(channel, key, newValue);
     },
 
-    on(event: string, callback: (value: T) => null) {
+    on(event: string, callback: (value: T) => unknown) {
       if (event !== "change") throw new Error("unsupported event");
 
       addonState.listen(key, callback);
