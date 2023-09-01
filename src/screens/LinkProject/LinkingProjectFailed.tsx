@@ -11,6 +11,7 @@ type LinkingProjectFailedProps = {
   projectId: string;
   projectToken: string;
   configDir: string;
+  mainPath?: string;
 };
 
 const addonName = "@chromaui/addon-visual-tests";
@@ -20,6 +21,7 @@ export function LinkingProjectFailed({
   projectId,
   projectToken,
   configDir,
+  mainPath,
 }: LinkingProjectFailedProps) {
   return (
     <Sections>
@@ -32,7 +34,7 @@ export function LinkingProjectFailed({
           </CenterText>
           <Code>
             {dedent`
-            // ${configDir}/main.js|ts|tsx
+            // ${configDir}/${mainPath ?? `main.js|ts|tsx`}
 
             module.exports = {
               // ...,

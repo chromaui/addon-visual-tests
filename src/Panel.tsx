@@ -75,15 +75,16 @@ export const Panel = ({ active, api }: PanelProps) => {
     },
     [api]
   );
-  const [
+  const {
     projectId,
     projectToken,
     configDir,
+    mainPath,
     updateProject,
     projectUpdatingFailed,
     projectIdUpdated,
     clearProjectIdUpdated,
-  ] = useProjectId();
+  } = useProjectId();
 
   // Render a hidden element when the addon panel is not active.
   // Storybook's AddonPanel component does the same but it's not styleable so we don't use it.
@@ -104,6 +105,7 @@ export const Panel = ({ active, api }: PanelProps) => {
       <LinkingProjectFailed
         projectId={projectId}
         projectToken={projectToken}
+        mainPath={mainPath}
         configDir={configDir}
       />
     );
@@ -114,6 +116,7 @@ export const Panel = ({ active, api }: PanelProps) => {
       <Provider key={PANEL_ID} value={client}>
         <LinkedProject
           projectId={projectId}
+          mainPath={mainPath}
           goToNext={clearProjectIdUpdated}
           setAccessToken={setAccessToken}
         />
