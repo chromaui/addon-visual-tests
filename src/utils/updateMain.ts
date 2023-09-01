@@ -1,18 +1,16 @@
 import { readConfig, writeConfig } from "@storybook/csf-tools";
 
 import { CHROMATIC_ADDON_NAME } from "../constants";
-import { findConfig } from "./storybook.config.utils";
 
 export async function updateMain({
   projectId,
   projectToken,
-  configDir,
+  mainPath,
 }: {
   projectId: string;
   projectToken: string;
-  configDir: string;
+  mainPath: string;
 }) {
-  const mainPath = await findConfig(configDir, "main");
   const MainConfig = await readConfig(mainPath);
 
   const addonsConfig = MainConfig.getFieldValue(["addons"]);

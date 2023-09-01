@@ -8,7 +8,7 @@ import { useProjectId } from "./utils/useProjectId";
 
 export const Tool = () => {
   const [isStarting, setIsStarting] = useState(false);
-  const [projectId] = useProjectId();
+  const { projectId } = useProjectId();
   const [accessToken] = useAccessToken();
   const isLoggedIn = !!accessToken;
 
