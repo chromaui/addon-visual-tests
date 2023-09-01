@@ -54,8 +54,18 @@ async function serverChannel(
   {
     configDir,
     projectToken: initialProjectToken,
+
+    // This is a small subset of the flags available to the CLI.
     buildScriptName,
-  }: { configDir: string; projectToken: string; buildScriptName?: string }
+    debug,
+    zip,
+  }: {
+    configDir: string;
+    projectToken: string;
+    buildScriptName?: string;
+    debug?: boolean;
+    zip?: boolean;
+  }
 ) {
   let projectToken = initialProjectToken;
   channel.on(START_BUILD, async () => {
@@ -67,6 +77,8 @@ async function serverChannel(
       flags: {
         projectToken,
         buildScriptName,
+        debug,
+        zip,
       },
       options: {
         // We might want to drop this later and instead record "uncommitted hashes" on builds
@@ -125,9 +137,9 @@ const config = {
   experimental_serverChannel: serverChannel,
   env: async (
     env: Record<string, string>,
-    { projectId, configType }: { projectId: string; configType: "development" | "production" }
+    { projectId, configType }: { projectId: string; configType: "DEVELOPMENT" | "PRODUCTION" }
   ) => {
-    if (configType === "production") return env;
+    if (configType === "PRODUCTION") return env;
 
     const { userEmail, userEmailHash, branch, commit, slug, uncommittedHash } = await getGitInfo();
     return {
