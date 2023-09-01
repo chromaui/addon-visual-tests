@@ -1,7 +1,7 @@
 import { styled } from "@storybook/theming";
 import React from "react";
 
-import { BuildProgressPayload } from "../../constants";
+import { RunningBuildPayload } from "../../constants";
 
 export const Header = styled.div(({ theme }) => ({
   color: theme.color.darkest,
@@ -28,10 +28,10 @@ export const Text = styled.div({
 });
 
 type BuildProgressProps = {
-  buildProgress: BuildProgressPayload;
+  runningBuild: RunningBuildPayload;
 };
 
-const messageMap: Record<BuildProgressPayload["step"], string> = {
+const messageMap: Record<RunningBuildPayload["step"], string> = {
   initialize: "📦 Validating Storybook files...",
   build: "📦 Validating Storybook files...",
   upload: "📡 Uploading to Chromatic...", // TODO represent progress in bytes
@@ -40,14 +40,13 @@ const messageMap: Record<BuildProgressPayload["step"], string> = {
   complete: "🎉 Visual tests completed!",
 };
 
-export function BuildProgress({ buildProgress }: BuildProgressProps) {
-  const percentage =
-    (buildProgress.total ? buildProgress.progress / buildProgress.total : 0.35) * 100;
+export function BuildProgress({ runningBuild }: BuildProgressProps) {
+  const percentage = (runningBuild.total ? runningBuild.progress / runningBuild.total : 0.35) * 100;
 
   return (
     <Header>
       <Bar percentage={percentage}>&nbsp;</Bar>
-      <Text>{messageMap[buildProgress.step]}</Text>
+      <Text>{messageMap[runningBuild.step]}</Text>
     </Header>
   );
 }

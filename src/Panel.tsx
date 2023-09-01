@@ -5,12 +5,12 @@ import React, { useCallback, useState } from "react";
 
 import {
   ADDON_ID,
-  BUILD_PROGRESS,
-  BuildProgressPayload,
   DEV_BUILD_ID_KEY,
   GIT_INFO,
   GitInfoPayload,
   PANEL_ID,
+  RUNNING_BUILD,
+  RunningBuildPayload,
   START_BUILD,
 } from "./constants";
 import { Authentication } from "./screens/Authentication/Authentication";
@@ -34,28 +34,9 @@ export const Panel = ({ active, api }: PanelProps) => {
   const [accessToken, setAccessToken] = useAccessToken();
   const { storyId } = useStorybookState();
 
-  const [isStarting, setIsStarting] = useState(false);
-  const [lastBuildId, setLastBuildId] = useState(storedBuildId);
   const [gitInfo] = useAddonState<GitInfoPayload>(GIT_INFO);
-  const [buildProgress, setBuildProgress] = useState<BuildProgressPayload | null>();
-
-  const emit = useChannel(
-    {
-      [START_BUILD]: () => setIsStarting(true),
-      [BUILD_PROGRESS]: (nextBuildProgress: BuildProgressPayload) => {
-        setBuildProgress(nextBuildProgress);
-        const { step, id } = nextBuildProgress;
-        if (step === "build") {
-          setLastBuildId(id);
-          localStorage.setItem(DEV_BUILD_ID_KEY, id);
-        }
-        if (step === "snapshot" || step === "complete") {
-          setIsStarting(false);
-        }
-      },
-    },
-    []
-  );
+  const [runningBuild] = useAddonState<RunningBuildPayload>(RUNNING_BUILD);
+  const emit = useChannel({});
 
   const updateBuildStatus = useCallback(
     (update: StatusUpdate) => {
@@ -123,10 +104,8 @@ export const Panel = ({ active, api }: PanelProps) => {
       <VisualTests
         projectId={projectId}
         gitInfo={gitInfo}
-        isStarting={isStarting}
-        buildProgress={buildProgress}
-        lastDevBuildId={lastBuildId}
-        startDevBuild={() => isStarting || emit(START_BUILD)}
+        runningBuild={runningBuild}
+        startDevBuild={() => emit(START_BUILD)}
         setAccessToken={setAccessToken}
         updateBuildStatus={updateBuildStatus}
         storyId={storyId}

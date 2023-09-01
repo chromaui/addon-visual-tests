@@ -12,7 +12,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Initialize: Story = {
   args: {
-    buildProgress: {
+    runningBuild: {
       step: "initialize",
     },
   },
@@ -23,7 +23,7 @@ export const Initialize: Story = {
 
 export const Build: Story = {
   args: {
-    buildProgress: {
+    runningBuild: {
       step: "build",
     },
   },
@@ -34,7 +34,7 @@ export const Build: Story = {
 
 export const Upload: Story = {
   args: {
-    buildProgress: {
+    runningBuild: {
       step: "upload",
       progress: 500,
       total: 1000,
@@ -47,7 +47,7 @@ export const Upload: Story = {
 
 export const Verify: Story = {
   args: {
-    buildProgress: {
+    runningBuild: {
       step: "verify",
     },
   },
@@ -58,7 +58,7 @@ export const Verify: Story = {
 
 export const Snapshot: Story = {
   args: {
-    buildProgress: {
+    runningBuild: {
       step: "snapshot",
       progress: 25,
       total: 50,
@@ -71,7 +71,7 @@ export const Snapshot: Story = {
 
 export const Complete: Story = {
   args: {
-    buildProgress: {
+    runningBuild: {
       step: "complete",
     },
   },

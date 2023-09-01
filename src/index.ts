@@ -5,13 +5,14 @@ import { getGitInfo, GitInfo, run } from "chromatic/node";
 import { basename, relative } from "path";
 
 import {
-  BUILD_PROGRESS,
-  BuildProgressPayload,
   CHROMATIC_BASE_URL,
   GIT_INFO,
   GitInfoPayload,
   PROJECT_INFO,
   ProjectInfoPayload,
+  RUNNING_BUILD,
+  RunningBuildPayload,
+  RunningBuildStep,
   START_BUILD,
 } from "./constants";
 import { useAddonState } from "./useAddonState/server";
@@ -66,73 +67,16 @@ async function serverChannel(
     zip?: boolean;
   }
 ) {
-  let projectToken = initialProjectToken;
-  channel.on(START_BUILD, async () => {
-    let step: BuildProgressPayload["step"] = "initialize";
-    await run({
-      // Currently we have to have these flags.
-      // We should move the checks to after flags have been parsed into options.
-      flags: {
-        projectToken,
-        buildScriptName,
-        debug,
-        zip,
-      },
-      options: {
-        // We might want to drop this later and instead record "uncommitted hashes" on builds
-        forceRebuild: true,
-        // Builds initiated from the addon are always considered local
-        isLocalBuild: true,
-        onTaskComplete(ctx) {
-          let newStep: BuildProgressPayload["step"];
-          if (step === "initialize" && ctx.announcedBuild) {
-            newStep = "build";
-          }
-          if (step === "upload" && ctx.isolatorUrl) {
-            newStep = "verify";
-          }
-          if (["build", "upload"].includes(step) && ctx.build) {
-            newStep = "snapshot";
-          }
-          if (ctx.build?.status !== "IN_PROGRESS") {
-            newStep = "complete";
-          }
-
-          if (newStep !== step) {
-            step = newStep;
-            channel.emit(BUILD_PROGRESS, {
-              step,
-              id: ctx.announcedBuild?.id,
-            } satisfies BuildProgressPayload);
-          }
-        },
-        onTaskProgress(ctx, { progress, total, unit }) {
-          if (unit === "bytes") {
-            step = "upload";
-          } else {
-            step = "snapshot";
-          }
-
-          channel.emit(BUILD_PROGRESS, {
-            step,
-            id: ctx.announcedBuild.id,
-            progress,
-            total,
-          } satisfies BuildProgressPayload);
-        },
-      },
-    });
-  });
-
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const projectInfoState = useAddonState<ProjectInfoPayload>(channel, PROJECT_INFO);
   projectInfoState.value = initialProjectId
     ? { projectId: initialProjectId, projectToken: initialProjectToken }
     : {};
 
-  projectInfoState.on("change", async ({ projectId, projectToken: updatedProjectToken }) => {
-    if (projectToken === updatedProjectToken) return;
-    projectToken = updatedProjectToken;
+  let lastProjectToken = initialProjectToken;
+  projectInfoState.on("change", async ({ projectId, projectToken }) => {
+    if (projectToken === lastProjectToken) return;
+    lastProjectToken = projectToken;
 
     const relativeConfigDir = relative(process.cwd(), configDir);
     let mainPath: string;
@@ -156,6 +100,60 @@ async function serverChannel(
         configDir: relativeConfigDir,
       };
     }
+  });
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const runningBuildState = useAddonState<RunningBuildPayload>(channel, RUNNING_BUILD);
+  channel.on(START_BUILD, async () => {
+    if (!projectInfoState.value.projectToken) throw new Error("No project token set");
+
+    runningBuildState.value = { step: "initialize" };
+    await run({
+      // Currently we have to have these flags.
+      // We should move the checks to after flags have been parsed into options.
+      flags: {
+        projectToken: projectInfoState.value.projectToken,
+        buildScriptName,
+        debug,
+        zip,
+      },
+      options: {
+        // We might want to drop this later and instead record "uncommitted hashes" on builds
+        forceRebuild: true,
+        // Builds initiated from the addon are always considered local
+        isLocalBuild: true,
+        onTaskComplete(ctx) {
+          let newStep = runningBuildState.value.step;
+          if (runningBuildState.value.step === "initialize" && ctx.announcedBuild) {
+            newStep = "build";
+          }
+          if (runningBuildState.value.step === "upload" && ctx.isolatorUrl) {
+            newStep = "verify";
+          }
+          if (["build", "upload"].includes(runningBuildState.value.step) && ctx.build) {
+            newStep = "snapshot";
+          }
+          if (ctx.build?.status !== "IN_PROGRESS") {
+            newStep = "complete";
+          }
+
+          if (newStep !== runningBuildState.value.step) {
+            runningBuildState.value = {
+              step: newStep,
+              id: ctx.announcedBuild?.id,
+            };
+          }
+        },
+        onTaskProgress(ctx, { progress, total, unit }) {
+          runningBuildState.value = {
+            step: unit === "bytes" ? "upload" : "snapshot",
+            id: ctx.announcedBuild?.id,
+            progress,
+            total,
+          };
+        },
+      },
+    });
   });
 
   // eslint-disable-next-line react-hooks/rules-of-hooks

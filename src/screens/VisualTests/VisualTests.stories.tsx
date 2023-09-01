@@ -184,7 +184,6 @@ const meta = {
     storyId: "button--primary",
     projectId: "Project:id123",
     startDevBuild: action("startDevBuild"),
-    isStarting: false,
     setAccessToken: action("setAccessToken"),
     updateBuildStatus: action("updateBuildStatus"),
   },
@@ -214,7 +213,6 @@ export const NoBuild: Story = {
 export const NoBuildStarting: Story = {
   ...NoBuild,
   args: {
-    isStarting: true,
     ...withGraphQLQuery("AddonVisualTestsBuild", (req, res, ctx) =>
       res(ctx.data({ build: null } as AddonVisualTestsBuildQuery))
     ),
@@ -251,23 +249,18 @@ export const OutdatedStarting: Story = {
   ...Outdated,
   args: {
     ...Outdated.args,
-    isStarting: true,
   },
 };
 
 export const Announced: Story = {
-  args: {
-    isStarting: true,
-  },
+  args: {},
   parameters: {
     ...withBuild(announcedBuild),
   },
 };
 
 export const Published: Story = {
-  args: {
-    isStarting: true,
-  },
+  args: {},
   parameters: {
     ...withBuild(publishedBuild),
   },
@@ -305,7 +298,7 @@ export const Pending: Story = {
 export const PendingWithSecondBuildInProgress: Story = {
   ...Pending,
   args: {
-    buildProgress: {
+    runningBuild: {
       step: "upload",
       progress: 1000,
       total: 2000,

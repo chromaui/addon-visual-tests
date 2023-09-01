@@ -27,11 +27,18 @@ export type ProjectInfoPayload = {
 };
 
 export const START_BUILD = `${ADDON_ID}/startBuild`;
-export const BUILD_PROGRESS = `${ADDON_ID}/buildProgress`;
-export type BuildProgressPayload = {
+export const RUNNING_BUILD = `${ADDON_ID}/runningBuild`;
+export type RunningBuildStep =
+  | "initialize"
+  | "build"
+  | "upload"
+  | "verify"
+  | "snapshot"
+  | "complete";
+export type RunningBuildPayload = {
   // Possibly this should be a type exported by the CLI -- these correspond to tasks
   /** The step of the build process we have reached */
-  step: "initialize" | "build" | "upload" | "verify" | "snapshot" | "complete";
+  step: RunningBuildStep;
   /** The id of the build, available after the initialize step */
   id?: string;
   /** progress pertains to the current step, and may not be set */

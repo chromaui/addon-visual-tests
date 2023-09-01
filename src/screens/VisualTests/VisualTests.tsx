@@ -13,7 +13,7 @@ import { IconButton } from "../../components/IconButton";
 import { ProgressIcon } from "../../components/icons/ProgressIcon";
 import { Bar, Col, Row, Section, Sections, Text } from "../../components/layout";
 import { Text as CenterText } from "../../components/Text";
-import { BuildProgressPayload } from "../../constants";
+import { RunningBuildPayload } from "../../constants";
 import { getFragment, graphql } from "../../gql";
 import {
   AddonVisualTestsBuildQuery,
@@ -199,9 +199,7 @@ const MutationReviewTest = graphql(/* GraphQL */ `
 interface VisualTestsProps {
   projectId: string;
   gitInfo: Pick<GitInfo, "branch" | "slug" | "userEmailHash" | "uncommittedHash">;
-  isStarting: boolean;
-  buildProgress?: BuildProgressPayload;
-  lastDevBuildId?: string;
+  runningBuild?: RunningBuildPayload;
   startDevBuild: () => void;
   setAccessToken: (accessToken: string | null) => void;
   updateBuildStatus: (update: StatusUpdate) => void;
@@ -209,9 +207,7 @@ interface VisualTestsProps {
 }
 
 export const VisualTests = ({
-  isStarting,
-  buildProgress,
-  lastDevBuildId,
+  runningBuild,
   startDevBuild,
   setAccessToken,
   updateBuildStatus,
@@ -280,6 +276,7 @@ export const VisualTests = ({
   const [baselineImageVisible, setBaselineImageVisible] = useState(false);
   const toggleBaselineImage = () => setBaselineImageVisible(!baselineImageVisible);
 
+  const isStarting = ["initializing"].includes(runningBuild?.step);
   if (!build || error) {
     return (
       <Sections>
@@ -328,7 +325,8 @@ export const VisualTests = ({
   }
 
   // TODO -- we need to drop this when the build is selected
-  const buildStatus = buildProgress && <BuildProgress buildProgress={buildProgress} />;
+  console.log(runningBuild);
+  const buildStatus = runningBuild && <BuildProgress runningBuild={runningBuild} />;
 
   const tests = [
     ...getFragment(
