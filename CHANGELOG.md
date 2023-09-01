@@ -1,3 +1,22 @@
+# v0.0.50 (Fri Sep 01 2023)
+
+#### 🐛 Bug Fix
+
+- Accidental unmerged PR [#67](https://github.com/chromaui/addon-visual-tests/pull/67) ([@tmeasday](https://github.com/tmeasday) [@weeksling](https://github.com/weeksling))
+- Send mainPath and configDir on update success/failure [#53](https://github.com/chromaui/addon-visual-tests/pull/53) ([@tmeasday](https://github.com/tmeasday))
+
+#### 📝 Documentation
+
+- Docs: Adds newly added flags to the documentation [#63](https://github.com/chromaui/addon-visual-tests/pull/63) ([@jonniebigodes](https://github.com/jonniebigodes))
+
+#### Authors: 3
+
+- [@jonniebigodes](https://github.com/jonniebigodes)
+- Matthew Weeks ([@weeksling](https://github.com/weeksling))
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.49 (Wed Aug 30 2023)
 
 #### 🐛 Bug Fix
