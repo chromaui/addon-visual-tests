@@ -11,14 +11,8 @@ import {
   GIT_INFO,
   GitInfoPayload,
   PROJECT_INFO,
-  PROJECT_UPDATED,
-  PROJECT_UPDATING_FAILED,
   ProjectInfoPayload,
-  ProjectUpdatedPayload,
-  ProjectUpdatingFailedPayload,
   START_BUILD,
-  UPDATE_PROJECT,
-  UpdateProjectPayload,
 } from "./constants";
 import { useAddonState } from "./useAddonState/server";
 import { findConfig } from "./utils/storybook.config.utils";
