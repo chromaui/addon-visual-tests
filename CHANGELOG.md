@@ -1,3 +1,139 @@
+# v0.0.50 (Fri Sep 01 2023)
+
+#### 🐛 Bug Fix
+
+- Accidental unmerged PR [#67](https://github.com/chromaui/addon-visual-tests/pull/67) ([@tmeasday](https://github.com/tmeasday) [@weeksling](https://github.com/weeksling))
+- Send mainPath and configDir on update success/failure [#53](https://github.com/chromaui/addon-visual-tests/pull/53) ([@tmeasday](https://github.com/tmeasday))
+
+#### 📝 Documentation
+
+- Docs: Adds newly added flags to the documentation [#63](https://github.com/chromaui/addon-visual-tests/pull/63) ([@jonniebigodes](https://github.com/jonniebigodes))
+
+#### Authors: 3
+
+- [@jonniebigodes](https://github.com/jonniebigodes)
+- Matthew Weeks ([@weeksling](https://github.com/weeksling))
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.49 (Wed Aug 30 2023)
+
+#### 🐛 Bug Fix
+
+- upgrade storybook & make development easier [#62](https://github.com/chromaui/addon-visual-tests/pull/62) ([@ndelangen](https://github.com/ndelangen))
+
+#### Authors: 1
+
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+
+---
+
+# v0.0.48 (Wed Aug 30 2023)
+
+#### 🐛 Bug Fix
+
+- Storybook API: use `useAddonState` from `manager-api` [#54](https://github.com/chromaui/addon-visual-tests/pull/54) ([@ndelangen](https://github.com/ndelangen) [@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 2
+
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.47 (Wed Aug 30 2023)
+
+#### 🐛 Bug Fix
+
+- fix: center run button [#60](https://github.com/chromaui/addon-visual-tests/pull/60) ([@weeksling](https://github.com/weeksling))
+
+#### Authors: 1
+
+- Matthew Weeks ([@weeksling](https://github.com/weeksling))
+
+---
+
+# v0.0.46 (Tue Aug 29 2023)
+
+#### 🐛 Bug Fix
+
+- Fix: Updates the the link to the Visual Testing addon  documentation [#61](https://github.com/chromaui/addon-visual-tests/pull/61) ([@jonniebigodes](https://github.com/jonniebigodes))
+
+#### 📝 Documentation
+
+- Docs: Minor documentation improvements [#50](https://github.com/chromaui/addon-visual-tests/pull/50) ([@jonniebigodes](https://github.com/jonniebigodes))
+
+#### Authors: 1
+
+- [@jonniebigodes](https://github.com/jonniebigodes)
+
+---
+
+# v0.0.45 (Tue Aug 29 2023)
+
+#### 🐛 Bug Fix
+
+- Proper short circuit for prod [#59](https://github.com/chromaui/addon-visual-tests/pull/59) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.44 (Tue Aug 29 2023)
+
+#### 🐛 Bug Fix
+
+- Add a couple more useful options [#58](https://github.com/chromaui/addon-visual-tests/pull/58) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.43 (Tue Aug 29 2023)
+
+#### 🐛 Bug Fix
+
+- Fix issue with run tests button [#57](https://github.com/chromaui/addon-visual-tests/pull/57) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.42 (Tue Aug 29 2023)
+
+#### 🐛 Bug Fix
+
+- Remove the run tests button if user is not logged in or the projectId is not set. [#52](https://github.com/chromaui/addon-visual-tests/pull/52) ([@weeksling](https://github.com/weeksling) [@ndelangen](https://github.com/ndelangen) [@tmeasday](https://github.com/tmeasday))
+- use mswLoader instead of decorator [#30](https://github.com/chromaui/addon-visual-tests/pull/30) ([@yannbf](https://github.com/yannbf) [@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 4
+
+- Matthew Weeks ([@weeksling](https://github.com/weeksling))
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+- Yann Braga ([@yannbf](https://github.com/yannbf))
+
+---
+
+# v0.0.41 (Tue Aug 29 2023)
+
+#### 🐛 Bug Fix
+
+- Show instructional UI if main.js updating fails [#41](https://github.com/chromaui/addon-visual-tests/pull/41) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.40 (Sat Aug 26 2023)
 
 #### 🐛 Bug Fix

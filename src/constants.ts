@@ -38,3 +38,12 @@ export type UpdateProjectPayload = {
 };
 
 export const PROJECT_UPDATED = `${ADDON_ID}/projectUpdated`;
+export type ProjectUpdatedPayload = {
+  mainPath: string;
+  configDir: string;
+};
+export const PROJECT_UPDATING_FAILED = `${ADDON_ID}/projectUpdatingFailed`;
+export type ProjectUpdatingFailedPayload = {
+  mainPath?: string;
+  configDir: string;
+};

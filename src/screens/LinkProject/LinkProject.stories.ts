@@ -2,13 +2,11 @@ import { action } from "@storybook/addon-actions";
 import type { Meta, StoryObj } from "@storybook/react";
 import { findByTestId } from "@storybook/testing-library";
 import { graphql } from "msw";
-import React from "react";
 
-import { ProjectQueryQuery, SelectProjectsQueryQuery } from "../../gql/graphql";
+import { SelectProjectsQueryQuery } from "../../gql/graphql";
 import { storyWrapper } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
-import { LinkedProject } from "./LinkedProject";
 import { LinkProject } from "./LinkProject";
 
 const meta = {
@@ -238,35 +236,6 @@ export const SelectProjectManyProjects: Story = {
     await rightDiv.scroll({ top: rightDiv.scrollHeight });
     await leftDiv.scroll({ top: leftDiv.scrollHeight });
   }),
-};
-export const Linked: Story = {
-  render: () => (
-    <LinkedProject
-      projectId="789"
-      goToNext={action("goToNext")}
-      setAccessToken={action("setAccessToken")}
-    />
-  ),
-  parameters: {
-    ...withGraphQLQuery("ProjectQuery", (req, res, ctx) =>
-      res(
-        ctx.data({
-          project: {
-            id: "789",
-            name: "acme",
-            webUrl: "https://www.chromatic.com/builds?appId=789",
-            lastBuild: {
-              branch: "main",
-              number: 123,
-            },
-          },
-        } satisfies ProjectQueryQuery)
-      )
-    ),
-    ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-317094&t=435fylbu7gUQNEgq-4"
-    ),
-  },
 };
 
 export const EmptyNoAccounts: Story = {

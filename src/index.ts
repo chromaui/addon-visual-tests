@@ -1,21 +1,25 @@
 /* eslint-disable no-console */
 import type { Channel } from "@storybook/channels";
-import { readConfig, writeConfig } from "@storybook/csf-tools";
 // eslint-disable-next-line import/no-unresolved
 import { getGitInfo, GitInfo, run } from "chromatic/node";
+import { basename, relative } from "path";
 
 import {
   BUILD_PROGRESS,
   BuildProgressPayload,
-  CHROMATIC_ADDON_NAME,
   CHROMATIC_BASE_URL,
   GIT_INFO,
   GitInfoPayload,
+  PROJECT_UPDATED,
+  PROJECT_UPDATING_FAILED,
+  ProjectUpdatedPayload,
+  ProjectUpdatingFailedPayload,
   START_BUILD,
   UPDATE_PROJECT,
   UpdateProjectPayload,
 } from "./constants";
 import { findConfig } from "./utils/storybook.config.utils";
+import { updateMain } from "./utils/updateMain";
 
 /**
  * to load the built addon in this test Storybook
@@ -50,8 +54,18 @@ async function serverChannel(
   {
     configDir,
     projectToken: initialProjectToken,
+
+    // This is a small subset of the flags available to the CLI.
     buildScriptName,
-  }: { configDir: string; projectToken: string; buildScriptName?: string }
+    debug,
+    zip,
+  }: {
+    configDir: string;
+    projectToken: string;
+    buildScriptName?: string;
+    debug?: boolean;
+    zip?: boolean;
+  }
 ) {
   let projectToken = initialProjectToken;
   channel.on(START_BUILD, async () => {
@@ -62,6 +76,8 @@ async function serverChannel(
       flags: {
         projectToken,
         buildScriptName,
+        debug,
+        zip,
       },
       options: {
         // We might want to drop this later and instead record "uncommitted hashes" on builds
@@ -114,25 +130,22 @@ async function serverChannel(
     async ({ projectId, projectToken: updatedProjectToken }: UpdateProjectPayload) => {
       projectToken = updatedProjectToken;
 
-      const mainPath = await findConfig(configDir, "main");
-      const MainConfig = await readConfig(mainPath);
-
-      const addonsConfig = MainConfig.getFieldValue(["addons"]);
-      const updatedAddonsConfig = addonsConfig.map(
-        (addonConfig: string | { name: string; options?: Record<string, string> }) => {
-          const fullConfig = typeof addonConfig === "string" ? { name: addonConfig } : addonConfig;
-          if (fullConfig.name === CHROMATIC_ADDON_NAME) {
-            return {
-              ...fullConfig,
-              options: { projectId, projectToken, ...fullConfig.options },
-            };
-          }
-          return addonConfig;
-        }
-      );
-
-      MainConfig.setFieldValue(["addons"], updatedAddonsConfig);
-      await writeConfig(MainConfig);
+      const relativeConfigDir = relative(process.cwd(), configDir);
+      let mainPath: string;
+      try {
+        mainPath = await findConfig(configDir, "main");
+        await updateMain({ mainPath, projectId, projectToken });
+        channel.emit(PROJECT_UPDATED, {
+          mainPath: basename(mainPath),
+          configDir: relativeConfigDir,
+        } satisfies ProjectUpdatedPayload);
+      } catch (err) {
+        console.warn(`Failed to update your main configuration:\n\n ${err}`);
+        channel.emit(PROJECT_UPDATING_FAILED, {
+          mainPath: mainPath && basename(mainPath),
+          configDir: relativeConfigDir,
+        } satisfies ProjectUpdatingFailedPayload);
+      }
     }
   );
 
@@ -146,9 +159,9 @@ const config = {
   experimental_serverChannel: serverChannel,
   env: async (
     env: Record<string, string>,
-    { projectId, configType }: { projectId: string; configType: "development" | "production" }
+    { projectId, configType }: { projectId: string; configType: "DEVELOPMENT" | "PRODUCTION" }
   ) => {
-    if (configType === "production") return env;
+    if (configType === "PRODUCTION") return env;
 
     const { userEmail, userEmailHash, branch, commit, slug, uncommittedHash } = await getGitInfo();
     return {
