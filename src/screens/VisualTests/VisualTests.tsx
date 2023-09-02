@@ -237,6 +237,8 @@ export const VisualTests = ({
   const [baselineImageVisible, setBaselineImageVisible] = useState(false);
   const toggleBaselineImage = () => setBaselineImageVisible(!baselineImageVisible);
 
+  // The storyId and buildId that drive the test(s) we are currently looking at
+  // The user can choose when to change story (via sidebar) and build (via opting into new builds)
   const [storyBuildInfo, setStoryBuildInfo] = useState<{
     storyId: string;
     buildId: string;
