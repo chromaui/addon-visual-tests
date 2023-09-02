@@ -133,7 +133,7 @@ async function serverChannel(
           if (["build", "upload"].includes(runningBuildState.value.step) && ctx.build) {
             newStep = "snapshot";
           }
-          if (ctx.build?.status !== "IN_PROGRESS") {
+          if (ctx.build && ctx.build.status !== "IN_PROGRESS") {
             newStep = "complete";
           }
 

@@ -319,11 +319,11 @@ export const VisualTests = ({
     } else if (storyBuildInfo.storyId !== storyId) {
       setStoryBuildInfo({ storyId, buildId: nextBuild.id });
     }
-  }, [storyBuildInfo, hasNextBuild, nextBuild.id, storyId]);
+  }, [storyBuildInfo, hasNextBuild, nextBuild?.id, storyId]);
 
   const switchToNextBuild = useCallback(
     () => setStoryBuildInfo({ storyId, buildId: nextBuild.id }),
-    [storyId, nextBuild.id]
+    [storyId, nextBuild?.id]
   );
 
   const isStarting = ["initializing"].includes(runningBuild?.step);
@@ -374,8 +374,18 @@ export const VisualTests = ({
     );
   }
 
-  // TODO -- we need to drop this when the build is selected
-  const buildStatus = runningBuild && <BuildProgress runningBuild={runningBuild} />;
+  const showBuildStatus =
+    // We always want to show the status of the running build (until it is done)
+    (runningBuild && runningBuild.step !== "complete") ||
+    // Even if there's no build running, we want to show the next build if it hasn't been selected.
+    (nextBuild && nextBuild.id !== storyBuild?.id);
+  const buildStatus = showBuildStatus && (
+    <BuildProgress
+      runningBuild={runningBuild}
+      nextBuild={nextBuild}
+      switchToNextBuild={switchToNextBuild}
+    />
+  );
 
   const storyTests = [
     ...getFragment(
