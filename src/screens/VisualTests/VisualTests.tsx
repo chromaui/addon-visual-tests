@@ -39,6 +39,8 @@ const QueryBuild = graphql(/* GraphQL */ `
     $slug: String
     $storyId: String!
     $testStatuses: [TestStatus!]!
+    $storyBuildId: ID!
+    $hasStoryBuildId: Boolean!
   ) {
     project(id: $projectId) {
       name
@@ -47,21 +49,21 @@ const QueryBuild = graphql(/* GraphQL */ `
         slug: $slug
         localBuilds: { localBuildEmailHash: $gitUserEmailHash }
       ) {
-        ...BuildFields
+        ...NextBuildFields
+        ...StoryBuildFields @skip(if: $hasStoryBuildId)
       }
+    }
+    storyBuild: build(id: $storyBuildId) @include(if: $hasStoryBuildId) {
+      ...StoryBuildFields
     }
   }
 `);
 
-const FragmentBuildFields = graphql(/* GraphQL */ `
-  fragment BuildFields on Build {
+const FragmentNextBuildFields = graphql(/* GraphQL */ `
+  fragment NextBuildFields on Build {
     __typename
     id
-    number
-    branch
     commit
-    uncommittedHash
-    status
     browsers {
       id
       key
@@ -70,15 +72,9 @@ const FragmentBuildFields = graphql(/* GraphQL */ `
     ... on StartedBuild {
       changeCount: testCount(results: [ADDED, CHANGED, FIXED])
       brokenCount: testCount(results: [CAPTURE_ERROR])
-      startedAt
       testsForStatus: tests(first: 1000, statuses: $testStatuses) {
         nodes {
           ...StatusTestFields
-        }
-      }
-      testsForStory: tests(storyId: $storyId) {
-        nodes {
-          ...StoryTestFields
         }
       }
     }
@@ -86,12 +82,33 @@ const FragmentBuildFields = graphql(/* GraphQL */ `
       result
       changeCount: testCount(results: [ADDED, CHANGED, FIXED])
       brokenCount: testCount(results: [CAPTURE_ERROR])
-      startedAt
       testsForStatus: tests(statuses: $testStatuses) {
         nodes {
           ...StatusTestFields
         }
       }
+    }
+  }
+`);
+
+const FragmentStoryBuildFields = graphql(/* GraphQL */ `
+  fragment StoryBuildFields on Build {
+    __typename
+    id
+    number
+    branch
+    uncommittedHash
+    status
+    ... on StartedBuild {
+      startedAt
+      testsForStory: tests(storyId: $storyId) {
+        nodes {
+          ...StoryTestFields
+        }
+      }
+    }
+    ... on CompletedBuild {
+      startedAt
       testsForStory: tests(storyId: $storyId) {
         nodes {
           ...StoryTestFields
@@ -215,6 +232,16 @@ export const VisualTests = ({
   gitInfo,
   storyId,
 }: VisualTestsProps) => {
+  const [settingsVisible, setSettingsVisible] = useState(false);
+  const [warningsVisible, setWarningsVisible] = useState(false);
+  const [baselineImageVisible, setBaselineImageVisible] = useState(false);
+  const toggleBaselineImage = () => setBaselineImageVisible(!baselineImageVisible);
+
+  const [storyBuildInfo, setStoryBuildInfo] = useState<{
+    storyId: string;
+    buildId: string;
+  }>();
+
   const [{ data, error }, rerun] = useQuery<
     AddonVisualTestsBuildQuery,
     AddonVisualTestsBuildQueryVariables
@@ -227,6 +254,8 @@ export const VisualTests = ({
       branch: gitInfo.branch || "",
       ...(gitInfo.slug ? { slug: gitInfo.slug } : {}),
       gitUserEmailHash: gitInfo.userEmailHash,
+      storyBuildId: storyBuildInfo?.buildId || "",
+      hasStoryBuildId: !!storyBuildInfo,
     },
   });
 
@@ -257,13 +286,19 @@ export const VisualTests = ({
     [reviewTest]
   );
 
-  const build = getFragment(FragmentBuildFields, data?.project?.lastBuild);
-  const isOutdated = build && build.uncommittedHash !== gitInfo.uncommittedHash;
+  const nextBuild = getFragment(FragmentNextBuildFields, data?.project?.lastBuild);
+  // Before we set the storyInfo, we use the nextBuild for story data
+  const storyBuild = getFragment(
+    FragmentStoryBuildFields,
+    data?.storyBuild ?? data?.project?.lastBuild
+  );
 
+  // We always set status to the next build's status, as when we change to a new story we'll see
+  // the next builds
   const buildStatusUpdate =
-    build &&
-    "testsForStatus" in build &&
-    testsToStatusUpdate(getFragment(FragmentStatusTestFields, build.testsForStatus.nodes));
+    nextBuild &&
+    "testsForStatus" in nextBuild &&
+    testsToStatusUpdate(getFragment(FragmentStatusTestFields, nextBuild.testsForStatus.nodes));
 
   useEffect(() => {
     if (buildStatusUpdate) updateBuildStatus(buildStatusUpdate);
@@ -271,13 +306,28 @@ export const VisualTests = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(buildStatusUpdate), updateBuildStatus]);
 
-  const [settingsVisible, setSettingsVisible] = useState(false);
-  const [warningsVisible, setWarningsVisible] = useState(false);
-  const [baselineImageVisible, setBaselineImageVisible] = useState(false);
-  const toggleBaselineImage = () => setBaselineImageVisible(!baselineImageVisible);
+  // Ensure we are holding the right story build
+  const hasNextBuild = !!nextBuild;
+  useEffect(() => {
+    if (!hasNextBuild) return;
+
+    // We always want storyBuildInfo set if we can
+    if (!storyBuildInfo) {
+      setStoryBuildInfo({ storyId, buildId: nextBuild.id });
+
+      // If you change story, we reset storyBuildInfo to the next build (you see the next build)
+    } else if (storyBuildInfo.storyId !== storyId) {
+      setStoryBuildInfo({ storyId, buildId: nextBuild.id });
+    }
+  }, [storyBuildInfo, hasNextBuild, nextBuild.id, storyId]);
+
+  const switchToNextBuild = useCallback(
+    () => setStoryBuildInfo({ storyId, buildId: nextBuild.id }),
+    [storyId, nextBuild.id]
+  );
 
   const isStarting = ["initializing"].includes(runningBuild?.step);
-  if (!build || error) {
+  if (!nextBuild || error) {
     return (
       <Sections>
         <Section grow>
@@ -289,7 +339,7 @@ export const VisualTests = ({
             </Row>
           )}
           {!data && <Loader />}
-          {data && !build && !error && (
+          {data && !nextBuild && !error && (
             <Container>
               <Heading>Create a test baseline</Heading>
               <CenterText>
@@ -325,20 +375,17 @@ export const VisualTests = ({
   }
 
   // TODO -- we need to drop this when the build is selected
-  console.log(runningBuild);
   const buildStatus = runningBuild && <BuildProgress runningBuild={runningBuild} />;
 
-  const tests = [
+  const storyTests = [
     ...getFragment(
       FragmentStoryTestFields,
-      "testsForStory" in build ? build.testsForStory.nodes : []
+      "testsForStory" in storyBuild ? storyBuild.testsForStory.nodes : []
     ),
   ];
-  const startedAt = "startedAt" in build && build.startedAt;
-  const isBuildFailed = build.status === BuildStatus.Failed;
 
   // It shouldn't be possible for one test to be skipped but not all of them
-  const isSkipped = !!tests?.find((t) => t.result === TestResult.Skipped);
+  const isSkipped = !!storyTests?.find((t) => t.result === TestResult.Skipped);
   if (isSkipped) {
     return (
       <Sections>
@@ -369,17 +416,27 @@ export const VisualTests = ({
     );
   }
 
+  const startedAt = "startedAt" in storyBuild && storyBuild.startedAt;
+  const isOutdated = storyBuild && storyBuild.uncommittedHash !== gitInfo.uncommittedHash;
+  const isBuildFailed = storyBuild.status === BuildStatus.Failed;
   return (
     <Sections>
       {buildStatus}
 
       <Section grow hidden={settingsVisible || warningsVisible}>
         <StoryInfo
-          {...{ tests, isOutdated, startedAt, isStarting, startDevBuild, isBuildFailed }}
+          {...{
+            tests: storyTests,
+            isOutdated,
+            startedAt,
+            isStarting,
+            startDevBuild,
+            isBuildFailed,
+          }}
         />
-        {!isStarting && tests && tests.length > 0 && (
+        {!isStarting && storyTests && storyTests.length > 0 && (
           <SnapshotComparison
-            {...{ tests, isAccepting, isOutdated, onAccept, baselineImageVisible }}
+            {...{ tests: storyTests, isAccepting, isOutdated, onAccept, baselineImageVisible }}
           />
         )}
       </Section>
@@ -409,11 +466,11 @@ export const VisualTests = ({
           <Col style={{ overflow: "hidden", whiteSpace: "nowrap" }}>
             {baselineImageVisible ? (
               <Text style={{ marginLeft: 5, width: "100%" }}>
-                <b>Baseline</b> Build {build.number} on {build.branch}
+                <b>Baseline</b> Build {storyBuild.number} on {storyBuild.branch}
               </Text>
             ) : (
               <Text style={{ marginLeft: 5, width: "100%" }}>
-                <b>Latest</b> Build {build.number} on {build.branch}
+                <b>Latest</b> Build {storyBuild.number} on {storyBuild.branch}
               </Text>
             )}
           </Col>
