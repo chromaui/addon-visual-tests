@@ -5,6 +5,7 @@ import {
   ADDON_ID,
   PROJECT_UPDATED,
   PROJECT_UPDATING_FAILED,
+  ProjectUpdatedPayload,
   ProjectUpdatingFailedPayload,
   UPDATE_PROJECT,
   UpdateProjectPayload,
@@ -14,15 +15,7 @@ const { CHROMATIC_PROJECT_ID } = process.env;
 
 const projectIdSharedStateKey = `${ADDON_ID}/projectId`;
 
-export const useProjectId = (): [
-  projectId: string,
-  projectToken: string,
-  configDir: string,
-  updateProject: (projectId: string, projectToken?: string) => void,
-  projectUpdatingFailed: boolean,
-  projectIdUpdated: boolean,
-  clearProjectIdUpdated: () => void
-] => {
+export const useProjectId = () => {
   const [projectId, setProjectId] = useAddonState<string | null>(
     projectIdSharedStateKey,
     CHROMATIC_PROJECT_ID
@@ -30,12 +23,18 @@ export const useProjectId = (): [
   const [projectToken, setProjectToken] = React.useState<string | null>();
   const [projectIdUpdated, setProjectIdUpdated] = React.useState(false);
   const [projectUpdatingFailed, setProjectUpdatingFailed] = React.useState(false);
+  const [mainPath, setMainPath] = React.useState<string | null>();
   const [configDir, setConfigDir] = React.useState<string | null>();
 
   const emit = useChannel({
-    [PROJECT_UPDATED]: () => setProjectIdUpdated(true),
+    [PROJECT_UPDATED]: (payload: ProjectUpdatedPayload) => {
+      setProjectIdUpdated(true);
+      setMainPath(payload.mainPath);
+      setConfigDir(payload.configDir);
+    },
     [PROJECT_UPDATING_FAILED]: (payload: ProjectUpdatingFailedPayload) => {
       setProjectUpdatingFailed(true);
+      setMainPath(payload.mainPath);
       setConfigDir(payload.configDir);
     },
   });
@@ -48,13 +47,14 @@ export const useProjectId = (): [
     setProjectId(newProjectId);
     setProjectToken(newProjectToken);
   };
-  return [
+  return {
     projectId,
     projectToken,
     configDir,
+    mainPath,
     updateProject,
     projectUpdatingFailed,
     projectIdUpdated,
-    () => setProjectIdUpdated(false),
-  ];
+    clearProjectIdUpdated: () => setProjectIdUpdated(false),
+  };
 };
