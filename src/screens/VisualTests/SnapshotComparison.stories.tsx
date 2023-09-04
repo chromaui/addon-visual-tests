@@ -6,7 +6,15 @@ import React, { ComponentProps } from "react";
 
 import { Browser, ComparisonResult, TestStatus } from "../../gql/graphql";
 import { playAll } from "../../utils/playAll";
-import { makeTest, makeTests } from "../../utils/storyData";
+import {
+  baseCapture,
+  captureDiff,
+  headCapture,
+  makeBrowserInfo,
+  makeTest,
+  makeTests,
+  makeViewportInfo,
+} from "../../utils/storyData";
 import { SnapshotComparison } from "./SnapshotComparison";
 
 const meta = {
@@ -143,5 +151,35 @@ export const SwitchingTests: Story = {
     const [tests, setTests] = React.useState(null);
     if (!tests) setTimeout(() => setTests([makeTest({})]), 0);
     return <SnapshotComparison {...props} tests={tests || props.tests} />;
+  },
+};
+
+export const InteractionFailure: Story = {
+  args: {
+    tests: [
+      makeTest({
+        status: TestStatus.Broken,
+        comparisons: [
+          {
+            id: "1",
+            browser: makeBrowserInfo(Browser.Chrome),
+            viewport: makeViewportInfo(1200),
+            result: ComparisonResult.CaptureError,
+            baseCapture,
+            headCapture: {
+              ...headCapture,
+              captureError: {
+                kind: "INTERACTION_FAILURE",
+                error: {
+                  name: "Error",
+                  message: `Unable to find an element by: [data-testid="button-toggle-snapshot"]`,
+                },
+              },
+            },
+            captureDiff,
+          },
+        ],
+      }),
+    ],
   },
 };

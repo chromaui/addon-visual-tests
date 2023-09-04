@@ -155,6 +155,12 @@ const FragmentStoryTestFields = graphql(/* GraphQL */ `
           imageUrl
           imageWidth
         }
+        captureError {
+          kind
+          ... on CaptureErrorInteractionFailure {
+            error
+          }
+        }
       }
       baseCapture {
         captureImage {
