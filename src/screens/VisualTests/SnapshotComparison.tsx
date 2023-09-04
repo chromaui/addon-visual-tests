@@ -41,9 +41,8 @@ export const SnapshotComparison = ({
   const [diffVisible, setDiffVisible] = useState(true);
   const [focusVisible, setFocusVisible] = useState(false);
 
-  const { selectedTest, selectedComparison, onSelectBrowser, onSelectViewport } = useTests(tests);
-  const { status, isInProgress, changeCount, browserResults, viewportResults } =
-    summarizeTests(tests);
+  const { selectedTest, selectedComparison, onSelectBrowser, onSelectMode } = useTests(tests);
+  const { status, isInProgress, changeCount, browserResults, modeResults } = summarizeTests(tests);
 
   return (
     <>
@@ -56,13 +55,13 @@ export const SnapshotComparison = ({
         </Bar>
       ) : (
         <Bar>
-          {viewportResults.length > 0 && (
+          {modeResults.length > 0 && (
             <Col>
               <ModeSelector
                 isAccepted={status === TestStatus.Accepted}
-                selectedViewport={selectedTest.parameters.viewport}
-                viewportResults={viewportResults}
-                onSelectViewport={onSelectViewport}
+                selectedMode={selectedTest.parameters.viewport}
+                modeResults={modeResults}
+                onSelectMode={onSelectMode}
               />
             </Col>
           )}

@@ -18,22 +18,22 @@ const IconWrapper = styled.div(({ theme }) => ({
   },
 }));
 
-type ViewportData = Pick<ViewportInfo, "id" | "name">;
+type ModeData = Pick<ViewportInfo, "id" | "name">;
 
 interface ModeSelectorProps {
   isAccepted: boolean;
-  selectedViewport: ViewportData;
-  onSelectViewport: (viewport: ViewportData) => void;
-  viewportResults: { viewport: ViewportData; result: ComparisonResult }[];
+  selectedMode: ModeData;
+  onSelectMode: (viewport: ModeData) => void;
+  modeResults: { viewport: ModeData; result: ComparisonResult }[];
 }
 
 export const ModeSelector = ({
   isAccepted,
-  selectedViewport,
-  viewportResults,
-  onSelectViewport,
+  selectedMode,
+  modeResults,
+  onSelectMode,
 }: ModeSelectorProps) => {
-  const aggregate = aggregateResult(viewportResults.map(({ result }) => result));
+  const aggregate = aggregateResult(modeResults.map(({ result }) => result));
   if (!aggregate) return null;
 
   let icon = <Icon icon="diamond" />;
@@ -41,12 +41,12 @@ export const ModeSelector = ({
     icon = <StatusDotWrapper status={aggregate}>{icon}</StatusDotWrapper>;
   }
 
-  const links = viewportResults.map(({ viewport, result }) => ({
+  const links = modeResults.map(({ viewport, result }) => ({
     id: viewport.id,
     title: viewport.name,
     right: !isAccepted && result !== ComparisonResult.Equal && <StatusDot status={result} />,
-    onClick: () => onSelectViewport(viewport),
-    active: selectedViewport === viewport,
+    onClick: () => onSelectMode(viewport),
+    active: selectedMode === viewport,
   }));
 
   return (
@@ -56,9 +56,7 @@ export const ModeSelector = ({
       trigger="hover"
       tooltip={
         <TooltipNote
-          note={
-            links.length === 1 ? `View mode: ${viewportResults[0].viewport.name}` : "Switch mode"
-          }
+          note={links.length === 1 ? `View mode: ${modeResults[0].viewport.name}` : "Switch mode"}
         />
       }
     >
@@ -67,7 +65,7 @@ export const ModeSelector = ({
       ) : (
         <TooltipMenu placement="bottom" links={links}>
           {icon}
-          {selectedViewport.name}
+          {selectedMode.name}
           <ArrowIcon icon="arrowdown" />
         </TooltipMenu>
       )}

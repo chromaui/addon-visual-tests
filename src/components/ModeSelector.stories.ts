@@ -17,7 +17,7 @@ const meta = {
   component: ModeSelector,
   args: {
     isAccepted: false,
-    onSelectViewport: action("onSelectViewport"),
+    onSelectMode: action("onSelectMode"),
   },
 } satisfies Meta<typeof ModeSelector>;
 
@@ -26,8 +26,8 @@ type Story = StoryObj<typeof meta>;
 
 export const WithSingleViewportChanged: Story = {
   args: {
-    selectedViewport: viewport1200Px,
-    viewportResults: [
+    selectedMode: viewport1200Px,
+    modeResults: [
       {
         viewport: viewport1200Px,
         result: ComparisonResult.Changed,
@@ -39,8 +39,8 @@ export const WithSingleViewportChanged: Story = {
 export const WithSingleViewportAccepted: Story = {
   args: {
     isAccepted: true,
-    selectedViewport: viewport1200Px,
-    viewportResults: [
+    selectedMode: viewport1200Px,
+    modeResults: [
       {
         viewport: viewport1200Px,
         result: ComparisonResult.Changed,
@@ -51,8 +51,8 @@ export const WithSingleViewportAccepted: Story = {
 
 export const WithSingleViewportEqual: Story = {
   args: {
-    selectedViewport: viewport1200Px,
-    viewportResults: [
+    selectedMode: viewport1200Px,
+    modeResults: [
       {
         viewport: viewport1200Px,
         result: ComparisonResult.Equal,
@@ -63,8 +63,8 @@ export const WithSingleViewportEqual: Story = {
 
 export const WithSingleViewportError: Story = {
   args: {
-    selectedViewport: viewport1200Px,
-    viewportResults: [
+    selectedMode: viewport1200Px,
+    modeResults: [
       {
         viewport: viewport1200Px,
         result: ComparisonResult.CaptureError,
@@ -75,8 +75,8 @@ export const WithSingleViewportError: Story = {
 
 export const WithManyViewportsEqual: Story = {
   args: {
-    selectedViewport: viewport800Px,
-    viewportResults: [
+    selectedMode: viewport800Px,
+    modeResults: [
       {
         viewport: viewport800Px,
         result: ComparisonResult.Equal,
@@ -91,8 +91,8 @@ export const WithManyViewportsEqual: Story = {
 
 export const WithManyViewportsSecondSelected: Story = {
   args: {
-    selectedViewport: viewport1200Px,
-    viewportResults: [
+    selectedMode: viewport1200Px,
+    modeResults: [
       {
         viewport: viewport800Px,
         result: ComparisonResult.Equal,
@@ -107,8 +107,8 @@ export const WithManyViewportsSecondSelected: Story = {
 
 export const WithManyViewportsVaried: Story = {
   args: {
-    selectedViewport: viewport800Px,
-    viewportResults: [
+    selectedMode: viewport800Px,
+    modeResults: [
       {
         viewport: viewport800Px,
         result: ComparisonResult.Equal,
