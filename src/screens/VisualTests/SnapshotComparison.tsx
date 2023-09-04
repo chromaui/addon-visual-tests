@@ -120,18 +120,26 @@ export const SnapshotComparison = ({
                   placement="bottom"
                   links={[
                     {
-                      id: "logout",
-                      title: "Accept all viewports",
+                      id: "acceptStory",
+                      title: "Accept story",
                       center: "Accept all unreviewed changes to this story",
                       onClick: () => onAccept(selectedTest.id, ReviewTestBatch.Spec),
                       disabled: isAccepting,
                       loading: isAccepting,
                     },
                     {
-                      id: "learn",
-                      title: "Accept this component",
+                      id: "acceptComponent",
+                      title: "Accept component",
                       center: "Accept all unreviewed changes for this component",
                       onClick: () => onAccept(selectedTest.id, ReviewTestBatch.Component),
+                      disabled: isAccepting,
+                      loading: isAccepting,
+                    },
+                    {
+                      id: "acceptBuild",
+                      title: "Accept entire build",
+                      center: "Accept all unreviewed changes for every story in the Storybook",
+                      onClick: () => onAccept(selectedTest.id, ReviewTestBatch.Build),
                       disabled: isAccepting,
                       loading: isAccepting,
                     },
