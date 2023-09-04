@@ -2,8 +2,8 @@ import { ComparisonResult, StoryTestFieldsFragment, TestResult, TestStatus } fro
 import { aggregateResult } from "./aggregateResult";
 
 function pickStatus(statusCounts: { [K in TestStatus]?: number }) {
-  if (statusCounts[TestStatus.InProgress] > 0) return TestStatus.InProgress;
   if (statusCounts[TestStatus.Failed] > 0) return TestStatus.Failed;
+  if (statusCounts[TestStatus.InProgress] > 0) return TestStatus.InProgress;
   if (statusCounts[TestStatus.Broken] > 0) return TestStatus.Broken;
   if (statusCounts[TestStatus.Denied] > 0) return TestStatus.Denied;
   if (statusCounts[TestStatus.Pending] > 0) return TestStatus.Pending;
