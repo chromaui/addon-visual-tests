@@ -86,7 +86,7 @@ it("Calculates static information correctly", () => {
       ],
       "changeCount": 1,
       "isInProgress": true,
-      "status": "BROKEN",
+      "status": "IN_PROGRESS",
       "viewportResults": [
         {
           "result": "EQUAL",

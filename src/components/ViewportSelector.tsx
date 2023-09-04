@@ -10,12 +10,14 @@ import { TooltipMenu } from "./TooltipMenu";
 type ViewportData = Pick<ViewportInfo, "id" | "name">;
 
 interface ViewportSelectorProps {
+  isAccepted: boolean;
   selectedViewport: ViewportData;
   onSelectViewport: (viewport: ViewportData) => void;
   viewportResults: { viewport: ViewportData; result: ComparisonResult }[];
 }
 
 export const ViewportSelector = ({
+  isAccepted,
   selectedViewport,
   viewportResults,
   onSelectViewport,
@@ -29,12 +31,12 @@ export const ViewportSelector = ({
       links={viewportResults.map(({ viewport, result }) => ({
         id: viewport.id,
         title: viewport.name,
-        right: result !== ComparisonResult.Equal && <StatusDot status={result} />,
+        right: !isAccepted && result !== ComparisonResult.Equal && <StatusDot status={result} />,
         onClick: () => onSelectViewport(viewport),
         active: selectedViewport === viewport,
       }))}
     >
-      {aggregate === ComparisonResult.Equal ? (
+      {isAccepted || aggregate === ComparisonResult.Equal ? (
         <Icon icon="grow" />
       ) : (
         <StatusDotWrapper status={aggregate}>

@@ -16,6 +16,7 @@ const viewport1200Px = {
 const meta = {
   component: ViewportSelector,
   args: {
+    isAccepted: false,
     onSelectViewport: action("onSelectViewport"),
   },
 } satisfies Meta<typeof ViewportSelector>;
@@ -25,6 +26,19 @@ type Story = StoryObj<typeof meta>;
 
 export const WithSingleViewportChanged: Story = {
   args: {
+    selectedViewport: viewport1200Px,
+    viewportResults: [
+      {
+        viewport: viewport1200Px,
+        result: ComparisonResult.Changed,
+      },
+    ],
+  },
+};
+
+export const WithSingleViewportAccepted: Story = {
+  args: {
+    isAccepted: true,
     selectedViewport: viewport1200Px,
     viewportResults: [
       {

@@ -42,7 +42,8 @@ export const SnapshotComparison = ({
   const [focusVisible, setFocusVisible] = useState(false);
 
   const { selectedTest, selectedComparison, onSelectBrowser, onSelectViewport } = useTests(tests);
-  const { isInProgress, changeCount, browserResults, viewportResults } = summarizeTests(tests);
+  const { status, isInProgress, changeCount, browserResults, viewportResults } =
+    summarizeTests(tests);
 
   return (
     <>
@@ -63,6 +64,7 @@ export const SnapshotComparison = ({
                 hasChrome={false}
               >
                 <ViewportSelector
+                  isAccepted={status === TestStatus.Accepted}
                   selectedViewport={selectedTest.parameters.viewport}
                   viewportResults={viewportResults}
                   onSelectViewport={onSelectViewport}
@@ -78,6 +80,7 @@ export const SnapshotComparison = ({
                 hasChrome={false}
               >
                 <BrowserSelector
+                  isAccepted={status === TestStatus.Accepted}
                   selectedBrowser={selectedComparison.browser}
                   browserResults={browserResults}
                   onSelectBrowser={onSelectBrowser}
