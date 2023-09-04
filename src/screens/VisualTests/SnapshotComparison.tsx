@@ -146,7 +146,7 @@ export const SnapshotComparison = ({
                   ]}
                 >
                   {(active) => (
-                    <IconButton secondary active={active}>
+                    <IconButton secondary active={active} aria-label="Batch accept">
                       {isAccepting ? (
                         <ProgressIcon parentComponent="IconButton" />
                       ) : (
