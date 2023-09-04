@@ -334,7 +334,11 @@ export const VisualTests = ({
     [canSwitchToNextBuild, nextBuild?.id, storyId]
   );
 
-  const isStarting = ["initializing"].includes(runningBuild?.step);
+  const isStarting =
+    runningBuild?.step === "initialize" ||
+    [BuildStatus.Announced, BuildStatus.Published, BuildStatus.Prepared].includes(
+      storyBuild?.status
+    );
   if (!nextBuild || error) {
     return (
       <Sections>
