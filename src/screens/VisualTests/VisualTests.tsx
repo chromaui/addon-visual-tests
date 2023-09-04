@@ -334,11 +334,8 @@ export const VisualTests = ({
     [canSwitchToNextBuild, nextBuild?.id, storyId]
   );
 
-  const isStarting =
-    runningBuild?.step === "initialize" ||
-    [BuildStatus.Announced, BuildStatus.Published, BuildStatus.Prepared].includes(
-      storyBuild?.status
-    );
+  const isRunningBuildStarting = runningBuild?.step === "initialize";
+
   if (!nextBuild || error) {
     return (
       <Sections>
@@ -359,8 +356,8 @@ export const VisualTests = ({
                 as test baselines.
               </CenterText>
               <br />
-              <Button small secondary onClick={startDevBuild} disabled={isStarting}>
-                {isStarting ? (
+              <Button small secondary onClick={startDevBuild} disabled={isRunningBuildStarting}>
+                {isRunningBuildStarting ? (
                   <ProgressIcon parentComponent="Button" style={{ marginRight: 6 }} />
                 ) : (
                   <Icons icon="play" />
@@ -386,16 +383,16 @@ export const VisualTests = ({
     );
   }
 
-  const runningBuildInProgress = runningBuild && runningBuild.step !== "complete";
+  const isRunningBuildInProgress = runningBuild && runningBuild.step !== "complete";
   const showBuildStatus =
     // We always want to show the status of the running build (until it is done)
-    runningBuildInProgress ||
+    isRunningBuildInProgress ||
     // Even if there's no build running, we want to show the next build if it hasn't been selected.
     (canSwitchToNextBuild && nextBuild.id !== storyBuild?.id);
   const runningBuildIsNextBuild = runningBuild && runningBuild?.id === nextBuild?.id;
   const buildStatus = showBuildStatus && (
     <BuildProgress
-      runningBuild={(runningBuildIsNextBuild || runningBuildInProgress) && runningBuild}
+      runningBuild={(runningBuildIsNextBuild || isRunningBuildInProgress) && runningBuild}
       switchToNextBuild={canSwitchToNextBuild && switchToNextBuild}
     />
   );
@@ -439,6 +436,11 @@ export const VisualTests = ({
     );
   }
 
+  const isStoryBuildStarting = [
+    BuildStatus.Announced,
+    BuildStatus.Published,
+    BuildStatus.Prepared,
+  ].includes(storyBuild?.status);
   const startedAt = "startedAt" in storyBuild && storyBuild.startedAt;
   const isOutdated = storyBuild && storyBuild.uncommittedHash !== gitInfo.uncommittedHash;
   const isBuildFailed = storyBuild.status === BuildStatus.Failed;
@@ -452,12 +454,12 @@ export const VisualTests = ({
             tests: storyTests,
             isOutdated,
             startedAt,
-            isStarting,
+            isStarting: isStoryBuildStarting,
             startDevBuild,
             isBuildFailed,
           }}
         />
-        {!isStarting && storyTests && storyTests.length > 0 && (
+        {!isStoryBuildStarting && storyTests && storyTests.length > 0 && (
           <SnapshotComparison
             {...{ tests: storyTests, isAccepting, isOutdated, onAccept, baselineImageVisible }}
           />
