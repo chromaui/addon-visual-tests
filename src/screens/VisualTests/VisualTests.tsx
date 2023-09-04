@@ -216,7 +216,10 @@ const MutationReviewTest = graphql(/* GraphQL */ `
 
 interface VisualTestsProps {
   projectId: string;
-  gitInfo: GitInfoPayload;
+  gitInfo: Pick<
+    GitInfoPayload,
+    "branch" | "slug" | "userEmailHash" | "committedAt" | "uncommittedHash"
+  >;
   runningBuild?: RunningBuildPayload;
   startDevBuild: () => void;
   setAccessToken: (accessToken: string | null) => void;

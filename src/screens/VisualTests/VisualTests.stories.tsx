@@ -69,9 +69,7 @@ const announcedBuild: AnnouncedBuild = {
   id: "1",
   number: 1,
   branch: "feature-branch",
-  commit: "1234567",
   uncommittedHash: "",
-  browsers: [makeBrowserInfo(Browser.Chrome), makeBrowserInfo(Browser.Safari)],
   status: BuildStatus.Announced,
 };
 
@@ -180,6 +178,7 @@ const meta = {
       branch: "feature-branch",
       slug: "chromaui/addon-visual-tests",
       uncommittedHash: "",
+      committedAt: Date.now() - 1000,
     },
     storyId: "button--primary",
     projectId: "Project:id123",
@@ -213,6 +212,12 @@ export const NoBuild: Story = {
 export const NoBuildStarting: Story = {
   ...NoBuild,
   args: {
+    ...NoBuild.args,
+    runningBuild: {
+      step: "initialize",
+    },
+  },
+  parameters: {
     ...withGraphQLQuery("AddonVisualTestsBuild", (req, res, ctx) =>
       res(ctx.data({ build: null } as AddonVisualTestsBuildQuery))
     ),
@@ -249,6 +254,9 @@ export const OutdatedStarting: Story = {
   ...Outdated,
   args: {
     ...Outdated.args,
+    runningBuild: {
+      step: "initialize",
+    },
   },
 };
 
