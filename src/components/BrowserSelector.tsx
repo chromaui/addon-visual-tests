@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Browser, BrowserInfo, ComparisonResult } from "../gql/graphql";
+import { Browser, BrowserInfo, ComparisonResult, TestStatus } from "../gql/graphql";
 import { aggregateResult } from "../utils/aggregateResult";
 import { ArrowIcon } from "./icons/ArrowIcon";
 import { ChromeIcon } from "./icons/ChromeIcon";
@@ -20,12 +20,14 @@ const browserIcons = {
 type BrowserData = Pick<BrowserInfo, "id" | "key" | "name">;
 
 interface BrowserSelectorProps {
+  testStatus: TestStatus;
   selectedBrowser: BrowserData;
   browserResults: { browser: BrowserData; result: ComparisonResult }[];
   onSelectBrowser: (browser: BrowserData) => void;
 }
 
 export const BrowserSelector = ({
+  testStatus,
   selectedBrowser,
   browserResults,
   onSelectBrowser,
@@ -36,7 +38,9 @@ export const BrowserSelector = ({
       active: selectedBrowser === browser,
       id: browser.id,
       onClick: () => onSelectBrowser(browser),
-      right: result !== ComparisonResult.Equal && <StatusDot status={result} />,
+      right: testStatus !== TestStatus.Accepted && result !== ComparisonResult.Equal && (
+        <StatusDot status={result} />
+      ),
       title: browser.name,
     }));
 
@@ -46,7 +50,7 @@ export const BrowserSelector = ({
   const icon = browserIcons[selectedBrowser.key];
   return (
     <TooltipMenu placement="bottom" links={links}>
-      {aggregate === ComparisonResult.Equal ? (
+      {testStatus === TestStatus.Accepted || aggregate === ComparisonResult.Equal ? (
         icon
       ) : (
         <StatusDotWrapper status={aggregate}>{icon}</StatusDotWrapper>

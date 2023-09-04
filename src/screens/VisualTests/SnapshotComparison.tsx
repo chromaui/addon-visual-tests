@@ -63,6 +63,7 @@ export const SnapshotComparison = ({
                 hasChrome={false}
               >
                 <ViewportSelector
+                  testStatus={selectedTest.status}
                   selectedViewport={selectedTest.parameters.viewport}
                   viewportResults={viewportResults}
                   onSelectViewport={onSelectViewport}
@@ -78,6 +79,7 @@ export const SnapshotComparison = ({
                 hasChrome={false}
               >
                 <BrowserSelector
+                  testStatus={selectedTest.status}
                   selectedBrowser={selectedComparison.browser}
                   browserResults={browserResults}
                   onSelectBrowser={onSelectBrowser}

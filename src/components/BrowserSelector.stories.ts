@@ -1,7 +1,7 @@
 import { action } from "@storybook/addon-actions";
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { Browser, ComparisonResult } from "../gql/graphql";
+import { Browser, ComparisonResult, TestStatus } from "../gql/graphql";
 import { BrowserSelector } from "./BrowserSelector";
 
 const meta = {
@@ -27,6 +27,20 @@ const browserSafari = {
 
 export const WithSingleBrowserChanged: Story = {
   args: {
+    testStatus: TestStatus.Pending,
+    selectedBrowser: browserChrome,
+    browserResults: [
+      {
+        browser: browserChrome,
+        result: ComparisonResult.Changed,
+      },
+    ],
+  },
+};
+
+export const WithSingleBrowserAccepted: Story = {
+  args: {
+    testStatus: TestStatus.Accepted,
     selectedBrowser: browserChrome,
     browserResults: [
       {
@@ -39,6 +53,7 @@ export const WithSingleBrowserChanged: Story = {
 
 export const WithSingleBrowserEqual: Story = {
   args: {
+    testStatus: TestStatus.Passed,
     selectedBrowser: browserChrome,
     browserResults: [
       {
@@ -51,6 +66,7 @@ export const WithSingleBrowserEqual: Story = {
 
 export const WithSingleBrowserError: Story = {
   args: {
+    testStatus: TestStatus.Broken,
     selectedBrowser: browserChrome,
     browserResults: [
       {
@@ -63,6 +79,7 @@ export const WithSingleBrowserError: Story = {
 
 export const WithManyBrowsersEqual: Story = {
   args: {
+    testStatus: TestStatus.Passed,
     selectedBrowser: browserChrome,
     browserResults: [
       {
@@ -79,6 +96,7 @@ export const WithManyBrowsersEqual: Story = {
 
 export const WithManyBrowsersSecondSelected: Story = {
   args: {
+    testStatus: TestStatus.Passed,
     selectedBrowser: browserSafari,
     browserResults: [
       {
@@ -95,6 +113,7 @@ export const WithManyBrowsersSecondSelected: Story = {
 
 export const WithManyBrowsersVaried: Story = {
   args: {
+    testStatus: TestStatus.Pending,
     selectedBrowser: browserChrome,
     browserResults: [
       {

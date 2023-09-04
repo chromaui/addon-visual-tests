@@ -1,7 +1,7 @@
 import { action } from "@storybook/addon-actions";
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { ComparisonResult } from "../gql/graphql";
+import { ComparisonResult, TestStatus } from "../gql/graphql";
 import { ViewportSelector } from "./ViewportSelector";
 
 const viewport800Px = {
@@ -25,6 +25,20 @@ type Story = StoryObj<typeof meta>;
 
 export const WithSingleViewportChanged: Story = {
   args: {
+    testStatus: TestStatus.Pending,
+    selectedViewport: viewport1200Px,
+    viewportResults: [
+      {
+        viewport: viewport1200Px,
+        result: ComparisonResult.Changed,
+      },
+    ],
+  },
+};
+
+export const WithSingleViewportAccepted: Story = {
+  args: {
+    testStatus: TestStatus.Accepted,
     selectedViewport: viewport1200Px,
     viewportResults: [
       {
@@ -37,6 +51,7 @@ export const WithSingleViewportChanged: Story = {
 
 export const WithSingleViewportEqual: Story = {
   args: {
+    testStatus: TestStatus.Passed,
     selectedViewport: viewport1200Px,
     viewportResults: [
       {
@@ -49,6 +64,7 @@ export const WithSingleViewportEqual: Story = {
 
 export const WithSingleViewportError: Story = {
   args: {
+    testStatus: TestStatus.Broken,
     selectedViewport: viewport1200Px,
     viewportResults: [
       {
@@ -61,6 +77,7 @@ export const WithSingleViewportError: Story = {
 
 export const WithManyViewportsEqual: Story = {
   args: {
+    testStatus: TestStatus.Passed,
     selectedViewport: viewport800Px,
     viewportResults: [
       {
@@ -77,6 +94,7 @@ export const WithManyViewportsEqual: Story = {
 
 export const WithManyViewportsSecondSelected: Story = {
   args: {
+    testStatus: TestStatus.Pending,
     selectedViewport: viewport1200Px,
     viewportResults: [
       {
@@ -93,6 +111,7 @@ export const WithManyViewportsSecondSelected: Story = {
 
 export const WithManyViewportsVaried: Story = {
   args: {
+    testStatus: TestStatus.Pending,
     selectedViewport: viewport800Px,
     viewportResults: [
       {
