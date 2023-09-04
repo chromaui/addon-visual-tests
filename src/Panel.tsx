@@ -1,7 +1,7 @@
 import { Spinner } from "@storybook/design-system";
 import type { API } from "@storybook/manager-api";
 import { useChannel, useStorybookState } from "@storybook/manager-api";
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 
 import {
   ADDON_ID,
@@ -18,9 +18,9 @@ import { LinkedProject } from "./screens/LinkProject/LinkedProject";
 import { LinkingProjectFailed } from "./screens/LinkProject/LinkingProjectFailed";
 import { LinkProject } from "./screens/LinkProject/LinkProject";
 import { VisualTests } from "./screens/VisualTests/VisualTests";
+import { UpdateStatusFunction } from "./types";
 import { useAddonState } from "./useAddonState/manager";
 import { client, Provider, useAccessToken } from "./utils/graphQLClient";
-import { StatusUpdate } from "./utils/testsToStatusUpdate";
 import { useProjectId } from "./utils/useProjectId";
 
 interface PanelProps {
@@ -38,10 +38,8 @@ export const Panel = ({ active, api }: PanelProps) => {
   const [runningBuild] = useAddonState<RunningBuildPayload>(RUNNING_BUILD);
   const emit = useChannel({});
 
-  const updateBuildStatus = useCallback(
-    (update: StatusUpdate) => {
-      api.experimental_updateStatus(ADDON_ID, update);
-    },
+  const updateBuildStatus = useCallback<UpdateStatusFunction>(
+    (update) => api.experimental_updateStatus(ADDON_ID, update),
     [api]
   );
   const {

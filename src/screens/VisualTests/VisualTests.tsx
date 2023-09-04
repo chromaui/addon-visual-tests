@@ -1,7 +1,6 @@
 import { Icons, Loader } from "@storybook/components";
 import { Icon, TooltipNote, WithTooltip } from "@storybook/design-system";
-// eslint-disable-next-line import/no-unresolved
-import { GitInfo } from "chromatic/node";
+import type { API_StatusState } from "@storybook/types";
 import React, { useCallback, useEffect, useState } from "react";
 import { useMutation, useQuery } from "urql";
 
@@ -24,7 +23,8 @@ import {
   TestResult,
   TestStatus,
 } from "../../gql/graphql";
-import { statusMap, StatusUpdate, testsToStatusUpdate } from "../../utils/testsToStatusUpdate";
+import { UpdateStatusFunction } from "../../types";
+import { statusMap, testsToStatusUpdate } from "../../utils/testsToStatusUpdate";
 import { BuildProgress } from "./BuildProgress";
 import { RenderSettings } from "./RenderSettings";
 import { SnapshotComparison } from "./SnapshotComparison";
@@ -214,6 +214,10 @@ const MutationReviewTest = graphql(/* GraphQL */ `
   }
 `);
 
+const createEmptyStoryStatusUpdate = (state: API_StatusState) => {
+  return Object.fromEntries(Object.entries(state).map(([id, update]) => [id, null]));
+};
+
 interface VisualTestsProps {
   projectId: string;
   gitInfo: Pick<
@@ -223,7 +227,7 @@ interface VisualTestsProps {
   runningBuild?: RunningBuildPayload;
   startDevBuild: () => void;
   setAccessToken: (accessToken: string | null) => void;
-  updateBuildStatus: (update: StatusUpdate) => void;
+  updateBuildStatus: UpdateStatusFunction;
   storyId: string;
 }
 
@@ -311,7 +315,10 @@ export const VisualTests = ({
     testsToStatusUpdate(getFragment(FragmentStatusTestFields, nextBuild.testsForStatus.nodes));
 
   useEffect(() => {
-    if (buildStatusUpdate) updateBuildStatus(buildStatusUpdate);
+    updateBuildStatus((state) => ({
+      ...createEmptyStoryStatusUpdate(state),
+      ...buildStatusUpdate,
+    }));
     // We use the stringified version of buildStatusUpdate to do a deep diff
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(buildStatusUpdate), updateBuildStatus]);

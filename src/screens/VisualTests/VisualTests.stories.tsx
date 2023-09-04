@@ -3,6 +3,7 @@ import { expect } from "@storybook/jest";
 import type { Meta, StoryObj } from "@storybook/react";
 import { findByRole, findByTestId, fireEvent, waitFor } from "@storybook/testing-library";
 import { graphql } from "msw";
+import React from "react";
 
 import type {
   AddonVisualTestsBuildQuery,
@@ -184,7 +185,7 @@ const meta = {
     projectId: "Project:id123",
     startDevBuild: action("startDevBuild"),
     setAccessToken: action("setAccessToken"),
-    updateBuildStatus: action("updateBuildStatus"),
+    updateBuildStatus: action("updateBuildStatus") as any,
   },
 } satisfies Meta<typeof VisualTests>;
 
@@ -207,6 +208,20 @@ export const NoBuild: Story = {
     ...withGraphQLQuery("AddonVisualTestsBuild", (req, res, ctx) =>
       res(ctx.data({ build: null } as AddonVisualTestsBuildQuery))
     ),
+  },
+  render: ({ ...args }) => {
+    // custom render for mapping `updateBuildStatus` to a function which is mocked, but returns data instead of a function
+    return (
+      <VisualTests
+        {...args}
+        updateBuildStatus={(fn) => args.updateBuildStatus(typeof fn === "function" ? fn({}) : fn)}
+      />
+    );
+  },
+  play: async ({ args }) => {
+    await waitFor(() => {
+      expect(args.updateBuildStatus).toHaveBeenCalledWith({});
+    });
   },
 };
 export const NoBuildStarting: Story = {
@@ -290,8 +305,17 @@ export const Pending: Story = {
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304718&t=0rxMQnkxsVpVj1qy-4"
     ),
   },
-  play: ({ args }) => {
-    waitFor(() => {
+  render: ({ ...args }) => {
+    // custom render for mapping `updateBuildStatus` to a function which is mocked, but returns data instead of a function
+    return (
+      <VisualTests
+        {...args}
+        updateBuildStatus={(fn) => args.updateBuildStatus(typeof fn === "function" ? fn({}) : fn)}
+      />
+    );
+  },
+  play: async ({ args }) => {
+    await waitFor(() => {
       expect(args.updateBuildStatus).toHaveBeenCalledWith({
         "button--primary": {
           status: "warn",
