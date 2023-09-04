@@ -1,5 +1,5 @@
 import { action } from "@storybook/addon-actions";
-import { expect, jest } from "@storybook/jest";
+import { expect } from "@storybook/jest";
 import type { Meta, StoryObj } from "@storybook/react";
 import { findByRole, findByTestId, fireEvent, waitFor } from "@storybook/testing-library";
 import { graphql } from "msw";
@@ -211,13 +211,9 @@ export const NoBuild: Story = {
       res(ctx.data({ build: null } as AddonVisualTestsBuildQuery))
     ),
   },
-  render: ({ ...args }) => {
-    return (
-      <VisualTests
-        {...args}
-        updateBuildStatus={(fn) => args.updateBuildStatus(typeof fn === "function" ? fn({}) : fn)}
-      />
-    );
+  args: {
+    updateBuildStatus: (fn) =>
+      (async (a) => action("updateBuildStatus")(a))(typeof fn === "function" ? fn({}) : fn),
   },
   play: async ({ args }) => {
     await waitFor(() => {
@@ -303,13 +299,9 @@ export const Pending: Story = {
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304718&t=0rxMQnkxsVpVj1qy-4"
     ),
   },
-  render: ({ ...args }) => {
-    return (
-      <VisualTests
-        {...args}
-        updateBuildStatus={(fn) => args.updateBuildStatus(typeof fn === "function" ? fn({}) : fn)}
-      />
-    );
+  args: {
+    updateBuildStatus: (fn) =>
+      (async (a) => action("updateBuildStatus")(a))(typeof fn === "function" ? fn({}) : fn),
   },
   play: async ({ args }) => {
     await waitFor(() => {
