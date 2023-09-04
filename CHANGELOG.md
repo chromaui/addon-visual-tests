@@ -1,3 +1,15 @@
+# v0.0.53 (Mon Sep 04 2023)
+
+#### 🐛 Bug Fix
+
+- Clear storyStatus when no longer relevant [#65](https://github.com/chromaui/addon-visual-tests/pull/65) ([@ndelangen](https://github.com/ndelangen))
+
+#### Authors: 1
+
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+
+---
+
 # v0.0.52 (Mon Sep 04 2023)
 
 #### 🐛 Bug Fix
