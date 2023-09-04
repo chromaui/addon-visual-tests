@@ -1,4 +1,4 @@
-import type { GitInfo } from "chromatic/node";
+import type { GitInfo, TaskName } from "chromatic/node";
 
 export const {
   CHROMATIC_INDEX_URL,
@@ -26,19 +26,19 @@ export type ProjectInfoPayload = {
   mainPath?: string;
 };
 
+// The CLI may have other steps that we don't respond to, so we just ignore updates
+// to those steps and focus on the ones we know.
+type KnownTask = Extract<TaskName, "initialize" | "build" | "upload" | "verify" | "snapshot">;
+export function isKnownTask(task: TaskName): task is KnownTask {
+  return ["initialize", "build", "upload", "verify", "snapshot"].includes(task);
+}
+
 export const START_BUILD = `${ADDON_ID}/startBuild`;
 export const RUNNING_BUILD = `${ADDON_ID}/runningBuild`;
-export type RunningBuildStep =
-  | "initialize"
-  | "build"
-  | "upload"
-  | "verify"
-  | "snapshot"
-  | "complete";
 export type RunningBuildPayload = {
   // Possibly this should be a type exported by the CLI -- these correspond to tasks
   /** The step of the build process we have reached */
-  step: RunningBuildStep;
+  step: KnownTask | "complete";
   /** The id of the build, available after the initialize step */
   id?: string;
   /** progress pertains to the current step, and may not be set */

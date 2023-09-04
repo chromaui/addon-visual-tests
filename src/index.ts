@@ -1,13 +1,14 @@
 /* eslint-disable no-console */
 import type { Channel } from "@storybook/channels";
 // eslint-disable-next-line import/no-unresolved
-import { getGitInfo, GitInfo, run } from "chromatic/node";
+import { Context, getGitInfo, GitInfo, run, TaskName } from "chromatic/node";
 import { basename, relative } from "path";
 
 import {
   CHROMATIC_BASE_URL,
   GIT_INFO,
   GitInfoPayload,
+  isKnownTask,
   PROJECT_INFO,
   ProjectInfoPayload,
   RUNNING_BUILD,
@@ -107,6 +108,16 @@ async function serverChannel(
   channel.on(START_BUILD, async () => {
     if (!projectInfoState.value.projectToken) throw new Error("No project token set");
 
+    const onStartOrProgress = (
+      ctx: Context,
+      { progress, total }: { progress?: number; total?: number } = {}
+    ) => {
+      console.log(ctx.task, isKnownTask(ctx.task));
+      if (isKnownTask(ctx.task)) {
+        runningBuildState.value = { step: ctx.task, id: ctx.announcedBuild?.id, progress, total };
+      }
+    };
+
     runningBuildState.value = { step: "initialize" };
     await run({
       // Currently we have to have these flags.
@@ -122,35 +133,12 @@ async function serverChannel(
         forceRebuild: true,
         // Builds initiated from the addon are always considered local
         isLocalBuild: true,
+        onTaskStart: onStartOrProgress,
+        onTaskProgress: onStartOrProgress,
         onTaskComplete(ctx) {
-          let newStep = runningBuildState.value.step;
-          if (runningBuildState.value.step === "initialize" && ctx.announcedBuild) {
-            newStep = "build";
+          if (ctx.task === "snapshot") {
+            runningBuildState.value = { step: "complete", id: ctx.announcedBuild?.id };
           }
-          if (runningBuildState.value.step === "upload" && ctx.isolatorUrl) {
-            newStep = "verify";
-          }
-          if (["build", "upload"].includes(runningBuildState.value.step) && ctx.build) {
-            newStep = "snapshot";
-          }
-          if (ctx.build && ctx.build.status !== "IN_PROGRESS") {
-            newStep = "complete";
-          }
-
-          if (newStep !== runningBuildState.value.step) {
-            runningBuildState.value = {
-              step: newStep,
-              id: ctx.announcedBuild?.id,
-            };
-          }
-        },
-        onTaskProgress(ctx, { progress, total, unit }) {
-          runningBuildState.value = {
-            step: unit === "bytes" ? "upload" : "snapshot",
-            id: ctx.announcedBuild?.id,
-            progress,
-            total,
-          };
         },
       },
     });
