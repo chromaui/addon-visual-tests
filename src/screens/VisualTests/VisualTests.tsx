@@ -13,7 +13,7 @@ import { IconButton } from "../../components/IconButton";
 import { ProgressIcon } from "../../components/icons/ProgressIcon";
 import { Bar, Col, Row, Section, Sections, Text } from "../../components/layout";
 import { Text as CenterText } from "../../components/Text";
-import { RunningBuildPayload } from "../../constants";
+import { GitInfoPayload, RunningBuildPayload } from "../../constants";
 import { getFragment, graphql } from "../../gql";
 import {
   AddonVisualTestsBuildQuery,
@@ -64,6 +64,7 @@ const FragmentNextBuildFields = graphql(/* GraphQL */ `
     __typename
     id
     commit
+    committedAt
     browsers {
       id
       key
@@ -215,7 +216,7 @@ const MutationReviewTest = graphql(/* GraphQL */ `
 
 interface VisualTestsProps {
   projectId: string;
-  gitInfo: Pick<GitInfo, "branch" | "slug" | "userEmailHash" | "uncommittedHash">;
+  gitInfo: GitInfoPayload;
   runningBuild?: RunningBuildPayload;
   startDevBuild: () => void;
   setAccessToken: (accessToken: string | null) => void;
@@ -295,10 +296,14 @@ export const VisualTests = ({
     data?.storyBuild ?? data?.project?.lastBuild
   );
 
+  // If the next build is *newer* than the current commit, we don't want to switch to the build
+  const nextBuildNewer = nextBuild ?? nextBuild.committedAt > gitInfo.committedAt;
+  const canSwitchToNextBuild = nextBuild && !nextBuildNewer;
+
   // We always set status to the next build's status, as when we change to a new story we'll see
   // the next builds
   const buildStatusUpdate =
-    nextBuild &&
+    canSwitchToNextBuild &&
     "testsForStatus" in nextBuild &&
     testsToStatusUpdate(getFragment(FragmentStatusTestFields, nextBuild.testsForStatus.nodes));
 
@@ -310,18 +315,20 @@ export const VisualTests = ({
 
   // Ensure we are holding the right story build
   useEffect(() => {
-    if (!nextBuild?.id) return;
-
     setStoryBuildInfo((oldStoryBuildInfo) => {
       return !oldStoryBuildInfo || oldStoryBuildInfo.storyId !== storyId
-        ? { storyId, buildId: nextBuild.id }
+        ? {
+            storyId,
+            // If the next build is "too new" and we have an old build, stick to it.
+            buildId: (!canSwitchToNextBuild && oldStoryBuildInfo?.buildId) || nextBuild.id,
+          }
         : oldStoryBuildInfo;
     });
-  }, [nextBuild?.id, storyId]);
+  }, [canSwitchToNextBuild, nextBuild?.id, storyId]);
 
   const switchToNextBuild = useCallback(
-    () => !!nextBuild?.id && setStoryBuildInfo({ storyId, buildId: nextBuild.id }),
-    [nextBuild?.id, storyId]
+    () => canSwitchToNextBuild && setStoryBuildInfo({ storyId, buildId: nextBuild.id }),
+    [canSwitchToNextBuild, nextBuild?.id, storyId]
   );
 
   const isStarting = ["initializing"].includes(runningBuild?.step);
@@ -376,12 +383,11 @@ export const VisualTests = ({
     // We always want to show the status of the running build (until it is done)
     (runningBuild && runningBuild.step !== "complete") ||
     // Even if there's no build running, we want to show the next build if it hasn't been selected.
-    (nextBuild && nextBuild.id !== storyBuild?.id);
+    (canSwitchToNextBuild && nextBuild.id !== storyBuild?.id);
   const buildStatus = showBuildStatus && (
     <BuildProgress
       runningBuild={runningBuild}
-      nextBuild={nextBuild}
-      switchToNextBuild={switchToNextBuild}
+      switchToNextBuild={canSwitchToNextBuild && switchToNextBuild}
     />
   );
 

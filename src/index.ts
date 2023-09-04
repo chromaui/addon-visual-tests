@@ -13,7 +13,6 @@ import {
   ProjectInfoPayload,
   RUNNING_BUILD,
   RunningBuildPayload,
-  RunningBuildStep,
   START_BUILD,
 } from "./constants";
 import { useAddonState } from "./useAddonState/server";

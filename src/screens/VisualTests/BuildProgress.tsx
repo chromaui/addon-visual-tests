@@ -1,9 +1,8 @@
-import { Button } from "@storybook/components";
+import { Link } from "@storybook/components";
 import { styled } from "@storybook/theming";
 import React from "react";
 
 import { RunningBuildPayload } from "../../constants";
-import { NextBuildFieldsFragment } from "../../gql/graphql";
 
 export const Header = styled.div(({ theme }) => ({
   color: theme.color.darkest,
@@ -31,8 +30,7 @@ export const Text = styled.div({
 
 type BuildProgressProps = {
   runningBuild?: RunningBuildPayload;
-  nextBuild?: NextBuildFieldsFragment;
-  switchToNextBuild: () => void;
+  switchToNextBuild?: () => void;
 };
 
 const messageMap: Record<RunningBuildPayload["step"], string> = {
@@ -44,17 +42,30 @@ const messageMap: Record<RunningBuildPayload["step"], string> = {
   complete: "🎉 Visual tests completed!",
 };
 
-export function BuildProgress({ runningBuild, nextBuild, switchToNextBuild }: BuildProgressProps) {
-  const percentage = (runningBuild.total ? runningBuild.progress / runningBuild.total : 0.35) * 100;
+export function BuildProgress({ runningBuild, switchToNextBuild }: BuildProgressProps) {
+  const percentage =
+    runningBuild && (runningBuild.total ? runningBuild.progress / runningBuild.total : 0.35) * 100;
+
+  // eslint-disable-next-line no-nested-ternary
+  const text = runningBuild
+    ? messageMap[runningBuild.step]
+    : switchToNextBuild
+    ? "There's a newer snapshot with changes"
+    : "Reviewing is disabled because there's a newer snapshot on <branch>";
 
   // We show the "go to next build" button if there's no build running or if the running build is complete
-  const showButton = !runningBuild || runningBuild.step === "complete";
+  const showButton = switchToNextBuild && (!runningBuild || runningBuild.step === "complete");
   return (
     <Header>
-      <Bar percentage={percentage}>&nbsp;</Bar>
+      {runningBuild && <Bar percentage={percentage}>&nbsp;</Bar>}
       <Text>
-        {messageMap[runningBuild.step]}{" "}
-        {showButton && <Button onClick={switchToNextBuild}>Switch to next build</Button>}
+        {text}{" "}
+        {showButton && (
+          // eslint-disable-next-line jsx-a11y/anchor-is-valid
+          <Link isButton withArrow onClick={switchToNextBuild}>
+            Switch to next build
+          </Link>
+        )}
       </Text>
     </Header>
   );

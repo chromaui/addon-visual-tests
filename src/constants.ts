@@ -15,7 +15,7 @@ export const ACCESS_TOKEN_KEY = `${ADDON_ID}/access-token/${CHROMATIC_BASE_URL}`
 export const DEV_BUILD_ID_KEY = `${ADDON_ID}/dev-build-id`;
 
 export const GIT_INFO = `${ADDON_ID}/gitInfo`;
-export type GitInfoPayload = Omit<GitInfo, "committedAt" | "committerEmail" | "committerName">;
+export type GitInfoPayload = Omit<GitInfo, "committerEmail" | "committerName">;
 
 export const PROJECT_INFO = `${ADDON_ID}/projectInfo`;
 export type ProjectInfoPayload = {
