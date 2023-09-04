@@ -92,7 +92,9 @@ export const StoryInfo = ({
     details = (
       <Text>
         <b>
-          {changeCount ? pluralize("change", changeCount, true) : "No changes"}
+          {changeCount && status === TestStatus.Pending
+            ? pluralize("change", changeCount, true)
+            : "No changes"}
           {brokenCount ? `, ${pluralize("error", brokenCount, true)}` : null}
         </b>
         <StatusIcon
