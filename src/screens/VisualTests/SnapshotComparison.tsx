@@ -58,34 +58,22 @@ export const SnapshotComparison = ({
         <Bar>
           {viewportResults.length > 0 && (
             <Col>
-              <WithTooltip
-                tooltip={<TooltipNote note="Switch viewport" />}
-                trigger="hover"
-                hasChrome={false}
-              >
-                <ViewportSelector
-                  isAccepted={status === TestStatus.Accepted}
-                  selectedViewport={selectedTest.parameters.viewport}
-                  viewportResults={viewportResults}
-                  onSelectViewport={onSelectViewport}
-                />
-              </WithTooltip>
+              <ViewportSelector
+                isAccepted={status === TestStatus.Accepted}
+                selectedViewport={selectedTest.parameters.viewport}
+                viewportResults={viewportResults}
+                onSelectViewport={onSelectViewport}
+              />
             </Col>
           )}
           {browserResults.length > 0 && (
             <Col>
-              <WithTooltip
-                tooltip={<TooltipNote note="Switch browser" />}
-                trigger="hover"
-                hasChrome={false}
-              >
-                <BrowserSelector
-                  isAccepted={status === TestStatus.Accepted}
-                  selectedBrowser={selectedComparison.browser}
-                  browserResults={browserResults}
-                  onSelectBrowser={onSelectBrowser}
-                />
-              </WithTooltip>
+              <BrowserSelector
+                isAccepted={status === TestStatus.Accepted}
+                selectedBrowser={selectedComparison.browser}
+                browserResults={browserResults}
+                onSelectBrowser={onSelectBrowser}
+              />
             </Col>
           )}
           {selectedComparison?.result === ComparisonResult.Changed && (
