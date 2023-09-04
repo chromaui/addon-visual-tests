@@ -210,6 +210,7 @@ export const NoBuild: Story = {
     ),
   },
   render: ({ ...args }) => {
+    // custom render for mapping `updateBuildStatus` to a function which is mocked, but returns data instead of a function
     return (
       <VisualTests
         {...args}
@@ -305,6 +306,7 @@ export const Pending: Story = {
     ),
   },
   render: ({ ...args }) => {
+    // custom render for mapping `updateBuildStatus` to a function which is mocked, but returns data instead of a function
     return (
       <VisualTests
         {...args}
