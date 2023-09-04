@@ -273,14 +273,10 @@ export const VisualTests = ({
     testsToStatusUpdate(getFragment(FragmentStatusTestFields, build.testsForStatus.nodes));
 
   useEffect(() => {
-    if (buildStatusUpdate) {
-      updateBuildStatus((state) => ({
-        ...createEmptyStoryStatusUpdate(state),
-        ...buildStatusUpdate,
-      }));
-    } else {
-      updateBuildStatus(createEmptyStoryStatusUpdate);
-    }
+    updateBuildStatus((state) => ({
+      ...createEmptyStoryStatusUpdate(state),
+      ...buildStatusUpdate,
+    }));
     // We use the stringified version of buildStatusUpdate to do a deep diff
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(buildStatusUpdate), updateBuildStatus]);
