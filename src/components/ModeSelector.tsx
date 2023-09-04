@@ -20,23 +20,23 @@ const IconWrapper = styled.div(({ theme }) => ({
 
 type ViewportData = Pick<ViewportInfo, "id" | "name">;
 
-interface ViewportSelectorProps {
+interface ModeSelectorProps {
   isAccepted: boolean;
   selectedViewport: ViewportData;
   onSelectViewport: (viewport: ViewportData) => void;
   viewportResults: { viewport: ViewportData; result: ComparisonResult }[];
 }
 
-export const ViewportSelector = ({
+export const ModeSelector = ({
   isAccepted,
   selectedViewport,
   viewportResults,
   onSelectViewport,
-}: ViewportSelectorProps) => {
+}: ModeSelectorProps) => {
   const aggregate = aggregateResult(viewportResults.map(({ result }) => result));
   if (!aggregate) return null;
 
-  let icon = <Icon icon="grow" />;
+  let icon = <Icon icon="diamond" />;
   if (!isAccepted && aggregate !== ComparisonResult.Equal) {
     icon = <StatusDotWrapper status={aggregate}>{icon}</StatusDotWrapper>;
   }
@@ -57,7 +57,7 @@ export const ViewportSelector = ({
       tooltip={
         <TooltipNote
           note={
-            links.length === 1 ? `Tested at ${viewportResults[0].viewport.name}` : "Switch viewport"
+            links.length === 1 ? `View mode: ${viewportResults[0].viewport.name}` : "Switch mode"
           }
         />
       }

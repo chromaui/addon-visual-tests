@@ -6,10 +6,10 @@ import { BrowserSelector } from "../../components/BrowserSelector";
 import { IconButton } from "../../components/IconButton";
 import { ProgressIcon } from "../../components/icons/ProgressIcon";
 import { Bar, Col } from "../../components/layout";
+import { ModeSelector } from "../../components/ModeSelector";
 import { Placeholder } from "../../components/Placeholder";
 import { SnapshotImage } from "../../components/SnapshotImage";
 import { TooltipMenu } from "../../components/TooltipMenu";
-import { ViewportSelector } from "../../components/ViewportSelector";
 import {
   ComparisonResult,
   ReviewTestBatch,
@@ -58,7 +58,7 @@ export const SnapshotComparison = ({
         <Bar>
           {viewportResults.length > 0 && (
             <Col>
-              <ViewportSelector
+              <ModeSelector
                 isAccepted={status === TestStatus.Accepted}
                 selectedViewport={selectedTest.parameters.viewport}
                 viewportResults={viewportResults}

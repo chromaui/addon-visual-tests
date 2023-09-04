@@ -2,7 +2,7 @@ import { action } from "@storybook/addon-actions";
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { ComparisonResult } from "../gql/graphql";
-import { ViewportSelector } from "./ViewportSelector";
+import { ModeSelector } from "./ModeSelector";
 
 const viewport800Px = {
   id: "_800",
@@ -14,12 +14,12 @@ const viewport1200Px = {
 };
 
 const meta = {
-  component: ViewportSelector,
+  component: ModeSelector,
   args: {
     isAccepted: false,
     onSelectViewport: action("onSelectViewport"),
   },
-} satisfies Meta<typeof ViewportSelector>;
+} satisfies Meta<typeof ModeSelector>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
