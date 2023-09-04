@@ -1,3 +1,15 @@
+# v0.0.52 (Mon Sep 04 2023)
+
+#### 🐛 Bug Fix
+
+- Fix status title and viewport/browser selector for accepted stories [#70](https://github.com/chromaui/addon-visual-tests/pull/70) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v0.0.51 (Mon Sep 04 2023)
 
 #### 🐛 Bug Fix
