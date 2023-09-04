@@ -111,7 +111,6 @@ async function serverChannel(
       ctx: Context,
       { progress, total }: { progress?: number; total?: number } = {}
     ) => {
-      console.log(ctx.task, isKnownTask(ctx.task));
       if (isKnownTask(ctx.task)) {
         runningBuildState.value = { step: ctx.task, id: ctx.announcedBuild?.id, progress, total };
       }

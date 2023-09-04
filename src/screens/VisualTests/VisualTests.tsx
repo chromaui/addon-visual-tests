@@ -297,7 +297,7 @@ export const VisualTests = ({
   );
 
   // If the next build is *newer* than the current commit, we don't want to switch to the build
-  const nextBuildNewer = nextBuild ?? nextBuild.committedAt > gitInfo.committedAt;
+  const nextBuildNewer = nextBuild && nextBuild.committedAt > gitInfo.committedAt;
   const canSwitchToNextBuild = nextBuild && !nextBuildNewer;
 
   // We always set status to the next build's status, as when we change to a new story we'll see
@@ -316,7 +316,7 @@ export const VisualTests = ({
   // Ensure we are holding the right story build
   useEffect(() => {
     setStoryBuildInfo((oldStoryBuildInfo) => {
-      return !oldStoryBuildInfo || oldStoryBuildInfo.storyId !== storyId
+      return (!oldStoryBuildInfo || oldStoryBuildInfo.storyId !== storyId) && nextBuild?.id
         ? {
             storyId,
             // If the next build is "too new" and we have an old build, stick to it.
@@ -379,14 +379,16 @@ export const VisualTests = ({
     );
   }
 
+  const runningBuildInProgress = runningBuild && runningBuild.step !== "complete";
   const showBuildStatus =
     // We always want to show the status of the running build (until it is done)
-    (runningBuild && runningBuild.step !== "complete") ||
+    runningBuildInProgress ||
     // Even if there's no build running, we want to show the next build if it hasn't been selected.
     (canSwitchToNextBuild && nextBuild.id !== storyBuild?.id);
+  const runningBuildIsNextBuild = runningBuild && runningBuild?.id === nextBuild?.id;
   const buildStatus = showBuildStatus && (
     <BuildProgress
-      runningBuild={runningBuild}
+      runningBuild={(runningBuildIsNextBuild || runningBuildInProgress) && runningBuild}
       switchToNextBuild={canSwitchToNextBuild && switchToNextBuild}
     />
   );
