@@ -309,23 +309,19 @@ export const VisualTests = ({
   }, [JSON.stringify(buildStatusUpdate), updateBuildStatus]);
 
   // Ensure we are holding the right story build
-  const hasNextBuild = !!nextBuild;
   useEffect(() => {
-    if (!hasNextBuild) return;
+    if (!nextBuild?.id) return;
 
-    // We always want storyBuildInfo set if we can
-    if (!storyBuildInfo) {
-      setStoryBuildInfo({ storyId, buildId: nextBuild.id });
-
-      // If you change story, we reset storyBuildInfo to the next build (you see the next build)
-    } else if (storyBuildInfo.storyId !== storyId) {
-      setStoryBuildInfo({ storyId, buildId: nextBuild.id });
-    }
-  }, [storyBuildInfo, hasNextBuild, nextBuild?.id, storyId]);
+    setStoryBuildInfo((oldStoryBuildInfo) => {
+      return !oldStoryBuildInfo || oldStoryBuildInfo.storyId !== storyId
+        ? { storyId, buildId: nextBuild.id }
+        : oldStoryBuildInfo;
+    });
+  }, [nextBuild?.id, storyId]);
 
   const switchToNextBuild = useCallback(
-    () => setStoryBuildInfo({ storyId, buildId: nextBuild.id }),
-    [storyId, nextBuild?.id]
+    () => !!nextBuild?.id && setStoryBuildInfo({ storyId, buildId: nextBuild.id }),
+    [nextBuild?.id, storyId]
   );
 
   const isStarting = ["initializing"].includes(runningBuild?.step);
