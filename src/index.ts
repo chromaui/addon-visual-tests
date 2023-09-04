@@ -1,23 +1,21 @@
 /* eslint-disable no-console */
 import type { Channel } from "@storybook/channels";
 // eslint-disable-next-line import/no-unresolved
-import { getGitInfo, GitInfo, run } from "chromatic/node";
+import { Context, getGitInfo, GitInfo, run, TaskName } from "chromatic/node";
 import { basename, relative } from "path";
 
 import {
-  BUILD_ANNOUNCED,
-  BUILD_STARTED,
   CHROMATIC_BASE_URL,
   GIT_INFO,
   GitInfoPayload,
-  PROJECT_UPDATED,
-  PROJECT_UPDATING_FAILED,
-  ProjectUpdatedPayload,
-  ProjectUpdatingFailedPayload,
+  isKnownTask,
+  PROJECT_INFO,
+  ProjectInfoPayload,
+  RUNNING_BUILD,
+  RunningBuildPayload,
   START_BUILD,
-  UPDATE_PROJECT,
-  UpdateProjectPayload,
 } from "./constants";
+import { useAddonState } from "./useAddonState/server";
 import { findConfig } from "./utils/storybook.config.utils";
 import { updateMain } from "./utils/updateMain";
 
@@ -53,6 +51,7 @@ async function serverChannel(
   channel: Channel,
   {
     configDir,
+    projectId: initialProjectId,
     projectToken: initialProjectToken,
 
     // This is a small subset of the flags available to the CLI.
@@ -61,21 +60,68 @@ async function serverChannel(
     zip,
   }: {
     configDir: string;
+    projectId: string;
     projectToken: string;
     buildScriptName?: string;
     debug?: boolean;
     zip?: boolean;
   }
 ) {
-  let projectToken = initialProjectToken;
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const projectInfoState = useAddonState<ProjectInfoPayload>(channel, PROJECT_INFO);
+  projectInfoState.value = initialProjectId
+    ? { projectId: initialProjectId, projectToken: initialProjectToken }
+    : {};
+
+  let lastProjectToken = initialProjectToken;
+  projectInfoState.on("change", async ({ projectId, projectToken }) => {
+    if (projectToken === lastProjectToken) return;
+    lastProjectToken = projectToken;
+
+    const relativeConfigDir = relative(process.cwd(), configDir);
+    let mainPath: string;
+    try {
+      mainPath = await findConfig(configDir, "main");
+      await updateMain({ mainPath, projectId, projectToken });
+
+      projectInfoState.value = {
+        ...projectInfoState.value,
+        written: true,
+        mainPath: basename(mainPath),
+        configDir: relativeConfigDir,
+      };
+    } catch (err) {
+      console.warn(`Failed to update your main configuration:\n\n ${err}`);
+
+      projectInfoState.value = {
+        ...projectInfoState.value,
+        written: false,
+        mainPath: mainPath && basename(mainPath),
+        configDir: relativeConfigDir,
+      };
+    }
+  });
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const runningBuildState = useAddonState<RunningBuildPayload>(channel, RUNNING_BUILD);
   channel.on(START_BUILD, async () => {
-    let announced = false;
-    let started = false;
+    if (!projectInfoState.value.projectToken) throw new Error("No project token set");
+
+    const onStartOrProgress = (
+      ctx: Context,
+      { progress, total }: { progress?: number; total?: number } = {}
+    ) => {
+      if (isKnownTask(ctx.task)) {
+        runningBuildState.value = { step: ctx.task, id: ctx.announcedBuild?.id, progress, total };
+      }
+    };
+
+    runningBuildState.value = { step: "initialize" };
     await run({
       // Currently we have to have these flags.
       // We should move the checks to after flags have been parsed into options.
       flags: {
-        projectToken,
+        projectToken: projectInfoState.value.projectToken,
         buildScriptName,
         debug,
         zip,
@@ -85,49 +131,22 @@ async function serverChannel(
         forceRebuild: true,
         // Builds initiated from the addon are always considered local
         isLocalBuild: true,
+        onTaskStart: onStartOrProgress,
+        onTaskProgress: onStartOrProgress,
         onTaskComplete(ctx) {
-          console.log(`Completed task '${ctx.title}'`);
-          if (!announced && ctx.announcedBuild) {
-            console.debug("emitting", BUILD_ANNOUNCED, ctx.announcedBuild.id);
-            channel.emit(BUILD_ANNOUNCED, ctx.announcedBuild.id);
-            announced = true;
-          }
-          if (announced && !started && ctx.build) {
-            console.debug("emitting", BUILD_STARTED, ctx.build.status);
-            channel.emit(BUILD_STARTED, ctx.build.status);
-            started = true;
+          if (ctx.task === "snapshot") {
+            runningBuildState.value = { step: "complete", id: ctx.announcedBuild?.id };
           }
         },
-        // as any due to CLI mistyping: https://github.com/chromaui/chromatic-cli/pull/800
       },
     });
   });
 
-  channel.on(
-    UPDATE_PROJECT,
-    async ({ projectId, projectToken: updatedProjectToken }: UpdateProjectPayload) => {
-      projectToken = updatedProjectToken;
-
-      const relativeConfigDir = relative(process.cwd(), configDir);
-      let mainPath: string;
-      try {
-        mainPath = await findConfig(configDir, "main");
-        await updateMain({ mainPath, projectId, projectToken });
-        channel.emit(PROJECT_UPDATED, {
-          mainPath: basename(mainPath),
-          configDir: relativeConfigDir,
-        } satisfies ProjectUpdatedPayload);
-      } catch (err) {
-        console.warn(`Failed to update your main configuration:\n\n ${err}`);
-        channel.emit(PROJECT_UPDATING_FAILED, {
-          mainPath: mainPath && basename(mainPath),
-          configDir: relativeConfigDir,
-        } satisfies ProjectUpdatingFailedPayload);
-      }
-    }
-  );
-
-  observeGitInfo(5000, (info) => channel.emit(GIT_INFO, info as GitInfoPayload));
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const gitInfoState = useAddonState<GitInfoPayload>(channel, GIT_INFO);
+  observeGitInfo(5000, (info) => {
+    gitInfoState.value = info;
+  });
 
   return channel;
 }
@@ -137,21 +156,13 @@ const config = {
   experimental_serverChannel: serverChannel,
   env: async (
     env: Record<string, string>,
-    { projectId, configType }: { projectId: string; configType: "DEVELOPMENT" | "PRODUCTION" }
+    { configType }: { configType: "DEVELOPMENT" | "PRODUCTION" }
   ) => {
     if (configType === "PRODUCTION") return env;
 
-    const { userEmail, userEmailHash, branch, commit, slug, uncommittedHash } = await getGitInfo();
     return {
       ...env,
       CHROMATIC_BASE_URL,
-      CHROMATIC_PROJECT_ID: projectId || "",
-      GIT_USER_EMAIL: userEmail,
-      GIT_USER_EMAIL_HASH: userEmailHash,
-      GIT_BRANCH: branch,
-      GIT_COMMIT: commit,
-      GIT_SLUG: slug,
-      GIT_UNCOMMITTED_HASH: uncommittedHash,
     };
   },
 };

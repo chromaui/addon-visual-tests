@@ -69,9 +69,7 @@ const announcedBuild: AnnouncedBuild = {
   id: "1",
   number: 1,
   branch: "feature-branch",
-  commit: "1234567",
   uncommittedHash: "",
-  browsers: [makeBrowserInfo(Browser.Chrome), makeBrowserInfo(Browser.Safari)],
   status: BuildStatus.Announced,
 };
 
@@ -180,11 +178,11 @@ const meta = {
       branch: "feature-branch",
       slug: "chromaui/addon-visual-tests",
       uncommittedHash: "",
+      committedAt: Date.now() - 1000,
     },
     storyId: "button--primary",
     projectId: "Project:id123",
     startDevBuild: action("startDevBuild"),
-    isStarting: false,
     setAccessToken: action("setAccessToken"),
     updateBuildStatus: action("updateBuildStatus"),
   },
@@ -214,7 +212,12 @@ export const NoBuild: Story = {
 export const NoBuildStarting: Story = {
   ...NoBuild,
   args: {
-    isStarting: true,
+    ...NoBuild.args,
+    runningBuild: {
+      step: "initialize",
+    },
+  },
+  parameters: {
     ...withGraphQLQuery("AddonVisualTestsBuild", (req, res, ctx) =>
       res(ctx.data({ build: null } as AddonVisualTestsBuildQuery))
     ),
@@ -251,23 +254,21 @@ export const OutdatedStarting: Story = {
   ...Outdated,
   args: {
     ...Outdated.args,
-    isStarting: true,
+    runningBuild: {
+      step: "initialize",
+    },
   },
 };
 
 export const Announced: Story = {
-  args: {
-    isStarting: true,
-  },
+  args: {},
   parameters: {
     ...withBuild(announcedBuild),
   },
 };
 
 export const Published: Story = {
-  args: {
-    isStarting: true,
-  },
+  args: {},
   parameters: {
     ...withBuild(publishedBuild),
   },
@@ -299,6 +300,17 @@ export const Pending: Story = {
         },
       });
     });
+  },
+};
+
+export const PendingWithSecondBuildInProgress: Story = {
+  ...Pending,
+  args: {
+    runningBuild: {
+      step: "upload",
+      progress: 1000,
+      total: 2000,
+    },
   },
 };
 
