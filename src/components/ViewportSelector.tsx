@@ -1,7 +1,7 @@
 import { Icon } from "@storybook/design-system";
 import React from "react";
 
-import { ComparisonResult, TestStatus, ViewportInfo } from "../gql/graphql";
+import { ComparisonResult, ViewportInfo } from "../gql/graphql";
 import { aggregateResult } from "../utils/aggregateResult";
 import { ArrowIcon } from "./icons/ArrowIcon";
 import { StatusDot, StatusDotWrapper } from "./StatusDot";
@@ -10,14 +10,14 @@ import { TooltipMenu } from "./TooltipMenu";
 type ViewportData = Pick<ViewportInfo, "id" | "name">;
 
 interface ViewportSelectorProps {
-  testStatus: TestStatus;
+  isAccepted: boolean;
   selectedViewport: ViewportData;
   onSelectViewport: (viewport: ViewportData) => void;
   viewportResults: { viewport: ViewportData; result: ComparisonResult }[];
 }
 
 export const ViewportSelector = ({
-  testStatus,
+  isAccepted,
   selectedViewport,
   viewportResults,
   onSelectViewport,
@@ -31,14 +31,12 @@ export const ViewportSelector = ({
       links={viewportResults.map(({ viewport, result }) => ({
         id: viewport.id,
         title: viewport.name,
-        right: testStatus !== TestStatus.Accepted && result !== ComparisonResult.Equal && (
-          <StatusDot status={result} />
-        ),
+        right: !isAccepted && result !== ComparisonResult.Equal && <StatusDot status={result} />,
         onClick: () => onSelectViewport(viewport),
         active: selectedViewport === viewport,
       }))}
     >
-      {testStatus === TestStatus.Accepted || aggregate === ComparisonResult.Equal ? (
+      {isAccepted || aggregate === ComparisonResult.Equal ? (
         <Icon icon="grow" />
       ) : (
         <StatusDotWrapper status={aggregate}>

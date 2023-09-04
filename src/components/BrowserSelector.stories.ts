@@ -7,6 +7,7 @@ import { BrowserSelector } from "./BrowserSelector";
 const meta = {
   component: BrowserSelector,
   args: {
+    isAccepted: false,
     onSelectBrowser: action("onSelectBrowser"),
   },
 } satisfies Meta<typeof BrowserSelector>;
@@ -27,7 +28,6 @@ const browserSafari = {
 
 export const WithSingleBrowserChanged: Story = {
   args: {
-    testStatus: TestStatus.Pending,
     selectedBrowser: browserChrome,
     browserResults: [
       {
@@ -40,7 +40,7 @@ export const WithSingleBrowserChanged: Story = {
 
 export const WithSingleBrowserAccepted: Story = {
   args: {
-    testStatus: TestStatus.Accepted,
+    isAccepted: true,
     selectedBrowser: browserChrome,
     browserResults: [
       {
@@ -53,7 +53,6 @@ export const WithSingleBrowserAccepted: Story = {
 
 export const WithSingleBrowserEqual: Story = {
   args: {
-    testStatus: TestStatus.Passed,
     selectedBrowser: browserChrome,
     browserResults: [
       {
@@ -66,7 +65,6 @@ export const WithSingleBrowserEqual: Story = {
 
 export const WithSingleBrowserError: Story = {
   args: {
-    testStatus: TestStatus.Broken,
     selectedBrowser: browserChrome,
     browserResults: [
       {
@@ -79,7 +77,6 @@ export const WithSingleBrowserError: Story = {
 
 export const WithManyBrowsersEqual: Story = {
   args: {
-    testStatus: TestStatus.Passed,
     selectedBrowser: browserChrome,
     browserResults: [
       {
@@ -96,7 +93,6 @@ export const WithManyBrowsersEqual: Story = {
 
 export const WithManyBrowsersSecondSelected: Story = {
   args: {
-    testStatus: TestStatus.Passed,
     selectedBrowser: browserSafari,
     browserResults: [
       {
@@ -113,7 +109,6 @@ export const WithManyBrowsersSecondSelected: Story = {
 
 export const WithManyBrowsersVaried: Story = {
   args: {
-    testStatus: TestStatus.Pending,
     selectedBrowser: browserChrome,
     browserResults: [
       {

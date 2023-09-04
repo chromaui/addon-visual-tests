@@ -1,7 +1,7 @@
 import { action } from "@storybook/addon-actions";
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { ComparisonResult, TestStatus } from "../gql/graphql";
+import { ComparisonResult } from "../gql/graphql";
 import { ViewportSelector } from "./ViewportSelector";
 
 const viewport800Px = {
@@ -16,6 +16,7 @@ const viewport1200Px = {
 const meta = {
   component: ViewportSelector,
   args: {
+    isAccepted: false,
     onSelectViewport: action("onSelectViewport"),
   },
 } satisfies Meta<typeof ViewportSelector>;
@@ -25,7 +26,6 @@ type Story = StoryObj<typeof meta>;
 
 export const WithSingleViewportChanged: Story = {
   args: {
-    testStatus: TestStatus.Pending,
     selectedViewport: viewport1200Px,
     viewportResults: [
       {
@@ -38,7 +38,7 @@ export const WithSingleViewportChanged: Story = {
 
 export const WithSingleViewportAccepted: Story = {
   args: {
-    testStatus: TestStatus.Accepted,
+    isAccepted: true,
     selectedViewport: viewport1200Px,
     viewportResults: [
       {
@@ -51,7 +51,6 @@ export const WithSingleViewportAccepted: Story = {
 
 export const WithSingleViewportEqual: Story = {
   args: {
-    testStatus: TestStatus.Passed,
     selectedViewport: viewport1200Px,
     viewportResults: [
       {
@@ -64,7 +63,6 @@ export const WithSingleViewportEqual: Story = {
 
 export const WithSingleViewportError: Story = {
   args: {
-    testStatus: TestStatus.Broken,
     selectedViewport: viewport1200Px,
     viewportResults: [
       {
@@ -77,7 +75,6 @@ export const WithSingleViewportError: Story = {
 
 export const WithManyViewportsEqual: Story = {
   args: {
-    testStatus: TestStatus.Passed,
     selectedViewport: viewport800Px,
     viewportResults: [
       {
@@ -94,7 +91,6 @@ export const WithManyViewportsEqual: Story = {
 
 export const WithManyViewportsSecondSelected: Story = {
   args: {
-    testStatus: TestStatus.Pending,
     selectedViewport: viewport1200Px,
     viewportResults: [
       {
@@ -111,7 +107,6 @@ export const WithManyViewportsSecondSelected: Story = {
 
 export const WithManyViewportsVaried: Story = {
   args: {
-    testStatus: TestStatus.Pending,
     selectedViewport: viewport800Px,
     viewportResults: [
       {
