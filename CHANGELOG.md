@@ -1,3 +1,15 @@
+# v0.0.55 (Tue Sep 05 2023)
+
+#### 🐛 Bug Fix
+
+- Don't show menu when there's only one viewport or browser [#72](https://github.com/chromaui/addon-visual-tests/pull/72) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v0.0.54 (Tue Sep 05 2023)
 
 #### 🐛 Bug Fix
