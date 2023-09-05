@@ -6,10 +6,10 @@ import { BrowserSelector } from "../../components/BrowserSelector";
 import { IconButton } from "../../components/IconButton";
 import { ProgressIcon } from "../../components/icons/ProgressIcon";
 import { Bar, Col } from "../../components/layout";
+import { ModeSelector } from "../../components/ModeSelector";
 import { Placeholder } from "../../components/Placeholder";
 import { SnapshotImage } from "../../components/SnapshotImage";
 import { TooltipMenu } from "../../components/TooltipMenu";
-import { ViewportSelector } from "../../components/ViewportSelector";
 import {
   ComparisonResult,
   ReviewTestBatch,
@@ -41,9 +41,8 @@ export const SnapshotComparison = ({
   const [diffVisible, setDiffVisible] = useState(true);
   const [focusVisible, setFocusVisible] = useState(false);
 
-  const { selectedTest, selectedComparison, onSelectBrowser, onSelectViewport } = useTests(tests);
-  const { status, isInProgress, changeCount, browserResults, viewportResults } =
-    summarizeTests(tests);
+  const { selectedTest, selectedComparison, onSelectBrowser, onSelectMode } = useTests(tests);
+  const { status, isInProgress, changeCount, browserResults, modeResults } = summarizeTests(tests);
 
   return (
     <>
@@ -56,36 +55,24 @@ export const SnapshotComparison = ({
         </Bar>
       ) : (
         <Bar>
-          {viewportResults.length > 0 && (
+          {modeResults.length > 0 && (
             <Col>
-              <WithTooltip
-                tooltip={<TooltipNote note="Switch viewport" />}
-                trigger="hover"
-                hasChrome={false}
-              >
-                <ViewportSelector
-                  isAccepted={status === TestStatus.Accepted}
-                  selectedViewport={selectedTest.parameters.viewport}
-                  viewportResults={viewportResults}
-                  onSelectViewport={onSelectViewport}
-                />
-              </WithTooltip>
+              <ModeSelector
+                isAccepted={status === TestStatus.Accepted}
+                selectedMode={selectedTest.parameters.viewport}
+                modeResults={modeResults}
+                onSelectMode={onSelectMode}
+              />
             </Col>
           )}
           {browserResults.length > 0 && (
             <Col>
-              <WithTooltip
-                tooltip={<TooltipNote note="Switch browser" />}
-                trigger="hover"
-                hasChrome={false}
-              >
-                <BrowserSelector
-                  isAccepted={status === TestStatus.Accepted}
-                  selectedBrowser={selectedComparison.browser}
-                  browserResults={browserResults}
-                  onSelectBrowser={onSelectBrowser}
-                />
-              </WithTooltip>
+              <BrowserSelector
+                isAccepted={status === TestStatus.Accepted}
+                selectedBrowser={selectedComparison.browser}
+                browserResults={browserResults}
+                onSelectBrowser={onSelectBrowser}
+              />
             </Col>
           )}
           {selectedComparison?.result === ComparisonResult.Changed && (
