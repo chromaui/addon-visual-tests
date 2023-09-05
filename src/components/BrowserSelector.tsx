@@ -50,13 +50,15 @@ export const BrowserSelector = ({
     icon = <StatusDotWrapper status={aggregate}>{icon}</StatusDotWrapper>;
   }
 
-  const links = browserResults.map(({ browser, result }) => ({
-    active: selectedBrowser === browser,
-    id: browser.id,
-    onClick: () => onSelectBrowser(browser),
-    right: !isAccepted && result !== ComparisonResult.Equal && <StatusDot status={result} />,
-    title: browser.name,
-  }));
+  const links =
+    browserResults.length > 1 &&
+    browserResults.map(({ browser, result }) => ({
+      active: selectedBrowser === browser,
+      id: browser.id,
+      onClick: () => onSelectBrowser(browser),
+      right: !isAccepted && result !== ComparisonResult.Equal && <StatusDot status={result} />,
+      title: browser.name,
+    }));
 
   return (
     <WithTooltip
@@ -65,19 +67,17 @@ export const BrowserSelector = ({
       trigger="hover"
       tooltip={
         <TooltipNote
-          note={
-            links.length === 1 ? `Tested in ${browserResults[0].browser.name}` : "Switch browser"
-          }
+          note={links ? "Switch browser" : `Tested in ${browserResults[0].browser.name}`}
         />
       }
     >
-      {links.length === 1 ? (
-        <IconWrapper>{icon}</IconWrapper>
-      ) : (
+      {links ? (
         <TooltipMenu placement="bottom" links={links}>
           {icon}
           <ArrowIcon icon="arrowdown" />
         </TooltipMenu>
+      ) : (
+        <IconWrapper>{icon}</IconWrapper>
       )}
     </WithTooltip>
   );

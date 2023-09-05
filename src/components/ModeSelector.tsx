@@ -41,13 +41,15 @@ export const ModeSelector = ({
     icon = <StatusDotWrapper status={aggregate}>{icon}</StatusDotWrapper>;
   }
 
-  const links = modeResults.map(({ viewport, result }) => ({
-    id: viewport.id,
-    title: viewport.name,
-    right: !isAccepted && result !== ComparisonResult.Equal && <StatusDot status={result} />,
-    onClick: () => onSelectMode(viewport),
-    active: selectedMode === viewport,
-  }));
+  const links =
+    modeResults.length > 1 &&
+    modeResults.map(({ viewport, result }) => ({
+      id: viewport.id,
+      title: viewport.name,
+      right: !isAccepted && result !== ComparisonResult.Equal && <StatusDot status={result} />,
+      onClick: () => onSelectMode(viewport),
+      active: selectedMode === viewport,
+    }));
 
   return (
     <WithTooltip
@@ -55,19 +57,17 @@ export const ModeSelector = ({
       placement="top"
       trigger="hover"
       tooltip={
-        <TooltipNote
-          note={links.length === 1 ? `View mode: ${modeResults[0].viewport.name}` : "Switch mode"}
-        />
+        <TooltipNote note={links ? "Switch mode" : `View mode: ${modeResults[0].viewport.name}`} />
       }
     >
-      {links.length === 1 ? (
-        <IconWrapper>{icon}</IconWrapper>
-      ) : (
+      {links ? (
         <TooltipMenu placement="bottom" links={links}>
           {icon}
           {selectedMode.name}
           <ArrowIcon icon="arrowdown" />
         </TooltipMenu>
+      ) : (
+        <IconWrapper>{icon}</IconWrapper>
       )}
     </WithTooltip>
   );
