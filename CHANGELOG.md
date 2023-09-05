@@ -1,3 +1,40 @@
+# v0.0.53 (Mon Sep 04 2023)
+
+#### 🐛 Bug Fix
+
+- Clear storyStatus when no longer relevant [#65](https://github.com/chromaui/addon-visual-tests/pull/65) ([@ndelangen](https://github.com/ndelangen))
+
+#### Authors: 1
+
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+
+---
+
+# v0.0.52 (Mon Sep 04 2023)
+
+#### 🐛 Bug Fix
+
+- Fix status title and viewport/browser selector for accepted stories [#70](https://github.com/chromaui/addon-visual-tests/pull/70) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.51 (Mon Sep 04 2023)
+
+#### 🐛 Bug Fix
+
+- Separate running/latest build from viewed stories [#69](https://github.com/chromaui/addon-visual-tests/pull/69) ([@tmeasday](https://github.com/tmeasday))
+- Merge branch 'tom/ap-3560-build-ui-for-build-status' into tom/ap-3544-implement-build-of-out-date-behaviour [#68](https://github.com/chromaui/addon-visual-tests/pull/68) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.50 (Fri Sep 01 2023)
 
 #### 🐛 Bug Fix

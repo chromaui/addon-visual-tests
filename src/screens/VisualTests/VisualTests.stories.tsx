@@ -3,6 +3,7 @@ import { expect } from "@storybook/jest";
 import type { Meta, StoryObj } from "@storybook/react";
 import { findByRole, findByTestId, fireEvent, waitFor } from "@storybook/testing-library";
 import { graphql } from "msw";
+import React from "react";
 
 import type {
   AddonVisualTestsBuildQuery,
@@ -69,9 +70,7 @@ const announcedBuild: AnnouncedBuild = {
   id: "1",
   number: 1,
   branch: "feature-branch",
-  commit: "1234567",
   uncommittedHash: "",
-  browsers: [makeBrowserInfo(Browser.Chrome), makeBrowserInfo(Browser.Safari)],
   status: BuildStatus.Announced,
 };
 
@@ -180,13 +179,13 @@ const meta = {
       branch: "feature-branch",
       slug: "chromaui/addon-visual-tests",
       uncommittedHash: "",
+      committedAt: Date.now() - 1000,
     },
     storyId: "button--primary",
     projectId: "Project:id123",
     startDevBuild: action("startDevBuild"),
-    isStarting: false,
     setAccessToken: action("setAccessToken"),
-    updateBuildStatus: action("updateBuildStatus"),
+    updateBuildStatus: action("updateBuildStatus") as any,
   },
 } satisfies Meta<typeof VisualTests>;
 
@@ -210,11 +209,30 @@ export const NoBuild: Story = {
       res(ctx.data({ build: null } as AddonVisualTestsBuildQuery))
     ),
   },
+  render: ({ ...args }) => {
+    // custom render for mapping `updateBuildStatus` to a function which is mocked, but returns data instead of a function
+    return (
+      <VisualTests
+        {...args}
+        updateBuildStatus={(fn) => args.updateBuildStatus(typeof fn === "function" ? fn({}) : fn)}
+      />
+    );
+  },
+  play: async ({ args }) => {
+    await waitFor(() => {
+      expect(args.updateBuildStatus).toHaveBeenCalledWith({});
+    });
+  },
 };
 export const NoBuildStarting: Story = {
   ...NoBuild,
   args: {
-    isStarting: true,
+    ...NoBuild.args,
+    runningBuild: {
+      step: "initialize",
+    },
+  },
+  parameters: {
     ...withGraphQLQuery("AddonVisualTestsBuild", (req, res, ctx) =>
       res(ctx.data({ build: null } as AddonVisualTestsBuildQuery))
     ),
@@ -251,23 +269,21 @@ export const OutdatedStarting: Story = {
   ...Outdated,
   args: {
     ...Outdated.args,
-    isStarting: true,
+    runningBuild: {
+      step: "initialize",
+    },
   },
 };
 
 export const Announced: Story = {
-  args: {
-    isStarting: true,
-  },
+  args: {},
   parameters: {
     ...withBuild(announcedBuild),
   },
 };
 
 export const Published: Story = {
-  args: {
-    isStarting: true,
-  },
+  args: {},
   parameters: {
     ...withBuild(publishedBuild),
   },
@@ -289,8 +305,17 @@ export const Pending: Story = {
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304718&t=0rxMQnkxsVpVj1qy-4"
     ),
   },
-  play: ({ args }) => {
-    waitFor(() => {
+  render: ({ ...args }) => {
+    // custom render for mapping `updateBuildStatus` to a function which is mocked, but returns data instead of a function
+    return (
+      <VisualTests
+        {...args}
+        updateBuildStatus={(fn) => args.updateBuildStatus(typeof fn === "function" ? fn({}) : fn)}
+      />
+    );
+  },
+  play: async ({ args }) => {
+    await waitFor(() => {
       expect(args.updateBuildStatus).toHaveBeenCalledWith({
         "button--primary": {
           status: "warn",
@@ -299,6 +324,17 @@ export const Pending: Story = {
         },
       });
     });
+  },
+};
+
+export const PendingWithSecondBuildInProgress: Story = {
+  ...Pending,
+  args: {
+    runningBuild: {
+      step: "upload",
+      progress: 1000,
+      total: 2000,
+    },
   },
 };
 

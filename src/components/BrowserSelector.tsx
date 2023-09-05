@@ -20,12 +20,14 @@ const browserIcons = {
 type BrowserData = Pick<BrowserInfo, "id" | "key" | "name">;
 
 interface BrowserSelectorProps {
+  isAccepted: boolean;
   selectedBrowser: BrowserData;
   browserResults: { browser: BrowserData; result: ComparisonResult }[];
   onSelectBrowser: (browser: BrowserData) => void;
 }
 
 export const BrowserSelector = ({
+  isAccepted,
   selectedBrowser,
   browserResults,
   onSelectBrowser,
@@ -36,7 +38,7 @@ export const BrowserSelector = ({
       active: selectedBrowser === browser,
       id: browser.id,
       onClick: () => onSelectBrowser(browser),
-      right: result !== ComparisonResult.Equal && <StatusDot status={result} />,
+      right: !isAccepted && result !== ComparisonResult.Equal && <StatusDot status={result} />,
       title: browser.name,
     }));
 
@@ -46,7 +48,7 @@ export const BrowserSelector = ({
   const icon = browserIcons[selectedBrowser.key];
   return (
     <TooltipMenu placement="bottom" links={links}>
-      {aggregate === ComparisonResult.Equal ? (
+      {isAccepted || aggregate === ComparisonResult.Equal ? (
         icon
       ) : (
         <StatusDotWrapper status={aggregate}>{icon}</StatusDotWrapper>

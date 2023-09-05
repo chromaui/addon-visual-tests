@@ -1,7 +1,6 @@
 import { Icons, Loader } from "@storybook/components";
 import { Icon, TooltipNote, WithTooltip } from "@storybook/design-system";
-// eslint-disable-next-line import/no-unresolved
-import { GitInfo } from "chromatic/node";
+import type { API_StatusState } from "@storybook/types";
 import React, { useCallback, useEffect, useState } from "react";
 import { useMutation, useQuery } from "urql";
 
@@ -13,6 +12,7 @@ import { IconButton } from "../../components/IconButton";
 import { ProgressIcon } from "../../components/icons/ProgressIcon";
 import { Bar, Col, Row, Section, Sections, Text } from "../../components/layout";
 import { Text as CenterText } from "../../components/Text";
+import { GitInfoPayload, RunningBuildPayload } from "../../constants";
 import { getFragment, graphql } from "../../gql";
 import {
   AddonVisualTestsBuildQuery,
@@ -23,7 +23,9 @@ import {
   TestResult,
   TestStatus,
 } from "../../gql/graphql";
-import { statusMap, StatusUpdate, testsToStatusUpdate } from "../../utils/testsToStatusUpdate";
+import { UpdateStatusFunction } from "../../types";
+import { statusMap, testsToStatusUpdate } from "../../utils/testsToStatusUpdate";
+import { BuildProgress } from "./BuildProgress";
 import { RenderSettings } from "./RenderSettings";
 import { SnapshotComparison } from "./SnapshotComparison";
 import { StoryInfo } from "./StoryInfo";
@@ -37,6 +39,8 @@ const QueryBuild = graphql(/* GraphQL */ `
     $slug: String
     $storyId: String!
     $testStatuses: [TestStatus!]!
+    $storyBuildId: ID!
+    $hasStoryBuildId: Boolean!
   ) {
     project(id: $projectId) {
       name
@@ -45,21 +49,22 @@ const QueryBuild = graphql(/* GraphQL */ `
         slug: $slug
         localBuilds: { localBuildEmailHash: $gitUserEmailHash }
       ) {
-        ...BuildFields
+        ...NextBuildFields
+        ...StoryBuildFields @skip(if: $hasStoryBuildId)
       }
+    }
+    storyBuild: build(id: $storyBuildId) @include(if: $hasStoryBuildId) {
+      ...StoryBuildFields
     }
   }
 `);
 
-const FragmentBuildFields = graphql(/* GraphQL */ `
-  fragment BuildFields on Build {
+const FragmentNextBuildFields = graphql(/* GraphQL */ `
+  fragment NextBuildFields on Build {
     __typename
     id
-    number
-    branch
     commit
-    uncommittedHash
-    status
+    committedAt
     browsers {
       id
       key
@@ -68,15 +73,9 @@ const FragmentBuildFields = graphql(/* GraphQL */ `
     ... on StartedBuild {
       changeCount: testCount(results: [ADDED, CHANGED, FIXED])
       brokenCount: testCount(results: [CAPTURE_ERROR])
-      startedAt
       testsForStatus: tests(first: 1000, statuses: $testStatuses) {
         nodes {
           ...StatusTestFields
-        }
-      }
-      testsForStory: tests(storyId: $storyId) {
-        nodes {
-          ...StoryTestFields
         }
       }
     }
@@ -84,12 +83,33 @@ const FragmentBuildFields = graphql(/* GraphQL */ `
       result
       changeCount: testCount(results: [ADDED, CHANGED, FIXED])
       brokenCount: testCount(results: [CAPTURE_ERROR])
-      startedAt
       testsForStatus: tests(statuses: $testStatuses) {
         nodes {
           ...StatusTestFields
         }
       }
+    }
+  }
+`);
+
+const FragmentStoryBuildFields = graphql(/* GraphQL */ `
+  fragment StoryBuildFields on Build {
+    __typename
+    id
+    number
+    branch
+    uncommittedHash
+    status
+    ... on StartedBuild {
+      startedAt
+      testsForStory: tests(storyId: $storyId) {
+        nodes {
+          ...StoryTestFields
+        }
+      }
+    }
+    ... on CompletedBuild {
+      startedAt
       testsForStory: tests(storyId: $storyId) {
         nodes {
           ...StoryTestFields
@@ -194,20 +214,25 @@ const MutationReviewTest = graphql(/* GraphQL */ `
   }
 `);
 
+const createEmptyStoryStatusUpdate = (state: API_StatusState) => {
+  return Object.fromEntries(Object.entries(state).map(([id, update]) => [id, null]));
+};
+
 interface VisualTestsProps {
   projectId: string;
-  gitInfo: Pick<GitInfo, "branch" | "slug" | "userEmailHash" | "uncommittedHash">;
-  isStarting: boolean;
-  lastDevBuildId?: string;
+  gitInfo: Pick<
+    GitInfoPayload,
+    "branch" | "slug" | "userEmailHash" | "committedAt" | "uncommittedHash"
+  >;
+  runningBuild?: RunningBuildPayload;
   startDevBuild: () => void;
   setAccessToken: (accessToken: string | null) => void;
-  updateBuildStatus: (update: StatusUpdate) => void;
+  updateBuildStatus: UpdateStatusFunction;
   storyId: string;
 }
 
 export const VisualTests = ({
-  isStarting,
-  lastDevBuildId,
+  runningBuild,
   startDevBuild,
   setAccessToken,
   updateBuildStatus,
@@ -215,6 +240,18 @@ export const VisualTests = ({
   gitInfo,
   storyId,
 }: VisualTestsProps) => {
+  const [settingsVisible, setSettingsVisible] = useState(false);
+  const [warningsVisible, setWarningsVisible] = useState(false);
+  const [baselineImageVisible, setBaselineImageVisible] = useState(false);
+  const toggleBaselineImage = () => setBaselineImageVisible(!baselineImageVisible);
+
+  // The storyId and buildId that drive the test(s) we are currently looking at
+  // The user can choose when to change story (via sidebar) and build (via opting into new builds)
+  const [storyBuildInfo, setStoryBuildInfo] = useState<{
+    storyId: string;
+    buildId: string;
+  }>();
+
   const [{ data, error }, rerun] = useQuery<
     AddonVisualTestsBuildQuery,
     AddonVisualTestsBuildQueryVariables
@@ -227,6 +264,8 @@ export const VisualTests = ({
       branch: gitInfo.branch || "",
       ...(gitInfo.slug ? { slug: gitInfo.slug } : {}),
       gitUserEmailHash: gitInfo.userEmailHash,
+      storyBuildId: storyBuildInfo?.buildId || "",
+      hasStoryBuildId: !!storyBuildInfo,
     },
   });
 
@@ -257,26 +296,54 @@ export const VisualTests = ({
     [reviewTest]
   );
 
-  const build = getFragment(FragmentBuildFields, data?.project?.lastBuild);
-  const isOutdated = build && build.uncommittedHash !== gitInfo.uncommittedHash;
+  const nextBuild = getFragment(FragmentNextBuildFields, data?.project?.lastBuild);
+  // Before we set the storyInfo, we use the nextBuild for story data
+  const storyBuild = getFragment(
+    FragmentStoryBuildFields,
+    data?.storyBuild ?? data?.project?.lastBuild
+  );
 
+  // If the next build is *newer* than the current commit, we don't want to switch to the build
+  const nextBuildNewer = nextBuild && nextBuild.committedAt > gitInfo.committedAt;
+  const canSwitchToNextBuild = nextBuild && !nextBuildNewer;
+
+  // We always set status to the next build's status, as when we change to a new story we'll see
+  // the next builds
   const buildStatusUpdate =
-    build &&
-    "testsForStatus" in build &&
-    testsToStatusUpdate(getFragment(FragmentStatusTestFields, build.testsForStatus.nodes));
+    canSwitchToNextBuild &&
+    "testsForStatus" in nextBuild &&
+    testsToStatusUpdate(getFragment(FragmentStatusTestFields, nextBuild.testsForStatus.nodes));
 
   useEffect(() => {
-    if (buildStatusUpdate) updateBuildStatus(buildStatusUpdate);
+    updateBuildStatus((state) => ({
+      ...createEmptyStoryStatusUpdate(state),
+      ...buildStatusUpdate,
+    }));
     // We use the stringified version of buildStatusUpdate to do a deep diff
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(buildStatusUpdate), updateBuildStatus]);
 
-  const [settingsVisible, setSettingsVisible] = useState(false);
-  const [warningsVisible, setWarningsVisible] = useState(false);
-  const [baselineImageVisible, setBaselineImageVisible] = useState(false);
-  const toggleBaselineImage = () => setBaselineImageVisible(!baselineImageVisible);
+  // Ensure we are holding the right story build
+  useEffect(() => {
+    setStoryBuildInfo((oldStoryBuildInfo) => {
+      return (!oldStoryBuildInfo || oldStoryBuildInfo.storyId !== storyId) && nextBuild?.id
+        ? {
+            storyId,
+            // If the next build is "too new" and we have an old build, stick to it.
+            buildId: (!canSwitchToNextBuild && oldStoryBuildInfo?.buildId) || nextBuild.id,
+          }
+        : oldStoryBuildInfo;
+    });
+  }, [canSwitchToNextBuild, nextBuild?.id, storyId]);
 
-  if (!build || error) {
+  const switchToNextBuild = useCallback(
+    () => canSwitchToNextBuild && setStoryBuildInfo({ storyId, buildId: nextBuild.id }),
+    [canSwitchToNextBuild, nextBuild?.id, storyId]
+  );
+
+  const isRunningBuildStarting = runningBuild?.step === "initialize";
+
+  if (!nextBuild || error) {
     return (
       <Sections>
         <Section grow>
@@ -288,7 +355,7 @@ export const VisualTests = ({
             </Row>
           )}
           {!data && <Loader />}
-          {data && !build && !error && (
+          {data && !nextBuild && !error && (
             <Container>
               <Heading>Create a test baseline</Heading>
               <CenterText>
@@ -296,8 +363,8 @@ export const VisualTests = ({
                 as test baselines.
               </CenterText>
               <br />
-              <Button small secondary onClick={startDevBuild} disabled={isStarting}>
-                {isStarting ? (
+              <Button small secondary onClick={startDevBuild} disabled={isRunningBuildStarting}>
+                {isRunningBuildStarting ? (
                   <ProgressIcon parentComponent="Button" style={{ marginRight: 6 }} />
                 ) : (
                   <Icons icon="play" />
@@ -323,20 +390,33 @@ export const VisualTests = ({
     );
   }
 
-  const tests = [
+  const isRunningBuildInProgress = runningBuild && runningBuild.step !== "complete";
+  const showBuildStatus =
+    // We always want to show the status of the running build (until it is done)
+    isRunningBuildInProgress ||
+    // Even if there's no build running, we want to show the next build if it hasn't been selected.
+    (canSwitchToNextBuild && nextBuild.id !== storyBuild?.id);
+  const runningBuildIsNextBuild = runningBuild && runningBuild?.id === nextBuild?.id;
+  const buildStatus = showBuildStatus && (
+    <BuildProgress
+      runningBuild={(runningBuildIsNextBuild || isRunningBuildInProgress) && runningBuild}
+      switchToNextBuild={canSwitchToNextBuild && switchToNextBuild}
+    />
+  );
+
+  const storyTests = [
     ...getFragment(
       FragmentStoryTestFields,
-      "testsForStory" in build ? build.testsForStory.nodes : []
+      "testsForStory" in storyBuild ? storyBuild.testsForStory.nodes : []
     ),
   ];
-  const startedAt = "startedAt" in build && build.startedAt;
-  const isBuildFailed = build.status === BuildStatus.Failed;
 
   // It shouldn't be possible for one test to be skipped but not all of them
-  const isSkipped = !!tests?.find((t) => t.result === TestResult.Skipped);
+  const isSkipped = !!storyTests?.find((t) => t.result === TestResult.Skipped);
   if (isSkipped) {
     return (
       <Sections>
+        {buildStatus}
         <Section grow>
           <Container>
             <Heading>This story was skipped</Heading>
@@ -363,15 +443,32 @@ export const VisualTests = ({
     );
   }
 
+  const isStoryBuildStarting = [
+    BuildStatus.Announced,
+    BuildStatus.Published,
+    BuildStatus.Prepared,
+  ].includes(storyBuild?.status);
+  const startedAt = "startedAt" in storyBuild && storyBuild.startedAt;
+  const isOutdated = storyBuild && storyBuild.uncommittedHash !== gitInfo.uncommittedHash;
+  const isBuildFailed = storyBuild.status === BuildStatus.Failed;
   return (
     <Sections>
+      {buildStatus}
+
       <Section grow hidden={settingsVisible || warningsVisible}>
         <StoryInfo
-          {...{ tests, isOutdated, startedAt, isStarting, startDevBuild, isBuildFailed }}
+          {...{
+            tests: storyTests,
+            isOutdated,
+            startedAt,
+            isStarting: isStoryBuildStarting,
+            startDevBuild,
+            isBuildFailed,
+          }}
         />
-        {!isStarting && tests && tests.length > 0 && (
+        {!isStoryBuildStarting && storyTests && storyTests.length > 0 && (
           <SnapshotComparison
-            {...{ tests, isAccepting, isOutdated, onAccept, baselineImageVisible }}
+            {...{ tests: storyTests, isAccepting, isOutdated, onAccept, baselineImageVisible }}
           />
         )}
       </Section>
@@ -401,11 +498,11 @@ export const VisualTests = ({
           <Col style={{ overflow: "hidden", whiteSpace: "nowrap" }}>
             {baselineImageVisible ? (
               <Text style={{ marginLeft: 5, width: "100%" }}>
-                <b>Baseline</b> Build {build.number} on {build.branch}
+                <b>Baseline</b> Build {storyBuild.number} on {storyBuild.branch}
               </Text>
             ) : (
               <Text style={{ marginLeft: 5, width: "100%" }}>
-                <b>Latest</b> Build {build.number} on {build.branch}
+                <b>Latest</b> Build {storyBuild.number} on {storyBuild.branch}
               </Text>
             )}
           </Col>

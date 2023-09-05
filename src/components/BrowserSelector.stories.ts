@@ -1,12 +1,13 @@
 import { action } from "@storybook/addon-actions";
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { Browser, ComparisonResult } from "../gql/graphql";
+import { Browser, ComparisonResult, TestStatus } from "../gql/graphql";
 import { BrowserSelector } from "./BrowserSelector";
 
 const meta = {
   component: BrowserSelector,
   args: {
+    isAccepted: false,
     onSelectBrowser: action("onSelectBrowser"),
   },
 } satisfies Meta<typeof BrowserSelector>;
@@ -27,6 +28,19 @@ const browserSafari = {
 
 export const WithSingleBrowserChanged: Story = {
   args: {
+    selectedBrowser: browserChrome,
+    browserResults: [
+      {
+        browser: browserChrome,
+        result: ComparisonResult.Changed,
+      },
+    ],
+  },
+};
+
+export const WithSingleBrowserAccepted: Story = {
+  args: {
+    isAccepted: true,
     selectedBrowser: browserChrome,
     browserResults: [
       {
