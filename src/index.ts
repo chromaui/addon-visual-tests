@@ -86,6 +86,7 @@ async function serverChannel(
         isLocalBuild: true,
         onTaskComplete(ctx) {
           let newStep: BuildProgressPayload["step"];
+          // FIX: For some reason, after the initialoze step, we are returning step = undefined. This continues until the snapshots step.
           if (step === "initialize" && ctx.announcedBuild) {
             newStep = "build";
           }

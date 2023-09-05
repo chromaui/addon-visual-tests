@@ -22,7 +22,7 @@ export const BUILD_PROGRESS = `${ADDON_ID}/buildProgress`;
 export type BuildProgressPayload = {
   // Possibly this should be a type exported by the CLI -- these correspond to tasks
   /** The step of the build process we have reached */
-  step: "initialize" | "build" | "upload" | "verify" | "snapshot" | "complete";
+  step: "initialize" | "build" | "upload" | "verify" | "snapshot" | "complete" | undefined; // This can be undefined if the onTaskProgress callback can't determine the nextStep. Currently, this happens often (for 'initialize', 'build' and 'upload' steps)
   /** The id of the build, available after the initialize step */
   id?: string;
   /** progress pertains to the current step, and may not be set */
