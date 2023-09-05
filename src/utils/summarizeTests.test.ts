@@ -86,7 +86,6 @@ it("Calculates static information correctly", () => {
       ],
       "changeCount": 1,
       "isInProgress": true,
-      "status": "IN_PROGRESS",
       "modeResults": [
         {
           "result": "EQUAL",
@@ -125,6 +124,7 @@ it("Calculates static information correctly", () => {
           },
         },
       ],
+      "status": "IN_PROGRESS",
     }
   `);
 });
