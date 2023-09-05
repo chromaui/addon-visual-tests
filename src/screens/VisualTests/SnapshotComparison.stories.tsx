@@ -1,4 +1,5 @@
 import { action } from "@storybook/addon-actions";
+import { expect } from "@storybook/jest";
 import { useState } from "@storybook/preview-api";
 import type { Meta, StoryObj } from "@storybook/react";
 import { screen, userEvent, within } from "@storybook/testing-library";
@@ -144,4 +145,22 @@ export const SwitchingTests: Story = {
     if (!tests) setTimeout(() => setTests([makeTest({})]), 0);
     return <SnapshotComparison {...props} tests={tests || props.tests} />;
   },
+};
+
+export const BatchAcceptOptions: Story = {
+  args: WithSingleTest.args,
+  play: playAll(async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const menu = await canvas.findByRole("button", { name: "Batch accept" });
+    await userEvent.click(menu);
+  }),
+};
+
+export const BatchAcceptedBuild: Story = {
+  args: WithSingleTest.args,
+  play: playAll(BatchAcceptOptions, async ({ args, canvasIndex }) => {
+    const items = await screen.findAllByText("Accept entire build");
+    await userEvent.click(items[canvasIndex]);
+    await expect(args.onAccept).toHaveBeenCalledWith(args.tests[0].id, "BUILD");
+  }),
 };
