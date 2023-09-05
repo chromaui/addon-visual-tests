@@ -41,11 +41,26 @@ export const Panel = ({ active, api }: PanelProps) => {
   const emit = useChannel({});
 
   useEffect(() => {
+    if (runningBuild.step === "complete") {
+      addNotification({
+        id: "chromatic/build-complete",
+        link: "https://www.chromatic.com/docs/cli",
+        content: {
+          headline: "Build complete",
+          subHeadline:
+            "Your build is complete. Check the terminal running storybook for more details.",
+        },
+        icon: {
+          name: "check",
+          color: "green",
+        },
+      });
+    }
     if (runningBuild.step === "error") {
       logger.error("Build error:", runningBuild.originalError);
       addNotification({
         id: "chromatic/build-error",
-        link: "https://www.chromatic.com/docs/failed-builds",
+        link: "https://www.chromatic.com/docs/cli",
         content: {
           headline: "Build error",
           subHeadline:
