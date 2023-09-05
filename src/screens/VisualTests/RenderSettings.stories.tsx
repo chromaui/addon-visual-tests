@@ -42,7 +42,4 @@ export const Default: Story = {
   parameters: withFigmaDesign(
     "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-525764&t=18c1zI1SMe76dWYk-4"
   ),
-  play: () => {
-    throw new Error("failed");
-  },
 };
