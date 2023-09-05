@@ -2,7 +2,7 @@
 import type { Channel } from "@storybook/channels";
 // eslint-disable-next-line import/no-unresolved
 import { Context, getGitInfo, GitInfo, run, TaskName } from "chromatic/node";
-import { basename, relative } from "path";
+import { basename, parse, relative } from "path";
 
 import {
   CHROMATIC_BASE_URL,
@@ -16,6 +16,7 @@ import {
   START_BUILD,
 } from "./constants";
 import { useAddonState } from "./useAddonState/server";
+import { loadConfig, parseConfig } from "./utils/loadConfig";
 import { findConfig } from "./utils/storybook.config.utils";
 import { updateMain } from "./utils/updateMain";
 
@@ -51,22 +52,25 @@ async function serverChannel(
   channel: Channel,
   {
     configDir,
-    projectId: initialProjectId,
-    projectToken: initialProjectToken,
-
-    // This is a small subset of the flags available to the CLI.
-    buildScriptName,
-    debug,
-    zip,
+    ...options
   }: {
     configDir: string;
-    projectId: string;
-    projectToken: string;
-    buildScriptName?: string;
-    debug?: boolean;
-    zip?: boolean;
   }
 ) {
+  const {
+    projectId: initialProjectId,
+    projectToken: initialProjectToken,
+    buildScriptName,
+    zip,
+    debug,
+    onlyChanged,
+    externals,
+    untraced,
+  } = {
+    ...(await loadConfig()),
+    ...parseConfig(options),
+  };
+
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const projectInfoState = useAddonState<ProjectInfoPayload>(channel, PROJECT_INFO);
   projectInfoState.value = initialProjectId
@@ -131,6 +135,12 @@ async function serverChannel(
         forceRebuild: true,
         // Builds initiated from the addon are always considered local
         isLocalBuild: true,
+
+        // TS options
+        onlyChanged: onlyChanged || undefined,
+        externals,
+        untraced,
+
         onTaskStart: onStartOrProgress,
         onTaskProgress: onStartOrProgress,
         onTaskComplete(ctx) {
