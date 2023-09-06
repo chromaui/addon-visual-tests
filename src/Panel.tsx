@@ -41,7 +41,7 @@ export const Panel = ({ active, api }: PanelProps) => {
   const emit = useChannel({});
 
   useEffect(() => {
-    if (runningBuild.step === "complete") {
+    if (runningBuild?.step === "complete") {
       addNotification({
         id: "chromatic/build-complete",
         link: "https://www.chromatic.com/docs/cli",
@@ -56,7 +56,7 @@ export const Panel = ({ active, api }: PanelProps) => {
         },
       });
     }
-    if (runningBuild.step === "error") {
+    if (runningBuild?.step === "error") {
       logger.error("Build error:", runningBuild.originalError);
       addNotification({
         id: "chromatic/build-error",
@@ -73,7 +73,7 @@ export const Panel = ({ active, api }: PanelProps) => {
         },
       });
     }
-  }, [addNotification, runningBuild.step, runningBuild.originalError]);
+  }, [addNotification, runningBuild?.step, runningBuild?.originalError]);
 
   const updateBuildStatus = useCallback<UpdateStatusFunction>(
     (update) => api.experimental_updateStatus(ADDON_ID, update),
