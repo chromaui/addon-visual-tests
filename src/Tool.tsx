@@ -1,11 +1,22 @@
+import { IconButton, Icons, WithTooltip } from "@storybook/components";
 import { useChannel } from "@storybook/manager-api";
-import React, { useState } from "react";
+import { styled } from "@storybook/theming";
+import React, { ComponentProps, FC } from "react";
 
-import { RunTestsButton } from "./components/RunTestsButton";
-import { RUNNING_BUILD, RunningBuildPayload, START_BUILD, TOOL_ID } from "./constants";
+import { RUNNING_BUILD, RunningBuildPayload, START_BUILD } from "./constants";
 import { useAddonState } from "./useAddonState/manager";
 import { useAccessToken } from "./utils/graphQLClient";
 import { useProjectId } from "./utils/useProjectId";
+
+export const SidebarIconButton = styled(IconButton)<ComponentProps<typeof IconButton>>(
+  ({ theme }) => ({
+    position: "relative",
+    overflow: "visible",
+    color: theme.textMutedColor,
+    marginTop: 0,
+    zIndex: 1,
+  })
+);
 
 export const Tool = () => {
   const { projectId } = useProjectId();
@@ -13,9 +24,37 @@ export const Tool = () => {
   const isLoggedIn = !!accessToken;
 
   const [runningBuild] = useAddonState<RunningBuildPayload>(RUNNING_BUILD);
+  const isRunning = !!runningBuild && runningBuild.step !== "complete";
+
   const emit = useChannel({});
   const startBuild = () => emit(START_BUILD);
 
-  const isStarting = ["initializing"].includes(runningBuild?.step);
-  return <RunTestsButton key={TOOL_ID} {...{ isStarting, projectId, isLoggedIn, startBuild }} />;
+  if (!projectId || isLoggedIn === false) {
+    return null;
+  }
+
+  return <ToolContent isRunning={isRunning} startBuild={startBuild} />;
+};
+
+export const ToolContent = ({
+  isRunning = false,
+  startBuild,
+}: {
+  isRunning?: boolean;
+  startBuild: () => void;
+}) => {
+  if (isRunning) {
+    return (
+      <WithTooltip tooltip="Running visual tests...">
+        <SidebarIconButton>
+          <Icons icon="play" />
+        </SidebarIconButton>
+      </WithTooltip>
+    );
+  }
+  return (
+    <SidebarIconButton active={false} disabled={false} onClick={() => startBuild()}>
+      <Icons icon="play" />
+    </SidebarIconButton>
+  );
 };
