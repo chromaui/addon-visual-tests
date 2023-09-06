@@ -58,6 +58,11 @@ export const SnapshotComparison = ({
   const { selectedTest, selectedComparison, onSelectBrowser, onSelectMode } = useTests(tests);
   const { status, isInProgress, changeCount, browserResults, modeResults } = summarizeTests(tests);
 
+  const captureErrorData =
+    selectedComparison?.headCapture?.captureError &&
+    "error" in selectedComparison?.headCapture?.captureError &&
+    selectedComparison?.headCapture?.captureError?.error;
+
   return (
     <>
       {isInProgress ? (
@@ -185,12 +190,12 @@ export const SnapshotComparison = ({
         />
       )}
 
-      {!isInProgress && selectedComparison?.headCapture?.captureError?.error && (
+      {!isInProgress && captureErrorData && (
         <>
           <Divider>
             <b>Error stack trace</b>
           </Divider>
-          <StackTrace>{selectedComparison?.headCapture?.captureError.error.message}</StackTrace>
+          <StackTrace>{captureErrorData.stack || captureErrorData.message}</StackTrace>
         </>
       )}
     </>

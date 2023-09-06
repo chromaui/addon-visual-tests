@@ -10,14 +10,7 @@ import type {
   StatusTestFieldsFragment,
   StoryTestFieldsFragment,
 } from "../../gql/graphql";
-import {
-  Browser,
-  BuildStatus,
-  CaptureErrorKind,
-  ComparisonResult,
-  TestResult,
-  TestStatus,
-} from "../../gql/graphql";
+import { Browser, BuildStatus, ComparisonResult, TestResult, TestStatus } from "../../gql/graphql";
 import {
   AnnouncedBuild,
   BuildWithTests,
@@ -27,7 +20,7 @@ import {
 } from "../../types";
 import { storyWrapper } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
-import { makeBrowserInfo, makeTest } from "../../utils/storyData";
+import { makeTest } from "../../utils/storyData";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
 import * as SnapshotComparisonStories from "./SnapshotComparison.stories";
 import { VisualTests } from "./VisualTests";
@@ -415,20 +408,7 @@ export const CaptureError: Story = {
 
 export const InteractionFailure: Story = {
   parameters: {
-    ...withBuild(
-      withTests(brokenBuild, [
-        makeTest({
-          status: TestStatus.Broken,
-          captureError: {
-            kind: CaptureErrorKind.InteractionFailure,
-            error: {
-              name: "Error",
-              message: `Unable to find an element by: [data-testid="button-toggle-snapshot"]`,
-            },
-          },
-        }),
-      ])
-    ),
+    ...withBuild(withTests(brokenBuild, SnapshotComparisonStories.InteractionFailure.args.tests)),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-305053&t=0rxMQnkxsVpVj1qy-4"
     ),

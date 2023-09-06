@@ -156,6 +156,38 @@ export const InteractionFailure: Story = {
           error: {
             name: "Error",
             message: `Unable to find an element by: [data-testid="button-toggle-snapshot"]`,
+            stack: `Error: Unable to find an element by: [data-testid="button-toggles-snapshot"]
+
+Ignored nodes: comments, script, style
+<div
+  class="css-nlyae3"
+  data-canvas="right"
+  orientation="right"
+>
+  <div
+    class="css-1g4yje1"
+  >
+    <div
+      class="css-3fce27"
+    >
+      <div
+        class="css-1o56ikb"
+      >
+        <div
+          class="css-gghy96"
+        >
+          <div
+            class="css-k4d9wy"
+          >
+            <b>
+              1 change
+            </b>
+            <svg
+              class="css-1g8ys9d css-6m3b1s-Svg e82dnwa0"
+              height="14px"
+              viewBox="0 0 14 14"
+              width="14px"
+            >`,
           },
         },
       }),
