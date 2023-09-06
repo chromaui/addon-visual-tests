@@ -48,16 +48,19 @@ export function makeComparison(options: {
   browser?: Browser;
   viewport?: number;
   result?: ComparisonResult;
+  captureError?: StoryTestFieldsFragment["comparisons"][number]["headCapture"]["captureError"];
 }): StoryTestFieldsFragment["comparisons"][number] {
-  const result = options.result || ComparisonResult.Equal;
+  const { captureError, result = ComparisonResult.Equal } = options;
   return {
     id: options.id || "111",
     browser: makeBrowserInfo(options.browser || Browser.Chrome),
     viewport: makeViewportInfo(options.viewport || 1200),
     result,
     baseCapture,
-    headCapture,
-    ...(result === ComparisonResult.Changed && { captureDiff }),
+    headCapture: captureError ? { ...headCapture, captureError } : headCapture,
+    ...((result === ComparisonResult.Changed || captureError?.kind === "INTERACTION_FAILURE") && {
+      captureDiff,
+    }),
   };
 }
 
@@ -94,6 +97,7 @@ export function makeTest(options: {
   browsers?: Browser[];
   viewport?: number;
   storyId?: string;
+  captureError?: StoryTestFieldsFragment["comparisons"][number]["headCapture"]["captureError"];
 }): StoryTestFieldsFragment {
   const id = options.id || "11";
   const status = options.status || TestStatus.Passed;
@@ -117,6 +121,7 @@ export function makeTest(options: {
         browser: browserKey,
         viewport: viewportWidth,
         result: options.comparisonResults?.[index] ?? testResultToComparisonResult[result],
+        captureError: options.captureError,
       })
     );
   }

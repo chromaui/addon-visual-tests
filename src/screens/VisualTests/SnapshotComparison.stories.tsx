@@ -5,7 +5,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { screen, userEvent, within } from "@storybook/testing-library";
 import React, { ComponentProps } from "react";
 
-import { Browser, ComparisonResult, TestStatus } from "../../gql/graphql";
+import { Browser, CaptureErrorKind, ComparisonResult, TestStatus } from "../../gql/graphql";
 import { playAll } from "../../utils/playAll";
 import {
   baseCapture,
@@ -160,26 +160,13 @@ export const InteractionFailure: Story = {
     tests: [
       makeTest({
         status: TestStatus.Broken,
-        comparisons: [
-          {
-            id: "1",
-            browser: makeBrowserInfo(Browser.Chrome),
-            viewport: makeViewportInfo(1200),
-            result: ComparisonResult.CaptureError,
-            baseCapture,
-            headCapture: {
-              ...headCapture,
-              captureError: {
-                kind: "INTERACTION_FAILURE",
-                error: {
-                  name: "Error",
-                  message: `Unable to find an element by: [data-testid="button-toggle-snapshot"]`,
-                },
-              },
-            },
-            captureDiff,
+        captureError: {
+          kind: CaptureErrorKind.InteractionFailure,
+          error: {
+            name: "Error",
+            message: `Unable to find an element by: [data-testid="button-toggle-snapshot"]`,
           },
-        ],
+        },
       }),
     ],
   },
