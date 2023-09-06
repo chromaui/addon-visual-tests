@@ -1,8 +1,7 @@
-import { logger } from "@storybook/client-logger";
 import { Spinner } from "@storybook/design-system";
 import type { API } from "@storybook/manager-api";
-import { useChannel, useStorybookApi, useStorybookState } from "@storybook/manager-api";
-import React, { useCallback, useEffect } from "react";
+import { useChannel, useStorybookState } from "@storybook/manager-api";
+import React, { useCallback } from "react";
 
 import {
   ADDON_ID,
@@ -31,46 +30,10 @@ interface PanelProps {
 export const Panel = ({ active, api }: PanelProps) => {
   const [accessToken, setAccessToken] = useAccessToken();
   const { storyId } = useStorybookState();
-  const { addNotification } = useStorybookApi();
 
   const [gitInfo] = useAddonState<GitInfoPayload>(GIT_INFO);
   const [runningBuild] = useAddonState<RunningBuildPayload>(RUNNING_BUILD);
   const emit = useChannel({});
-
-  useEffect(() => {
-    if (runningBuild?.step === "complete") {
-      addNotification({
-        id: "chromatic/build-complete",
-        link: "#",
-        content: {
-          headline: "Build complete",
-          subHeadline:
-            "Your build is complete. Check the terminal running storybook for more details.",
-        },
-        icon: {
-          name: "check",
-          color: "green",
-        },
-      });
-    }
-    if (runningBuild?.step === "error") {
-      logger.error("Build error:", runningBuild.originalError);
-      addNotification({
-        id: "chromatic/build-error",
-        link: "#",
-        content: {
-          headline: "Build error",
-          subHeadline:
-            "There was an error running your build. Check the terminal running storybook for more details.",
-          // Not we do not show the full error message because it is long and formatted for the terminal.
-        },
-        icon: {
-          name: "alert",
-          color: "red",
-        },
-      });
-    }
-  }, [addNotification, runningBuild?.step, runningBuild?.originalError]);
 
   const updateBuildStatus = useCallback<UpdateStatusFunction>(
     (update) => api.experimental_updateStatus(ADDON_ID, update),

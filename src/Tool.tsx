@@ -1,7 +1,8 @@
+import { logger } from "@storybook/client-logger";
 import { IconButton, Icons, WithTooltip } from "@storybook/components";
-import { useChannel } from "@storybook/manager-api";
+import { useChannel, useStorybookApi } from "@storybook/manager-api";
 import { styled } from "@storybook/theming";
-import React, { ComponentProps, FC } from "react";
+import React, { ComponentProps, FC, useEffect } from "react";
 
 import { RUNNING_BUILD, RunningBuildPayload, START_BUILD } from "./constants";
 import { useAddonState } from "./useAddonState/manager";
@@ -25,6 +26,43 @@ export const Tool = () => {
 
   const [runningBuild] = useAddonState<RunningBuildPayload>(RUNNING_BUILD);
   const isRunning = !!runningBuild && runningBuild.step !== "complete";
+
+  const { addNotification } = useStorybookApi();
+
+  useEffect(() => {
+    if (runningBuild?.step === "complete") {
+      addNotification({
+        id: "chromatic/build-complete",
+        link: undefined,
+        content: {
+          headline: "Build complete",
+          subHeadline:
+            "Your build is complete. Check the terminal running storybook for more details.",
+        },
+        icon: {
+          name: "check",
+          color: "green",
+        },
+      });
+    }
+    if (runningBuild?.step === "error") {
+      logger.error("Build error:", runningBuild.originalError);
+      addNotification({
+        id: "chromatic/build-error",
+        link: undefined,
+        content: {
+          headline: "Build error",
+          subHeadline:
+            "There was an error running your build. Check the terminal running storybook for more details.",
+          // Not we do not show the full error message because it is long and formatted for the terminal.
+        },
+        icon: {
+          name: "alert",
+          color: "red",
+        },
+      });
+    }
+  }, [addNotification, runningBuild?.step, runningBuild?.originalError]);
 
   const emit = useChannel({});
   const startBuild = () => emit(START_BUILD);
