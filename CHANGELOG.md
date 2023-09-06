@@ -1,3 +1,27 @@
+# v0.0.58 (Wed Sep 06 2023)
+
+#### 🐛 Bug Fix
+
+- Refactor `VisualTests` component into three [#80](https://github.com/chromaui/addon-visual-tests/pull/80) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.57 (Wed Sep 06 2023)
+
+#### 🐛 Bug Fix
+
+- Rename `VisualTests` stories [#79](https://github.com/chromaui/addon-visual-tests/pull/79) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.56 (Wed Sep 06 2023)
 
 #### 🐛 Bug Fix
