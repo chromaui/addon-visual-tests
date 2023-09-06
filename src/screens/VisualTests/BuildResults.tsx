@@ -1,6 +1,6 @@
 import { Icons } from "@storybook/components";
 import { Icon, TooltipNote, WithTooltip } from "@storybook/design-system";
-import React, { Dispatch, SetStateAction } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 
 import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
@@ -27,52 +27,43 @@ import { Warnings } from "./Warnings";
 
 interface BuildResultsProps {
   runningBuild: RunningBuildPayload;
+  storyBuild: StoryBuildFieldsFragment;
   nextBuild: NextBuildFieldsFragment;
-  switchToNextBuild: () => void;
-  canSwitchToNextBuild: boolean;
-  settingsVisible: boolean;
-  warningsVisible: boolean;
+  switchToNextBuild?: () => void;
   startDevBuild: () => void;
   isAccepting: boolean;
   onAccept: (testId: string, batch: ReviewTestBatch) => Promise<void>;
-  baselineImageVisible: boolean;
-  setSettingsVisible: Dispatch<SetStateAction<boolean>>;
-  setWarningsVisible: Dispatch<SetStateAction<boolean>>;
-  toggleBaselineImage: () => void;
-  storyBuild: StoryBuildFieldsFragment;
   setAccessToken: (accessToken: string | null) => void;
   uncommittedHash: string;
 }
 
 export const BuildResults = ({
   runningBuild,
-  canSwitchToNextBuild,
   nextBuild,
   switchToNextBuild,
-  settingsVisible,
-  warningsVisible,
   startDevBuild,
   isAccepting,
   onAccept,
-  baselineImageVisible,
-  setSettingsVisible,
-  setWarningsVisible,
-  toggleBaselineImage,
   storyBuild,
   setAccessToken,
   uncommittedHash,
 }: BuildResultsProps) => {
+  const [settingsVisible, setSettingsVisible] = useState(false);
+  const [warningsVisible, setWarningsVisible] = useState(false);
+  const [baselineImageVisible, setBaselineImageVisible] = useState(false);
+  const toggleBaselineImage = () => setBaselineImageVisible(!baselineImageVisible);
+
   const isRunningBuildInProgress = runningBuild && runningBuild.step !== "complete";
   const showBuildStatus =
     // We always want to show the status of the running build (until it is done)
     isRunningBuildInProgress ||
     // Even if there's no build running, we want to show the next build if it hasn't been selected.
-    (canSwitchToNextBuild && nextBuild.id !== storyBuild?.id);
+    (switchToNextBuild && nextBuild.id !== storyBuild?.id);
   const runningBuildIsNextBuild = runningBuild && runningBuild?.id === nextBuild?.id;
   const buildStatus = showBuildStatus && (
     <BuildProgress
       runningBuild={(runningBuildIsNextBuild || isRunningBuildInProgress) && runningBuild}
-      switchToNextBuild={canSwitchToNextBuild && switchToNextBuild}
+      switchToNextBuild={switchToNextBuild}
     />
   );
 

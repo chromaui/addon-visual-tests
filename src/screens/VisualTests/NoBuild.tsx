@@ -9,29 +9,24 @@ import { Heading } from "../../components/Heading";
 import { ProgressIcon } from "../../components/icons/ProgressIcon";
 import { Bar, Col, Row, Section, Sections, Text } from "../../components/layout";
 import { Text as CenterText } from "../../components/Text";
-import { GitInfoPayload } from "../../constants";
-import { AddonVisualTestsBuildQuery, NextBuildFieldsFragment } from "../../gql/graphql";
 
 interface NoBuildProps {
   error: CombinedError;
-  data: AddonVisualTestsBuildQuery;
-  nextBuild: NextBuildFieldsFragment;
+  hasData: boolean;
+  hasNextBuild: boolean;
   startDevBuild: () => void;
   isRunningBuildStarting: boolean;
-  gitInfo: Pick<
-    GitInfoPayload,
-    "slug" | "branch" | "committedAt" | "uncommittedHash" | "userEmailHash"
-  >;
+  branch: string;
   setAccessToken: (accessToken: string | null) => void;
 }
 
 export const NoBuild = ({
   error,
-  data,
-  nextBuild,
+  hasData,
+  hasNextBuild,
   startDevBuild,
   isRunningBuildStarting,
-  gitInfo,
+  branch,
   setAccessToken,
 }: NoBuildProps) => (
   <Sections>
@@ -44,9 +39,9 @@ export const NoBuild = ({
         </Row>
       )}
 
-      {!data && <Loader />}
+      {!hasData && <Loader />}
 
-      {data && !nextBuild && !error && (
+      {hasData && !hasNextBuild && !error && (
         <Container>
           <Heading>Create a test baseline</Heading>
           <CenterText>
@@ -70,7 +65,7 @@ export const NoBuild = ({
       <Bar>
         <Col>
           <Text style={{ marginLeft: 5 }}>
-            {data ? `Waiting for build on ${gitInfo.branch}` : "Loading..."}
+            {hasData ? `Waiting for build on ${branch}` : "Loading..."}
           </Text>
         </Col>
         <Col push>

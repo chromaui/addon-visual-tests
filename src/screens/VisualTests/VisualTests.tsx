@@ -49,11 +49,6 @@ export const VisualTests = ({
   gitInfo,
   storyId,
 }: VisualTestsProps) => {
-  const [settingsVisible, setSettingsVisible] = useState(false);
-  const [warningsVisible, setWarningsVisible] = useState(false);
-  const [baselineImageVisible, setBaselineImageVisible] = useState(false);
-  const toggleBaselineImage = () => setBaselineImageVisible(!baselineImageVisible);
-
   // The storyId and buildId that drive the test(s) we are currently looking at
   // The user can choose when to change story (via sidebar) and build (via opting into new builds)
   const [storyBuildInfo, setStoryBuildInfo] = useState<{
@@ -152,15 +147,16 @@ export const VisualTests = ({
 
   const isRunningBuildStarting = runningBuild?.step === "initialize";
 
+  const { branch, uncommittedHash } = gitInfo;
   return !nextBuild || error ? (
     <NoBuild
       {...{
         error,
-        data,
-        nextBuild,
+        hasData: !!data,
+        hasNextBuild: !!nextBuild,
         startDevBuild,
         isRunningBuildStarting,
-        gitInfo,
+        branch,
         setAccessToken,
       }}
     />
@@ -169,20 +165,13 @@ export const VisualTests = ({
       {...{
         runningBuild,
         nextBuild,
-        switchToNextBuild,
-        canSwitchToNextBuild,
-        settingsVisible,
-        warningsVisible,
+        switchToNextBuild: canSwitchToNextBuild && switchToNextBuild,
         startDevBuild,
         isAccepting,
         onAccept,
-        baselineImageVisible,
-        setSettingsVisible,
-        setWarningsVisible,
-        toggleBaselineImage,
         storyBuild,
         setAccessToken,
-        uncommittedHash: gitInfo.uncommittedHash,
+        uncommittedHash,
       }}
     />
   );
