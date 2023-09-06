@@ -185,7 +185,7 @@ export const SnapshotComparison = ({
         />
       )}
 
-      {!isInProgress && selectedComparison?.headCapture?.captureError && (
+      {!isInProgress && selectedComparison?.headCapture?.captureError?.error && (
         <>
           <Divider>
             <b>Error stack trace</b>
