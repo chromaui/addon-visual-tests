@@ -10,7 +10,14 @@ import type {
   StatusTestFieldsFragment,
   StoryTestFieldsFragment,
 } from "../../gql/graphql";
-import { Browser, BuildStatus, ComparisonResult, TestResult, TestStatus } from "../../gql/graphql";
+import {
+  Browser,
+  BuildStatus,
+  CaptureErrorKind,
+  ComparisonResult,
+  TestResult,
+  TestStatus,
+} from "../../gql/graphql";
 import {
   AnnouncedBuild,
   BuildWithTests,
@@ -409,28 +416,18 @@ export const CaptureError: Story = {
 export const InteractionFailure: Story = {
   parameters: {
     ...withBuild(
-      withTests(
-        brokenBuild,
-        primaryTests.map((test) => ({
-          ...test,
+      withTests(brokenBuild, [
+        makeTest({
           status: TestStatus.Broken,
-          result: TestResult.CaptureError,
-          comparisons: test.comparisons.map((comparison) => ({
-            ...comparison,
-            headCapture: {
-              ...comparison.headCapture,
-              captureError: {
-                kind: "INTERACTION_FAILURE",
-                error: {
-                  name: "Error",
-                  message: `Unable to find an element by: [data-testid="button-toggle-snapshot"]`,
-                },
-              },
+          captureError: {
+            kind: CaptureErrorKind.InteractionFailure,
+            error: {
+              name: "Error",
+              message: `Unable to find an element by: [data-testid="button-toggle-snapshot"]`,
             },
-            result: ComparisonResult.CaptureError,
-          })),
-        }))
-      )
+          },
+        }),
+      ])
     ),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-305053&t=0rxMQnkxsVpVj1qy-4"
