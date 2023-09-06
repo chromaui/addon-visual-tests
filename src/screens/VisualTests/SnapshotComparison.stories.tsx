@@ -1,21 +1,12 @@
 import { action } from "@storybook/addon-actions";
 import { expect } from "@storybook/jest";
-import { useState } from "@storybook/preview-api";
 import type { Meta, StoryObj } from "@storybook/react";
 import { screen, userEvent, within } from "@storybook/testing-library";
 import React, { ComponentProps } from "react";
 
 import { Browser, CaptureErrorKind, ComparisonResult, TestStatus } from "../../gql/graphql";
 import { playAll } from "../../utils/playAll";
-import {
-  baseCapture,
-  captureDiff,
-  headCapture,
-  makeBrowserInfo,
-  makeTest,
-  makeTests,
-  makeViewportInfo,
-} from "../../utils/storyData";
+import { makeTest, makeTests } from "../../utils/storyData";
 import { SnapshotComparison } from "./SnapshotComparison";
 
 const meta = {
