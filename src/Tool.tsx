@@ -33,6 +33,16 @@ export const Tool = () => {
     return null;
   }
 
+  return <ToolContent isRunning={isRunning} startBuild={startBuild} />;
+};
+
+export const ToolContent = ({
+  isRunning = false,
+  startBuild,
+}: {
+  isRunning?: boolean;
+  startBuild: () => void;
+}) => {
   if (isRunning) {
     return (
       <WithTooltip tooltip="Running visual tests...">
