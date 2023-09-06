@@ -82,7 +82,7 @@ export function summarizeTests(tests: StoryTestFieldsFragment[]) {
     browser: browserInfoById[id],
     result,
   }));
-  const viewportResults = Object.entries(resultsByViewport).map(([id, result]) => ({
+  const modeResults = Object.entries(resultsByViewport).map(([id, result]) => ({
     viewport: viewportInfoById[id],
     result,
   }));
@@ -93,6 +93,6 @@ export function summarizeTests(tests: StoryTestFieldsFragment[]) {
     changeCount,
     brokenCount,
     browserResults,
-    viewportResults,
+    modeResults,
   };
 }
