@@ -287,7 +287,7 @@ export const VisualTests = ({
     return () => clearInterval(interval);
   }, [rerun]);
 
-  const [{ fetching: isAccepting }, reviewTest] = useMutation(MutationReviewTest);
+  const [{ fetching: isReviewing }, reviewTest] = useMutation(MutationReviewTest);
 
   const onAccept = useCallback(
     async (testId: string, batch: ReviewTestBatch) => {
@@ -501,7 +501,7 @@ export const VisualTests = ({
           <SnapshotComparison
             {...{
               tests: storyTests,
-              isAccepting,
+              isReviewing,
               isOutdated,
               onAccept,
               onUnaccept,
