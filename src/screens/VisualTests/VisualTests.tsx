@@ -152,24 +152,19 @@ export const VisualTests = ({
 
   const isRunningBuildStarting = runningBuild?.step === "initialize";
 
-  if (!nextBuild || error) {
-    return (
-      <NoBuild
-        {...{
-          error,
-          data,
-          nextBuild,
-          startDevBuild,
-          isRunningBuildStarting,
-          gitInfo,
-          setAccessToken,
-        }}
-      />
-    );
-  }
-  const { uncommittedHash } = gitInfo;
-
-  return (
+  return !nextBuild || error ? (
+    <NoBuild
+      {...{
+        error,
+        data,
+        nextBuild,
+        startDevBuild,
+        isRunningBuildStarting,
+        gitInfo,
+        setAccessToken,
+      }}
+    />
+  ) : (
     <BuildResults
       {...{
         runningBuild,
@@ -187,7 +182,7 @@ export const VisualTests = ({
         toggleBaselineImage,
         storyBuild,
         setAccessToken,
-        uncommittedHash,
+        uncommittedHash: gitInfo.uncommittedHash,
       }}
     />
   );
