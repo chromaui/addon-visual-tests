@@ -3,6 +3,7 @@ import type { API } from "@storybook/manager-api";
 import { useChannel, useStorybookState } from "@storybook/manager-api";
 import React, { useCallback } from "react";
 
+import { Sections } from "./components/layout";
 import {
   ADDON_ID,
   DEV_BUILD_ID_KEY,
@@ -54,10 +55,6 @@ export const Panel = ({ active, api }: PanelProps) => {
     clearProjectIdUpdated,
   } = useProjectId();
 
-  // Render a hidden element when the addon panel is not active.
-  // Storybook's AddonPanel component does the same but it's not styleable so we don't use it.
-  if (!active) return <div hidden key={PANEL_ID} />;
-
   // Render the Authentication flow if the user is not signed in.
   if (!accessToken) return <Authentication key={PANEL_ID} setAccessToken={setAccessToken} />;
 
@@ -69,45 +66,53 @@ export const Panel = ({ active, api }: PanelProps) => {
   if (!projectId)
     return (
       <Provider key={PANEL_ID} value={client}>
-        <LinkProject onUpdateProject={updateProject} setAccessToken={setAccessToken} />
+        <Sections hidden={!active}>
+          <LinkProject onUpdateProject={updateProject} setAccessToken={setAccessToken} />
+        </Sections>
       </Provider>
     );
 
   if (projectUpdatingFailed) {
     return (
-      <LinkingProjectFailed
-        projectId={projectId}
-        projectToken={projectToken}
-        mainPath={mainPath}
-        configDir={configDir}
-      />
+      <Sections hidden={!active}>
+        <LinkingProjectFailed
+          projectId={projectId}
+          projectToken={projectToken}
+          mainPath={mainPath}
+          configDir={configDir}
+        />
+      </Sections>
     );
   }
 
   if (projectIdUpdated) {
     return (
       <Provider key={PANEL_ID} value={client}>
-        <LinkedProject
-          projectId={projectId}
-          mainPath={mainPath}
-          goToNext={clearProjectIdUpdated}
-          setAccessToken={setAccessToken}
-        />
+        <Sections hidden={!active}>
+          <LinkedProject
+            projectId={projectId}
+            mainPath={mainPath}
+            goToNext={clearProjectIdUpdated}
+            setAccessToken={setAccessToken}
+          />
+        </Sections>
       </Provider>
     );
   }
 
   return (
     <Provider key={PANEL_ID} value={client}>
-      <VisualTests
-        projectId={projectId}
-        gitInfo={gitInfo}
-        runningBuild={runningBuild}
-        startDevBuild={() => emit(START_BUILD)}
-        setAccessToken={setAccessToken}
-        updateBuildStatus={updateBuildStatus}
-        storyId={storyId}
-      />
+      <Sections hidden={!active}>
+        <VisualTests
+          projectId={projectId}
+          gitInfo={gitInfo}
+          runningBuild={runningBuild}
+          startDevBuild={() => emit(START_BUILD)}
+          setAccessToken={setAccessToken}
+          updateBuildStatus={updateBuildStatus}
+          storyId={storyId}
+        />
+      </Sections>
     </Provider>
   );
 };
