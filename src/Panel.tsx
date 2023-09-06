@@ -41,7 +41,7 @@ export const Panel = ({ active, api }: PanelProps) => {
     if (runningBuild?.step === "complete") {
       addNotification({
         id: "chromatic/build-complete",
-        link: "https://www.chromatic.com/docs/cli",
+        link: "#",
         content: {
           headline: "Build complete",
           subHeadline:
@@ -57,7 +57,7 @@ export const Panel = ({ active, api }: PanelProps) => {
       logger.error("Build error:", runningBuild.originalError);
       addNotification({
         id: "chromatic/build-error",
-        link: "https://www.chromatic.com/docs/cli",
+        link: "#",
         content: {
           headline: "Build error",
           subHeadline:
