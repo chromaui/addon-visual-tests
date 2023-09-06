@@ -160,6 +160,12 @@ const FragmentStoryTestFields = graphql(/* GraphQL */ `
           ... on CaptureErrorInteractionFailure {
             error
           }
+          ... on CaptureErrorJsError {
+            error
+          }
+          ... on CaptureErrorFailedJs {
+            error
+          }
         }
       }
       baseCapture {
