@@ -8,8 +8,7 @@ import { Tool } from "./Tool";
 
 addons.register(ADDON_ID, (api) => {
   addons.add(TOOL_ID, {
-    type: types.TOOL,
-    title: "Run visual tests",
+    type: types.experimental_SIDEBAR_TOP,
     render: Tool,
   });
 
