@@ -19,10 +19,24 @@ import {
 import { summarizeTests } from "../../utils/summarizeTests";
 import { useTests } from "../../utils/useTests";
 
-const Divider = styled.div(({ theme }) => ({
-  backgroundColor: theme.appBorderColor,
-  height: 1,
-  width: "100%",
+const Divider = styled.div(({ children, theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  border: `0px solid ${theme.appBorderColor}`,
+  borderTopWidth: 1,
+  borderBottomWidth: children ? 1 : 0,
+  height: children ? 40 : 0,
+  padding: children ? "0 15px" : 0,
+}));
+
+const StackTrace = styled.div(({ theme }) => ({
+  fontFamily: theme.typography.fonts.mono,
+  fontSize: theme.typography.size.s1,
+  color: theme.color.defaultText,
+  lineHeight: "18px",
+  padding: 15,
+  whiteSpace: "pre-wrap",
+  wordBreak: "break-word",
 }));
 
 interface SnapshotSectionProps {
@@ -43,6 +57,11 @@ export const SnapshotComparison = ({
 
   const { selectedTest, selectedComparison, onSelectBrowser, onSelectMode } = useTests(tests);
   const { status, isInProgress, changeCount, browserResults, modeResults } = summarizeTests(tests);
+
+  const captureErrorData =
+    selectedComparison?.headCapture?.captureError &&
+    "error" in selectedComparison?.headCapture?.captureError &&
+    selectedComparison?.headCapture?.captureError?.error;
 
   return (
     <>
@@ -169,6 +188,15 @@ export const SnapshotComparison = ({
           diffVisible={diffVisible}
           focusVisible={focusVisible}
         />
+      )}
+
+      {!isInProgress && captureErrorData && (
+        <>
+          <Divider>
+            <b>Error stack trace</b>
+          </Divider>
+          <StackTrace>{captureErrorData.stack || captureErrorData.message}</StackTrace>
+        </>
       )}
     </>
   );

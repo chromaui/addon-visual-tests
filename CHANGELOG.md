@@ -1,3 +1,42 @@
+# v0.0.58 (Wed Sep 06 2023)
+
+#### 🐛 Bug Fix
+
+- Refactor `VisualTests` component into three [#80](https://github.com/chromaui/addon-visual-tests/pull/80) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.57 (Wed Sep 06 2023)
+
+#### 🐛 Bug Fix
+
+- Rename `VisualTests` stories [#79](https://github.com/chromaui/addon-visual-tests/pull/79) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.56 (Wed Sep 06 2023)
+
+#### 🐛 Bug Fix
+
+- Show capture error stack trace if there is one [#73](https://github.com/chromaui/addon-visual-tests/pull/73) ([@ghengeveld](https://github.com/ghengeveld))
+- UI: Render the panel in JSX (but hidden) when inactive [#78](https://github.com/chromaui/addon-visual-tests/pull/78) ([@ndelangen](https://github.com/ndelangen))
+- UI: Move toolbar button to sidebar [#77](https://github.com/chromaui/addon-visual-tests/pull/77) ([@ndelangen](https://github.com/ndelangen))
+
+#### Authors: 2
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+
+---
+
 # v0.0.55 (Tue Sep 05 2023)
 
 #### 🐛 Bug Fix

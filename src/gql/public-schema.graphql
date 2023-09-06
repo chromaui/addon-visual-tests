@@ -478,6 +478,11 @@ type Test implements Node & Temporal {
   parameters: TestParameters!
 
   """
+  The mode applied to this test. If this test was not using modes, the viewport is set as the mode name (e.g. "[viewport]px")
+  """
+  mode: TestMode!
+
+  """
   Reference to the story for this test in the published Storybook for this build.
   """
   story: Story
@@ -565,7 +570,9 @@ type Capture {
   """The result of the capture."""
   result: CaptureResult!
 
-  """The screenshot capture image. Available if the capture was successful."""
+  """
+  The screenshot capture image. Available if the capture was successful or was taken after an interaction error.
+  """
   captureImage: CaptureImage
 
   """Metadata about the error if the capture failed."""
@@ -754,6 +761,21 @@ type TestParameters {
   """This test only contains representative snapshots."""
   representativeOnly: Boolean
 }
+
+type TestMode {
+  """The name of the mode (e.g. "Spanish Dark Mobile")"""
+  name: String!
+
+  """
+  A map of Storybook globals with chosen values that defines how to render a spec (e.g. `{ "lang": "es", "theme": "dark", "viewport": 320 }`)
+  """
+  globals: JSONObject!
+}
+
+"""
+The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSONObject @specifiedBy(url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf")
 
 type Story implements Node & Temporal {
   """GraphQL node identifier"""
@@ -1299,6 +1321,97 @@ enum CompletedBuildComponentRepresentationsOrderField {
   resultOrder
 }
 
+type CaptureErrorComponentOffPage implements CaptureError {
+  """The ID of the capture error."""
+  id: ID!
+
+  """The kind of capture error."""
+  kind: CaptureErrorKind!
+}
+
+type CaptureErrorFailedJS implements CaptureError {
+  """The ID of the capture error."""
+  id: ID!
+
+  """The kind of capture error."""
+  kind: CaptureErrorKind!
+
+  """
+  The original error that caused the capture to fail. Typically contains a name and message.
+  """
+  error: JSONObject!
+}
+
+type CaptureErrorImageTooLarge implements CaptureError {
+  """The ID of the capture error."""
+  id: ID!
+
+  """The kind of capture error."""
+  kind: CaptureErrorKind!
+
+  """The width of the image that was too large."""
+  width: Int!
+
+  """The height of the image that was too large."""
+  height: Int!
+
+  """The maximum number of pixels allowed for an image."""
+  maxImagePixels: Int!
+}
+
+type CaptureErrorInteractionFailure implements CaptureError {
+  """The ID of the capture error."""
+  id: ID!
+
+  """The kind of capture error."""
+  kind: CaptureErrorKind!
+
+  """
+  The original error that caused the capture to fail. Typically contains a name and message.
+  """
+  error: JSONObject!
+}
+
+type CaptureErrorJSError implements CaptureError {
+  """The ID of the capture error."""
+  id: ID!
+
+  """The kind of capture error."""
+  kind: CaptureErrorKind!
+
+  """
+  The original error that caused the capture to fail. Typically contains a name and message.
+  """
+  error: JSONObject!
+}
+
+type CaptureErrorNavigationTimeout implements CaptureError {
+  """The ID of the capture error."""
+  id: ID!
+
+  """The kind of capture error."""
+  kind: CaptureErrorKind!
+
+  """The maximum number of milliseconds allowed for a page to load."""
+  navigationTimeoutMs: Int!
+}
+
+type CaptureErrorNoJS implements CaptureError {
+  """The ID of the capture error."""
+  id: ID!
+
+  """The kind of capture error."""
+  kind: CaptureErrorKind!
+}
+
+type CaptureErrorStoryMissing implements CaptureError {
+  """The ID of the capture error."""
+  id: ID!
+
+  """The kind of capture error."""
+  kind: CaptureErrorKind!
+}
+
 type Query {
   account(id: ID!): Account
   build(id: ID!): Build
@@ -1416,11 +1529,6 @@ type FigmaMetadata implements Node & Temporal {
   """When the entity was last updated or created in Chromatic."""
   updatedAt: DateTime!
 }
-
-"""
-The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
-"""
-scalar JSONObject @specifiedBy(url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf")
 
 type User implements Node {
   """GraphQL node identifier"""
