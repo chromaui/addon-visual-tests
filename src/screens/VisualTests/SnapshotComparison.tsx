@@ -44,12 +44,14 @@ interface SnapshotSectionProps {
   isAccepting: boolean;
   baselineImageVisible: boolean;
   onAccept: (testId: StoryTestFieldsFragment["id"], batch?: ReviewTestBatch) => void;
+  onUnaccept: (testId: StoryTestFieldsFragment["id"]) => void;
 }
 
 export const SnapshotComparison = ({
   tests,
   isAccepting,
   onAccept,
+  onUnaccept,
   baselineImageVisible,
 }: SnapshotSectionProps) => {
   const [diffVisible, setDiffVisible] = useState(true);
@@ -164,6 +166,22 @@ export const SnapshotComparison = ({
                     </IconButton>
                   )}
                 </TooltipMenu>
+              </Col>
+            </>
+          )}
+          {changeCount > 0 && selectedTest.status === TestStatus.Accepted && (
+            <>
+              <Col push>
+                <WithTooltip
+                  tooltip={<TooltipNote note="Unaccept this snapshot" />}
+                  trigger="hover"
+                  hasChrome={false}
+                >
+                  <IconButton onClick={() => onUnaccept(selectedTest.id)}>
+                    <Icons icon="undo" />
+                    Unaccept
+                  </IconButton>
+                </WithTooltip>
               </Col>
             </>
           )}

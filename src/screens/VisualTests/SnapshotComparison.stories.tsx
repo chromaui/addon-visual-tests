@@ -26,6 +26,7 @@ const meta = {
     }),
     isAccepting: false,
     onAccept: action("onAccept"),
+    onUnaccept: action("onUnaccept"),
     baselineImageVisible: false,
   },
 } satisfies Meta<typeof SnapshotComparison>;

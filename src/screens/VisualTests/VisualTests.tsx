@@ -308,6 +308,25 @@ export const VisualTests = ({
     [reviewTest]
   );
 
+  const onUnaccept = useCallback(
+    async (testId: string) => {
+      try {
+        const { error: reviewError } = await reviewTest({
+          input: { testId, status: ReviewTestInputStatus.Pending },
+        });
+
+        if (reviewError) throw reviewError;
+      } catch (err) {
+        // https://linear.app/chromaui/issue/AP-3279/error-handling
+        // eslint-disable-next-line no-console
+        console.log("Failed to unaccept changes:");
+        // eslint-disable-next-line no-console
+        console.log(err);
+      }
+    },
+    [reviewTest]
+  );
+
   const nextBuild = getFragment(FragmentNextBuildFields, data?.project?.lastBuild);
   // Before we set the storyInfo, we use the nextBuild for story data
   const storyBuild = getFragment(
@@ -480,7 +499,14 @@ export const VisualTests = ({
         />
         {!isStoryBuildStarting && storyTests && storyTests.length > 0 && (
           <SnapshotComparison
-            {...{ tests: storyTests, isAccepting, isOutdated, onAccept, baselineImageVisible }}
+            {...{
+              tests: storyTests,
+              isAccepting,
+              isOutdated,
+              onAccept,
+              onUnaccept,
+              baselineImageVisible,
+            }}
           />
         )}
       </Section>
