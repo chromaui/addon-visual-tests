@@ -6,7 +6,6 @@ import React, { useCallback, useEffect } from "react";
 
 import {
   ADDON_ID,
-  DEV_BUILD_ID_KEY,
   GIT_INFO,
   GitInfoPayload,
   PANEL_ID,
@@ -28,8 +27,6 @@ interface PanelProps {
   active: boolean;
   api: API;
 }
-
-const storedBuildId = localStorage.getItem(DEV_BUILD_ID_KEY);
 
 export const Panel = ({ active, api }: PanelProps) => {
   const [accessToken, setAccessToken] = useAccessToken();
