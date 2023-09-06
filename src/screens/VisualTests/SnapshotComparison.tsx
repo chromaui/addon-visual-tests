@@ -41,6 +41,7 @@ const StackTrace = styled.div(({ theme }) => ({
 
 interface SnapshotSectionProps {
   tests: StoryTestFieldsFragment[];
+  isReviewable: boolean;
   isReviewing: boolean;
   baselineImageVisible: boolean;
   onAccept: (testId: StoryTestFieldsFragment["id"], batch?: ReviewTestBatch) => void;
@@ -49,6 +50,7 @@ interface SnapshotSectionProps {
 
 export const SnapshotComparison = ({
   tests,
+  isReviewable,
   isReviewing,
   onAccept,
   onUnaccept,
@@ -113,7 +115,7 @@ export const SnapshotComparison = ({
               </WithTooltip>
             </Col>
           )}
-          {changeCount > 0 && selectedTest.status !== TestStatus.Accepted && (
+          {isReviewable && changeCount > 0 && selectedTest.status !== TestStatus.Accepted && (
             <>
               <Col push>
                 <WithTooltip
@@ -173,7 +175,7 @@ export const SnapshotComparison = ({
               </Col>
             </>
           )}
-          {changeCount > 0 && selectedTest.status === TestStatus.Accepted && (
+          {isReviewable && changeCount > 0 && selectedTest.status === TestStatus.Accepted && (
             <>
               <Col push>
                 <WithTooltip

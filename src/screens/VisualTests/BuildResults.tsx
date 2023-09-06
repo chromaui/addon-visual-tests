@@ -61,7 +61,7 @@ export const BuildResults = ({
     isRunningBuildInProgress ||
     // Even if there's no build running, we want to show the next build if it hasn't been selected.
     (switchToNextBuild && nextBuild.id !== storyBuild?.id);
-  const runningBuildIsNextBuild = runningBuild && runningBuild?.id === nextBuild?.id;
+  const runningBuildIsNextBuild = runningBuild && runningBuild?.id === nextBuild.id;
   const buildStatus = showBuildStatus && (
     <BuildProgress
       runningBuild={(runningBuildIsNextBuild || isRunningBuildInProgress) && runningBuild}
@@ -112,10 +112,11 @@ export const BuildResults = ({
     BuildStatus.Announced,
     BuildStatus.Published,
     BuildStatus.Prepared,
-  ].includes(storyBuild?.status);
+  ].includes(storyBuild.status);
   const startedAt = "startedAt" in storyBuild && storyBuild.startedAt;
-  const isOutdated = storyBuild && storyBuild.uncommittedHash !== uncommittedHash;
+  const isOutdated = storyBuild.uncommittedHash !== uncommittedHash;
   const isBuildFailed = storyBuild.status === BuildStatus.Failed;
+  const isReviewable = storyBuild.id === nextBuild.id;
 
   return (
     <Sections>
@@ -136,6 +137,7 @@ export const BuildResults = ({
           <SnapshotComparison
             {...{
               tests: storyTests,
+              isReviewable,
               isReviewing,
               isOutdated,
               onAccept,
