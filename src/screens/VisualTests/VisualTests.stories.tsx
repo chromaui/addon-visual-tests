@@ -20,7 +20,7 @@ import {
 } from "../../types";
 import { storyWrapper } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
-import { makeBrowserInfo, makeTest } from "../../utils/storyData";
+import { makeTest } from "../../utils/storyData";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
 import * as SnapshotComparisonStories from "./SnapshotComparison.stories";
 import { VisualTests } from "./VisualTests";
@@ -400,6 +400,15 @@ export const Skipped: Story = {
 export const CaptureError: Story = {
   parameters: {
     ...withBuild(brokenBuild),
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-305053&t=0rxMQnkxsVpVj1qy-4"
+    ),
+  },
+};
+
+export const InteractionFailure: Story = {
+  parameters: {
+    ...withBuild(withTests(brokenBuild, SnapshotComparisonStories.InteractionFailure.args.tests)),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-305053&t=0rxMQnkxsVpVj1qy-4"
     ),
