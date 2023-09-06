@@ -1,5 +1,4 @@
-import { Icons, Loader } from "@storybook/components";
-import { Icon, TooltipNote, WithTooltip } from "@storybook/design-system";
+import { Icons, Loader, TooltipNote, WithTooltip } from "@storybook/components";
 import type { API_StatusState } from "@storybook/types";
 import React, { useCallback, useEffect, useState } from "react";
 import { useMutation, useQuery } from "urql";
@@ -499,11 +498,8 @@ export const VisualTests = ({
               trigger="hover"
               hasChrome={false}
             >
-              <IconButton
-                data-testid="button-toggle-snapshot"
-                onClick={() => toggleBaselineImage()}
-              >
-                <Icon icon="transfer" />
+              <IconButton data-testid="button-toggle-snapshot" onClick={toggleBaselineImage}>
+                <Icons icon="transfer" />
               </IconButton>
             </WithTooltip>
           </Col>
