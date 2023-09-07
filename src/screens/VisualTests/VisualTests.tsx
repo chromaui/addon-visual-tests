@@ -1,3 +1,4 @@
+import { useStorybookApi } from "@storybook/manager-api";
 import type { API_StatusState } from "@storybook/types";
 import React, { useCallback, useEffect, useState } from "react";
 import { useMutation, useQuery } from "urql";
@@ -49,6 +50,8 @@ export const VisualTests = ({
   gitInfo,
   storyId,
 }: VisualTestsProps) => {
+  const { addNotification } = useStorybookApi();
+
   // The storyId and buildId that drive the test(s) we are currently looking at
   // The user can choose when to change story (via sidebar) and build (via opting into new builds)
   const [storyBuildInfo, setStoryBuildInfo] = useState<{
@@ -90,14 +93,21 @@ export const VisualTests = ({
 
         if (reviewError) throw reviewError;
       } catch (err) {
-        // https://linear.app/chromaui/issue/AP-3279/error-handling
-        // eslint-disable-next-line no-console
-        console.log("Failed to accept changes:");
-        // eslint-disable-next-line no-console
-        console.log(err);
+        addNotification({
+          id: "chromatic/errorAccepting",
+          link: undefined,
+          content: {
+            headline: "Failed to accept changes",
+            subHeadline: err.message,
+          },
+          icon: {
+            name: "cross",
+            color: "red",
+          },
+        });
       }
     },
-    [reviewTest]
+    [addNotification, reviewTest]
   );
 
   const nextBuild = getFragment(FragmentNextBuildFields, data?.project?.lastBuild);
