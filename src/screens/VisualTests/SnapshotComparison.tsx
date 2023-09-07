@@ -138,7 +138,11 @@ export const SnapshotComparison = ({
                   trigger="hover"
                   hasChrome={false}
                 >
-                  <IconButton secondary onClick={() => onAccept(selectedTest.id)}>
+                  <IconButton
+                    secondary
+                    disabled={isReviewing}
+                    onClick={() => onAccept(selectedTest.id)}
+                  >
                     Accept
                   </IconButton>
                 </WithTooltip>
