@@ -1,4 +1,4 @@
-import { ResultOf } from "@graphql-typed-document-node/core";
+import type { ResultOf } from "@graphql-typed-document-node/core";
 import { action } from "@storybook/addon-actions";
 import { expect } from "@storybook/jest";
 import type { Meta, StoryObj } from "@storybook/react";
