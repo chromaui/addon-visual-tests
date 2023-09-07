@@ -170,6 +170,7 @@ const withBuild = (build: AnnouncedBuild | PublishedBuild | StartedBuild | Compl
   );
 
 const meta = {
+  title: "screens/VisualTests/VisualTests",
   component: VisualTests,
   decorators: [storyWrapper],
   parameters: withBuild(passedBuild),

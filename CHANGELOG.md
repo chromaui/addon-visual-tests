@@ -1,3 +1,52 @@
+# v0.0.60 (Thu Sep 07 2023)
+
+#### 🐛 Bug Fix
+
+- UI: Add ability to un-accept per story [#82](https://github.com/chromaui/addon-visual-tests/pull/82) ([@ndelangen](https://github.com/ndelangen) [@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 2
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+
+---
+
+# v0.0.59 (Thu Sep 07 2023)
+
+#### 🐛 Bug Fix
+
+- Update to 7.1.0 of CLI [#83](https://github.com/chromaui/addon-visual-tests/pull/83) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.58 (Wed Sep 06 2023)
+
+#### 🐛 Bug Fix
+
+- Refactor `VisualTests` component into three [#80](https://github.com/chromaui/addon-visual-tests/pull/80) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.57 (Wed Sep 06 2023)
+
+#### 🐛 Bug Fix
+
+- Rename `VisualTests` stories [#79](https://github.com/chromaui/addon-visual-tests/pull/79) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.56 (Wed Sep 06 2023)
 
 #### 🐛 Bug Fix
