@@ -237,31 +237,6 @@ export const NoChanges: Story = {
   },
 };
 
-export const Outdated: Story = {
-  args: {
-    gitInfo: {
-      ...meta.args.gitInfo,
-      uncommittedHash: "1234abc",
-    },
-  },
-  parameters: {
-    ...withBuilds({ storyBuild: passedBuild }),
-    ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304922&t=0rxMQnkxsVpVj1qy-4"
-    ),
-  },
-};
-
-export const OutdatedStarting: Story = {
-  ...Outdated,
-  args: {
-    ...Outdated.args,
-    runningBuild: {
-      step: "initialize",
-    },
-  },
-};
-
 export const Announced: Story = {
   args: {},
   parameters: {

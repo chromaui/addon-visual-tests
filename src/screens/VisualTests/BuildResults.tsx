@@ -80,10 +80,12 @@ export const BuildResults = ({
       "testsForStatus" in nextBuild ? nextBuild.testsForStatus.nodes : []
     ),
   ];
-  const isStoryOutdated = storyTests.every(({ story: { storyId } }) => {
-    const nextTest = nextTests.find((t) => t.story.storyId === storyId);
-    return nextTest && nextTest.status !== TestStatus.InProgress;
-  });
+  const isStoryOutdated =
+    !isReviewable &&
+    storyTests.every(({ story: { storyId } }) => {
+      const nextTest = nextTests.find((t) => t.story.storyId === storyId);
+      return nextTest && nextTest.status !== TestStatus.InProgress;
+    });
 
   // It shouldn't be possible for one test to be skipped but not all of them
   const isSkipped = !!storyTests?.find((t) => t.result === TestResult.Skipped);
