@@ -135,7 +135,12 @@ async function serverChannel(
         experimental_onTaskProgress: onStartOrProgress,
         experimental_onTaskComplete(ctx) {
           if (ctx.task === "snapshot") {
-            runningBuildState.value = { step: "complete", id: ctx.announcedBuild?.id };
+            runningBuildState.value = {
+              step: "complete",
+              id: ctx.announcedBuild?.id,
+              changeCount: ctx.build.changeCount,
+              errorCount: ctx.build.errorCount,
+            };
           }
         },
         experimental_onTaskError(ctx, { formattedError, originalError }) {

@@ -1,10 +1,10 @@
-import { logger } from "@storybook/client-logger";
 import { IconButton, Icons, WithTooltip } from "@storybook/components";
 import { useChannel, useStorybookApi } from "@storybook/manager-api";
-import { styled } from "@storybook/theming";
+import { color, styled } from "@storybook/theming";
+import pluralize from "pluralize";
 import React, { ComponentProps, useEffect, useRef } from "react";
 
-import { RUNNING_BUILD, RunningBuildPayload, START_BUILD } from "./constants";
+import { ADDON_ID, RUNNING_BUILD, RunningBuildPayload, START_BUILD } from "./constants";
 import { useAddonState } from "./useAddonState/manager";
 import { useAccessToken } from "./utils/graphQLClient";
 import { useProjectId } from "./utils/useProjectId";
@@ -27,46 +27,71 @@ export const Tool = () => {
   const [runningBuild] = useAddonState<RunningBuildPayload>(RUNNING_BUILD);
   const isRunning = !!runningBuild && runningBuild.step !== "complete";
 
-  const { addNotification } = useStorybookApi();
+  const { addNotification, clearNotification } = useStorybookApi();
 
   const lastStep = useRef(runningBuild?.step);
   useEffect(() => {
     if (runningBuild?.step === lastStep.current) return;
     lastStep.current = runningBuild?.step;
 
+    if (runningBuild?.step === "initialize") {
+      addNotification({
+        id: `${ADDON_ID}/build-initialize`,
+        content: {
+          headline: "Build started",
+          subHeadline: "Check the Storybook process on the command line for more details.",
+        },
+        icon: {
+          name: "passed",
+          color: color.positive,
+        },
+        link: undefined,
+      });
+      setTimeout(() => clearNotification(`${ADDON_ID}/build-initialize`), 10_000);
+    }
+
     if (runningBuild?.step === "complete") {
       addNotification({
-        id: "chromatic/build-complete",
-        link: undefined,
+        id: `${ADDON_ID}/build-complete`,
         content: {
           headline: "Build complete",
-          subHeadline:
-            "Your build is complete. Check the terminal running storybook for more details.",
+          // eslint-disable-next-line no-nested-ternary
+          subHeadline: runningBuild.errorCount
+            ? `Encountered ${pluralize("component error", runningBuild.errorCount, true)}`
+            : runningBuild.changeCount
+            ? `Found ${pluralize("change", runningBuild.changeCount, true)}`
+            : "No visual changes detected",
         },
         icon: {
-          name: "check",
-          color: "green",
+          name: "passed",
+          color: color.positive,
         },
-      });
-    }
-    if (runningBuild?.step === "error") {
-      logger.error("Build error:", runningBuild.originalError);
-      addNotification({
-        id: "chromatic/build-error",
         link: undefined,
+      });
+      setTimeout(() => clearNotification(`${ADDON_ID}/build-complete`), 10_000);
+    }
+
+    if (runningBuild?.step === "error") {
+      addNotification({
+        id: `${ADDON_ID}/build-error`,
         content: {
           headline: "Build error",
-          subHeadline:
-            "There was an error running your build. Check the terminal running storybook for more details.",
-          // Not we do not show the full error message because it is long and formatted for the terminal.
+          subHeadline: "Check the Storybook process on the command line for more details.",
         },
         icon: {
-          name: "alert",
-          color: "red",
+          name: "failed",
+          color: color.negative,
         },
+        link: undefined,
       });
     }
-  }, [addNotification, runningBuild?.step, runningBuild?.originalError]);
+  }, [
+    addNotification,
+    clearNotification,
+    runningBuild?.step,
+    runningBuild?.errorCount,
+    runningBuild?.changeCount,
+  ]);
 
   const emit = useChannel({});
   const startBuild = () => emit(START_BUILD);

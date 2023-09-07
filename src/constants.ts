@@ -45,6 +45,10 @@ export type RunningBuildPayload = {
   progress?: number;
   /** total pertains to the current step, and may not be set */
   total?: number;
+  /** Number of visual changes detected */
+  changeCount?: number;
+  /** Number of component errors detected */
+  errorCount?: number;
   /** The error message formatted to display in CLI */
   formattedError?: string;
   /** The original error without formatting */
