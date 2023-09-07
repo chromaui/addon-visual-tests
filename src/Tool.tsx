@@ -2,7 +2,7 @@ import { logger } from "@storybook/client-logger";
 import { IconButton, Icons, WithTooltip } from "@storybook/components";
 import { useChannel, useStorybookApi } from "@storybook/manager-api";
 import { styled } from "@storybook/theming";
-import React, { ComponentProps, FC, useEffect } from "react";
+import React, { ComponentProps, useEffect, useRef } from "react";
 
 import { RUNNING_BUILD, RunningBuildPayload, START_BUILD } from "./constants";
 import { useAddonState } from "./useAddonState/manager";
@@ -29,7 +29,11 @@ export const Tool = () => {
 
   const { addNotification } = useStorybookApi();
 
+  const lastStep = useRef(runningBuild?.step);
   useEffect(() => {
+    if (runningBuild?.step === lastStep.current) return;
+    lastStep.current = runningBuild?.step;
+
     if (runningBuild?.step === "complete") {
       addNotification({
         id: "chromatic/build-complete",

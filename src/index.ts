@@ -138,7 +138,7 @@ async function serverChannel(
             runningBuildState.value = { step: "complete", id: ctx.announcedBuild?.id };
           }
         },
-        onTaskError(ctx, { formattedError, originalError }) {
+        experimental_onTaskError(ctx, { formattedError, originalError }) {
           runningBuildState.value = {
             step: "error",
             id: ctx.announcedBuild?.id,
