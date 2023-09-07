@@ -100,7 +100,7 @@ export const VisualTests = ({
         console.log(err);
       }
     },
-    [reviewTest]
+    [rerun, reviewTest]
   );
 
   const onUnaccept = useCallback(
@@ -122,7 +122,7 @@ export const VisualTests = ({
         console.log(err);
       }
     },
-    [reviewTest]
+    [rerun, reviewTest]
   );
 
   const nextBuild = getFragment(FragmentNextBuildFields, data?.project?.lastBuild);
