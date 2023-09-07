@@ -1,5 +1,4 @@
-import { Icons } from "@storybook/components";
-import { Icon, TooltipNote, WithTooltip } from "@storybook/design-system";
+import { Icons, TooltipNote, WithTooltip } from "@storybook/components";
 import React, { useState } from "react";
 
 import { Button } from "../../components/Button";
@@ -166,7 +165,7 @@ export const BuildResults = ({
                 data-testid="button-toggle-snapshot"
                 onClick={() => toggleBaselineImage()}
               >
-                <Icon icon="transfer" />
+                <Icons icon="transfer" />
               </IconButton>
             </WithTooltip>
           </Col>

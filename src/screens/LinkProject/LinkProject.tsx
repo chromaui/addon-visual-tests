@@ -1,4 +1,5 @@
-import { Avatar, Icon, ListItem } from "@storybook/design-system";
+import { Icons } from "@storybook/components";
+import { Avatar, ListItem } from "@storybook/design-system";
 import { styled } from "@storybook/theming";
 import React, { useState } from "react";
 import { useQuery } from "urql";
@@ -168,7 +169,7 @@ function SelectProject({
                           appearance="secondary"
                           key={project.id}
                           title={project.name}
-                          right={<Icon icon="add" aria-label={project.name} />}
+                          right={<Icons icon="add" aria-label={project.name} />}
                           onClick={() => handleSelectProject(project)}
                           disabled={isSelectingProject}
                         />
