@@ -39,12 +39,22 @@ export const FragmentNextBuildFields = graphql(/* GraphQL */ `
           ...StatusTestFields
         }
       }
+      testsForStory: tests(storyId: $storyId) {
+        nodes {
+          ...NextStoryTestFields
+        }
+      }
     }
     ... on CompletedBuild {
       result
       testsForStatus: tests(statuses: $testStatuses) {
         nodes {
           ...StatusTestFields
+        }
+      }
+      testsForStory: tests(storyId: $storyId) {
+        nodes {
+          ...NextStoryTestFields
         }
       }
     }
@@ -86,6 +96,12 @@ export const FragmentStatusTestFields = graphql(/* GraphQL */ `
     story {
       storyId
     }
+  }
+`);
+
+export const FragmentNextStoryTestFields = graphql(/* GraphQL */ `
+  fragment NextStoryTestFields on Test {
+    status
   }
 `);
 

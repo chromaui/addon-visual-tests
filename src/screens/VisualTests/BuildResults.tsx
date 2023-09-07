@@ -19,7 +19,7 @@ import {
   TestStatus,
 } from "../../gql/graphql";
 import { BuildProgress } from "./BuildProgress";
-import { FragmentStatusTestFields, FragmentStoryTestFields } from "./graphql";
+import { FragmentNextStoryTestFields, FragmentStoryTestFields } from "./graphql";
 import { RenderSettings } from "./RenderSettings";
 import { SnapshotComparison } from "./SnapshotComparison";
 import { StoryInfo } from "./StoryInfo";
@@ -74,18 +74,14 @@ export const BuildResults = ({
       "testsForStory" in storyBuild ? storyBuild.testsForStory.nodes : []
     ),
   ];
-  const nextTests = [
+  const nextStoryTests = [
     ...getFragment(
-      FragmentStatusTestFields,
-      "testsForStatus" in nextBuild ? nextBuild.testsForStatus.nodes : []
+      FragmentNextStoryTestFields,
+      "testsForStory" in nextBuild ? nextBuild.testsForStory.nodes : []
     ),
   ];
   const isStoryOutdated =
-    !isReviewable &&
-    storyTests.every(({ story: { storyId } }) => {
-      const nextTest = nextTests.find((t) => t.story.storyId === storyId);
-      return nextTest && nextTest.status !== TestStatus.InProgress;
-    });
+    !isReviewable && nextStoryTests.every(({ status }) => status !== TestStatus.InProgress);
 
   // It shouldn't be possible for one test to be skipped but not all of them
   const isSkipped = !!storyTests?.find((t) => t.result === TestResult.Skipped);
