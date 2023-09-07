@@ -41,15 +41,19 @@ const StackTrace = styled.div(({ theme }) => ({
 
 interface SnapshotSectionProps {
   tests: StoryTestFieldsFragment[];
-  isAccepting: boolean;
+  isReviewable: boolean;
+  isReviewing: boolean;
   baselineImageVisible: boolean;
   onAccept: (testId: StoryTestFieldsFragment["id"], batch?: ReviewTestBatch) => void;
+  onUnaccept: (testId: StoryTestFieldsFragment["id"]) => void;
 }
 
 export const SnapshotComparison = ({
   tests,
-  isAccepting,
+  isReviewable,
+  isReviewing,
   onAccept,
+  onUnaccept,
   baselineImageVisible,
 }: SnapshotSectionProps) => {
   const [diffVisible, setDiffVisible] = useState(true);
@@ -111,7 +115,7 @@ export const SnapshotComparison = ({
               </WithTooltip>
             </Col>
           )}
-          {changeCount > 0 && selectedTest.status !== TestStatus.Accepted && (
+          {isReviewable && changeCount > 0 && selectedTest.status !== TestStatus.Accepted && (
             <>
               <Col push>
                 <WithTooltip
@@ -119,7 +123,11 @@ export const SnapshotComparison = ({
                   trigger="hover"
                   hasChrome={false}
                 >
-                  <IconButton secondary onClick={() => onAccept(selectedTest.id)}>
+                  <IconButton
+                    secondary
+                    disabled={isReviewing}
+                    onClick={() => onAccept(selectedTest.id)}
+                  >
                     Accept
                   </IconButton>
                 </WithTooltip>
@@ -133,30 +141,30 @@ export const SnapshotComparison = ({
                       title: "Accept story",
                       center: "Accept all unreviewed changes to this story",
                       onClick: () => onAccept(selectedTest.id, ReviewTestBatch.Spec),
-                      disabled: isAccepting,
-                      loading: isAccepting,
+                      disabled: isReviewing,
+                      loading: isReviewing,
                     },
                     {
                       id: "acceptComponent",
                       title: "Accept component",
                       center: "Accept all unreviewed changes for this component",
                       onClick: () => onAccept(selectedTest.id, ReviewTestBatch.Component),
-                      disabled: isAccepting,
-                      loading: isAccepting,
+                      disabled: isReviewing,
+                      loading: isReviewing,
                     },
                     {
                       id: "acceptBuild",
                       title: "Accept entire build",
                       center: "Accept all unreviewed changes for every story in the Storybook",
                       onClick: () => onAccept(selectedTest.id, ReviewTestBatch.Build),
-                      disabled: isAccepting,
-                      loading: isAccepting,
+                      disabled: isReviewing,
+                      loading: isReviewing,
                     },
                   ]}
                 >
                   {(active) => (
                     <IconButton secondary active={active} aria-label="Batch accept">
-                      {isAccepting ? (
+                      {isReviewing ? (
                         <ProgressIcon parentComponent="IconButton" />
                       ) : (
                         <Icons icon="batchaccept" />
@@ -164,6 +172,22 @@ export const SnapshotComparison = ({
                     </IconButton>
                   )}
                 </TooltipMenu>
+              </Col>
+            </>
+          )}
+          {isReviewable && changeCount > 0 && selectedTest.status === TestStatus.Accepted && (
+            <>
+              <Col push>
+                <WithTooltip
+                  tooltip={<TooltipNote note="Unaccept this snapshot" />}
+                  trigger="hover"
+                  hasChrome={false}
+                >
+                  <IconButton disabled={isReviewing} onClick={() => onUnaccept(selectedTest.id)}>
+                    <Icons icon="undo" />
+                    Unaccept
+                  </IconButton>
+                </WithTooltip>
               </Col>
             </>
           )}
