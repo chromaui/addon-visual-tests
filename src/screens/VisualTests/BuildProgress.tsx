@@ -2,6 +2,7 @@ import { Link } from "@storybook/components";
 import { styled } from "@storybook/theming";
 import React from "react";
 
+import { BuildProgressLabel } from "../../components/BuildProgressLabel";
 import { RunningBuildPayload } from "../../constants";
 
 export const Header = styled.div(({ theme }) => ({
@@ -20,7 +21,7 @@ export const Bar = styled.div<{ percentage: number }>(({ theme, percentage }) =>
   left: "0",
   width: `${percentage}%`,
   transition: "all 150ms ease-out",
-  backgroundColor: "#E3F3FF",
+  backgroundColor: theme.background.hoverable,
 }));
 
 export const Text = styled.div({
@@ -33,26 +34,17 @@ type BuildProgressProps = {
   switchToNextBuild?: () => void;
 };
 
-const messageMap: Record<RunningBuildPayload["step"], string> = {
-  initialize: "📦 Validating Storybook files...",
-  build: "📦 Validating Storybook files...",
-  upload: "📡 Uploading to Chromatic...", // TODO represent progress in bytes
-  verify: "🛠️ Initiating build...", // TODO build number
-  snapshot: "👀 Running visual tests...", // TODO count
-  complete: "🎉 Visual tests completed!",
-  error: "❌ Build failed", // TODO error
-};
-
 export function BuildProgress({ runningBuild, switchToNextBuild }: BuildProgressProps) {
-  const percentage =
-    runningBuild && (runningBuild.total ? runningBuild.progress / runningBuild.total : 0.35) * 100;
+  const percentage = runningBuild?.buildProgressPercentage;
 
   // eslint-disable-next-line no-nested-ternary
-  const text = runningBuild
-    ? messageMap[runningBuild.step]
-    : switchToNextBuild
-    ? "There's a newer snapshot with changes"
-    : "Reviewing is disabled because there's a newer snapshot on <branch>";
+  const text = runningBuild ? (
+    <BuildProgressLabel runningBuild={runningBuild} />
+  ) : switchToNextBuild ? (
+    "There's a newer snapshot with changes"
+  ) : (
+    "Reviewing is disabled because there's a newer snapshot on <branch>"
+  );
 
   // We show the "go to next build" button if there's no build running or if the running build is complete
   const showButton = switchToNextBuild && (!runningBuild || runningBuild.step === "complete");

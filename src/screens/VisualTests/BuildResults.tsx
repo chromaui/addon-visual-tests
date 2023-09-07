@@ -60,7 +60,7 @@ export const BuildResults = ({
     isRunningBuildInProgress ||
     // Even if there's no build running, we want to show the next build if it hasn't been selected.
     (switchToNextBuild && nextBuild.id !== storyBuild?.id);
-  const runningBuildIsNextBuild = runningBuild && runningBuild?.id === nextBuild.id;
+  const runningBuildIsNextBuild = runningBuild && runningBuild?.buildId === nextBuild.id;
   const buildStatus = showBuildStatus && (
     <BuildProgress
       runningBuild={(runningBuildIsNextBuild || isRunningBuildInProgress) && runningBuild}
