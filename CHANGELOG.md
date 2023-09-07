@@ -1,3 +1,15 @@
+# v0.0.63 (Thu Sep 07 2023)
+
+#### 🐛 Bug Fix
+
+- Reviewing: Rerun query when accepting & un-accepting changes [#86](https://github.com/chromaui/addon-visual-tests/pull/86) ([@ndelangen](https://github.com/ndelangen))
+
+#### Authors: 1
+
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+
+---
+
 # v0.0.62 (Thu Sep 07 2023)
 
 #### 🐛 Bug Fix
