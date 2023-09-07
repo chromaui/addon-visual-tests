@@ -1,3 +1,15 @@
+# v0.0.59 (Thu Sep 07 2023)
+
+#### 🐛 Bug Fix
+
+- Update to 7.1.0 of CLI [#83](https://github.com/chromaui/addon-visual-tests/pull/83) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.58 (Wed Sep 06 2023)
 
 #### 🐛 Bug Fix
