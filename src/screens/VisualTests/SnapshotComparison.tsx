@@ -118,18 +118,17 @@ export const SnapshotComparison = ({
             </Col>
           )}
 
-          {isAcceptable ||
-            (isUnacceptable && !isReviewable && (
-              <Col push>
-                <WithTooltip
-                  tooltip={<TooltipNote note="This snapshot is outdated so you cannot accept it" />}
-                  trigger="hover"
-                  hasChrome={false}
-                >
-                  <Icons icon="lock" />
-                </WithTooltip>
-              </Col>
-            ))}
+          {(isAcceptable || isUnacceptable) && !isReviewable && (
+            <Col push>
+              <WithTooltip
+                tooltip={<TooltipNote note="This snapshot is outdated so you cannot accept it" />}
+                trigger="hover"
+                hasChrome={false}
+              >
+                <Icons icon="lock" />
+              </WithTooltip>
+            </Col>
+          )}
 
           {isAcceptable && isReviewable && (
             <>
