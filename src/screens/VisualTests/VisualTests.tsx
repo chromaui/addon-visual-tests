@@ -88,7 +88,10 @@ export const VisualTests = ({
           input: { testId, status: ReviewTestInputStatus.Accepted, batch },
         });
 
-        if (reviewError) throw reviewError;
+        if (reviewError) {
+          throw reviewError;
+        }
+        rerun();
       } catch (err) {
         // https://linear.app/chromaui/issue/AP-3279/error-handling
         // eslint-disable-next-line no-console
@@ -97,7 +100,7 @@ export const VisualTests = ({
         console.log(err);
       }
     },
-    [reviewTest]
+    [rerun, reviewTest]
   );
 
   const onUnaccept = useCallback(
@@ -107,7 +110,10 @@ export const VisualTests = ({
           input: { testId, status: ReviewTestInputStatus.Pending },
         });
 
-        if (reviewError) throw reviewError;
+        if (reviewError) {
+          throw reviewError;
+        }
+        rerun();
       } catch (err) {
         // https://linear.app/chromaui/issue/AP-3279/error-handling
         // eslint-disable-next-line no-console
@@ -116,7 +122,7 @@ export const VisualTests = ({
         console.log(err);
       }
     },
-    [reviewTest]
+    [rerun, reviewTest]
   );
 
   const nextBuild = getFragment(FragmentNextBuildFields, data?.project?.nextBuild);
