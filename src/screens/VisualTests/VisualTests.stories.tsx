@@ -333,8 +333,9 @@ export const PendingWithSecondBuildInProgress: Story = {
   args: {
     runningBuild: {
       step: "upload",
-      progress: 1000,
-      total: 2000,
+      stepProgressValue: 1000,
+      stepProgressTotal: 2000,
+      buildProgressPercentage: 50,
     },
   },
 };
