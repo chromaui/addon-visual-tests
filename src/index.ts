@@ -131,9 +131,9 @@ async function serverChannel(
         forceRebuild: true,
         // Builds initiated from the addon are always considered local
         isLocalBuild: true,
-        onTaskStart: onStartOrProgress,
-        onTaskProgress: onStartOrProgress,
-        onTaskComplete(ctx) {
+        experimental_onTaskStart: onStartOrProgress,
+        experimental_onTaskProgress: onStartOrProgress,
+        experimental_onTaskComplete(ctx) {
           if (ctx.task === "snapshot") {
             runningBuildState.value = { step: "complete", id: ctx.announcedBuild?.id };
           }
