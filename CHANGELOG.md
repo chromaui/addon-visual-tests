@@ -1,3 +1,15 @@
+# v0.0.61 (Thu Sep 07 2023)
+
+#### 🐛 Bug Fix
+
+- Avoid `@storybook/design-system` in favor of `@storybook/components` [#81](https://github.com/chromaui/addon-visual-tests/pull/81) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v0.0.60 (Thu Sep 07 2023)
 
 #### 🐛 Bug Fix
