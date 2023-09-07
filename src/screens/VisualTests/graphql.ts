@@ -13,7 +13,7 @@ export const QueryBuild = graphql(/* GraphQL */ `
   ) {
     project(id: $projectId) {
       name
-      lastBuild(
+      nextBuild: lastBuild(
         branches: [$branch]
         slug: $slug
         localBuilds: { localBuildEmailHash: $gitUserEmailHash }
@@ -32,16 +32,8 @@ export const FragmentNextBuildFields = graphql(/* GraphQL */ `
   fragment NextBuildFields on Build {
     __typename
     id
-    commit
     committedAt
-    browsers {
-      id
-      key
-      name
-    }
     ... on StartedBuild {
-      changeCount: testCount(results: [ADDED, CHANGED, FIXED])
-      brokenCount: testCount(results: [CAPTURE_ERROR])
       testsForStatus: tests(first: 1000, statuses: $testStatuses) {
         nodes {
           ...StatusTestFields
@@ -50,8 +42,6 @@ export const FragmentNextBuildFields = graphql(/* GraphQL */ `
     }
     ... on CompletedBuild {
       result
-      changeCount: testCount(results: [ADDED, CHANGED, FIXED])
-      brokenCount: testCount(results: [CAPTURE_ERROR])
       testsForStatus: tests(statuses: $testStatuses) {
         nodes {
           ...StatusTestFields
@@ -67,6 +57,7 @@ export const FragmentStoryBuildFields = graphql(/* GraphQL */ `
     id
     number
     branch
+    committedAt
     uncommittedHash
     status
     ... on StartedBuild {

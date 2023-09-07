@@ -1,88 +1,59 @@
+import type { ResultOf } from "@graphql-typed-document-node/core";
 import { action } from "@storybook/addon-actions";
 import { expect } from "@storybook/jest";
 import type { Meta, StoryObj } from "@storybook/react";
 import { findByRole, findByTestId, fireEvent, waitFor } from "@storybook/testing-library";
+import { getOperationAST } from "graphql";
 import { graphql } from "msw";
 import React from "react";
+import { TypedDocumentNode } from "urql";
 
 import type {
-  AddonVisualTestsBuildQuery,
-  StatusTestFieldsFragment,
+  NextBuildFieldsFragment,
+  StoryBuildFieldsFragment,
   StoryTestFieldsFragment,
 } from "../../gql/graphql";
 import { Browser, BuildStatus, ComparisonResult, TestResult, TestStatus } from "../../gql/graphql";
-import {
-  AnnouncedBuild,
-  BuildWithTests,
-  CompletedBuild,
-  PublishedBuild,
-  StartedBuild,
-} from "../../types";
+import { AnnouncedBuild, PublishedBuild, StoryBuildWithTests } from "../../types";
 import { storyWrapper } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
 import { makeTest } from "../../utils/storyData";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
+import { QueryBuild } from "./graphql";
 import * as SnapshotComparisonStories from "./SnapshotComparison.stories";
 import { VisualTests } from "./VisualTests";
 
 const { tests: primaryTests } = SnapshotComparisonStories.default.args;
 const browsers = [Browser.Chrome, Browser.Safari];
-const tests = [
-  ...primaryTests,
-  makeTest({
-    id: "21",
-    status: TestStatus.Passed,
-    result: TestResult.Equal,
-    browsers,
-    viewport: 1200,
-    storyId: "button--secondary",
-  }),
-  makeTest({
-    id: "31",
-    status: TestStatus.Passed,
-    result: TestResult.Skipped,
-    browsers,
-    viewport: 1200,
-    storyId: "button--tertiary",
-  }),
-];
 
-const paginated = (nodes: StatusTestFieldsFragment[] | StoryTestFieldsFragment[]) => ({
-  edges: nodes.map((node) => ({ cursor: node.id, node })),
-  nodes,
-  pageInfo: {
-    hasNextPage: false,
-    hasPreviousPage: false,
-    startCursor: nodes.at(0).id,
-    endCursor: nodes.at(-1).id,
-  },
-  totalCount: nodes.length,
-});
-
-const withTests = <T extends BuildWithTests>(build: T, fullTests: StoryTestFieldsFragment[]) => ({
+const withTests = <T extends StoryBuildWithTests>(
+  build: T,
+  fullTests: StoryTestFieldsFragment[]
+) => ({
   ...build,
-  testsForStatus: paginated(fullTests),
-  testsForStory: paginated(fullTests),
+  testsForStatus: { nodes: fullTests },
+  testsForStory: { nodes: fullTests },
 });
 
-const announcedBuild: AnnouncedBuild = {
+const announcedBuild = {
   __typename: "AnnouncedBuild",
   id: "1",
   number: 1,
   branch: "feature-branch",
+  committedAt: Date.now() - 2000,
   uncommittedHash: "",
   status: BuildStatus.Announced,
-};
+} satisfies AnnouncedBuild;
 
-const publishedBuild: PublishedBuild = {
-  ...(announcedBuild as any),
+const publishedBuild = {
+  ...announcedBuild,
   __typename: "PublishedBuild",
   status: BuildStatus.Published,
-};
+} satisfies PublishedBuild;
 
-const inProgressBuild: StartedBuild = withTests(
+const inProgressBuild = withTests(
   {
-    ...(publishedBuild as any),
+    ...publishedBuild,
     __typename: "StartedBuild",
     startedAt: new Date(Date.now() - 1000 * 60 * 2), // 2 minutes ago
     status: BuildStatus.InProgress,
@@ -91,12 +62,8 @@ const inProgressBuild: StartedBuild = withTests(
   SnapshotComparisonStories.InProgress.args.tests
 );
 
-const passedBuild: CompletedBuild = withTests(
-  {
-    ...(inProgressBuild as any),
-    status: BuildStatus.Passed,
-    changeCount: 0,
-  },
+const passedBuild = withTests(
+  { ...inProgressBuild, status: BuildStatus.Passed },
   primaryTests.map((test) => ({
     ...test,
     status: TestStatus.Passed,
@@ -108,32 +75,20 @@ const passedBuild: CompletedBuild = withTests(
   }))
 );
 
-const pendingBuild: CompletedBuild = withTests(
-  {
-    ...(inProgressBuild as any),
-    status: BuildStatus.Pending,
-    changeCount: 3,
-  },
-  primaryTests
-);
+const pendingBuild = withTests({ ...inProgressBuild, status: BuildStatus.Pending }, primaryTests);
 
-const acceptedBuild: CompletedBuild = withTests(
-  {
-    ...pendingBuild,
-    status: BuildStatus.Accepted,
-  },
+const acceptedBuild = withTests(
+  { ...pendingBuild, status: BuildStatus.Accepted },
   primaryTests.map((test) => ({
     ...test,
     status: TestStatus.Accepted,
   }))
 );
 
-const brokenBuild: CompletedBuild = withTests(
+const brokenBuild = withTests(
   {
-    ...(inProgressBuild as any),
+    ...inProgressBuild,
     status: BuildStatus.Broken,
-    changeCount: 0,
-    brokenCount: 3,
   },
   primaryTests.map((test) => ({
     ...test,
@@ -158,22 +113,41 @@ const withGraphQLQuery = (...args: Parameters<typeof graphql.query>) => ({
   },
 });
 
+function withGraphQLQueryResult<TQuery extends TypedDocumentNode>(
+  query: TQuery,
+  result: ResultOf<TQuery>
+) {
+  const queryName = getOperationAST(query).name.value;
+  return withGraphQLQuery(queryName, (req, res, ctx) => res(ctx.data(result)));
+}
+
 const withGraphQLMutation = (...args: Parameters<typeof graphql.mutation>) => ({
   msw: {
     handlers: [graphql.mutation(...args)],
   },
 });
 
-const withBuild = (build: AnnouncedBuild | PublishedBuild | StartedBuild | CompletedBuild) =>
-  withGraphQLQuery("AddonVisualTestsBuild", (req, res, ctx) =>
-    res(ctx.data({ project: { name: "acme", lastBuild: build } } as AddonVisualTestsBuildQuery))
-  );
+const withBuilds = ({
+  nextBuild,
+  storyBuild,
+}: {
+  storyBuild?: StoryBuildFieldsFragment;
+  nextBuild?: NextBuildFieldsFragment;
+}) => {
+  return withGraphQLQueryResult(QueryBuild, {
+    project: {
+      name: "acme",
+      nextBuild: nextBuild || storyBuild,
+    },
+    storyBuild,
+  });
+};
 
 const meta = {
   title: "screens/VisualTests/VisualTests",
   component: VisualTests,
   decorators: [storyWrapper],
-  parameters: withBuild(passedBuild),
+  parameters: withBuilds({ storyBuild: passedBuild }),
   args: {
     gitInfo: {
       userEmailHash: "abc123",
@@ -204,11 +178,17 @@ export const Loading: Story = {
   },
 };
 
-export const NoBuild: Story = {
+export const GraphQLError: Story = {
   parameters: {
     ...withGraphQLQuery("AddonVisualTestsBuild", (req, res, ctx) =>
-      res(ctx.data({ build: null } as AddonVisualTestsBuildQuery))
+      res(ctx.status(200), ctx.errors([{ message: "Something went wrong on the server" }]))
     ),
+  },
+};
+
+export const NoNextBuild: Story = {
+  parameters: {
+    ...withBuilds({ storyBuild: null }),
   },
   render: ({ ...args }) => {
     // custom render for mapping `updateBuildStatus` to a function which is mocked, but returns data instead of a function
@@ -225,26 +205,32 @@ export const NoBuild: Story = {
     });
   },
 };
-export const NoBuildStarting: Story = {
-  ...NoBuild,
+
+export const NoNextBuildRunningBuildStarting: Story = {
+  ...NoNextBuild,
   args: {
-    ...NoBuild.args,
+    ...NoNextBuild.args,
     runningBuild: {
       step: "initialize",
     },
   },
-  parameters: {
-    ...withGraphQLQuery("AddonVisualTestsBuild", (req, res, ctx) =>
-      res(ctx.data({ build: null } as AddonVisualTestsBuildQuery))
-    ),
-    // No design for this state
-    // ...withFigmaDesign(""),
+};
+
+export const NoNextBuildRunningBuildUploading: Story = {
+  ...NoNextBuild,
+  args: {
+    ...NoNextBuild.args,
+    runningBuild: {
+      step: "upload",
+      progress: 10,
+      total: 100,
+    },
   },
 };
 
 export const NoChanges: Story = {
   parameters: {
-    ...withBuild(passedBuild),
+    ...withBuilds({ storyBuild: passedBuild }),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304933&t=0rxMQnkxsVpVj1qy-4"
     ),
@@ -259,7 +245,7 @@ export const Outdated: Story = {
     },
   },
   parameters: {
-    ...withBuild(passedBuild),
+    ...withBuilds({ storyBuild: passedBuild }),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304922&t=0rxMQnkxsVpVj1qy-4"
     ),
@@ -279,29 +265,84 @@ export const OutdatedStarting: Story = {
 export const Announced: Story = {
   args: {},
   parameters: {
-    ...withBuild(announcedBuild),
+    ...withBuilds({ storyBuild: announcedBuild }),
   },
 };
 
 export const Published: Story = {
   args: {},
   parameters: {
-    ...withBuild(publishedBuild),
+    ...withBuilds({ storyBuild: publishedBuild }),
   },
 };
 
 export const InProgress: Story = {
+  args: {
+    runningBuild: {
+      step: "snapshot",
+      progress: 20,
+      total: 100,
+    },
+  },
   parameters: {
-    ...withBuild(inProgressBuild),
+    ...withBuilds({ storyBuild: inProgressBuild }),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304861&t=0rxMQnkxsVpVj1qy-4"
     ),
   },
 };
 
+/**
+ * The next build is snapshotting but hasn't yet reached this story
+ */
+export const NextBuildInProgress: Story = {
+  ...InProgress,
+  parameters: {
+    ...withBuilds({ storyBuild: pendingBuild, nextBuild: { ...inProgressBuild, id: "2" } }),
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304861&t=0rxMQnkxsVpVj1qy-4"
+    ),
+  },
+};
+
+/**
+ * The next build is snapshotting and has captured this story
+ */
+export const NextBuildInProgressCapturedStory: Story = {
+  ...InProgress,
+  parameters: {
+    ...withBuilds({
+      storyBuild: pendingBuild,
+      nextBuild: withTests(
+        { ...inProgressBuild, id: "2" },
+        SnapshotComparisonStories.WithSingleTest.args.tests
+      ),
+    }),
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304861&t=0rxMQnkxsVpVj1qy-4"
+    ),
+  },
+};
+
+export const InProgressNoRunningBuild: Story = {
+  parameters: {
+    ...withBuilds({ storyBuild: inProgressBuild }),
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304861&t=0rxMQnkxsVpVj1qy-4"
+    ),
+  },
+};
+
+export const RunningBuildInProgress: Story = {
+  ...InProgress,
+  parameters: {
+    ...withBuilds({ storyBuild: pendingBuild }),
+  },
+};
+
 export const Pending: Story = {
   parameters: {
-    ...withBuild(pendingBuild),
+    ...withBuilds({ storyBuild: pendingBuild }),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304718&t=0rxMQnkxsVpVj1qy-4"
     ),
@@ -328,20 +369,9 @@ export const Pending: Story = {
   },
 };
 
-export const PendingWithSecondBuildInProgress: Story = {
-  ...Pending,
-  args: {
-    runningBuild: {
-      step: "upload",
-      progress: 1000,
-      total: 2000,
-    },
-  },
-};
-
 export const ToggleSnapshot: Story = {
   parameters: {
-    ...withBuild(pendingBuild),
+    ...withBuilds({ storyBuild: pendingBuild }),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=1782%3A446732&mode=design&t=krpUfPW0tIoADqu5-1"
     ),
@@ -356,7 +386,7 @@ export const Accepting: Story = {
   parameters: {
     msw: {
       handlers: [
-        ...withBuild(pendingBuild).msw.handlers,
+        ...withBuilds({ storyBuild: pendingBuild }).msw.handlers,
         ...withGraphQLMutation("ReviewTest", (req, res, ctx) =>
           res(ctx.status(200), ctx.data({}), ctx.delay("infinite"))
         ).msw.handlers,
@@ -374,7 +404,7 @@ export const Accepting: Story = {
 
 export const Accepted: Story = {
   parameters: {
-    ...withBuild(acceptedBuild),
+    ...withBuilds({ storyBuild: acceptedBuild }),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-305053&t=0rxMQnkxsVpVj1qy-4"
     ),
@@ -386,12 +416,18 @@ export const Skipped: Story = {
     storyId: "button--tertiary",
   },
   parameters: {
-    ...withBuild(
-      withTests(
-        pendingBuild,
-        tests.filter(({ story }) => story.storyId === "button--tertiary")
-      )
-    ),
+    ...withBuilds({
+      storyBuild: withTests(pendingBuild, [
+        makeTest({
+          id: "31",
+          status: TestStatus.Passed,
+          result: TestResult.Skipped,
+          browsers,
+          viewport: 1200,
+          storyId: "button--tertiary",
+        }),
+      ]),
+    }),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2255-42087&t=a8NRPgQk3kXMyxqZ-0"
     ),
@@ -400,7 +436,7 @@ export const Skipped: Story = {
 
 export const CaptureError: Story = {
   parameters: {
-    ...withBuild(brokenBuild),
+    ...withBuilds({ storyBuild: brokenBuild }),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-305053&t=0rxMQnkxsVpVj1qy-4"
     ),
@@ -409,7 +445,9 @@ export const CaptureError: Story = {
 
 export const InteractionFailure: Story = {
   parameters: {
-    ...withBuild(withTests(brokenBuild, SnapshotComparisonStories.InteractionFailure.args.tests)),
+    ...withBuilds({
+      storyBuild: withTests(brokenBuild, SnapshotComparisonStories.InteractionFailure.args.tests),
+    }),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-305053&t=0rxMQnkxsVpVj1qy-4"
     ),
@@ -418,7 +456,27 @@ export const InteractionFailure: Story = {
 
 export const InfrastructureError: Story = {
   parameters: {
-    ...withBuild(failedBuild),
+    ...withBuilds({ storyBuild: failedBuild }),
+  },
+};
+
+/** The new build is newer than the story build (but we didn't run it) */
+export const NextBuildNewer: Story = {
+  parameters: {
+    ...withBuilds({
+      storyBuild: pendingBuild,
+      nextBuild: { ...pendingBuild, id: "2", committedAt: meta.args.gitInfo.committedAt },
+    }),
+  },
+};
+
+/** The new build is newer than the story build and the git info */
+export const NextBuildNewerThanCommit: Story = {
+  parameters: {
+    ...withBuilds({
+      storyBuild: pendingBuild,
+      nextBuild: { ...pendingBuild, id: "2", committedAt: meta.args.gitInfo.committedAt + 1 },
+    }),
   },
 };
 
