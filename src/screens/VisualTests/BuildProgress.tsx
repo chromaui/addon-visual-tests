@@ -40,6 +40,7 @@ const messageMap: Record<RunningBuildPayload["step"], string> = {
   verify: "🛠️ Initiating build...", // TODO build number
   snapshot: "👀 Running visual tests...", // TODO count
   complete: "🎉 Visual tests completed!",
+  error: "❌ Build failed", // TODO error
 };
 
 export function BuildProgress({ runningBuild, switchToNextBuild }: BuildProgressProps) {
