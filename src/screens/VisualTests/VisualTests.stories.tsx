@@ -398,9 +398,6 @@ export const AcceptingFailed: Story = {
         ).msw.handlers,
       ],
     },
-    ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304718&t=0rxMQnkxsVpVj1qy-4"
-    ),
   },
   play: playAll(async ({ canvasElement, argsByTarget, args, argTypes }) => {
     const button = await findByRole(canvasElement, "button", { name: "Accept" });
