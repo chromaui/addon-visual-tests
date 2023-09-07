@@ -17,9 +17,10 @@ import {
   ReviewTestBatch,
   StoryBuildFieldsFragment,
   TestResult,
+  TestStatus,
 } from "../../gql/graphql";
 import { BuildProgress } from "./BuildProgress";
-import { FragmentStoryTestFields } from "./graphql";
+import { FragmentStatusTestFields, FragmentStoryTestFields } from "./graphql";
 import { RenderSettings } from "./RenderSettings";
 import { SnapshotComparison } from "./SnapshotComparison";
 import { StoryInfo } from "./StoryInfo";
@@ -34,7 +35,6 @@ interface BuildResultsProps {
   isAccepting: boolean;
   onAccept: (testId: string, batch: ReviewTestBatch) => Promise<void>;
   setAccessToken: (accessToken: string | null) => void;
-  uncommittedHash: string;
 }
 
 export const BuildResults = ({
@@ -46,7 +46,6 @@ export const BuildResults = ({
   onAccept,
   storyBuild,
   setAccessToken,
-  uncommittedHash,
 }: BuildResultsProps) => {
   const [settingsVisible, setSettingsVisible] = useState(false);
   const [warningsVisible, setWarningsVisible] = useState(false);
@@ -54,11 +53,12 @@ export const BuildResults = ({
   const toggleBaselineImage = () => setBaselineImageVisible(!baselineImageVisible);
 
   const isRunningBuildInProgress = runningBuild && runningBuild.step !== "complete";
+  const isNextBuildSelected = nextBuild.id === storyBuild?.id;
   const showBuildStatus =
     // We always want to show the status of the running build (until it is done)
     isRunningBuildInProgress ||
     // Even if there's no build running, we want to show the next build if it hasn't been selected.
-    nextBuild.id !== storyBuild?.id;
+    !isNextBuildSelected;
   const runningBuildIsNextBuild = runningBuild && runningBuild?.id === nextBuild?.id;
   const buildStatus = showBuildStatus && (
     <BuildProgress
@@ -73,6 +73,16 @@ export const BuildResults = ({
       "testsForStory" in storyBuild ? storyBuild.testsForStory.nodes : []
     ),
   ];
+  const nextTests = [
+    ...getFragment(
+      FragmentStatusTestFields,
+      "testsForStatus" in nextBuild ? nextBuild.testsForStatus.nodes : []
+    ),
+  ];
+  const isStoryOutdated = storyTests.every(
+    ({ story: { storyId } }) =>
+      nextTests.find((t) => t.story.storyId === storyId).status !== TestStatus.InProgress
+  );
 
   // It shouldn't be possible for one test to be skipped but not all of them
   const isSkipped = !!storyTests?.find((t) => t.result === TestResult.Skipped);
@@ -112,7 +122,6 @@ export const BuildResults = ({
     BuildStatus.Prepared,
   ].includes(storyBuild?.status);
   const startedAt = "startedAt" in storyBuild && storyBuild.startedAt;
-  const isOutdated = storyBuild && storyBuild.uncommittedHash !== uncommittedHash;
   const isBuildFailed = storyBuild.status === BuildStatus.Failed;
 
   return (
@@ -123,16 +132,23 @@ export const BuildResults = ({
         <StoryInfo
           {...{
             tests: storyTests,
-            isOutdated,
             startedAt,
             isStarting: isStoryBuildStarting,
             startDevBuild,
             isBuildFailed,
+            isStoryOutdated,
+            switchToNextBuild,
           }}
         />
         {!isStoryBuildStarting && storyTests && storyTests.length > 0 && (
           <SnapshotComparison
-            {...{ tests: storyTests, isAccepting, isOutdated, onAccept, baselineImageVisible }}
+            {...{
+              tests: storyTests,
+              isNextBuildSelected,
+              isAccepting,
+              onAccept,
+              baselineImageVisible,
+            }}
           />
         )}
       </Section>

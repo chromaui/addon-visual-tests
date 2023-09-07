@@ -147,7 +147,7 @@ export const VisualTests = ({
 
   const isRunningBuildStarting = !runningBuild || !["success", "error"].includes(runningBuild.step);
 
-  const { branch, uncommittedHash } = gitInfo;
+  const { branch } = gitInfo;
   return !nextBuild || error ? (
     <NoBuild
       {...{
@@ -171,7 +171,6 @@ export const VisualTests = ({
         onAccept,
         storyBuild,
         setAccessToken,
-        uncommittedHash,
       }}
     />
   );

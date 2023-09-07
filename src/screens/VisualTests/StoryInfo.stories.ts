@@ -11,7 +11,7 @@ const meta = {
     isStarting: false,
     startedAt: new Date(Date.now() - 1000 * 60 * 2), // 2 minutes ago
     startDevBuild: action("startDevBuild"),
-    isOutdated: false,
+    isStoryOutdated: false,
     isBuildFailed: false,
   },
 } satisfies Meta<typeof StoryInfo>;
@@ -31,7 +31,11 @@ export const Announced: Story = {
 // The build hasn't start properly yet but is already out of date
 export const AnnouncedOutdated: Story = {
   ...Announced,
-  args: { ...Announced.args, isOutdated: true },
+  args: {
+    ...Announced.args,
+    isStoryOutdated: true,
+    switchToNextBuild: action("switchToNextBuild"),
+  },
 };
 
 // The build failed before the test had stories
@@ -49,7 +53,8 @@ export const InProgress: Story = {
 export const InProgressOutdated: Story = {
   args: {
     tests: [makeTest({ status: TestStatus.InProgress })],
-    isOutdated: true,
+    isStoryOutdated: true,
+    switchToNextBuild: action("switchToNextBuild"),
   },
 };
 
@@ -63,16 +68,8 @@ export const PendingOutdated: Story = {
   ...Pending,
   args: {
     ...Pending.args,
-    isOutdated: true,
-  },
-};
-
-// Immediately after clicking "Run tests" in the story above
-export const PendingOutdatedStarting: Story = {
-  ...PendingOutdated,
-  args: {
-    ...PendingOutdated.args,
-    isStarting: true,
+    isStoryOutdated: true,
+    switchToNextBuild: action("switchToNextBuild"),
   },
 };
 
@@ -91,6 +88,14 @@ export const Accepted: Story = {
 export const Broken: Story = {
   args: {
     tests: [makeTest({ status: TestStatus.Broken })],
+  },
+};
+
+// Immediately after clicking run tests in the story above
+export const BrokenStarting: Story = {
+  args: {
+    tests: [makeTest({ status: TestStatus.Broken })],
+    isStarting: true,
   },
 };
 

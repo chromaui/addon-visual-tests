@@ -41,19 +41,21 @@ const StackTrace = styled.div(({ theme }) => ({
 
 interface SnapshotSectionProps {
   tests: StoryTestFieldsFragment[];
+  isNextBuildSelected: boolean;
   isAccepting: boolean;
-  baselineImageVisible: boolean;
   onAccept: (testId: StoryTestFieldsFragment["id"], batch?: ReviewTestBatch) => void;
+  baselineImageVisible: boolean;
 }
 
 export const SnapshotComparison = ({
   tests,
+  isNextBuildSelected,
   isAccepting,
   onAccept,
   baselineImageVisible,
 }: SnapshotSectionProps) => {
   const [diffVisible, setDiffVisible] = useState(true);
-  const [focusVisible, setFocusVisible] = useState(false);
+  const [focusVisible] = useState(false);
 
   const { selectedTest, selectedComparison, onSelectBrowser, onSelectMode } = useTests(tests);
   const { status, isInProgress, changeCount, browserResults, modeResults } = summarizeTests(tests);
@@ -63,6 +65,7 @@ export const SnapshotComparison = ({
     "error" in selectedComparison?.headCapture?.captureError &&
     selectedComparison?.headCapture?.captureError?.error;
 
+  const isAcceptable = changeCount > 0 && selectedTest.status !== TestStatus.Accepted;
   return (
     <>
       {isInProgress ? (
@@ -111,62 +114,73 @@ export const SnapshotComparison = ({
               </WithTooltip>
             </Col>
           )}
-          {changeCount > 0 && selectedTest.status !== TestStatus.Accepted && (
-            <>
+          {isAcceptable &&
+            (!isNextBuildSelected ? (
               <Col push>
                 <WithTooltip
-                  tooltip={<TooltipNote note="Accept this snapshot" />}
+                  tooltip={<TooltipNote note="This snapshot is outdated so you cannot accept it" />}
                   trigger="hover"
                   hasChrome={false}
                 >
-                  <IconButton secondary onClick={() => onAccept(selectedTest.id)}>
-                    Accept
-                  </IconButton>
+                  <Icons icon="lock" />
                 </WithTooltip>
               </Col>
-              <Col>
-                <TooltipMenu
-                  placement="bottom"
-                  links={[
-                    {
-                      id: "acceptStory",
-                      title: "Accept story",
-                      center: "Accept all unreviewed changes to this story",
-                      onClick: () => onAccept(selectedTest.id, ReviewTestBatch.Spec),
-                      disabled: isAccepting,
-                      loading: isAccepting,
-                    },
-                    {
-                      id: "acceptComponent",
-                      title: "Accept component",
-                      center: "Accept all unreviewed changes for this component",
-                      onClick: () => onAccept(selectedTest.id, ReviewTestBatch.Component),
-                      disabled: isAccepting,
-                      loading: isAccepting,
-                    },
-                    {
-                      id: "acceptBuild",
-                      title: "Accept entire build",
-                      center: "Accept all unreviewed changes for every story in the Storybook",
-                      onClick: () => onAccept(selectedTest.id, ReviewTestBatch.Build),
-                      disabled: isAccepting,
-                      loading: isAccepting,
-                    },
-                  ]}
-                >
-                  {(active) => (
-                    <IconButton secondary active={active} aria-label="Batch accept">
-                      {isAccepting ? (
-                        <ProgressIcon parentComponent="IconButton" />
-                      ) : (
-                        <Icons icon="batchaccept" />
-                      )}
+            ) : (
+              <>
+                <Col push>
+                  <WithTooltip
+                    tooltip={<TooltipNote note="Accept this snapshot" />}
+                    trigger="hover"
+                    hasChrome={false}
+                  >
+                    <IconButton secondary onClick={() => onAccept(selectedTest.id)}>
+                      Accept
                     </IconButton>
-                  )}
-                </TooltipMenu>
-              </Col>
-            </>
-          )}
+                  </WithTooltip>
+                </Col>
+                <Col>
+                  <TooltipMenu
+                    placement="bottom"
+                    links={[
+                      {
+                        id: "acceptStory",
+                        title: "Accept story",
+                        center: "Accept all unreviewed changes to this story",
+                        onClick: () => onAccept(selectedTest.id, ReviewTestBatch.Spec),
+                        disabled: isAccepting,
+                        loading: isAccepting,
+                      },
+                      {
+                        id: "acceptComponent",
+                        title: "Accept component",
+                        center: "Accept all unreviewed changes for this component",
+                        onClick: () => onAccept(selectedTest.id, ReviewTestBatch.Component),
+                        disabled: isAccepting,
+                        loading: isAccepting,
+                      },
+                      {
+                        id: "acceptBuild",
+                        title: "Accept entire build",
+                        center: "Accept all unreviewed changes for every story in the Storybook",
+                        onClick: () => onAccept(selectedTest.id, ReviewTestBatch.Build),
+                        disabled: isAccepting,
+                        loading: isAccepting,
+                      },
+                    ]}
+                  >
+                    {(active) => (
+                      <IconButton secondary active={active} aria-label="Batch accept">
+                        {isAccepting ? (
+                          <ProgressIcon parentComponent="IconButton" />
+                        ) : (
+                          <Icons icon="batchaccept" />
+                        )}
+                      </IconButton>
+                    )}
+                  </TooltipMenu>
+                </Col>
+              </>
+            ))}
         </Bar>
       )}
 

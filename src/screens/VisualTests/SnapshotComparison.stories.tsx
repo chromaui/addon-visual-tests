@@ -24,6 +24,7 @@ const meta = {
         { status: TestStatus.Passed, viewport: 1200 },
       ],
     }),
+    isNextBuildSelected: true,
     isAccepting: false,
     onAccept: action("onAccept"),
     baselineImageVisible: false,
@@ -76,14 +77,21 @@ export const WithSingleTest: Story = {
 
 export const WithSingleTestAccepting: Story = {
   args: {
+    ...WithSingleTest.args,
     isAccepting: true,
-    tests: [makeTest({ status: TestStatus.Pending })],
   },
 };
 
 export const WithSingleTestAccepted: Story = {
   args: {
     tests: [makeTest({ status: TestStatus.Accepted })],
+  },
+};
+
+export const WithSingleTestOutdated: Story = {
+  args: {
+    ...WithSingleTest.args,
+    isNextBuildSelected: false,
   },
 };
 
