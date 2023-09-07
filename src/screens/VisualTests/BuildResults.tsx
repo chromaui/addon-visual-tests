@@ -1,6 +1,6 @@
 import { Icons } from "@storybook/components";
 import { Icon, TooltipNote, WithTooltip } from "@storybook/design-system";
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { useState } from "react";
 
 import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
@@ -31,8 +31,9 @@ interface BuildResultsProps {
   nextBuild: NextBuildFieldsFragment;
   switchToNextBuild?: () => void;
   startDevBuild: () => void;
-  isAccepting: boolean;
+  isReviewing: boolean;
   onAccept: (testId: string, batch: ReviewTestBatch) => Promise<void>;
+  onUnaccept: (testId: string) => Promise<void>;
   setAccessToken: (accessToken: string | null) => void;
   uncommittedHash: string;
 }
@@ -42,8 +43,9 @@ export const BuildResults = ({
   nextBuild,
   switchToNextBuild,
   startDevBuild,
-  isAccepting,
+  isReviewing,
   onAccept,
+  onUnaccept,
   storyBuild,
   setAccessToken,
   uncommittedHash,
@@ -59,7 +61,7 @@ export const BuildResults = ({
     isRunningBuildInProgress ||
     // Even if there's no build running, we want to show the next build if it hasn't been selected.
     (switchToNextBuild && nextBuild.id !== storyBuild?.id);
-  const runningBuildIsNextBuild = runningBuild && runningBuild?.id === nextBuild?.id;
+  const runningBuildIsNextBuild = runningBuild && runningBuild?.id === nextBuild.id;
   const buildStatus = showBuildStatus && (
     <BuildProgress
       runningBuild={(runningBuildIsNextBuild || isRunningBuildInProgress) && runningBuild}
@@ -110,10 +112,11 @@ export const BuildResults = ({
     BuildStatus.Announced,
     BuildStatus.Published,
     BuildStatus.Prepared,
-  ].includes(storyBuild?.status);
+  ].includes(storyBuild.status);
   const startedAt = "startedAt" in storyBuild && storyBuild.startedAt;
-  const isOutdated = storyBuild && storyBuild.uncommittedHash !== uncommittedHash;
+  const isOutdated = storyBuild.uncommittedHash !== uncommittedHash;
   const isBuildFailed = storyBuild.status === BuildStatus.Failed;
+  const isReviewable = storyBuild.id === nextBuild.id;
 
   return (
     <Sections>
@@ -132,7 +135,15 @@ export const BuildResults = ({
         />
         {!isStoryBuildStarting && storyTests && storyTests.length > 0 && (
           <SnapshotComparison
-            {...{ tests: storyTests, isAccepting, isOutdated, onAccept, baselineImageVisible }}
+            {...{
+              tests: storyTests,
+              isReviewable,
+              isReviewing,
+              isOutdated,
+              onAccept,
+              onUnaccept,
+              baselineImageVisible,
+            }}
           />
         )}
       </Section>
@@ -205,7 +216,6 @@ export const BuildResults = ({
               >
                 <Icons icon="alert" />2
               </IconButton>
-  
             </WithTooltip>
           </Col> */}
           <Col push>
