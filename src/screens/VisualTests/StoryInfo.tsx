@@ -76,7 +76,7 @@ export const StoryInfo = ({
         </small>
       </Text>
     );
-  } else if (isStoryOutdated) {
+  } else if (isStoryOutdated && switchToNextBuild) {
     details = (
       <Text>
         <b>
