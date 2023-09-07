@@ -1,3 +1,15 @@
+# v0.0.62 (Thu Sep 07 2023)
+
+#### 🐛 Bug Fix
+
+- Add a bunch of `VisualTests` stories [#85](https://github.com/chromaui/addon-visual-tests/pull/85) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.61 (Thu Sep 07 2023)
 
 #### 🐛 Bug Fix
