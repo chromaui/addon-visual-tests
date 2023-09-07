@@ -41,17 +41,19 @@ const StackTrace = styled.div(({ theme }) => ({
 
 interface SnapshotSectionProps {
   tests: StoryTestFieldsFragment[];
-  isNextBuildSelected: boolean;
-  isAccepting: boolean;
-  onAccept: (testId: StoryTestFieldsFragment["id"], batch?: ReviewTestBatch) => void;
+  isReviewable: boolean;
+  isReviewing: boolean;
   baselineImageVisible: boolean;
+  onAccept: (testId: StoryTestFieldsFragment["id"], batch?: ReviewTestBatch) => void;
+  onUnaccept: (testId: StoryTestFieldsFragment["id"]) => void;
 }
 
 export const SnapshotComparison = ({
   tests,
-  isNextBuildSelected,
-  isAccepting,
+  isReviewable,
+  isReviewing,
   onAccept,
+  onUnaccept,
   baselineImageVisible,
 }: SnapshotSectionProps) => {
   const [diffVisible, setDiffVisible] = useState(true);
@@ -66,6 +68,7 @@ export const SnapshotComparison = ({
     selectedComparison?.headCapture?.captureError?.error;
 
   const isAcceptable = changeCount > 0 && selectedTest.status !== TestStatus.Accepted;
+  const isUnacceptable = changeCount > 0 && selectedTest.status === TestStatus.Accepted;
   return (
     <>
       {isInProgress ? (
@@ -114,8 +117,9 @@ export const SnapshotComparison = ({
               </WithTooltip>
             </Col>
           )}
-          {isAcceptable &&
-            (!isNextBuildSelected ? (
+
+          {isAcceptable ||
+            (isUnacceptable && !isReviewable && (
               <Col push>
                 <WithTooltip
                   tooltip={<TooltipNote note="This snapshot is outdated so you cannot accept it" />}
@@ -125,62 +129,80 @@ export const SnapshotComparison = ({
                   <Icons icon="lock" />
                 </WithTooltip>
               </Col>
-            ) : (
-              <>
-                <Col push>
-                  <WithTooltip
-                    tooltip={<TooltipNote note="Accept this snapshot" />}
-                    trigger="hover"
-                    hasChrome={false}
-                  >
-                    <IconButton secondary onClick={() => onAccept(selectedTest.id)}>
-                      Accept
-                    </IconButton>
-                  </WithTooltip>
-                </Col>
-                <Col>
-                  <TooltipMenu
-                    placement="bottom"
-                    links={[
-                      {
-                        id: "acceptStory",
-                        title: "Accept story",
-                        center: "Accept all unreviewed changes to this story",
-                        onClick: () => onAccept(selectedTest.id, ReviewTestBatch.Spec),
-                        disabled: isAccepting,
-                        loading: isAccepting,
-                      },
-                      {
-                        id: "acceptComponent",
-                        title: "Accept component",
-                        center: "Accept all unreviewed changes for this component",
-                        onClick: () => onAccept(selectedTest.id, ReviewTestBatch.Component),
-                        disabled: isAccepting,
-                        loading: isAccepting,
-                      },
-                      {
-                        id: "acceptBuild",
-                        title: "Accept entire build",
-                        center: "Accept all unreviewed changes for every story in the Storybook",
-                        onClick: () => onAccept(selectedTest.id, ReviewTestBatch.Build),
-                        disabled: isAccepting,
-                        loading: isAccepting,
-                      },
-                    ]}
-                  >
-                    {(active) => (
-                      <IconButton secondary active={active} aria-label="Batch accept">
-                        {isAccepting ? (
-                          <ProgressIcon parentComponent="IconButton" />
-                        ) : (
-                          <Icons icon="batchaccept" />
-                        )}
-                      </IconButton>
-                    )}
-                  </TooltipMenu>
-                </Col>
-              </>
             ))}
+
+          {isAcceptable && isReviewable && (
+            <>
+              <Col push>
+                <WithTooltip
+                  tooltip={<TooltipNote note="Accept this snapshot" />}
+                  trigger="hover"
+                  hasChrome={false}
+                >
+                  <IconButton secondary onClick={() => onAccept(selectedTest.id)}>
+                    Accept
+                  </IconButton>
+                </WithTooltip>
+              </Col>
+              <Col>
+                <TooltipMenu
+                  placement="bottom"
+                  links={[
+                    {
+                      id: "acceptStory",
+                      title: "Accept story",
+                      center: "Accept all unreviewed changes to this story",
+                      onClick: () => onAccept(selectedTest.id, ReviewTestBatch.Spec),
+                      disabled: isReviewing,
+                      loading: isReviewing,
+                    },
+                    {
+                      id: "acceptComponent",
+                      title: "Accept component",
+                      center: "Accept all unreviewed changes for this component",
+                      onClick: () => onAccept(selectedTest.id, ReviewTestBatch.Component),
+                      disabled: isReviewing,
+                      loading: isReviewing,
+                    },
+                    {
+                      id: "acceptBuild",
+                      title: "Accept entire build",
+                      center: "Accept all unreviewed changes for every story in the Storybook",
+                      onClick: () => onAccept(selectedTest.id, ReviewTestBatch.Build),
+                      disabled: isReviewing,
+                      loading: isReviewing,
+                    },
+                  ]}
+                >
+                  {(active) => (
+                    <IconButton secondary active={active} aria-label="Batch accept">
+                      {isReviewing ? (
+                        <ProgressIcon parentComponent="IconButton" />
+                      ) : (
+                        <Icons icon="batchaccept" />
+                      )}
+                    </IconButton>
+                  )}
+                </TooltipMenu>
+              </Col>
+            </>
+          )}
+          {isUnacceptable && isReviewable && (
+            <>
+              <Col push>
+                <WithTooltip
+                  tooltip={<TooltipNote note="Unaccept this snapshot" />}
+                  trigger="hover"
+                  hasChrome={false}
+                >
+                  <IconButton disabled={isReviewing} onClick={() => onUnaccept(selectedTest.id)}>
+                    <Icons icon="undo" />
+                    Unaccept
+                  </IconButton>
+                </WithTooltip>
+              </Col>
+            </>
+          )}
         </Bar>
       )}
 

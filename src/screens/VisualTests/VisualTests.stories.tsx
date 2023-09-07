@@ -462,7 +462,7 @@ export const NextBuildNewer: Story = {
   parameters: {
     ...withBuilds({
       storyBuild: pendingBuild,
-      nextBuild: { ...pendingBuild, id: "2", committedAt: Date.now() - 1000 },
+      nextBuild: { ...pendingBuild, id: "2", committedAt: meta.args.gitInfo.committedAt },
     }),
   },
 };
@@ -472,7 +472,7 @@ export const NextBuildNewerThanCommit: Story = {
   parameters: {
     ...withBuilds({
       storyBuild: pendingBuild,
-      nextBuild: { ...pendingBuild, id: "2", committedAt: Date.now() },
+      nextBuild: { ...pendingBuild, id: "2", committedAt: meta.args.gitInfo.committedAt + 1 },
     }),
   },
 };

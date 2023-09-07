@@ -1,6 +1,5 @@
-import { Icons } from "@storybook/components";
-import { Icon, TooltipNote, WithTooltip } from "@storybook/design-system";
-import React, { Dispatch, SetStateAction, useState } from "react";
+import { Icons, TooltipNote, WithTooltip } from "@storybook/components";
+import React, { useState } from "react";
 
 import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
@@ -32,8 +31,9 @@ interface BuildResultsProps {
   nextBuild: NextBuildFieldsFragment;
   switchToNextBuild?: () => void;
   startDevBuild: () => void;
-  isAccepting: boolean;
+  isReviewing: boolean;
   onAccept: (testId: string, batch: ReviewTestBatch) => Promise<void>;
+  onUnaccept: (testId: string) => Promise<void>;
   setAccessToken: (accessToken: string | null) => void;
 }
 
@@ -42,8 +42,9 @@ export const BuildResults = ({
   nextBuild,
   switchToNextBuild,
   startDevBuild,
-  isAccepting,
+  isReviewing,
   onAccept,
+  onUnaccept,
   storyBuild,
   setAccessToken,
 }: BuildResultsProps) => {
@@ -53,13 +54,13 @@ export const BuildResults = ({
   const toggleBaselineImage = () => setBaselineImageVisible(!baselineImageVisible);
 
   const isRunningBuildInProgress = runningBuild && runningBuild.step !== "complete";
-  const isNextBuildSelected = nextBuild.id === storyBuild?.id;
+  const isReviewable = nextBuild.id === storyBuild.id;
   const showBuildStatus =
     // We always want to show the status of the running build (until it is done)
     isRunningBuildInProgress ||
     // Even if there's no build running, we want to show the next build if it hasn't been selected.
-    !isNextBuildSelected;
-  const runningBuildIsNextBuild = runningBuild && runningBuild?.id === nextBuild?.id;
+    !isReviewable;
+  const runningBuildIsNextBuild = runningBuild && runningBuild?.id === nextBuild.id;
   const buildStatus = showBuildStatus && (
     <BuildProgress
       runningBuild={(runningBuildIsNextBuild || isRunningBuildInProgress) && runningBuild}
@@ -120,7 +121,7 @@ export const BuildResults = ({
     BuildStatus.Announced,
     BuildStatus.Published,
     BuildStatus.Prepared,
-  ].includes(storyBuild?.status);
+  ].includes(storyBuild.status);
   const startedAt = "startedAt" in storyBuild && storyBuild.startedAt;
   const isBuildFailed = storyBuild.status === BuildStatus.Failed;
 
@@ -144,9 +145,10 @@ export const BuildResults = ({
           <SnapshotComparison
             {...{
               tests: storyTests,
-              isNextBuildSelected,
-              isAccepting,
+              isReviewable,
+              isReviewing,
               onAccept,
+              onUnaccept,
               baselineImageVisible,
             }}
           />
@@ -171,7 +173,7 @@ export const BuildResults = ({
                 data-testid="button-toggle-snapshot"
                 onClick={() => toggleBaselineImage()}
               >
-                <Icon icon="transfer" />
+                <Icons icon="transfer" />
               </IconButton>
             </WithTooltip>
           </Col>
@@ -221,7 +223,6 @@ export const BuildResults = ({
               >
                 <Icons icon="alert" />2
               </IconButton>
-  
             </WithTooltip>
           </Col> */}
           <Col push>
