@@ -145,7 +145,7 @@ export const VisualTests = ({
     [canSwitchToNextBuild, nextBuild?.id, storyId]
   );
 
-  const isRunningBuildStarting = !runningBuild || !["success", "error"].includes(runningBuild.step);
+  const isRunningBuildStarting = runningBuild && !["success", "error"].includes(runningBuild.step);
 
   const { branch, uncommittedHash } = gitInfo;
   return !nextBuild || error ? (
