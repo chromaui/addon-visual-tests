@@ -24,8 +24,10 @@ const meta = {
         { status: TestStatus.Passed, viewport: 1200 },
       ],
     }),
-    isAccepting: false,
+    isReviewable: true,
+    isReviewing: false,
     onAccept: action("onAccept"),
+    onUnaccept: action("onUnaccept"),
     baselineImageVisible: false,
   },
 } satisfies Meta<typeof SnapshotComparison>;
@@ -76,7 +78,7 @@ export const WithSingleTest: Story = {
 
 export const WithSingleTestAccepting: Story = {
   args: {
-    isAccepting: true,
+    isReviewing: true,
     tests: [makeTest({ status: TestStatus.Pending })],
   },
 };

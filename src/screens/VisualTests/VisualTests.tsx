@@ -79,7 +79,7 @@ export const VisualTests = ({
     return () => clearInterval(interval);
   }, [rerun]);
 
-  const [{ fetching: isAccepting }, reviewTest] = useMutation(MutationReviewTest);
+  const [{ fetching: isReviewing }, reviewTest] = useMutation(MutationReviewTest);
 
   const onAccept = useCallback(
     async (testId: string, batch: ReviewTestBatch) => {
@@ -93,6 +93,25 @@ export const VisualTests = ({
         // https://linear.app/chromaui/issue/AP-3279/error-handling
         // eslint-disable-next-line no-console
         console.log("Failed to accept changes:");
+        // eslint-disable-next-line no-console
+        console.log(err);
+      }
+    },
+    [reviewTest]
+  );
+
+  const onUnaccept = useCallback(
+    async (testId: string) => {
+      try {
+        const { error: reviewError } = await reviewTest({
+          input: { testId, status: ReviewTestInputStatus.Pending },
+        });
+
+        if (reviewError) throw reviewError;
+      } catch (err) {
+        // https://linear.app/chromaui/issue/AP-3279/error-handling
+        // eslint-disable-next-line no-console
+        console.log("Failed to unaccept changes:");
         // eslint-disable-next-line no-console
         console.log(err);
       }
@@ -167,8 +186,9 @@ export const VisualTests = ({
         nextBuild,
         switchToNextBuild: canSwitchToNextBuild && switchToNextBuild,
         startDevBuild,
-        isAccepting,
+        isReviewing,
         onAccept,
+        onUnaccept,
         storyBuild,
         setAccessToken,
         uncommittedHash,
