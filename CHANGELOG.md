@@ -1,3 +1,17 @@
+# v0.0.64 (Fri Sep 08 2023)
+
+#### 🐛 Bug Fix
+
+- Notify users when a build is completed or when a build fails [#66](https://github.com/chromaui/addon-visual-tests/pull/66) ([@weeksling](https://github.com/weeksling) [@tmeasday](https://github.com/tmeasday) [@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 3
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Matthew Weeks ([@weeksling](https://github.com/weeksling))
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.63 (Thu Sep 07 2023)
 
 #### 🐛 Bug Fix
