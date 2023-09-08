@@ -30,11 +30,11 @@ interface BuildResultsProps {
   nextBuild: NextBuildFieldsFragment;
   switchToNextBuild?: () => void;
   startDevBuild: () => void;
+  isOutdated: boolean;
   isReviewing: boolean;
   onAccept: (testId: string, batch: ReviewTestBatch) => Promise<void>;
   onUnaccept: (testId: string) => Promise<void>;
   setAccessToken: (accessToken: string | null) => void;
-  uncommittedHash: string;
 }
 
 export const BuildResults = ({
@@ -42,12 +42,12 @@ export const BuildResults = ({
   nextBuild,
   switchToNextBuild,
   startDevBuild,
+  isOutdated,
   isReviewing,
   onAccept,
   onUnaccept,
   storyBuild,
   setAccessToken,
-  uncommittedHash,
 }: BuildResultsProps) => {
   const [settingsVisible, setSettingsVisible] = useState(false);
   const [warningsVisible, setWarningsVisible] = useState(false);
@@ -60,7 +60,7 @@ export const BuildResults = ({
     isRunningBuildInProgress ||
     // Even if there's no build running, we want to show the next build if it hasn't been selected.
     nextBuild.id !== storyBuild?.id;
-  const runningBuildIsNextBuild = runningBuild && runningBuild?.id === nextBuild.id;
+  const runningBuildIsNextBuild = runningBuild && runningBuild?.buildId === nextBuild.id;
   const buildStatus = showBuildStatus && (
     <BuildProgress
       runningBuild={(runningBuildIsNextBuild || isRunningBuildInProgress) && runningBuild}
@@ -113,7 +113,6 @@ export const BuildResults = ({
     BuildStatus.Prepared,
   ].includes(storyBuild.status);
   const startedAt = "startedAt" in storyBuild && storyBuild.startedAt;
-  const isOutdated = storyBuild.uncommittedHash !== uncommittedHash;
   const isBuildFailed = storyBuild.status === BuildStatus.Failed;
   const isReviewable = storyBuild.id === nextBuild.id;
 

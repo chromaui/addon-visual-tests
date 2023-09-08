@@ -36,6 +36,7 @@ interface VisualTestsProps {
   runningBuild?: RunningBuildPayload;
   startDevBuild: () => void;
   setAccessToken: (accessToken: string | null) => void;
+  setOutdated: (isOutdated: boolean) => void;
   updateBuildStatus: UpdateStatusFunction;
   storyId: string;
 }
@@ -44,6 +45,7 @@ export const VisualTests = ({
   runningBuild,
   startDevBuild,
   setAccessToken,
+  setOutdated,
   updateBuildStatus,
   projectId,
   gitInfo,
@@ -171,8 +173,10 @@ export const VisualTests = ({
   );
 
   const isRunningBuildStarting = runningBuild && !["success", "error"].includes(runningBuild.step);
+  const isOutdated = storyBuild?.uncommittedHash !== gitInfo.uncommittedHash;
 
-  const { branch, uncommittedHash } = gitInfo;
+  useEffect(() => setOutdated(isOutdated), [isOutdated, setOutdated]);
+
   return !nextBuild || error ? (
     <NoBuild
       {...{
@@ -181,7 +185,7 @@ export const VisualTests = ({
         hasNextBuild: !!nextBuild,
         startDevBuild,
         isRunningBuildStarting,
-        branch,
+        branch: gitInfo.branch,
         setAccessToken,
       }}
     />
@@ -192,12 +196,12 @@ export const VisualTests = ({
         nextBuild,
         switchToNextBuild: canSwitchToNextBuild && switchToNextBuild,
         startDevBuild,
+        isOutdated,
         isReviewing,
         onAccept,
         onUnaccept,
         storyBuild,
         setAccessToken,
-        uncommittedHash,
       }}
     />
   );

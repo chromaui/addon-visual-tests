@@ -6,9 +6,9 @@ import React, { useCallback } from "react";
 import { Sections } from "./components/layout";
 import {
   ADDON_ID,
-  DEV_BUILD_ID_KEY,
   GIT_INFO,
   GitInfoPayload,
+  IS_OUTDATED,
   PANEL_ID,
   RUNNING_BUILD,
   RunningBuildPayload,
@@ -29,14 +29,13 @@ interface PanelProps {
   api: API;
 }
 
-const storedBuildId = localStorage.getItem(DEV_BUILD_ID_KEY);
-
 export const Panel = ({ active, api }: PanelProps) => {
   const [accessToken, setAccessToken] = useAccessToken();
   const { storyId } = useStorybookState();
 
   const [gitInfo] = useAddonState<GitInfoPayload>(GIT_INFO);
   const [runningBuild] = useAddonState<RunningBuildPayload>(RUNNING_BUILD);
+  const [, setOutdated] = useAddonState<boolean>(IS_OUTDATED);
   const emit = useChannel({});
 
   const updateBuildStatus = useCallback<UpdateStatusFunction>(
@@ -109,6 +108,7 @@ export const Panel = ({ active, api }: PanelProps) => {
           runningBuild={runningBuild}
           startDevBuild={() => emit(START_BUILD)}
           setAccessToken={setAccessToken}
+          setOutdated={setOutdated}
           updateBuildStatus={updateBuildStatus}
           storyId={storyId}
         />

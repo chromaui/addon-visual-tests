@@ -16,7 +16,9 @@ type Story = StoryObj<typeof meta>;
 
 export const Initialize: Story = {
   args: {
-    runningBuild: { step: "initialize" },
+    runningBuild: {
+      step: "initialize",
+    },
   },
   parameters: withFigmaDesign(
     "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2303-353260&mode=design&t=vlcsXN2x67tQaQdy-0"
@@ -27,6 +29,7 @@ export const Build: Story = {
   args: {
     runningBuild: {
       step: "build",
+      buildProgressPercentage: 30,
     },
   },
   parameters: withFigmaDesign(
@@ -38,8 +41,9 @@ export const Upload: Story = {
   args: {
     runningBuild: {
       step: "upload",
-      progress: 500,
-      total: 1000,
+      stepProgressValue: 500,
+      stepProgressTotal: 1000,
+      buildProgressPercentage: 50,
     },
   },
   parameters: withFigmaDesign(
@@ -51,6 +55,7 @@ export const Verify: Story = {
   args: {
     runningBuild: {
       step: "verify",
+      buildProgressPercentage: 75,
     },
   },
   parameters: withFigmaDesign(
@@ -62,8 +67,9 @@ export const Snapshot: Story = {
   args: {
     runningBuild: {
       step: "snapshot",
-      progress: 25,
-      total: 50,
+      stepProgressValue: 25,
+      stepProgressTotal: 50,
+      buildProgressPercentage: 90,
     },
   },
   parameters: withFigmaDesign(
@@ -75,6 +81,7 @@ export const Complete: Story = {
   args: {
     runningBuild: {
       step: "complete",
+      buildProgressPercentage: 100,
     },
   },
   parameters: withFigmaDesign(

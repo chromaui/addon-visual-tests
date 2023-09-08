@@ -160,6 +160,7 @@ const meta = {
     projectId: "Project:id123",
     startDevBuild: action("startDevBuild"),
     setAccessToken: action("setAccessToken"),
+    setOutdated: action("setOutdated"),
     updateBuildStatus: action("updateBuildStatus") as any,
   },
 } satisfies Meta<typeof VisualTests>;
@@ -222,8 +223,8 @@ export const NoNextBuildRunningBuildUploading: Story = {
     ...NoNextBuild.args,
     runningBuild: {
       step: "upload",
-      progress: 10,
-      total: 100,
+      stepProgressValue: 10,
+      stepProgressTotal: 100,
     },
   },
 };
@@ -280,8 +281,8 @@ export const InProgress: Story = {
   args: {
     runningBuild: {
       step: "snapshot",
-      progress: 20,
-      total: 100,
+      stepProgressValue: 20,
+      stepProgressTotal: 100,
     },
   },
   parameters: {
