@@ -84,11 +84,15 @@ export const VisualTests = ({
 
   const [{ fetching: isReviewing }, reviewTest] = useMutation(MutationReviewTest);
 
-  const onAccept = useCallback(
-    async (testId: string, batch: ReviewTestBatch) => {
+  const onReview = useCallback(
+    async (
+      status: ReviewTestInputStatus.Accepted | ReviewTestInputStatus.Pending,
+      testId: string,
+      batch?: ReviewTestBatch
+    ) => {
       try {
         const { error: reviewError } = await reviewTest({
-          input: { testId, status: ReviewTestInputStatus.Accepted, batch },
+          input: { testId, status, batch },
         });
 
         if (reviewError) {
@@ -100,7 +104,9 @@ export const VisualTests = ({
           id: "chromatic/errorAccepting",
           link: undefined,
           content: {
-            headline: "Failed to accept changes",
+            headline: `Failed to ${
+              status === ReviewTestInputStatus.Accepted ? "accept" : "unaccept"
+            } changes`,
             subHeadline: err.message,
           },
           icon: {
@@ -113,33 +119,15 @@ export const VisualTests = ({
     [addNotification, rerun, reviewTest]
   );
 
-  const onUnaccept = useCallback(
-    async (testId: string) => {
-      try {
-        const { error: reviewError } = await reviewTest({
-          input: { testId, status: ReviewTestInputStatus.Pending },
-        });
+  const onAccept = useCallback(
+    async (testId: string, batch: ReviewTestBatch) =>
+      onReview(ReviewTestInputStatus.Accepted, testId, batch),
+    [onReview]
+  );
 
-        if (reviewError) {
-          throw reviewError;
-        }
-        rerun();
-      } catch (err) {
-        addNotification({
-          id: "chromatic/errorAccepting",
-          link: undefined,
-          content: {
-            headline: "Failed to unaccept changes",
-            subHeadline: err.message,
-          },
-          icon: {
-            name: "cross",
-            color: "red",
-          },
-        });
-      }
-    },
-    [addNotification, rerun, reviewTest]
+  const onUnaccept = useCallback(
+    async (testId: string) => onReview(ReviewTestInputStatus.Pending, testId),
+    [onReview]
   );
 
   const nextBuild = getFragment(FragmentNextBuildFields, data?.project?.nextBuild);
