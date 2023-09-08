@@ -16,8 +16,16 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
+  play: playAll(async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = await canvas.findByRole("button", { name: "Run tests" });
+    await userEvent.click(button);
+  }),
+};
+
+export const Outdated: Story = {
   args: {
-    isRunning: false,
+    isOutdated: true,
   },
 };
 

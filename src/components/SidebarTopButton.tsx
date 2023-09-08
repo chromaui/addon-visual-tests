@@ -1,17 +1,20 @@
-import { IconButton, Icons, WithTooltip } from "@storybook/components";
+import { Icons, WithTooltip } from "@storybook/components";
 import { styled } from "@storybook/theming";
 import React, { ComponentProps } from "react";
 
 import { RunningBuildPayload } from "../constants";
 import { BuildProgressLabel } from "./BuildProgressLabel";
+import { IconButton } from "./IconButton";
+import { StatusDotWrapper } from "./StatusDot";
 
 export const TooltipContent = styled.div(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  gap: 5,
-  minWidth: 200,
-  padding: 10,
+  width: 200,
+  padding: 3,
   color: theme.color.defaultText,
+
+  "& > div": {
+    margin: 7,
+  },
 }));
 
 export const ProgressTrack = styled.div(({ theme }) => ({
@@ -44,51 +47,77 @@ export const SidebarIconButton = styled(IconButton)<ComponentProps<typeof IconBu
 
 export const SidebarTopButton = ({
   isRunning = false,
+  isOutdated = false,
   runningBuild,
   startBuild,
 }: {
   isRunning?: boolean;
+  isOutdated?: boolean;
   runningBuild?: RunningBuildPayload;
   startBuild: () => void;
 }) => {
-  return isRunning && runningBuild ? (
+  if (isRunning && runningBuild) {
+    return (
+      <WithTooltip
+        trigger="hover"
+        tooltip={
+          <TooltipContent>
+            <div>
+              <BuildProgressLabel runningBuild={runningBuild} />
+            </div>
+            <ProgressTrack>
+              {typeof runningBuild.buildProgressPercentage === "number" && (
+                <ProgressBar style={{ width: `${runningBuild.buildProgressPercentage}%` }} />
+              )}
+            </ProgressTrack>
+          </TooltipContent>
+        }
+      >
+        <SidebarIconButton aria-label="Run tests">
+          <Icons icon="play" />
+          {typeof runningBuild.buildProgressPercentage === "number" && (
+            <ProgressCircle xmlns="http://www.w3.org/2000/svg">
+              <circle
+                r="10"
+                cx="12"
+                cy="12"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeDasharray={Math.PI * 20}
+                strokeDashoffset={Math.PI * 20 * (1 - runningBuild.buildProgressPercentage / 100)}
+                fill="transparent"
+              />
+            </ProgressCircle>
+          )}
+        </SidebarIconButton>
+      </WithTooltip>
+    );
+  }
+
+  return isOutdated ? (
+    <SidebarIconButton aria-label="Run tests" onClick={() => startBuild()}>
+      <StatusDotWrapper status="notification">
+        <Icons icon="play" />
+      </StatusDotWrapper>
+    </SidebarIconButton>
+  ) : (
     <WithTooltip
-      trigger="hover"
+      trigger="click"
+      closeOnOutsideClick
       tooltip={
         <TooltipContent>
-          <div>
-            <BuildProgressLabel runningBuild={runningBuild} />
-          </div>
-          <ProgressTrack>
-            {typeof runningBuild.buildProgressPercentage === "number" && (
-              <ProgressBar style={{ width: `${runningBuild.buildProgressPercentage}%` }} />
-            )}
-          </ProgressTrack>
+          <div>No code changes detected. Rerun tests to take new snapshots.</div>
+          <IconButton onClick={() => startBuild()}>
+            <Icons icon="sync" />
+            Rerun tests
+          </IconButton>
         </TooltipContent>
       }
     >
       <SidebarIconButton aria-label="Run tests">
         <Icons icon="play" />
-        {typeof runningBuild.buildProgressPercentage === "number" && (
-          <ProgressCircle xmlns="http://www.w3.org/2000/svg">
-            <circle
-              r="10"
-              cx="12"
-              cy="12"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeDasharray={Math.PI * 20}
-              strokeDashoffset={Math.PI * 20 * (1 - runningBuild.buildProgressPercentage / 100)}
-              fill="transparent"
-            />
-          </ProgressCircle>
-        )}
       </SidebarIconButton>
     </WithTooltip>
-  ) : (
-    <SidebarIconButton aria-label="Run tests" onClick={() => startBuild()}>
-      <Icons icon="play" />
-    </SidebarIconButton>
   );
 };
