@@ -180,7 +180,8 @@ export const VisualTests = ({
   // Ensure we are holding the right story build
   useEffect(() => {
     setStoryBuildInfo((oldStoryBuildInfo) => {
-      return (!oldStoryBuildInfo || oldStoryBuildInfo.storyId !== storyId) && nextBuild?.id
+      return (!oldStoryBuildInfo || oldStoryBuildInfo.storyId !== storyId) &&
+        nextBuildCompletedStory
         ? {
             storyId,
             // If the next build is "too new" and we have an old build, stick to it.
