@@ -90,7 +90,10 @@ export const VisualTests = ({
           input: { testId, status: ReviewTestInputStatus.Accepted, batch },
         });
 
-        if (reviewError) throw reviewError;
+        if (reviewError) {
+          throw reviewError;
+        }
+        rerun();
       } catch (err) {
         // https://linear.app/chromaui/issue/AP-3279/error-handling
         // eslint-disable-next-line no-console
@@ -99,7 +102,7 @@ export const VisualTests = ({
         console.log(err);
       }
     },
-    [reviewTest]
+    [rerun, reviewTest]
   );
 
   const onUnaccept = useCallback(
@@ -109,7 +112,10 @@ export const VisualTests = ({
           input: { testId, status: ReviewTestInputStatus.Pending },
         });
 
-        if (reviewError) throw reviewError;
+        if (reviewError) {
+          throw reviewError;
+        }
+        rerun();
       } catch (err) {
         // https://linear.app/chromaui/issue/AP-3279/error-handling
         // eslint-disable-next-line no-console
@@ -118,14 +124,14 @@ export const VisualTests = ({
         console.log(err);
       }
     },
-    [reviewTest]
+    [rerun, reviewTest]
   );
 
-  const nextBuild = getFragment(FragmentNextBuildFields, data?.project?.lastBuild);
+  const nextBuild = getFragment(FragmentNextBuildFields, data?.project?.nextBuild);
   // Before we set the storyInfo, we use the nextBuild for story data
   const storyBuild = getFragment(
     FragmentStoryBuildFields,
-    data?.storyBuild ?? data?.project?.lastBuild
+    data?.storyBuild ?? data?.project?.nextBuild
   );
 
   // If the next build is *newer* than the current commit, we don't want to switch to the build
@@ -166,7 +172,7 @@ export const VisualTests = ({
     [canSwitchToNextBuild, nextBuild?.id, storyId]
   );
 
-  const isRunningBuildStarting = runningBuild?.step === "initialize";
+  const isRunningBuildStarting = runningBuild && !["success", "error"].includes(runningBuild.step);
   const isOutdated = storyBuild?.uncommittedHash !== gitInfo.uncommittedHash;
 
   useEffect(() => setOutdated(isOutdated), [isOutdated, setOutdated]);
