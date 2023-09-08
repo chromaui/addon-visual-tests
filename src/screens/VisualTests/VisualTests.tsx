@@ -188,7 +188,7 @@ export const VisualTests = ({
           }
         : oldStoryBuildInfo;
     });
-  }, [canSwitchToNextBuild, nextBuild?.id, storyId]);
+  }, [nextBuildCompletedStory, canSwitchToNextBuild, nextBuild?.id, storyId]);
 
   const switchToNextBuild = useCallback(
     () => canSwitchToNextBuild && setStoryBuildInfo({ storyId, buildId: nextBuild.id }),
