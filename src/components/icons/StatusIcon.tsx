@@ -1,7 +1,7 @@
-import { Icon } from "@storybook/design-system";
+import { Icons } from "@storybook/components";
 import { styled } from "@storybook/theming";
 
-export const StatusIcon = styled(Icon)<{ icon: "passed" | "changed" | "failed" }>(
+export const StatusIcon = styled(Icons)<{ icon: "passed" | "changed" | "failed" }>(
   ({ icon, theme }) => ({
     width: 12,
     height: 12,

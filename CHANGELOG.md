@@ -1,3 +1,52 @@
+# v0.0.63 (Thu Sep 07 2023)
+
+#### 🐛 Bug Fix
+
+- Reviewing: Rerun query when accepting & un-accepting changes [#86](https://github.com/chromaui/addon-visual-tests/pull/86) ([@ndelangen](https://github.com/ndelangen))
+
+#### Authors: 1
+
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+
+---
+
+# v0.0.62 (Thu Sep 07 2023)
+
+#### 🐛 Bug Fix
+
+- Add a bunch of `VisualTests` stories [#85](https://github.com/chromaui/addon-visual-tests/pull/85) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.61 (Thu Sep 07 2023)
+
+#### 🐛 Bug Fix
+
+- Avoid `@storybook/design-system` in favor of `@storybook/components` [#81](https://github.com/chromaui/addon-visual-tests/pull/81) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.60 (Thu Sep 07 2023)
+
+#### 🐛 Bug Fix
+
+- UI: Add ability to un-accept per story [#82](https://github.com/chromaui/addon-visual-tests/pull/82) ([@ndelangen](https://github.com/ndelangen) [@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 2
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+
+---
+
 # v0.0.59 (Thu Sep 07 2023)
 
 #### 🐛 Bug Fix

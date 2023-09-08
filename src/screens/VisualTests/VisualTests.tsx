@@ -82,7 +82,7 @@ export const VisualTests = ({
     return () => clearInterval(interval);
   }, [rerun]);
 
-  const [{ fetching: isAccepting }, reviewTest] = useMutation(MutationReviewTest);
+  const [{ fetching: isReviewing }, reviewTest] = useMutation(MutationReviewTest);
 
   const onAccept = useCallback(
     async (testId: string, batch: ReviewTestBatch) => {
@@ -91,7 +91,10 @@ export const VisualTests = ({
           input: { testId, status: ReviewTestInputStatus.Accepted, batch },
         });
 
-        if (reviewError) throw reviewError;
+        if (reviewError) {
+          throw reviewError;
+        }
+        rerun();
       } catch (err) {
         addNotification({
           id: "chromatic/errorAccepting",
@@ -107,14 +110,43 @@ export const VisualTests = ({
         });
       }
     },
-    [addNotification, reviewTest]
+    [addNotification, rerun, reviewTest]
   );
 
-  const nextBuild = getFragment(FragmentNextBuildFields, data?.project?.lastBuild);
+  const onUnaccept = useCallback(
+    async (testId: string) => {
+      try {
+        const { error: reviewError } = await reviewTest({
+          input: { testId, status: ReviewTestInputStatus.Pending },
+        });
+
+        if (reviewError) {
+          throw reviewError;
+        }
+        rerun();
+      } catch (err) {
+        addNotification({
+          id: "chromatic/errorAccepting",
+          link: undefined,
+          content: {
+            headline: "Failed to unaccept changes",
+            subHeadline: err.message,
+          },
+          icon: {
+            name: "cross",
+            color: "red",
+          },
+        });
+      }
+    },
+    [addNotification, rerun, reviewTest]
+  );
+
+  const nextBuild = getFragment(FragmentNextBuildFields, data?.project?.nextBuild);
   // Before we set the storyInfo, we use the nextBuild for story data
   const storyBuild = getFragment(
     FragmentStoryBuildFields,
-    data?.storyBuild ?? data?.project?.lastBuild
+    data?.storyBuild ?? data?.project?.nextBuild
   );
 
   // If the next build is *newer* than the current commit, we don't want to switch to the build
@@ -155,7 +187,7 @@ export const VisualTests = ({
     [canSwitchToNextBuild, nextBuild?.id, storyId]
   );
 
-  const isRunningBuildStarting = runningBuild?.step === "initialize";
+  const isRunningBuildStarting = runningBuild && !["success", "error"].includes(runningBuild.step);
 
   const { branch, uncommittedHash } = gitInfo;
   return !nextBuild || error ? (
@@ -177,8 +209,9 @@ export const VisualTests = ({
         nextBuild,
         switchToNextBuild: canSwitchToNextBuild && switchToNextBuild,
         startDevBuild,
-        isAccepting,
+        isReviewing,
         onAccept,
+        onUnaccept,
         storyBuild,
         setAccessToken,
         uncommittedHash,

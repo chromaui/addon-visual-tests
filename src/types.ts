@@ -7,7 +7,7 @@ export type PublishedBuild = Extract<StoryBuildFieldsFragment, { __typename: "Pu
 export type StartedBuild = Extract<StoryBuildFieldsFragment, { __typename: "StartedBuild" }>;
 export type CompletedBuild = Extract<StoryBuildFieldsFragment, { __typename: "CompletedBuild" }>;
 
-export type BuildWithTests = StartedBuild | CompletedBuild;
+export type StoryBuildWithTests = StartedBuild | CompletedBuild;
 
 export type StoryStatusUpdater = Parameters<API["experimental_updateStatus"]>[1];
 
