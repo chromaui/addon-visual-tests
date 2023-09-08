@@ -1,8 +1,16 @@
-import { BuildFieldsFragment } from "./gql/graphql";
+import type { API } from "@storybook/manager-api";
 
-export type AnnouncedBuild = Extract<BuildFieldsFragment, { __typename: "AnnouncedBuild" }>;
-export type PublishedBuild = Extract<BuildFieldsFragment, { __typename: "PublishedBuild" }>;
-export type StartedBuild = Extract<BuildFieldsFragment, { __typename: "StartedBuild" }>;
-export type CompletedBuild = Extract<BuildFieldsFragment, { __typename: "CompletedBuild" }>;
+import { StoryBuildFieldsFragment } from "./gql/graphql";
 
-export type BuildWithTests = StartedBuild | CompletedBuild;
+export type AnnouncedBuild = Extract<StoryBuildFieldsFragment, { __typename: "AnnouncedBuild" }>;
+export type PublishedBuild = Extract<StoryBuildFieldsFragment, { __typename: "PublishedBuild" }>;
+export type StartedBuild = Extract<StoryBuildFieldsFragment, { __typename: "StartedBuild" }>;
+export type CompletedBuild = Extract<StoryBuildFieldsFragment, { __typename: "CompletedBuild" }>;
+
+export type StoryBuildWithTests = StartedBuild | CompletedBuild;
+
+export type StoryStatusUpdater = Parameters<API["experimental_updateStatus"]>[1];
+
+export type UpdateStatusFunction = (
+  update: StoryStatusUpdater
+) => ReturnType<API["experimental_updateStatus"]>;

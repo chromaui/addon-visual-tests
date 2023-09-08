@@ -1,3 +1,5 @@
+import { TooltipNote, WithTooltip } from "@storybook/components";
+import { styled } from "@storybook/theming";
 import React from "react";
 
 import { Browser, BrowserInfo, ComparisonResult } from "../gql/graphql";
@@ -17,41 +19,66 @@ const browserIcons = {
   [Browser.Edge]: <EdgeIcon alt="Edge" aria-label="Edge" />,
 } as const;
 
+const IconWrapper = styled.div({
+  height: 16,
+  margin: "6px 7px",
+  svg: {
+    verticalAlign: "top",
+  },
+});
+
 type BrowserData = Pick<BrowserInfo, "id" | "key" | "name">;
 
 interface BrowserSelectorProps {
+  isAccepted: boolean;
   selectedBrowser: BrowserData;
   browserResults: { browser: BrowserData; result: ComparisonResult }[];
   onSelectBrowser: (browser: BrowserData) => void;
 }
 
 export const BrowserSelector = ({
+  isAccepted,
   selectedBrowser,
   browserResults,
   onSelectBrowser,
 }: BrowserSelectorProps) => {
-  const links = browserResults
-    .filter(({ browser }) => browser.key in browserIcons)
-    .map(({ browser, result }) => ({
-      active: selectedBrowser === browser,
-      id: browser.id,
-      onClick: () => onSelectBrowser(browser),
-      right: result !== ComparisonResult.Equal && <StatusDot status={result} />,
-      title: browser.name,
-    }));
-
   const aggregate = aggregateResult(browserResults.map(({ result }) => result));
   if (!aggregate) return null;
 
-  const icon = browserIcons[selectedBrowser.key];
+  let icon = browserIcons[selectedBrowser.key];
+  if (!isAccepted && aggregate !== ComparisonResult.Equal) {
+    icon = <StatusDotWrapper status={aggregate}>{icon}</StatusDotWrapper>;
+  }
+
+  const links =
+    browserResults.length > 1 &&
+    browserResults.map(({ browser, result }) => ({
+      active: selectedBrowser === browser,
+      id: browser.id,
+      onClick: () => onSelectBrowser(browser),
+      right: !isAccepted && result !== ComparisonResult.Equal && <StatusDot status={result} />,
+      title: browser.name,
+    }));
+
   return (
-    <TooltipMenu placement="bottom" links={links}>
-      {aggregate === ComparisonResult.Equal ? (
-        icon
+    <WithTooltip
+      hasChrome={false}
+      placement="top"
+      trigger="hover"
+      tooltip={
+        <TooltipNote
+          note={links ? "Switch browser" : `Tested in ${browserResults[0].browser.name}`}
+        />
+      }
+    >
+      {links ? (
+        <TooltipMenu placement="bottom" links={links}>
+          {icon}
+          <ArrowIcon icon="arrowdown" />
+        </TooltipMenu>
       ) : (
-        <StatusDotWrapper status={aggregate}>{icon}</StatusDotWrapper>
+        <IconWrapper>{icon}</IconWrapper>
       )}
-      <ArrowIcon icon="arrowdown" />
-    </TooltipMenu>
+    </WithTooltip>
   );
 };

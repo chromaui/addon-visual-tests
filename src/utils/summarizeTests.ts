@@ -3,11 +3,11 @@ import { aggregateResult } from "./aggregateResult";
 
 function pickStatus(statusCounts: { [K in TestStatus]?: number }) {
   if (statusCounts[TestStatus.Failed] > 0) return TestStatus.Failed;
+  if (statusCounts[TestStatus.InProgress] > 0) return TestStatus.InProgress;
   if (statusCounts[TestStatus.Broken] > 0) return TestStatus.Broken;
   if (statusCounts[TestStatus.Denied] > 0) return TestStatus.Denied;
   if (statusCounts[TestStatus.Pending] > 0) return TestStatus.Pending;
   if (statusCounts[TestStatus.Accepted] > 0) return TestStatus.Accepted;
-  if (statusCounts[TestStatus.InProgress] > 0) return TestStatus.InProgress;
   return TestStatus.Passed;
 }
 
@@ -82,7 +82,7 @@ export function summarizeTests(tests: StoryTestFieldsFragment[]) {
     browser: browserInfoById[id],
     result,
   }));
-  const viewportResults = Object.entries(resultsByViewport).map(([id, result]) => ({
+  const modeResults = Object.entries(resultsByViewport).map(([id, result]) => ({
     viewport: viewportInfoById[id],
     result,
   }));
@@ -93,6 +93,6 @@ export function summarizeTests(tests: StoryTestFieldsFragment[]) {
     changeCount,
     brokenCount,
     browserResults,
-    viewportResults,
+    modeResults,
   };
 }

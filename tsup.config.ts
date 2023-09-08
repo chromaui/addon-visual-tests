@@ -6,9 +6,7 @@ export default defineConfig((options) => [
     splitting: false,
     minify: !options.watch,
     format: ["cjs"],
-    dts: {
-      resolve: true,
-    },
+    dts: false,
     treeshake: true,
     sourcemap: true,
     clean: !options.watch,
@@ -22,9 +20,7 @@ export default defineConfig((options) => [
     splitting: false,
     minify: !options.watch,
     format: ["esm"],
-    dts: {
-      resolve: true,
-    },
+    dts: false,
     treeshake: true,
     sourcemap: true,
     clean: !options.watch,

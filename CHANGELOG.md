@@ -1,3 +1,164 @@
+# v0.0.63 (Thu Sep 07 2023)
+
+#### 🐛 Bug Fix
+
+- Reviewing: Rerun query when accepting & un-accepting changes [#86](https://github.com/chromaui/addon-visual-tests/pull/86) ([@ndelangen](https://github.com/ndelangen))
+
+#### Authors: 1
+
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+
+---
+
+# v0.0.62 (Thu Sep 07 2023)
+
+#### 🐛 Bug Fix
+
+- Add a bunch of `VisualTests` stories [#85](https://github.com/chromaui/addon-visual-tests/pull/85) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.61 (Thu Sep 07 2023)
+
+#### 🐛 Bug Fix
+
+- Avoid `@storybook/design-system` in favor of `@storybook/components` [#81](https://github.com/chromaui/addon-visual-tests/pull/81) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.60 (Thu Sep 07 2023)
+
+#### 🐛 Bug Fix
+
+- UI: Add ability to un-accept per story [#82](https://github.com/chromaui/addon-visual-tests/pull/82) ([@ndelangen](https://github.com/ndelangen) [@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 2
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+
+---
+
+# v0.0.59 (Thu Sep 07 2023)
+
+#### 🐛 Bug Fix
+
+- Update to 7.1.0 of CLI [#83](https://github.com/chromaui/addon-visual-tests/pull/83) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.58 (Wed Sep 06 2023)
+
+#### 🐛 Bug Fix
+
+- Refactor `VisualTests` component into three [#80](https://github.com/chromaui/addon-visual-tests/pull/80) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.57 (Wed Sep 06 2023)
+
+#### 🐛 Bug Fix
+
+- Rename `VisualTests` stories [#79](https://github.com/chromaui/addon-visual-tests/pull/79) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.56 (Wed Sep 06 2023)
+
+#### 🐛 Bug Fix
+
+- Show capture error stack trace if there is one [#73](https://github.com/chromaui/addon-visual-tests/pull/73) ([@ghengeveld](https://github.com/ghengeveld))
+- UI: Render the panel in JSX (but hidden) when inactive [#78](https://github.com/chromaui/addon-visual-tests/pull/78) ([@ndelangen](https://github.com/ndelangen))
+- UI: Move toolbar button to sidebar [#77](https://github.com/chromaui/addon-visual-tests/pull/77) ([@ndelangen](https://github.com/ndelangen))
+
+#### Authors: 2
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+
+---
+
+# v0.0.55 (Tue Sep 05 2023)
+
+#### 🐛 Bug Fix
+
+- Don't show menu when there's only one viewport or browser [#72](https://github.com/chromaui/addon-visual-tests/pull/72) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.54 (Tue Sep 05 2023)
+
+#### 🐛 Bug Fix
+
+- Add option to accept entire build [#71](https://github.com/chromaui/addon-visual-tests/pull/71) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.53 (Mon Sep 04 2023)
+
+#### 🐛 Bug Fix
+
+- Clear storyStatus when no longer relevant [#65](https://github.com/chromaui/addon-visual-tests/pull/65) ([@ndelangen](https://github.com/ndelangen))
+
+#### Authors: 1
+
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+
+---
+
+# v0.0.52 (Mon Sep 04 2023)
+
+#### 🐛 Bug Fix
+
+- Fix status title and viewport/browser selector for accepted stories [#70](https://github.com/chromaui/addon-visual-tests/pull/70) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.51 (Mon Sep 04 2023)
+
+#### 🐛 Bug Fix
+
+- Separate running/latest build from viewed stories [#69](https://github.com/chromaui/addon-visual-tests/pull/69) ([@tmeasday](https://github.com/tmeasday))
+- Merge branch 'tom/ap-3560-build-ui-for-build-status' into tom/ap-3544-implement-build-of-out-date-behaviour [#68](https://github.com/chromaui/addon-visual-tests/pull/68) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.50 (Fri Sep 01 2023)
 
 #### 🐛 Bug Fix

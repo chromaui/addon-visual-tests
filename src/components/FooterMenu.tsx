@@ -1,4 +1,4 @@
-import { Icon } from "@storybook/design-system";
+import { Icons } from "@storybook/components";
 import React from "react";
 
 import { TooltipMenu } from "./TooltipMenu";
@@ -26,7 +26,7 @@ export const FooterMenu = ({ setAccessToken }: FooterMenuProps) => {
         },
       ]}
     >
-      <Icon icon="ellipsis" />
+      <Icons icon="ellipsis" />
     </TooltipMenu>
   );
 };

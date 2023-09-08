@@ -35,7 +35,7 @@ export const StoryInfo = ({
   isBuildFailed,
 }: StoryInfoSectionProps) => {
   // isInProgress means we have tests but they are still unfinished
-  const { status, isInProgress, changeCount, brokenCount, viewportResults, browserResults } =
+  const { status, isInProgress, changeCount, brokenCount, modeResults, browserResults } =
     summarizeTests(tests ?? []);
 
   const startedAgo =
@@ -92,7 +92,9 @@ export const StoryInfo = ({
     details = (
       <Text>
         <b>
-          {changeCount ? pluralize("change", changeCount, true) : "No changes"}
+          {changeCount && status === TestStatus.Pending
+            ? pluralize("change", changeCount, true)
+            : "No changes"}
           {brokenCount ? `, ${pluralize("error", brokenCount, true)}` : null}
         </b>
         <StatusIcon
@@ -103,14 +105,14 @@ export const StoryInfo = ({
         />
         <br />
         <small>
-          {viewportResults.length > 0 && (
+          {modeResults.length > 0 && (
             <span>
-              {pluralize("viewport", viewportResults.length, true)}
+              {pluralize("mode", modeResults.length, true)}
               {", "}
               {pluralize("browser", browserResults.length, true)}
             </span>
           )}
-          {viewportResults.length > 0 && " • "}
+          {modeResults.length > 0 && " • "}
           {isInProgress && <span>Test in progress...</span>}
           {!isInProgress && <span title={new Date(startedAt).toUTCString()}>{startedAgo}</span>}
         </small>

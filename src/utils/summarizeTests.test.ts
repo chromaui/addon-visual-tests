@@ -51,7 +51,7 @@ const tests = [
 ];
 
 it("Calculates static information correctly", () => {
-  const { status, isInProgress, changeCount, brokenCount, browserResults, viewportResults } =
+  const { status, isInProgress, changeCount, brokenCount, browserResults, modeResults } =
     summarizeTests(tests);
 
   expect({
@@ -60,7 +60,7 @@ it("Calculates static information correctly", () => {
     changeCount,
     brokenCount,
     browserResults,
-    viewportResults,
+    modeResults,
   }).toMatchInlineSnapshot(`
     {
       "brokenCount": 1,
@@ -86,8 +86,7 @@ it("Calculates static information correctly", () => {
       ],
       "changeCount": 1,
       "isInProgress": true,
-      "status": "BROKEN",
-      "viewportResults": [
+      "modeResults": [
         {
           "result": "EQUAL",
           "viewport": {
@@ -125,6 +124,7 @@ it("Calculates static information correctly", () => {
           },
         },
       ],
+      "status": "IN_PROGRESS",
     }
   `);
 });

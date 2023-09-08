@@ -4,7 +4,7 @@ import React from "react";
 import { ComparisonResult, TestStatus } from "../gql/graphql";
 
 interface StatusDotProps {
-  status?: TestStatus | ComparisonResult;
+  status?: TestStatus | ComparisonResult | "notification";
 }
 
 const Dot = styled.div<StatusDotProps & { overlay?: boolean }>(
@@ -28,6 +28,7 @@ const Dot = styled.div<StatusDotProps & { overlay?: boolean }>(
       [ComparisonResult.Removed]: theme.color.gold,
       [ComparisonResult.CaptureError]: theme.color.negative,
       [ComparisonResult.SystemError]: theme.color.negative,
+      notification: theme.color.secondary,
     }[status],
   }),
   ({ overlay, theme }) =>

@@ -1,10 +1,13 @@
-import { css, styled } from "@storybook/theming";
+import { styled } from "@storybook/theming";
 
-export const Sections = styled.div({
-  display: "flex",
-  flexDirection: "column",
-  height: "100%",
-});
+export const Sections = styled.div<{ hidden?: boolean }>(
+  {
+    display: "flex",
+    flexDirection: "column",
+    height: "100%",
+  },
+  ({ hidden }) => hidden && { display: "none" }
+);
 
 export const Section = styled.div<{ grow?: boolean }>(({ grow, theme }) => ({
   flexGrow: grow ? 1 : "auto",
@@ -35,7 +38,7 @@ export const Col = styled.div<{ push?: boolean }>(
       marginRight: 6,
     },
   },
-  ({ push }) => push && css({ marginLeft: "auto" })
+  ({ push }) => push && { marginLeft: "auto" }
 );
 
 export const Text = styled.div(({ theme }) => ({
