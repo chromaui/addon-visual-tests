@@ -28,8 +28,9 @@ import { Warnings } from "./Warnings";
 interface BuildResultsProps {
   branch: string;
   runningBuild: RunningBuildPayload;
-  storyBuild: StoryBuildFieldsFragment;
+  storyBuild?: StoryBuildFieldsFragment;
   nextBuild: NextBuildFieldsFragment;
+  nextBuildCompletedStory: boolean;
   switchToNextBuild?: () => void;
   startDevBuild: () => void;
   isReviewing: boolean;
@@ -42,6 +43,7 @@ export const BuildResults = ({
   branch,
   runningBuild,
   nextBuild,
+  nextBuildCompletedStory,
   switchToNextBuild,
   startDevBuild,
   isReviewing,
@@ -56,12 +58,11 @@ export const BuildResults = ({
   const toggleBaselineImage = () => setBaselineImageVisible(!baselineImageVisible);
 
   const isRunningBuildInProgress = runningBuild && runningBuild.currentStep !== "complete";
-  const isReviewable = nextBuild.id === storyBuild.id;
 
   const storyTests = [
     ...getFragment(
       FragmentStoryTestFields,
-      "testsForStory" in storyBuild ? storyBuild.testsForStory.nodes : []
+      storyBuild && "testsForStory" in storyBuild ? storyBuild.testsForStory.nodes : []
     ),
   ];
   const nextStoryTests = [
@@ -70,8 +71,9 @@ export const BuildResults = ({
       "testsForStory" in nextBuild ? nextBuild.testsForStory.nodes : []
     ),
   ];
-  const isStorySuperseded =
-    !isReviewable && nextStoryTests.every(({ status }) => status !== TestStatus.InProgress);
+
+  const isReviewable = nextBuild.id === storyBuild?.id;
+  const isStorySuperseded = !isReviewable && nextBuildCompletedStory;
 
   const showBuildStatus =
     // We always want to show the status of the running build (until it is done)
@@ -124,9 +126,9 @@ export const BuildResults = ({
     BuildStatus.Announced,
     BuildStatus.Published,
     BuildStatus.Prepared,
-  ].includes(storyBuild.status);
-  const startedAt = "startedAt" in storyBuild && storyBuild.startedAt;
-  const isBuildFailed = storyBuild.status === BuildStatus.Failed;
+  ].includes(storyBuild?.status);
+  const startedAt = storyBuild && "startedAt" in storyBuild && storyBuild.startedAt;
+  const isBuildFailed = storyBuild?.status === BuildStatus.Failed;
 
   return (
     <Sections>

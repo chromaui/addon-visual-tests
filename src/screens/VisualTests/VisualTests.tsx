@@ -16,6 +16,7 @@ import { statusMap, testsToStatusUpdate } from "../../utils/testsToStatusUpdate"
 import { BuildResults } from "./BuildResults";
 import {
   FragmentNextBuildFields,
+  FragmentNextStoryTestFields,
   FragmentStatusTestFields,
   FragmentStoryBuildFields,
   MutationReviewTest,
@@ -132,10 +133,21 @@ export const VisualTests = ({
   );
 
   const nextBuild = getFragment(FragmentNextBuildFields, data?.project?.nextBuild);
-  // Before we set the storyInfo, we use the nextBuild for story data
+
+  const nextStoryTests = [
+    ...getFragment(
+      FragmentNextStoryTestFields,
+      nextBuild && "testsForStory" in nextBuild ? nextBuild.testsForStory.nodes : []
+    ),
+  ];
+  const nextBuildCompletedStory = nextStoryTests.every(
+    ({ status }) => status !== TestStatus.InProgress
+  );
+
+  // Before we set the storyInfo, we use the nextBuild for story data if it's ready
   const storyBuild = getFragment(
     FragmentStoryBuildFields,
-    data?.storyBuild ?? data?.project?.nextBuild
+    data?.storyBuild ?? (nextBuildCompletedStory && data?.project?.nextBuild)
   );
 
   // Currently only used by the sidebar button to show a blue dot ("build outdated")
@@ -148,10 +160,13 @@ export const VisualTests = ({
 
   // We always set status to the next build's status, as when we change to a new story we'll see
   // the next builds
-  const buildStatusUpdate =
-    canSwitchToNextBuild &&
+  const testsForStatus =
+    nextBuild &&
     "testsForStatus" in nextBuild &&
-    testsToStatusUpdate(getFragment(FragmentStatusTestFields, nextBuild.testsForStatus.nodes));
+    getFragment(FragmentStatusTestFields, nextBuild.testsForStatus.nodes);
+
+  const buildStatusUpdate =
+    canSwitchToNextBuild && testsForStatus && testsToStatusUpdate(testsForStatus);
 
   useEffect(() => {
     updateBuildStatus((state) => ({
@@ -183,12 +198,12 @@ export const VisualTests = ({
   const isRunningBuildStarting =
     runningBuild && !["success", "error"].includes(runningBuild.currentStep);
 
-  return !nextBuild || error ? (
+  return !storyBuild || error ? (
     <NoBuild
       {...{
         error,
         hasData: !!data,
-        hasNextBuild: !!nextBuild,
+        hasStoryBuild: !!storyBuild,
         startDevBuild,
         isRunningBuildStarting,
         branch: gitInfo.branch,
@@ -201,6 +216,7 @@ export const VisualTests = ({
         branch: gitInfo.branch,
         runningBuild,
         nextBuild,
+        nextBuildCompletedStory,
         switchToNextBuild: canSwitchToNextBuild && switchToNextBuild,
         startDevBuild,
         isReviewing,

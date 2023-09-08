@@ -205,7 +205,7 @@ export const GraphQLError: Story = {
   },
 };
 
-export const NoNextBuild: Story = {
+export const NoStoryBuild: Story = {
   parameters: {
     ...withBuilds({ storyBuild: null }),
   },
@@ -225,10 +225,9 @@ export const NoNextBuild: Story = {
   },
 };
 
-export const NoNextBuildRunningBuildStarting: Story = {
-  ...NoNextBuild,
+export const NoStoryBuildRunningBuildStarting: Story = {
+  ...NoStoryBuild,
   args: {
-    ...NoNextBuild.args,
     runningBuild: {
       buildProgressPercentage: 1,
       currentStep: "initialize",
@@ -240,10 +239,9 @@ export const NoNextBuildRunningBuildStarting: Story = {
   },
 };
 
-export const NoNextBuildRunningBuildUploading: Story = {
-  ...NoNextBuild,
+export const NoStoryBuildRunningBuildUploading: Story = {
+  ...NoStoryBuild,
   args: {
-    ...NoNextBuild.args,
     runningBuild: {
       ...INITIAL_BUILD_PAYLOAD,
       currentStep: "upload",
@@ -259,6 +257,48 @@ export const NoNextBuildRunningBuildUploading: Story = {
   },
 };
 
+/** This story should maintain the "no build" UI with a progress bar */
+export const NoStoryBuildNextBuildCapturing: Story = {
+  parameters: {
+    ...withBuilds({ storyBuild: null, nextBuild: inProgressBuild }),
+  },
+  args: {
+    runningBuild: {
+      step: "snapshot",
+      stepProgressValue: 10,
+      stepProgressTotal: 100,
+    },
+  },
+};
+
+/** At this point, we should switch to the next build */
+export const NoStoryBuildNextBuildCapturedCurrentStory: Story = {
+  parameters: {
+    ...withBuilds({
+      storyBuild: null,
+      nextBuild: withTests(inProgressBuild, SnapshotComparisonStories.WithSingleTest.args.tests),
+    }),
+  },
+  args: {
+    runningBuild: {
+      step: "snapshot",
+      stepProgressValue: 90,
+      stepProgressTotal: 100,
+    },
+  },
+};
+
+/** Complete builds should always be switched to */
+export const NoStoryBuildNextBuildPending: Story = {
+  parameters: {
+    ...withBuilds({
+      storyBuild: null,
+      nextBuild: pendingBuild,
+    }),
+  },
+  // In theory we might have a complete running build here, it should behave the same either way
+};
+
 export const NoChanges: Story = {
   parameters: {
     ...withBuilds({ storyBuild: passedBuild }),
@@ -268,21 +308,34 @@ export const NoChanges: Story = {
   },
 };
 
-export const Announced: Story = {
-  args: {},
+/**
+ * We've started a new build but it's not done yet
+ */
+export const RunningBuildStarting: Story = {
+  args: {
+    runningBuild: {
+      step: "initialize",
+    },
+  },
   parameters: {
-    ...withBuilds({ storyBuild: announcedBuild }),
+    ...withBuilds({ storyBuild: pendingBuild }),
   },
 };
 
-export const Published: Story = {
-  args: {},
+/**
+ * The next build is snapshotting but hasn't yet reached this story (we didn't start it)
+ */
+export const NextBuildInProgress: Story = {
   parameters: {
-    ...withBuilds({ storyBuild: publishedBuild }),
+    ...withBuilds({ storyBuild: pendingBuild, nextBuild: { ...inProgressBuild, id: "2" } }),
   },
 };
 
-export const InProgress: Story = {
+/**
+ * As above but we started the next build
+ */
+export const RunningBuildInProgress: Story = {
+  ...NextBuildInProgress,
   args: {
     runningBuild: {
       ...INITIAL_BUILD_PAYLOAD,
@@ -298,29 +351,13 @@ export const InProgress: Story = {
       },
     },
   },
-  parameters: {
-    ...withBuilds({ storyBuild: inProgressBuild }),
-    ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304861&t=0rxMQnkxsVpVj1qy-4"
-    ),
-  },
-};
-
-/**
- * The next build is snapshotting but hasn't yet reached this story
- */
-export const NextBuildInProgress: Story = {
-  ...InProgress,
-  parameters: {
-    ...withBuilds({ storyBuild: pendingBuild, nextBuild: { ...inProgressBuild, id: "2" } }),
-  },
 };
 
 /**
  * The next build is snapshotting and has captured this story
+ * (The behaviour should be the same whether or not we started it)
  */
 export const NextBuildInProgressCapturedStory: Story = {
-  ...InProgress,
   parameters: {
     ...withBuilds({
       storyBuild: pendingBuild,
@@ -332,22 +369,6 @@ export const NextBuildInProgressCapturedStory: Story = {
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2303-374529&t=qjmuGHxoALrVuhvX-0"
     ),
-  },
-};
-
-export const InProgressNoRunningBuild: Story = {
-  parameters: {
-    ...withBuilds({ storyBuild: inProgressBuild }),
-    ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304861&t=0rxMQnkxsVpVj1qy-4"
-    ),
-  },
-};
-
-export const RunningBuildInProgress: Story = {
-  ...InProgress,
-  parameters: {
-    ...withBuilds({ storyBuild: pendingBuild }),
   },
 };
 
