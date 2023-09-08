@@ -8,6 +8,7 @@ import {
   ADDON_ID,
   GIT_INFO,
   GitInfoPayload,
+  IS_OUTDATED,
   PANEL_ID,
   RUNNING_BUILD,
   RunningBuildPayload,
@@ -34,6 +35,7 @@ export const Panel = ({ active, api }: PanelProps) => {
 
   const [gitInfo] = useAddonState<GitInfoPayload>(GIT_INFO);
   const [runningBuild] = useAddonState<RunningBuildPayload>(RUNNING_BUILD);
+  const [, setOutdated] = useAddonState<boolean>(IS_OUTDATED);
   const emit = useChannel({});
 
   const updateBuildStatus = useCallback<UpdateStatusFunction>(
@@ -106,6 +108,7 @@ export const Panel = ({ active, api }: PanelProps) => {
           runningBuild={runningBuild}
           startDevBuild={() => emit(START_BUILD)}
           setAccessToken={setAccessToken}
+          setOutdated={setOutdated}
           updateBuildStatus={updateBuildStatus}
           storyId={storyId}
         />

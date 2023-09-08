@@ -4,7 +4,13 @@ import pluralize from "pluralize";
 import React, { useEffect, useRef } from "react";
 
 import { SidebarTopButton } from "./components/SidebarTopButton";
-import { ADDON_ID, RUNNING_BUILD, RunningBuildPayload, START_BUILD } from "./constants";
+import {
+  ADDON_ID,
+  IS_OUTDATED,
+  RUNNING_BUILD,
+  RunningBuildPayload,
+  START_BUILD,
+} from "./constants";
 import { useAddonState } from "./useAddonState/manager";
 import { useAccessToken } from "./utils/graphQLClient";
 import { useProjectId } from "./utils/useProjectId";
@@ -20,6 +26,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
   const [accessToken] = useAccessToken();
   const isLoggedIn = !!accessToken;
 
+  const [isOutdated] = useAddonState<boolean>(IS_OUTDATED);
   const [runningBuild] = useAddonState<RunningBuildPayload>(RUNNING_BUILD);
   const isRunning = !!runningBuild && runningBuild.step !== "complete";
 
@@ -95,6 +102,11 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
   }
 
   return (
-    <SidebarTopButton isRunning={isRunning} runningBuild={runningBuild} startBuild={startBuild} />
+    <SidebarTopButton
+      isOutdated={isOutdated}
+      isRunning={isRunning}
+      runningBuild={runningBuild}
+      startBuild={startBuild}
+    />
   );
 };

@@ -32,6 +32,7 @@ type KnownStep = Extract<TaskName, "initialize" | "build" | "upload" | "verify" 
 export const knownSteps = ["initialize", "build", "upload", "verify", "snapshot"];
 export const isKnownStep = (task: TaskName): task is KnownStep => knownSteps.includes(task);
 
+export const IS_OUTDATED = `${ADDON_ID}/isOutdated`;
 export const START_BUILD = `${ADDON_ID}/startBuild`;
 export const RUNNING_BUILD = `${ADDON_ID}/runningBuild`;
 export type RunningBuildPayload = {

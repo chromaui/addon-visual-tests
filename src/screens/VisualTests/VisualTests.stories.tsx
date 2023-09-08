@@ -186,6 +186,7 @@ const meta = {
     projectId: "Project:id123",
     startDevBuild: action("startDevBuild"),
     setAccessToken: action("setAccessToken"),
+    setOutdated: action("setOutdated"),
     updateBuildStatus: action("updateBuildStatus") as any,
   },
 } satisfies Meta<typeof VisualTests>;

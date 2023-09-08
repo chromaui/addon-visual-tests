@@ -46,13 +46,13 @@ export const SidebarIconButton = styled(IconButton)<ComponentProps<typeof IconBu
 );
 
 export const SidebarTopButton = ({
-  isRunning = false,
   isOutdated = false,
+  isRunning = false,
   runningBuild,
   startBuild,
 }: {
-  isRunning?: boolean;
   isOutdated?: boolean;
+  isRunning?: boolean;
   runningBuild?: RunningBuildPayload;
   startBuild: () => void;
 }) => {
