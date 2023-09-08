@@ -140,9 +140,8 @@ export const VisualTests = ({
       nextBuild && "testsForStory" in nextBuild ? nextBuild.testsForStory.nodes : []
     ),
   ];
-  const nextBuildCompletedStory = nextStoryTests.every(
-    ({ status }) => status !== TestStatus.InProgress
-  );
+  const nextBuildCompletedStory =
+    nextBuild && nextStoryTests.every(({ status }) => status !== TestStatus.InProgress);
 
   // Before we set the storyInfo, we use the nextBuild for story data if it's ready
   const storyBuild = getFragment(
