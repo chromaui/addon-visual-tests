@@ -7,9 +7,10 @@ import {
   styled,
   useTheme,
 } from "@storybook/theming";
-import type { Preview } from "@storybook/react";
+import type { Loader, Preview } from "@storybook/react";
 import { initialize, mswLoader } from "msw-storybook-addon";
 import React from "react";
+import { graphql } from "msw";
 
 // Initialize MSW
 initialize({
@@ -94,11 +95,37 @@ const withTheme = (StoryFn, { globals, parameters }) => {
       </Panels>
     </>
   );
-}
+};
+
+/**
+ * An experiment with targeted args for MSW. This loader will serve a graphql
+ * response for any arg targetted at 'msw'.
+ * We serve the arg value for the query by the name of arg name, e.g.
+ *
+ * {
+ *   argTypes: {
+ *     AddonVisualTestsBuild: { target: 'msw' }.
+ *   },
+ *   args: {
+ *     AddonVisualTestsBuild: { project: { name: 'acme', ... } },
+ *   },
+ * }
+ */
+const mswGraphQLArgsLoader: Loader = async ({ argTypes, argsByTarget, parameters }) => {
+  const handlers = Object.entries(argsByTarget.msw || []).map(
+    ([argName, result]: [string, any]) => {
+      return graphql.query(argName, (req, res, ctx) => res(ctx.data(result)));
+    }
+  );
+
+  return mswLoader({
+    parameters: { msw: { handlers: [...handlers, ...parameters.msw.handlers] } },
+  });
+};
 
 const preview: Preview = {
   decorators: [withTheme],
-  loaders: [mswLoader],
+  loaders: [mswGraphQLArgsLoader],
   parameters: {
     actions: {
       argTypesRegex: "^on[A-Z].*",
@@ -132,7 +159,7 @@ const preview: Preview = {
         ],
       },
     },
-  }
-}
+  },
+};
 
 export default preview;

@@ -13,7 +13,14 @@ import type {
   StoryBuildFieldsFragment,
   StoryTestFieldsFragment,
 } from "../../gql/graphql";
-import { Browser, BuildStatus, ComparisonResult, TestResult, TestStatus } from "../../gql/graphql";
+import {
+  AddonVisualTestsBuildDocument,
+  Browser,
+  BuildStatus,
+  ComparisonResult,
+  TestResult,
+  TestStatus,
+} from "../../gql/graphql";
 import { AnnouncedBuild, PublishedBuild, StoryBuildWithTests } from "../../types";
 import { storyWrapper } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
@@ -127,20 +134,27 @@ const withGraphQLMutation = (...args: Parameters<typeof graphql.mutation>) => ({
   },
 });
 
-const withBuilds = ({
+const constructResult = ({
   nextBuild,
   storyBuild,
 }: {
   storyBuild?: StoryBuildFieldsFragment;
   nextBuild?: NextBuildFieldsFragment;
 }) => {
-  return withGraphQLQueryResult(QueryBuild, {
+  return {
     project: {
       name: "acme",
       nextBuild: nextBuild || storyBuild,
     },
     storyBuild,
-  });
+  };
+};
+
+const withBuilds = (args: {
+  storyBuild?: StoryBuildFieldsFragment;
+  nextBuild?: NextBuildFieldsFragment;
+}) => {
+  return withGraphQLQueryResult(AddonVisualTestsBuildDocument, constructResult(args));
 };
 
 const meta = {
@@ -148,6 +162,9 @@ const meta = {
   component: VisualTests,
   decorators: [storyWrapper],
   parameters: withBuilds({ storyBuild: passedBuild }),
+  argTypes: {
+    AddonVisualTestsBuild: { target: "msw" },
+  },
   args: {
     gitInfo: {
       userEmailHash: "abc123",
@@ -162,7 +179,11 @@ const meta = {
     setAccessToken: action("setAccessToken"),
     updateBuildStatus: action("updateBuildStatus") as any,
   },
-} satisfies Meta<typeof VisualTests>;
+} satisfies Meta<
+  Parameters<typeof VisualTests>[0] & {
+    AddonVisualTestsBuild: ResultOf<typeof QueryBuild>;
+  }
+>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -341,8 +362,11 @@ export const RunningBuildInProgress: Story = {
 };
 
 export const Pending: Story = {
+  args: {
+    // @ts-expect-error
+    AddonVisualTestsBuild: constructResult({ storyBuild: pendingBuild }),
+  },
   parameters: {
-    ...withBuilds({ storyBuild: pendingBuild }),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304718&t=0rxMQnkxsVpVj1qy-4"
     ),
