@@ -1,21 +1,17 @@
 import React from "react";
 
-import { RunningBuildPayload } from "../constants";
-
-const messageMap: Record<RunningBuildPayload["step"], (payload: RunningBuildPayload) => string> = {
-  initialize: () => `📦 Validating Storybook files...`,
-  build: () => `📦 Validating Storybook files...`,
-  upload: () => `📡 Uploading to Chromatic...`, // TODO represent progress in bytes
-  verify: () => `🛠️ Initiating build...`, // TODO build number
-  snapshot: () => `👀 Running visual tests...`, // TODO count
-  complete: () => `🎉 Visual tests completed!`,
-  error: () => `❌ Build failed`, // TODO error
-};
+import { BUILD_STEP_CONFIG } from "../buildSteps";
+import { RunningBuildPayload } from "../types";
 
 interface BuildProgressLabelProps {
   runningBuild: RunningBuildPayload;
 }
 
-export const BuildProgressLabel = ({ runningBuild }: BuildProgressLabelProps) => (
-  <>{messageMap[runningBuild.step](runningBuild)}</>
-);
+export const BuildProgressLabel = ({ runningBuild }: BuildProgressLabelProps) => {
+  const { emoji, renderProgress } = BUILD_STEP_CONFIG[runningBuild.step];
+  return (
+    <>
+      {emoji} {renderProgress(runningBuild)}
+    </>
+  );
+};

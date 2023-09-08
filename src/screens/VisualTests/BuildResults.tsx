@@ -8,7 +8,6 @@ import { Heading } from "../../components/Heading";
 import { IconButton } from "../../components/IconButton";
 import { Bar, Col, Section, Sections, Text } from "../../components/layout";
 import { Text as CenterText } from "../../components/Text";
-import { RunningBuildPayload } from "../../constants";
 import { getFragment } from "../../gql";
 import {
   BuildStatus,
@@ -17,6 +16,7 @@ import {
   StoryBuildFieldsFragment,
   TestResult,
 } from "../../gql/graphql";
+import { RunningBuildPayload } from "../../types";
 import { BuildEyebrow } from "./BuildEyebrow";
 import { FragmentStoryTestFields } from "./graphql";
 import { RenderSettings } from "./RenderSettings";

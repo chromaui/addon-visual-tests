@@ -4,18 +4,15 @@ import type { Channel } from "@storybook/channels";
 import { Context, getGitInfo, GitInfo, run, TaskName } from "chromatic/node";
 import { basename, relative } from "path";
 
+import { BUILD_STEP_ORDER, isKnownStep } from "./buildSteps";
 import {
   CHROMATIC_BASE_URL,
   GIT_INFO,
-  GitInfoPayload,
-  isKnownStep,
-  knownSteps,
   PROJECT_INFO,
-  ProjectInfoPayload,
   RUNNING_BUILD,
-  RunningBuildPayload,
   START_BUILD,
 } from "./constants";
+import { GitInfoPayload, KnownStep, ProjectInfoPayload, RunningBuildPayload } from "./types";
 import { useAddonState } from "./useAddonState/server";
 import { findConfig } from "./utils/storybook.config.utils";
 import { updateMain } from "./utils/updateMain";
@@ -113,9 +110,10 @@ async function serverChannel(
       { progress, total }: { progress?: number; total?: number } = {}
     ) => {
       if (isKnownStep(ctx.task)) {
-        let buildProgressPercentage = (knownSteps.indexOf(ctx.task) / knownSteps.length) * 100;
+        let buildProgressPercentage =
+          (BUILD_STEP_ORDER.indexOf(ctx.task) / BUILD_STEP_ORDER.length) * 100;
         if (progress && total) {
-          buildProgressPercentage += (progress / total) * (100 / knownSteps.length);
+          buildProgressPercentage += (progress / total) * (100 / BUILD_STEP_ORDER.length);
         }
         runningBuildState.value = {
           buildId: ctx.announcedBuild?.id,
@@ -127,7 +125,10 @@ async function serverChannel(
       }
     };
 
-    runningBuildState.value = { step: "initialize" };
+    runningBuildState.value = {
+      step: "initialize",
+      buildProgressPercentage: 0,
+    };
     await run({
       // Currently we have to have these flags.
       // We should move the checks to after flags have been parsed into options.
@@ -160,7 +161,7 @@ async function serverChannel(
             buildId: ctx.announcedBuild?.id,
             buildProgressPercentage:
               runningBuildState.value.buildProgressPercentage ??
-              knownSteps.indexOf(ctx.task) / knownSteps.length,
+              BUILD_STEP_ORDER.indexOf(ctx.task as KnownStep) / BUILD_STEP_ORDER.length,
             step: "error",
             formattedError,
             originalError,

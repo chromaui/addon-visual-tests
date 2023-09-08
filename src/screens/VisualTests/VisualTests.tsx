@@ -2,7 +2,6 @@ import type { API_StatusState } from "@storybook/types";
 import React, { useCallback, useEffect, useState } from "react";
 import { useMutation, useQuery } from "urql";
 
-import { GitInfoPayload, RunningBuildPayload } from "../../constants";
 import { getFragment } from "../../gql";
 import {
   AddonVisualTestsBuildQuery,
@@ -11,7 +10,7 @@ import {
   ReviewTestInputStatus,
   TestStatus,
 } from "../../gql/graphql";
-import { UpdateStatusFunction } from "../../types";
+import { GitInfoPayload, RunningBuildPayload, UpdateStatusFunction } from "../../types";
 import { statusMap, testsToStatusUpdate } from "../../utils/testsToStatusUpdate";
 import { BuildResults } from "./BuildResults";
 import {

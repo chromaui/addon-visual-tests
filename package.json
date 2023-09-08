@@ -62,6 +62,7 @@
     "@storybook/design-system": "^7.15.15",
     "chromatic": "^7.1.0",
     "date-fns": "^2.30.0",
+    "filesize": "^10.0.12",
     "pluralize": "^8.0.0",
     "ts-dedent": "^2.2.0",
     "urql": "^4.0.3",

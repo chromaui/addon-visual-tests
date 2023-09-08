@@ -1,7 +1,10 @@
+import { Icons } from "@storybook/components";
 import React from "react";
 
-import { RunningBuildPayload } from "../../constants";
-import { Bar, BuildProgress, Header, Text } from "./BuildProgress";
+import { BuildProgressLabel } from "../../components/BuildProgressLabel";
+import { IconButton } from "../../components/IconButton";
+import { RunningBuildPayload } from "../../types";
+import { Bar, BuildProgress, Header } from "./BuildProgress";
 
 type BuildEyebrowProps = {
   runningBuild?: RunningBuildPayload;
@@ -9,8 +12,24 @@ type BuildEyebrowProps = {
 };
 
 export function BuildEyebrow({ runningBuild, switchToNextBuild }: BuildEyebrowProps) {
+  const [expanded, setExpanded] = React.useState(false);
+  const toggleExpanded = () => {
+    setExpanded(!expanded);
+  };
+
   if (runningBuild) {
-    return <BuildProgress buildProgress={runningBuild} />;
+    return (
+      <>
+        <Header onClick={toggleExpanded}>
+          <Bar percentage={runningBuild.buildProgressPercentage} />
+          <BuildProgressLabel runningBuild={runningBuild} />
+          <IconButton as="div">
+            {expanded ? <Icons icon="collapse" /> : <Icons icon="expandalt" />}
+          </IconButton>
+        </Header>
+        <BuildProgress buildProgress={runningBuild} expanded={expanded} />
+      </>
+    );
   }
 
   const message = switchToNextBuild
@@ -19,8 +38,8 @@ export function BuildEyebrow({ runningBuild, switchToNextBuild }: BuildEyebrowPr
 
   return (
     <Header>
-      <Bar percentage={100}>&nbsp;</Bar>
-      <Text style={{ display: "inline-block" }}>{message}</Text>
+      <Bar percentage={100} />
+      {message}
     </Header>
   );
 }

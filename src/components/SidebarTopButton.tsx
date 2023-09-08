@@ -2,7 +2,7 @@ import { Icons, WithTooltip } from "@storybook/components";
 import { styled } from "@storybook/theming";
 import React, { ComponentProps } from "react";
 
-import { RunningBuildPayload } from "../constants";
+import { RunningBuildPayload } from "../types";
 import { BuildProgressLabel } from "./BuildProgressLabel";
 import { IconButton } from "./IconButton";
 import { StatusDotWrapper } from "./StatusDot";

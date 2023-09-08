@@ -1,20 +1,29 @@
 import { Icons } from "@storybook/components";
-import { styled } from "@storybook/theming";
-import React from "react";
+import { css, keyframes, styled } from "@storybook/theming";
+import React, { useEffect, useRef } from "react";
 
-import { BuildProgressLabel } from "../../components/BuildProgressLabel";
-import { RunningBuildPayload } from "../../constants";
+import { BUILD_STEP_CONFIG, BUILD_STEP_ORDER } from "../../buildSteps";
+import { RunningBuildPayload } from "../../types";
 
-export const Header = styled.div(({ theme }) => ({
-  display: "flex",
-  justifyContent: "space-between",
-  cursor: "pointer",
-  color: theme.color.darkest,
-  background: theme.background.app,
-  borderBottom: `1px solid ${theme.appBorderColor}`,
-  padding: "10px",
-  lineHeight: "18px",
+const spin = keyframes({
+  from: { transform: "rotate(0deg)" },
+  to: { transform: "rotate(359deg)" },
+});
+
+export const Header = styled.button(({ theme }) => ({
   position: "relative",
+  display: "flex",
+  width: "100%",
+  minHeight: 40,
+  padding: "5px 5px 5px 10px",
+  justifyContent: "space-between",
+  alignItems: "center",
+  background: theme.background.app,
+  border: "none",
+  borderBottom: `1px solid ${theme.appBorderColor}`,
+  color: theme.color.defaultText,
+  cursor: "pointer",
+  textAlign: "left",
 }));
 
 export const Bar = styled.div<{ percentage: number }>(({ theme, percentage }) => ({
@@ -28,55 +37,40 @@ export const Bar = styled.div<{ percentage: number }>(({ theme, percentage }) =>
   backgroundColor: theme.background.hoverable,
 }));
 
-export const Text = styled.div({
-  position: "relative",
-  zIndex: 1,
-});
-
 const ExpandableDiv = styled.div<{ expanded: boolean }>(({ expanded, theme }) => ({
-  height: expanded ? "151px" : "0",
-  padding: expanded ? "15px 11px" : 0,
   overflow: "hidden",
-  transition: "height 150ms ease-out",
   background: theme.background.app,
-  borderBottom: `1px solid ${theme.appBorderColor}`,
+  transition: "max-height 150ms ease-out",
+  maxHeight: expanded ? 140 : 0,
+  borderBottom: expanded ? `1px solid ${theme.appBorderColor}` : "none",
 }));
 
-const StepDetail = styled.div<{ isCurrent: boolean }>`
-  display: flex;
-  justify-content: space-between;
-  font-weight: ${(props) => (props.isCurrent ? "bold" : "normal")};
-  font-family: Menlo, monospace;
-  font-size: 12px;
-  line-height: 24px;
-  // ... styles
-`;
+const StepDetails = styled.div({
+  padding: 10,
+  whiteSpace: "nowrap",
+});
 
-const Progress = styled.div`
-  // ... styles
-`;
+const StepDetail = styled.div<{ isCurrent: boolean; isPending: boolean }>(
+  ({ isCurrent, isPending }) => ({
+    display: "flex",
+    flexDirection: "row",
+    gap: 8,
+    opacity: isPending ? 0.7 : 1,
+    fontWeight: isCurrent ? "bold" : "normal",
+    fontFamily: "Menlo, monospace",
+    fontSize: "12px",
+    lineHeight: "24px",
+  })
+);
 
-const StepName = styled.div`
-  align-self: left;
-  // ... other styles
-`;
-
-const Status = styled.div`
-  // ... styles
-`;
-
-function ProgressSummary({
-  expanded = false,
-  children,
-}: {
-  expanded: boolean;
-  children?: React.ReactNode;
-}) {
-  return <ExpandableDiv expanded={expanded}>{children}</ExpandableDiv>;
-}
+const StepIcon = styled(Icons)(
+  { width: 10, marginRight: 8 },
+  ({ icon }) => icon === "sync" && css({ animation: `${spin} 1s linear infinite` })
+);
 
 type BuildProgressProps = {
   buildProgress?: RunningBuildPayload;
+  expanded?: boolean;
 };
 
 // Need to actually create an store an array of stepHistory objects on step completion. Fields may change.
@@ -84,113 +78,50 @@ type StepHistory = {
   timeToComplete: number;
   total: number;
 };
-// Weight to take a percentage of the progress bar
-// Using an array to preserve order
-const stepsArray: Array<{
-  step: RunningBuildPayload["step"];
-  displayName?: string;
-  weight: number;
-  message: (payload: RunningBuildPayload) => string;
-  statusInProgress?: (payload: RunningBuildPayload) => string;
-  // Completed should accept a stepHistory object but not made yet
-  statusCompleted: (stepHistory?: StepHistory) => string;
-}> = [
-  {
-    step: "initialize",
-    weight: 0,
-    message: () => `📦 Validating Storybook files...`,
-    displayName: "Initialize",
-    statusInProgress: () => "Inititalizing",
-    statusCompleted: () => "Initialized", // Need stepHistory to know how long it took
-  },
-  {
-    step: "build",
-    weight: 40,
-    message: () => `📦 Validating Storybook files...`,
-    displayName: "Build Storybook",
-    statusInProgress: () => "Building...",
-    statusCompleted: () => "Built", // Need stepHistory to know how long it took
-  },
-  {
-    step: "upload",
-    weight: 10,
-    message: (payload) =>
-      `📡 Uploading to Chromatic ${payload.stepProgressValue}/${payload.stepProgressTotal}...`,
-    displayName: "Publish Storybook",
-    statusInProgress: () => "Publishing...",
-    statusCompleted: () => "Published", // Need stepHistory to know how long it took
-  },
-  {
-    step: "verify",
-    weight: 10,
-    message: () => `🛠️ Initiating build`,
-    displayName: "Verify Storynook",
-    statusInProgress: () => "Verifying...",
-    statusCompleted: () => "Verified", // Need stepHistory to know how long it took
-  },
-  {
-    step: "snapshot",
-    weight: 40,
-    message: (payload) =>
-      `👀 Running visual test ${payload.stepProgressValue}/${payload.stepProgressTotal}...`,
-    displayName: "Run visual tests",
-    statusInProgress: (progress) => `${progress.stepProgressValue}/${progress.stepProgressTotal}`,
-    statusCompleted: () => `Uploaded`, // Need stepHistory to know how many completed
-  },
-  {
-    step: "complete",
-    weight: 0,
-    message: () => "🎉 Visual tests completed!",
-    displayName: "Completed",
-    statusInProgress: () => "Completed",
-    statusCompleted: () => "Completed",
-  },
-];
 
-export function BuildProgress({ buildProgress }: BuildProgressProps) {
-  const { step, buildProgressPercentage } = buildProgress;
+export function BuildProgress({ buildProgress, expanded }: BuildProgressProps) {
+  const stepHistory = useRef<Partial<Record<RunningBuildPayload["step"], RunningBuildPayload>>>({});
 
-  const [expanded, setExpanded] = React.useState(false);
-  const toggleExpanded = () => {
-    setExpanded(!expanded);
-  };
+  useEffect(() => {
+    stepHistory.current[buildProgress.step] = { ...buildProgress };
+  }, [buildProgress]);
 
-  // This shouldn't happen, but it does because of an issue in the onTaskProgress callback returning undefined for newSteps between initialize and snapshot
-  if (!step) {
-    console.log("buildProgress.step is undefined", buildProgress);
+  const currentIndex = BUILD_STEP_ORDER.findIndex((key) => key === buildProgress.step);
+
+  // This shouldn't happen, but it does because of an issue in the onTaskProgress callback returning
+  // undefined for newSteps between initialize and snapshot
+  if (currentIndex === -1) {
+    console.log("buildProgress.step is undefined or not supported", buildProgress);
     return null;
   }
 
-  const stepIndex = stepsArray.findIndex((s) => s.step === step);
-  const currentStep = stepsArray[stepIndex];
+  const steps = BUILD_STEP_ORDER.map((step, index) => {
+    const config = {
+      ...BUILD_STEP_CONFIG[step],
+      isCurrent: index === currentIndex,
+      isPending: index > currentIndex,
+    };
+    if (index > currentIndex) {
+      return { ...config, icon: "arrowright", renderLabel: config.renderName };
+    }
+    if (index < currentIndex) {
+      return { ...config, icon: "check", renderLabel: config.renderComplete };
+    }
+    return { ...config, icon: "sync", renderLabel: config.renderProgress };
+  });
 
   return (
-    <>
-      <Header onClick={toggleExpanded}>
-        <Bar percentage={buildProgressPercentage}>&nbsp;</Bar>
-        <Text style={{ display: "inline-block" }}>{currentStep.message(buildProgress)}</Text>
-        {expanded ? <Icons icon="collapse" /> : <Icons icon="expandalt" />}
-      </Header>
-      <ProgressSummary expanded={expanded}>
-        {stepsArray.slice(0, stepsArray.length - 1).map((stepDetail, index) => (
-          <StepDetail isCurrent={stepDetail.step === buildProgress.step} key={index}>
-            <div style={{ display: "flex" }}>
-              {stepDetail.step === buildProgress.step && (
-                <Progress>[{Math.trunc(buildProgressPercentage)}% ]</Progress>
-              )}
-              {index < stepIndex && <Progress> [100%]</Progress>}
-              {index > stepIndex && <Progress>[0% ]</Progress>}
-              <StepName>{stepDetail.displayName}</StepName>
+    <ExpandableDiv expanded={expanded}>
+      <StepDetails>
+        {steps.map(({ icon, isCurrent, isPending, key, renderLabel }) => (
+          <StepDetail isCurrent={isCurrent} isPending={isPending} key={key}>
+            <div>
+              <StepIcon icon={icon as any} />
+              {renderLabel(stepHistory.current[key] || buildProgress)}
             </div>
-            <Status>
-              {/* {step.timeToComplete ? `Completed in ${step.timeToComplete}s` : step.status} */}
-              {stepDetail.step === buildProgress.step && stepDetail.statusInProgress(buildProgress)}
-              {index < stepIndex && <Progress>{stepDetail.statusCompleted()}</Progress>}
-              {index > stepIndex && <Progress>Not started</Progress>}
-            </Status>
           </StepDetail>
         ))}
-      </ProgressSummary>
-    </>
+      </StepDetails>
+    </ExpandableDiv>
   );
 }

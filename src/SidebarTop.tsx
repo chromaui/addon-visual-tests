@@ -4,13 +4,8 @@ import pluralize from "pluralize";
 import React, { useEffect, useRef } from "react";
 
 import { SidebarTopButton } from "./components/SidebarTopButton";
-import {
-  ADDON_ID,
-  IS_OUTDATED,
-  RUNNING_BUILD,
-  RunningBuildPayload,
-  START_BUILD,
-} from "./constants";
+import { ADDON_ID, IS_OUTDATED, RUNNING_BUILD, START_BUILD } from "./constants";
+import { RunningBuildPayload } from "./types";
 import { useAddonState } from "./useAddonState/manager";
 import { useAccessToken } from "./utils/graphQLClient";
 import { useProjectId } from "./utils/useProjectId";

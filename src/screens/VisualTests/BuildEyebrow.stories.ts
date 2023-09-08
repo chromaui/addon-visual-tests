@@ -18,6 +18,7 @@ export const Initialize: Story = {
   args: {
     runningBuild: {
       step: "initialize",
+      buildProgressPercentage: 0,
     },
   },
   parameters: withFigmaDesign(
@@ -29,7 +30,7 @@ export const Build: Story = {
   args: {
     runningBuild: {
       step: "build",
-      buildProgressPercentage: 30,
+      buildProgressPercentage: 8,
     },
   },
   parameters: withFigmaDesign(
@@ -41,8 +42,8 @@ export const Upload: Story = {
   args: {
     runningBuild: {
       step: "upload",
-      stepProgressValue: 500,
-      stepProgressTotal: 1000,
+      stepProgressValue: 4_200_000,
+      stepProgressTotal: 123_000_000,
       buildProgressPercentage: 50,
     },
   },
