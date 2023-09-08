@@ -1,7 +1,8 @@
 import type { ResultOf } from "@graphql-typed-document-node/core";
 import { action } from "@storybook/addon-actions";
 import { expect } from "@storybook/jest";
-import { API, ManagerContext, State } from "@storybook/manager-api";
+import type { API, State } from "@storybook/manager-api";
+import { ManagerContext } from "@storybook/manager-api";
 import type { Decorator, Meta, StoryObj } from "@storybook/react";
 import { findByRole, findByTestId, fireEvent, waitFor } from "@storybook/testing-library";
 import { getOperationAST } from "graphql";
