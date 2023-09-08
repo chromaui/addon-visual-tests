@@ -52,5 +52,11 @@ const config: StorybookConfig = {
   staticDirs: ["../public"],
   stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|ts|tsx)"],
   logLevel: "debug",
+  refs: {
+    "@storybook/components": {
+      title: "@storybook/components",
+      url: "https://next--635781f3500dd2c49e189caf.chromatic.com/?path=/story/blocks-blocks-anchor--default",
+    },
+  },
 };
 export default config;
