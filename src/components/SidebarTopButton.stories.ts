@@ -2,15 +2,15 @@ import { action } from "@storybook/addon-actions";
 import type { Meta, StoryObj } from "@storybook/react";
 import { userEvent, within } from "@storybook/testing-library";
 
-import { ToolContent } from "./Tool";
-import { playAll } from "./utils/playAll";
+import { playAll } from "../utils/playAll";
+import { SidebarTopButton } from "./SidebarTopButton";
 
 const meta = {
-  component: ToolContent,
+  component: SidebarTopButton,
   args: {
     startBuild: action("startBuild"),
   },
-} satisfies Meta<typeof ToolContent>;
+} satisfies Meta<typeof SidebarTopButton>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
