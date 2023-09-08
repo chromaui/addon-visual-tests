@@ -8,6 +8,7 @@ import { Heading } from "../../components/Heading";
 import { BackIcon } from "../../components/icons/BackIcon";
 import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
+import { useChromaticDialog } from "../../utils/useChromaticDialog";
 
 const Digits = styled.ol(({ theme }) => ({
   display: "inline-flex",
@@ -34,26 +35,7 @@ interface VerifyProps {
 }
 
 export const Verify = ({ onBack, userCode, verificationUrl }: VerifyProps) => {
-  const dialog = React.useRef<Window>();
-
-  // Close the dialog window when the screen gets unmounted.
-  React.useEffect(() => () => dialog.current?.close(), []);
-
-  const openChromatic = () => {
-    const width = 800;
-    const height = 800;
-    const usePopup = window.innerWidth > width && window.innerHeight > height;
-
-    if (usePopup) {
-      const left = (window.innerWidth - width) / 2 + window.screenLeft;
-      const top = (window.innerHeight - height) / 2 + window.screenTop;
-      const options = `scrollbars=yes,width=${width},height=${height},top=${top},left=${left}`;
-      dialog.current = window.open(verificationUrl, "oauth-dialog", options);
-      if (window.focus) dialog.current.focus();
-    } else {
-      dialog.current = window.open(verificationUrl, "_blank");
-    }
-  };
+  const openChromatic = useChromaticDialog();
 
   return (
     <Container>
@@ -74,7 +56,7 @@ export const Verify = ({ onBack, userCode, verificationUrl }: VerifyProps) => {
             ))}
           </Digits>
         </div>
-        <Button secondary onClick={openChromatic}>
+        <Button secondary onClick={() => openChromatic(verificationUrl)}>
           Go to Chromatic
         </Button>
       </Stack>

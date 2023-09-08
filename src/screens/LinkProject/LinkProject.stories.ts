@@ -14,6 +14,7 @@ const meta = {
   decorators: [storyWrapper],
   args: {
     onUpdateProject: action("updateProject"),
+    chromaticBaseUrl: "https://www.chromatic.com",
   },
 } satisfies Meta<typeof LinkProject>;
 
@@ -236,19 +237,6 @@ export const SelectProjectManyProjects: Story = {
     await rightDiv.scroll({ top: rightDiv.scrollHeight });
     await leftDiv.scroll({ top: leftDiv.scrollHeight });
   }),
-};
-
-export const EmptyNoAccounts: Story = {
-  parameters: {
-    ...withSelectProjectsQuery({
-      viewer: {
-        accounts: [],
-      },
-    }),
-    ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-317038&mode=design&t=P9IPi8sOGNpjCeNs-4"
-    ),
-  },
 };
 
 export const EmptyNoProjects: Story = {

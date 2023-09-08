@@ -1,5 +1,5 @@
 import { Icons } from "@storybook/components";
-import { Avatar, ListItem } from "@storybook/design-system";
+import { Avatar, Link, ListItem } from "@storybook/design-system";
 import { styled } from "@storybook/theming";
 import React, { useState } from "react";
 import { useQuery } from "urql";
@@ -11,6 +11,7 @@ import { Bar, Col, Section, Sections, Text } from "../../components/layout";
 import { Stack } from "../../components/Stack";
 import { graphql } from "../../gql";
 import { SelectProjectsQueryQuery } from "../../gql/graphql";
+import { useChromaticDialog } from "../../utils/useChromaticDialog";
 
 const SelectProjectsQuery = graphql(/* GraphQL */ `
   query SelectProjectsQuery {
@@ -37,9 +38,11 @@ const SelectProjectsQuery = graphql(/* GraphQL */ `
 export const LinkProject = ({
   onUpdateProject,
   setAccessToken,
+  chromaticBaseUrl,
 }: {
   onUpdateProject: (projectId: string, projectToken: string) => void;
   setAccessToken: (accessToken: string | null) => void;
+  chromaticBaseUrl: string;
 }) => {
   const onSelectProjectId = React.useCallback(
     async (selectedProjectId: string, projectToken: string) => {
@@ -48,7 +51,13 @@ export const LinkProject = ({
     [onUpdateProject]
   );
 
-  return <SelectProject onSelectProjectId={onSelectProjectId} setAccessToken={setAccessToken} />;
+  return (
+    <SelectProject
+      onSelectProjectId={onSelectProjectId}
+      setAccessToken={setAccessToken}
+      chromaticBaseUrl={chromaticBaseUrl}
+    />
+  );
 };
 
 const ListHeading = styled.div`
@@ -98,9 +107,11 @@ const RepositoryOwnerAvatar = styled(Avatar)`
 function SelectProject({
   onSelectProjectId,
   setAccessToken,
+  chromaticBaseUrl,
 }: {
   onSelectProjectId: (projectId: string, projectToken: string) => Promise<void>;
   setAccessToken: (accessToken: string | null) => void;
+  chromaticBaseUrl: string;
 }) {
   const [selectedAccount, setSelectedAccount] =
     useState<SelectProjectsQueryQuery["viewer"]["accounts"][number]>(null);
@@ -134,6 +145,12 @@ function SelectProject({
     },
     [onSelectProjectId, setSelectingProject]
   );
+
+  const openChromatic = useChromaticDialog();
+  // TODO: Make this available on the API
+  const newProjectUrl = `${chromaticBaseUrl}/apps?accountId=${selectedAccount?.id
+    ?.split(":")
+    ?.at(1)}`;
 
   return (
     <Sections>
@@ -174,6 +191,11 @@ function SelectProject({
                           disabled={isSelectingProject}
                         />
                       ))}
+                      <ListItem
+                        key="__new"
+                        title="Don't see your project, create one?"
+                        onClick={() => openChromatic(newProjectUrl)}
+                      />
                     </List>
                   </Right>
                 </ProjectPicker>
