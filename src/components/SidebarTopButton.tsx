@@ -8,7 +8,7 @@ import { IconButton } from "./IconButton";
 import { StatusDotWrapper } from "./StatusDot";
 
 export const TooltipContent = styled.div(({ theme }) => ({
-  width: 200,
+  width: 220,
   padding: 3,
   color: theme.color.defaultText,
 
