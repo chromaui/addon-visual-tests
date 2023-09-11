@@ -16,8 +16,10 @@ import {
   ReviewTestBatch,
   SelectedBuildFieldsFragment,
   TestResult,
+  TestStatus,
 } from "../../gql/graphql";
 import { LocalBuildProgress } from "../../types";
+import { summarizeTests } from "../../utils/summarizeTests";
 import { BuildEyebrow } from "./BuildEyebrow";
 import { FragmentStoryTestFields } from "./graphql";
 import { RenderSettings } from "./RenderSettings";
@@ -93,6 +95,9 @@ export const BuildResults = ({
       switchToLastBuildOnBranch={switchToLastBuildOnBranch}
     />
   );
+
+  const { changeCount, status } = summarizeTests(storyTests ?? []);
+  const completedNoChanges = !changeCount && status !== TestStatus.Pending;
 
   // It shouldn't be possible for one test to be skipped but not all of them
   const isSkipped = !!storyTests?.find((t) => t.result === TestResult.Skipped);
@@ -194,20 +199,22 @@ export const BuildResults = ({
       </Section>
       <Section>
         <Bar>
-          <Col>
-            <WithTooltip
-              tooltip={<TooltipNote note="Switch snapshot" />}
-              trigger="hover"
-              hasChrome={false}
-            >
-              <IconButton
-                data-testid="button-toggle-snapshot"
-                onClick={() => toggleBaselineImage()}
+          {!completedNoChanges && (
+            <Col>
+              <WithTooltip
+                tooltip={<TooltipNote note="Switch snapshot" />}
+                trigger="hover"
+                hasChrome={false}
               >
-                <Icons icon="transfer" />
-              </IconButton>
-            </WithTooltip>
-          </Col>
+                <IconButton
+                  data-testid="button-toggle-snapshot"
+                  onClick={() => toggleBaselineImage()}
+                >
+                  <Icons icon="transfer" />
+                </IconButton>
+              </WithTooltip>
+            </Col>
+          )}
           <Col style={{ overflow: "hidden", whiteSpace: "nowrap" }}>
             {baselineImageVisible ? (
               <Text style={{ marginLeft: 5, width: "100%" }}>
