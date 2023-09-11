@@ -25,11 +25,19 @@ export const TooltipMenu = ({ children, links, note, ...props }: TooltipMenuProp
       closeOnOutsideClick
       closeOnTriggerHidden
       onVisibleChange={(visible) => setActive(visible)}
-      tooltip={
+      tooltip={({ onHide }) => (
         <Tooltip>
-          <TooltipLinkList links={links} />
+          <TooltipLinkList
+            links={links.map((link) => ({
+              ...link,
+              onClick: (...args) => {
+                onHide();
+                return link.onClick(...args);
+              },
+            }))}
+          />
         </Tooltip>
-      }
+      )}
       trigger="click"
       {...props}
     >
