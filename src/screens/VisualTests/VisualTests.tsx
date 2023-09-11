@@ -1,3 +1,4 @@
+import { useStorybookApi } from "@storybook/manager-api";
 import type { API_StatusState } from "@storybook/types";
 import React, { useCallback, useEffect, useState } from "react";
 import { useMutation, useQuery } from "urql";
@@ -51,6 +52,8 @@ export const VisualTests = ({
   gitInfo,
   storyId,
 }: VisualTestsProps) => {
+  const { addNotification } = useStorybookApi();
+
   // The storyId and buildId that drive the test(s) we are currently looking at
   // The user can choose when to change story (via sidebar) and build (via opting into new builds)
   const [storyBuildInfo, setStoryBuildInfo] = useState<{
@@ -83,11 +86,15 @@ export const VisualTests = ({
 
   const [{ fetching: isReviewing }, reviewTest] = useMutation(MutationReviewTest);
 
-  const onAccept = useCallback(
-    async (testId: string, batch: ReviewTestBatch) => {
+  const onReview = useCallback(
+    async (
+      status: ReviewTestInputStatus.Accepted | ReviewTestInputStatus.Pending,
+      testId: string,
+      batch?: ReviewTestBatch
+    ) => {
       try {
         const { error: reviewError } = await reviewTest({
-          input: { testId, status: ReviewTestInputStatus.Accepted, batch },
+          input: { testId, status, batch },
         });
 
         if (reviewError) {
@@ -95,36 +102,34 @@ export const VisualTests = ({
         }
         rerun();
       } catch (err) {
-        // https://linear.app/chromaui/issue/AP-3279/error-handling
-        // eslint-disable-next-line no-console
-        console.log("Failed to accept changes:");
-        // eslint-disable-next-line no-console
-        console.log(err);
+        addNotification({
+          id: "chromatic/errorAccepting",
+          link: undefined,
+          content: {
+            headline: `Failed to ${
+              status === ReviewTestInputStatus.Accepted ? "accept" : "unaccept"
+            } changes`,
+            subHeadline: err.message,
+          },
+          icon: {
+            name: "cross",
+            color: "red",
+          },
+        });
       }
     },
-    [rerun, reviewTest]
+    [addNotification, rerun, reviewTest]
+  );
+
+  const onAccept = useCallback(
+    async (testId: string, batch: ReviewTestBatch) =>
+      onReview(ReviewTestInputStatus.Accepted, testId, batch),
+    [onReview]
   );
 
   const onUnaccept = useCallback(
-    async (testId: string) => {
-      try {
-        const { error: reviewError } = await reviewTest({
-          input: { testId, status: ReviewTestInputStatus.Pending },
-        });
-
-        if (reviewError) {
-          throw reviewError;
-        }
-        rerun();
-      } catch (err) {
-        // https://linear.app/chromaui/issue/AP-3279/error-handling
-        // eslint-disable-next-line no-console
-        console.log("Failed to unaccept changes:");
-        // eslint-disable-next-line no-console
-        console.log(err);
-      }
-    },
-    [rerun, reviewTest]
+    async (testId: string) => onReview(ReviewTestInputStatus.Pending, testId),
+    [onReview]
   );
 
   const nextBuild = getFragment(FragmentNextBuildFields, data?.project?.nextBuild);
