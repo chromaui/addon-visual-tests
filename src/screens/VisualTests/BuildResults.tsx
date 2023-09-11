@@ -54,7 +54,7 @@ export const BuildResults = ({
   const [baselineImageVisible, setBaselineImageVisible] = useState(false);
   const toggleBaselineImage = () => setBaselineImageVisible(!baselineImageVisible);
 
-  const isRunningBuildInProgress = runningBuild && runningBuild.step !== "complete";
+  const isRunningBuildInProgress = runningBuild && runningBuild.currentStep !== "complete";
   const showBuildStatus =
     // We always want to show the status of the running build (until it is done)
     isRunningBuildInProgress ||

@@ -33,22 +33,25 @@ export type KnownStep = Extract<
   "initialize" | "build" | "upload" | "verify" | "snapshot"
 >;
 
+export type StepProgressPayload = {
+  /** Current task progress value (e.g. bytes or snapshots) */
+  numerator?: number;
+  /** Current task progress total (e.g. bytes or snapshots)  */
+  denominator?: number;
+  startedAt?: number;
+  completedAt?: number;
+};
+
 export type RunningBuildPayload = {
   /** The id of the build, available after the initialize step */
   buildId?: string;
 
   /** Overall percentage of build progress */
-  buildProgressPercentage?: number;
+  buildProgressPercentage: number;
 
   // Possibly this should be a type exported by the CLI -- these correspond to tasks
   /** The step of the build process we have reached */
-  step: KnownStep | "error" | "complete";
-
-  /** Current task progress value (e.g. bytes or snapshots) */
-  stepProgressValue?: number;
-
-  /** Current task progress total (e.g. bytes or snapshots)  */
-  stepProgressTotal?: number;
+  currentStep: KnownStep | "error" | "complete";
 
   /** Number of visual changes detected */
   changeCount?: number;
@@ -61,4 +64,10 @@ export type RunningBuildPayload = {
 
   /** The original error without formatting */
   originalError?: Error | Error[];
+
+  /** Progress tracking data for each step */
+  stepProgress: Record<KnownStep, StepProgressPayload>;
+
+  /** Progress tracking data from the previous build (if any) */
+  previousBuildProgress?: Record<KnownStep, StepProgressPayload>;
 };

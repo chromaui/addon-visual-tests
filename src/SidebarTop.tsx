@@ -23,14 +23,14 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
 
   const [isOutdated] = useAddonState<boolean>(IS_OUTDATED);
   const [runningBuild] = useAddonState<RunningBuildPayload>(RUNNING_BUILD);
-  const isRunning = !!runningBuild && runningBuild.step !== "complete";
+  const isRunning = !!runningBuild && runningBuild.currentStep !== "complete";
 
-  const lastStep = useRef(runningBuild?.step);
+  const lastStep = useRef(runningBuild?.currentStep);
   useEffect(() => {
-    if (runningBuild?.step === lastStep.current) return;
-    lastStep.current = runningBuild?.step;
+    if (runningBuild?.currentStep === lastStep.current) return;
+    lastStep.current = runningBuild?.currentStep;
 
-    if (runningBuild?.step === "initialize") {
+    if (runningBuild?.currentStep === "initialize") {
       addNotification({
         id: `${ADDON_ID}/build-initialize`,
         content: {
@@ -46,7 +46,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
       setTimeout(() => clearNotification(`${ADDON_ID}/build-initialize`), 10_000);
     }
 
-    if (runningBuild?.step === "complete") {
+    if (runningBuild?.currentStep === "complete") {
       addNotification({
         id: `${ADDON_ID}/build-complete`,
         content: {
@@ -67,7 +67,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
       setTimeout(() => clearNotification(`${ADDON_ID}/build-complete`), 10_000);
     }
 
-    if (runningBuild?.step === "error") {
+    if (runningBuild?.currentStep === "error") {
       addNotification({
         id: `${ADDON_ID}/build-error`,
         content: {
@@ -84,7 +84,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
   }, [
     addNotification,
     clearNotification,
-    runningBuild?.step,
+    runningBuild?.currentStep,
     runningBuild?.errorCount,
     runningBuild?.changeCount,
   ]);

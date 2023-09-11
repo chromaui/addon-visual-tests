@@ -171,7 +171,8 @@ export const VisualTests = ({
     [canSwitchToNextBuild, nextBuild?.id, storyId]
   );
 
-  const isRunningBuildStarting = runningBuild && !["success", "error"].includes(runningBuild.step);
+  const isRunningBuildStarting =
+    runningBuild && !["success", "error"].includes(runningBuild.currentStep);
   const isOutdated = storyBuild?.uncommittedHash !== gitInfo.uncommittedHash;
 
   useEffect(() => setOutdated(isOutdated), [isOutdated, setOutdated]);

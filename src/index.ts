@@ -1,10 +1,16 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable no-console */
 import type { Channel } from "@storybook/channels";
 // eslint-disable-next-line import/no-unresolved
 import { Context, getGitInfo, GitInfo, run, TaskName } from "chromatic/node";
 import { basename, relative } from "path";
 
-import { BUILD_STEP_ORDER, isKnownStep } from "./buildSteps";
+import {
+  BUILD_STEP_CONFIG,
+  BUILD_STEP_ORDER,
+  INITIAL_BUILD_PAYLOAD,
+  isKnownStep,
+} from "./buildSteps";
 import {
   CHROMATIC_BASE_URL,
   GIT_INFO,
@@ -12,7 +18,7 @@ import {
   RUNNING_BUILD,
   START_BUILD,
 } from "./constants";
-import { GitInfoPayload, KnownStep, ProjectInfoPayload, RunningBuildPayload } from "./types";
+import { GitInfoPayload, ProjectInfoPayload, RunningBuildPayload } from "./types";
 import { useAddonState } from "./useAddonState/server";
 import { findConfig } from "./utils/storybook.config.utils";
 import { updateMain } from "./utils/updateMain";
@@ -44,6 +50,120 @@ const observeGitInfo = async (
 
   return () => clearTimeout(timer);
 };
+
+const getConfig = (
+  task: TaskName,
+  previousBuildProgress?: RunningBuildPayload["previousBuildProgress"]
+) => {
+  if (!isKnownStep(task)) throw new Error(`Unknown step: ${task}`);
+  const stepDurations = BUILD_STEP_ORDER.map((step) => {
+    const { startedAt, completedAt } = previousBuildProgress?.[step] || {};
+    return startedAt && completedAt
+      ? completedAt - startedAt
+      : BUILD_STEP_CONFIG[step].estimateDuration;
+  });
+  const totalDuration = stepDurations.reduce((sum, duration) => sum + duration, 0);
+
+  const stepIndex = BUILD_STEP_ORDER.indexOf(task);
+  const startTime = stepDurations.slice(0, stepIndex).reduce((sum, duration) => sum + duration, 0);
+  const endTime = startTime + stepDurations[stepIndex];
+
+  const startPercentage = (startTime / totalDuration) * 100;
+  const endPercentage = (endTime / totalDuration) * 100;
+  return {
+    ...BUILD_STEP_CONFIG[task],
+    startPercentage,
+    endPercentage,
+    stepPercentage: endPercentage - startPercentage,
+  };
+};
+
+const onStartOrProgress =
+  (runningBuildState: ReturnType<typeof useAddonState<RunningBuildPayload>>) =>
+  ({ ...ctx }: Context, { progress, total }: { progress?: number; total?: number } = {}) => {
+    if (isKnownStep(ctx.task)) {
+      const { buildProgressPercentage, stepProgress, previousBuildProgress } =
+        runningBuildState.value;
+
+      const { startPercentage, endPercentage, stepPercentage } = getConfig(
+        ctx.task,
+        previousBuildProgress
+      );
+
+      let newPercentage = startPercentage;
+      if (progress && total) {
+        newPercentage += stepPercentage * (progress / total);
+      }
+
+      if (!["upload", "snapshot"].includes(ctx.task)) {
+        const { estimateDuration } = BUILD_STEP_CONFIG[ctx.task];
+        const stepIndex = BUILD_STEP_ORDER.indexOf(ctx.task);
+        newPercentage =
+          Math.max(newPercentage, buildProgressPercentage) +
+          (2000 / estimateDuration) * stepPercentage;
+
+        setTimeout(() => {
+          // Intentionally reference the _current_ value here (after timeout)
+          const { currentStep } = runningBuildState.value;
+          const index = BUILD_STEP_ORDER.indexOf(currentStep as any);
+
+          // Only update if we haven't moved on to a later step
+          if (index !== -1 && index <= stepIndex) onStartOrProgress(runningBuildState)(ctx);
+        }, 2000);
+      }
+
+      stepProgress[ctx.task] = {
+        startedAt: Date.now(),
+        ...stepProgress[ctx.task],
+        ...(progress && total && { numerator: progress, denominator: total }),
+      };
+
+      runningBuildState.value = {
+        buildId: ctx.announcedBuild?.id,
+        buildProgressPercentage: Math.min(newPercentage, endPercentage),
+        currentStep: ctx.task,
+        stepProgress,
+      };
+    }
+  };
+
+const onCompleteOrError =
+  (runningBuildState: ReturnType<typeof useAddonState<RunningBuildPayload>>) =>
+  (ctx: Context, error?: { formattedError: string; originalError: Error | Error[] }) => {
+    const { buildProgressPercentage, stepProgress } = runningBuildState.value;
+
+    if (isKnownStep(ctx.task)) {
+      stepProgress[ctx.task] = {
+        ...stepProgress[ctx.task],
+        completedAt: Date.now(),
+      };
+    }
+
+    if (error) {
+      runningBuildState.value = {
+        buildId: ctx.announcedBuild?.id,
+        buildProgressPercentage,
+        currentStep: "error",
+        stepProgress,
+        formattedError: error.formattedError,
+        originalError: error.originalError,
+        previousBuildProgress: stepProgress,
+      };
+      return;
+    }
+
+    if (ctx.task === "snapshot") {
+      runningBuildState.value = {
+        buildId: ctx.announcedBuild?.id,
+        buildProgressPercentage: 100,
+        currentStep: "complete",
+        stepProgress,
+        changeCount: ctx.build.changeCount,
+        errorCount: ctx.build.errorCount,
+        previousBuildProgress: stepProgress,
+      };
+    }
+  };
 
 async function serverChannel(
   channel: Channel,
@@ -102,33 +222,12 @@ async function serverChannel(
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const runningBuildState = useAddonState<RunningBuildPayload>(channel, RUNNING_BUILD);
+
   channel.on(START_BUILD, async () => {
     if (!projectInfoState.value.projectToken) throw new Error("No project token set");
 
-    const onStartOrProgress = (
-      ctx: Context,
-      { progress, total }: { progress?: number; total?: number } = {}
-    ) => {
-      if (isKnownStep(ctx.task)) {
-        let buildProgressPercentage =
-          (BUILD_STEP_ORDER.indexOf(ctx.task) / BUILD_STEP_ORDER.length) * 100;
-        if (progress && total) {
-          buildProgressPercentage += (progress / total) * (100 / BUILD_STEP_ORDER.length);
-        }
-        runningBuildState.value = {
-          buildId: ctx.announcedBuild?.id,
-          buildProgressPercentage,
-          step: ctx.task,
-          stepProgressValue: progress,
-          stepProgressTotal: total,
-        };
-      }
-    };
+    runningBuildState.value = INITIAL_BUILD_PAYLOAD;
 
-    runningBuildState.value = {
-      step: "initialize",
-      buildProgressPercentage: 0,
-    };
     await run({
       // Currently we have to have these flags.
       // We should move the checks to after flags have been parsed into options.
@@ -143,30 +242,10 @@ async function serverChannel(
         forceRebuild: true,
         // Builds initiated from the addon are always considered local
         isLocalBuild: true,
-        experimental_onTaskStart: onStartOrProgress,
-        experimental_onTaskProgress: onStartOrProgress,
-        experimental_onTaskComplete(ctx) {
-          if (ctx.task === "snapshot") {
-            runningBuildState.value = {
-              buildId: ctx.announcedBuild?.id,
-              buildProgressPercentage: 100,
-              step: "complete",
-              changeCount: ctx.build.changeCount,
-              errorCount: ctx.build.errorCount,
-            };
-          }
-        },
-        experimental_onTaskError(ctx, { formattedError, originalError }) {
-          runningBuildState.value = {
-            buildId: ctx.announcedBuild?.id,
-            buildProgressPercentage:
-              runningBuildState.value.buildProgressPercentage ??
-              BUILD_STEP_ORDER.indexOf(ctx.task as KnownStep) / BUILD_STEP_ORDER.length,
-            step: "error",
-            formattedError,
-            originalError,
-          };
-        },
+        experimental_onTaskStart: onStartOrProgress(runningBuildState),
+        experimental_onTaskProgress: onStartOrProgress(runningBuildState),
+        experimental_onTaskComplete: onCompleteOrError(runningBuildState),
+        experimental_onTaskError: onCompleteOrError(runningBuildState),
       },
     });
   });

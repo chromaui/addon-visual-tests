@@ -73,20 +73,16 @@ type BuildProgressProps = {
   expanded?: boolean;
 };
 
-// Need to actually create an store an array of stepHistory objects on step completion. Fields may change.
-type StepHistory = {
-  timeToComplete: number;
-  total: number;
-};
-
 export function BuildProgress({ buildProgress, expanded }: BuildProgressProps) {
-  const stepHistory = useRef<Partial<Record<RunningBuildPayload["step"], RunningBuildPayload>>>({});
+  const stepHistory = useRef<
+    Partial<Record<RunningBuildPayload["currentStep"], RunningBuildPayload>>
+  >({});
 
   useEffect(() => {
-    stepHistory.current[buildProgress.step] = { ...buildProgress };
+    stepHistory.current[buildProgress.currentStep] = { ...buildProgress };
   }, [buildProgress]);
 
-  const currentIndex = BUILD_STEP_ORDER.findIndex((key) => key === buildProgress.step);
+  const currentIndex = BUILD_STEP_ORDER.findIndex((key) => key === buildProgress.currentStep);
 
   // This shouldn't happen, but it does because of an issue in the onTaskProgress callback returning
   // undefined for newSteps between initialize and snapshot

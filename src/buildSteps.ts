@@ -1,7 +1,7 @@
 import { TaskName } from "chromatic/node";
 import { filesize } from "filesize";
 
-import { KnownStep, RunningBuildPayload } from "./types";
+import { KnownStep, RunningBuildPayload, StepProgressPayload } from "./types";
 
 export const isKnownStep = (task: TaskName): task is KnownStep =>
   BUILD_STEP_ORDER.includes(task as KnownStep);
@@ -16,14 +16,14 @@ export const BUILD_STEP_ORDER: KnownStep[] = [
 ];
 
 export const BUILD_STEP_CONFIG: Record<
-  RunningBuildPayload["step"],
+  RunningBuildPayload["currentStep"],
   {
-    key: RunningBuildPayload["step"];
+    key: RunningBuildPayload["currentStep"];
     emoji: string;
     renderName: () => string;
     renderProgress: (payload: RunningBuildPayload) => string;
     renderComplete: () => string;
-    weight: number;
+    estimateDuration: number;
   }
 > = {
   initialize: {
@@ -32,7 +32,7 @@ export const BUILD_STEP_CONFIG: Record<
     renderName: () => `Initialize build`,
     renderProgress: () => `Initializing build`,
     renderComplete: () => `Initialized`,
-    weight: 5,
+    estimateDuration: 2000,
   },
   build: {
     key: "build",
@@ -40,19 +40,20 @@ export const BUILD_STEP_CONFIG: Record<
     renderName: () => `Build Storybook`,
     renderProgress: () => `Building your Storybook...`,
     renderComplete: () => `Storybook built`,
-    weight: 35,
+    estimateDuration: 30_000,
   },
   upload: {
     key: "upload",
     emoji: "📡",
     renderName: () => `Publish your Storybook`,
-    renderProgress: (payload) => {
-      if (!payload.stepProgressTotal) return `Uploading files`;
-      const { value: total, exponent } = filesize(payload.stepProgressTotal, {
+    renderProgress: ({ stepProgress }) => {
+      const { numerator, denominator } = stepProgress.upload;
+      if (!denominator) return `Uploading files`;
+      const { value: total, exponent } = filesize(denominator, {
         output: "object",
         round: 1,
       });
-      const { value: progress, symbol } = filesize(payload.stepProgressValue, {
+      const { value: progress, symbol } = filesize(numerator, {
         exponent,
         output: "object",
         round: 1,
@@ -60,7 +61,7 @@ export const BUILD_STEP_CONFIG: Record<
       return `Uploading files (${progress}/${total} ${symbol})`;
     },
     renderComplete: () => `Publish complete`,
-    weight: 15,
+    estimateDuration: 30_000,
   },
   verify: {
     key: "verify",
@@ -68,18 +69,20 @@ export const BUILD_STEP_CONFIG: Record<
     renderName: () => `Verify your Storybook`,
     renderProgress: () => `Verifying contents...`,
     renderComplete: () => `Storybook verified`,
-    weight: 10,
+    estimateDuration: 10_000,
   },
   snapshot: {
     key: "snapshot",
     emoji: "📸",
     renderName: () => `Run visual tests`,
-    renderProgress: (payload) =>
-      payload.stepProgressTotal
-        ? `Running visual tests (${payload.stepProgressValue}/${payload.stepProgressTotal})`
-        : `Running visual tests`,
+    renderProgress: ({ stepProgress }) => {
+      const { numerator, denominator } = stepProgress.snapshot;
+      return denominator
+        ? `Running visual tests (${numerator}/${denominator})`
+        : `Running visual tests`;
+    },
     renderComplete: () => `Tested your stories`,
-    weight: 35,
+    estimateDuration: 60_000,
   },
 
   // These are special steps that are not part of the build process
@@ -89,7 +92,7 @@ export const BUILD_STEP_CONFIG: Record<
     renderName: () => `Visual tests completed!`,
     renderProgress: () => `Visual tests completed!`,
     renderComplete: () => `Visual tests completed!`,
-    weight: 0,
+    estimateDuration: 0,
   },
   error: {
     key: "error",
@@ -97,6 +100,15 @@ export const BUILD_STEP_CONFIG: Record<
     renderName: () => `Build failed`,
     renderProgress: () => `Build failed`,
     renderComplete: () => `Build failed`,
-    weight: 0,
+    estimateDuration: 0,
   },
+};
+
+export const INITIAL_BUILD_PAYLOAD = {
+  buildProgressPercentage: 0,
+  currentStep: BUILD_STEP_ORDER[0],
+  stepProgress: Object.fromEntries(BUILD_STEP_ORDER.map((step) => [step, {}])) as Record<
+    KnownStep,
+    StepProgressPayload
+  >,
 };

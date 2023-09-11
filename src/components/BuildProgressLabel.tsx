@@ -8,7 +8,7 @@ interface BuildProgressLabelProps {
 }
 
 export const BuildProgressLabel = ({ runningBuild }: BuildProgressLabelProps) => {
-  const { emoji, renderProgress } = BUILD_STEP_CONFIG[runningBuild.step];
+  const { emoji, renderProgress } = BUILD_STEP_CONFIG[runningBuild.currentStep];
   return (
     <>
       {emoji} {renderProgress(runningBuild)}
