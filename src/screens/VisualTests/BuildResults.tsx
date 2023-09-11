@@ -25,6 +25,7 @@ import { StoryInfo } from "./StoryInfo";
 import { Warnings } from "./Warnings";
 
 interface BuildResultsProps {
+  branch: string;
   runningBuild: RunningBuildPayload;
   storyBuild: StoryBuildFieldsFragment;
   nextBuild: NextBuildFieldsFragment;
@@ -38,6 +39,7 @@ interface BuildResultsProps {
 }
 
 export const BuildResults = ({
+  branch,
   runningBuild,
   nextBuild,
   switchToNextBuild,
@@ -63,6 +65,7 @@ export const BuildResults = ({
   const runningBuildIsNextBuild = runningBuild && runningBuild?.buildId === nextBuild.id;
   const buildStatus = showBuildStatus && (
     <BuildEyebrow
+      branch={branch}
       runningBuild={(runningBuildIsNextBuild || isRunningBuildInProgress) && runningBuild}
       switchToNextBuild={switchToNextBuild}
     />

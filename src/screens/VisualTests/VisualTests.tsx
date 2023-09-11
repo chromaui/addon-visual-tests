@@ -192,6 +192,7 @@ export const VisualTests = ({
   ) : (
     <BuildResults
       {...{
+        branch: gitInfo.branch,
         runningBuild,
         nextBuild,
         switchToNextBuild: canSwitchToNextBuild && switchToNextBuild,

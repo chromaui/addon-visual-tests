@@ -10,20 +10,25 @@ const spin = keyframes({
   to: { transform: "rotate(359deg)" },
 });
 
-export const Header = styled.button(({ theme }) => ({
+export const Header = styled.button(({ onClick, theme }) => ({
   position: "relative",
   display: "flex",
   width: "100%",
   minHeight: 40,
-  padding: "5px 5px 5px 10px",
+  padding: "5px 5px 5px 15px",
   justifyContent: "space-between",
   alignItems: "center",
   background: theme.background.app,
   border: "none",
   borderBottom: `1px solid ${theme.appBorderColor}`,
   color: theme.color.defaultText,
-  cursor: "pointer",
+  cursor: onClick ? "pointer" : "default",
   textAlign: "left",
+
+  code: {
+    fontFamily: theme.typography.fonts.mono,
+    fontSize: theme.typography.size.s1,
+  },
 }));
 
 export const Bar = styled.div<{ percentage: number }>(({ theme, percentage }) => ({
