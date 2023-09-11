@@ -1,7 +1,7 @@
 import { Icons } from "@storybook/components";
 import { Avatar, Link, ListItem } from "@storybook/design-system";
 import { styled } from "@storybook/theming";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useQuery } from "urql";
 
 import { Container } from "../../components/Container";
@@ -115,9 +115,17 @@ function SelectProject({
 }) {
   const [selectedAccount, setSelectedAccount] =
     useState<SelectProjectsQueryQuery["viewer"]["accounts"][number]>(null);
-  const [{ data, fetching, error }] = useQuery<SelectProjectsQueryQuery>({
+  const [{ data, fetching, error }, rerun] = useQuery<SelectProjectsQueryQuery>({
     query: SelectProjectsQuery,
   });
+  console.log({ data, fetching, error });
+
+  // Poll for updates
+  useEffect(() => {
+    const interval = setInterval(rerun, 5000);
+    return () => clearInterval(interval);
+  }, [rerun]);
+
   const onSelectAccount = React.useCallback(
     (account: SelectProjectsQueryQuery["viewer"]["accounts"][number]) => {
       setSelectedAccount(account);
@@ -147,7 +155,7 @@ function SelectProject({
   );
 
   const openChromatic = useChromaticDialog();
-  // TODO: Make this available on the API
+  // TODO: Make this available on the API https://github.com/chromaui/chromatic/pull/7714
   const newProjectUrl = `${chromaticBaseUrl}/apps?accountId=${selectedAccount?.id
     ?.split(":")
     ?.at(1)}`;
@@ -157,9 +165,9 @@ function SelectProject({
       <Section grow>
         <Container>
           <Stack>
-            {fetching && <p>Loading...</p>}
+            {!data && fetching && <p>Loading...</p>}
             {error && <p>{error.message}</p>}
-            {!fetching && data.viewer?.accounts && (
+            {data?.viewer?.accounts && (
               <>
                 <Heading>Select a Project</Heading>
                 <Text>Baselines will be used with this project.</Text>
