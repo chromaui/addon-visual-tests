@@ -1,3 +1,15 @@
+# v0.0.65 (Mon Sep 11 2023)
+
+#### 🐛 Bug Fix
+
+- Show a notification when there is trouble accepting [#84](https://github.com/chromaui/addon-visual-tests/pull/84) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.64 (Fri Sep 08 2023)
 
 #### 🐛 Bug Fix
