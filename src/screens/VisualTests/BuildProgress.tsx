@@ -33,7 +33,7 @@ export const Bar = styled.div<{ percentage: number }>(({ theme, percentage }) =>
   height: "100%",
   left: "0",
   width: `${percentage}%`,
-  transition: "all 150ms ease-out",
+  transition: "width 3s ease-out",
   backgroundColor: theme.background.hoverable,
 }));
 

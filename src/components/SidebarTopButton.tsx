@@ -25,6 +25,7 @@ export const ProgressTrack = styled.div(({ theme }) => ({
 
 export const ProgressBar = styled(ProgressTrack)(({ theme }) => ({
   background: theme.color.secondary,
+  transition: "width 3s ease-out",
 }));
 
 export const ProgressCircle = styled.svg(({ theme }) => ({
