@@ -38,16 +38,16 @@ export const Bar = styled.div<{ percentage: number }>(({ theme, percentage }) =>
 }));
 
 const ExpandableDiv = styled.div<{ expanded: boolean }>(({ expanded, theme }) => ({
-  overflow: "hidden",
+  display: "grid",
+  gridTemplateRows: expanded ? "1fr" : "0fr",
   background: theme.background.app,
-  transition: "max-height 150ms ease-out",
-  maxHeight: expanded ? 140 : 0,
   borderBottom: expanded ? `1px solid ${theme.appBorderColor}` : "none",
+  transition: "grid-template-rows 150ms ease-out",
 }));
 
 const StepDetails = styled.div({
-  padding: 10,
   whiteSpace: "nowrap",
+  overflow: "hidden",
 });
 
 const StepDetail = styled.div<{ isCurrent: boolean; isPending: boolean }>(
@@ -60,6 +60,13 @@ const StepDetail = styled.div<{ isCurrent: boolean; isPending: boolean }>(
     fontFamily: "Menlo, monospace",
     fontSize: "12px",
     lineHeight: "24px",
+    margin: "0 10px",
+    "&:first-of-type": {
+      marginTop: 8,
+    },
+    "&:last-of-type": {
+      marginBottom: 8,
+    },
   })
 );
 
