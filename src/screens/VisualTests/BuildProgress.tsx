@@ -90,14 +90,6 @@ export function BuildProgress({ buildProgress, expanded }: BuildProgressProps) {
   }, [buildProgress]);
 
   const currentIndex = BUILD_STEP_ORDER.findIndex((key) => key === buildProgress.currentStep);
-
-  // This shouldn't happen, but it does because of an issue in the onTaskProgress callback returning
-  // undefined for newSteps between initialize and snapshot
-  if (currentIndex === -1) {
-    console.log("buildProgress.step is undefined or not supported", buildProgress);
-    return null;
-  }
-
   const steps = BUILD_STEP_ORDER.map((step, index) => {
     const config = {
       ...BUILD_STEP_CONFIG[step],
