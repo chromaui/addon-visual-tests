@@ -46,8 +46,7 @@ export const Panel = ({ active, api }: PanelProps) => {
     loading: projectInfoLoading,
     projectId,
     projectToken,
-    configDir,
-    mainPath,
+    configFile,
     updateProject,
     projectUpdatingFailed,
     projectIdUpdated,
@@ -77,8 +76,7 @@ export const Panel = ({ active, api }: PanelProps) => {
         <LinkingProjectFailed
           projectId={projectId}
           projectToken={projectToken}
-          mainPath={mainPath}
-          configDir={configDir}
+          configFile={configFile}
         />
       </Sections>
     );
@@ -90,7 +88,7 @@ export const Panel = ({ active, api }: PanelProps) => {
         <Sections hidden={!active}>
           <LinkedProject
             projectId={projectId}
-            mainPath={mainPath}
+            configFile={configFile}
             goToNext={clearProjectIdUpdated}
             setAccessToken={setAccessToken}
           />

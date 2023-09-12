@@ -3,7 +3,6 @@ import type { GitInfo, TaskName } from "chromatic/node";
 export const {
   CHROMATIC_INDEX_URL,
   CHROMATIC_BASE_URL = CHROMATIC_INDEX_URL || "https://www.chromatic.com",
-  CHROMATIC_ADDON_NAME = "@chromaui/addon-visual-tests",
   CHROMATIC_API_URL = `${CHROMATIC_BASE_URL}/api`,
 } = process.env;
 
@@ -22,8 +21,7 @@ export type ProjectInfoPayload = {
   projectId?: string;
   projectToken?: string;
   written?: boolean;
-  configDir?: string;
-  mainPath?: string;
+  configFile?: string;
 };
 
 // The CLI may have other steps that we don't respond to, so we just ignore updates
