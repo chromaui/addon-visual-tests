@@ -31,7 +31,6 @@ interface BuildResultsProps {
   nextBuild: NextBuildFieldsFragment;
   switchToNextBuild?: () => void;
   startDevBuild: () => void;
-  isOutdated: boolean;
   isReviewing: boolean;
   onAccept: (testId: string, batch: ReviewTestBatch) => Promise<void>;
   onUnaccept: (testId: string) => Promise<void>;
@@ -43,7 +42,6 @@ export const BuildResults = ({
   nextBuild,
   switchToNextBuild,
   startDevBuild,
-  isOutdated,
   isReviewing,
   onAccept,
   onUnaccept,
@@ -57,18 +55,6 @@ export const BuildResults = ({
 
   const isRunningBuildInProgress = runningBuild && runningBuild.step !== "complete";
   const isReviewable = nextBuild.id === storyBuild.id;
-  const showBuildStatus =
-    // We always want to show the status of the running build (until it is done)
-    isRunningBuildInProgress ||
-    // Even if there's no build running, we want to show the next build if it hasn't been selected.
-    !isReviewable;
-  const runningBuildIsNextBuild = runningBuild && runningBuild?.buildId === nextBuild.id;
-  const buildStatus = showBuildStatus && (
-    <BuildProgress
-      runningBuild={(runningBuildIsNextBuild || isRunningBuildInProgress) && runningBuild}
-      switchToNextBuild={switchToNextBuild}
-    />
-  );
 
   const storyTests = [
     ...getFragment(
@@ -84,6 +70,20 @@ export const BuildResults = ({
   ];
   const isStorySuperseded =
     !isReviewable && nextStoryTests.every(({ status }) => status !== TestStatus.InProgress);
+
+  const showBuildStatus =
+    // We always want to show the status of the running build (until it is done)
+    isRunningBuildInProgress ||
+    // Even if there's no build running, we want to show the next build if it hasn't been selected,
+    // unless the story info itself is going to tell us to switch already
+    (!isReviewable && !(isStorySuperseded && switchToNextBuild));
+  const runningBuildIsNextBuild = runningBuild && runningBuild?.buildId === nextBuild.id;
+  const buildStatus = showBuildStatus && (
+    <BuildProgress
+      runningBuild={(runningBuildIsNextBuild || isRunningBuildInProgress) && runningBuild}
+      switchToNextBuild={switchToNextBuild}
+    />
+  );
 
   // It shouldn't be possible for one test to be skipped but not all of them
   const isSkipped = !!storyTests?.find((t) => t.result === TestResult.Skipped);

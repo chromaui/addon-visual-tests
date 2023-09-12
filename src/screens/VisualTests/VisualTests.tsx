@@ -139,6 +139,10 @@ export const VisualTests = ({
     data?.storyBuild ?? data?.project?.nextBuild
   );
 
+  // Currently only used by the sidebar button to show a blue dot ("build outdated")
+  const isOutdated = storyBuild?.uncommittedHash !== gitInfo.uncommittedHash;
+  useEffect(() => setOutdated(isOutdated), [isOutdated, setOutdated]);
+
   // If the next build is *newer* than the current commit, we don't want to switch to the build
   const nextBuildNewer = nextBuild && nextBuild.committedAt > gitInfo.committedAt;
   const canSwitchToNextBuild = nextBuild && !nextBuildNewer;
@@ -178,9 +182,6 @@ export const VisualTests = ({
   );
 
   const isRunningBuildStarting = runningBuild && !["success", "error"].includes(runningBuild.step);
-  const isOutdated = storyBuild?.uncommittedHash !== gitInfo.uncommittedHash;
-
-  useEffect(() => setOutdated(isOutdated), [isOutdated, setOutdated]);
 
   return !nextBuild || error ? (
     <NoBuild
@@ -201,7 +202,6 @@ export const VisualTests = ({
         nextBuild,
         switchToNextBuild: canSwitchToNextBuild && switchToNextBuild,
         startDevBuild,
-        isOutdated,
         isReviewing,
         onAccept,
         onUnaccept,
