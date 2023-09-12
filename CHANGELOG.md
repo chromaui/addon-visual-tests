@@ -1,3 +1,15 @@
+# v0.0.66 (Tue Sep 12 2023)
+
+#### 🐛 Bug Fix
+
+- Don't show eyebrow unnecessarily [#87](https://github.com/chromaui/addon-visual-tests/pull/87) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.65 (Mon Sep 11 2023)
 
 #### 🐛 Bug Fix
