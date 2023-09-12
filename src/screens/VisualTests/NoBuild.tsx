@@ -1,7 +1,6 @@
 import { Icons, Link, Loader } from "@storybook/components";
 import { styled } from "@storybook/theming";
 import React from "react";
-import { RunningBuildPayload } from "src/constants";
 import { CombinedError } from "urql";
 
 import { Button } from "../../components/Button";
@@ -11,6 +10,7 @@ import { Heading } from "../../components/Heading";
 import { ProgressIcon } from "../../components/icons/ProgressIcon";
 import { Bar, Col, Row, Section, Sections, Text } from "../../components/layout";
 import { Text as CenterText } from "../../components/Text";
+import { RunningBuildPayload } from "../../constants";
 
 const buildFailureUrl = "https://www.chromatic.com/docs/?";
 
