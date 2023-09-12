@@ -57,6 +57,7 @@ export const BrowserSelector = ({
       id: browser.id,
       onClick: () => onSelectBrowser(browser),
       right: !isAccepted && result !== ComparisonResult.Equal && <StatusDot status={result} />,
+      left: browserIcons[browser.key],
       title: browser.name,
     }));
 
