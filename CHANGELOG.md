@@ -1,3 +1,16 @@
+# v0.0.67 (Tue Sep 12 2023)
+
+#### 🐛 Bug Fix
+
+- Add a compose `@storybook/components` in our Storybook [#88](https://github.com/chromaui/addon-visual-tests/pull/88) ([@tmeasday](https://github.com/tmeasday) [@ndelangen](https://github.com/ndelangen))
+
+#### Authors: 2
+
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.66 (Tue Sep 12 2023)
 
 #### 🐛 Bug Fix
