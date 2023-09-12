@@ -68,7 +68,6 @@ async function serverChannel(
     if (projectToken === lastProjectToken) return;
     lastProjectToken = projectToken;
 
-    const relativeConfigDir = relative(process.cwd(), configDir);
     const writtenConfigFile = configFile || "chromatic.config.json";
     try {
       await updateChromaticConfig(writtenConfigFile, {
@@ -123,9 +122,6 @@ async function serverChannel(
       // We should move the checks to after flags have been parsed into options.
       flags: {
         projectToken: projectInfoState.value.projectToken,
-        buildScriptName,
-        debug,
-        zip,
       },
       options: {
         // We might want to drop this later and instead record "uncommitted hashes" on builds

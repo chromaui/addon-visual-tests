@@ -17,7 +17,7 @@ const meta = {
   component: LinkedProject,
   args: {
     projectId: "Project:abc123",
-    configPath: "chromatic.config.json",
+    configFile: "chromatic.config.json",
     goToNext: action("goToNext"),
     setAccessToken: action("setAccessToken"),
   },
