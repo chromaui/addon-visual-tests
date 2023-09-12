@@ -8,10 +8,10 @@ CHROMATIC_BASE_URL=https://www.staging-chromatic.com yarn storybook
 
 If running with the index URL set in against the addon's Storybook, we'll also update the configured
 project identifier appropriately. If you are running in dev, you can either tweak your database to have
-the correct project identifier/token, or you can run with the extra environment variables set:
+the correct project identifier/token, or you can alter `development.config.json` and run with:
 
 ```bash
-CHROMATIC_PROJECT_ID=xyz CHROMATIC_PROJECT_TOKEN=abc CHROMATIC_BASE_URL=https://www.dev-chromatic.com yarn storybook
+CHROMATIC_BASE_URL=https://www.dev-chromatic.com yarn storybook
 ```
 
 ## Running against an outside Storybook
