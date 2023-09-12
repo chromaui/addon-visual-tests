@@ -11,7 +11,7 @@ const meta = {
     isStarting: false,
     startedAt: new Date(Date.now() - 1000 * 60 * 2), // 2 minutes ago
     startDevBuild: action("startDevBuild"),
-    isStoryOutdated: false,
+    isStorySuperseded: false,
     isBuildFailed: false,
   },
 } satisfies Meta<typeof StoryInfo>;
@@ -28,12 +28,12 @@ export const Announced: Story = {
   args: { isStarting: true, startedAt: null },
 };
 
-// The build hasn't start properly yet but is already out of date
-export const AnnouncedOutdated: Story = {
+// The build hasn't start properly yet but is already superseded by another build
+export const AnnouncedSuperseded: Story = {
   ...Announced,
   args: {
     ...Announced.args,
-    isStoryOutdated: true,
+    isStorySuperseded: true,
     switchToNextBuild: action("switchToNextBuild"),
   },
 };
@@ -43,17 +43,17 @@ export const FailedAnnounced: Story = {
   args: { isBuildFailed: true },
 };
 
-// The build hasn't finished yet but is already out of date
+// The build hasn't finished yet but is already superseded by another build
 export const InProgress: Story = {
   args: {
     tests: [makeTest({ status: TestStatus.InProgress })],
   },
 };
 
-export const InProgressOutdated: Story = {
+export const InProgressSuperseded: Story = {
   args: {
     tests: [makeTest({ status: TestStatus.InProgress })],
-    isStoryOutdated: true,
+    isStorySuperseded: true,
     switchToNextBuild: action("switchToNextBuild"),
   },
 };
@@ -64,11 +64,11 @@ export const Pending: Story = {
   },
 };
 
-export const PendingOutdated: Story = {
+export const PendingSuperseded: Story = {
   ...Pending,
   args: {
     ...Pending.args,
-    isStoryOutdated: true,
+    isStorySuperseded: true,
     switchToNextBuild: action("switchToNextBuild"),
   },
 };

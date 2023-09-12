@@ -23,7 +23,7 @@ interface StoryInfoSectionProps {
   /** Did the build fail entirely? */
   isBuildFailed: boolean;
   /** is the story we are looking at already replaced by a completed capture on the next build? */
-  isStoryOutdated: boolean;
+  isStorySuperseded: boolean;
   /** Select the next build if it isn't this build */
   switchToNextBuild?: () => void;
 }
@@ -34,7 +34,7 @@ export const StoryInfo = ({
   startedAt,
   startDevBuild,
   isBuildFailed,
-  isStoryOutdated,
+  isStorySuperseded,
   switchToNextBuild,
 }: StoryInfoSectionProps) => {
   // isInProgress means we have tests but they are still unfinished
@@ -76,7 +76,7 @@ export const StoryInfo = ({
         </small>
       </Text>
     );
-  } else if (isStoryOutdated && switchToNextBuild) {
+  } else if (isStorySuperseded && switchToNextBuild) {
     details = (
       <Text>
         <b>

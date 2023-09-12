@@ -80,7 +80,7 @@ export const BuildResults = ({
       "testsForStory" in nextBuild ? nextBuild.testsForStory.nodes : []
     ),
   ];
-  const isStoryOutdated =
+  const isStorySuperseded =
     !isReviewable && nextStoryTests.every(({ status }) => status !== TestStatus.InProgress);
 
   // It shouldn't be possible for one test to be skipped but not all of them
@@ -135,7 +135,7 @@ export const BuildResults = ({
             isStarting: isStoryBuildStarting,
             startDevBuild,
             isBuildFailed,
-            isStoryOutdated,
+            isStorySuperseded,
             switchToNextBuild,
           }}
         />
