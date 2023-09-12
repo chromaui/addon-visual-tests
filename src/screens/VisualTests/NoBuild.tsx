@@ -64,7 +64,7 @@ export const NoBuild = ({
               Take an image snapshot of each story to save their &quot;last known good state&quot;
               as test baselines.
             </CenterText>
-            {runningBuild.step === "error" ? (
+            {runningBuild?.step === "error" ? (
               <ErrorContainer>
                 <b>Build failed:</b> <code>{[].concat(runningBuild.originalError)[0].message}</code>{" "}
                 <Link target="_new" href={buildFailureUrl} withArrow>
