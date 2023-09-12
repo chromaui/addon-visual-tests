@@ -59,7 +59,7 @@ export const VisualTests = ({
   // The user can choose when to change story (via sidebar) and build (via opting into new builds)
   const [storyBuildInfo, setStoryBuildInfo] = useState<StoryBuildInfo>({ storyId });
 
-  const [{ data, error }, rerun] = useQuery<
+  const [{ data, error: queryError }, rerunQuery] = useQuery<
     AddonVisualTestsBuildQuery,
     AddonVisualTestsBuildQueryVariables
   >({
@@ -78,9 +78,9 @@ export const VisualTests = ({
 
   // Poll for updates
   useEffect(() => {
-    const interval = setInterval(rerun, 5000);
+    const interval = setInterval(rerunQuery, 5000);
     return () => clearInterval(interval);
-  }, [rerun]);
+  }, [rerunQuery]);
 
   const [{ fetching: isReviewing }, reviewTest] = useMutation(MutationReviewTest);
 
@@ -98,7 +98,7 @@ export const VisualTests = ({
         if (reviewError) {
           throw reviewError;
         }
-        rerun();
+        rerunQuery();
       } catch (err) {
         addNotification({
           id: "chromatic/errorAccepting",
@@ -116,7 +116,7 @@ export const VisualTests = ({
         });
       }
     },
-    [addNotification, rerun, reviewTest]
+    [addNotification, rerunQuery, reviewTest]
   );
 
   const onAccept = useCallback(
@@ -191,17 +191,14 @@ export const VisualTests = ({
     [canSwitchToNextBuild, nextBuild?.id, storyId]
   );
 
-  const isRunningBuildStarting =
-    runningBuild && !["success", "error"].includes(runningBuild.currentStep);
-
-  return !storyBuild || error ? (
+  return !storyBuild || queryError ? (
     <NoBuild
       {...{
-        error,
+        queryError,
         hasData: !!data,
         hasStoryBuild: !!storyBuild,
         startDevBuild,
-        isRunningBuildStarting,
+        runningBuild,
         branch: gitInfo.branch,
         setAccessToken,
       }}
