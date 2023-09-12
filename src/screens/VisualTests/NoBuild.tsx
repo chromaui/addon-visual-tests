@@ -43,7 +43,7 @@ export const NoBuild = ({
   branch,
   setAccessToken,
 }: NoBuildProps) => {
-  const isRunningBuildStarting = !["success", "error"].includes(runningBuild?.step);
+  const isRunningBuildStarting = runningBuild && !["success", "error"].includes(runningBuild?.step);
   return (
     <Sections>
       <Section grow>
