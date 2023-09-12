@@ -8,7 +8,8 @@ import {
   CHROMATIC_BASE_URL,
   GIT_INFO,
   GitInfoPayload,
-  isKnownTask,
+  isKnownStep,
+  knownSteps,
   PROJECT_INFO,
   ProjectInfoPayload,
   RUNNING_BUILD,
@@ -111,8 +112,18 @@ async function serverChannel(
       ctx: Context,
       { progress, total }: { progress?: number; total?: number } = {}
     ) => {
-      if (isKnownTask(ctx.task)) {
-        runningBuildState.value = { step: ctx.task, id: ctx.announcedBuild?.id, progress, total };
+      if (isKnownStep(ctx.task)) {
+        let buildProgressPercentage = (knownSteps.indexOf(ctx.task) / knownSteps.length) * 100;
+        if (progress && total) {
+          buildProgressPercentage += (progress / total) * (100 / knownSteps.length);
+        }
+        runningBuildState.value = {
+          buildId: ctx.announcedBuild?.id,
+          buildProgressPercentage,
+          step: ctx.task,
+          stepProgressValue: progress,
+          stepProgressTotal: total,
+        };
       }
     };
 
@@ -135,8 +146,25 @@ async function serverChannel(
         experimental_onTaskProgress: onStartOrProgress,
         experimental_onTaskComplete(ctx) {
           if (ctx.task === "snapshot") {
-            runningBuildState.value = { step: "complete", id: ctx.announcedBuild?.id };
+            runningBuildState.value = {
+              buildId: ctx.announcedBuild?.id,
+              buildProgressPercentage: 100,
+              step: "complete",
+              changeCount: ctx.build.changeCount,
+              errorCount: ctx.build.errorCount,
+            };
           }
+        },
+        experimental_onTaskError(ctx, { formattedError, originalError }) {
+          runningBuildState.value = {
+            buildId: ctx.announcedBuild?.id,
+            buildProgressPercentage:
+              runningBuildState.value.buildProgressPercentage ??
+              knownSteps.indexOf(ctx.task) / knownSteps.length,
+            step: "error",
+            formattedError,
+            originalError,
+          };
         },
       },
     });

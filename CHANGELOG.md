@@ -1,3 +1,53 @@
+# v0.0.65 (Mon Sep 11 2023)
+
+#### 🐛 Bug Fix
+
+- Show a notification when there is trouble accepting [#84](https://github.com/chromaui/addon-visual-tests/pull/84) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.64 (Fri Sep 08 2023)
+
+#### 🐛 Bug Fix
+
+- Notify users when a build is completed or when a build fails [#66](https://github.com/chromaui/addon-visual-tests/pull/66) ([@weeksling](https://github.com/weeksling) [@tmeasday](https://github.com/tmeasday) [@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 3
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Matthew Weeks ([@weeksling](https://github.com/weeksling))
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.63 (Thu Sep 07 2023)
+
+#### 🐛 Bug Fix
+
+- Reviewing: Rerun query when accepting & un-accepting changes [#86](https://github.com/chromaui/addon-visual-tests/pull/86) ([@ndelangen](https://github.com/ndelangen))
+
+#### Authors: 1
+
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+
+---
+
+# v0.0.62 (Thu Sep 07 2023)
+
+#### 🐛 Bug Fix
+
+- Add a bunch of `VisualTests` stories [#85](https://github.com/chromaui/addon-visual-tests/pull/85) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.61 (Thu Sep 07 2023)
 
 #### 🐛 Bug Fix

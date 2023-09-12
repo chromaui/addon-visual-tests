@@ -31,6 +31,7 @@ interface BuildResultsProps {
   nextBuild: NextBuildFieldsFragment;
   switchToNextBuild?: () => void;
   startDevBuild: () => void;
+  isOutdated: boolean;
   isReviewing: boolean;
   onAccept: (testId: string, batch: ReviewTestBatch) => Promise<void>;
   onUnaccept: (testId: string) => Promise<void>;
@@ -42,6 +43,7 @@ export const BuildResults = ({
   nextBuild,
   switchToNextBuild,
   startDevBuild,
+  isOutdated,
   isReviewing,
   onAccept,
   onUnaccept,
@@ -60,7 +62,7 @@ export const BuildResults = ({
     isRunningBuildInProgress ||
     // Even if there's no build running, we want to show the next build if it hasn't been selected.
     !isReviewable;
-  const runningBuildIsNextBuild = runningBuild && runningBuild?.id === nextBuild.id;
+  const runningBuildIsNextBuild = runningBuild && runningBuild?.buildId === nextBuild.id;
   const buildStatus = showBuildStatus && (
     <BuildProgress
       runningBuild={(runningBuildIsNextBuild || isRunningBuildInProgress) && runningBuild}
