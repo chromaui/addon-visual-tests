@@ -13,6 +13,7 @@ const meta = {
   decorators: [storyWrapper],
   args: {
     setAccessToken: action("setAccessToken"),
+    isSetup: false,
   },
   parameters: {
     msw: {
@@ -50,6 +51,13 @@ export const Welcome = {
   parameters: withFigmaDesign(
     "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-317931&t=3EAIRe8423CpOQWY-4"
   ),
+};
+
+export const PreSetup = {
+  parameters: withFigmaDesign(
+    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-317931&t=3EAIRe8423CpOQWY-4"
+  ),
+  isSetup: true,
 };
 
 export const SignIn: Story = {
