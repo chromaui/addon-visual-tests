@@ -75,17 +75,19 @@ export const BuildResults = ({
   const isReviewable = nextBuild.id === storyBuild?.id;
   const isStorySuperseded = !isReviewable && nextBuildCompletedStory;
 
+  const nextBuildInProgress = nextBuild.status === BuildStatus.InProgress;
   const showBuildStatus =
     // We always want to show the status of the running build (until it is done)
     isRunningBuildInProgress ||
     // Even if there's no build running, we want to show the next build if it hasn't been selected,
     // unless the story info itself is going to tell us to switch already
-    (!isReviewable && !(isStorySuperseded && switchToNextBuild));
+    (!isReviewable && !(isStorySuperseded && !nextBuildInProgress && switchToNextBuild));
   const runningBuildIsNextBuild = runningBuild && runningBuild?.buildId === nextBuild.id;
   const buildStatus = showBuildStatus && (
     <BuildEyebrow
       branch={branch}
       runningBuild={(runningBuildIsNextBuild || isRunningBuildInProgress) && runningBuild}
+      nextBuildInProgress={nextBuildInProgress}
       switchToNextBuild={switchToNextBuild}
     />
   );

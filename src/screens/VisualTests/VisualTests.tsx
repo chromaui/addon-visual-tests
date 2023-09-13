@@ -1,7 +1,6 @@
 import { useStorybookApi } from "@storybook/manager-api";
 import type { API_StatusState } from "@storybook/types";
 import React, { useCallback, useEffect, useState } from "react";
-import { StoryBuildInfo, updateStoryBuildInfo } from "src/utils/updateStoryBuildInfo";
 import { useMutation, useQuery } from "urql";
 
 import { getFragment } from "../../gql";
@@ -14,6 +13,7 @@ import {
 } from "../../gql/graphql";
 import { GitInfoPayload, RunningBuildPayload, UpdateStatusFunction } from "../../types";
 import { statusMap, testsToStatusUpdate } from "../../utils/testsToStatusUpdate";
+import { StoryBuildInfo, updateStoryBuildInfo } from "../../utils/updateStoryBuildInfo";
 import { BuildResults } from "./BuildResults";
 import {
   FragmentNextBuildFields,

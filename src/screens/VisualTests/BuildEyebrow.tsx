@@ -139,10 +139,16 @@ const BuildProgress = ({ buildProgress, expanded }: BuildProgressProps) => {
 type BuildEyebrowProps = {
   branch: string;
   runningBuild?: RunningBuildPayload;
+  nextBuildInProgress?: boolean;
   switchToNextBuild?: () => void;
 };
 
-export const BuildEyebrow = ({ branch, runningBuild, switchToNextBuild }: BuildEyebrowProps) => {
+export const BuildEyebrow = ({
+  branch,
+  runningBuild,
+  nextBuildInProgress,
+  switchToNextBuild,
+}: BuildEyebrowProps) => {
   const [expanded, setExpanded] = React.useState(false);
   const toggleExpanded = () => {
     setExpanded(!expanded);
@@ -165,22 +171,32 @@ export const BuildEyebrow = ({ branch, runningBuild, switchToNextBuild }: BuildE
     );
   }
 
-  const message = switchToNextBuild ? (
-    <Label>
-      There's a newer snapshot with changes.
-      {" " /* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-      <Link withArrow>Switch to newer snapshot</Link>
-    </Label>
-  ) : (
-    <Label>
-      Reviewing is disabled because there's a newer build on <code>{branch}</code>.
-    </Label>
-  );
+  function nextBuildLabel() {
+    if (!switchToNextBuild) {
+      return (
+        <Label>
+          Reviewing is disabled because there's a newer build on <code>{branch}</code>.
+        </Label>
+      );
+    }
+    if (nextBuildInProgress) {
+      return "⚠️ Reviewing is disabled because there's a newer build in progress on main. This can happen when a build runs in CI.";
+    }
+    return (
+      <Label>
+        There's a newer snapshot with changes.
+        {" " /* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+        <Link withArrow onClick={switchToNextBuild}>
+          Switch to newer snapshot
+        </Link>
+      </Label>
+    );
+  }
 
   return (
     <Header onClick={switchToNextBuild}>
       <Bar percentage={100} />
-      {message}
+      {nextBuildMessage()}
     </Header>
   );
 };

@@ -32,6 +32,7 @@ export const FragmentNextBuildFields = graphql(/* GraphQL */ `
   fragment NextBuildFields on Build {
     __typename
     id
+    status
     committedAt
     ... on StartedBuild {
       testsForStatus: tests(first: 1000, statuses: $testStatuses) {
