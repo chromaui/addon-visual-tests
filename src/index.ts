@@ -79,6 +79,8 @@ const getBuildStepData = (
   };
 };
 
+const ESTIMATED_PROGRESS_INTERVAL = 2000;
+
 const onStartOrProgress =
   (runningBuildState: ReturnType<typeof useAddonState<RunningBuildPayload>>) =>
   ({ ...ctx }: Context, { progress, total }: { progress?: number; total?: number } = {}) => {
@@ -101,7 +103,7 @@ const onStartOrProgress =
         const stepIndex = BUILD_STEP_ORDER.indexOf(ctx.task);
         newPercentage =
           Math.max(newPercentage, buildProgressPercentage) +
-          (2000 / estimateDuration) * stepPercentage;
+          (ESTIMATED_PROGRESS_INTERVAL / estimateDuration) * stepPercentage;
 
         setTimeout(() => {
           // Intentionally reference the _current_ value here (after timeout)
@@ -110,7 +112,7 @@ const onStartOrProgress =
 
           // Only update if we haven't moved on to a later step
           if (index !== -1 && index <= stepIndex) onStartOrProgress(runningBuildState)(ctx);
-        }, 2000);
+        }, ESTIMATED_PROGRESS_INTERVAL);
       }
 
       stepProgress[ctx.task] = {
