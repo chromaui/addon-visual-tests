@@ -8,6 +8,7 @@ import { basename, relative } from "path";
 import {
   BUILD_STEP_CONFIG,
   BUILD_STEP_ORDER,
+  hasProgressEvent,
   INITIAL_BUILD_PAYLOAD,
   isKnownStep,
 } from "./buildSteps";
@@ -98,7 +99,8 @@ const onStartOrProgress =
         newPercentage += stepPercentage * (progress / total);
       }
 
-      if (!["upload", "snapshot"].includes(ctx.task)) {
+      // If the step doesn't have a progress event, simulate one by synthetically updating progress
+      if (!hasProgressEvent(ctx.task)) {
         const { estimateDuration } = BUILD_STEP_CONFIG[ctx.task];
         const stepIndex = BUILD_STEP_ORDER.indexOf(ctx.task);
         newPercentage =

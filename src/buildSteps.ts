@@ -8,6 +8,8 @@ export const isKnownStep = (
   taskOrStep: TaskName | RunningBuildPayload["currentStep"]
 ): taskOrStep is KnownStep => BUILD_STEP_ORDER.includes(taskOrStep as KnownStep);
 
+export const hasProgressEvent = (task: TaskName) => ["upload", "snapshot"].includes(task);
+
 // Note this does not include the "complete" and "error" steps
 export const BUILD_STEP_ORDER: KnownStep[] = [
   "initialize",
