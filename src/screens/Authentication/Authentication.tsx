@@ -8,15 +8,21 @@ import { Welcome } from "./Welcome";
 
 interface AuthenticationProps {
   setAccessToken: (token: string) => void;
+  isSetup: boolean;
 }
 
 type AuthenticationScreen = "welcome" | "signin" | "subdomain" | "verify";
 
-export const Authentication = ({ setAccessToken }: AuthenticationProps) => {
-  const [screen, setScreen] = useState<AuthenticationScreen>("welcome");
+export const Authentication = ({ setAccessToken, isSetup }: AuthenticationProps) => {
+  const [screen, setScreen] = useState<AuthenticationScreen>(isSetup ? "signin" : "welcome");
 
   const [isMounted, setMounted] = useState(true);
   useEffect(() => () => setMounted(false), []);
+  useEffect(() => {
+    if (isSetup && screen === "welcome") {
+      setScreen("signin");
+    }
+  }, [isSetup, screen]);
 
   const { onSignIn, userCode, verificationUrl } = useSignIn({
     isMounted,
