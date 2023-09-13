@@ -65,6 +65,7 @@ async function serverChannel(
 
   let lastProjectToken = initialProjectToken;
   projectInfoState.on("change", async ({ projectId, projectToken }) => {
+    if (!projectId || !projectToken) return;
     if (projectToken === lastProjectToken) return;
     lastProjectToken = projectToken;
 
