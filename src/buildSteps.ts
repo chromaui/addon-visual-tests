@@ -4,8 +4,9 @@ import { filesize } from "filesize";
 
 import { KnownStep, RunningBuildPayload, StepProgressPayload } from "./types";
 
-export const isKnownStep = (task: TaskName): task is KnownStep =>
-  BUILD_STEP_ORDER.includes(task as KnownStep);
+export const isKnownStep = (
+  taskOrStep: TaskName | RunningBuildPayload["currentStep"]
+): taskOrStep is KnownStep => BUILD_STEP_ORDER.includes(taskOrStep as KnownStep);
 
 // Note this does not include the "complete" and "error" steps
 export const BUILD_STEP_ORDER: KnownStep[] = [

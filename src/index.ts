@@ -106,12 +106,15 @@ const onStartOrProgress =
           (ESTIMATED_PROGRESS_INTERVAL / estimateDuration) * stepPercentage;
 
         setTimeout(() => {
-          // Intentionally reference the _current_ value here (after timeout)
+          // Intentionally reference the present value here (after timeout)
           const { currentStep } = runningBuildState.value;
-          const index = BUILD_STEP_ORDER.indexOf(currentStep as any);
-
-          // Only update if we haven't moved on to a later step
-          if (index !== -1 && index <= stepIndex) onStartOrProgress(runningBuildState)(ctx);
+          if (isKnownStep(currentStep)) {
+            const index = BUILD_STEP_ORDER.indexOf(currentStep);
+            if (index !== -1 && index <= stepIndex) {
+              // Only update if we haven't moved on to a later step
+              onStartOrProgress(runningBuildState)(ctx);
+            }
+          }
         }, ESTIMATED_PROGRESS_INTERVAL);
       }
 
