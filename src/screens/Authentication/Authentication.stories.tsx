@@ -57,7 +57,9 @@ export const PreSetup = {
   parameters: withFigmaDesign(
     "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-317931&t=3EAIRe8423CpOQWY-4"
   ),
-  isSetup: true,
+  args: {
+    isSetup: true,
+  },
 };
 
 export const SignIn: Story = {
