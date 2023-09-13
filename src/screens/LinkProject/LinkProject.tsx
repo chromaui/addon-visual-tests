@@ -118,7 +118,6 @@ function SelectProject({
   const [{ data, fetching, error }, rerun] = useQuery<SelectProjectsQueryQuery>({
     query: SelectProjectsQuery,
   });
-  console.log({ data, fetching, error });
 
   // Poll for updates
   useEffect(() => {
@@ -134,10 +133,10 @@ function SelectProject({
   );
 
   React.useEffect(() => {
-    if (data?.viewer?.accounts) {
+    if (!selectedAccount && data?.viewer?.accounts) {
       onSelectAccount(data.viewer.accounts[0]);
     }
-  }, [data, onSelectAccount]);
+  }, [data, selectedAccount, onSelectAccount]);
 
   const [isSelectingProject, setSelectingProject] = useState(false);
 
