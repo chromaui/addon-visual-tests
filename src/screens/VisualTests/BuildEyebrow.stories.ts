@@ -1,13 +1,15 @@
 import { action } from "@storybook/addon-actions";
 import type { Meta, StoryObj } from "@storybook/react";
+import { fireEvent, within } from "@storybook/testing-library";
 
 import { INITIAL_BUILD_PAYLOAD } from "../../buildSteps";
+import { playAll } from "../../utils/playAll";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
 import { BuildEyebrow } from "./BuildEyebrow";
 
 const meta = {
   args: {
-    runningBuild: INITIAL_BUILD_PAYLOAD,
+    branch: "feature",
     switchToNextBuild: action("switchToNextBuild"),
   },
   component: BuildEyebrow,
@@ -16,10 +18,20 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+const expandEyebrow = playAll(async ({ canvasElement }) => {
+  const canvas = within(canvasElement);
+  const button = await canvas.findByRole("button");
+  await fireEvent.click(button);
+});
+
 export const Initialize: Story = {
+  args: {
+    runningBuild: INITIAL_BUILD_PAYLOAD,
+  },
   parameters: withFigmaDesign(
-    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2303-353260&mode=design&t=vlcsXN2x67tQaQdy-0"
+    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2892-73423&mode=design&t=gIM40WT0324ynPQD-4"
   ),
+  play: expandEyebrow,
 };
 
 export const Build: Story = {
@@ -31,8 +43,9 @@ export const Build: Story = {
     },
   },
   parameters: withFigmaDesign(
-    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2303-353260&mode=design&t=vlcsXN2x67tQaQdy-0"
+    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2892-73453&mode=design&t=gIM40WT0324ynPQD-4"
   ),
+  play: expandEyebrow,
 };
 
 export const Upload: Story = {
@@ -52,8 +65,9 @@ export const Upload: Story = {
     },
   },
   parameters: withFigmaDesign(
-    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2303-370243&mode=design&t=vlcsXN2x67tQaQdy-0"
+    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2935-71430&mode=design&t=gIM40WT0324ynPQD-4"
   ),
+  play: expandEyebrow,
 };
 
 export const Verify: Story = {
@@ -65,8 +79,9 @@ export const Verify: Story = {
     },
   },
   parameters: withFigmaDesign(
-    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2303-371149&mode=design&t=vlcsXN2x67tQaQdy-0"
+    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2935-72020&mode=design&t=gIM40WT0324ynPQD-4"
   ),
+  play: expandEyebrow,
 };
 
 export const Snapshot: Story = {
@@ -86,8 +101,9 @@ export const Snapshot: Story = {
     },
   },
   parameters: withFigmaDesign(
-    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2303-373686&mode=design&t=vlcsXN2x67tQaQdy-0"
+    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2892-74603&mode=design&t=gIM40WT0324ynPQD-4"
   ),
+  play: expandEyebrow,
 };
 
 export const Complete: Story = {
@@ -99,6 +115,7 @@ export const Complete: Story = {
     },
   },
   parameters: withFigmaDesign(
-    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2303-375342&mode=design&t=vlcsXN2x67tQaQdy-0"
+    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2892-74801&mode=design&t=gIM40WT0324ynPQD-4"
   ),
+  play: expandEyebrow,
 };
