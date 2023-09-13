@@ -20,7 +20,7 @@ export const runChromaticBuild = async (
 ) => {
   if (!flags.projectToken) throw new Error("No project token set");
 
-  runningBuildState.value = INITIAL_BUILD_PAYLOAD;
+  let timeout: ReturnType<typeof setTimeout>;
 
   const getBuildStepData = (
     task: TaskName,
@@ -56,60 +56,59 @@ export const runChromaticBuild = async (
     { ...ctx }: Context,
     { progress, total }: { progress?: number; total?: number } = {}
   ) => {
-    if (isKnownStep(ctx.task)) {
-      const { buildProgressPercentage, stepProgress, previousBuildProgress } =
-        runningBuildState.value;
+    clearTimeout(timeout);
+    if (!isKnownStep(ctx.task)) return;
 
-      const { startPercentage, endPercentage, stepPercentage } = getBuildStepData(
-        ctx.task,
-        previousBuildProgress
-      );
+    const { buildProgressPercentage, stepProgress, previousBuildProgress } =
+      runningBuildState.value;
 
-      let newPercentage = startPercentage;
-      if (progress && total) {
-        newPercentage += stepPercentage * (progress / total);
-      }
+    const { startPercentage, endPercentage, stepPercentage } = getBuildStepData(
+      ctx.task,
+      previousBuildProgress
+    );
 
-      // If the step doesn't have a progress event, simulate one by synthetically updating progress
-      if (!hasProgressEvent(ctx.task)) {
-        const { estimateDuration } = BUILD_STEP_CONFIG[ctx.task];
-        const stepIndex = BUILD_STEP_ORDER.indexOf(ctx.task);
-        newPercentage =
-          Math.max(newPercentage, buildProgressPercentage) +
-          (ESTIMATED_PROGRESS_INTERVAL / estimateDuration) * stepPercentage;
-
-        setTimeout(() => {
-          // Intentionally reference the present value here (after timeout)
-          const { currentStep } = runningBuildState.value;
-          if (isKnownStep(currentStep)) {
-            const index = BUILD_STEP_ORDER.indexOf(currentStep);
-            if (index !== -1 && index <= stepIndex) {
-              // Only update if we haven't moved on to a later step
-              onStartOrProgress(ctx);
-            }
-          }
-        }, ESTIMATED_PROGRESS_INTERVAL);
-      }
-
-      stepProgress[ctx.task] = {
-        startedAt: Date.now(),
-        ...stepProgress[ctx.task],
-        ...(progress && total && { numerator: progress, denominator: total }),
-      };
-
-      runningBuildState.value = {
-        buildId: ctx.announcedBuild?.id,
-        buildProgressPercentage: Math.min(newPercentage, endPercentage),
-        currentStep: ctx.task,
-        stepProgress,
-      };
+    let newPercentage = startPercentage;
+    if (progress && total) {
+      newPercentage += stepPercentage * (progress / total);
     }
+
+    // If the step doesn't have a progress event, simulate one by synthetically updating progress
+    if (!hasProgressEvent(ctx.task)) {
+      const { estimateDuration } = BUILD_STEP_CONFIG[ctx.task];
+      const stepIndex = BUILD_STEP_ORDER.indexOf(ctx.task);
+      newPercentage =
+        Math.max(newPercentage, buildProgressPercentage) +
+        (ESTIMATED_PROGRESS_INTERVAL / estimateDuration) * stepPercentage;
+
+      timeout = setTimeout(() => {
+        // Intentionally reference the present value here (after timeout)
+        const { currentStep } = runningBuildState.value;
+        // Only update if we haven't moved on to a later step
+        if (isKnownStep(currentStep) && BUILD_STEP_ORDER.indexOf(currentStep) <= stepIndex) {
+          onStartOrProgress(ctx);
+        }
+      }, ESTIMATED_PROGRESS_INTERVAL);
+    }
+
+    stepProgress[ctx.task] = {
+      startedAt: Date.now(),
+      ...stepProgress[ctx.task],
+      ...(progress && total && { numerator: progress, denominator: total }),
+    };
+
+    runningBuildState.value = {
+      buildId: ctx.announcedBuild?.id,
+      buildProgressPercentage: Math.min(newPercentage, endPercentage),
+      currentStep: ctx.task,
+      stepProgress,
+    };
   };
 
   const onCompleteOrError = (
     ctx: Context,
     error?: { formattedError: string; originalError: Error | Error[] }
   ) => {
+    clearTimeout(timeout);
     const { buildProgressPercentage, stepProgress } = runningBuildState.value;
 
     if (isKnownStep(ctx.task)) {
@@ -144,6 +143,8 @@ export const runChromaticBuild = async (
       };
     }
   };
+
+  runningBuildState.value = INITIAL_BUILD_PAYLOAD;
 
   await run({
     // Currently we have to have these flags.
