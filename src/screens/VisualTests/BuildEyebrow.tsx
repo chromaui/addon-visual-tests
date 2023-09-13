@@ -16,7 +16,7 @@ const Header = styled.button(({ onClick, theme }) => ({
   position: "relative",
   display: "flex",
   width: "100%",
-  minHeight: 40,
+  lineHeight: "20px",
   padding: "5px 5px 5px 15px",
   justifyContent: "space-between",
   alignItems: "center",
@@ -26,6 +26,10 @@ const Header = styled.button(({ onClick, theme }) => ({
   color: theme.color.defaultText,
   cursor: onClick ? "pointer" : "default",
   textAlign: "left",
+
+  "& > *": {
+    zIndex: 1,
+  },
 
   code: {
     fontFamily: theme.typography.fonts.mono,
@@ -42,7 +46,13 @@ const Bar = styled.div<{ percentage: number }>(({ theme, percentage }) => ({
   width: `${percentage}%`,
   transition: "width 3s ease-out",
   backgroundColor: theme.background.hoverable,
+  pointerEvents: "none",
+  zIndex: 0,
 }));
+
+const Label = styled.div({
+  padding: "5px 0",
+});
 
 const ExpandableDiv = styled.div<{ expanded: boolean }>(({ expanded, theme }) => ({
   display: "grid",
@@ -143,7 +153,9 @@ export const BuildEyebrow = ({ branch, runningBuild, switchToNextBuild }: BuildE
       <>
         <Header onClick={toggleExpanded}>
           <Bar percentage={runningBuild.buildProgressPercentage} />
-          <BuildProgressLabel runningBuild={runningBuild} />
+          <Label>
+            <BuildProgressLabel runningBuild={runningBuild} />
+          </Label>
           <IconButton as="div">
             {expanded ? <Icons icon="collapse" /> : <Icons icon="expandalt" />}
           </IconButton>
@@ -154,15 +166,15 @@ export const BuildEyebrow = ({ branch, runningBuild, switchToNextBuild }: BuildE
   }
 
   const message = switchToNextBuild ? (
-    <span>
+    <Label>
       There's a newer snapshot with changes.
       {" " /* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
       <Link withArrow>Switch to newer snapshot</Link>
-    </span>
+    </Label>
   ) : (
-    <span>
+    <Label>
       Reviewing is disabled because there's a newer build on <code>{branch}</code>.
-    </span>
+    </Label>
   );
 
   return (
