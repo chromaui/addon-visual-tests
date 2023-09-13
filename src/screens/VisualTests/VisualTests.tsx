@@ -1,6 +1,7 @@
 import { useStorybookApi } from "@storybook/manager-api";
 import type { API_StatusState } from "@storybook/types";
 import React, { useCallback, useEffect, useState } from "react";
+import { StoryBuildInfo, updateStoryBuildInfo } from "src/utils/updateStoryBuildInfo";
 import { useMutation, useQuery } from "urql";
 
 import { getFragment } from "../../gql";
@@ -56,10 +57,7 @@ export const VisualTests = ({
 
   // The storyId and buildId that drive the test(s) we are currently looking at
   // The user can choose when to change story (via sidebar) and build (via opting into new builds)
-  const [storyBuildInfo, setStoryBuildInfo] = useState<{
-    storyId: string;
-    buildId: string;
-  }>();
+  const [storyBuildInfo, setStoryBuildInfo] = useState<StoryBuildInfo>({ storyId });
 
   const [{ data, error }, rerun] = useQuery<
     AddonVisualTestsBuildQuery,
@@ -74,7 +72,7 @@ export const VisualTests = ({
       ...(gitInfo.slug ? { slug: gitInfo.slug } : {}),
       gitUserEmailHash: gitInfo.userEmailHash,
       storyBuildId: storyBuildInfo?.buildId || "",
-      hasStoryBuildId: !!storyBuildInfo,
+      hasStoryBuildId: !!storyBuildInfo?.buildId,
     },
   });
 
@@ -176,19 +174,17 @@ export const VisualTests = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(buildStatusUpdate), updateBuildStatus]);
 
+  const shouldSwitchToNextBuild = canSwitchToNextBuild && nextBuildCompletedStory;
   // Ensure we are holding the right story build
   useEffect(() => {
-    setStoryBuildInfo((oldStoryBuildInfo) => {
-      return (!oldStoryBuildInfo || oldStoryBuildInfo.storyId !== storyId) &&
-        nextBuildCompletedStory
-        ? {
-            storyId,
-            // If the next build is "too new" and we have an old build, stick to it.
-            buildId: (!canSwitchToNextBuild && oldStoryBuildInfo?.buildId) || nextBuild.id,
-          }
-        : oldStoryBuildInfo;
-    });
-  }, [nextBuildCompletedStory, canSwitchToNextBuild, nextBuild?.id, storyId]);
+    setStoryBuildInfo((oldStoryBuildInfo) =>
+      updateStoryBuildInfo(oldStoryBuildInfo, {
+        shouldSwitchToNextBuild,
+        nextBuildId: nextBuild?.id,
+        storyId,
+      })
+    );
+  }, [shouldSwitchToNextBuild, nextBuild?.id, storyId]);
 
   const switchToNextBuild = useCallback(
     () => canSwitchToNextBuild && setStoryBuildInfo({ storyId, buildId: nextBuild.id }),
