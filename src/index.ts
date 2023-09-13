@@ -51,11 +51,12 @@ const observeGitInfo = async (
   return () => clearTimeout(timer);
 };
 
-const getConfig = (
+const getBuildStepData = (
   task: TaskName,
   previousBuildProgress?: RunningBuildPayload["previousBuildProgress"]
 ) => {
   if (!isKnownStep(task)) throw new Error(`Unknown step: ${task}`);
+
   const stepDurations = BUILD_STEP_ORDER.map((step) => {
     const { startedAt, completedAt } = previousBuildProgress?.[step] || {};
     return startedAt && completedAt
@@ -85,7 +86,7 @@ const onStartOrProgress =
       const { buildProgressPercentage, stepProgress, previousBuildProgress } =
         runningBuildState.value;
 
-      const { startPercentage, endPercentage, stepPercentage } = getConfig(
+      const { startPercentage, endPercentage, stepPercentage } = getBuildStepData(
         ctx.task,
         previousBuildProgress
       );
