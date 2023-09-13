@@ -200,9 +200,12 @@ function SelectProject({
                         />
                       ))}
                       <ListItem
-                        key="__new"
-                        title="Don't see your project, create one?"
-                        onClick={() => openChromatic(newProjectUrl)}
+                        title={
+                          // eslint-disable-next-line jsx-a11y/anchor-is-valid
+                          <Link isButton withArrow onClick={() => openChromatic(newProjectUrl)}>
+                            Create project
+                          </Link>
+                        }
                       />
                     </List>
                   </Right>
