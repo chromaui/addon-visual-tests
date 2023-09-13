@@ -84,6 +84,8 @@ export const VisualTests = ({
     return () => clearInterval(interval);
   }, [rerun]);
 
+  const { canReview } = data?.viewer?.projectMembership || {};
+
   const [{ fetching: isReviewing }, reviewTest] = useMutation(MutationReviewTest);
 
   const onReview = useCallback(
@@ -198,10 +200,12 @@ export const VisualTests = ({
   ) : (
     <BuildResults
       {...{
+        branch: gitInfo.branch,
         runningBuild,
         nextBuild,
         switchToNextBuild: canSwitchToNextBuild && switchToNextBuild,
         startDevBuild,
+        canReview,
         isReviewing,
         onAccept,
         onUnaccept,

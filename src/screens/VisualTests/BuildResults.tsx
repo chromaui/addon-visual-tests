@@ -1,8 +1,9 @@
-import { Icons, TooltipNote, WithTooltip } from "@storybook/components";
+import { Icons, Link, TooltipNote, WithTooltip } from "@storybook/components";
 import React, { useState } from "react";
 
 import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
+import { Eyebrow } from "../../components/Eyebrow";
 import { FooterMenu } from "../../components/FooterMenu";
 import { Heading } from "../../components/Heading";
 import { IconButton } from "../../components/IconButton";
@@ -26,11 +27,13 @@ import { StoryInfo } from "./StoryInfo";
 import { Warnings } from "./Warnings";
 
 interface BuildResultsProps {
+  branch: string;
   runningBuild: RunningBuildPayload;
   storyBuild: StoryBuildFieldsFragment;
   nextBuild: NextBuildFieldsFragment;
   switchToNextBuild?: () => void;
   startDevBuild: () => void;
+  canReview: boolean;
   isReviewing: boolean;
   onAccept: (testId: string, batch: ReviewTestBatch) => Promise<void>;
   onUnaccept: (testId: string) => Promise<void>;
@@ -38,10 +41,12 @@ interface BuildResultsProps {
 }
 
 export const BuildResults = ({
+  branch,
   runningBuild,
   nextBuild,
   switchToNextBuild,
   startDevBuild,
+  canReview,
   isReviewing,
   onAccept,
   onUnaccept,
@@ -129,6 +134,27 @@ export const BuildResults = ({
     <Sections>
       {buildStatus}
 
+      {!buildStatus &&
+        (!canReview || !isReviewable) &&
+        storyBuild.status === BuildStatus.Pending && (
+          <Eyebrow>
+            {canReview ? (
+              <>Reviewing is disabled because there's a newer build on {branch}.</>
+            ) : (
+              <>
+                You do not have permission to accept changes.{" "}
+                <Link
+                  href="https://www.chromatic.com/docs/collaborators#roles"
+                  target="_blank"
+                  withArrow
+                >
+                  Learn about roles
+                </Link>
+              </>
+            )}
+          </Eyebrow>
+        )}
+
       <Section grow hidden={settingsVisible || warningsVisible}>
         <StoryInfo
           {...{
@@ -145,6 +171,7 @@ export const BuildResults = ({
           <SnapshotComparison
             {...{
               tests: storyTests,
+              canReview,
               isReviewable,
               isReviewing,
               onAccept,

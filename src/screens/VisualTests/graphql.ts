@@ -25,6 +25,11 @@ export const QueryBuild = graphql(/* GraphQL */ `
     storyBuild: build(id: $storyBuildId) @include(if: $hasStoryBuildId) {
       ...StoryBuildFields
     }
+    viewer {
+      projectMembership(projectId: $projectId) {
+        canReview: meetsAccessLevel(minimumAccessLevel: REVIEWER)
+      }
+    }
   }
 `);
 
