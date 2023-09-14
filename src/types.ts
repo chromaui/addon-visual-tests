@@ -22,8 +22,7 @@ export type ProjectInfoPayload = {
   projectId?: string;
   projectToken?: string;
   written?: boolean;
-  configDir?: string;
-  mainPath?: string;
+  configFile?: string;
 };
 
 // The CLI may have other steps that we don't respond to, so we just ignore updates
