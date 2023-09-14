@@ -78,14 +78,21 @@ export const WithSingleTest: Story = {
 
 export const WithSingleTestAccepting: Story = {
   args: {
+    ...WithSingleTest.args,
     isReviewing: true,
-    tests: [makeTest({ status: TestStatus.Pending })],
   },
 };
 
 export const WithSingleTestAccepted: Story = {
   args: {
     tests: [makeTest({ status: TestStatus.Accepted })],
+  },
+};
+
+export const WithSingleTestOutdated: Story = {
+  args: {
+    ...WithSingleTest.args,
+    isReviewable: false,
   },
 };
 

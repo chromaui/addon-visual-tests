@@ -3,7 +3,6 @@ import type { API_StatusState } from "@storybook/types";
 import React, { useCallback, useEffect, useState } from "react";
 import { useMutation, useQuery } from "urql";
 
-import { GitInfoPayload, RunningBuildPayload } from "../../constants";
 import { getFragment } from "../../gql";
 import {
   AddonVisualTestsBuildQuery,
@@ -12,7 +11,7 @@ import {
   ReviewTestInputStatus,
   TestStatus,
 } from "../../gql/graphql";
-import { UpdateStatusFunction } from "../../types";
+import { GitInfoPayload, RunningBuildPayload, UpdateStatusFunction } from "../../types";
 import { statusMap, testsToStatusUpdate } from "../../utils/testsToStatusUpdate";
 import { BuildResults } from "./BuildResults";
 import {
@@ -139,6 +138,10 @@ export const VisualTests = ({
     data?.storyBuild ?? data?.project?.nextBuild
   );
 
+  // Currently only used by the sidebar button to show a blue dot ("build outdated")
+  const isOutdated = storyBuild?.uncommittedHash !== gitInfo.uncommittedHash;
+  useEffect(() => setOutdated(isOutdated), [isOutdated, setOutdated]);
+
   // If the next build is *newer* than the current commit, we don't want to switch to the build
   const nextBuildNewer = nextBuild && nextBuild.committedAt > gitInfo.committedAt;
   const canSwitchToNextBuild = nextBuild && !nextBuildNewer;
@@ -177,10 +180,8 @@ export const VisualTests = ({
     [canSwitchToNextBuild, nextBuild?.id, storyId]
   );
 
-  const isRunningBuildStarting = runningBuild && !["success", "error"].includes(runningBuild.step);
-  const isOutdated = storyBuild?.uncommittedHash !== gitInfo.uncommittedHash;
-
-  useEffect(() => setOutdated(isOutdated), [isOutdated, setOutdated]);
+  const isRunningBuildStarting =
+    runningBuild && !["success", "error"].includes(runningBuild.currentStep);
 
   return !nextBuild || error ? (
     <NoBuild
@@ -197,11 +198,11 @@ export const VisualTests = ({
   ) : (
     <BuildResults
       {...{
+        branch: gitInfo.branch,
         runningBuild,
         nextBuild,
         switchToNextBuild: canSwitchToNextBuild && switchToNextBuild,
         startDevBuild,
-        isOutdated,
         isReviewing,
         onAccept,
         onUnaccept,

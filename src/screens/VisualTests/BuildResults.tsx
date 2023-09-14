@@ -8,7 +8,6 @@ import { Heading } from "../../components/Heading";
 import { IconButton } from "../../components/IconButton";
 import { Bar, Col, Section, Sections, Text } from "../../components/layout";
 import { Text as CenterText } from "../../components/Text";
-import { RunningBuildPayload } from "../../constants";
 import { getFragment } from "../../gql";
 import {
   BuildStatus,
@@ -16,21 +15,23 @@ import {
   ReviewTestBatch,
   StoryBuildFieldsFragment,
   TestResult,
+  TestStatus,
 } from "../../gql/graphql";
-import { BuildProgress } from "./BuildProgress";
-import { FragmentStoryTestFields } from "./graphql";
+import { RunningBuildPayload } from "../../types";
+import { BuildEyebrow } from "./BuildEyebrow";
+import { FragmentNextStoryTestFields, FragmentStoryTestFields } from "./graphql";
 import { RenderSettings } from "./RenderSettings";
 import { SnapshotComparison } from "./SnapshotComparison";
 import { StoryInfo } from "./StoryInfo";
 import { Warnings } from "./Warnings";
 
 interface BuildResultsProps {
+  branch: string;
   runningBuild: RunningBuildPayload;
   storyBuild: StoryBuildFieldsFragment;
   nextBuild: NextBuildFieldsFragment;
   switchToNextBuild?: () => void;
   startDevBuild: () => void;
-  isOutdated: boolean;
   isReviewing: boolean;
   onAccept: (testId: string, batch: ReviewTestBatch) => Promise<void>;
   onUnaccept: (testId: string) => Promise<void>;
@@ -38,11 +39,11 @@ interface BuildResultsProps {
 }
 
 export const BuildResults = ({
+  branch,
   runningBuild,
   nextBuild,
   switchToNextBuild,
   startDevBuild,
-  isOutdated,
   isReviewing,
   onAccept,
   onUnaccept,
@@ -54,19 +55,8 @@ export const BuildResults = ({
   const [baselineImageVisible, setBaselineImageVisible] = useState(false);
   const toggleBaselineImage = () => setBaselineImageVisible(!baselineImageVisible);
 
-  const isRunningBuildInProgress = runningBuild && runningBuild.step !== "complete";
-  const showBuildStatus =
-    // We always want to show the status of the running build (until it is done)
-    isRunningBuildInProgress ||
-    // Even if there's no build running, we want to show the next build if it hasn't been selected.
-    nextBuild.id !== storyBuild?.id;
-  const runningBuildIsNextBuild = runningBuild && runningBuild?.buildId === nextBuild.id;
-  const buildStatus = showBuildStatus && (
-    <BuildProgress
-      runningBuild={(runningBuildIsNextBuild || isRunningBuildInProgress) && runningBuild}
-      switchToNextBuild={switchToNextBuild}
-    />
-  );
+  const isRunningBuildInProgress = runningBuild && runningBuild.currentStep !== "complete";
+  const isReviewable = nextBuild.id === storyBuild.id;
 
   const storyTests = [
     ...getFragment(
@@ -74,6 +64,29 @@ export const BuildResults = ({
       "testsForStory" in storyBuild ? storyBuild.testsForStory.nodes : []
     ),
   ];
+  const nextStoryTests = [
+    ...getFragment(
+      FragmentNextStoryTestFields,
+      "testsForStory" in nextBuild ? nextBuild.testsForStory.nodes : []
+    ),
+  ];
+  const isStorySuperseded =
+    !isReviewable && nextStoryTests.every(({ status }) => status !== TestStatus.InProgress);
+
+  const showBuildStatus =
+    // We always want to show the status of the running build (until it is done)
+    isRunningBuildInProgress ||
+    // Even if there's no build running, we want to show the next build if it hasn't been selected,
+    // unless the story info itself is going to tell us to switch already
+    (!isReviewable && !(isStorySuperseded && switchToNextBuild));
+  const runningBuildIsNextBuild = runningBuild && runningBuild?.buildId === nextBuild.id;
+  const buildStatus = showBuildStatus && (
+    <BuildEyebrow
+      branch={branch}
+      runningBuild={(runningBuildIsNextBuild || isRunningBuildInProgress) && runningBuild}
+      switchToNextBuild={switchToNextBuild}
+    />
+  );
 
   // It shouldn't be possible for one test to be skipped but not all of them
   const isSkipped = !!storyTests?.find((t) => t.result === TestResult.Skipped);
@@ -114,7 +127,6 @@ export const BuildResults = ({
   ].includes(storyBuild.status);
   const startedAt = "startedAt" in storyBuild && storyBuild.startedAt;
   const isBuildFailed = storyBuild.status === BuildStatus.Failed;
-  const isReviewable = storyBuild.id === nextBuild.id;
 
   return (
     <Sections>
@@ -124,11 +136,12 @@ export const BuildResults = ({
         <StoryInfo
           {...{
             tests: storyTests,
-            isOutdated,
             startedAt,
             isStarting: isStoryBuildStarting,
             startDevBuild,
             isBuildFailed,
+            isStorySuperseded,
+            switchToNextBuild,
           }}
         />
         {!isStoryBuildStarting && storyTests && storyTests.length > 0 && (
@@ -137,7 +150,6 @@ export const BuildResults = ({
               tests: storyTests,
               isReviewable,
               isReviewing,
-              isOutdated,
               onAccept,
               onUnaccept,
               baselineImageVisible,

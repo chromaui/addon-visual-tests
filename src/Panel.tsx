@@ -4,22 +4,13 @@ import { useChannel, useStorybookState } from "@storybook/manager-api";
 import React, { useCallback } from "react";
 
 import { Sections } from "./components/layout";
-import {
-  ADDON_ID,
-  GIT_INFO,
-  GitInfoPayload,
-  IS_OUTDATED,
-  PANEL_ID,
-  RUNNING_BUILD,
-  RunningBuildPayload,
-  START_BUILD,
-} from "./constants";
+import { ADDON_ID, GIT_INFO, IS_OUTDATED, PANEL_ID, RUNNING_BUILD, START_BUILD } from "./constants";
 import { Authentication } from "./screens/Authentication/Authentication";
 import { LinkedProject } from "./screens/LinkProject/LinkedProject";
 import { LinkingProjectFailed } from "./screens/LinkProject/LinkingProjectFailed";
 import { LinkProject } from "./screens/LinkProject/LinkProject";
 import { VisualTests } from "./screens/VisualTests/VisualTests";
-import { UpdateStatusFunction } from "./types";
+import { GitInfoPayload, RunningBuildPayload, UpdateStatusFunction } from "./types";
 import { useAddonState } from "./useAddonState/manager";
 import { client, Provider, useAccessToken } from "./utils/graphQLClient";
 import { useProjectId } from "./utils/useProjectId";
@@ -54,11 +45,16 @@ export const Panel = ({ active, api }: PanelProps) => {
   } = useProjectId();
 
   // Render the Authentication flow if the user is not signed in.
-  if (!accessToken) return <Authentication key={PANEL_ID} setAccessToken={setAccessToken} />;
+  if (!accessToken)
+    return (
+      <Sections hidden={!active}>
+        <Authentication key={PANEL_ID} setAccessToken={setAccessToken} />
+      </Sections>
+    );
 
   // Momentarily wait on addonState (should be very fast)
   if (projectInfoLoading || !gitInfo) {
-    return <Spinner />;
+    return active ? <Spinner /> : null;
   }
 
   if (!projectId)

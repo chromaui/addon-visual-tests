@@ -2,13 +2,13 @@ import { Icons, WithTooltip } from "@storybook/components";
 import { styled } from "@storybook/theming";
 import React, { ComponentProps } from "react";
 
-import { RunningBuildPayload } from "../constants";
+import { RunningBuildPayload } from "../types";
 import { BuildProgressLabel } from "./BuildProgressLabel";
 import { IconButton } from "./IconButton";
 import { StatusDotWrapper } from "./StatusDot";
 
 export const TooltipContent = styled.div(({ theme }) => ({
-  width: 200,
+  width: 220,
   padding: 3,
   color: theme.color.defaultText,
 
@@ -25,6 +25,7 @@ export const ProgressTrack = styled.div(({ theme }) => ({
 
 export const ProgressBar = styled(ProgressTrack)(({ theme }) => ({
   background: theme.color.secondary,
+  transition: "width 3s ease-out",
 }));
 
 export const ProgressCircle = styled.svg(({ theme }) => ({

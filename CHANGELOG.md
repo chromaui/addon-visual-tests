@@ -1,3 +1,53 @@
+# v0.0.69 (Thu Sep 14 2023)
+
+#### 🐛 Bug Fix
+
+- UI: Hide panel in auth and loading states [#98](https://github.com/chromaui/addon-visual-tests/pull/98) ([@ndelangen](https://github.com/ndelangen))
+
+#### Authors: 1
+
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+
+---
+
+# v0.0.68 (Thu Sep 14 2023)
+
+#### 🐛 Bug Fix
+
+- [AP 3560] Build UI for build status [#76](https://github.com/chromaui/addon-visual-tests/pull/76) ([@weeksling](https://github.com/weeksling) [@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 2
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Matthew Weeks ([@weeksling](https://github.com/weeksling))
+
+---
+
+# v0.0.67 (Tue Sep 12 2023)
+
+#### 🐛 Bug Fix
+
+- Add a compose `@storybook/components` in our Storybook [#88](https://github.com/chromaui/addon-visual-tests/pull/88) ([@tmeasday](https://github.com/tmeasday) [@ndelangen](https://github.com/ndelangen))
+
+#### Authors: 2
+
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.66 (Tue Sep 12 2023)
+
+#### 🐛 Bug Fix
+
+- Don't show eyebrow unnecessarily [#87](https://github.com/chromaui/addon-visual-tests/pull/87) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.65 (Mon Sep 11 2023)
 
 #### 🐛 Bug Fix
