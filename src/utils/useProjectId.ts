@@ -18,13 +18,12 @@ export const useProjectId = () => {
     });
   };
 
-  const { projectId, projectToken, written, configDir, mainPath } = projectInfo || {};
+  const { projectId, projectToken, written, configFile } = projectInfo || {};
   return {
     loading: !projectInfo,
     projectId,
     projectToken,
-    configDir,
-    mainPath,
+    configFile,
     updateProject,
     projectUpdatingFailed: !clearUpdated && written === false,
     projectIdUpdated: !clearUpdated && written === true,

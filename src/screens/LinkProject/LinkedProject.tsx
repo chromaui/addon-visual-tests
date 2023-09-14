@@ -37,12 +37,12 @@ const ProjectQuery = graphql(/* GraphQL */ `
 
 export const LinkedProject = ({
   projectId,
-  mainPath,
+  configFile,
   goToNext,
   setAccessToken,
 }: {
   projectId: string;
-  mainPath: string;
+  configFile: string;
   goToNext: () => void;
   setAccessToken: (accessToken: string | null) => void;
 }) => {
@@ -64,8 +64,8 @@ export const LinkedProject = ({
                 <Heading>Project linked!</Heading>
                 <Text style={{ maxWidth: 380 }}>
                   The <code>projectId</code> for {data.project.name} has been added to this
-                  Storybook&apos;s <code>{mainPath}</code>. This will be used to sync with
-                  Chromatic. Please commit this change to continue using this addon.
+                  project's <code>{configFile}</code>. This will be used to sync with Chromatic.
+                  Please commit this change to continue using this addon.
                 </Text>
                 <Button secondary onClick={() => goToNext()}>
                   Catch a UI change
