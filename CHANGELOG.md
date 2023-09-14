@@ -1,3 +1,15 @@
+# v0.0.73 (Thu Sep 14 2023)
+
+#### 🐛 Bug Fix
+
+- Show eyebrow and lock review button when user has no `REVIEWER` permission [#97](https://github.com/chromaui/addon-visual-tests/pull/97) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v0.0.72 (Thu Sep 14 2023)
 
 #### 🐛 Bug Fix
