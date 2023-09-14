@@ -1,6 +1,7 @@
 import { useState } from "react";
 
-import { PROJECT_INFO, ProjectInfoPayload } from "../constants";
+import { PROJECT_INFO } from "../constants";
+import { ProjectInfoPayload } from "../types";
 import { useAddonState } from "../useAddonState/manager";
 
 export const useProjectId = () => {

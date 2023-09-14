@@ -8,7 +8,6 @@ import { Heading } from "../../components/Heading";
 import { IconButton } from "../../components/IconButton";
 import { Bar, Col, Section, Sections, Text } from "../../components/layout";
 import { Text as CenterText } from "../../components/Text";
-import { RunningBuildPayload } from "../../constants";
 import { getFragment } from "../../gql";
 import {
   BuildStatus,
@@ -18,7 +17,8 @@ import {
   TestResult,
   TestStatus,
 } from "../../gql/graphql";
-import { BuildProgress } from "./BuildProgress";
+import { RunningBuildPayload } from "../../types";
+import { BuildEyebrow } from "./BuildEyebrow";
 import { FragmentNextStoryTestFields, FragmentStoryTestFields } from "./graphql";
 import { RenderSettings } from "./RenderSettings";
 import { SnapshotComparison } from "./SnapshotComparison";
@@ -26,6 +26,7 @@ import { StoryInfo } from "./StoryInfo";
 import { Warnings } from "./Warnings";
 
 interface BuildResultsProps {
+  branch: string;
   runningBuild: RunningBuildPayload;
   storyBuild: StoryBuildFieldsFragment;
   nextBuild: NextBuildFieldsFragment;
@@ -38,6 +39,7 @@ interface BuildResultsProps {
 }
 
 export const BuildResults = ({
+  branch,
   runningBuild,
   nextBuild,
   switchToNextBuild,
@@ -53,7 +55,7 @@ export const BuildResults = ({
   const [baselineImageVisible, setBaselineImageVisible] = useState(false);
   const toggleBaselineImage = () => setBaselineImageVisible(!baselineImageVisible);
 
-  const isRunningBuildInProgress = runningBuild && runningBuild.step !== "complete";
+  const isRunningBuildInProgress = runningBuild && runningBuild.currentStep !== "complete";
   const isReviewable = nextBuild.id === storyBuild.id;
 
   const storyTests = [
@@ -79,7 +81,8 @@ export const BuildResults = ({
     (!isReviewable && !(isStorySuperseded && switchToNextBuild));
   const runningBuildIsNextBuild = runningBuild && runningBuild?.buildId === nextBuild.id;
   const buildStatus = showBuildStatus && (
-    <BuildProgress
+    <BuildEyebrow
+      branch={branch}
       runningBuild={(runningBuildIsNextBuild || isRunningBuildInProgress) && runningBuild}
       switchToNextBuild={switchToNextBuild}
     />
