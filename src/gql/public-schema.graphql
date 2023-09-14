@@ -1426,6 +1426,9 @@ type Query {
 type Account implements Node & Temporal {
   """GraphQL node identifier"""
   id: ID!
+
+  """Is this a personal account."""
+  isPersonal: Boolean!
   avatarUrl: String
 
   """Account name, typically the repository owner."""
@@ -1537,12 +1540,36 @@ type User implements Node {
   username: String!
   avatarUrl: URL
   accounts: [Account!]!
+  projectMembership(projectId: ID!): ProjectMembership
 
   """When the entity was first created in Chromatic."""
   createdAt: DateTime!
 
   """When the entity was last updated or created in Chromatic."""
   updatedAt: DateTime!
+}
+
+type ProjectMembership {
+  """GraphQL node identifier"""
+  id: ID!
+  user: User
+  project: Project!
+  accessLevel: AccessLevel!
+  meetsAccessLevel(minimumAccessLevel: AccessLevel!): Boolean!
+
+  """When the entity was first created in Chromatic."""
+  createdAt: DateTime!
+
+  """When the entity was last updated or created in Chromatic."""
+  updatedAt: DateTime!
+}
+
+enum AccessLevel {
+  OWNER
+  DEVELOPER
+  REVIEWER
+  VIEWER
+  NONE
 }
 
 """A MongoDB ObjectId."""
