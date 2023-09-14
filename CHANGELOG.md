@@ -1,3 +1,15 @@
+# v0.0.70 (Thu Sep 14 2023)
+
+#### 🐛 Bug Fix
+
+- Use `chromatic.config.json` rather than setting options in `main.js` [#94](https://github.com/chromaui/addon-visual-tests/pull/94) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.69 (Thu Sep 14 2023)
 
 #### 🐛 Bug Fix
