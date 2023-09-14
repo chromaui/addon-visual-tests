@@ -264,9 +264,17 @@ export const NoStoryBuildNextBuildCapturing: Story = {
   },
   args: {
     runningBuild: {
-      step: "snapshot",
-      stepProgressValue: 10,
-      stepProgressTotal: 100,
+      ...INITIAL_BUILD_PAYLOAD,
+      buildProgressPercentage: 60,
+      currentStep: "snapshot",
+      stepProgress: {
+        ...INITIAL_BUILD_PAYLOAD.stepProgress,
+        snapshot: {
+          startedAt: Date.now() - 5000,
+          numerator: 64,
+          denominator: 340,
+        },
+      },
     },
   },
 };
@@ -281,9 +289,15 @@ export const NoStoryBuildNextBuildCapturedCurrentStory: Story = {
   },
   args: {
     runningBuild: {
-      step: "snapshot",
-      stepProgressValue: 90,
-      stepProgressTotal: 100,
+      ...NoStoryBuildNextBuildCapturing.args.runningBuild,
+      buildProgressPercentage: 90,
+      stepProgress: {
+        ...NoStoryBuildNextBuildCapturing.args.runningBuild.stepProgress,
+        snapshot: {
+          ...NoStoryBuildNextBuildCapturing.args.runningBuild.stepProgress.snapshot,
+          numerator: 310,
+        },
+      },
     },
   },
 };
@@ -313,9 +327,7 @@ export const NoChanges: Story = {
  */
 export const RunningBuildStarting: Story = {
   args: {
-    runningBuild: {
-      step: "initialize",
-    },
+    ...NoStoryBuildRunningBuildStarting.args,
   },
   parameters: {
     ...withBuilds({ storyBuild: pendingBuild }),
@@ -337,19 +349,7 @@ export const NextBuildInProgress: Story = {
 export const RunningBuildInProgress: Story = {
   ...NextBuildInProgress,
   args: {
-    runningBuild: {
-      ...INITIAL_BUILD_PAYLOAD,
-      buildProgressPercentage: 60,
-      currentStep: "snapshot",
-      stepProgress: {
-        ...INITIAL_BUILD_PAYLOAD.stepProgress,
-        snapshot: {
-          startedAt: Date.now() - 5000,
-          numerator: 64,
-          denominator: 340,
-        },
-      },
-    },
+    ...NoStoryBuildNextBuildCapturing.args,
   },
 };
 
