@@ -8,6 +8,7 @@ import { Eyebrow } from "../../components/Eyebrow";
 import { FooterMenu } from "../../components/FooterMenu";
 import { Heading } from "../../components/Heading";
 import { IconButton } from "../../components/IconButton";
+import { ProgressIcon } from "../../components/icons/ProgressIcon";
 import { Bar, Col, Section, Sections, Text } from "../../components/layout";
 import { Text as CenterText } from "../../components/Text";
 import { getFragment } from "../../gql";
