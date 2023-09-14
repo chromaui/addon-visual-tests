@@ -1,3 +1,15 @@
+# v0.0.72 (Thu Sep 14 2023)
+
+#### 🐛 Bug Fix
+
+- fix: hide tooltip menu on click [#92](https://github.com/chromaui/addon-visual-tests/pull/92) ([@weeksling](https://github.com/weeksling))
+
+#### Authors: 1
+
+- Matthew Weeks ([@weeksling](https://github.com/weeksling))
+
+---
+
 # v0.0.71 (Thu Sep 14 2023)
 
 #### 🐛 Bug Fix
