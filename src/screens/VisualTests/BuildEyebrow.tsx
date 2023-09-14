@@ -171,7 +171,7 @@ export const BuildEyebrow = ({
     );
   }
 
-  function nextBuildLabel() {
+  function nextBuildMessage() {
     if (!switchToNextBuild) {
       return (
         <Label>

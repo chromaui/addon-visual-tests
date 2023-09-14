@@ -15,11 +15,10 @@ import {
   ReviewTestBatch,
   StoryBuildFieldsFragment,
   TestResult,
-  TestStatus,
 } from "../../gql/graphql";
 import { RunningBuildPayload } from "../../types";
 import { BuildEyebrow } from "./BuildEyebrow";
-import { FragmentNextStoryTestFields, FragmentStoryTestFields } from "./graphql";
+import { FragmentStoryTestFields } from "./graphql";
 import { RenderSettings } from "./RenderSettings";
 import { SnapshotComparison } from "./SnapshotComparison";
 import { StoryInfo } from "./StoryInfo";
@@ -65,23 +64,19 @@ export const BuildResults = ({
       storyBuild && "testsForStory" in storyBuild ? storyBuild.testsForStory.nodes : []
     ),
   ];
-  const nextStoryTests = [
-    ...getFragment(
-      FragmentNextStoryTestFields,
-      "testsForStory" in nextBuild ? nextBuild.testsForStory.nodes : []
-    ),
-  ];
 
   const isReviewable = nextBuild.id === storyBuild?.id;
   const isStorySuperseded = !isReviewable && nextBuildCompletedStory;
+  // Do we want to encourage them to switch to the next build?
+  const shouldSwitchToNextBuild = isStorySuperseded && !!switchToNextBuild;
 
   const nextBuildInProgress = nextBuild.status === BuildStatus.InProgress;
   const showBuildStatus =
     // We always want to show the status of the running build (until it is done)
     isRunningBuildInProgress ||
-    // Even if there's no build running, we want to show the next build if it hasn't been selected,
-    // unless the story info itself is going to tell us to switch already
-    (!isReviewable && !(isStorySuperseded && !nextBuildInProgress && switchToNextBuild));
+    // Even if there's no build running, we need to tell them why they can't review, unless
+    // the story is superseded and the UI is already telling them
+    (!isReviewable && !shouldSwitchToNextBuild);
   const runningBuildIsNextBuild = runningBuild && runningBuild?.buildId === nextBuild.id;
   const buildStatus = showBuildStatus && (
     <BuildEyebrow
@@ -144,7 +139,7 @@ export const BuildResults = ({
             isStarting: isStoryBuildStarting,
             startDevBuild,
             isBuildFailed,
-            isStorySuperseded,
+            shouldSwitchToNextBuild,
             switchToNextBuild,
           }}
         />
