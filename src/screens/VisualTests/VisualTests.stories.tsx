@@ -396,6 +396,24 @@ export const NoPermission: Story = {
   },
 };
 
+export const NoPermissionRunning: Story = {
+  parameters: {
+    ...withBuilds({ storyBuild: inProgressBuild, userCanReview: false }),
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2127-449276&mode=design&t=gIM40WT0324ynPQD-4"
+    ),
+  },
+};
+
+export const NoPermissionNoChanges: Story = {
+  parameters: {
+    ...withBuilds({ storyBuild: passedBuild, userCanReview: false }),
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2127-449276&mode=design&t=gIM40WT0324ynPQD-4"
+    ),
+  },
+};
+
 export const ToggleSnapshot: Story = {
   parameters: {
     ...withBuilds({ storyBuild: pendingBuild }),
