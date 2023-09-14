@@ -14,49 +14,42 @@ import { useAddonState } from "./useAddonState/server";
 
 const ESTIMATED_PROGRESS_INTERVAL = 2000;
 
-export const runChromaticBuild = async (
-  runningBuildState: ReturnType<typeof useAddonState<RunningBuildPayload>>,
-  flags: Flags
+const getBuildStepData = (
+  task: TaskName,
+  previousBuildProgress?: RunningBuildPayload["previousBuildProgress"]
 ) => {
-  if (!flags.projectToken) throw new Error("No project token set");
+  if (!isKnownStep(task)) throw new Error(`Unknown step: ${task}`);
 
-  let timeout: ReturnType<typeof setTimeout>;
+  const stepDurations = BUILD_STEP_ORDER.map((step) => {
+    const { startedAt, completedAt } = previousBuildProgress?.[step] || {};
+    return startedAt && completedAt
+      ? completedAt - startedAt
+      : BUILD_STEP_CONFIG[step].estimateDuration;
+  });
+  const totalDuration = stepDurations.reduce((sum, duration) => sum + duration, 0);
 
-  const getBuildStepData = (
-    task: TaskName,
-    previousBuildProgress?: RunningBuildPayload["previousBuildProgress"]
-  ) => {
-    if (!isKnownStep(task)) throw new Error(`Unknown step: ${task}`);
+  const stepIndex = BUILD_STEP_ORDER.indexOf(task);
+  const startTime = stepDurations.slice(0, stepIndex).reduce((sum, duration) => sum + duration, 0);
+  const endTime = startTime + stepDurations[stepIndex];
 
-    const stepDurations = BUILD_STEP_ORDER.map((step) => {
-      const { startedAt, completedAt } = previousBuildProgress?.[step] || {};
-      return startedAt && completedAt
-        ? completedAt - startedAt
-        : BUILD_STEP_CONFIG[step].estimateDuration;
-    });
-    const totalDuration = stepDurations.reduce((sum, duration) => sum + duration, 0);
-
-    const stepIndex = BUILD_STEP_ORDER.indexOf(task);
-    const startTime = stepDurations
-      .slice(0, stepIndex)
-      .reduce((sum, duration) => sum + duration, 0);
-    const endTime = startTime + stepDurations[stepIndex];
-
-    const startPercentage = (startTime / totalDuration) * 100;
-    const endPercentage = (endTime / totalDuration) * 100;
-    return {
-      ...BUILD_STEP_CONFIG[task],
-      startPercentage,
-      endPercentage,
-      stepPercentage: endPercentage - startPercentage,
-    };
+  const startPercentage = (startTime / totalDuration) * 100;
+  const endPercentage = (endTime / totalDuration) * 100;
+  return {
+    ...BUILD_STEP_CONFIG[task],
+    startPercentage,
+    endPercentage,
+    stepPercentage: endPercentage - startPercentage,
   };
+};
 
-  const onStartOrProgress = (
-    { ...ctx }: Context,
-    { progress, total }: { progress?: number; total?: number } = {}
-  ) => {
+export const onStartOrProgress =
+  (
+    runningBuildState: ReturnType<typeof useAddonState<RunningBuildPayload>>,
+    timeout: ReturnType<typeof setTimeout>
+  ) =>
+  ({ ...ctx }: Context, { progress, total }: { progress?: number; total?: number } = {}) => {
     clearTimeout(timeout);
+
     if (!isKnownStep(ctx.task)) return;
 
     const { buildProgressPercentage, stepProgress, previousBuildProgress } =
@@ -85,7 +78,7 @@ export const runChromaticBuild = async (
         const { currentStep } = runningBuildState.value;
         // Only update if we haven't moved on to a later step
         if (isKnownStep(currentStep) && BUILD_STEP_ORDER.indexOf(currentStep) <= stepIndex) {
-          onStartOrProgress(ctx);
+          onStartOrProgress(runningBuildState, timeout)(ctx);
         }
       }, ESTIMATED_PROGRESS_INTERVAL);
     }
@@ -104,11 +97,14 @@ export const runChromaticBuild = async (
     };
   };
 
-  const onCompleteOrError = (
-    ctx: Context,
-    error?: { formattedError: string; originalError: Error | Error[] }
-  ) => {
+export const onCompleteOrError =
+  (
+    runningBuildState: ReturnType<typeof useAddonState<RunningBuildPayload>>,
+    timeout: ReturnType<typeof setTimeout>
+  ) =>
+  (ctx: Context, error?: { formattedError: string; originalError: Error | Error[] }) => {
     clearTimeout(timeout);
+
     const { buildProgressPercentage, stepProgress } = runningBuildState.value;
 
     if (isKnownStep(ctx.task)) {
@@ -144,7 +140,16 @@ export const runChromaticBuild = async (
     }
   };
 
+export const runChromaticBuild = async (
+  runningBuildState: ReturnType<typeof useAddonState<RunningBuildPayload>>,
+  flags: Flags
+) => {
+  if (!flags.projectToken) throw new Error("No project token set");
+
   runningBuildState.value = INITIAL_BUILD_PAYLOAD;
+
+  // Timeout is defined here so it's shared between all handlers
+  let timeout: ReturnType<typeof setTimeout>;
 
   await run({
     // Currently we have to have these flags.
@@ -156,10 +161,10 @@ export const runChromaticBuild = async (
       // Builds initiated from the addon are always considered local
       isLocalBuild: true,
 
-      experimental_onTaskStart: onStartOrProgress,
-      experimental_onTaskProgress: onStartOrProgress,
-      experimental_onTaskComplete: onCompleteOrError,
-      experimental_onTaskError: onCompleteOrError,
+      experimental_onTaskStart: onStartOrProgress(runningBuildState, timeout),
+      experimental_onTaskProgress: onStartOrProgress(runningBuildState, timeout),
+      experimental_onTaskComplete: onCompleteOrError(runningBuildState, timeout),
+      experimental_onTaskError: onCompleteOrError(runningBuildState, timeout),
     },
   });
 };
