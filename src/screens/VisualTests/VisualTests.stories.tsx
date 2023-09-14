@@ -1,7 +1,9 @@
 import type { ResultOf } from "@graphql-typed-document-node/core";
 import { action } from "@storybook/addon-actions";
 import { expect } from "@storybook/jest";
-import type { Meta, StoryObj } from "@storybook/react";
+import type { API, State } from "@storybook/manager-api";
+import { ManagerContext } from "@storybook/manager-api";
+import type { Decorator, Meta, StoryObj } from "@storybook/react";
 import { findByRole, findByTestId, fireEvent, waitFor } from "@storybook/testing-library";
 import { getOperationAST } from "graphql";
 import { graphql } from "msw";
@@ -108,6 +110,17 @@ const failedBuild: PublishedBuild = {
   status: BuildStatus.Failed,
 };
 
+const withManagerApi: Decorator = (Story, { argsByTarget }) => (
+  <ManagerContext.Provider
+    value={{
+      api: { addNotification: argsByTarget["manager-api"].addNotification } as API,
+      state: {} as State,
+    }}
+  >
+    <Story />
+  </ManagerContext.Provider>
+);
+
 const withGraphQLQuery = (...args: Parameters<typeof graphql.query>) => ({
   msw: {
     handlers: [graphql.query(...args)],
@@ -147,8 +160,11 @@ const withBuilds = ({
 const meta = {
   title: "screens/VisualTests/VisualTests",
   component: VisualTests,
-  decorators: [storyWrapper],
+  decorators: [storyWrapper, withManagerApi],
   parameters: withBuilds({ storyBuild: passedBuild }),
+  argTypes: {
+    addNotification: { type: "function", target: "manager-api" },
+  },
   args: {
     gitInfo: {
       userEmailHash: "abc123",
@@ -163,8 +179,9 @@ const meta = {
     setAccessToken: action("setAccessToken"),
     setOutdated: action("setOutdated"),
     updateBuildStatus: action("updateBuildStatus") as any,
+    addNotification: action("addNotification"),
   },
-} satisfies Meta<typeof VisualTests>;
+} satisfies Meta<Parameters<typeof VisualTests>[0] & { addNotification: () => void }>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -251,29 +268,6 @@ export const NoChanges: Story = {
   },
 };
 
-export const Outdated: Story = {
-  args: {
-    gitInfo: {
-      ...meta.args.gitInfo,
-      uncommittedHash: "1234abc",
-    },
-  },
-  parameters: {
-    ...withBuilds({ storyBuild: passedBuild }),
-    ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304922&t=0rxMQnkxsVpVj1qy-4"
-    ),
-  },
-};
-
-export const OutdatedStarting: Story = {
-  ...Outdated,
-  args: {
-    ...Outdated.args,
-    runningBuild: NoNextBuildRunningBuildStarting.args.runningBuild,
-  },
-};
-
 export const Announced: Story = {
   args: {},
   parameters: {
@@ -318,9 +312,6 @@ export const NextBuildInProgress: Story = {
   ...InProgress,
   parameters: {
     ...withBuilds({ storyBuild: pendingBuild, nextBuild: { ...inProgressBuild, id: "2" } }),
-    ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304861&t=0rxMQnkxsVpVj1qy-4"
-    ),
   },
 };
 
@@ -338,7 +329,7 @@ export const NextBuildInProgressCapturedStory: Story = {
       ),
     }),
     ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304861&t=0rxMQnkxsVpVj1qy-4"
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2303-374529&t=qjmuGHxoALrVuhvX-0"
     ),
   },
 };
@@ -418,6 +409,26 @@ export const Accepting: Story = {
   play: playAll(async ({ canvasElement }) => {
     const button = await findByRole(canvasElement, "button", { name: "Accept" });
     await fireEvent.click(button);
+  }),
+};
+
+export const AcceptingFailed: Story = {
+  parameters: {
+    msw: {
+      handlers: [
+        ...withBuilds({ storyBuild: pendingBuild }).msw.handlers,
+        ...withGraphQLMutation("ReviewTest", (req, res, ctx) =>
+          res(ctx.status(200), ctx.errors([{ message: "Accepting failed" }]))
+        ).msw.handlers,
+      ],
+    },
+  },
+  play: playAll(async ({ canvasElement, argsByTarget, args, argTypes }) => {
+    const button = await findByRole(canvasElement, "button", { name: "Accept" });
+    await fireEvent.click(button);
+    await waitFor(async () =>
+      expect(argsByTarget["manager-api"].addNotification).toHaveBeenCalled()
+    );
   }),
 };
 

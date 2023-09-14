@@ -1,3 +1,54 @@
+# v0.0.67 (Tue Sep 12 2023)
+
+#### 🐛 Bug Fix
+
+- Add a compose `@storybook/components` in our Storybook [#88](https://github.com/chromaui/addon-visual-tests/pull/88) ([@tmeasday](https://github.com/tmeasday) [@ndelangen](https://github.com/ndelangen))
+
+#### Authors: 2
+
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.66 (Tue Sep 12 2023)
+
+#### 🐛 Bug Fix
+
+- Don't show eyebrow unnecessarily [#87](https://github.com/chromaui/addon-visual-tests/pull/87) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.65 (Mon Sep 11 2023)
+
+#### 🐛 Bug Fix
+
+- Show a notification when there is trouble accepting [#84](https://github.com/chromaui/addon-visual-tests/pull/84) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.64 (Fri Sep 08 2023)
+
+#### 🐛 Bug Fix
+
+- Notify users when a build is completed or when a build fails [#66](https://github.com/chromaui/addon-visual-tests/pull/66) ([@weeksling](https://github.com/weeksling) [@tmeasday](https://github.com/tmeasday) [@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 3
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Matthew Weeks ([@weeksling](https://github.com/weeksling))
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.63 (Thu Sep 07 2023)
 
 #### 🐛 Bug Fix

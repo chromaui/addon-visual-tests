@@ -15,10 +15,11 @@ import {
   ReviewTestBatch,
   StoryBuildFieldsFragment,
   TestResult,
+  TestStatus,
 } from "../../gql/graphql";
 import { RunningBuildPayload } from "../../types";
 import { BuildEyebrow } from "./BuildEyebrow";
-import { FragmentStoryTestFields } from "./graphql";
+import { FragmentNextStoryTestFields, FragmentStoryTestFields } from "./graphql";
 import { RenderSettings } from "./RenderSettings";
 import { SnapshotComparison } from "./SnapshotComparison";
 import { StoryInfo } from "./StoryInfo";
@@ -31,7 +32,6 @@ interface BuildResultsProps {
   nextBuild: NextBuildFieldsFragment;
   switchToNextBuild?: () => void;
   startDevBuild: () => void;
-  isOutdated: boolean;
   isReviewing: boolean;
   onAccept: (testId: string, batch: ReviewTestBatch) => Promise<void>;
   onUnaccept: (testId: string) => Promise<void>;
@@ -44,7 +44,6 @@ export const BuildResults = ({
   nextBuild,
   switchToNextBuild,
   startDevBuild,
-  isOutdated,
   isReviewing,
   onAccept,
   onUnaccept,
@@ -57,11 +56,29 @@ export const BuildResults = ({
   const toggleBaselineImage = () => setBaselineImageVisible(!baselineImageVisible);
 
   const isRunningBuildInProgress = runningBuild && runningBuild.currentStep !== "complete";
+  const isReviewable = nextBuild.id === storyBuild.id;
+
+  const storyTests = [
+    ...getFragment(
+      FragmentStoryTestFields,
+      "testsForStory" in storyBuild ? storyBuild.testsForStory.nodes : []
+    ),
+  ];
+  const nextStoryTests = [
+    ...getFragment(
+      FragmentNextStoryTestFields,
+      "testsForStory" in nextBuild ? nextBuild.testsForStory.nodes : []
+    ),
+  ];
+  const isStorySuperseded =
+    !isReviewable && nextStoryTests.every(({ status }) => status !== TestStatus.InProgress);
+
   const showBuildStatus =
     // We always want to show the status of the running build (until it is done)
     isRunningBuildInProgress ||
-    // Even if there's no build running, we want to show the next build if it hasn't been selected.
-    nextBuild.id !== storyBuild?.id;
+    // Even if there's no build running, we want to show the next build if it hasn't been selected,
+    // unless the story info itself is going to tell us to switch already
+    (!isReviewable && !(isStorySuperseded && switchToNextBuild));
   const runningBuildIsNextBuild = runningBuild && runningBuild?.buildId === nextBuild.id;
   const buildStatus = showBuildStatus && (
     <BuildEyebrow
@@ -70,13 +87,6 @@ export const BuildResults = ({
       switchToNextBuild={switchToNextBuild}
     />
   );
-
-  const storyTests = [
-    ...getFragment(
-      FragmentStoryTestFields,
-      "testsForStory" in storyBuild ? storyBuild.testsForStory.nodes : []
-    ),
-  ];
 
   // It shouldn't be possible for one test to be skipped but not all of them
   const isSkipped = !!storyTests?.find((t) => t.result === TestResult.Skipped);
@@ -117,7 +127,6 @@ export const BuildResults = ({
   ].includes(storyBuild.status);
   const startedAt = "startedAt" in storyBuild && storyBuild.startedAt;
   const isBuildFailed = storyBuild.status === BuildStatus.Failed;
-  const isReviewable = storyBuild.id === nextBuild.id;
 
   return (
     <Sections>
@@ -127,11 +136,12 @@ export const BuildResults = ({
         <StoryInfo
           {...{
             tests: storyTests,
-            isOutdated,
             startedAt,
             isStarting: isStoryBuildStarting,
             startDevBuild,
             isBuildFailed,
+            isStorySuperseded,
+            switchToNextBuild,
           }}
         />
         {!isStoryBuildStarting && storyTests && storyTests.length > 0 && (
@@ -140,7 +150,6 @@ export const BuildResults = ({
               tests: storyTests,
               isReviewable,
               isReviewing,
-              isOutdated,
               onAccept,
               onUnaccept,
               baselineImageVisible,

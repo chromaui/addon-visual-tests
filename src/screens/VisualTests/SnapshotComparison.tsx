@@ -57,7 +57,7 @@ export const SnapshotComparison = ({
   baselineImageVisible,
 }: SnapshotSectionProps) => {
   const [diffVisible, setDiffVisible] = useState(true);
-  const [focusVisible, setFocusVisible] = useState(false);
+  const [focusVisible] = useState(false);
 
   const { selectedTest, selectedComparison, onSelectBrowser, onSelectMode } = useTests(tests);
   const { status, isInProgress, changeCount, browserResults, modeResults } = summarizeTests(tests);
@@ -67,6 +67,8 @@ export const SnapshotComparison = ({
     "error" in selectedComparison?.headCapture?.captureError &&
     selectedComparison?.headCapture?.captureError?.error;
 
+  const isAcceptable = changeCount > 0 && selectedTest.status !== TestStatus.Accepted;
+  const isUnacceptable = changeCount > 0 && selectedTest.status === TestStatus.Accepted;
   return (
     <>
       {isInProgress ? (
@@ -115,7 +117,20 @@ export const SnapshotComparison = ({
               </WithTooltip>
             </Col>
           )}
-          {isReviewable && changeCount > 0 && selectedTest.status !== TestStatus.Accepted && (
+
+          {(isAcceptable || isUnacceptable) && !isReviewable && (
+            <Col push>
+              <WithTooltip
+                tooltip={<TooltipNote note="This snapshot is outdated so you cannot accept it" />}
+                trigger="hover"
+                hasChrome={false}
+              >
+                <Icons icon="lock" />
+              </WithTooltip>
+            </Col>
+          )}
+
+          {isAcceptable && isReviewable && (
             <>
               <Col push>
                 <WithTooltip
@@ -175,7 +190,7 @@ export const SnapshotComparison = ({
               </Col>
             </>
           )}
-          {isReviewable && changeCount > 0 && selectedTest.status === TestStatus.Accepted && (
+          {isUnacceptable && isReviewable && (
             <>
               <Col push>
                 <WithTooltip
