@@ -27,7 +27,7 @@ export const QueryBuild = graphql(/* GraphQL */ `
     }
     viewer {
       projectMembership(projectId: $projectId) {
-        canReview: meetsAccessLevel(minimumAccessLevel: REVIEWER)
+        userCanReview: meetsAccessLevel(minimumAccessLevel: REVIEWER)
       }
     }
   }

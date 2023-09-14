@@ -144,11 +144,11 @@ const withGraphQLMutation = (...args: Parameters<typeof graphql.mutation>) => ({
 const withBuilds = ({
   nextBuild,
   storyBuild,
-  canReview = true,
+  userCanReview = true,
 }: {
   storyBuild?: StoryBuildFieldsFragment;
   nextBuild?: NextBuildFieldsFragment;
-  canReview?: boolean;
+  userCanReview?: boolean;
 }) => {
   return withGraphQLQueryResult(QueryBuild, {
     project: {
@@ -158,7 +158,7 @@ const withBuilds = ({
     storyBuild,
     viewer: {
       projectMembership: {
-        canReview,
+        userCanReview,
       },
     },
   });
@@ -389,7 +389,7 @@ export const Pending: Story = {
 
 export const NoPermission: Story = {
   parameters: {
-    ...withBuilds({ storyBuild: pendingBuild, canReview: false }),
+    ...withBuilds({ storyBuild: pendingBuild, userCanReview: false }),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2127-449276&mode=design&t=gIM40WT0324ynPQD-4"
     ),

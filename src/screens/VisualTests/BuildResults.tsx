@@ -33,7 +33,7 @@ interface BuildResultsProps {
   nextBuild: NextBuildFieldsFragment;
   switchToNextBuild?: () => void;
   startDevBuild: () => void;
-  canReview: boolean;
+  userCanReview: boolean;
   isReviewing: boolean;
   onAccept: (testId: string, batch: ReviewTestBatch) => Promise<void>;
   onUnaccept: (testId: string) => Promise<void>;
@@ -46,7 +46,7 @@ export const BuildResults = ({
   nextBuild,
   switchToNextBuild,
   startDevBuild,
-  canReview,
+  userCanReview,
   isReviewing,
   onAccept,
   onUnaccept,
@@ -123,38 +123,38 @@ export const BuildResults = ({
     );
   }
 
+  const { status } = storyBuild;
+  const startedAt = "startedAt" in storyBuild && storyBuild.startedAt;
   const isStoryBuildStarting = [
     BuildStatus.Announced,
     BuildStatus.Published,
     BuildStatus.Prepared,
-  ].includes(storyBuild.status);
-  const startedAt = "startedAt" in storyBuild && storyBuild.startedAt;
-  const isBuildFailed = storyBuild.status === BuildStatus.Failed;
+  ].includes(status);
+  const isBuildFailed = status === BuildStatus.Failed;
+  const isReviewLocked = status === BuildStatus.Pending && (!userCanReview || !isReviewable);
 
   return (
     <Sections>
       {buildStatus}
 
-      {!buildStatus &&
-        (!canReview || !isReviewable) &&
-        storyBuild.status === BuildStatus.Pending && (
-          <Eyebrow>
-            {canReview ? (
-              <>Reviewing is disabled because there's a newer build on {branch}.</>
-            ) : (
-              <>
-                You do not have permission to accept changes.{" "}
-                <Link
-                  href="https://www.chromatic.com/docs/collaborators#roles"
-                  target="_blank"
-                  withArrow
-                >
-                  Learn about roles
-                </Link>
-              </>
-            )}
-          </Eyebrow>
-        )}
+      {!buildStatus && isReviewLocked && (
+        <Eyebrow>
+          {userCanReview ? (
+            <>Reviewing is disabled because there's a newer build on {branch}.</>
+          ) : (
+            <>
+              You do not have permission to accept changes.{" "}
+              <Link
+                href="https://www.chromatic.com/docs/collaborators#roles"
+                target="_blank"
+                withArrow
+              >
+                Learn about roles
+              </Link>
+            </>
+          )}
+        </Eyebrow>
+      )}
 
       <Section grow hidden={settingsVisible || warningsVisible}>
         <StoryInfo
@@ -172,7 +172,7 @@ export const BuildResults = ({
           <SnapshotComparison
             {...{
               tests: storyTests,
-              canReview,
+              userCanReview,
               isReviewable,
               isReviewing,
               onAccept,

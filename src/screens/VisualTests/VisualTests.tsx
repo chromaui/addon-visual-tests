@@ -83,7 +83,7 @@ export const VisualTests = ({
     return () => clearInterval(interval);
   }, [rerun]);
 
-  const { canReview } = data?.viewer?.projectMembership || {};
+  const { userCanReview } = data?.viewer?.projectMembership || {};
 
   const [{ fetching: isReviewing }, reviewTest] = useMutation(MutationReviewTest);
 
@@ -205,7 +205,7 @@ export const VisualTests = ({
         nextBuild,
         switchToNextBuild: canSwitchToNextBuild && switchToNextBuild,
         startDevBuild,
-        canReview,
+        userCanReview,
         isReviewing,
         onAccept,
         onUnaccept,

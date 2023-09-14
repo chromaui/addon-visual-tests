@@ -41,7 +41,7 @@ const StackTrace = styled.div(({ theme }) => ({
 
 interface SnapshotSectionProps {
   tests: StoryTestFieldsFragment[];
-  canReview: boolean;
+  userCanReview: boolean;
   isReviewable: boolean;
   isReviewing: boolean;
   baselineImageVisible: boolean;
@@ -51,7 +51,7 @@ interface SnapshotSectionProps {
 
 export const SnapshotComparison = ({
   tests,
-  canReview,
+  userCanReview,
   isReviewable,
   isReviewing,
   onAccept,
@@ -120,7 +120,7 @@ export const SnapshotComparison = ({
             </Col>
           )}
 
-          {(isAcceptable || isUnacceptable) && (!isReviewable || !canReview) && (
+          {(isAcceptable || isUnacceptable) && (!isReviewable || !userCanReview) && (
             <Col push>
               <WithTooltip
                 tooltip={<TooltipNote note="Reviewing disabled" />}
@@ -134,7 +134,7 @@ export const SnapshotComparison = ({
             </Col>
           )}
 
-          {canReview && isReviewable && isAcceptable && (
+          {userCanReview && isReviewable && isAcceptable && (
             <>
               <Col push>
                 <WithTooltip
@@ -194,7 +194,7 @@ export const SnapshotComparison = ({
               </Col>
             </>
           )}
-          {canReview && isReviewable && isUnacceptable && (
+          {userCanReview && isReviewable && isUnacceptable && (
             <>
               <Col push>
                 <WithTooltip
