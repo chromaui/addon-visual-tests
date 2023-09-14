@@ -110,7 +110,6 @@ export const BuildResults = ({
   if (isCompletelyNewStory) {
     return (
       <Sections>
-        {buildStatus}
         <Section grow>
           <Container>
             <Heading>New story found</Heading>
