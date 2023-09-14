@@ -286,13 +286,14 @@ export const InProgress: Story = {
   args: {
     runningBuild: {
       ...INITIAL_BUILD_PAYLOAD,
+      buildProgressPercentage: 60,
       currentStep: "snapshot",
       stepProgress: {
         ...INITIAL_BUILD_PAYLOAD.stepProgress,
-        upload: {
+        snapshot: {
           startedAt: Date.now() - 5000,
-          numerator: 1_000_000,
-          denominator: 25_000_000,
+          numerator: 64,
+          denominator: 340,
         },
       },
     },
