@@ -1,3 +1,15 @@
+# v0.0.69 (Thu Sep 14 2023)
+
+#### 🐛 Bug Fix
+
+- UI: Hide panel in auth and loading states [#98](https://github.com/chromaui/addon-visual-tests/pull/98) ([@ndelangen](https://github.com/ndelangen))
+
+#### Authors: 1
+
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+
+---
+
 # v0.0.68 (Thu Sep 14 2023)
 
 #### 🐛 Bug Fix
