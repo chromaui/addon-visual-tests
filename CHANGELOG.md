@@ -1,3 +1,15 @@
+# v0.0.71 (Thu Sep 14 2023)
+
+#### 🐛 Bug Fix
+
+- UI: Add icons in BrowserSelector list [#96](https://github.com/chromaui/addon-visual-tests/pull/96) ([@ndelangen](https://github.com/ndelangen))
+
+#### Authors: 1
+
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+
+---
+
 # v0.0.70 (Thu Sep 14 2023)
 
 #### 🐛 Bug Fix
