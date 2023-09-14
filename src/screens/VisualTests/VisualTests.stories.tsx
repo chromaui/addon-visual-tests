@@ -10,6 +10,7 @@ import { graphql } from "msw";
 import React from "react";
 import { TypedDocumentNode } from "urql";
 
+import { INITIAL_BUILD_PAYLOAD } from "../../buildSteps";
 import type {
   NextBuildFieldsFragment,
   StoryBuildFieldsFragment,
@@ -236,7 +237,12 @@ export const NoNextBuildRunningBuildStarting: Story = {
   args: {
     ...NoNextBuild.args,
     runningBuild: {
-      step: "initialize",
+      buildProgressPercentage: 1,
+      currentStep: "initialize",
+      stepProgress: {
+        ...INITIAL_BUILD_PAYLOAD.stepProgress,
+        initialize: { startedAt: Date.now() - 1000 },
+      },
     },
   },
 };
@@ -246,9 +252,16 @@ export const NoNextBuildRunningBuildUploading: Story = {
   args: {
     ...NoNextBuild.args,
     runningBuild: {
-      step: "upload",
-      stepProgressValue: 10,
-      stepProgressTotal: 100,
+      ...INITIAL_BUILD_PAYLOAD,
+      currentStep: "upload",
+      stepProgress: {
+        ...INITIAL_BUILD_PAYLOAD.stepProgress,
+        upload: {
+          startedAt: Date.now() - 3000,
+          numerator: 10,
+          denominator: 100,
+        },
+      },
     },
   },
 };
@@ -279,9 +292,17 @@ export const Published: Story = {
 export const InProgress: Story = {
   args: {
     runningBuild: {
-      step: "snapshot",
-      stepProgressValue: 20,
-      stepProgressTotal: 100,
+      ...INITIAL_BUILD_PAYLOAD,
+      buildProgressPercentage: 60,
+      currentStep: "snapshot",
+      stepProgress: {
+        ...INITIAL_BUILD_PAYLOAD.stepProgress,
+        snapshot: {
+          startedAt: Date.now() - 5000,
+          numerator: 64,
+          denominator: 340,
+        },
+      },
     },
   },
   parameters: {

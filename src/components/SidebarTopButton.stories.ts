@@ -2,6 +2,7 @@ import { action } from "@storybook/addon-actions";
 import type { Meta, StoryObj } from "@storybook/react";
 import { userEvent, within } from "@storybook/testing-library";
 
+import { INITIAL_BUILD_PAYLOAD } from "../buildSteps";
 import { playAll } from "../utils/playAll";
 import { SidebarTopButton } from "./SidebarTopButton";
 
@@ -33,8 +34,9 @@ export const IsRunning: Story = {
   args: {
     isRunning: true,
     runningBuild: {
-      step: "build",
+      ...INITIAL_BUILD_PAYLOAD,
       buildProgressPercentage: 40,
+      currentStep: "build",
     },
   },
   play: playAll(async ({ canvasElement }) => {
