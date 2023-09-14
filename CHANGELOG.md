@@ -1,3 +1,16 @@
+# v0.0.68 (Thu Sep 14 2023)
+
+#### 🐛 Bug Fix
+
+- [AP 3560] Build UI for build status [#76](https://github.com/chromaui/addon-visual-tests/pull/76) ([@weeksling](https://github.com/weeksling) [@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 2
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Matthew Weeks ([@weeksling](https://github.com/weeksling))
+
+---
+
 # v0.0.67 (Tue Sep 12 2023)
 
 #### 🐛 Bug Fix
