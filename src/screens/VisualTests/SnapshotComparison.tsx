@@ -1,11 +1,12 @@
 import { Icons, Loader, TooltipNote, WithTooltip } from "@storybook/components";
+import { Link } from "@storybook/design-system";
 import { styled } from "@storybook/theming";
 import React, { useState } from "react";
 
 import { BrowserSelector } from "../../components/BrowserSelector";
 import { IconButton } from "../../components/IconButton";
 import { ProgressIcon } from "../../components/icons/ProgressIcon";
-import { Bar, Col } from "../../components/layout";
+import { Bar, Col, Text } from "../../components/layout";
 import { ModeSelector } from "../../components/ModeSelector";
 import { Placeholder } from "../../components/Placeholder";
 import { SnapshotImage } from "../../components/SnapshotImage";
@@ -14,6 +15,7 @@ import {
   ComparisonResult,
   ReviewTestBatch,
   StoryTestFieldsFragment,
+  TestResult,
   TestStatus,
 } from "../../gql/graphql";
 import { summarizeTests } from "../../utils/summarizeTests";
@@ -37,6 +39,14 @@ const StackTrace = styled.div(({ theme }) => ({
   padding: 15,
   whiteSpace: "pre-wrap",
   wordBreak: "break-word",
+}));
+
+const Warning = styled.div(({ theme }) => ({
+  color: theme.color.warning,
+  background: theme.background.warning,
+  padding: "10px",
+  lineHeight: "18px",
+  position: "relative",
 }));
 
 interface SnapshotSectionProps {
@@ -63,6 +73,15 @@ export const SnapshotComparison = ({
 
   const { selectedTest, selectedComparison, onSelectBrowser, onSelectMode } = useTests(tests);
   const { status, isInProgress, changeCount, browserResults, modeResults } = summarizeTests(tests);
+  // This is when a new story is added (should all tests be added then?)
+  const isNewStory = tests.every((t) => t.result === TestResult.Added);
+  // isNewTest, could be true if a change occurs in a single mode, viewport, browser, etc. (should all tests be added then?)
+
+  // TODO: This is when a new mode has been added - How to actually determine this? https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=1898-562765&mode=design&t=ciag0nGKx2OGmoSR-4
+  const hasAddedMode = modeResults.find((t) => t.result === ComparisonResult.Added);
+
+  // TODO: Same as above, but for browsers.
+  const hasAddedBrowser = browserResults.find((t) => t.result === ComparisonResult.Added);
 
   const captureErrorData =
     selectedComparison?.headCapture?.captureError &&
@@ -216,6 +235,14 @@ export const SnapshotComparison = ({
       <Divider />
 
       {isInProgress && <Loader />}
+      {!isInProgress && isNewStory && (
+        <Warning>
+          <Text>
+            New story found. Accept this snapshot as a test baseline.{" "}
+            <Link href="https://www.chromatic.com/docs/branching-and-baselines">Learn More »</Link>
+          </Text>
+        </Warning>
+      )}
       {!isInProgress && selectedComparison && (
         <SnapshotImage
           componentName={selectedTest.story.component.name}

@@ -1,4 +1,5 @@
 import { Icons, Link, TooltipNote, WithTooltip } from "@storybook/components";
+import { styled } from "@storybook/theming";
 import React, { useState } from "react";
 
 import { Button } from "../../components/Button";
@@ -39,6 +40,14 @@ interface BuildResultsProps {
   onUnaccept: (testId: string) => Promise<void>;
   setAccessToken: (accessToken: string | null) => void;
 }
+
+export const Warning = styled.div(({ theme }) => ({
+  color: theme.color.warning,
+  background: theme.background.warning,
+  padding: "10px",
+  lineHeight: "18px",
+  position: "relative",
+}));
 
 export const BuildResults = ({
   branch,
@@ -94,6 +103,35 @@ export const BuildResults = ({
     />
   );
 
+  // If there are no tests yet, there is no baseline for this story. User needs to create one.
+  const isCompletelyNewStory = storyTests.length === 0;
+
+  if (isCompletelyNewStory) {
+    return (
+      <Sections>
+        {buildStatus}
+        <Section grow>
+          <Container>
+            <Heading>New story found</Heading>
+            <CenterText>
+              Take an image snapshot of this story to save its “last known good state” as a test
+              baseline. This unlocks visual regression testing so you can see exactly what has
+              changed down to the pixel.
+            </CenterText>
+            <Button
+              belowText
+              small
+              secondary
+              onClick={() => startDevBuild()}
+              disabled={isLocalBuildInProgress}
+            >
+              Create visual test
+            </Button>
+          </Container>
+        </Section>
+      </Sections>
+    );
+  }
   // It shouldn't be possible for one test to be skipped but not all of them
   const isSkipped = !!storyTests?.find((t) => t.result === TestResult.Skipped);
   if (isSkipped) {
