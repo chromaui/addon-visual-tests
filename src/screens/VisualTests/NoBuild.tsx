@@ -10,7 +10,7 @@ import { Heading } from "../../components/Heading";
 import { ProgressIcon } from "../../components/icons/ProgressIcon";
 import { Bar, Col, Row, Section, Sections, Text } from "../../components/layout";
 import { Text as CenterText } from "../../components/Text";
-import { RunningBuildPayload } from "../../constants";
+import { RunningBuildPayload } from "../../types";
 
 const buildFailureUrl = "https://www.chromatic.com/docs/?";
 
@@ -43,7 +43,8 @@ export const NoBuild = ({
   branch,
   setAccessToken,
 }: NoBuildProps) => {
-  const isRunningBuildStarting = runningBuild && !["success", "error"].includes(runningBuild?.step);
+  const isRunningBuildStarting =
+    runningBuild && !["success", "error"].includes(runningBuild?.currentStep);
   return (
     <Sections>
       <Section grow>
@@ -64,7 +65,7 @@ export const NoBuild = ({
               Take an image snapshot of each story to save their &quot;last known good state&quot;
               as test baselines.
             </CenterText>
-            {runningBuild?.step === "error" ? (
+            {runningBuild?.currentStep === "error" ? (
               <ErrorContainer>
                 <b>Build failed:</b> <code>{[].concat(runningBuild.originalError)[0].message}</code>{" "}
                 <Link target="_new" href={buildFailureUrl} withArrow>
