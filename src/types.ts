@@ -1,14 +1,14 @@
 import type { API } from "@storybook/manager-api";
 import type { GitInfo, TaskName } from "chromatic/node";
 
-import { StoryBuildFieldsFragment } from "./gql/graphql";
+import { SelectedBuildFieldsFragment } from "./gql/graphql";
 
-export type AnnouncedBuild = Extract<StoryBuildFieldsFragment, { __typename: "AnnouncedBuild" }>;
-export type PublishedBuild = Extract<StoryBuildFieldsFragment, { __typename: "PublishedBuild" }>;
-export type StartedBuild = Extract<StoryBuildFieldsFragment, { __typename: "StartedBuild" }>;
-export type CompletedBuild = Extract<StoryBuildFieldsFragment, { __typename: "CompletedBuild" }>;
+export type AnnouncedBuild = Extract<SelectedBuildFieldsFragment, { __typename: "AnnouncedBuild" }>;
+export type PublishedBuild = Extract<SelectedBuildFieldsFragment, { __typename: "PublishedBuild" }>;
+export type StartedBuild = Extract<SelectedBuildFieldsFragment, { __typename: "StartedBuild" }>;
+export type CompletedBuild = Extract<SelectedBuildFieldsFragment, { __typename: "CompletedBuild" }>;
 
-export type StoryBuildWithTests = StartedBuild | CompletedBuild;
+export type SelectedBuildWithTests = StartedBuild | CompletedBuild;
 
 export type StoryStatusUpdater = Parameters<API["experimental_updateStatus"]>[1];
 

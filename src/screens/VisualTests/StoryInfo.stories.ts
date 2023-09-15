@@ -11,7 +11,7 @@ const meta = {
     isStarting: false,
     startedAt: new Date(Date.now() - 1000 * 60 * 2), // 2 minutes ago
     startDevBuild: action("startDevBuild"),
-    shouldSwitchToNextBuild: false,
+    shouldSwitchToLastBuildOnBranch: false,
     isBuildFailed: false,
   },
 } satisfies Meta<typeof StoryInfo>;
@@ -33,8 +33,8 @@ export const AnnouncedSuperseded: Story = {
   ...Announced,
   args: {
     ...Announced.args,
-    shouldSwitchToNextBuild: true,
-    switchToNextBuild: action("switchToNextBuild"),
+    shouldSwitchToLastBuildOnBranch: true,
+    switchToLastBuildOnBranch: action("switchToLastBuildOnBranch"),
   },
 };
 
@@ -53,8 +53,8 @@ export const InProgress: Story = {
 export const InProgressSuperseded: Story = {
   args: {
     tests: [makeTest({ status: TestStatus.InProgress })],
-    shouldSwitchToNextBuild: true,
-    switchToNextBuild: action("switchToNextBuild"),
+    shouldSwitchToLastBuildOnBranch: true,
+    switchToLastBuildOnBranch: action("switchToLastBuildOnBranch"),
   },
 };
 
@@ -68,8 +68,8 @@ export const PendingSuperseded: Story = {
   ...Pending,
   args: {
     ...Pending.args,
-    shouldSwitchToNextBuild: true,
-    switchToNextBuild: action("switchToNextBuild"),
+    shouldSwitchToLastBuildOnBranch: true,
+    switchToLastBuildOnBranch: action("switchToLastBuildOnBranch"),
   },
 };
 

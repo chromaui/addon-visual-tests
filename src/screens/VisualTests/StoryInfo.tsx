@@ -22,10 +22,10 @@ interface StoryInfoSectionProps {
   startDevBuild: () => void;
   /** Did the build fail entirely? */
   isBuildFailed: boolean;
-  /** is the story we are looking at already replaced by a completed capture on the next build? */
-  shouldSwitchToNextBuild: boolean;
-  /** Select the next build if it isn't this build */
-  switchToNextBuild?: () => void;
+  /** is the story we are looking at replaced by a capture on the last build on the branch? */
+  shouldSwitchToLastBuildOnBranch: boolean;
+  /** Select the last build on the branch if it isn't this build */
+  switchToLastBuildOnBranch?: () => void;
 }
 
 export const StoryInfo = ({
@@ -34,8 +34,8 @@ export const StoryInfo = ({
   startedAt,
   startDevBuild,
   isBuildFailed,
-  shouldSwitchToNextBuild,
-  switchToNextBuild,
+  shouldSwitchToLastBuildOnBranch,
+  switchToLastBuildOnBranch,
 }: StoryInfoSectionProps) => {
   // isInProgress means we have tests but they are still unfinished
   const { status, isInProgress, changeCount, brokenCount, modeResults, browserResults } =
@@ -76,12 +76,12 @@ export const StoryInfo = ({
         </small>
       </Text>
     );
-  } else if (shouldSwitchToNextBuild) {
+  } else if (shouldSwitchToLastBuildOnBranch) {
     details = (
       <Text>
         <b>
           {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-          <Link isButton onClick={switchToNextBuild}>
+          <Link isButton onClick={switchToLastBuildOnBranch}>
             View latest snapshot
           </Link>
         </b>
