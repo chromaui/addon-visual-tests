@@ -1,3 +1,15 @@
+# v0.0.74 (Fri Sep 15 2023)
+
+#### 🐛 Bug Fix
+
+- Keep the "create first build" UI right up until the running build has captured this story [#89](https://github.com/chromaui/addon-visual-tests/pull/89) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.73 (Thu Sep 14 2023)
 
 #### 🐛 Bug Fix
