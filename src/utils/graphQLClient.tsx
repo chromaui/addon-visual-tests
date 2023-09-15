@@ -54,7 +54,7 @@ export const client = new Client({
     // no cacheExchange to prevent sharing data between stories
     mapExchange({
       onResult(result) {
-        if (result.data.viewer === null) setCurrentToken(undefined);
+        if (result.data?.viewer === null) setCurrentToken(undefined);
       },
     }),
     authExchange(async (utils) => {
