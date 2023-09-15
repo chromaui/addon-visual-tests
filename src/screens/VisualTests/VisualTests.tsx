@@ -79,7 +79,7 @@ export const VisualTests = ({
   // When you change story, for a period the query will return the previous set of data, and indicate
   // that with the operation being for the previous query.
   const storyDataIsStale =
-    operation && storyBuildInfo && operation.variables.storyId !== storyBuildInfo.storyId;
+    operation && storyBuildInfo?.storyId && operation.variables.storyId !== storyBuildInfo.storyId;
 
   // Poll for updates
   useEffect(() => {
