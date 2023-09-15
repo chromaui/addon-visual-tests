@@ -1,3 +1,16 @@
+# v0.0.75 (Fri Sep 15 2023)
+
+#### 🐛 Bug Fix
+
+- Rename variables [#102](https://github.com/chromaui/addon-visual-tests/pull/102) ([@tmeasday](https://github.com/tmeasday) [@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 2
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.74 (Fri Sep 15 2023)
 
 #### 🐛 Bug Fix
