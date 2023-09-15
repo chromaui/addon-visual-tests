@@ -36,11 +36,7 @@ interface VerifyProps {
 
 export const Verify = ({ onBack, userCode, verificationUrl }: VerifyProps) => {
   const openChromatic = useChromaticDialog((eventName, payload) => {
-    // if (eventName === "login") {
-    //   console.log(payload);
-    //   const x: DialogPayload<"login"> = {};
-    // }
-    if (eventName === "bar") {
+    if (eventName === "login") {
       console.log(payload);
     }
   });

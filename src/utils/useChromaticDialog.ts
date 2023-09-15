@@ -1,23 +1,25 @@
 import { useCallback, useEffect, useRef } from "react";
 import { z } from "zod";
 
-const dialogEventNames = ["login", "bar"] as const;
-export type DialogEventName = (typeof dialogEventNames)[number];
-const isDialogEventName = (name: string): name is DialogEventName =>
-  dialogEventNames.includes(name as DialogEventName);
+const dialogPayloadSchema = z.union([
+  z.object({ message: z.literal("login") }),
+  z.object({ message: z.literal("grant"), denied: z.boolean() }),
+  z.object({ message: z.literal("projectCreated"), projectId: z.string() }),
+]);
 
-const dialogPayloadSchemas = {
-  login: z.object({ foo: z.number() }),
+type WithRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] };
+type Schema = WithRequired<z.infer<typeof dialogPayloadSchema>, "message">;
+type Payload<T extends { message: string }, TMessage extends string> = Omit<
+  Extract<T, { message: TMessage }>,
+  "message"
+>;
 
-  bar: z.object({ foo: z.string() }),
-} as const;
+type DialogArguments =
+  | ["login", Payload<Schema, "login">]
+  | ["grant", Payload<Schema, "grant">]
+  | ["projectCreated", Payload<Schema, "projectCreated">];
 
-export type DialogPayload<T extends DialogEventName> = z.infer<(typeof dialogPayloadSchemas)[T]>;
-
-export type DialogHandler = (
-  eventName: DialogEventName,
-  payload: DialogPayload<typeof eventName>
-) => void;
+export type DialogHandler = (...args: DialogArguments) => void;
 
 export const useChromaticDialog = (handler?: DialogHandler) => {
   const dialog = useRef<Window>();
@@ -29,13 +31,9 @@ export const useChromaticDialog = (handler?: DialogHandler) => {
   useEffect(() => {
     const handleMessage = ({ origin, data }: MessageEvent) => {
       if (origin === dialogOrigin.current) {
-        const { message: eventName, ...rest } = data;
-        if (!isDialogEventName(eventName)) {
-          throw new Error(`Unexpected event from dialog: ${eventName}`);
-        }
+        const { message, ...payload } = dialogPayloadSchema.parse(data);
 
-        const payload = dialogPayloadSchemas[eventName].parse(rest);
-        handler?.(eventName, payload);
+        handler?.(message, payload);
       }
     };
 
