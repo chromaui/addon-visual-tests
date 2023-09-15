@@ -47,18 +47,18 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Welcome = {
+export const Welcome: Story = {
   parameters: withFigmaDesign(
     "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-317931&t=3EAIRe8423CpOQWY-4"
   ),
 };
 
-export const HasProjectId = {
+export const HasProjectId: Story = {
   parameters: withFigmaDesign(
     "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-317931&t=3EAIRe8423CpOQWY-4"
   ),
   args: {
-    hasprojectId: true,
+    hasProjectId: true,
   },
 };
 
