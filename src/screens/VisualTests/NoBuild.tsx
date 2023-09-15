@@ -50,7 +50,6 @@ export const NoBuild = ({
             Take an image snapshot of each story to save their &quot;last known good state&quot; as
             test baselines.
           </CenterText>
-          <br />
           {localBuildProgress ? (
             <CenterText style={{ display: "flex", flexDirection: "column", gap: 10, width: 200 }}>
               <ProgressTrack>
@@ -63,10 +62,13 @@ export const NoBuild = ({
               <BuildProgressLabel localBuildProgress={localBuildProgress} />
             </CenterText>
           ) : (
-            <Button small secondary onClick={startDevBuild}>
-              <Icons icon="play" />
-              Take snapshots
-            </Button>
+            <>
+              <br />
+              <Button small secondary onClick={startDevBuild}>
+                <Icons icon="play" />
+                Take snapshots
+              </Button>
+            </>
           )}
         </Container>
       )}
