@@ -11,7 +11,7 @@ const meta = {
     isStarting: false,
     startedAt: new Date(Date.now() - 1000 * 60 * 2), // 2 minutes ago
     startDevBuild: action("startDevBuild"),
-    isStorySuperseded: false,
+    shouldSwitchToNextBuild: false,
     isBuildFailed: false,
   },
 } satisfies Meta<typeof StoryInfo>;
@@ -33,7 +33,7 @@ export const AnnouncedSuperseded: Story = {
   ...Announced,
   args: {
     ...Announced.args,
-    isStorySuperseded: true,
+    shouldSwitchToNextBuild: true,
     switchToNextBuild: action("switchToNextBuild"),
   },
 };
@@ -53,7 +53,7 @@ export const InProgress: Story = {
 export const InProgressSuperseded: Story = {
   args: {
     tests: [makeTest({ status: TestStatus.InProgress })],
-    isStorySuperseded: true,
+    shouldSwitchToNextBuild: true,
     switchToNextBuild: action("switchToNextBuild"),
   },
 };
@@ -68,7 +68,7 @@ export const PendingSuperseded: Story = {
   ...Pending,
   args: {
     ...Pending.args,
-    isStorySuperseded: true,
+    shouldSwitchToNextBuild: true,
     switchToNextBuild: action("switchToNextBuild"),
   },
 };

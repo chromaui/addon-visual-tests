@@ -1,6 +1,7 @@
 import { useState } from "react";
 
-import { PROJECT_INFO, ProjectInfoPayload } from "../constants";
+import { PROJECT_INFO } from "../constants";
+import { ProjectInfoPayload } from "../types";
 import { useAddonState } from "../useAddonState/manager";
 
 export const useProjectId = () => {
@@ -17,13 +18,12 @@ export const useProjectId = () => {
     });
   };
 
-  const { projectId, projectToken, written, configDir, mainPath } = projectInfo || {};
+  const { projectId, projectToken, written, configFile } = projectInfo || {};
   return {
     loading: !projectInfo,
     projectId,
     projectToken,
-    configDir,
-    mainPath,
+    configFile,
     updateProject,
     projectUpdatingFailed: !clearUpdated && written === false,
     projectIdUpdated: !clearUpdated && written === true,

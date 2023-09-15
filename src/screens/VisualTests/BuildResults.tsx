@@ -1,14 +1,14 @@
-import { Icons, TooltipNote, WithTooltip } from "@storybook/components";
+import { Icons, Link, TooltipNote, WithTooltip } from "@storybook/components";
 import React, { useState } from "react";
 
 import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
+import { Eyebrow } from "../../components/Eyebrow";
 import { FooterMenu } from "../../components/FooterMenu";
 import { Heading } from "../../components/Heading";
 import { IconButton } from "../../components/IconButton";
 import { Bar, Col, Section, Sections, Text } from "../../components/layout";
 import { Text as CenterText } from "../../components/Text";
-import { RunningBuildPayload } from "../../constants";
 import { getFragment } from "../../gql";
 import {
   BuildStatus,
@@ -16,21 +16,24 @@ import {
   ReviewTestBatch,
   StoryBuildFieldsFragment,
   TestResult,
-  TestStatus,
 } from "../../gql/graphql";
-import { BuildProgress } from "./BuildProgress";
-import { FragmentNextStoryTestFields, FragmentStoryTestFields } from "./graphql";
+import { RunningBuildPayload } from "../../types";
+import { BuildEyebrow } from "./BuildEyebrow";
+import { FragmentStoryTestFields } from "./graphql";
 import { RenderSettings } from "./RenderSettings";
 import { SnapshotComparison } from "./SnapshotComparison";
 import { StoryInfo } from "./StoryInfo";
 import { Warnings } from "./Warnings";
 
 interface BuildResultsProps {
+  branch: string;
   runningBuild: RunningBuildPayload;
-  storyBuild: StoryBuildFieldsFragment;
+  storyBuild?: StoryBuildFieldsFragment;
   nextBuild: NextBuildFieldsFragment;
+  nextBuildCompletedStory: boolean;
   switchToNextBuild?: () => void;
   startDevBuild: () => void;
+  userCanReview: boolean;
   isReviewing: boolean;
   onAccept: (testId: string, batch: ReviewTestBatch) => Promise<void>;
   onUnaccept: (testId: string) => Promise<void>;
@@ -38,10 +41,13 @@ interface BuildResultsProps {
 }
 
 export const BuildResults = ({
+  branch,
   runningBuild,
   nextBuild,
+  nextBuildCompletedStory,
   switchToNextBuild,
   startDevBuild,
+  userCanReview,
   isReviewing,
   onAccept,
   onUnaccept,
@@ -53,34 +59,33 @@ export const BuildResults = ({
   const [baselineImageVisible, setBaselineImageVisible] = useState(false);
   const toggleBaselineImage = () => setBaselineImageVisible(!baselineImageVisible);
 
-  const isRunningBuildInProgress = runningBuild && runningBuild.step !== "complete";
-  const isReviewable = nextBuild.id === storyBuild.id;
+  const isRunningBuildInProgress = runningBuild && runningBuild.currentStep !== "complete";
 
   const storyTests = [
     ...getFragment(
       FragmentStoryTestFields,
-      "testsForStory" in storyBuild ? storyBuild.testsForStory.nodes : []
+      storyBuild && "testsForStory" in storyBuild ? storyBuild.testsForStory.nodes : []
     ),
   ];
-  const nextStoryTests = [
-    ...getFragment(
-      FragmentNextStoryTestFields,
-      "testsForStory" in nextBuild ? nextBuild.testsForStory.nodes : []
-    ),
-  ];
-  const isStorySuperseded =
-    !isReviewable && nextStoryTests.every(({ status }) => status !== TestStatus.InProgress);
 
+  const isReviewable = nextBuild.id === storyBuild?.id;
+  const isStorySuperseded = !isReviewable && nextBuildCompletedStory;
+  // Do we want to encourage them to switch to the next build?
+  const shouldSwitchToNextBuild = isStorySuperseded && !!switchToNextBuild;
+
+  const nextBuildInProgress = nextBuild.status === BuildStatus.InProgress;
   const showBuildStatus =
     // We always want to show the status of the running build (until it is done)
     isRunningBuildInProgress ||
-    // Even if there's no build running, we want to show the next build if it hasn't been selected,
-    // unless the story info itself is going to tell us to switch already
-    (!isReviewable && !(isStorySuperseded && switchToNextBuild));
+    // Even if there's no build running, we need to tell them why they can't review, unless
+    // the story is superseded and the UI is already telling them
+    (!isReviewable && !shouldSwitchToNextBuild);
   const runningBuildIsNextBuild = runningBuild && runningBuild?.buildId === nextBuild.id;
   const buildStatus = showBuildStatus && (
-    <BuildProgress
+    <BuildEyebrow
+      branch={branch}
       runningBuild={(runningBuildIsNextBuild || isRunningBuildInProgress) && runningBuild}
+      nextBuildInProgress={nextBuildInProgress}
       switchToNextBuild={switchToNextBuild}
     />
   );
@@ -117,17 +122,38 @@ export const BuildResults = ({
     );
   }
 
+  const { status } = storyBuild;
+  const startedAt = "startedAt" in storyBuild && storyBuild.startedAt;
   const isStoryBuildStarting = [
     BuildStatus.Announced,
     BuildStatus.Published,
     BuildStatus.Prepared,
-  ].includes(storyBuild.status);
-  const startedAt = "startedAt" in storyBuild && storyBuild.startedAt;
-  const isBuildFailed = storyBuild.status === BuildStatus.Failed;
+  ].includes(status);
+  const isBuildFailed = status === BuildStatus.Failed;
+  const isReviewLocked = status === BuildStatus.Pending && (!userCanReview || !isReviewable);
 
   return (
     <Sections>
       {buildStatus}
+
+      {!buildStatus && isReviewLocked && (
+        <Eyebrow>
+          {userCanReview ? (
+            <>Reviewing is disabled because there's a newer build on {branch}.</>
+          ) : (
+            <>
+              You do not have permission to accept changes.{" "}
+              <Link
+                href="https://www.chromatic.com/docs/collaborators#roles"
+                target="_blank"
+                withArrow
+              >
+                Learn about roles
+              </Link>
+            </>
+          )}
+        </Eyebrow>
+      )}
 
       <Section grow hidden={settingsVisible || warningsVisible}>
         <StoryInfo
@@ -137,7 +163,7 @@ export const BuildResults = ({
             isStarting: isStoryBuildStarting,
             startDevBuild,
             isBuildFailed,
-            isStorySuperseded,
+            shouldSwitchToNextBuild,
             switchToNextBuild,
           }}
         />
@@ -145,6 +171,7 @@ export const BuildResults = ({
           <SnapshotComparison
             {...{
               tests: storyTests,
+              userCanReview,
               isReviewable,
               isReviewing,
               onAccept,

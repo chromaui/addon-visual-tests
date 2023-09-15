@@ -10,6 +10,7 @@ import { graphql } from "msw";
 import React from "react";
 import { TypedDocumentNode } from "urql";
 
+import { INITIAL_BUILD_PAYLOAD } from "../../buildSteps";
 import type {
   NextBuildFieldsFragment,
   StoryBuildFieldsFragment,
@@ -143,9 +144,11 @@ const withGraphQLMutation = (...args: Parameters<typeof graphql.mutation>) => ({
 const withBuilds = ({
   nextBuild,
   storyBuild,
+  userCanReview = true,
 }: {
   storyBuild?: StoryBuildFieldsFragment;
   nextBuild?: NextBuildFieldsFragment;
+  userCanReview?: boolean;
 }) => {
   return withGraphQLQueryResult(QueryBuild, {
     project: {
@@ -153,6 +156,11 @@ const withBuilds = ({
       nextBuild: nextBuild || storyBuild,
     },
     storyBuild,
+    viewer: {
+      projectMembership: {
+        userCanReview,
+      },
+    },
   });
 };
 
@@ -204,7 +212,7 @@ export const GraphQLError: Story = {
   },
 };
 
-export const NoNextBuild: Story = {
+export const NoStoryBuild: Story = {
   parameters: {
     ...withBuilds({ storyBuild: null }),
   },
@@ -224,26 +232,92 @@ export const NoNextBuild: Story = {
   },
 };
 
-export const NoNextBuildRunningBuildStarting: Story = {
-  ...NoNextBuild,
+export const NoStoryBuildRunningBuildStarting: Story = {
+  ...NoStoryBuild,
   args: {
-    ...NoNextBuild.args,
     runningBuild: {
-      step: "initialize",
+      buildProgressPercentage: 1,
+      currentStep: "initialize",
+      stepProgress: {
+        ...INITIAL_BUILD_PAYLOAD.stepProgress,
+        initialize: { startedAt: Date.now() - 1000 },
+      },
     },
   },
 };
 
-export const NoNextBuildRunningBuildUploading: Story = {
-  ...NoNextBuild,
+export const NoStoryBuildRunningBuildUploading: Story = {
+  ...NoStoryBuild,
   args: {
-    ...NoNextBuild.args,
     runningBuild: {
-      step: "upload",
-      stepProgressValue: 10,
-      stepProgressTotal: 100,
+      ...INITIAL_BUILD_PAYLOAD,
+      currentStep: "upload",
+      stepProgress: {
+        ...INITIAL_BUILD_PAYLOAD.stepProgress,
+        upload: {
+          startedAt: Date.now() - 3000,
+          numerator: 10,
+          denominator: 100,
+        },
+      },
     },
   },
+};
+
+/** This story should maintain the "no build" UI with a progress bar */
+export const NoStoryBuildNextBuildCapturing: Story = {
+  parameters: {
+    ...withBuilds({ storyBuild: null, nextBuild: inProgressBuild }),
+  },
+  args: {
+    runningBuild: {
+      ...INITIAL_BUILD_PAYLOAD,
+      buildProgressPercentage: 60,
+      currentStep: "snapshot",
+      stepProgress: {
+        ...INITIAL_BUILD_PAYLOAD.stepProgress,
+        snapshot: {
+          startedAt: Date.now() - 5000,
+          numerator: 64,
+          denominator: 340,
+        },
+      },
+    },
+  },
+};
+
+/** At this point, we should switch to the next build */
+export const NoStoryBuildNextBuildCapturedCurrentStory: Story = {
+  parameters: {
+    ...withBuilds({
+      storyBuild: null,
+      nextBuild: withTests(inProgressBuild, SnapshotComparisonStories.WithSingleTest.args.tests),
+    }),
+  },
+  args: {
+    runningBuild: {
+      ...NoStoryBuildNextBuildCapturing.args.runningBuild,
+      buildProgressPercentage: 90,
+      stepProgress: {
+        ...NoStoryBuildNextBuildCapturing.args.runningBuild.stepProgress,
+        snapshot: {
+          ...NoStoryBuildNextBuildCapturing.args.runningBuild.stepProgress.snapshot,
+          numerator: 310,
+        },
+      },
+    },
+  },
+};
+
+/** Complete builds should always be switched to */
+export const NoStoryBuildNextBuildPending: Story = {
+  parameters: {
+    ...withBuilds({
+      storyBuild: null,
+      nextBuild: pendingBuild,
+    }),
+  },
+  // In theory we might have a complete running build here, it should behave the same either way
 };
 
 export const NoChanges: Story = {
@@ -255,51 +329,42 @@ export const NoChanges: Story = {
   },
 };
 
-export const Announced: Story = {
-  args: {},
-  parameters: {
-    ...withBuilds({ storyBuild: announcedBuild }),
-  },
-};
-
-export const Published: Story = {
-  args: {},
-  parameters: {
-    ...withBuilds({ storyBuild: publishedBuild }),
-  },
-};
-
-export const InProgress: Story = {
+/**
+ * We've started a new build but it's not done yet
+ */
+export const RunningBuildStarting: Story = {
   args: {
-    runningBuild: {
-      step: "snapshot",
-      stepProgressValue: 20,
-      stepProgressTotal: 100,
-    },
+    ...NoStoryBuildRunningBuildStarting.args,
   },
   parameters: {
-    ...withBuilds({ storyBuild: inProgressBuild }),
-    ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304861&t=0rxMQnkxsVpVj1qy-4"
-    ),
+    ...withBuilds({ storyBuild: pendingBuild }),
   },
 };
 
 /**
- * The next build is snapshotting but hasn't yet reached this story
+ * The next build is snapshotting but hasn't yet reached this story (we didn't start it)
  */
 export const NextBuildInProgress: Story = {
-  ...InProgress,
   parameters: {
     ...withBuilds({ storyBuild: pendingBuild, nextBuild: { ...inProgressBuild, id: "2" } }),
   },
 };
 
 /**
+ * As above but we started the next build
+ */
+export const RunningBuildInProgress: Story = {
+  ...NextBuildInProgress,
+  args: {
+    ...NoStoryBuildNextBuildCapturing.args,
+  },
+};
+
+/**
  * The next build is snapshotting and has captured this story
+ * (The behaviour should be the same whether or not we started it)
  */
 export const NextBuildInProgressCapturedStory: Story = {
-  ...InProgress,
   parameters: {
     ...withBuilds({
       storyBuild: pendingBuild,
@@ -311,22 +376,6 @@ export const NextBuildInProgressCapturedStory: Story = {
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2303-374529&t=qjmuGHxoALrVuhvX-0"
     ),
-  },
-};
-
-export const InProgressNoRunningBuild: Story = {
-  parameters: {
-    ...withBuilds({ storyBuild: inProgressBuild }),
-    ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304861&t=0rxMQnkxsVpVj1qy-4"
-    ),
-  },
-};
-
-export const RunningBuildInProgress: Story = {
-  ...InProgress,
-  parameters: {
-    ...withBuilds({ storyBuild: pendingBuild }),
   },
 };
 
@@ -356,6 +405,33 @@ export const Pending: Story = {
         },
       });
     });
+  },
+};
+
+export const NoPermission: Story = {
+  parameters: {
+    ...withBuilds({ storyBuild: pendingBuild, userCanReview: false }),
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2127-449276&mode=design&t=gIM40WT0324ynPQD-4"
+    ),
+  },
+};
+
+export const NoPermissionRunning: Story = {
+  parameters: {
+    ...withBuilds({ storyBuild: inProgressBuild, userCanReview: false }),
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2127-449276&mode=design&t=gIM40WT0324ynPQD-4"
+    ),
+  },
+};
+
+export const NoPermissionNoChanges: Story = {
+  parameters: {
+    ...withBuilds({ storyBuild: passedBuild, userCanReview: false }),
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2127-449276&mode=design&t=gIM40WT0324ynPQD-4"
+    ),
   },
 };
 

@@ -7,7 +7,7 @@ const meta = {
   args: {
     projectId: "Project:abc123",
     projectToken: "xzy789",
-    configDir: ".storybook",
+    configFile: "chromatic.config.json",
   },
 } satisfies Meta<typeof LinkingProjectFailed>;
 
@@ -16,8 +16,8 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 
-export const WithMainPath: Story = {
+export const WithCustomConfig: Story = {
   args: {
-    mainPath: "main.ts",
+    configFile: "production.chromatic.config.json",
   },
 };

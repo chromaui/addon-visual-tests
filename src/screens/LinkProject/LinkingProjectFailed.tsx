@@ -10,45 +10,32 @@ import { Text as CenterText } from "../../components/Text";
 type LinkingProjectFailedProps = {
   projectId: string;
   projectToken: string;
-  configDir: string;
-  mainPath?: string;
+  configFile: string;
 };
 
-const addonName = "@chromaui/addon-visual-tests";
 const configureDocsLink = "https://www.chromatic.com/docs/addon-visual-tests#configure";
 
 export function LinkingProjectFailed({
   projectId,
   projectToken,
-  configDir,
-  mainPath,
+  configFile,
 }: LinkingProjectFailedProps) {
   return (
     <Sections>
       <Section grow>
         <Container>
           <CenterText>
-            <Heading>Add the Project ID to your Storybook config</Heading>
+            <Heading>Add the Project ID to your Chromatic config</Heading>
             The <code>projectId</code> will be used to reference prior tests. Please commit this
-            change to continue using this addon.
+            change to continue using this addon. The file should be saved at{" "}
+            <code>{configFile}</code>.
           </CenterText>
           <Code>
             {dedent`
-            // ${configDir}/${mainPath ?? `main.js|ts|tsx`}
-
-            module.exports = {
-              // ...,
-              addons: [
-                // ...
-                {
-                  name: '${addonName}',
-                  options: {
-                    projectId: '${projectId}',
-                    projectToken: '${projectToken}',
-                  },
-                },
-              ],
-            };
+            {
+              "projectId": "${projectId}",
+              "projectToken": "${projectToken}",
+            }
             `}
           </Code>
           <CenterText>

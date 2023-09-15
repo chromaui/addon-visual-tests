@@ -25,6 +25,11 @@ export const QueryBuild = graphql(/* GraphQL */ `
     storyBuild: build(id: $storyBuildId) @include(if: $hasStoryBuildId) {
       ...StoryBuildFields
     }
+    viewer {
+      projectMembership(projectId: $projectId) {
+        userCanReview: meetsAccessLevel(minimumAccessLevel: REVIEWER)
+      }
+    }
   }
 `);
 
@@ -32,6 +37,7 @@ export const FragmentNextBuildFields = graphql(/* GraphQL */ `
   fragment NextBuildFields on Build {
     __typename
     id
+    status
     committedAt
     ... on StartedBuild {
       testsForStatus: tests(first: 1000, statuses: $testStatuses) {
