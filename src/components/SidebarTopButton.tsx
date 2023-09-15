@@ -58,6 +58,7 @@ export const SidebarTopButton = ({
   startBuild: () => void;
 }) => {
   if (isRunning && localBuildProgress) {
+    const { buildProgressPercentage } = localBuildProgress;
     return (
       <WithTooltip
         trigger="hover"
@@ -67,8 +68,8 @@ export const SidebarTopButton = ({
               <BuildProgressLabel localBuildProgress={localBuildProgress} />
             </div>
             <ProgressTrack>
-              {typeof localBuildProgress.buildProgressPercentage === "number" && (
-                <ProgressBar style={{ width: `${localBuildProgress.buildProgressPercentage}%` }} />
+              {typeof buildProgressPercentage === "number" && (
+                <ProgressBar style={{ width: `${buildProgressPercentage}%` }} />
               )}
             </ProgressTrack>
           </TooltipContent>
@@ -76,7 +77,7 @@ export const SidebarTopButton = ({
       >
         <SidebarIconButton aria-label="Run tests">
           <Icons icon="play" />
-          {typeof localBuildProgress.buildProgressPercentage === "number" && (
+          {typeof buildProgressPercentage === "number" && (
             <ProgressCircle xmlns="http://www.w3.org/2000/svg">
               <circle
                 r="10"
@@ -86,9 +87,7 @@ export const SidebarTopButton = ({
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeDasharray={Math.PI * 20}
-                strokeDashoffset={
-                  Math.PI * 20 * (1 - localBuildProgress.buildProgressPercentage / 100)
-                }
+                strokeDashoffset={Math.PI * 20 * (1 - buildProgressPercentage / 100)}
                 fill="transparent"
               />
             </ProgressCircle>
