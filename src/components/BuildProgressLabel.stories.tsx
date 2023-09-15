@@ -37,7 +37,7 @@ export const Upload: Story = {
   args: {
     localBuildProgress: {
       ...INITIAL_BUILD_PAYLOAD,
-      buildProgressPercentage: 50,
+      buildProgressPercentage: 25,
       currentStep: "upload",
       stepProgress: {
         ...INITIAL_BUILD_PAYLOAD.stepProgress,
@@ -58,7 +58,7 @@ export const Verify: Story = {
   args: {
     localBuildProgress: {
       ...INITIAL_BUILD_PAYLOAD,
-      buildProgressPercentage: 75,
+      buildProgressPercentage: 50,
       currentStep: "verify",
     },
   },
@@ -71,7 +71,7 @@ export const Snapshot: Story = {
   args: {
     localBuildProgress: {
       ...INITIAL_BUILD_PAYLOAD,
-      buildProgressPercentage: 90,
+      buildProgressPercentage: 75,
       currentStep: "snapshot",
       stepProgress: {
         ...INITIAL_BUILD_PAYLOAD.stepProgress,
