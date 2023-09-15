@@ -33,7 +33,7 @@ export const Outdated: Story = {
 export const IsRunning: Story = {
   args: {
     isRunning: true,
-    runningBuild: {
+    localBuildProgress: {
       ...INITIAL_BUILD_PAYLOAD,
       buildProgressPercentage: 40,
       currentStep: "build",
