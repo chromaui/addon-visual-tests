@@ -212,7 +212,7 @@ export const GraphQLError: Story = {
   },
 };
 
-export const NoStoryBuild: Story = {
+export const EmptyBranch: Story = {
   parameters: {
     ...withBuilds({ selectedBuild: null }),
   },
@@ -232,8 +232,8 @@ export const NoStoryBuild: Story = {
   },
 };
 
-export const NoStoryBuildRunningBuildStarting: Story = {
-  ...NoStoryBuild,
+export const EmptyBranchStartedLocalBuild: Story = {
+  ...EmptyBranch,
   args: {
     localBuildProgress: {
       buildProgressPercentage: 1,
@@ -246,8 +246,8 @@ export const NoStoryBuildRunningBuildStarting: Story = {
   },
 };
 
-export const NoStoryBuildRunningBuildUploading: Story = {
-  ...NoStoryBuild,
+export const EmptyBranchLocalBuildUploading: Story = {
+  ...EmptyBranch,
   args: {
     localBuildProgress: {
       ...INITIAL_BUILD_PAYLOAD,
@@ -265,7 +265,7 @@ export const NoStoryBuildRunningBuildUploading: Story = {
 };
 
 /** This story should maintain the "no build" UI with a progress bar */
-export const NoStoryBuildNextBuildCapturing: Story = {
+export const EmptyBranchLocalBuildCapturing: Story = {
   parameters: {
     ...withBuilds({ selectedBuild: null, lastBuildOnBranch: inProgressBuild }),
   },
@@ -287,7 +287,7 @@ export const NoStoryBuildNextBuildCapturing: Story = {
 };
 
 /** At this point, we should switch to the next build */
-export const NoStoryBuildNextBuildCapturedCurrentStory: Story = {
+export const EmptyBranchLocalBuildCapturedCurrentStory: Story = {
   parameters: {
     ...withBuilds({
       selectedBuild: null,
@@ -299,12 +299,12 @@ export const NoStoryBuildNextBuildCapturedCurrentStory: Story = {
   },
   args: {
     localBuildProgress: {
-      ...NoStoryBuildNextBuildCapturing.args.localBuildProgress,
+      ...EmptyBranchLocalBuildCapturing.args.localBuildProgress,
       buildProgressPercentage: 90,
       stepProgress: {
-        ...NoStoryBuildNextBuildCapturing.args.localBuildProgress.stepProgress,
+        ...EmptyBranchLocalBuildCapturing.args.localBuildProgress.stepProgress,
         snapshot: {
-          ...NoStoryBuildNextBuildCapturing.args.localBuildProgress.stepProgress.snapshot,
+          ...EmptyBranchLocalBuildCapturing.args.localBuildProgress.stepProgress.snapshot,
           numerator: 310,
         },
       },
@@ -313,7 +313,7 @@ export const NoStoryBuildNextBuildCapturedCurrentStory: Story = {
 };
 
 /** Complete builds should always be switched to */
-export const NoStoryBuildNextBuildPending: Story = {
+export const EmptyBranchCIBuildPending: Story = {
   parameters: {
     ...withBuilds({
       selectedBuild: null,
@@ -335,9 +335,9 @@ export const NoChanges: Story = {
 /**
  * We've started a new build but it's not done yet
  */
-export const RunningBuildStarting: Story = {
+export const PendingLocalBuildStarting: Story = {
   args: {
-    ...NoStoryBuildRunningBuildStarting.args,
+    ...EmptyBranchStartedLocalBuild.args,
   },
   parameters: {
     ...withBuilds({ selectedBuild: pendingBuild }),
@@ -345,32 +345,25 @@ export const RunningBuildStarting: Story = {
 };
 
 /**
- * The next build is snapshotting but hasn't yet reached this story (we didn't start it)
+ * As above but we started the next build
  */
-export const NextBuildInProgress: Story = {
+export const PendingLocalBuildCapturing: Story = {
   parameters: {
     ...withBuilds({
       selectedBuild: pendingBuild,
       lastBuildOnBranch: { ...inProgressBuild, id: "2" },
     }),
   },
-};
-
-/**
- * As above but we started the next build
- */
-export const RunningBuildInProgress: Story = {
-  ...NextBuildInProgress,
   args: {
-    ...NoStoryBuildNextBuildCapturing.args,
+    ...EmptyBranchLocalBuildCapturing.args,
   },
 };
 
 /**
  * The next build is snapshotting and has captured this story
- * (The behaviour should be the same whether or not we started it)
  */
-export const NextBuildInProgressCapturedStory: Story = {
+export const PendingLocalBuildCapturedStory: Story = {
+  ...PendingLocalBuildCapturing,
   parameters: {
     ...withBuilds({
       selectedBuild: pendingBuild,
@@ -379,6 +372,25 @@ export const NextBuildInProgressCapturedStory: Story = {
         SnapshotComparisonStories.WithSingleTest.args.tests
       ),
     }),
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2303-374529&t=qjmuGHxoALrVuhvX-0"
+    ),
+  },
+};
+
+/**
+ * The next build is snapshotting but hasn't yet reached this story (we didn't start it)
+ */
+export const PendingCIBuildInProgress: Story = {
+  parameters: PendingLocalBuildCapturing.parameters,
+};
+
+/**
+ * The next build is snapshotting and has captured this story
+ */
+export const PendingCIBuildCapturedStory: Story = {
+  parameters: {
+    ...PendingLocalBuildCapturedStory.parameters,
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2303-374529&t=qjmuGHxoALrVuhvX-0"
     ),
@@ -556,7 +568,7 @@ export const InfrastructureError: Story = {
 };
 
 /** The new build is newer than the story build (but we didn't run it) */
-export const NextBuildNewer: Story = {
+export const CIBuildNewer: Story = {
   parameters: {
     ...withBuilds({
       selectedBuild: pendingBuild,
@@ -566,7 +578,7 @@ export const NextBuildNewer: Story = {
 };
 
 /** The new build is newer than the story build and the git info */
-export const NextBuildNewerThanCommit: Story = {
+export const CIBuildNewerThanCommit: Story = {
   parameters: {
     ...withBuilds({
       selectedBuild: pendingBuild,
