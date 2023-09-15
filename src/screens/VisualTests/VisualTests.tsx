@@ -82,6 +82,8 @@ export const VisualTests = ({
     return () => clearInterval(interval);
   }, [rerun]);
 
+  const { userCanReview } = data?.viewer?.projectMembership || {};
+
   const [{ fetching: isReviewing }, reviewTest] = useMutation(MutationReviewTest);
 
   const onReview = useCallback(
@@ -215,6 +217,7 @@ export const VisualTests = ({
         nextBuildCompletedStory,
         switchToNextBuild: canSwitchToNextBuild && switchToNextBuild,
         startDevBuild,
+        userCanReview,
         isReviewing,
         onAccept,
         onUnaccept,

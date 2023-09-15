@@ -24,6 +24,7 @@ const meta = {
         { status: TestStatus.Passed, viewport: 1200 },
       ],
     }),
+    userCanReview: true,
     isReviewable: true,
     isReviewing: false,
     onAccept: action("onAccept"),

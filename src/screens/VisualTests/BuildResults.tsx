@@ -1,8 +1,9 @@
-import { Icons, TooltipNote, WithTooltip } from "@storybook/components";
+import { Icons, Link, TooltipNote, WithTooltip } from "@storybook/components";
 import React, { useState } from "react";
 
 import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
+import { Eyebrow } from "../../components/Eyebrow";
 import { FooterMenu } from "../../components/FooterMenu";
 import { Heading } from "../../components/Heading";
 import { IconButton } from "../../components/IconButton";
@@ -32,6 +33,7 @@ interface BuildResultsProps {
   nextBuildCompletedStory: boolean;
   switchToNextBuild?: () => void;
   startDevBuild: () => void;
+  userCanReview: boolean;
   isReviewing: boolean;
   onAccept: (testId: string, batch: ReviewTestBatch) => Promise<void>;
   onUnaccept: (testId: string) => Promise<void>;
@@ -45,6 +47,7 @@ export const BuildResults = ({
   nextBuildCompletedStory,
   switchToNextBuild,
   startDevBuild,
+  userCanReview,
   isReviewing,
   onAccept,
   onUnaccept,
@@ -119,17 +122,38 @@ export const BuildResults = ({
     );
   }
 
+  const { status } = storyBuild;
+  const startedAt = "startedAt" in storyBuild && storyBuild.startedAt;
   const isStoryBuildStarting = [
     BuildStatus.Announced,
     BuildStatus.Published,
     BuildStatus.Prepared,
-  ].includes(storyBuild?.status);
-  const startedAt = storyBuild && "startedAt" in storyBuild && storyBuild.startedAt;
-  const isBuildFailed = storyBuild?.status === BuildStatus.Failed;
+  ].includes(status);
+  const isBuildFailed = status === BuildStatus.Failed;
+  const isReviewLocked = status === BuildStatus.Pending && (!userCanReview || !isReviewable);
 
   return (
     <Sections>
       {buildStatus}
+
+      {!buildStatus && isReviewLocked && (
+        <Eyebrow>
+          {userCanReview ? (
+            <>Reviewing is disabled because there's a newer build on {branch}.</>
+          ) : (
+            <>
+              You do not have permission to accept changes.{" "}
+              <Link
+                href="https://www.chromatic.com/docs/collaborators#roles"
+                target="_blank"
+                withArrow
+              >
+                Learn about roles
+              </Link>
+            </>
+          )}
+        </Eyebrow>
+      )}
 
       <Section grow hidden={settingsVisible || warningsVisible}>
         <StoryInfo
@@ -147,6 +171,7 @@ export const BuildResults = ({
           <SnapshotComparison
             {...{
               tests: storyTests,
+              userCanReview,
               isReviewable,
               isReviewing,
               onAccept,
