@@ -6,7 +6,7 @@ import React, { ComponentProps } from "react";
 
 import { Browser, CaptureErrorKind, ComparisonResult, TestStatus } from "../../gql/graphql";
 import { playAll } from "../../utils/playAll";
-import { makeTest, makeTests } from "../../utils/storyData";
+import { makeComparison, makeTest, makeTests } from "../../utils/storyData";
 import { SnapshotComparison } from "./SnapshotComparison";
 
 const meta = {
@@ -30,6 +30,16 @@ const meta = {
     onAccept: action("onAccept"),
     onUnaccept: action("onUnaccept"),
     baselineImageVisible: false,
+    selectedBuild: {
+      id: "build-id",
+      number: 123,
+      branch: "feature-branch",
+    } as any,
+    setSettingsVisible: action("setSettingsVisible"),
+    settingsVisible: false,
+    setWarningsVisible: action("setWarningsVisible"),
+    warningsVisible: false,
+    setAccessToken: action("setAccessToken"),
   },
 } satisfies Meta<typeof SnapshotComparison>;
 
@@ -74,6 +84,22 @@ export const WithMultipleTestsFirstPassed: Story = {
 export const WithSingleTest: Story = {
   args: {
     tests: [makeTest({ status: TestStatus.Pending })],
+  },
+};
+
+export const WithSingleTestNoBaseline: Story = {
+  args: {
+    tests: [
+      makeTest({
+        status: TestStatus.Pending,
+        comparisons: [
+          {
+            ...makeComparison({}),
+            baseCapture: null,
+          },
+        ],
+      }),
+    ],
   },
 };
 
