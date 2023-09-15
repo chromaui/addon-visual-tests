@@ -5,7 +5,7 @@ import React, { useEffect, useRef } from "react";
 
 import { SidebarTopButton } from "./components/SidebarTopButton";
 import { ADDON_ID, IS_OUTDATED, LOCAL_BUILD_PROGRESS, START_BUILD } from "./constants";
-import { LocalBuildProgressPayload } from "./types";
+import { LocalBuildProgress } from "./types";
 import { useAddonState } from "./useAddonState/manager";
 import { useAccessToken } from "./utils/graphQLClient";
 import { useProjectId } from "./utils/useProjectId";
@@ -22,7 +22,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
   const isLoggedIn = !!accessToken;
 
   const [isOutdated] = useAddonState<boolean>(IS_OUTDATED);
-  const [localBuildProgress] = useAddonState<LocalBuildProgressPayload>(LOCAL_BUILD_PROGRESS);
+  const [localBuildProgress] = useAddonState<LocalBuildProgress>(LOCAL_BUILD_PROGRESS);
   const isRunning = !!localBuildProgress && localBuildProgress.currentStep !== "complete";
 
   const lastStep = useRef(localBuildProgress?.currentStep);

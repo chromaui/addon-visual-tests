@@ -5,7 +5,7 @@ import React, { useEffect, useRef } from "react";
 import { BUILD_STEP_CONFIG, BUILD_STEP_ORDER } from "../../buildSteps";
 import { BuildProgressLabel } from "../../components/BuildProgressLabel";
 import { IconButton } from "../../components/IconButton";
-import { LocalBuildProgressPayload } from "../../types";
+import { LocalBuildProgress } from "../../types";
 
 const spin = keyframes({
   from: { transform: "rotate(0deg)" },
@@ -93,13 +93,13 @@ const StepIcon = styled(Icons)(
 );
 
 type BuildProgressProps = {
-  localBuildProgress?: LocalBuildProgressPayload;
+  localBuildProgress?: LocalBuildProgress;
   expanded?: boolean;
 };
 
 const BuildProgress = ({ localBuildProgress, expanded }: BuildProgressProps) => {
   const stepHistory = useRef<
-    Partial<Record<LocalBuildProgressPayload["currentStep"], LocalBuildProgressPayload>>
+    Partial<Record<LocalBuildProgress["currentStep"], LocalBuildProgress>>
   >({});
 
   useEffect(() => {
@@ -138,7 +138,7 @@ const BuildProgress = ({ localBuildProgress, expanded }: BuildProgressProps) => 
 
 type BuildEyebrowProps = {
   branch: string;
-  localBuildProgress?: LocalBuildProgressPayload;
+  localBuildProgress?: LocalBuildProgress;
   lastBuildOnBranchInProgress?: boolean;
   switchToLastBuildOnBranch?: () => void;
 };

@@ -41,7 +41,7 @@ export type StepProgressPayload = {
   completedAt?: number;
 };
 
-export type LocalBuildProgressPayload = {
+export type LocalBuildProgress = {
   /** The id of the build, available after the initialize step */
   buildId?: string;
 

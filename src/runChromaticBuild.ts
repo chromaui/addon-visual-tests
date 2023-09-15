@@ -9,14 +9,14 @@ import {
   INITIAL_BUILD_PAYLOAD,
   isKnownStep,
 } from "./buildSteps";
-import { LocalBuildProgressPayload } from "./types";
+import { LocalBuildProgress } from "./types";
 import { useAddonState } from "./useAddonState/server";
 
 const ESTIMATED_PROGRESS_INTERVAL = 2000;
 
 const getBuildStepData = (
   task: TaskName,
-  previousBuildProgress?: LocalBuildProgressPayload["previousBuildProgress"]
+  previousBuildProgress?: LocalBuildProgress["previousBuildProgress"]
 ) => {
   if (!isKnownStep(task)) throw new Error(`Unknown step: ${task}`);
 
@@ -44,7 +44,7 @@ const getBuildStepData = (
 
 export const onStartOrProgress =
   (
-    localBuildProgress: ReturnType<typeof useAddonState<LocalBuildProgressPayload>>,
+    localBuildProgress: ReturnType<typeof useAddonState<LocalBuildProgress>>,
     timeout: ReturnType<typeof setTimeout>
   ) =>
   ({ ...ctx }: Context, { progress, total }: { progress?: number; total?: number } = {}) => {
@@ -99,7 +99,7 @@ export const onStartOrProgress =
 
 export const onCompleteOrError =
   (
-    localBuildProgress: ReturnType<typeof useAddonState<LocalBuildProgressPayload>>,
+    localBuildProgress: ReturnType<typeof useAddonState<LocalBuildProgress>>,
     timeout: ReturnType<typeof setTimeout>
   ) =>
   (ctx: Context, error?: { formattedError: string; originalError: Error | Error[] }) => {
@@ -141,7 +141,7 @@ export const onCompleteOrError =
   };
 
 export const runChromaticBuild = async (
-  localBuildProgress: ReturnType<typeof useAddonState<LocalBuildProgressPayload>>,
+  localBuildProgress: ReturnType<typeof useAddonState<LocalBuildProgress>>,
   flags: Flags
 ) => {
   if (!flags.projectToken) throw new Error("No project token set");

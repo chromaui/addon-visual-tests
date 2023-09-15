@@ -2,7 +2,7 @@ import { Icons, WithTooltip } from "@storybook/components";
 import { styled } from "@storybook/theming";
 import React, { ComponentProps } from "react";
 
-import { LocalBuildProgressPayload } from "../types";
+import { LocalBuildProgress } from "../types";
 import { BuildProgressLabel } from "./BuildProgressLabel";
 import { IconButton } from "./IconButton";
 import { StatusDotWrapper } from "./StatusDot";
@@ -54,7 +54,7 @@ export const SidebarTopButton = ({
 }: {
   isOutdated?: boolean;
   isRunning?: boolean;
-  localBuildProgress?: LocalBuildProgressPayload;
+  localBuildProgress?: LocalBuildProgress;
   startBuild: () => void;
 }) => {
   if (isRunning && localBuildProgress) {

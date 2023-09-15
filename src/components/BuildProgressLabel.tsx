@@ -1,10 +1,10 @@
 import React from "react";
 
 import { BUILD_STEP_CONFIG } from "../buildSteps";
-import { LocalBuildProgressPayload } from "../types";
+import { LocalBuildProgress } from "../types";
 
 interface BuildProgressLabelProps {
-  localBuildProgress: LocalBuildProgressPayload;
+  localBuildProgress: LocalBuildProgress;
 }
 
 export const BuildProgressLabel = ({ localBuildProgress }: BuildProgressLabelProps) => {

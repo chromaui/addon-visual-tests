@@ -5,7 +5,7 @@ import { useMutation, useQuery } from "urql";
 
 import { getFragment } from "../../gql";
 import { ReviewTestBatch, ReviewTestInputStatus, TestStatus } from "../../gql/graphql";
-import { GitInfoPayload, LocalBuildProgressPayload, UpdateStatusFunction } from "../../types";
+import { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from "../../types";
 import { statusMap, testsToStatusUpdate } from "../../utils/testsToStatusUpdate";
 import { SelectedBuildInfo, updateSelectedBuildInfo } from "../../utils/updateSelectedBuildInfo";
 import { BuildResults } from "./BuildResults";
@@ -29,7 +29,7 @@ interface VisualTestsProps {
     GitInfoPayload,
     "branch" | "slug" | "userEmailHash" | "committedAt" | "uncommittedHash"
   >;
-  localBuildProgress?: LocalBuildProgressPayload;
+  localBuildProgress?: LocalBuildProgress;
   startDevBuild: () => void;
   setAccessToken: (accessToken: string | null) => void;
   setOutdated: (isOutdated: boolean) => void;

@@ -17,7 +17,7 @@ import {
   SelectedBuildFieldsFragment,
   TestResult,
 } from "../../gql/graphql";
-import { LocalBuildProgressPayload } from "../../types";
+import { LocalBuildProgress } from "../../types";
 import { BuildEyebrow } from "./BuildEyebrow";
 import { FragmentStoryTestFields } from "./graphql";
 import { RenderSettings } from "./RenderSettings";
@@ -27,7 +27,7 @@ import { Warnings } from "./Warnings";
 
 interface BuildResultsProps {
   branch: string;
-  localBuildProgress: LocalBuildProgressPayload;
+  localBuildProgress: LocalBuildProgress;
   selectedBuild?: SelectedBuildFieldsFragment;
   lastBuildOnBranch: LastBuildOnBranchBuildFieldsFragment;
   lastBuildOnBranchCompletedStory: boolean;

@@ -17,7 +17,7 @@ import { LinkedProject } from "./screens/LinkProject/LinkedProject";
 import { LinkingProjectFailed } from "./screens/LinkProject/LinkingProjectFailed";
 import { LinkProject } from "./screens/LinkProject/LinkProject";
 import { VisualTests } from "./screens/VisualTests/VisualTests";
-import { GitInfoPayload, LocalBuildProgressPayload, UpdateStatusFunction } from "./types";
+import { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from "./types";
 import { useAddonState } from "./useAddonState/manager";
 import { client, Provider, useAccessToken } from "./utils/graphQLClient";
 import { useProjectId } from "./utils/useProjectId";
@@ -32,7 +32,7 @@ export const Panel = ({ active, api }: PanelProps) => {
   const { storyId } = useStorybookState();
 
   const [gitInfo] = useAddonState<GitInfoPayload>(GIT_INFO);
-  const [localBuildProgress] = useAddonState<LocalBuildProgressPayload>(LOCAL_BUILD_PROGRESS);
+  const [localBuildProgress] = useAddonState<LocalBuildProgress>(LOCAL_BUILD_PROGRESS);
   const [, setOutdated] = useAddonState<boolean>(IS_OUTDATED);
   const emit = useChannel({});
 

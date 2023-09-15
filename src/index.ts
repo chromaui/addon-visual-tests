@@ -11,7 +11,7 @@ import {
   START_BUILD,
 } from "./constants";
 import { runChromaticBuild } from "./runChromaticBuild";
-import { GitInfoPayload, LocalBuildProgressPayload, ProjectInfoPayload } from "./types";
+import { GitInfoPayload, LocalBuildProgress, ProjectInfoPayload } from "./types";
 import { useAddonState } from "./useAddonState/server";
 import { updateChromaticConfig } from "./utils/updateChromaticConfig";
 
@@ -90,10 +90,7 @@ async function serverChannel(
   });
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const localBuildProgress = useAddonState<LocalBuildProgressPayload>(
-    channel,
-    LOCAL_BUILD_PROGRESS
-  );
+  const localBuildProgress = useAddonState<LocalBuildProgress>(channel, LOCAL_BUILD_PROGRESS);
 
   channel.on(START_BUILD, async () => {
     const { projectToken } = projectInfoState.value;
