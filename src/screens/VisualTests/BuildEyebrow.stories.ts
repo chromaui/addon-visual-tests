@@ -60,6 +60,10 @@ export const Complete: Story = {
   play: expandEyebrow,
 };
 
+export const NewBuildRunning: Story = {
+  args: { nextBuildInProgress: true },
+};
+
 export const NewerSnapshotAvailable: Story = {};
 
 export const NewerBuildOnBranch: Story = {

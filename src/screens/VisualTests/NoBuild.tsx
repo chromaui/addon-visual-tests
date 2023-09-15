@@ -13,7 +13,7 @@ import { Text as CenterText } from "../../components/Text";
 interface NoBuildProps {
   error: CombinedError;
   hasData: boolean;
-  hasNextBuild: boolean;
+  hasStoryBuild: boolean;
   startDevBuild: () => void;
   isRunningBuildStarting: boolean;
   branch: string;
@@ -23,7 +23,7 @@ interface NoBuildProps {
 export const NoBuild = ({
   error,
   hasData,
-  hasNextBuild,
+  hasStoryBuild,
   startDevBuild,
   isRunningBuildStarting,
   branch,
@@ -41,7 +41,7 @@ export const NoBuild = ({
 
       {!hasData && <Loader />}
 
-      {hasData && !hasNextBuild && !error && (
+      {hasData && !hasStoryBuild && !error && (
         <Container>
           <Heading>Create a test baseline</Heading>
           <CenterText>
