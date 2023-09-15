@@ -2,10 +2,10 @@
 import { TaskName } from "chromatic/node";
 import { filesize } from "filesize";
 
-import { KnownStep, RunningBuildPayload, StepProgressPayload } from "./types";
+import { KnownStep, LocalBuildProgressPayload, StepProgressPayload } from "./types";
 
 export const isKnownStep = (
-  taskOrStep: TaskName | RunningBuildPayload["currentStep"]
+  taskOrStep: TaskName | LocalBuildProgressPayload["currentStep"]
 ): taskOrStep is KnownStep => BUILD_STEP_ORDER.includes(taskOrStep as KnownStep);
 
 export const hasProgressEvent = (task: TaskName) => ["upload", "snapshot"].includes(task);
@@ -20,12 +20,12 @@ export const BUILD_STEP_ORDER: KnownStep[] = [
 ];
 
 export const BUILD_STEP_CONFIG: Record<
-  RunningBuildPayload["currentStep"],
+  LocalBuildProgressPayload["currentStep"],
   {
-    key: RunningBuildPayload["currentStep"];
+    key: LocalBuildProgressPayload["currentStep"];
     emoji: string;
     renderName: () => string;
-    renderProgress: (payload: RunningBuildPayload) => string;
+    renderProgress: (payload: LocalBuildProgressPayload) => string;
     renderComplete: () => string;
     estimateDuration: number;
   }

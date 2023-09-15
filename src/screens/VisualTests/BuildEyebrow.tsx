@@ -5,7 +5,7 @@ import React, { useEffect, useRef } from "react";
 import { BUILD_STEP_CONFIG, BUILD_STEP_ORDER } from "../../buildSteps";
 import { BuildProgressLabel } from "../../components/BuildProgressLabel";
 import { IconButton } from "../../components/IconButton";
-import { RunningBuildPayload } from "../../types";
+import { LocalBuildProgressPayload } from "../../types";
 
 const spin = keyframes({
   from: { transform: "rotate(0deg)" },
@@ -93,20 +93,20 @@ const StepIcon = styled(Icons)(
 );
 
 type BuildProgressProps = {
-  buildProgress?: RunningBuildPayload;
+  localBuildProgress?: LocalBuildProgressPayload;
   expanded?: boolean;
 };
 
-const BuildProgress = ({ buildProgress, expanded }: BuildProgressProps) => {
+const BuildProgress = ({ localBuildProgress, expanded }: BuildProgressProps) => {
   const stepHistory = useRef<
-    Partial<Record<RunningBuildPayload["currentStep"], RunningBuildPayload>>
+    Partial<Record<LocalBuildProgressPayload["currentStep"], LocalBuildProgressPayload>>
   >({});
 
   useEffect(() => {
-    stepHistory.current[buildProgress.currentStep] = { ...buildProgress };
-  }, [buildProgress]);
+    stepHistory.current[localBuildProgress.currentStep] = { ...localBuildProgress };
+  }, [localBuildProgress]);
 
-  const currentIndex = BUILD_STEP_ORDER.findIndex((key) => key === buildProgress.currentStep);
+  const currentIndex = BUILD_STEP_ORDER.findIndex((key) => key === localBuildProgress.currentStep);
   const steps = BUILD_STEP_ORDER.map((step, index) => {
     const isCurrent = index === currentIndex;
     const isPending = index > currentIndex && currentIndex !== -1;
@@ -127,7 +127,7 @@ const BuildProgress = ({ buildProgress, expanded }: BuildProgressProps) => {
           <StepDetail isCurrent={isCurrent} isPending={isPending} key={key}>
             <div>
               <StepIcon icon={icon as any} />
-              {renderLabel(stepHistory.current[key] || buildProgress)}
+              {renderLabel(stepHistory.current[key] || localBuildProgress)}
             </div>
           </StepDetail>
         ))}
@@ -138,14 +138,14 @@ const BuildProgress = ({ buildProgress, expanded }: BuildProgressProps) => {
 
 type BuildEyebrowProps = {
   branch: string;
-  runningBuild?: RunningBuildPayload;
+  localBuildProgress?: LocalBuildProgressPayload;
   nextBuildInProgress?: boolean;
   switchToNextBuild?: () => void;
 };
 
 export const BuildEyebrow = ({
   branch,
-  runningBuild,
+  localBuildProgress,
   nextBuildInProgress,
   switchToNextBuild,
 }: BuildEyebrowProps) => {
@@ -154,19 +154,19 @@ export const BuildEyebrow = ({
     setExpanded(!expanded);
   };
 
-  if (runningBuild) {
+  if (localBuildProgress) {
     return (
       <>
         <Header onClick={toggleExpanded}>
-          <Bar percentage={runningBuild.buildProgressPercentage} />
+          <Bar percentage={localBuildProgress.buildProgressPercentage} />
           <Label>
-            <BuildProgressLabel runningBuild={runningBuild} />
+            <BuildProgressLabel localBuildProgress={localBuildProgress} />
           </Label>
           <IconButton as="div">
             {expanded ? <Icons icon="collapse" /> : <Icons icon="expandalt" />}
           </IconButton>
         </Header>
-        <BuildProgress buildProgress={runningBuild} expanded={expanded} />
+        <BuildProgress localBuildProgress={localBuildProgress} expanded={expanded} />
       </>
     );
   }

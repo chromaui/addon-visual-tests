@@ -235,7 +235,7 @@ export const NoStoryBuild: Story = {
 export const NoStoryBuildRunningBuildStarting: Story = {
   ...NoStoryBuild,
   args: {
-    runningBuild: {
+    localBuildProgress: {
       buildProgressPercentage: 1,
       currentStep: "initialize",
       stepProgress: {
@@ -249,7 +249,7 @@ export const NoStoryBuildRunningBuildStarting: Story = {
 export const NoStoryBuildRunningBuildUploading: Story = {
   ...NoStoryBuild,
   args: {
-    runningBuild: {
+    localBuildProgress: {
       ...INITIAL_BUILD_PAYLOAD,
       currentStep: "upload",
       stepProgress: {
@@ -270,7 +270,7 @@ export const NoStoryBuildNextBuildCapturing: Story = {
     ...withBuilds({ storyBuild: null, nextBuild: inProgressBuild }),
   },
   args: {
-    runningBuild: {
+    localBuildProgress: {
       ...INITIAL_BUILD_PAYLOAD,
       buildProgressPercentage: 60,
       currentStep: "snapshot",
@@ -295,13 +295,13 @@ export const NoStoryBuildNextBuildCapturedCurrentStory: Story = {
     }),
   },
   args: {
-    runningBuild: {
-      ...NoStoryBuildNextBuildCapturing.args.runningBuild,
+    localBuildProgress: {
+      ...NoStoryBuildNextBuildCapturing.args.localBuildProgress,
       buildProgressPercentage: 90,
       stepProgress: {
-        ...NoStoryBuildNextBuildCapturing.args.runningBuild.stepProgress,
+        ...NoStoryBuildNextBuildCapturing.args.localBuildProgress.stepProgress,
         snapshot: {
-          ...NoStoryBuildNextBuildCapturing.args.runningBuild.stepProgress.snapshot,
+          ...NoStoryBuildNextBuildCapturing.args.localBuildProgress.stepProgress.snapshot,
           numerator: 310,
         },
       },

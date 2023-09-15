@@ -17,7 +17,7 @@ import {
   StoryBuildFieldsFragment,
   TestResult,
 } from "../../gql/graphql";
-import { RunningBuildPayload } from "../../types";
+import { LocalBuildProgressPayload } from "../../types";
 import { BuildEyebrow } from "./BuildEyebrow";
 import { FragmentStoryTestFields } from "./graphql";
 import { RenderSettings } from "./RenderSettings";
@@ -27,7 +27,7 @@ import { Warnings } from "./Warnings";
 
 interface BuildResultsProps {
   branch: string;
-  runningBuild: RunningBuildPayload;
+  localBuildProgress: LocalBuildProgressPayload;
   storyBuild?: StoryBuildFieldsFragment;
   nextBuild: NextBuildFieldsFragment;
   nextBuildCompletedStory: boolean;
@@ -42,7 +42,7 @@ interface BuildResultsProps {
 
 export const BuildResults = ({
   branch,
-  runningBuild,
+  localBuildProgress,
   nextBuild,
   nextBuildCompletedStory,
   switchToNextBuild,
@@ -59,7 +59,8 @@ export const BuildResults = ({
   const [baselineImageVisible, setBaselineImageVisible] = useState(false);
   const toggleBaselineImage = () => setBaselineImageVisible(!baselineImageVisible);
 
-  const isRunningBuildInProgress = runningBuild && runningBuild.currentStep !== "complete";
+  const isRunningBuildInProgress =
+    localBuildProgress && localBuildProgress.currentStep !== "complete";
 
   const storyTests = [
     ...getFragment(
@@ -80,11 +81,14 @@ export const BuildResults = ({
     // Even if there's no build running, we need to tell them why they can't review, unless
     // the story is superseded and the UI is already telling them
     (!isReviewable && !shouldSwitchToNextBuild);
-  const runningBuildIsNextBuild = runningBuild && runningBuild?.buildId === nextBuild.id;
+  const localBuildProgressIsNextBuild =
+    localBuildProgress && localBuildProgress?.buildId === nextBuild.id;
   const buildStatus = showBuildStatus && (
     <BuildEyebrow
       branch={branch}
-      runningBuild={(runningBuildIsNextBuild || isRunningBuildInProgress) && runningBuild}
+      localBuildProgress={
+        (localBuildProgressIsNextBuild || isRunningBuildInProgress) && localBuildProgress
+      }
       nextBuildInProgress={nextBuildInProgress}
       switchToNextBuild={switchToNextBuild}
     />

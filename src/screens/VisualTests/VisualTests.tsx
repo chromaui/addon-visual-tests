@@ -11,7 +11,7 @@ import {
   ReviewTestInputStatus,
   TestStatus,
 } from "../../gql/graphql";
-import { GitInfoPayload, RunningBuildPayload, UpdateStatusFunction } from "../../types";
+import { GitInfoPayload, LocalBuildProgressPayload, UpdateStatusFunction } from "../../types";
 import { statusMap, testsToStatusUpdate } from "../../utils/testsToStatusUpdate";
 import { StoryBuildInfo, updateStoryBuildInfo } from "../../utils/updateStoryBuildInfo";
 import { BuildResults } from "./BuildResults";
@@ -35,7 +35,7 @@ interface VisualTestsProps {
     GitInfoPayload,
     "branch" | "slug" | "userEmailHash" | "committedAt" | "uncommittedHash"
   >;
-  runningBuild?: RunningBuildPayload;
+  localBuildProgress?: LocalBuildProgressPayload;
   startDevBuild: () => void;
   setAccessToken: (accessToken: string | null) => void;
   setOutdated: (isOutdated: boolean) => void;
@@ -44,7 +44,7 @@ interface VisualTestsProps {
 }
 
 export const VisualTests = ({
-  runningBuild,
+  localBuildProgress,
   startDevBuild,
   setAccessToken,
   setOutdated,
@@ -194,7 +194,7 @@ export const VisualTests = ({
   );
 
   const isRunningBuildStarting =
-    runningBuild && !["success", "error"].includes(runningBuild.currentStep);
+    localBuildProgress && !["success", "error"].includes(localBuildProgress.currentStep);
 
   return !storyBuild || error ? (
     <NoBuild
@@ -212,7 +212,7 @@ export const VisualTests = ({
     <BuildResults
       {...{
         branch: gitInfo.branch,
-        runningBuild,
+        localBuildProgress,
         nextBuild,
         nextBuildCompletedStory,
         switchToNextBuild: canSwitchToNextBuild && switchToNextBuild,

@@ -13,7 +13,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Initialize: Story = {
   args: {
-    runningBuild: INITIAL_BUILD_PAYLOAD,
+    localBuildProgress: INITIAL_BUILD_PAYLOAD,
   },
   parameters: withFigmaDesign(
     "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2892-73423&mode=design&t=gIM40WT0324ynPQD-4"
@@ -22,7 +22,7 @@ export const Initialize: Story = {
 
 export const Build: Story = {
   args: {
-    runningBuild: {
+    localBuildProgress: {
       ...INITIAL_BUILD_PAYLOAD,
       buildProgressPercentage: 8,
       currentStep: "build",
@@ -35,7 +35,7 @@ export const Build: Story = {
 
 export const Upload: Story = {
   args: {
-    runningBuild: {
+    localBuildProgress: {
       ...INITIAL_BUILD_PAYLOAD,
       buildProgressPercentage: 50,
       currentStep: "upload",
@@ -56,7 +56,7 @@ export const Upload: Story = {
 
 export const Verify: Story = {
   args: {
-    runningBuild: {
+    localBuildProgress: {
       ...INITIAL_BUILD_PAYLOAD,
       buildProgressPercentage: 75,
       currentStep: "verify",
@@ -69,7 +69,7 @@ export const Verify: Story = {
 
 export const Snapshot: Story = {
   args: {
-    runningBuild: {
+    localBuildProgress: {
       ...INITIAL_BUILD_PAYLOAD,
       buildProgressPercentage: 90,
       currentStep: "snapshot",
@@ -90,7 +90,7 @@ export const Snapshot: Story = {
 
 export const Complete: Story = {
   args: {
-    runningBuild: {
+    localBuildProgress: {
       ...INITIAL_BUILD_PAYLOAD,
       currentStep: "complete",
       buildProgressPercentage: 100,
