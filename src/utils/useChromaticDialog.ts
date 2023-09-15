@@ -23,12 +23,10 @@ export const useChromaticDialog = (handlers: DialogHandlers = {}) => {
       }
     };
 
-    window.addEventListener("message", handleMessage, false);
+    window.addEventListener("message", handleMessage);
 
-    return () => {
-      window.removeEventListener("message", handleMessage);
-    };
-  }, [handlers, dialogOrigin]);
+    return () => window.removeEventListener("message", handleMessage);
+  }, [handlers]);
 
   return useCallback(
     (url: string) => {
@@ -40,7 +38,7 @@ export const useChromaticDialog = (handlers: DialogHandlers = {}) => {
         const left = (window.innerWidth - width) / 2 + window.screenLeft;
         const top = (window.innerHeight - height) / 2 + window.screenTop;
         const options = `scrollbars=yes,width=${width},height=${height},top=${top},left=${left}`;
-        dialog.current = window.open(url, "oauth-dialog", options);
+        dialog.current = window.open(url, "chromatic-dialog", options);
         if (window.focus) dialog.current.focus();
       } else {
         dialog.current = window.open(url, "_blank");
