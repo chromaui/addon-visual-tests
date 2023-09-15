@@ -1,12 +1,25 @@
 import { useCallback, useEffect, useRef } from "react";
+import { z } from "zod";
 
-export type DialogEventName = "login";
-export type DialogPayload<T extends DialogEventName> = Record<string, never>;
-export type DialogHandlers = {
-  [Event in DialogEventName]?: (payload: DialogPayload<Event>) => void;
-};
+const dialogEventNames = ["login", "bar"] as const;
+export type DialogEventName = (typeof dialogEventNames)[number];
+const isDialogEventName = (name: string): name is DialogEventName =>
+  dialogEventNames.includes(name as DialogEventName);
 
-export const useChromaticDialog = (handlers: DialogHandlers = {}) => {
+const dialogPayloadSchemas = {
+  login: z.object({ foo: z.number() }),
+
+  bar: z.object({ foo: z.string() }),
+} as const;
+
+export type DialogPayload<T extends DialogEventName> = z.infer<(typeof dialogPayloadSchemas)[T]>;
+
+export type DialogHandler = (
+  eventName: DialogEventName,
+  payload: DialogPayload<typeof eventName>
+) => void;
+
+export const useChromaticDialog = (handler?: DialogHandler) => {
   const dialog = useRef<Window>();
   const dialogOrigin = useRef<string>();
 
@@ -16,17 +29,20 @@ export const useChromaticDialog = (handlers: DialogHandlers = {}) => {
   useEffect(() => {
     const handleMessage = ({ origin, data }: MessageEvent) => {
       if (origin === dialogOrigin.current) {
-        const { message, ...rest } = data;
-        if (message in handlers) {
-          handlers[message as DialogEventName](rest);
+        const { message: eventName, ...rest } = data;
+        if (!isDialogEventName(eventName)) {
+          throw new Error(`Unexpected event from dialog: ${eventName}`);
         }
+
+        const payload = dialogPayloadSchemas[eventName].parse(rest);
+        handler?.(eventName, payload);
       }
     };
 
     window.addEventListener("message", handleMessage);
 
     return () => window.removeEventListener("message", handleMessage);
-  }, [handlers]);
+  }, [handler]);
 
   return useCallback(
     (url: string) => {

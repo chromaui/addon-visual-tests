@@ -8,7 +8,7 @@ import { Heading } from "../../components/Heading";
 import { BackIcon } from "../../components/icons/BackIcon";
 import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
-import { useChromaticDialog } from "../../utils/useChromaticDialog";
+import { DialogPayload, useChromaticDialog } from "../../utils/useChromaticDialog";
 
 const Digits = styled.ol(({ theme }) => ({
   display: "inline-flex",
@@ -35,8 +35,14 @@ interface VerifyProps {
 }
 
 export const Verify = ({ onBack, userCode, verificationUrl }: VerifyProps) => {
-  const openChromatic = useChromaticDialog({
-    login: () => openChromatic(verificationUrl),
+  const openChromatic = useChromaticDialog((eventName, payload) => {
+    // if (eventName === "login") {
+    //   console.log(payload);
+    //   const x: DialogPayload<"login"> = {};
+    // }
+    if (eventName === "bar") {
+      console.log(payload);
+    }
   });
 
   return (
