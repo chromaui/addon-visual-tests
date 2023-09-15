@@ -4,13 +4,20 @@ import { useChannel, useStorybookState } from "@storybook/manager-api";
 import React, { useCallback } from "react";
 
 import { Sections } from "./components/layout";
-import { ADDON_ID, GIT_INFO, IS_OUTDATED, PANEL_ID, RUNNING_BUILD, START_BUILD } from "./constants";
+import {
+  ADDON_ID,
+  GIT_INFO,
+  IS_OUTDATED,
+  LOCAL_BUILD_PROGRESS,
+  PANEL_ID,
+  START_BUILD,
+} from "./constants";
 import { Authentication } from "./screens/Authentication/Authentication";
 import { LinkedProject } from "./screens/LinkProject/LinkedProject";
 import { LinkingProjectFailed } from "./screens/LinkProject/LinkingProjectFailed";
 import { LinkProject } from "./screens/LinkProject/LinkProject";
 import { VisualTests } from "./screens/VisualTests/VisualTests";
-import { GitInfoPayload, RunningBuildPayload, UpdateStatusFunction } from "./types";
+import { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from "./types";
 import { useAddonState } from "./useAddonState/manager";
 import { client, Provider, useAccessToken } from "./utils/graphQLClient";
 import { useProjectId } from "./utils/useProjectId";
@@ -25,7 +32,7 @@ export const Panel = ({ active, api }: PanelProps) => {
   const { storyId } = useStorybookState();
 
   const [gitInfo] = useAddonState<GitInfoPayload>(GIT_INFO);
-  const [runningBuild] = useAddonState<RunningBuildPayload>(RUNNING_BUILD);
+  const [localBuildProgress] = useAddonState<LocalBuildProgress>(LOCAL_BUILD_PROGRESS);
   const [, setOutdated] = useAddonState<boolean>(IS_OUTDATED);
   const emit = useChannel({});
 
@@ -99,7 +106,7 @@ export const Panel = ({ active, api }: PanelProps) => {
         <VisualTests
           projectId={projectId}
           gitInfo={gitInfo}
-          runningBuild={runningBuild}
+          localBuildProgress={localBuildProgress}
           startDevBuild={() => emit(START_BUILD)}
           setAccessToken={setAccessToken}
           setOutdated={setOutdated}

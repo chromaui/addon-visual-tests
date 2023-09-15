@@ -2,7 +2,7 @@ import { Icons, WithTooltip } from "@storybook/components";
 import { styled } from "@storybook/theming";
 import React, { ComponentProps } from "react";
 
-import { RunningBuildPayload } from "../types";
+import { LocalBuildProgress } from "../types";
 import { BuildProgressLabel } from "./BuildProgressLabel";
 import { IconButton } from "./IconButton";
 import { StatusDotWrapper } from "./StatusDot";
@@ -49,26 +49,27 @@ export const SidebarIconButton = styled(IconButton)<ComponentProps<typeof IconBu
 export const SidebarTopButton = ({
   isOutdated = false,
   isRunning = false,
-  runningBuild,
+  localBuildProgress,
   startBuild,
 }: {
   isOutdated?: boolean;
   isRunning?: boolean;
-  runningBuild?: RunningBuildPayload;
+  localBuildProgress?: LocalBuildProgress;
   startBuild: () => void;
 }) => {
-  if (isRunning && runningBuild) {
+  if (isRunning && localBuildProgress) {
+    const { buildProgressPercentage } = localBuildProgress;
     return (
       <WithTooltip
         trigger="hover"
         tooltip={
           <TooltipContent>
             <div>
-              <BuildProgressLabel runningBuild={runningBuild} />
+              <BuildProgressLabel localBuildProgress={localBuildProgress} />
             </div>
             <ProgressTrack>
-              {typeof runningBuild.buildProgressPercentage === "number" && (
-                <ProgressBar style={{ width: `${runningBuild.buildProgressPercentage}%` }} />
+              {typeof buildProgressPercentage === "number" && (
+                <ProgressBar style={{ width: `${buildProgressPercentage}%` }} />
               )}
             </ProgressTrack>
           </TooltipContent>
@@ -76,7 +77,7 @@ export const SidebarTopButton = ({
       >
         <SidebarIconButton aria-label="Run tests">
           <Icons icon="play" />
-          {typeof runningBuild.buildProgressPercentage === "number" && (
+          {typeof buildProgressPercentage === "number" && (
             <ProgressCircle xmlns="http://www.w3.org/2000/svg">
               <circle
                 r="10"
@@ -86,7 +87,7 @@ export const SidebarTopButton = ({
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeDasharray={Math.PI * 20}
-                strokeDashoffset={Math.PI * 20 * (1 - runningBuild.buildProgressPercentage / 100)}
+                strokeDashoffset={Math.PI * 20 * (1 - buildProgressPercentage / 100)}
                 fill="transparent"
               />
             </ProgressCircle>

@@ -15,7 +15,7 @@ interface NoBuildProps {
   hasData: boolean;
   hasStoryBuild: boolean;
   startDevBuild: () => void;
-  isRunningBuildStarting: boolean;
+  isLocalBuildStarting: boolean;
   branch: string;
   setAccessToken: (accessToken: string | null) => void;
 }
@@ -25,7 +25,7 @@ export const NoBuild = ({
   hasData,
   hasStoryBuild,
   startDevBuild,
-  isRunningBuildStarting,
+  isLocalBuildStarting,
   branch,
   setAccessToken,
 }: NoBuildProps) => (
@@ -49,8 +49,8 @@ export const NoBuild = ({
             test baselines.
           </CenterText>
           <br />
-          <Button small secondary onClick={startDevBuild} disabled={isRunningBuildStarting}>
-            {isRunningBuildStarting ? (
+          <Button small secondary onClick={startDevBuild} disabled={isLocalBuildStarting}>
+            {isLocalBuildStarting ? (
               <ProgressIcon parentComponent="Button" style={{ marginRight: 6 }} />
             ) : (
               <Icons icon="play" />

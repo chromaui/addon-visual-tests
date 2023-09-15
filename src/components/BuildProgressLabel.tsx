@@ -1,17 +1,17 @@
 import React from "react";
 
 import { BUILD_STEP_CONFIG } from "../buildSteps";
-import { RunningBuildPayload } from "../types";
+import { LocalBuildProgress } from "../types";
 
 interface BuildProgressLabelProps {
-  runningBuild: RunningBuildPayload;
+  localBuildProgress: LocalBuildProgress;
 }
 
-export const BuildProgressLabel = ({ runningBuild }: BuildProgressLabelProps) => {
-  const { emoji, renderProgress } = BUILD_STEP_CONFIG[runningBuild.currentStep];
+export const BuildProgressLabel = ({ localBuildProgress }: BuildProgressLabelProps) => {
+  const { emoji, renderProgress } = BUILD_STEP_CONFIG[localBuildProgress.currentStep];
   return (
     <>
-      {emoji} {renderProgress(runningBuild)}
+      {emoji} {renderProgress(localBuildProgress)}
     </>
   );
 };
