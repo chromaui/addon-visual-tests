@@ -59,7 +59,7 @@ export const VisualTests = ({
   // The user can choose when to change story (via sidebar) and build (via opting into new builds)
   const [storyBuildInfo, setStoryBuildInfo] = useState<StoryBuildInfo>({ storyId });
 
-  const [{ data, error }, rerun] = useQuery<
+  const [{ data, error, operation }, rerun] = useQuery<
     AddonVisualTestsBuildQuery,
     AddonVisualTestsBuildQueryVariables
   >({
@@ -75,6 +75,11 @@ export const VisualTests = ({
       hasStoryBuildId: !!storyBuildInfo?.buildId,
     },
   });
+
+  // When you change story, for a period the query will return the previous set of data, and indicate
+  // that with the operation being for the previous query.
+  const storyDataIsStale =
+    operation && storyBuildInfo && operation.variables.storyId !== storyBuildInfo.storyId;
 
   // Poll for updates
   useEffect(() => {
@@ -196,12 +201,12 @@ export const VisualTests = ({
   const isRunningBuildStarting =
     runningBuild && !["success", "error"].includes(runningBuild.currentStep);
 
-  return !storyBuild || error ? (
+  return !storyBuild || storyDataIsStale || error ? (
     <NoBuild
       {...{
         error,
-        hasData: !!data,
-        hasStoryBuild: !!storyBuild,
+        hasData: !!data && !storyDataIsStale,
+        hasStoryBuild: !storyBuild,
         startDevBuild,
         isRunningBuildStarting,
         branch: gitInfo.branch,
