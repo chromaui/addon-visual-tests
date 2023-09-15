@@ -222,7 +222,7 @@ export const VisualTests = ({
         isReviewing,
         onAccept,
         onUnaccept,
-        storyBuild: selectedBuild,
+        selectedBuild,
         setAccessToken,
       }}
     />
