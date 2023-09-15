@@ -73,15 +73,14 @@ export const SnapshotComparison = ({
 
   const { selectedTest, selectedComparison, onSelectBrowser, onSelectMode } = useTests(tests);
   const { status, isInProgress, changeCount, browserResults, modeResults } = summarizeTests(tests);
-  // This is when a new story is added (should all tests be added then?)
-  const isNewStory = tests.every((t) => t.result === TestResult.Added);
-  // isNewTest, could be true if a change occurs in a single mode, viewport, browser, etc. (should all tests be added then?)
 
-  // TODO: This is when a new mode has been added - How to actually determine this? https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=1898-562765&mode=design&t=ciag0nGKx2OGmoSR-4
-  const hasAddedMode = modeResults.find((t) => t.result === ComparisonResult.Added);
+  // isNewStory is when the story itself is added and all tests should also be added
+  const isNewStory = tests.every((test) => test.result === TestResult.Added);
 
-  // TODO: Same as above, but for browsers.
-  const hasAddedBrowser = browserResults.find((t) => t.result === ComparisonResult.Added);
+  // This checks if the specific comparison is new, but the story itself is not.
+  // Using instead of isNewMode or isNewBrowser because those are not yet implemented.
+  const isNewTestOnExistingStory =
+    selectedComparison.result === ComparisonResult.Added && !isNewStory;
 
   const captureErrorData =
     selectedComparison?.headCapture?.captureError &&
@@ -239,6 +238,14 @@ export const SnapshotComparison = ({
         <Warning>
           <Text>
             New story found. Accept this snapshot as a test baseline.{" "}
+            <Link href="https://www.chromatic.com/docs/branching-and-baselines">Learn More »</Link>
+          </Text>
+        </Warning>
+      )}
+      {isNewTestOnExistingStory && (
+        <Warning>
+          <Text>
+            This test is new. Accept this snapshot as a test baseline.{" "}
             <Link href="https://www.chromatic.com/docs/branching-and-baselines">Learn More »</Link>
           </Text>
         </Warning>

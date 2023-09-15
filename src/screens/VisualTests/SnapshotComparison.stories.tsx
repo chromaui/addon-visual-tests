@@ -4,7 +4,13 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { screen, userEvent, within } from "@storybook/testing-library";
 import React, { ComponentProps } from "react";
 
-import { Browser, CaptureErrorKind, ComparisonResult, TestStatus } from "../../gql/graphql";
+import {
+  Browser,
+  CaptureErrorKind,
+  ComparisonResult,
+  TestResult,
+  TestStatus,
+} from "../../gql/graphql";
 import { playAll } from "../../utils/playAll";
 import { makeTest, makeTests } from "../../utils/storyData";
 import { SnapshotComparison } from "./SnapshotComparison";
@@ -71,9 +77,50 @@ export const WithMultipleTestsFirstPassed: Story = {
   },
 };
 
+export const WithMultipleTestsFirstAdded: Story = {
+  args: {
+    tests: makeTests({
+      browsers: [Browser.Chrome, Browser.Safari],
+      viewports: [
+        {
+          status: TestStatus.Pending,
+          viewport: 800,
+          comparisonResults: [ComparisonResult.Added, ComparisonResult.Equal],
+        },
+        {
+          status: TestStatus.Pending,
+          viewport: 1200,
+        },
+      ],
+    }),
+  },
+};
+
+export const WithMultipleTestsAllAdded: Story = {
+  args: {
+    tests: makeTests({
+      browsers: [Browser.Chrome, Browser.Safari],
+      viewports: [
+        {
+          status: TestStatus.Pending,
+          result: TestResult.Added,
+          viewport: 800,
+          comparisonResults: [ComparisonResult.Added, ComparisonResult.Added],
+        },
+      ],
+    }),
+  },
+};
+
 export const WithSingleTest: Story = {
   args: {
     tests: [makeTest({ status: TestStatus.Pending })],
+  },
+};
+
+export const WithSingleTestAdded: Story = {
+  args: {
+    tests: [makeTest({ status: TestStatus.Pending, result: TestResult.Added })],
   },
 };
 

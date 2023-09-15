@@ -87,6 +87,7 @@ const pendingBuildNewStory = withTests(
     result: TestResult.Added,
     comparisons: test.comparisons.map((comparison) => ({
       ...comparison,
+      result: ComparisonResult.Added,
     })),
   }))
 );
