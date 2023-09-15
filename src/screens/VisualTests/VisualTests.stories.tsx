@@ -497,7 +497,7 @@ export const AcceptingFailed: Story = {
       ],
     },
   },
-  play: playAll(async ({ canvasElement, argsByTarget, args, argTypes }) => {
+  play: playAll(async ({ canvasElement, argsByTarget }) => {
     const button = await findByRole(canvasElement, "button", { name: "Accept" });
     await fireEvent.click(button);
     await waitFor(async () =>
