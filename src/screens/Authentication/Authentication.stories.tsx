@@ -13,7 +13,7 @@ const meta = {
   decorators: [storyWrapper],
   args: {
     setAccessToken: action("setAccessToken"),
-    isSetup: false,
+    hasProjectId: false,
   },
   parameters: {
     msw: {
@@ -53,12 +53,12 @@ export const Welcome = {
   ),
 };
 
-export const PreSetup = {
+export const HasProjectId = {
   parameters: withFigmaDesign(
     "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-317931&t=3EAIRe8423CpOQWY-4"
   ),
   args: {
-    isSetup: true,
+    hasprojectId: true,
   },
 };
 

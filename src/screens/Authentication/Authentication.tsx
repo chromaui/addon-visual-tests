@@ -8,21 +8,21 @@ import { Welcome } from "./Welcome";
 
 interface AuthenticationProps {
   setAccessToken: (token: string) => void;
-  isSetup: boolean;
+  hasProjectId: boolean;
 }
 
 type AuthenticationScreen = "welcome" | "signin" | "subdomain" | "verify";
 
-export const Authentication = ({ setAccessToken, isSetup }: AuthenticationProps) => {
-  const [screen, setScreen] = useState<AuthenticationScreen>(isSetup ? "signin" : "welcome");
+export const Authentication = ({ setAccessToken, hasProjectId }: AuthenticationProps) => {
+  const [screen, setScreen] = useState<AuthenticationScreen>(hasProjectId ? "signin" : "welcome");
 
   const [isMounted, setMounted] = useState(true);
   useEffect(() => () => setMounted(false), []);
   useEffect(() => {
-    if (isSetup && screen === "welcome") {
+    if (hasProjectId && screen === "welcome") {
       setScreen("signin");
     }
-  }, [isSetup, screen]);
+  }, [hasProjectId, screen]);
 
   const { onSignIn, userCode, verificationUrl } = useSignIn({
     isMounted,
@@ -30,20 +30,20 @@ export const Authentication = ({ setAccessToken, isSetup }: AuthenticationProps)
     onFailure: () => {},
   });
 
-  switch (screen) {
-    case "welcome":
+  switch (true) {
+    case screen === "welcome" && !hasProjectId:
       return <Welcome onNext={() => setScreen("signin")} />;
 
-    case "signin":
+    case screen === "signin" || (screen === "welcome" && hasProjectId):
       return (
         <SignIn
-          onBack={() => setScreen("welcome")}
+          onBack={hasProjectId ? undefined : () => setScreen("welcome")}
           onSignIn={() => onSignIn().then(() => setScreen("verify"))}
           onSignInWithSSO={() => setScreen("subdomain")}
         />
       );
 
-    case "subdomain":
+    case screen === "subdomain":
       return (
         <SetSubdomain
           onBack={() => setScreen("signin")}
@@ -51,7 +51,7 @@ export const Authentication = ({ setAccessToken, isSetup }: AuthenticationProps)
         />
       );
 
-    case "verify":
+    case screen === "verify":
       return (
         <Verify
           onBack={() => setScreen("signin")}
