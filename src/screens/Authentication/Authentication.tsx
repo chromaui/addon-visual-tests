@@ -18,11 +18,6 @@ export const Authentication = ({ setAccessToken, hasProjectId }: AuthenticationP
 
   const [isMounted, setMounted] = useState(true);
   useEffect(() => () => setMounted(false), []);
-  useEffect(() => {
-    if (hasProjectId && screen === "welcome") {
-      setScreen("signin");
-    }
-  }, [hasProjectId, screen]);
 
   const { onSignIn, userCode, verificationUrl } = useSignIn({
     isMounted,
