@@ -1,3 +1,15 @@
+# v0.0.76 (Sat Sep 16 2023)
+
+#### 🐛 Bug Fix
+
+- Dependencies: Upgrade storybook to latest patch [#106](https://github.com/chromaui/addon-visual-tests/pull/106) ([@ndelangen](https://github.com/ndelangen))
+
+#### Authors: 1
+
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+
+---
+
 # v0.0.75 (Fri Sep 15 2023)
 
 #### 🐛 Bug Fix
