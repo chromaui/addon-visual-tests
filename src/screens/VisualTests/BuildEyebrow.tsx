@@ -160,7 +160,7 @@ export const BuildEyebrow = ({
         <Header onClick={toggleExpanded}>
           <Bar percentage={localBuildProgress.buildProgressPercentage} />
           <Label>
-            <BuildProgressLabel localBuildProgress={localBuildProgress} />
+            <BuildProgressLabel localBuildProgress={localBuildProgress} withEmoji />
           </Label>
           <IconButton as="div">
             {expanded ? <Icons icon="collapse" /> : <Icons icon="expandalt" />}

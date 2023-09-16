@@ -65,7 +65,7 @@ export const SidebarTopButton = ({
         tooltip={
           <TooltipContent>
             <div>
-              <BuildProgressLabel localBuildProgress={localBuildProgress} />
+              <BuildProgressLabel localBuildProgress={localBuildProgress} withEmoji />
             </div>
             <ProgressTrack>
               {typeof buildProgressPercentage === "number" && (

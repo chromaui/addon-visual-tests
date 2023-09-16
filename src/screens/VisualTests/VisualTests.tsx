@@ -194,9 +194,6 @@ export const VisualTests = ({
     [canSwitchToLastBuildOnBranch, lastBuildOnBranch?.id, storyId]
   );
 
-  const isLocalBuildStarting =
-    localBuildProgress && !["success", "error"].includes(localBuildProgress.currentStep);
-
   return !selectedBuild || error ? (
     <NoBuild
       {...{
@@ -204,7 +201,7 @@ export const VisualTests = ({
         hasData: !!data,
         hasStoryBuild: !!selectedBuild,
         startDevBuild,
-        isLocalBuildStarting,
+        localBuildProgress,
         branch: gitInfo.branch,
         setAccessToken,
       }}

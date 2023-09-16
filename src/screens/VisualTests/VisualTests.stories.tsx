@@ -251,6 +251,7 @@ export const EmptyBranchLocalBuildUploading: Story = {
   args: {
     localBuildProgress: {
       ...INITIAL_BUILD_PAYLOAD,
+      buildProgressPercentage: 25,
       currentStep: "upload",
       stepProgress: {
         ...INITIAL_BUILD_PAYLOAD.stepProgress,
@@ -272,7 +273,7 @@ export const EmptyBranchLocalBuildCapturing: Story = {
   args: {
     localBuildProgress: {
       ...INITIAL_BUILD_PAYLOAD,
-      buildProgressPercentage: 60,
+      buildProgressPercentage: 75,
       currentStep: "snapshot",
       stepProgress: {
         ...INITIAL_BUILD_PAYLOAD.stepProgress,
