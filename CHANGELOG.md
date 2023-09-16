@@ -1,3 +1,15 @@
+# v0.0.77 (Sat Sep 16 2023)
+
+#### 🐛 Bug Fix
+
+- Show build progress on 'no build' screen [#107](https://github.com/chromaui/addon-visual-tests/pull/107) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v0.0.76 (Sat Sep 16 2023)
 
 #### 🐛 Bug Fix
