@@ -41,21 +41,32 @@ export const InProgress: Story = {
     tests: makeTests({
       browsers: [Browser.Chrome, Browser.Safari],
       viewports: [
-        { status: TestStatus.InProgress, viewport: 480 },
-        { status: TestStatus.InProgress, viewport: 800 },
+        {
+          status: TestStatus.Pending,
+          viewport: 480,
+          comparisonResults: [ComparisonResult.Changed, ComparisonResult.Equal],
+        },
+        { status: TestStatus.Passed, viewport: 800 },
         { status: TestStatus.InProgress, viewport: 1200 },
       ],
     }),
   },
 };
 
-export const WithMultipleTests: Story = {};
+export const Default: Story = {};
+
+export const ShowingBaseline: Story = {
+  args: {
+    ...Default.args,
+    baselineImageVisible: true,
+  },
+};
 
 /**
  * Sort of confusing situation where the only comparison with changes (1200px/Saf) is on the
  * "opposite" side of the current comparison (800px/Chrome)
  */
-export const WithMultipleTestsFirstPassed: Story = {
+export const FirstPassed: Story = {
   args: {
     tests: makeTests({
       browsers: [Browser.Chrome, Browser.Safari],
@@ -68,39 +79,6 @@ export const WithMultipleTestsFirstPassed: Story = {
         },
       ],
     }),
-  },
-};
-
-export const WithSingleTest: Story = {
-  args: {
-    tests: [makeTest({ status: TestStatus.Pending })],
-  },
-};
-
-export const WithSingleTestAccepting: Story = {
-  args: {
-    ...WithSingleTest.args,
-    isReviewing: true,
-  },
-};
-
-export const WithSingleTestAccepted: Story = {
-  args: {
-    tests: [makeTest({ status: TestStatus.Accepted })],
-  },
-};
-
-export const WithSingleTestOutdated: Story = {
-  args: {
-    ...WithSingleTest.args,
-    isReviewable: false,
-  },
-};
-
-export const WithSingleTestShowingBaseline: Story = {
-  args: {
-    tests: [makeTest({ status: TestStatus.Pending })],
-    baselineImageVisible: true,
   },
 };
 
@@ -203,22 +181,4 @@ Ignored nodes: comments, script, style
       }),
     ],
   },
-};
-
-export const BatchAcceptOptions: Story = {
-  args: WithSingleTest.args,
-  play: playAll(async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const menu = await canvas.findByRole("button", { name: "Batch accept" });
-    await userEvent.click(menu);
-  }),
-};
-
-export const BatchAcceptedBuild: Story = {
-  args: WithSingleTest.args,
-  play: playAll(BatchAcceptOptions, async ({ args, canvasIndex }) => {
-    const items = await screen.findAllByText("Accept entire build");
-    await userEvent.click(items[canvasIndex]);
-    await expect(args.onAccept).toHaveBeenCalledWith(args.tests[0].id, "BUILD");
-  }),
 };
