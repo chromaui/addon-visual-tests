@@ -53,6 +53,7 @@ const CTA = styled.div({
   display: "flex",
   justifySelf: "end",
   justifyContent: "center",
+  alignItems: "start",
   margin: 15,
 
   "@container (min-width: 800px)": {
