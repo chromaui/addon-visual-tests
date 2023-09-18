@@ -91,6 +91,7 @@ export const onStartOrProgress =
 
     localBuildProgress.value = {
       buildId: ctx.announcedBuild?.id,
+      branch: ctx.git.branch,
       buildProgressPercentage: Math.min(newPercentage, endPercentage),
       currentStep: ctx.task,
       stepProgress,
