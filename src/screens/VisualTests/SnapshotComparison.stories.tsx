@@ -24,12 +24,16 @@ const meta = {
         { status: TestStatus.Passed, viewport: 1200 },
       ],
     }),
+    startedAt: new Date(),
     userCanReview: true,
+    isStarting: false,
+    isBuildFailed: false,
     isReviewable: true,
     isReviewing: false,
     onAccept: action("onAccept"),
     onUnaccept: action("onUnaccept"),
     baselineImageVisible: false,
+    shouldSwitchToLastBuildOnBranch: false,
   },
 } satisfies Meta<typeof SnapshotComparison>;
 

@@ -1,10 +1,10 @@
 import { Icons, TooltipNote, WithTooltip } from "@storybook/components";
+import { styled } from "@storybook/theming";
 import React from "react";
 
 import { BrowserSelector } from "../../components/BrowserSelector";
 import { IconButton } from "../../components/IconButton";
 import { ProgressIcon } from "../../components/icons/ProgressIcon";
-import { Bar, Col } from "../../components/layout";
 import { ModeSelector } from "../../components/ModeSelector";
 import { Placeholder } from "../../components/Placeholder";
 import { TooltipMenu } from "../../components/TooltipMenu";
@@ -39,6 +39,32 @@ interface SnapshotSectionProps {
   setDiffVisible: (visible: boolean) => void;
 }
 
+const Controls = styled.div(({ theme }) => ({
+  gridArea: "controls",
+  display: "flex",
+  alignItems: "center",
+  margin: "8px 10px",
+  gap: 6,
+
+  "@container (min-width: 800px)": {
+    flexDirection: "row-reverse",
+  },
+}));
+
+const Actions = styled.div(({ theme }) => ({
+  gridArea: "actions",
+  margin: "8px 10px",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "flex-end",
+
+  "@container (min-width: 800px)": {
+    borderLeft: `1px solid ${theme.color.border}`,
+    paddingLeft: 8,
+    marginLeft: 0,
+  },
+}));
+
 export const SnapshotControls = ({
   status,
   changeCount,
@@ -59,41 +85,37 @@ export const SnapshotControls = ({
 }: SnapshotSectionProps) => {
   if (isInProgress)
     return (
-      <Bar>
+      <Controls>
         <Placeholder />
         {modeResults.length > 1 && <Placeholder width={50} marginLeft={-5} />}
         <Placeholder />
         <Placeholder />
-      </Bar>
+      </Controls>
     );
 
   const isAcceptable = changeCount > 0 && selectedTest.status !== TestStatus.Accepted;
   const isUnacceptable = changeCount > 0 && selectedTest.status === TestStatus.Accepted;
 
   return (
-    <Bar>
-      {modeResults.length > 0 && (
-        <Col>
+    <>
+      <Controls>
+        {modeResults.length > 0 && (
           <ModeSelector
             isAccepted={status === TestStatus.Accepted}
             selectedMode={selectedTest.parameters.viewport}
             modeResults={modeResults}
             onSelectMode={onSelectMode}
           />
-        </Col>
-      )}
-      {browserResults.length > 0 && (
-        <Col>
+        )}
+        {browserResults.length > 0 && (
           <BrowserSelector
             isAccepted={status === TestStatus.Accepted}
             selectedBrowser={selectedComparison.browser}
             browserResults={browserResults}
             onSelectBrowser={onSelectBrowser}
           />
-        </Col>
-      )}
-      {selectedComparison?.result === ComparisonResult.Changed && (
-        <Col>
+        )}
+        {selectedComparison?.result === ComparisonResult.Changed && (
           <WithTooltip
             tooltip={<TooltipNote note="Toggle diff" />}
             trigger="hover"
@@ -107,86 +129,69 @@ export const SnapshotControls = ({
               <Icons icon="contrast" />
             </IconButton>
           </WithTooltip>
-        </Col>
-      )}
+        )}
+      </Controls>
 
-      {(isAcceptable || isUnacceptable) && (!isReviewable || !userCanReview) && (
-        <Col push>
-          <WithTooltip
-            tooltip={<TooltipNote note="Reviewing disabled" />}
-            trigger="hover"
-            hasChrome={false}
-          >
-            <IconButton as="span">
-              <Icons icon="lock" />
-            </IconButton>
-          </WithTooltip>
-        </Col>
-      )}
-
-      {userCanReview && isReviewable && isAcceptable && (
-        <>
-          <Col push>
-            <WithTooltip
-              tooltip={<TooltipNote note="Accept this snapshot" />}
-              trigger="hover"
-              hasChrome={false}
-            >
-              <IconButton
-                secondary
-                disabled={isReviewing}
-                onClick={() => onAccept(selectedTest.id)}
+      {(isAcceptable || isUnacceptable) && (
+        <Actions>
+          {userCanReview && isReviewable && isAcceptable && (
+            <>
+              <WithTooltip
+                tooltip={<TooltipNote note="Accept this snapshot" />}
+                trigger="hover"
+                hasChrome={false}
               >
-                Accept
-              </IconButton>
-            </WithTooltip>
-          </Col>
-          <Col>
-            <TooltipMenu
-              placement="bottom"
-              links={[
-                {
-                  id: "acceptStory",
-                  title: "Accept story",
-                  center: "Accept all unreviewed changes to this story",
-                  onClick: () => onAccept(selectedTest.id, ReviewTestBatch.Spec),
-                  disabled: isReviewing,
-                  loading: isReviewing,
-                },
-                {
-                  id: "acceptComponent",
-                  title: "Accept component",
-                  center: "Accept all unreviewed changes for this component",
-                  onClick: () => onAccept(selectedTest.id, ReviewTestBatch.Component),
-                  disabled: isReviewing,
-                  loading: isReviewing,
-                },
-                {
-                  id: "acceptBuild",
-                  title: "Accept entire build",
-                  center: "Accept all unreviewed changes for every story in the Storybook",
-                  onClick: () => onAccept(selectedTest.id, ReviewTestBatch.Build),
-                  disabled: isReviewing,
-                  loading: isReviewing,
-                },
-              ]}
-            >
-              {(active) => (
-                <IconButton secondary active={active} aria-label="Batch accept">
-                  {isReviewing ? (
-                    <ProgressIcon parentComponent="IconButton" />
-                  ) : (
-                    <Icons icon="batchaccept" />
-                  )}
+                <IconButton
+                  secondary
+                  disabled={isReviewing}
+                  onClick={() => onAccept(selectedTest.id)}
+                >
+                  Accept
                 </IconButton>
-              )}
-            </TooltipMenu>
-          </Col>
-        </>
-      )}
-      {userCanReview && isReviewable && isUnacceptable && (
-        <>
-          <Col push>
+              </WithTooltip>
+              <TooltipMenu
+                placement="bottom"
+                links={[
+                  {
+                    id: "acceptStory",
+                    title: "Accept story",
+                    center: "Accept all unreviewed changes to this story",
+                    onClick: () => onAccept(selectedTest.id, ReviewTestBatch.Spec),
+                    disabled: isReviewing,
+                    loading: isReviewing,
+                  },
+                  {
+                    id: "acceptComponent",
+                    title: "Accept component",
+                    center: "Accept all unreviewed changes for this component",
+                    onClick: () => onAccept(selectedTest.id, ReviewTestBatch.Component),
+                    disabled: isReviewing,
+                    loading: isReviewing,
+                  },
+                  {
+                    id: "acceptBuild",
+                    title: "Accept entire build",
+                    center: "Accept all unreviewed changes for every story in the Storybook",
+                    onClick: () => onAccept(selectedTest.id, ReviewTestBatch.Build),
+                    disabled: isReviewing,
+                    loading: isReviewing,
+                  },
+                ]}
+              >
+                {(active) => (
+                  <IconButton secondary active={active} aria-label="Batch accept">
+                    {isReviewing ? (
+                      <ProgressIcon parentComponent="IconButton" />
+                    ) : (
+                      <Icons icon="batchaccept" />
+                    )}
+                  </IconButton>
+                )}
+              </TooltipMenu>
+            </>
+          )}
+
+          {userCanReview && isReviewable && isUnacceptable && (
             <WithTooltip
               tooltip={<TooltipNote note="Unaccept this snapshot" />}
               trigger="hover"
@@ -197,9 +202,21 @@ export const SnapshotControls = ({
                 Unaccept
               </IconButton>
             </WithTooltip>
-          </Col>
-        </>
+          )}
+
+          {!(userCanReview && isReviewable) && (
+            <WithTooltip
+              tooltip={<TooltipNote note="Reviewing disabled" />}
+              trigger="hover"
+              hasChrome={false}
+            >
+              <IconButton as="span">
+                <Icons icon="lock" />
+              </IconButton>
+            </WithTooltip>
+          )}
+        </Actions>
       )}
-    </Bar>
+    </>
   );
 };

@@ -7,6 +7,25 @@ import { ReviewTestBatch, StoryTestFieldsFragment } from "../../gql/graphql";
 import { summarizeTests } from "../../utils/summarizeTests";
 import { useTests } from "../../utils/useTests";
 import { SnapshotControls } from "./SnapshotControls";
+import { StoryInfo } from "./StoryInfo";
+
+export const Grid = styled.div(({ theme }) => ({
+  display: "grid",
+  gridTemplateAreas: `
+    "info button"
+    "controls actions"
+  `,
+  gridTemplateColumns: "1fr auto",
+  gridTemplateRows: "auto 40px",
+  borderBottom: `1px solid ${theme.color.border}`,
+
+  "@container (min-width: 800px)": {
+    backgroundColor: theme.background.app,
+    gridTemplateAreas: `"info controls actions button"`,
+    gridTemplateColumns: "1fr auto auto auto",
+    gridTemplateRows: "40px",
+  },
+}));
 
 const Divider = styled.div(({ children, theme }) => ({
   display: "flex",
@@ -29,7 +48,13 @@ const StackTrace = styled.div(({ theme }) => ({
 }));
 
 interface SnapshotSectionProps {
-  tests: StoryTestFieldsFragment[];
+  tests?: StoryTestFieldsFragment[];
+  startedAt: Date;
+  isStarting: boolean;
+  startDevBuild: () => void;
+  isBuildFailed: boolean;
+  shouldSwitchToLastBuildOnBranch: boolean;
+  switchToLastBuildOnBranch?: () => void;
   userCanReview: boolean;
   isReviewable: boolean;
   isReviewing: boolean;
@@ -39,7 +64,13 @@ interface SnapshotSectionProps {
 }
 
 export const SnapshotComparison = ({
-  tests,
+  tests = [],
+  startedAt,
+  isStarting,
+  startDevBuild,
+  isBuildFailed,
+  shouldSwitchToLastBuildOnBranch,
+  switchToLastBuildOnBranch,
   userCanReview,
   isReviewable,
   isReviewing,
@@ -49,12 +80,29 @@ export const SnapshotComparison = ({
 }: SnapshotSectionProps) => {
   const [diffVisible, setDiffVisible] = useState(true);
   const [focusVisible] = useState(false);
-
   const testControls = useTests(tests);
-  const testSummary = summarizeTests(tests);
 
-  const { selectedTest, selectedComparison } = testControls;
+  const storyInfo = (
+    <StoryInfo
+      {...{
+        tests,
+        startedAt,
+        isStarting,
+        startDevBuild,
+        isBuildFailed,
+        shouldSwitchToLastBuildOnBranch,
+        switchToLastBuildOnBranch,
+      }}
+    />
+  );
+
+  if (isStarting || !tests.length) {
+    return <Grid>{storyInfo}</Grid>;
+  }
+
+  const testSummary = summarizeTests(tests);
   const { isInProgress } = testSummary;
+  const { selectedTest, selectedComparison } = testControls;
 
   const captureErrorData =
     selectedComparison?.headCapture?.captureError &&
@@ -63,14 +111,16 @@ export const SnapshotComparison = ({
 
   return (
     <>
-      <SnapshotControls
-        {...testControls}
-        {...testSummary}
-        {...{ diffVisible, setDiffVisible }}
-        {...{ userCanReview, isReviewable, isReviewing, onAccept, onUnaccept }}
-      />
+      <Grid>
+        {storyInfo}
 
-      <Divider />
+        <SnapshotControls
+          {...testControls}
+          {...testSummary}
+          {...{ diffVisible, setDiffVisible }}
+          {...{ userCanReview, isReviewable, isReviewing, onAccept, onUnaccept }}
+        />
+      </Grid>
 
       {isInProgress && <Loader />}
       {!isInProgress && selectedComparison && (

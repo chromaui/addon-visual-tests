@@ -2,12 +2,13 @@ import { action } from "@storybook/addon-actions";
 import { expect } from "@storybook/jest";
 import type { Meta, StoryObj } from "@storybook/react";
 import { screen, userEvent, within } from "@storybook/testing-library";
-import React, { ComponentProps } from "react";
+import React from "react";
 
 import { Browser, ComparisonResult, TestStatus } from "../../gql/graphql";
 import { playAll } from "../../utils/playAll";
 import { makeTest, makeTests } from "../../utils/storyData";
 import { summarizeTests } from "../../utils/summarizeTests";
+import { Grid } from "./SnapshotComparison";
 import { SnapshotControls } from "./SnapshotControls";
 
 const withTests = (tests: ReturnType<typeof makeTests>) => ({
@@ -43,6 +44,13 @@ const meta = {
     diffVisible: true,
     setDiffVisible: action("setDiffVisible"),
   },
+  decorators: [
+    (Story) => (
+      <Grid>
+        <Story />
+      </Grid>
+    ),
+  ],
 } satisfies Meta<typeof SnapshotControls>;
 
 export default meta;

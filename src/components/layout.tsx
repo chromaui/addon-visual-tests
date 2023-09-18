@@ -17,11 +17,27 @@ export const Section = styled.div<{ grow?: boolean }>(({ grow, theme }) => ({
   },
 }));
 
-export const Row = styled.div({
-  display: "flex",
-  flexDirection: "row",
-  margin: 15,
-});
+export const Row = styled.div<{ header?: boolean }>(
+  {
+    display: "flex",
+    flexDirection: "row",
+    margin: 15,
+  },
+  ({ header, theme }) =>
+    header && {
+      margin: 0,
+      padding: 15,
+      borderBottom: `1px solid ${theme.color.border}`,
+
+      "@container (min-width: 800px)": {
+        height: 40,
+        alignItems: "center",
+        justifyContent: "space-between",
+        backgroundColor: theme.background.app,
+        padding: "5px 15px",
+      },
+    }
+);
 
 export const Bar = styled(Row)({
   alignItems: "center",
@@ -34,9 +50,6 @@ export const Col = styled.div<{ push?: boolean }>(
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    "&:not(:last-of-type)": {
-      marginRight: 6,
-    },
   },
   ({ push }) => push && { marginLeft: "auto" }
 );
@@ -61,5 +74,16 @@ export const Text = styled.div(({ theme }) => ({
   },
   svg: {
     verticalAlign: "top",
+  },
+  "@container (min-width: 800px)": {
+    br: {
+      verticalAlign: "top",
+      display: "inline-block",
+      content: "''",
+      background: theme.color.border,
+      width: 1,
+      height: "100%",
+      margin: "0 6px",
+    },
   },
 }));
