@@ -127,7 +127,7 @@ const withGraphQLQuery = (...args: Parameters<typeof graphql.query>) => ({
   },
 });
 
-function withGraphQLQueryResult<TQuery extends TypedDocumentNode<any, any>(
+function withGraphQLQueryResult<TQuery extends TypedDocumentNode<any, any>>(
   query: TQuery,
   result: ResultOf<TQuery>
 ) {
