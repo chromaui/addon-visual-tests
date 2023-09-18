@@ -14,11 +14,7 @@ it("handles single test", () => {
     ])
   ).toMatchInlineSnapshot(`
     {
-      "story--id": {
-        "description": "Chromatic Visual Tests",
-        "status": undefined,
-        "title": "Visual Tests",
-      },
+      "story--id": null,
     }
   `);
 });
