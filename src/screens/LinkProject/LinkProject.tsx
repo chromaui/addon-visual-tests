@@ -10,7 +10,7 @@ import { Heading } from "../../components/Heading";
 import { Bar, Col, Section, Sections, Text } from "../../components/layout";
 import { Stack } from "../../components/Stack";
 import { graphql } from "../../gql";
-import { SelectProjectsQueryQuery } from "../../gql/graphql";
+import { Account, Project, SelectProjectsQueryQuery } from "../../gql/graphql";
 import { useChromaticDialog } from "../../utils/useChromaticDialog";
 
 const SelectProjectsQuery = graphql(/* GraphQL */ `
@@ -50,13 +50,7 @@ export const LinkProject = ({
     [onUpdateProject]
   );
 
-  return (
-    <SelectProject
-      onSelectProjectId={onSelectProjectId}
-      setAccessToken={setAccessToken}
-      chromaticBaseUrl={chromaticBaseUrl}
-    />
-  );
+  return <SelectProject onSelectProjectId={onSelectProjectId} setAccessToken={setAccessToken} />;
 };
 
 const ListHeading = styled.div`
@@ -106,36 +100,35 @@ const RepositoryOwnerAvatar = styled(Avatar)`
 function SelectProject({
   onSelectProjectId,
   setAccessToken,
-  chromaticBaseUrl,
 }: {
   onSelectProjectId: (projectId: string, projectToken: string) => Promise<void>;
   setAccessToken: (accessToken: string | null) => void;
-  chromaticBaseUrl: string;
 }) {
-  const [selectedAccount, setSelectedAccount] =
-    useState<NonNullable<SelectProjectsQueryQuery["viewer"]>["accounts"][number]>();
-  const [{ data, fetching, error }, rerun] = useQuery<SelectProjectsQueryQuery>({
+  const [{ data, fetching, error }, rerunProjectsQuery] = useQuery<SelectProjectsQueryQuery>({
     query: SelectProjectsQuery,
   });
 
   // Poll for updates
   useEffect(() => {
-    const interval = setInterval(rerun, 5000);
+    const interval = setInterval(rerunProjectsQuery, 5000);
     return () => clearInterval(interval);
-  }, [rerun]);
+  }, [rerunProjectsQuery]);
+
+  const [selectedAccountId, setSelectedAccountId] = useState<Account["id"]>();
+  const selectedAccount = data?.viewer?.accounts.find((a) => a.id === selectedAccountId);
 
   const onSelectAccount = React.useCallback(
     (account: NonNullable<SelectProjectsQueryQuery["viewer"]>["accounts"][number]) => {
-      setSelectedAccount(account);
+      setSelectedAccountId(account.id);
     },
-    [setSelectedAccount]
+    [setSelectedAccountId]
   );
 
   React.useEffect(() => {
-    if (!selectedAccount && data?.viewer?.accounts) {
+    if (!selectedAccountId && data?.viewer?.accounts) {
       onSelectAccount(data.viewer.accounts[0]);
     }
-  }, [data, selectedAccount, onSelectAccount]);
+  }, [data, selectedAccountId, onSelectAccount]);
 
   const [isSelectingProject, setSelectingProject] = useState(false);
 
@@ -158,7 +151,26 @@ function SelectProject({
     [onSelectProjectId, setSelectingProject]
   );
 
-  const [openDialog, closeDialog] = useChromaticDialog();
+  const [createdProjectId, setCreatedProjectId] = useState<Project["id"]>();
+  const [openDialog, closeDialog] = useChromaticDialog(async (event) => {
+    if (event.message === "createdProject") {
+      // We don't know the project token yet, so we need to wait until it comes back on the query
+      // longer be necessary once we don't write tokens any more
+      // (https://linear.app/chromaui/issue/AP-3383/generate-an-app-token-for-each-build-rather-than-writing-project-token)
+      rerunProjectsQuery();
+      setCreatedProjectId(event.projectId);
+    }
+  });
+
+  // Once we find the project we created just above, close the dialog and select it
+  const createdProject =
+    createdProjectId && selectedAccount?.projects?.find((p) => p?.id.endsWith(createdProjectId));
+  useEffect(() => {
+    if (createdProject) {
+      closeDialog();
+      handleSelectProject(createdProject);
+    }
+  }, [createdProject, handleSelectProject, closeDialog]);
 
   return (
     <Sections>
@@ -167,7 +179,7 @@ function SelectProject({
           <Stack>
             {!data && fetching && <p>Loading...</p>}
             {error && <p>{error.message}</p>}
-            {!fetching && data?.viewer?.accounts && (
+            {data?.viewer?.accounts && (
               <>
                 <Heading>Select a Project</Heading>
                 <Text>Baselines will be used with this project.</Text>
@@ -186,7 +198,7 @@ function SelectProject({
                             />
                           }
                           onClick={() => onSelectAccount(account)}
-                          active={selectedAccount?.id === account.id}
+                          active={selectedAccountId === account.id}
                         />
                       ))}
                     </List>
