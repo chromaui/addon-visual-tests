@@ -78,7 +78,7 @@ export const SnapshotComparison = ({
   const isNewStory = tests.every((test) => test.result === TestResult.Added);
 
   // This checks if the specific comparison is new, but the story itself is not.
-  // Using instead of isNewMode or isNewBrowser because those are not yet implemented.
+  // Rather than determine why the test was
   const isNewTestOnExistingStory =
     selectedComparison.result === ComparisonResult.Added && !isNewStory;
 
@@ -242,10 +242,10 @@ export const SnapshotComparison = ({
           </Text>
         </Warning>
       )}
-      {isNewTestOnExistingStory && (
+      {!isInProgress && isNewTestOnExistingStory && (
         <Warning>
           <Text>
-            This test is new. Accept this snapshot as a test baseline.{" "}
+            New mode found. Accept this mode as a test baseline.{" "}
             <Link href="https://www.chromatic.com/docs/branching-and-baselines">Learn More »</Link>
           </Text>
         </Warning>
