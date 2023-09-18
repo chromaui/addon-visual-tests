@@ -9,27 +9,35 @@ export const statusMap: Partial<Record<TestStatus, API_StatusValue>> = {
   [TestStatus.Broken]: "error",
 };
 
-const statusOrder: API_StatusValue[] = ["unknown", "pending", "success", "warn", "error"];
-function chooseWorseStatus(status: API_StatusValue, oldStatus: API_StatusValue | null) {
-  if (!oldStatus) return status;
-
+const statusOrder: (API_StatusValue | null)[] = [
+  null,
+  "unknown",
+  "pending",
+  "success",
+  "warn",
+  "error",
+];
+function chooseWorseStatus(status: API_StatusValue | null, oldStatus: API_StatusValue | null) {
   return statusOrder[Math.max(statusOrder.indexOf(status), statusOrder.indexOf(oldStatus))];
 }
 
 export function testsToStatusUpdate<T extends StatusTestFieldsFragment>(
   tests: readonly T[]
 ): API_StatusUpdate {
-  const storyIdToStatus: Record<StoryId, API_StatusValue> = {};
+  const storyIdToStatus: Record<StoryId, API_StatusValue | null> = {};
   tests.forEach((test) => {
+    if (!test.story || !test.status) {
+      return;
+    }
     storyIdToStatus[test.story.storyId] = chooseWorseStatus(
-      statusMap[test.status],
+      statusMap[test.status] || null,
       storyIdToStatus[test.story.storyId]
     );
   });
   const update = Object.fromEntries(
     Object.entries(storyIdToStatus).map(([storyId, status]) => [
       storyId,
-      {
+      status && {
         status,
         title: "Visual Tests",
         description: "Chromatic Visual Tests",
@@ -37,5 +45,6 @@ export function testsToStatusUpdate<T extends StatusTestFieldsFragment>(
     ])
   );
 
+  // @ts-expect-error SB's API type is incorrect here you are allowed to pass null
   return update;
 }

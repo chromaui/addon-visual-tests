@@ -1,6 +1,6 @@
-import type { StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react";
 
-export function playAll<Story extends StoryObj>(
+export function playAll<Story extends StoryObj<Meta<TCmpOrArgs>>, TCmpOrArgs>(
   ...sequence: (Story | Story["play"])[]
 ): Story["play"] {
   return async (context) => {

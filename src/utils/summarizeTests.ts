@@ -2,12 +2,12 @@ import { ComparisonResult, StoryTestFieldsFragment, TestResult, TestStatus } fro
 import { aggregateResult } from "./aggregateResult";
 
 function pickStatus(statusCounts: { [K in TestStatus]?: number }) {
-  if (statusCounts[TestStatus.Failed] > 0) return TestStatus.Failed;
-  if (statusCounts[TestStatus.InProgress] > 0) return TestStatus.InProgress;
-  if (statusCounts[TestStatus.Broken] > 0) return TestStatus.Broken;
-  if (statusCounts[TestStatus.Denied] > 0) return TestStatus.Denied;
-  if (statusCounts[TestStatus.Pending] > 0) return TestStatus.Pending;
-  if (statusCounts[TestStatus.Accepted] > 0) return TestStatus.Accepted;
+  if ((statusCounts[TestStatus.Failed] ?? 0) > 0) return TestStatus.Failed;
+  if ((statusCounts[TestStatus.InProgress] ?? 0) > 0) return TestStatus.InProgress;
+  if ((statusCounts[TestStatus.Broken] ?? 0) > 0) return TestStatus.Broken;
+  if ((statusCounts[TestStatus.Denied] ?? 0) > 0) return TestStatus.Denied;
+  if ((statusCounts[TestStatus.Pending] ?? 0) > 0) return TestStatus.Pending;
+  if ((statusCounts[TestStatus.Accepted] ?? 0) > 0) return TestStatus.Accepted;
   return TestStatus.Passed;
 }
 
@@ -29,8 +29,8 @@ export function summarizeTests(tests: StoryTestFieldsFragment[]) {
     isInProgress: boolean;
     changeCount: number;
     brokenCount: number;
-    resultsByBrowser: Record<string, ComparisonResult>;
-    resultsByViewport: Record<string, ComparisonResult>;
+    resultsByBrowser: Record<string, ComparisonResult | undefined>;
+    resultsByViewport: Record<string, ComparisonResult | undefined>;
     viewportInfoById: Record<string, StoryTestFieldsFragment["parameters"]["viewport"]>;
   }>(
     (acc, test) => {
@@ -39,21 +39,21 @@ export function summarizeTests(tests: StoryTestFieldsFragment[]) {
       if (test.status === TestStatus.InProgress) {
         acc.isInProgress = true;
       }
-      if ([TestResult.Changed, TestResult.Added].includes(test.result)) {
+      if (test.result && [TestResult.Changed, TestResult.Added].includes(test.result)) {
         acc.changeCount += 1;
       }
-      if ([TestResult.CaptureError, TestResult.SystemError].includes(test.result)) {
+      if (test.result && [TestResult.CaptureError, TestResult.SystemError].includes(test.result)) {
         acc.brokenCount += 1;
       }
       test.comparisons?.forEach(({ browser, result }) => {
         acc.resultsByBrowser[browser.id] = aggregateResult([
-          result,
+          result ?? undefined,
           acc.resultsByBrowser[browser.id],
         ]);
       });
       test.comparisons?.forEach(({ viewport, result }) => {
         acc.resultsByViewport[viewport.id] = aggregateResult([
-          result,
+          result ?? undefined,
           acc.resultsByViewport[viewport.id],
         ]);
       });
