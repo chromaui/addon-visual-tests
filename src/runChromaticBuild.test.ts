@@ -40,7 +40,7 @@ describe("onStartOrProgress", () => {
   it("sets build id and branch", () => {
     const announcedBuild = { id: "build-id" };
     const git = { branch: "feature-branch" };
-    onStartOrProgress(store, null)({ task: "initialize", announcedBuild, git } as any);
+    onStartOrProgress(store)({ task: "initialize", announcedBuild, git } as any);
     expect(store.value).toMatchObject({
       buildId: "build-id",
       branch: "feature-branch",
