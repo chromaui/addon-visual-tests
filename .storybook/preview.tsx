@@ -48,7 +48,7 @@ const Panel = styled.div<{ orientation: "right" | "bottom" }>(
     containerType: "size",
     containerName: "storybookRoot",
     position: "relative",
-    outline: `1px solid ${theme.color.border}`,
+    outline: `1px solid ${theme.appBorderColor}`,
     background: theme.background.content,
     color: theme.color.defaultText,
     fontSize: theme.typography.size.s2 - 1,

@@ -11,7 +11,7 @@ export const Sections = styled.div<{ hidden?: boolean }>(
 
 export const Section = styled.div<{ grow?: boolean }>(({ grow, theme }) => ({
   flexGrow: grow ? 1 : "auto",
-  borderBottom: `1px solid ${theme.color.border}`,
+  borderBottom: `1px solid ${theme.appBorderColor}`,
   "&:last-of-type": {
     borderBottom: 0,
   },
@@ -27,7 +27,7 @@ export const Row = styled.div<{ header?: boolean }>(
     header && {
       margin: 0,
       padding: 15,
-      borderBottom: `1px solid ${theme.color.border}`,
+      borderBottom: `1px solid ${theme.appBorderColor}`,
 
       "@container (min-width: 800px)": {
         height: 40,
@@ -62,7 +62,7 @@ export const Text = styled.div(({ theme }) => ({
   },
   code: {
     fontSize: theme.typography.size.s1,
-    border: `1px solid ${theme.color.border}`,
+    border: `1px solid ${theme.appBorderColor}`,
     borderRadius: 3,
     padding: "0 3px",
   },
@@ -80,7 +80,7 @@ export const Text = styled.div(({ theme }) => ({
       verticalAlign: "top",
       display: "inline-block",
       content: "''",
-      background: theme.color.border,
+      background: theme.appBorderColor,
       width: 1,
       height: "100%",
       margin: "0 6px",

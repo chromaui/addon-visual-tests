@@ -43,7 +43,7 @@ const Info = styled.div(({ theme }) => ({
       height: 24,
       marginRight: 10,
       paddingRight: 10,
-      borderRight: `1px solid ${theme.color.border}`,
+      borderRight: `1px solid ${theme.appBorderColor}`,
     },
   },
 }));

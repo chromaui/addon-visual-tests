@@ -17,7 +17,7 @@ export const Grid = styled.div(({ theme }) => ({
   `,
   gridTemplateColumns: "1fr auto",
   gridTemplateRows: "auto 40px",
-  borderBottom: `1px solid ${theme.color.border}`,
+  borderBottom: `1px solid ${theme.appBorderColor}`,
 
   "@container (min-width: 800px)": {
     backgroundColor: theme.background.app,

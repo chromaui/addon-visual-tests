@@ -59,7 +59,7 @@ const Actions = styled.div(({ theme }) => ({
   justifyContent: "flex-end",
 
   "@container (min-width: 800px)": {
-    borderLeft: `1px solid ${theme.color.border}`,
+    borderLeft: `1px solid ${theme.appBorderColor}`,
     paddingLeft: 8,
     marginLeft: 0,
   },
