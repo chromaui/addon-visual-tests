@@ -68,26 +68,6 @@ export const WithMultipleTestsInProgress: Story = {
   },
 };
 
-/**
- * Sort of confusing situation where the only comparison with changes (1200px/Saf) is on the
- * "opposite" side of the current comparison (800px/Chrome)
- */
-export const WithMultipleTestsFirstPassed: Story = {
-  args: withTests(
-    makeTests({
-      browsers: [Browser.Chrome, Browser.Safari],
-      viewports: [
-        { status: TestStatus.Passed, viewport: 800 },
-        {
-          status: TestStatus.Pending,
-          viewport: 1200,
-          comparisonResults: [ComparisonResult.Equal, ComparisonResult.Changed],
-        },
-      ],
-    })
-  ),
-};
-
 export const WithSingleTestAccepting: Story = {
   args: {
     ...WithSingleTest.args,
