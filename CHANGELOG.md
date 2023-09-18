@@ -1,3 +1,15 @@
+# v0.0.79 (Mon Sep 18 2023)
+
+#### 🐛 Bug Fix
+
+- Turn on strict types (!) [#110](https://github.com/chromaui/addon-visual-tests/pull/110) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.78 (Mon Sep 18 2023)
 
 #### 🐛 Bug Fix
