@@ -56,88 +56,87 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const WithSingleTest: Story = {
+export const WithSingleTest = {
   args: withTests([makeTest({ status: TestStatus.Pending })]),
-};
+} satisfies Story;
 
-export const WithSingleTestInProgress: Story = {
+export const WithSingleTestInProgress = {
   args: {
     ...WithSingleTest.args,
     isInProgress: true,
   },
-};
+} satisfies Story;
 
-export const WithMultipleTests: Story = {};
+export const WithMultipleTests = {} satisfies Story;
 
-export const WithMultipleTestsInProgress: Story = {
+export const WithMultipleTestsInProgress = {
   args: {
-    ...WithMultipleTests.args,
     isInProgress: true,
   },
-};
+} satisfies Story;
 
-export const WithSingleTestAccepting: Story = {
+export const WithSingleTestAccepting = {
   args: {
     ...WithSingleTest.args,
     isReviewing: true,
   },
-};
+} satisfies Story;
 
-export const WithSingleTestAccepted: Story = {
+export const WithSingleTestAccepted = {
   args: withTests([makeTest({ status: TestStatus.Accepted })]),
-};
+} satisfies Story;
 
-export const WithSingleTestUnreviewable: Story = {
+export const WithSingleTestUnreviewable = {
   args: {
     ...WithSingleTest.args,
     isReviewable: false,
   },
-};
+} satisfies Story;
 
-export const SelectViewport: Story = {
-  play: playAll<Story>(async ({ canvasElement }) => {
+export const SelectViewport = {
+  play: playAll(async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const menu = await canvas.findByRole("button", { name: "480px" });
     await userEvent.click(menu);
   }),
-};
+} satisfies Story;
 
-export const SelectedViewport: Story = {
-  play: playAll<Story>(SelectViewport, async ({ args, canvasIndex }) => {
+export const SelectedViewport = {
+  play: playAll(SelectViewport, async ({ args, canvasIndex }) => {
     const items = await screen.findAllByText("1200px");
     await userEvent.click(items[canvasIndex]);
     expect(args.onSelectMode).toHaveBeenCalledWith(expect.objectContaining({ name: "1200px" }));
   }),
-};
+} satisfies Story;
 
-export const SelectBrowser: Story = {
-  play: playAll<Story>(async ({ canvasElement }) => {
+export const SelectBrowser = {
+  play: playAll(async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const menu = await canvas.findByRole("button", { name: "Chrome" });
     await userEvent.click(menu);
   }),
-};
+} satisfies Story;
 
-export const SelectedBrowser: Story = {
-  play: playAll<Story>(SelectBrowser, async ({ args, canvasIndex }) => {
+export const SelectedBrowser = {
+  play: playAll(SelectBrowser, async ({ args, canvasIndex }) => {
     const items = await screen.findAllByText("Safari");
     await userEvent.click(items[canvasIndex]);
     expect(args.onSelectBrowser).toHaveBeenCalledWith(expect.objectContaining({ name: "Safari" }));
   }),
-};
+} satisfies Story;
 
-export const BatchAcceptOptions: Story = {
+export const BatchAcceptOptions = {
   play: playAll(async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const menu = await canvas.findByRole("button", { name: "Batch accept" });
     await userEvent.click(menu);
   }),
-};
+} satisfies Story;
 
-export const BatchAcceptedBuild: Story = {
+export const BatchAcceptedBuild = {
   play: playAll(BatchAcceptOptions, async ({ args, canvasIndex }) => {
     const items = await screen.findAllByText("Accept entire build");
     await userEvent.click(items[canvasIndex]);
     await expect(args.onAccept).toHaveBeenCalledWith(args.selectedTest.id, "BUILD");
   }),
-};
+} satisfies Story;
