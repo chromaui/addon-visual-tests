@@ -1,3 +1,15 @@
+# v0.0.80 (Mon Sep 18 2023)
+
+#### 🐛 Bug Fix
+
+- Show "1 change accepted" [#103](https://github.com/chromaui/addon-visual-tests/pull/103) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.79 (Mon Sep 18 2023)
 
 #### 🐛 Bug Fix
