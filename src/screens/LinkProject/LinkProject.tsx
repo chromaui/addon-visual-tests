@@ -161,9 +161,10 @@ function SelectProject({
                           key={account.id}
                           title={account.name}
                           left={
-                            account.avatarUrl && (
-                              <RepositoryOwnerAvatar src={account.avatarUrl} size="tiny" />
-                            )
+                            <RepositoryOwnerAvatar
+                              src={account.avatarUrl ?? undefined}
+                              size="tiny"
+                            />
                           }
                           onClick={() => onSelectAccount(account)}
                           active={selectedAccount?.id === account.id}
