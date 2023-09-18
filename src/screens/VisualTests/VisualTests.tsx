@@ -27,7 +27,7 @@ interface VisualTestsProps {
   projectId: string;
   gitInfo: Pick<
     GitInfoPayload,
-    "branch" | "slug" | "userEmailHash" | "committedAt" | "uncommittedHash"
+    "branch" | "slug" | "userEmailHash" | "commit" | "committedAt" | "uncommittedHash"
   >;
   localBuildProgress?: LocalBuildProgress;
   startDevBuild: () => void;
@@ -146,8 +146,12 @@ export const VisualTests = ({
     data?.selectedBuild ?? (lastBuildOnBranchCompletedStory && data?.project?.lastBuildOnBranch)
   );
 
+  const selectedBuildHasCorrectBranch = selectedBuild?.branch === gitInfo.branch;
   // Currently only used by the sidebar button to show a blue dot ("build outdated")
-  const isOutdated = selectedBuild?.uncommittedHash !== gitInfo.uncommittedHash;
+  const isOutdated =
+    !selectedBuildHasCorrectBranch ||
+    selectedBuild?.commit !== gitInfo.commit ||
+    selectedBuild?.uncommittedHash !== gitInfo.uncommittedHash;
   useEffect(() => setOutdated(isOutdated), [isOutdated, setOutdated]);
 
   // If the next build is *newer* than the current commit, we don't want to switch to the build
@@ -194,12 +198,12 @@ export const VisualTests = ({
     [canSwitchToLastBuildOnBranch, lastBuildOnBranch?.id, storyId]
   );
 
-  return !selectedBuild || error ? (
+  return !selectedBuildHasCorrectBranch || !selectedBuild || error ? (
     <NoBuild
       {...{
         error,
         hasData: !!data,
-        hasStoryBuild: !!selectedBuild,
+        hasSelectedBuild: !!selectedBuildHasCorrectBranch && !!selectedBuild,
         startDevBuild,
         localBuildProgress,
         branch: gitInfo.branch,
@@ -219,7 +223,7 @@ export const VisualTests = ({
         isReviewing,
         onAccept,
         onUnaccept,
-        selectedBuild,
+        ...(selectedBuildHasCorrectBranch && { selectedBuild }),
         setAccessToken,
       }}
     />

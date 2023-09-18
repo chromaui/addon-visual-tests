@@ -43,6 +43,7 @@ const announcedBuild = {
   id: "1",
   number: 1,
   branch: "feature-branch",
+  commit: "abc123",
   committedAt: Date.now() - 2000,
   uncommittedHash: "",
   status: BuildStatus.Announced,
@@ -174,11 +175,12 @@ const meta = {
   },
   args: {
     gitInfo: {
-      userEmailHash: "abc123",
+      userEmailHash: "xyz987",
       branch: "feature-branch",
       slug: "chromaui/addon-visual-tests",
-      uncommittedHash: "",
+      commit: "abc123",
       committedAt: Date.now() - 1000,
+      uncommittedHash: "",
     },
     storyId: "button--primary",
     projectId: "Project:id123",
@@ -327,6 +329,19 @@ export const EmptyBranchCIBuildPending: Story = {
 export const NoChanges: Story = {
   parameters: {
     ...withBuilds({ selectedBuild: passedBuild }),
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304933&t=0rxMQnkxsVpVj1qy-4"
+    ),
+  },
+};
+
+/** We just switched branches so the selected build is out of date */
+export const NoChangesOnWrongBranch: Story = {
+  args: {
+    gitInfo: { ...meta.args.gitInfo, branch: "new-branch" },
+  },
+  parameters: {
+    ...withBuilds({ selectedBuild: passedBuild, lastBuildOnBranch: null }),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304933&t=0rxMQnkxsVpVj1qy-4"
     ),

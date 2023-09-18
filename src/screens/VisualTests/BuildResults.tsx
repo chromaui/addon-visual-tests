@@ -69,12 +69,12 @@ export const BuildResults = ({
     ),
   ];
 
-  const isReviewable = lastBuildOnBranch.id === selectedBuild?.id;
+  const isReviewable = lastBuildOnBranch?.id === selectedBuild?.id;
   const isStorySuperseded = !isReviewable && lastBuildOnBranchCompletedStory;
   // Do we want to encourage them to switch to the next build?
   const shouldSwitchToLastBuildOnBranch = isStorySuperseded && !!switchToLastBuildOnBranch;
 
-  const lastBuildOnBranchInProgress = lastBuildOnBranch.status === BuildStatus.InProgress;
+  const lastBuildOnBranchInProgress = lastBuildOnBranch?.status === BuildStatus.InProgress;
   const showBuildStatus =
     // We always want to show the status of the running build (until it is done)
     isLocalBuildInProgress ||
@@ -82,7 +82,7 @@ export const BuildResults = ({
     // the story is superseded and the UI is already telling them
     (!isReviewable && !shouldSwitchToLastBuildOnBranch);
   const localBuildProgressIsNextBuild =
-    localBuildProgress && localBuildProgress?.buildId === lastBuildOnBranch.id;
+    localBuildProgress && localBuildProgress?.buildId === lastBuildOnBranch?.id;
   const buildStatus = showBuildStatus && (
     <BuildEyebrow
       branch={branch}

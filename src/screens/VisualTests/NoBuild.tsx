@@ -15,7 +15,7 @@ import { LocalBuildProgress } from "../../types";
 interface NoBuildProps {
   error: CombinedError;
   hasData: boolean;
-  hasStoryBuild: boolean;
+  hasSelectedBuild: boolean;
   startDevBuild: () => void;
   localBuildProgress: LocalBuildProgress;
   branch: string;
@@ -25,7 +25,7 @@ interface NoBuildProps {
 export const NoBuild = ({
   error,
   hasData,
-  hasStoryBuild,
+  hasSelectedBuild,
   startDevBuild,
   localBuildProgress,
   branch,
@@ -43,7 +43,7 @@ export const NoBuild = ({
 
       {!hasData && <Loader />}
 
-      {hasData && !hasStoryBuild && !error && (
+      {hasData && !hasSelectedBuild && !error && (
         <Container>
           <Heading>Create a test baseline</Heading>
           <CenterText>
