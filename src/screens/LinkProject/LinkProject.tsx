@@ -20,6 +20,7 @@ const SelectProjectsQuery = graphql(/* GraphQL */ `
         id
         name
         avatarUrl
+        newProjectUrl
         projects {
           id
           name
@@ -159,11 +160,7 @@ function SelectProject({
     [onSelectProjectId, setSelectingProject]
   );
 
-  const openChromatic = useChromaticDialog();
-  // TODO: Make this available on the API https://github.com/chromaui/chromatic/pull/7714
-  const newProjectUrl = `${chromaticBaseUrl}/apps?accountId=${selectedAccount?.id
-    ?.split(":")
-    ?.at(1)}`;
+  const [openDialog, closeDialog] = useChromaticDialog();
 
   return (
     <Sections>
@@ -212,14 +209,25 @@ function SelectProject({
                             />
                           )
                       )}
-                      <ListItem
-                        title={
-                          // eslint-disable-next-line jsx-a11y/anchor-is-valid
-                          <Link isButton withArrow onClick={() => openChromatic(newProjectUrl)}>
-                            Create project
-                          </Link>
-                        }
-                      />
+                      {selectedAccount && (
+                        <ListItem
+                          title={
+                            // eslint-disable-next-line jsx-a11y/anchor-is-valid
+                            <Link
+                              isButton
+                              withArrow
+                              onClick={() => {
+                                if (!selectedAccount?.newProjectUrl) {
+                                  throw new Error("Unexpected missing `newProjectUrl` on account");
+                                }
+                                openDialog(selectedAccount.newProjectUrl);
+                              }}
+                            >
+                              Create project
+                            </Link>
+                          }
+                        />
+                      )}
                     </List>
                   </Right>
                 </ProjectPicker>

@@ -1,5 +1,5 @@
 import { styled } from "@storybook/theming";
-import React from "react";
+import React, { useEffect } from "react";
 
 import { BackButton } from "../../components/BackButton";
 import { Button } from "../../components/Button";
@@ -35,7 +35,9 @@ interface VerifyProps {
 }
 
 export const Verify = ({ onBack, userCode, verificationUrl }: VerifyProps) => {
-  const openChromatic = useChromaticDialog();
+  const [openDialog, closeDialog] = useChromaticDialog();
+  // Close the dialog on unmount
+  useEffect(() => () => closeDialog(), [closeDialog]);
 
   return (
     <Container>
@@ -56,7 +58,7 @@ export const Verify = ({ onBack, userCode, verificationUrl }: VerifyProps) => {
             ))}
           </Digits>
         </div>
-        <Button secondary onClick={() => openChromatic(verificationUrl)}>
+        <Button secondary onClick={() => openDialog(verificationUrl)}>
           Go to Chromatic
         </Button>
       </Stack>

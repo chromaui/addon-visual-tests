@@ -3,11 +3,8 @@ import { useCallback, useEffect, useRef } from "react";
 export const useChromaticDialog = () => {
   const dialog = useRef<Window | null>();
 
-  // Close the dialog window when the screen gets unmounted.
-  useEffect(() => () => dialog.current?.close(), []);
-
-  return useCallback(
-    (url: string) => {
+  return [
+    useCallback((url: string) => {
       const width = 800;
       const height = 800;
       const usePopup = window.innerWidth > width && window.innerHeight > height;
@@ -21,7 +18,7 @@ export const useChromaticDialog = () => {
       } else {
         dialog.current = window.open(url, "_blank");
       }
-    },
-    [dialog]
-  );
+    }, []),
+    useCallback(() => dialog.current?.close(), []),
+  ] as const;
 };
