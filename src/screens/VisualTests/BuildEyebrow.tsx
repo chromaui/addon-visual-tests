@@ -93,11 +93,11 @@ const StepIcon = styled(Icons)(
 );
 
 type BuildProgressProps = {
-  localBuildProgress?: LocalBuildProgress;
+  localBuildProgress: LocalBuildProgress;
   expanded?: boolean;
 };
 
-const BuildProgress = ({ localBuildProgress, expanded }: BuildProgressProps) => {
+const BuildProgress = ({ localBuildProgress, expanded = false }: BuildProgressProps) => {
   const stepHistory = useRef<
     Partial<Record<LocalBuildProgress["currentStep"], LocalBuildProgress>>
   >({});

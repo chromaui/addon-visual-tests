@@ -65,10 +65,10 @@ export const Container = styled.div<{ href?: string; target?: string }>(
 );
 
 interface SnapshotImageProps {
-  componentName: Test["story"]["component"]["name"];
-  storyName: Test["story"]["name"];
+  componentName?: NonNullable<NonNullable<Test["story"]>["component"]>["name"];
+  storyName?: NonNullable<Test["story"]>["name"];
   testUrl: Test["webUrl"];
-  comparisonResult: ComparisonResult;
+  comparisonResult?: ComparisonResult;
   captureImage?: Pick<CaptureImage, "imageUrl" | "imageWidth">;
   diffImage?: Pick<CaptureOverlayImage, "imageUrl" | "imageWidth">;
   focusImage?: Pick<CaptureOverlayImage, "imageUrl" | "imageWidth">;

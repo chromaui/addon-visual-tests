@@ -24,7 +24,7 @@ interface ModeSelectorProps {
   isAccepted: boolean;
   selectedMode: ModeData;
   onSelectMode: (viewport: ModeData) => void;
-  modeResults: { viewport: ModeData; result: ComparisonResult }[];
+  modeResults: { viewport: ModeData; result?: ComparisonResult }[];
 }
 
 export const ModeSelector = ({
