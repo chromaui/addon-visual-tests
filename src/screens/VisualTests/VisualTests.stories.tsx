@@ -127,7 +127,7 @@ const withGraphQLQuery = (...args: Parameters<typeof graphql.query>) => ({
   },
 });
 
-function withGraphQLQueryResult<TQuery extends TypedDocumentNode<any, TVariables>, TVariables>(
+function withGraphQLQueryResult<TQuery extends TypedDocumentNode<any, any>(
   query: TQuery,
   result: ResultOf<TQuery>
 ) {
@@ -151,8 +151,7 @@ const withBuilds = ({
   lastBuildOnBranch?: LastBuildOnBranchBuildFieldsFragment;
   userCanReview?: boolean;
 }) => {
-  // FIXME -- I'm not sure why I have to mess with the types in this way
-  return withGraphQLQueryResult<typeof QueryBuild, VariablesOf<typeof QueryBuild>>(QueryBuild, {
+  return withGraphQLQueryResult(QueryBuild, {
     project: {
       name: "acme",
       lastBuildOnBranch: lastBuildOnBranch || selectedBuild,
