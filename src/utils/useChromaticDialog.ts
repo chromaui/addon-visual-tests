@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from "react";
 
 export const useChromaticDialog = () => {
-  const dialog = useRef<Window>();
+  const dialog = useRef<Window | null>();
 
   // Close the dialog window when the screen gets unmounted.
   useEffect(() => () => dialog.current?.close(), []);
@@ -17,7 +17,7 @@ export const useChromaticDialog = () => {
         const top = (window.innerHeight - height) / 2 + window.screenTop;
         const options = `scrollbars=yes,width=${width},height=${height},top=${top},left=${left}`;
         dialog.current = window.open(url, "oauth-dialog", options);
-        if (window.focus) dialog.current.focus();
+        dialog.current?.focus();
       } else {
         dialog.current = window.open(url, "_blank");
       }
