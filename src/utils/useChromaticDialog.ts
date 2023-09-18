@@ -39,7 +39,6 @@ export const useChromaticDialog = (handler?: DialogHandler) => {
       const width = 800;
       const height = 800;
       const usePopup = window.innerWidth > width && window.innerHeight > height;
-      console.log({ usePopup });
 
       if (usePopup) {
         const left = (window.innerWidth - width) / 2 + window.screenLeft;
