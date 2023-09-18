@@ -105,7 +105,7 @@ export const BuildResults = ({
   );
 
   // If there is a build, but there are no tests yet, there is no baseline for this story. User needs to create one.
-  const isCompletelyNewStory = "testsForStory" in storyBuild && storyTests.length === 0;
+  const isCompletelyNewStory = "testsForStory" in selectedBuild && storyTests.length === 0;
 
   if (isCompletelyNewStory) {
     return (
@@ -125,7 +125,7 @@ export const BuildResults = ({
               onClick={() => startDevBuild()}
               disabled={isLocalBuildInProgress}
             >
-              {isRunningBuildInProgress ? (
+              {isLocalBuildInProgress ? (
                 <ProgressIcon parentComponent="Button" style={{ marginRight: 6 }} />
               ) : (
                 <Icons icon="play" />
