@@ -1,4 +1,4 @@
-import { Icons, TooltipNote, WithTooltip } from "@storybook/components";
+import { Icons, Link } from "@storybook/components";
 import { formatDistance } from "date-fns";
 import pluralize from "pluralize";
 import React from "react";
@@ -20,10 +20,12 @@ interface StoryInfoSectionProps {
   startedAt?: Date;
   /** Start a new build */
   startDevBuild: () => void;
-  /** Could the build be outdated (as per git) */
-  isOutdated: boolean;
   /** Did the build fail entirely? */
   isBuildFailed: boolean;
+  /** is the story we are looking at replaced by a capture on the last build on the branch? */
+  shouldSwitchToLastBuildOnBranch: boolean;
+  /** Select the last build on the branch if it isn't this build */
+  switchToLastBuildOnBranch?: () => void;
 }
 
 export const StoryInfo = ({
@@ -31,15 +33,18 @@ export const StoryInfo = ({
   tests,
   startedAt,
   startDevBuild,
-  isOutdated,
   isBuildFailed,
+  shouldSwitchToLastBuildOnBranch,
+  switchToLastBuildOnBranch,
 }: StoryInfoSectionProps) => {
   // isInProgress means we have tests but they are still unfinished
   const { status, isInProgress, changeCount, brokenCount, modeResults, browserResults } =
     summarizeTests(tests ?? []);
 
   const startedAgo =
-    !isStarting && formatDistance(new Date(startedAt), new Date(), { addSuffix: true });
+    !isStarting &&
+    startedAt &&
+    formatDistance(new Date(startedAt), new Date(), { addSuffix: true });
   // isRunning means either we have no tests or they are unfinished
   const isRunning = isStarting || isInProgress;
   // isFailed means either the whole build failed or the story did
@@ -47,7 +52,7 @@ export const StoryInfo = ({
   // isErrored means there's a problem with the story
   const isErrored = isFailed || status === TestStatus.Broken;
 
-  const showButton = (isOutdated || isErrored) && !isRunning;
+  const showButton = isErrored && !isRunning;
   const buttonInProgress = isRunning && !isFailed;
 
   let details;
@@ -73,19 +78,17 @@ export const StoryInfo = ({
         </small>
       </Text>
     );
-  } else if (isOutdated) {
+  } else if (shouldSwitchToLastBuildOnBranch) {
     details = (
       <Text>
-        <b>Snapshots outdated</b>
-        <WithTooltip
-          tooltip={<TooltipNote note="Some files have changed since the last build" />}
-          trigger="hover"
-          hasChrome={false}
-        >
-          <AlertIcon />
-        </WithTooltip>
+        <b>
+          {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+          <Link isButton onClick={switchToLastBuildOnBranch}>
+            View latest snapshot
+          </Link>
+        </b>
         <br />
-        <span>Run tests to see what changed</span>
+        <span>Newer test results are available for this story</span>
       </Text>
     );
   } else {
@@ -114,7 +117,9 @@ export const StoryInfo = ({
           )}
           {modeResults.length > 0 && " • "}
           {isInProgress && <span>Test in progress...</span>}
-          {!isInProgress && <span title={new Date(startedAt).toUTCString()}>{startedAgo}</span>}
+          {!isInProgress && startedAt && (
+            <span title={new Date(startedAt).toUTCString()}>{startedAgo}</span>
+          )}
         </small>
       </Text>
     );

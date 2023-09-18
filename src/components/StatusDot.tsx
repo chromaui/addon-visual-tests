@@ -4,7 +4,7 @@ import React from "react";
 import { ComparisonResult, TestStatus } from "../gql/graphql";
 
 interface StatusDotProps {
-  status?: TestStatus | ComparisonResult;
+  status?: TestStatus | ComparisonResult | "notification";
 }
 
 const Dot = styled.div<StatusDotProps & { overlay?: boolean }>(
@@ -13,22 +13,25 @@ const Dot = styled.div<StatusDotProps & { overlay?: boolean }>(
     width: 6,
     height: 6,
     borderRadius: "50%",
-    background: {
-      [TestStatus.InProgress]: "transparent",
-      [TestStatus.Passed]: theme.color.positive,
-      [TestStatus.Pending]: theme.color.gold,
-      [TestStatus.Accepted]: theme.color.positive,
-      [TestStatus.Denied]: theme.color.positive,
-      [TestStatus.Broken]: theme.color.negative,
-      [TestStatus.Failed]: theme.color.negative,
-      [ComparisonResult.Equal]: theme.color.positive,
-      [ComparisonResult.Fixed]: theme.color.positive,
-      [ComparisonResult.Added]: theme.color.gold,
-      [ComparisonResult.Changed]: theme.color.gold,
-      [ComparisonResult.Removed]: theme.color.gold,
-      [ComparisonResult.CaptureError]: theme.color.negative,
-      [ComparisonResult.SystemError]: theme.color.negative,
-    }[status],
+    background:
+      status &&
+      {
+        [TestStatus.InProgress]: "transparent",
+        [TestStatus.Passed]: theme.color.positive,
+        [TestStatus.Pending]: theme.color.gold,
+        [TestStatus.Accepted]: theme.color.positive,
+        [TestStatus.Denied]: theme.color.positive,
+        [TestStatus.Broken]: theme.color.negative,
+        [TestStatus.Failed]: theme.color.negative,
+        [ComparisonResult.Equal]: theme.color.positive,
+        [ComparisonResult.Fixed]: theme.color.positive,
+        [ComparisonResult.Added]: theme.color.gold,
+        [ComparisonResult.Changed]: theme.color.gold,
+        [ComparisonResult.Removed]: theme.color.gold,
+        [ComparisonResult.CaptureError]: theme.color.negative,
+        [ComparisonResult.SystemError]: theme.color.negative,
+        notification: theme.color.secondary,
+      }[status],
   }),
   ({ overlay, theme }) =>
     overlay &&

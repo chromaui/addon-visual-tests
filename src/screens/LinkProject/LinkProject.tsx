@@ -114,7 +114,7 @@ function SelectProject({
   chromaticBaseUrl: string;
 }) {
   const [selectedAccount, setSelectedAccount] =
-    useState<SelectProjectsQueryQuery["viewer"]["accounts"][number]>(null);
+    useState<NonNullable<SelectProjectsQueryQuery["viewer"]>["accounts"][number]>();
   const [{ data, fetching, error }, rerun] = useQuery<SelectProjectsQueryQuery>({
     query: SelectProjectsQuery,
   });
@@ -126,7 +126,7 @@ function SelectProject({
   }, [rerun]);
 
   const onSelectAccount = React.useCallback(
-    (account: SelectProjectsQueryQuery["viewer"]["accounts"][number]) => {
+    (account: NonNullable<SelectProjectsQueryQuery["viewer"]>["accounts"][number]) => {
       setSelectedAccount(account);
     },
     [setSelectedAccount]
@@ -141,7 +141,13 @@ function SelectProject({
   const [isSelectingProject, setSelectingProject] = useState(false);
 
   const handleSelectProject = React.useCallback(
-    (project: SelectProjectsQueryQuery["viewer"]["accounts"][number]["projects"][number]) => {
+    (
+      project: NonNullable<
+        NonNullable<
+          NonNullable<SelectProjectsQueryQuery["viewer"]>["accounts"][number]["projects"]
+        >[number]
+      >
+    ) => {
       setSelectingProject(true);
       const { id: projectId, projectToken } = project;
       onSelectProjectId(projectId, projectToken);
@@ -166,7 +172,7 @@ function SelectProject({
           <Stack>
             {!data && fetching && <p>Loading...</p>}
             {error && <p>{error.message}</p>}
-            {data?.viewer?.accounts && (
+            {!fetching && data?.viewer?.accounts && (
               <>
                 <Heading>Select a Project</Heading>
                 <Text>Baselines will be used with this project.</Text>
@@ -178,7 +184,12 @@ function SelectProject({
                         <ListItem
                           key={account.id}
                           title={account.name}
-                          left={<RepositoryOwnerAvatar src={account.avatarUrl} size="tiny" />}
+                          left={
+                            <RepositoryOwnerAvatar
+                              src={account.avatarUrl ?? undefined}
+                              size="tiny"
+                            />
+                          }
                           onClick={() => onSelectAccount(account)}
                           active={selectedAccount?.id === account.id}
                         />
@@ -188,16 +199,19 @@ function SelectProject({
                   <Right>
                     <ListHeading>Projects</ListHeading>
                     <List data-testid="right-list">
-                      {selectedAccount?.projects?.map((project) => (
-                        <ListItem
-                          appearance="secondary"
-                          key={project.id}
-                          title={project.name}
-                          right={<Icons icon="add" aria-label={project.name} />}
-                          onClick={() => handleSelectProject(project)}
-                          disabled={isSelectingProject}
-                        />
-                      ))}
+                      {selectedAccount?.projects?.map(
+                        (project) =>
+                          project && (
+                            <ListItem
+                              appearance="secondary"
+                              key={project.id}
+                              title={project.name}
+                              right={<Icons icon="add" aria-label={project.name} />}
+                              onClick={() => handleSelectProject(project)}
+                              disabled={isSelectingProject}
+                            />
+                          )
+                      )}
                       <ListItem
                         title={
                           // eslint-disable-next-line jsx-a11y/anchor-is-valid

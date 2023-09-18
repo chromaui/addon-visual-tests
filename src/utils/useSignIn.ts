@@ -13,7 +13,7 @@ const base64URLEncode = (val: any) =>
   base64(val).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
 
 const hexStringToBytes = (str: string) =>
-  Array.from(str.match(/.{1,2}/g), (byte) => parseInt(byte, 16));
+  Array.from(str.match(/.{1,2}/g) ?? [], (byte) => parseInt(byte, 16));
 
 const seed = () =>
   Math.random().toString(36).slice(2, 10) +
@@ -134,8 +134,8 @@ export const useSignIn = (options: {
   onSuccess: (token: string) => void;
   onFailure: () => void;
 }) => {
-  const [userCode, setUserCode] = useState(null);
-  const [verificationUrl, setVerificationUrl] = useState(null);
+  const [userCode, setUserCode] = useState<string>();
+  const [verificationUrl, setVerificationUrl] = useState<string>();
 
   const onSignIn = (subdomain?: string) =>
     signInWithRetry({ ...options, setUserCode, setVerificationUrl, subdomain });

@@ -11,7 +11,7 @@ const meta = {
     isStarting: false,
     startedAt: new Date(Date.now() - 1000 * 60 * 2), // 2 minutes ago
     startDevBuild: action("startDevBuild"),
-    isOutdated: false,
+    shouldSwitchToLastBuildOnBranch: false,
     isBuildFailed: false,
   },
 } satisfies Meta<typeof StoryInfo>;
@@ -20,18 +20,22 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Starting: Story = {
-  args: { isStarting: true, startedAt: null },
+  args: { isStarting: true, startedAt: undefined },
 };
 
 // Announced -> Prepared are indistiguishable from Starting currently
 export const Announced: Story = {
-  args: { isStarting: true, startedAt: null },
+  args: { isStarting: true, startedAt: undefined },
 };
 
-// The build hasn't start properly yet but is already out of date
-export const AnnouncedOutdated: Story = {
+// The build hasn't start properly yet but is already superseded by another build
+export const AnnouncedSuperseded: Story = {
   ...Announced,
-  args: { ...Announced.args, isOutdated: true },
+  args: {
+    ...Announced.args,
+    shouldSwitchToLastBuildOnBranch: true,
+    switchToLastBuildOnBranch: action("switchToLastBuildOnBranch"),
+  },
 };
 
 // The build failed before the test had stories
@@ -39,17 +43,18 @@ export const FailedAnnounced: Story = {
   args: { isBuildFailed: true },
 };
 
-// The build hasn't finished yet but is already out of date
+// The build hasn't finished yet but is already superseded by another build
 export const InProgress: Story = {
   args: {
     tests: [makeTest({ status: TestStatus.InProgress })],
   },
 };
 
-export const InProgressOutdated: Story = {
+export const InProgressSuperseded: Story = {
   args: {
     tests: [makeTest({ status: TestStatus.InProgress })],
-    isOutdated: true,
+    shouldSwitchToLastBuildOnBranch: true,
+    switchToLastBuildOnBranch: action("switchToLastBuildOnBranch"),
   },
 };
 
@@ -59,20 +64,12 @@ export const Pending: Story = {
   },
 };
 
-export const PendingOutdated: Story = {
+export const PendingSuperseded: Story = {
   ...Pending,
   args: {
     ...Pending.args,
-    isOutdated: true,
-  },
-};
-
-// Immediately after clicking "Run tests" in the story above
-export const PendingOutdatedStarting: Story = {
-  ...PendingOutdated,
-  args: {
-    ...PendingOutdated.args,
-    isStarting: true,
+    shouldSwitchToLastBuildOnBranch: true,
+    switchToLastBuildOnBranch: action("switchToLastBuildOnBranch"),
   },
 };
 
@@ -91,6 +88,14 @@ export const Accepted: Story = {
 export const Broken: Story = {
   args: {
     tests: [makeTest({ status: TestStatus.Broken })],
+  },
+};
+
+// Immediately after clicking run tests in the story above
+export const BrokenStarting: Story = {
+  args: {
+    tests: [makeTest({ status: TestStatus.Broken })],
+    isStarting: true,
   },
 };
 

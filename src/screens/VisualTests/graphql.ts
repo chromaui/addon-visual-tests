@@ -8,35 +8,46 @@ export const QueryBuild = graphql(/* GraphQL */ `
     $slug: String
     $storyId: String!
     $testStatuses: [TestStatus!]!
-    $storyBuildId: ID!
-    $hasStoryBuildId: Boolean!
+    $selectedBuildId: ID!
+    $hasSelectedBuildId: Boolean!
   ) {
     project(id: $projectId) {
       name
-      nextBuild: lastBuild(
+      lastBuildOnBranch: lastBuild(
         branches: [$branch]
         slug: $slug
         localBuilds: { localBuildEmailHash: $gitUserEmailHash }
       ) {
-        ...NextBuildFields
-        ...StoryBuildFields @skip(if: $hasStoryBuildId)
+        ...LastBuildOnBranchBuildFields
+        ...SelectedBuildFields @skip(if: $hasSelectedBuildId)
       }
     }
-    storyBuild: build(id: $storyBuildId) @include(if: $hasStoryBuildId) {
-      ...StoryBuildFields
+    selectedBuild: build(id: $selectedBuildId) @include(if: $hasSelectedBuildId) {
+      ...SelectedBuildFields
+    }
+    viewer {
+      projectMembership(projectId: $projectId) {
+        userCanReview: meetsAccessLevel(minimumAccessLevel: REVIEWER)
+      }
     }
   }
 `);
 
-export const FragmentNextBuildFields = graphql(/* GraphQL */ `
-  fragment NextBuildFields on Build {
+export const FragmentLastBuildOnBranchBuildFields = graphql(/* GraphQL */ `
+  fragment LastBuildOnBranchBuildFields on Build {
     __typename
     id
+    status
     committedAt
     ... on StartedBuild {
       testsForStatus: tests(first: 1000, statuses: $testStatuses) {
         nodes {
           ...StatusTestFields
+        }
+      }
+      testsForStory: tests(storyId: $storyId) {
+        nodes {
+          ...LastBuildOnBranchTestFields
         }
       }
     }
@@ -47,12 +58,17 @@ export const FragmentNextBuildFields = graphql(/* GraphQL */ `
           ...StatusTestFields
         }
       }
+      testsForStory: tests(storyId: $storyId) {
+        nodes {
+          ...LastBuildOnBranchTestFields
+        }
+      }
     }
   }
 `);
 
-export const FragmentStoryBuildFields = graphql(/* GraphQL */ `
-  fragment StoryBuildFields on Build {
+export const FragmentSelectedBuildFields = graphql(/* GraphQL */ `
+  fragment SelectedBuildFields on Build {
     __typename
     id
     number
@@ -89,6 +105,12 @@ export const FragmentStatusTestFields = graphql(/* GraphQL */ `
   }
 `);
 
+export const FragmentLastBuildOnBranchTestFields = graphql(/* GraphQL */ `
+  fragment LastBuildOnBranchTestFields on Test {
+    status
+  }
+`);
+
 export const FragmentStoryTestFields = graphql(/* GraphQL */ `
   fragment StoryTestFields on Test {
     id
@@ -105,13 +127,13 @@ export const FragmentStoryTestFields = graphql(/* GraphQL */ `
         version
       }
       captureDiff {
-        diffImage {
+        diffImage(signed: true) {
           imageUrl
           imageWidth
         }
       }
       headCapture {
-        captureImage {
+        captureImage(signed: true) {
           imageUrl
           imageWidth
         }
@@ -129,7 +151,7 @@ export const FragmentStoryTestFields = graphql(/* GraphQL */ `
         }
       }
       baseCapture {
-        captureImage {
+        captureImage(signed: true) {
           imageUrl
           imageWidth
         }

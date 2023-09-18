@@ -31,14 +31,14 @@ const tests = [
   makeTest({
     id: "14",
     status: TestStatus.InProgress,
-    result: null,
+    result: undefined,
     viewport: 1600,
     comparisons: [
       makeComparison({
         id: "141",
         browser: Browser.Chrome,
         viewport: 1600,
-        result: null,
+        result: undefined,
       }),
       makeComparison({
         id: "142",

@@ -41,6 +41,7 @@ const StackTrace = styled.div(({ theme }) => ({
 
 interface SnapshotSectionProps {
   tests: StoryTestFieldsFragment[];
+  userCanReview: boolean;
   isReviewable: boolean;
   isReviewing: boolean;
   baselineImageVisible: boolean;
@@ -50,6 +51,7 @@ interface SnapshotSectionProps {
 
 export const SnapshotComparison = ({
   tests,
+  userCanReview,
   isReviewable,
   isReviewing,
   onAccept,
@@ -57,7 +59,7 @@ export const SnapshotComparison = ({
   baselineImageVisible,
 }: SnapshotSectionProps) => {
   const [diffVisible, setDiffVisible] = useState(true);
-  const [focusVisible, setFocusVisible] = useState(false);
+  const [focusVisible] = useState(false);
 
   const { selectedTest, selectedComparison, onSelectBrowser, onSelectMode } = useTests(tests);
   const { status, isInProgress, changeCount, browserResults, modeResults } = summarizeTests(tests);
@@ -67,6 +69,8 @@ export const SnapshotComparison = ({
     "error" in selectedComparison?.headCapture?.captureError &&
     selectedComparison?.headCapture?.captureError?.error;
 
+  const isAcceptable = changeCount > 0 && selectedTest.status !== TestStatus.Accepted;
+  const isUnacceptable = changeCount > 0 && selectedTest.status === TestStatus.Accepted;
   return (
     <>
       {isInProgress ? (
@@ -115,7 +119,22 @@ export const SnapshotComparison = ({
               </WithTooltip>
             </Col>
           )}
-          {isReviewable && changeCount > 0 && selectedTest.status !== TestStatus.Accepted && (
+
+          {(isAcceptable || isUnacceptable) && (!isReviewable || !userCanReview) && (
+            <Col push>
+              <WithTooltip
+                tooltip={<TooltipNote note="Reviewing disabled" />}
+                trigger="hover"
+                hasChrome={false}
+              >
+                <IconButton as="span">
+                  <Icons icon="lock" />
+                </IconButton>
+              </WithTooltip>
+            </Col>
+          )}
+
+          {userCanReview && isReviewable && isAcceptable && (
             <>
               <Col push>
                 <WithTooltip
@@ -175,7 +194,7 @@ export const SnapshotComparison = ({
               </Col>
             </>
           )}
-          {isReviewable && changeCount > 0 && selectedTest.status === TestStatus.Accepted && (
+          {userCanReview && isReviewable && isUnacceptable && (
             <>
               <Col push>
                 <WithTooltip
@@ -199,16 +218,16 @@ export const SnapshotComparison = ({
       {isInProgress && <Loader />}
       {!isInProgress && selectedComparison && (
         <SnapshotImage
-          componentName={selectedTest.story.component.name}
-          storyName={selectedTest.story.name}
+          componentName={selectedTest.story?.component?.name}
+          storyName={selectedTest.story?.name}
           testUrl={selectedTest.webUrl}
-          comparisonResult={selectedComparison.result}
+          comparisonResult={selectedComparison.result ?? undefined}
           captureImage={
             baselineImageVisible
-              ? selectedComparison.baseCapture?.captureImage
-              : selectedComparison.headCapture?.captureImage
+              ? selectedComparison.baseCapture?.captureImage ?? undefined
+              : selectedComparison.headCapture?.captureImage ?? undefined
           }
-          diffImage={selectedComparison.captureDiff?.diffImage}
+          diffImage={selectedComparison.captureDiff?.diffImage ?? undefined}
           diffVisible={diffVisible}
           focusVisible={focusVisible}
         />

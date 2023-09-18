@@ -7,12 +7,10 @@ import { Sections } from "./components/layout";
 import {
   ADDON_ID,
   CHROMATIC_BASE_URL,
-  DEV_BUILD_ID_KEY,
   GIT_INFO,
-  GitInfoPayload,
+  IS_OUTDATED,
+  LOCAL_BUILD_PROGRESS,
   PANEL_ID,
-  RUNNING_BUILD,
-  RunningBuildPayload,
   START_BUILD,
 } from "./constants";
 import { Authentication } from "./screens/Authentication/Authentication";
@@ -20,7 +18,7 @@ import { LinkedProject } from "./screens/LinkProject/LinkedProject";
 import { LinkingProjectFailed } from "./screens/LinkProject/LinkingProjectFailed";
 import { LinkProject } from "./screens/LinkProject/LinkProject";
 import { VisualTests } from "./screens/VisualTests/VisualTests";
-import { UpdateStatusFunction } from "./types";
+import { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from "./types";
 import { useAddonState } from "./useAddonState/manager";
 import { client, Provider, useAccessToken } from "./utils/graphQLClient";
 import { useProjectId } from "./utils/useProjectId";
@@ -30,14 +28,13 @@ interface PanelProps {
   api: API;
 }
 
-const storedBuildId = localStorage.getItem(DEV_BUILD_ID_KEY);
-
 export const Panel = ({ active, api }: PanelProps) => {
   const [accessToken, setAccessToken] = useAccessToken();
   const { storyId } = useStorybookState();
 
   const [gitInfo] = useAddonState<GitInfoPayload>(GIT_INFO);
-  const [runningBuild] = useAddonState<RunningBuildPayload>(RUNNING_BUILD);
+  const [localBuildProgress] = useAddonState<LocalBuildProgress>(LOCAL_BUILD_PROGRESS);
+  const [, setOutdated] = useAddonState<boolean>(IS_OUTDATED);
   const emit = useChannel({});
 
   const updateBuildStatus = useCallback<UpdateStatusFunction>(
@@ -48,8 +45,7 @@ export const Panel = ({ active, api }: PanelProps) => {
     loading: projectInfoLoading,
     projectId,
     projectToken,
-    configDir,
-    mainPath,
+    configFile,
     updateProject,
     projectUpdatingFailed,
     projectIdUpdated,
@@ -57,11 +53,16 @@ export const Panel = ({ active, api }: PanelProps) => {
   } = useProjectId();
 
   // Render the Authentication flow if the user is not signed in.
-  if (!accessToken) return <Authentication key={PANEL_ID} setAccessToken={setAccessToken} />;
+  if (!accessToken)
+    return (
+      <Sections hidden={!active}>
+        <Authentication key={PANEL_ID} setAccessToken={setAccessToken} />
+      </Sections>
+    );
 
   // Momentarily wait on addonState (should be very fast)
   if (projectInfoLoading || !gitInfo) {
-    return <Spinner />;
+    return active ? <Spinner /> : null;
   }
 
   if (!projectId)
@@ -78,25 +79,32 @@ export const Panel = ({ active, api }: PanelProps) => {
     );
 
   if (projectUpdatingFailed) {
+    // These should always be set when we get this error
+    if (!projectToken || !configFile) {
+      throw new Error(`Missing projectToken/config file after configuration failure`);
+    }
+
     return (
       <Sections hidden={!active}>
         <LinkingProjectFailed
           projectId={projectId}
           projectToken={projectToken}
-          mainPath={mainPath}
-          configDir={configDir}
+          configFile={configFile}
         />
       </Sections>
     );
   }
 
   if (projectIdUpdated) {
+    // This should always be set when we succeed
+    if (!configFile) throw new Error(`Missing config file after configuration success`);
+
     return (
       <Provider key={PANEL_ID} value={client}>
         <Sections hidden={!active}>
           <LinkedProject
             projectId={projectId}
-            mainPath={mainPath}
+            configFile={configFile}
             goToNext={clearProjectIdUpdated}
             setAccessToken={setAccessToken}
           />
@@ -111,9 +119,10 @@ export const Panel = ({ active, api }: PanelProps) => {
         <VisualTests
           projectId={projectId}
           gitInfo={gitInfo}
-          runningBuild={runningBuild}
+          localBuildProgress={localBuildProgress}
           startDevBuild={() => emit(START_BUILD)}
           setAccessToken={setAccessToken}
+          setOutdated={setOutdated}
           updateBuildStatus={updateBuildStatus}
           storyId={storyId}
         />

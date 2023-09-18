@@ -1,6 +1,7 @@
-import type { StoryObj } from "@storybook/react";
+import type { ReactRenderer } from "@storybook/react";
+import type { StoryAnnotations } from "@storybook/types";
 
-export function playAll<Story extends StoryObj>(
+export function playAll<Story extends StoryAnnotations<ReactRenderer>>(
   ...sequence: (Story | Story["play"])[]
 ): Story["play"] {
   return async (context) => {
