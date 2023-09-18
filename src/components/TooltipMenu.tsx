@@ -32,7 +32,7 @@ export const TooltipMenu = ({ children, links, note, ...props }: TooltipMenuProp
               ...link,
               onClick: (...args) => {
                 onHide();
-                return link.onClick(...args);
+                return link.onClick?.(...args);
               },
             }))}
           />

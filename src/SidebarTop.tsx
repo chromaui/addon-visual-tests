@@ -41,6 +41,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
           name: "passed",
           color: color.positive,
         },
+        // @ts-expect-error SB needs a proper API for no link
         link: undefined,
       });
       setTimeout(() => clearNotification(`${ADDON_ID}/build-initialize`), 10_000);
@@ -62,6 +63,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
           name: "passed",
           color: color.positive,
         },
+        // @ts-expect-error SB needs a proper API for no link
         link: undefined,
       });
       setTimeout(() => clearNotification(`${ADDON_ID}/build-complete`), 10_000);
@@ -78,6 +80,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
           name: "failed",
           color: color.negative,
         },
+        // @ts-expect-error SB needs a proper API for no link
         link: undefined,
       });
     }

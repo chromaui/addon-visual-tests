@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { screen, userEvent, within } from "@storybook/testing-library";
 import React, { ComponentProps } from "react";
 
-import { Browser, ComparisonResult, TestStatus } from "../../gql/graphql";
+import { Browser, ComparisonResult, StoryTestFieldsFragment, TestStatus } from "../../gql/graphql";
 import { playAll } from "../../utils/playAll";
 import { makeTest, makeTests } from "../../utils/storyData";
 import { interactionFailureTests } from "./mocks";
@@ -40,7 +40,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const InProgress: Story = {
+export const InProgress = {
   args: {
     tests: makeTests({
       browsers: [Browser.Chrome, Browser.Safari],
@@ -55,9 +55,9 @@ export const InProgress: Story = {
       ],
     }),
   },
-};
+} satisfies Story;
 
-export const Default: Story = {};
+export const Default = {} satisfies Story;
 
 /**
  * Sort of confusing situation where the only comparison with changes (1200px/Safari) is on the
@@ -78,16 +78,15 @@ export const FirstPassed: Story = {
       ],
     }),
   },
-};
+} satisfies Story;
 
 export const ShowingBaseline: Story = {
   args: {
-    ...Default.args,
     baselineImageVisible: true,
   },
-};
+} satisfies Story;
 
-export const SwitchingViewport: Story = {
+export const SwitchingViewport = {
   args: {
     tests: makeTests({
       browsers: [Browser.Chrome, Browser.Safari],
@@ -117,9 +116,9 @@ export const SwitchingViewport: Story = {
     const items = await screen.findAllByText("1200px");
     await userEvent.click(items[canvasIndex]);
   }),
-};
+} satisfies Story;
 
-export const SwitchingBrowser: Story = {
+export const SwitchingBrowser = {
   args: SwitchingViewport.args,
   play: playAll(async ({ canvasElement, canvasIndex }) => {
     const canvas = within(canvasElement);
@@ -128,18 +127,18 @@ export const SwitchingBrowser: Story = {
     const items = await screen.findAllByText("Safari");
     await userEvent.click(items[canvasIndex]);
   }),
-};
+} satisfies Story;
 
-export const SwitchingTests: Story = {
+export const SwitchingTests = {
   args: SwitchingViewport.args,
   render: function RenderSwitchingTests({ ...props }: ComponentProps<typeof SnapshotComparison>) {
-    const [tests, setTests] = React.useState(null);
+    const [tests, setTests] = React.useState<StoryTestFieldsFragment[]>();
     if (!tests) setTimeout(() => setTests([makeTest({})]), 0);
     return <SnapshotComparison {...props} tests={tests || props.tests} />;
   },
-};
+} satisfies Story;
 
-export const InteractionFailure: Story = {
+export const InteractionFailure = {
   args: {
     tests: interactionFailureTests,
   },

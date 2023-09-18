@@ -32,7 +32,7 @@ type BrowserData = Pick<BrowserInfo, "id" | "key" | "name">;
 interface BrowserSelectorProps {
   isAccepted: boolean;
   selectedBrowser: BrowserData;
-  browserResults: { browser: BrowserData; result: ComparisonResult }[];
+  browserResults: { browser: BrowserData; result?: ComparisonResult }[];
   onSelectBrowser: (browser: BrowserData) => void;
 }
 
@@ -52,7 +52,7 @@ export const BrowserSelector = ({
 
   type Link = ComponentProps<typeof TooltipMenu>["links"][0];
 
-  const links: Link[] =
+  const links =
     browserResults.length > 1 &&
     browserResults.map(
       ({ browser, result }): Link => ({
@@ -64,7 +64,6 @@ export const BrowserSelector = ({
         title: browser.name,
       })
     );
-
   return (
     <WithTooltip
       hasChrome={false}

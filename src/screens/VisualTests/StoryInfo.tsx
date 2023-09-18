@@ -91,7 +91,9 @@ export const StoryInfo = ({
     summarizeTests(tests ?? []);
 
   const startedAgo =
-    !isStarting && formatDistance(new Date(startedAt), new Date(), { addSuffix: true });
+    !isStarting &&
+    startedAt &&
+    formatDistance(new Date(startedAt), new Date(), { addSuffix: true });
   // isRunning means either we have no tests or they are unfinished
   const isRunning = isStarting || isInProgress;
   // isFailed means either the whole build failed or the story did
@@ -166,7 +168,9 @@ export const StoryInfo = ({
           )}
           {modeResults.length > 0 && " • "}
           {isInProgress && <span>Test in progress...</span>}
-          {!isInProgress && <span title={new Date(startedAt).toUTCString()}>{startedAgo}</span>}
+          {!isInProgress && startedAt && (
+            <span title={new Date(startedAt).toUTCString()}>{startedAgo}</span>
+          )}
         </small>
       </Info>
     );
