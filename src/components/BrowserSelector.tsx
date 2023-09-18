@@ -52,22 +52,18 @@ export const BrowserSelector = ({
 
   type Link = ComponentProps<typeof TooltipMenu>["links"][0];
 
-  const links: Link[] =
-    browserResults.length > 1
-      ? browserResults.map(
-          ({ browser, result }): Link => ({
-            active: selectedBrowser === browser,
-            id: browser.id,
-            onClick: () => onSelectBrowser(browser),
-            right: !isAccepted && result !== ComparisonResult.Equal && (
-              <StatusDot status={result} />
-            ),
-            icon: browserIcons[browser.key],
-            title: browser.name,
-          })
-        )
-      : [];
-
+  const links =
+    browserResults.length > 1 &&
+    browserResults.map(
+      ({ browser, result }): Link => ({
+        active: selectedBrowser === browser,
+        id: browser.id,
+        onClick: () => onSelectBrowser(browser),
+        right: !isAccepted && result !== ComparisonResult.Equal && <StatusDot status={result} />,
+        icon: browserIcons[browser.key],
+        title: browser.name,
+      })
+    );
   return (
     <WithTooltip
       hasChrome={false}
