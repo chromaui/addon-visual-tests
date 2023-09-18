@@ -13,11 +13,11 @@ import { Text as CenterText } from "../../components/Text";
 import { LocalBuildProgress } from "../../types";
 
 interface NoBuildProps {
-  error: CombinedError;
+  error?: CombinedError;
   hasData: boolean;
   hasSelectedBuild: boolean;
   startDevBuild: () => void;
-  localBuildProgress: LocalBuildProgress;
+  localBuildProgress?: LocalBuildProgress;
   branch: string;
   setAccessToken: (accessToken: string | null) => void;
 }

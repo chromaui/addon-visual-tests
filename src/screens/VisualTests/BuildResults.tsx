@@ -15,6 +15,7 @@ import {
   LastBuildOnBranchBuildFieldsFragment,
   ReviewTestBatch,
   SelectedBuildFieldsFragment,
+  StoryTestFieldsFragment,
   TestResult,
 } from "../../gql/graphql";
 import { LocalBuildProgress } from "../../types";
@@ -27,15 +28,15 @@ import { Warnings } from "./Warnings";
 
 interface BuildResultsProps {
   branch: string;
-  localBuildProgress: LocalBuildProgress;
-  selectedBuild?: SelectedBuildFieldsFragment;
-  lastBuildOnBranch: LastBuildOnBranchBuildFieldsFragment;
+  localBuildProgress?: LocalBuildProgress;
+  selectedBuild: SelectedBuildFieldsFragment;
+  lastBuildOnBranch?: LastBuildOnBranchBuildFieldsFragment;
   lastBuildOnBranchCompletedStory: boolean;
   switchToLastBuildOnBranch?: () => void;
   startDevBuild: () => void;
   userCanReview: boolean;
   isReviewing: boolean;
-  onAccept: (testId: string, batch: ReviewTestBatch) => Promise<void>;
+  onAccept: (testId: StoryTestFieldsFragment["id"], batch?: ReviewTestBatch) => void;
   onUnaccept: (testId: string) => Promise<void>;
   setAccessToken: (accessToken: string | null) => void;
 }
@@ -65,7 +66,9 @@ export const BuildResults = ({
   const storyTests = [
     ...getFragment(
       FragmentStoryTestFields,
-      selectedBuild && "testsForStory" in selectedBuild ? selectedBuild.testsForStory.nodes : []
+      selectedBuild && "testsForStory" in selectedBuild && selectedBuild.testsForStory
+        ? selectedBuild.testsForStory.nodes
+        : []
     ),
   ];
 
@@ -81,13 +84,15 @@ export const BuildResults = ({
     // Even if there's no build running, we need to tell them why they can't review, unless
     // the story is superseded and the UI is already telling them
     (!isReviewable && !shouldSwitchToLastBuildOnBranch);
-  const localBuildProgressIsNextBuild =
+  const localBuildProgressIsLastBuildOnBranch =
     localBuildProgress && localBuildProgress?.buildId === lastBuildOnBranch?.id;
   const buildStatus = showBuildStatus && (
     <BuildEyebrow
       branch={branch}
       localBuildProgress={
-        (localBuildProgressIsNextBuild || isLocalBuildInProgress) && localBuildProgress
+        localBuildProgressIsLastBuildOnBranch || isLocalBuildInProgress
+          ? localBuildProgress
+          : undefined
       }
       lastBuildOnBranchInProgress={lastBuildOnBranchInProgress}
       switchToLastBuildOnBranch={switchToLastBuildOnBranch}

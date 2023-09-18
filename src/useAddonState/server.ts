@@ -71,11 +71,11 @@ export function useAddonState<T>(channel: Pick<Channel, "emit" | "on">, key: str
   ensureListening(channel);
 
   return {
-    get value() {
+    get value(): T | undefined {
       return apiGetAddonState(channel, key);
     },
 
-    set value(newValue: T) {
+    set value(newValue: T | undefined) {
       apiSetAddonState(channel, key, newValue);
     },
 

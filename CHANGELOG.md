@@ -1,3 +1,27 @@
+# v0.0.79 (Mon Sep 18 2023)
+
+#### 🐛 Bug Fix
+
+- Turn on strict types (!) [#110](https://github.com/chromaui/addon-visual-tests/pull/110) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.78 (Mon Sep 18 2023)
+
+#### 🐛 Bug Fix
+
+- Retrieve signed `captureImage` / `diffImage` URLs [#108](https://github.com/chromaui/addon-visual-tests/pull/108) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v0.0.77 (Sat Sep 16 2023)
 
 #### 🐛 Bug Fix
