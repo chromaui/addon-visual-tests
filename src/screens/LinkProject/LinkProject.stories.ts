@@ -14,7 +14,6 @@ const meta = {
   decorators: [storyWrapper],
   args: {
     onUpdateProject: action("updateProject"),
-    chromaticBaseUrl: "https://www.chromatic.com",
   },
 } satisfies Meta<typeof LinkProject>;
 

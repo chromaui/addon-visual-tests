@@ -39,11 +39,9 @@ const SelectProjectsQuery = graphql(/* GraphQL */ `
 export const LinkProject = ({
   onUpdateProject,
   setAccessToken,
-  chromaticBaseUrl,
 }: {
   onUpdateProject: (projectId: string, projectToken: string) => void;
   setAccessToken: (accessToken: string | null) => void;
-  chromaticBaseUrl: string;
 }) => {
   const onSelectProjectId = React.useCallback(
     async (selectedProjectId: string, projectToken: string) => {

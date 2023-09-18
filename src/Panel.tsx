@@ -6,7 +6,6 @@ import React, { useCallback } from "react";
 import { Sections } from "./components/layout";
 import {
   ADDON_ID,
-  CHROMATIC_BASE_URL,
   GIT_INFO,
   IS_OUTDATED,
   LOCAL_BUILD_PROGRESS,
@@ -69,11 +68,7 @@ export const Panel = ({ active, api }: PanelProps) => {
     return (
       <Provider key={PANEL_ID} value={client}>
         <Sections hidden={!active}>
-          <LinkProject
-            onUpdateProject={updateProject}
-            setAccessToken={setAccessToken}
-            chromaticBaseUrl={CHROMATIC_BASE_URL}
-          />
+          <LinkProject onUpdateProject={updateProject} setAccessToken={setAccessToken} />
         </Sections>
       </Provider>
     );
