@@ -2,6 +2,9 @@
 
 The Visual Testing addon enables you to run visual tests on your stories and compare changes with the latest baselines across multiple viewports and browsers to catch UI regressions early in development without leaving Storybook.
 
+## Getting Help
+
+We're here to help if you encounter any issues! Please sign in to [chromatic.com](https://www.chromatic.com) and contact support via the blue bubble in the bottom right of the screen.
 
 ## Prerequisites
 
