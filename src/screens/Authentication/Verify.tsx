@@ -8,7 +8,7 @@ import { Heading } from "../../components/Heading";
 import { BackIcon } from "../../components/icons/BackIcon";
 import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
-import { DialogPayload, useChromaticDialog } from "../../utils/useChromaticDialog";
+import { useChromaticDialog } from "../../utils/useChromaticDialog";
 
 const Digits = styled.ol(({ theme }) => ({
   display: "inline-flex",

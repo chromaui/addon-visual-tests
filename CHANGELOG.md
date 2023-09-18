@@ -1,3 +1,124 @@
+# v0.0.79 (Mon Sep 18 2023)
+
+#### 🐛 Bug Fix
+
+- Turn on strict types (!) [#110](https://github.com/chromaui/addon-visual-tests/pull/110) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.78 (Mon Sep 18 2023)
+
+#### 🐛 Bug Fix
+
+- Retrieve signed `captureImage` / `diffImage` URLs [#108](https://github.com/chromaui/addon-visual-tests/pull/108) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.77 (Sat Sep 16 2023)
+
+#### 🐛 Bug Fix
+
+- Show build progress on 'no build' screen [#107](https://github.com/chromaui/addon-visual-tests/pull/107) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.76 (Sat Sep 16 2023)
+
+#### 🐛 Bug Fix
+
+- Dependencies: Upgrade storybook to latest patch [#106](https://github.com/chromaui/addon-visual-tests/pull/106) ([@ndelangen](https://github.com/ndelangen))
+
+#### Authors: 1
+
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+
+---
+
+# v0.0.75 (Fri Sep 15 2023)
+
+#### 🐛 Bug Fix
+
+- Rename variables [#102](https://github.com/chromaui/addon-visual-tests/pull/102) ([@tmeasday](https://github.com/tmeasday) [@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 2
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.74 (Fri Sep 15 2023)
+
+#### 🐛 Bug Fix
+
+- Keep the "create first build" UI right up until the running build has captured this story [#89](https://github.com/chromaui/addon-visual-tests/pull/89) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.73 (Thu Sep 14 2023)
+
+#### 🐛 Bug Fix
+
+- Show eyebrow and lock review button when user has no `REVIEWER` permission [#97](https://github.com/chromaui/addon-visual-tests/pull/97) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.72 (Thu Sep 14 2023)
+
+#### 🐛 Bug Fix
+
+- fix: hide tooltip menu on click [#92](https://github.com/chromaui/addon-visual-tests/pull/92) ([@weeksling](https://github.com/weeksling))
+
+#### Authors: 1
+
+- Matthew Weeks ([@weeksling](https://github.com/weeksling))
+
+---
+
+# v0.0.71 (Thu Sep 14 2023)
+
+#### 🐛 Bug Fix
+
+- UI: Add icons in BrowserSelector list [#96](https://github.com/chromaui/addon-visual-tests/pull/96) ([@ndelangen](https://github.com/ndelangen))
+
+#### Authors: 1
+
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+
+---
+
+# v0.0.70 (Thu Sep 14 2023)
+
+#### 🐛 Bug Fix
+
+- Use `chromatic.config.json` rather than setting options in `main.js` [#94](https://github.com/chromaui/addon-visual-tests/pull/94) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.69 (Thu Sep 14 2023)
 
 #### 🐛 Bug Fix

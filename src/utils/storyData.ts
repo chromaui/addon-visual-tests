@@ -48,7 +48,9 @@ export function makeComparison(options: {
   browser?: Browser;
   viewport?: number;
   result?: ComparisonResult;
-  captureError?: StoryTestFieldsFragment["comparisons"][number]["headCapture"]["captureError"];
+  captureError?: NonNullable<
+    StoryTestFieldsFragment["comparisons"][number]["headCapture"]
+  >["captureError"];
 }): StoryTestFieldsFragment["comparisons"][number] {
   const { captureError, result = ComparisonResult.Equal } = options;
   return {
@@ -64,25 +66,25 @@ export function makeComparison(options: {
   };
 }
 
-const testResultToComparisonResult: Record<TestResult, ComparisonResult> = {
+const testResultToComparisonResult: Record<TestResult, ComparisonResult | undefined> = {
   [TestResult.Added]: ComparisonResult.Added,
   [TestResult.Changed]: ComparisonResult.Changed,
   [TestResult.Equal]: ComparisonResult.Equal,
   [TestResult.Removed]: ComparisonResult.Removed,
   [TestResult.CaptureError]: ComparisonResult.CaptureError,
   [TestResult.Fixed]: ComparisonResult.Fixed,
-  [TestResult.Skipped]: null, // Shouldn't have any comparisons
+  [TestResult.Skipped]: undefined, // Shouldn't have any comparisons
   [TestResult.SystemError]: ComparisonResult.SystemError,
 };
 
-const testStatusToTestResult: Record<TestStatus, TestResult> = {
+const testStatusToTestResult: Record<TestStatus, TestResult | undefined> = {
   [TestStatus.Failed]: TestResult.SystemError,
   [TestStatus.Broken]: TestResult.CaptureError,
   [TestStatus.Accepted]: TestResult.Changed,
   [TestStatus.Denied]: TestResult.Changed,
   [TestStatus.Pending]: TestResult.Changed,
   [TestStatus.Passed]: TestResult.Equal,
-  [TestStatus.InProgress]: null,
+  [TestStatus.InProgress]: undefined,
 };
 
 /**
@@ -97,7 +99,9 @@ export function makeTest(options: {
   browsers?: Browser[];
   viewport?: number;
   storyId?: string;
-  captureError?: StoryTestFieldsFragment["comparisons"][number]["headCapture"]["captureError"];
+  captureError?: NonNullable<
+    StoryTestFieldsFragment["comparisons"][number]["headCapture"]
+  >["captureError"];
 }): StoryTestFieldsFragment {
   const id = options.id || "11";
   const status = options.status || TestStatus.Passed;
@@ -120,7 +124,8 @@ export function makeTest(options: {
         id: `id${index}`,
         browser: browserKey,
         viewport: viewportWidth,
-        result: options.comparisonResults?.[index] ?? testResultToComparisonResult[result],
+        result:
+          options.comparisonResults?.[index] ?? (result && testResultToComparisonResult[result]),
         captureError: options.captureError,
       })
     );

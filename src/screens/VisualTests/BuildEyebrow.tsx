@@ -5,7 +5,7 @@ import React, { useEffect, useRef } from "react";
 import { BUILD_STEP_CONFIG, BUILD_STEP_ORDER } from "../../buildSteps";
 import { BuildProgressLabel } from "../../components/BuildProgressLabel";
 import { IconButton } from "../../components/IconButton";
-import { RunningBuildPayload } from "../../types";
+import { LocalBuildProgress } from "../../types";
 
 const spin = keyframes({
   from: { transform: "rotate(0deg)" },
@@ -93,20 +93,20 @@ const StepIcon = styled(Icons)(
 );
 
 type BuildProgressProps = {
-  buildProgress?: RunningBuildPayload;
+  localBuildProgress: LocalBuildProgress;
   expanded?: boolean;
 };
 
-const BuildProgress = ({ buildProgress, expanded }: BuildProgressProps) => {
+const BuildProgress = ({ localBuildProgress, expanded = false }: BuildProgressProps) => {
   const stepHistory = useRef<
-    Partial<Record<RunningBuildPayload["currentStep"], RunningBuildPayload>>
+    Partial<Record<LocalBuildProgress["currentStep"], LocalBuildProgress>>
   >({});
 
   useEffect(() => {
-    stepHistory.current[buildProgress.currentStep] = { ...buildProgress };
-  }, [buildProgress]);
+    stepHistory.current[localBuildProgress.currentStep] = { ...localBuildProgress };
+  }, [localBuildProgress]);
 
-  const currentIndex = BUILD_STEP_ORDER.findIndex((key) => key === buildProgress.currentStep);
+  const currentIndex = BUILD_STEP_ORDER.findIndex((key) => key === localBuildProgress.currentStep);
   const steps = BUILD_STEP_ORDER.map((step, index) => {
     const isCurrent = index === currentIndex;
     const isPending = index > currentIndex && currentIndex !== -1;
@@ -127,7 +127,7 @@ const BuildProgress = ({ buildProgress, expanded }: BuildProgressProps) => {
           <StepDetail isCurrent={isCurrent} isPending={isPending} key={key}>
             <div>
               <StepIcon icon={icon as any} />
-              {renderLabel(stepHistory.current[key] || buildProgress)}
+              {renderLabel(stepHistory.current[key] || localBuildProgress)}
             </div>
           </StepDetail>
         ))}
@@ -138,49 +138,65 @@ const BuildProgress = ({ buildProgress, expanded }: BuildProgressProps) => {
 
 type BuildEyebrowProps = {
   branch: string;
-  runningBuild?: RunningBuildPayload;
-  switchToNextBuild?: () => void;
+  localBuildProgress?: LocalBuildProgress;
+  lastBuildOnBranchInProgress?: boolean;
+  switchToLastBuildOnBranch?: () => void;
 };
 
-export const BuildEyebrow = ({ branch, runningBuild, switchToNextBuild }: BuildEyebrowProps) => {
+export const BuildEyebrow = ({
+  branch,
+  localBuildProgress,
+  lastBuildOnBranchInProgress,
+  switchToLastBuildOnBranch,
+}: BuildEyebrowProps) => {
   const [expanded, setExpanded] = React.useState(false);
   const toggleExpanded = () => {
     setExpanded(!expanded);
   };
 
-  if (runningBuild) {
+  if (localBuildProgress) {
     return (
       <>
         <Header onClick={toggleExpanded}>
-          <Bar percentage={runningBuild.buildProgressPercentage} />
+          <Bar percentage={localBuildProgress.buildProgressPercentage} />
           <Label>
-            <BuildProgressLabel runningBuild={runningBuild} />
+            <BuildProgressLabel localBuildProgress={localBuildProgress} withEmoji />
           </Label>
           <IconButton as="div">
             {expanded ? <Icons icon="collapse" /> : <Icons icon="expandalt" />}
           </IconButton>
         </Header>
-        <BuildProgress buildProgress={runningBuild} expanded={expanded} />
+        <BuildProgress localBuildProgress={localBuildProgress} expanded={expanded} />
       </>
     );
   }
 
-  const message = switchToNextBuild ? (
-    <Label>
-      There's a newer snapshot with changes.
-      {" " /* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-      <Link withArrow>Switch to newer snapshot</Link>
-    </Label>
-  ) : (
-    <Label>
-      Reviewing is disabled because there's a newer build on <code>{branch}</code>.
-    </Label>
-  );
+  function nextBuildMessage() {
+    if (!switchToLastBuildOnBranch) {
+      return (
+        <Label>
+          Reviewing is disabled because there's a newer build on <code>{branch}</code>.
+        </Label>
+      );
+    }
+    if (lastBuildOnBranchInProgress) {
+      return "⚠️ Reviewing is disabled because there's a newer build in progress on main. This can happen when a build runs in CI.";
+    }
+    return (
+      <Label>
+        There's a newer snapshot with changes.
+        {" " /* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+        <Link withArrow onClick={switchToLastBuildOnBranch}>
+          Switch to newer snapshot
+        </Link>
+      </Label>
+    );
+  }
 
   return (
-    <Header onClick={switchToNextBuild}>
+    <Header onClick={switchToLastBuildOnBranch}>
       <Bar percentage={100} />
-      {message}
+      {nextBuildMessage()}
     </Header>
   );
 };

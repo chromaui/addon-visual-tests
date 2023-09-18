@@ -10,7 +10,7 @@ import { BuildEyebrow } from "./BuildEyebrow";
 const meta = {
   args: {
     branch: "feature",
-    switchToNextBuild: action("switchToNextBuild"),
+    switchToLastBuildOnBranch: action("switchToLastBuildOnBranch"),
   },
   component: BuildEyebrow,
 } satisfies Meta<typeof BuildEyebrow>;
@@ -60,11 +60,15 @@ export const Complete: Story = {
   play: expandEyebrow,
 };
 
+export const NewBuildRunning: Story = {
+  args: { lastBuildOnBranchInProgress: true },
+};
+
 export const NewerSnapshotAvailable: Story = {};
 
 export const NewerBuildOnBranch: Story = {
   args: {
-    switchToNextBuild: undefined,
+    switchToLastBuildOnBranch: undefined,
   },
   parameters: withFigmaDesign(
     "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2127-448761&mode=design&t=70EtYCn1H7hB8PAk-0"

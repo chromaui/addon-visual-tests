@@ -22,7 +22,7 @@ type DialogArguments =
 export type DialogHandler = (...args: DialogArguments) => void;
 
 export const useChromaticDialog = (handler?: DialogHandler) => {
-  const dialog = useRef<Window>();
+  const dialog = useRef<Window | null>();
   const dialogOrigin = useRef<string>();
 
   // Close the dialog window when the screen gets unmounted.
@@ -33,6 +33,7 @@ export const useChromaticDialog = (handler?: DialogHandler) => {
       if (origin === dialogOrigin.current) {
         const { message, ...payload } = dialogPayloadSchema.parse(data);
 
+        // @ts-expect-error fixed this on https://github.com/chromaui/addon-visual-tests/pull/91
         handler?.(message, payload);
       }
     };
@@ -53,7 +54,7 @@ export const useChromaticDialog = (handler?: DialogHandler) => {
         const top = (window.innerHeight - height) / 2 + window.screenTop;
         const options = `scrollbars=yes,width=${width},height=${height},top=${top},left=${left}`;
         dialog.current = window.open(url, "chromatic-dialog", options);
-        if (window.focus) dialog.current.focus();
+        dialog.current?.focus();
       } else {
         dialog.current = window.open(url, "_blank");
       }

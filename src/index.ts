@@ -1,21 +1,19 @@
 /* eslint-disable no-console */
 import type { Channel } from "@storybook/channels";
 // eslint-disable-next-line import/no-unresolved
-import { getGitInfo, GitInfo } from "chromatic/node";
-import { basename, relative } from "path";
+import { getConfiguration, getGitInfo, GitInfo } from "chromatic/node";
 
 import {
   CHROMATIC_BASE_URL,
   GIT_INFO,
+  LOCAL_BUILD_PROGRESS,
   PROJECT_INFO,
-  RUNNING_BUILD,
   START_BUILD,
 } from "./constants";
 import { runChromaticBuild } from "./runChromaticBuild";
-import { GitInfoPayload, ProjectInfoPayload, RunningBuildPayload } from "./types";
+import { GitInfoPayload, LocalBuildProgress, ProjectInfoPayload } from "./types";
 import { useAddonState } from "./useAddonState/server";
-import { findConfig } from "./utils/storybook.config.utils";
-import { updateMain } from "./utils/updateMain";
+import { updateChromaticConfig } from "./utils/updateChromaticConfig";
 
 /**
  * to load the built addon in this test Storybook
@@ -31,7 +29,7 @@ const observeGitInfo = async (
   callback: (info: GitInfo, prevInfo: GitInfo) => void
 ) => {
   let prev: GitInfo;
-  let timer: NodeJS.Timeout | null = null;
+  let timer: NodeJS.Timeout | undefined;
   const act = async () => {
     const gitInfo = await getGitInfo();
     if (Object.entries(gitInfo).some(([key, value]) => prev?.[key as keyof GitInfo] !== value)) {
@@ -47,24 +45,14 @@ const observeGitInfo = async (
 
 async function serverChannel(
   channel: Channel,
-  {
-    configDir,
-    projectId: initialProjectId,
-    projectToken: initialProjectToken,
-
-    // This is a small subset of the flags available to the CLI.
-    buildScriptName,
-    debug,
-    zip,
-  }: {
-    configDir: string;
-    projectId: string;
-    projectToken: string;
-    buildScriptName?: string;
-    debug?: boolean;
-    zip?: boolean;
-  }
+  // configDir is the standard storybook flag (-c to the storybook CLI)
+  // configFile is the `main.js` option, which should be set by the user to correspond to the
+  //   chromatic option (-c to the chromatic CLI)
+  { configDir, configFile }: { configDir: string; configFile?: string }
 ) {
+  const configuration = await getConfiguration(configFile);
+  const { projectId: initialProjectId, projectToken: initialProjectToken } = configuration;
+
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const projectInfoState = useAddonState<ProjectInfoPayload>(channel, PROJECT_INFO);
   projectInfoState.value = initialProjectId
@@ -73,20 +61,22 @@ async function serverChannel(
 
   let lastProjectToken = initialProjectToken;
   projectInfoState.on("change", async ({ projectId, projectToken }) => {
+    if (!projectId || !projectToken) return;
     if (projectToken === lastProjectToken) return;
     lastProjectToken = projectToken;
 
-    const relativeConfigDir = relative(process.cwd(), configDir);
-    let mainPath: string;
+    const writtenConfigFile = configFile || "chromatic.config.json";
     try {
-      mainPath = await findConfig(configDir, "main");
-      await updateMain({ mainPath, projectId, projectToken });
+      await updateChromaticConfig(writtenConfigFile, {
+        ...configuration,
+        projectId,
+        projectToken,
+      });
 
       projectInfoState.value = {
         ...projectInfoState.value,
         written: true,
-        mainPath: basename(mainPath),
-        configDir: relativeConfigDir,
+        configFile: writtenConfigFile,
       };
     } catch (err) {
       console.warn(`Failed to update your main configuration:\n\n ${err}`);
@@ -94,18 +84,17 @@ async function serverChannel(
       projectInfoState.value = {
         ...projectInfoState.value,
         written: false,
-        mainPath: mainPath && basename(mainPath),
-        configDir: relativeConfigDir,
+        configFile: writtenConfigFile,
       };
     }
   });
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const runningBuildState = useAddonState<RunningBuildPayload>(channel, RUNNING_BUILD);
+  const localBuildProgress = useAddonState<LocalBuildProgress>(channel, LOCAL_BUILD_PROGRESS);
 
   channel.on(START_BUILD, async () => {
-    const { projectToken } = projectInfoState.value;
-    await runChromaticBuild(runningBuildState, { projectToken, buildScriptName, debug, zip });
+    const { projectToken } = projectInfoState.value || {};
+    await runChromaticBuild(localBuildProgress, { projectToken });
   });
 
   // eslint-disable-next-line react-hooks/rules-of-hooks

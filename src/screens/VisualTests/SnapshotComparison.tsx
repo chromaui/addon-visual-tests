@@ -41,6 +41,7 @@ const StackTrace = styled.div(({ theme }) => ({
 
 interface SnapshotSectionProps {
   tests: StoryTestFieldsFragment[];
+  userCanReview: boolean;
   isReviewable: boolean;
   isReviewing: boolean;
   baselineImageVisible: boolean;
@@ -50,6 +51,7 @@ interface SnapshotSectionProps {
 
 export const SnapshotComparison = ({
   tests,
+  userCanReview,
   isReviewable,
   isReviewing,
   onAccept,
@@ -118,19 +120,21 @@ export const SnapshotComparison = ({
             </Col>
           )}
 
-          {(isAcceptable || isUnacceptable) && !isReviewable && (
+          {(isAcceptable || isUnacceptable) && (!isReviewable || !userCanReview) && (
             <Col push>
               <WithTooltip
-                tooltip={<TooltipNote note="This snapshot is outdated so you cannot accept it" />}
+                tooltip={<TooltipNote note="Reviewing disabled" />}
                 trigger="hover"
                 hasChrome={false}
               >
-                <Icons icon="lock" />
+                <IconButton as="span">
+                  <Icons icon="lock" />
+                </IconButton>
               </WithTooltip>
             </Col>
           )}
 
-          {isAcceptable && isReviewable && (
+          {userCanReview && isReviewable && isAcceptable && (
             <>
               <Col push>
                 <WithTooltip
@@ -190,7 +194,7 @@ export const SnapshotComparison = ({
               </Col>
             </>
           )}
-          {isUnacceptable && isReviewable && (
+          {userCanReview && isReviewable && isUnacceptable && (
             <>
               <Col push>
                 <WithTooltip
@@ -214,16 +218,16 @@ export const SnapshotComparison = ({
       {isInProgress && <Loader />}
       {!isInProgress && selectedComparison && (
         <SnapshotImage
-          componentName={selectedTest.story.component.name}
-          storyName={selectedTest.story.name}
+          componentName={selectedTest.story?.component?.name}
+          storyName={selectedTest.story?.name}
           testUrl={selectedTest.webUrl}
-          comparisonResult={selectedComparison.result}
+          comparisonResult={selectedComparison.result ?? undefined}
           captureImage={
             baselineImageVisible
-              ? selectedComparison.baseCapture?.captureImage
-              : selectedComparison.headCapture?.captureImage
+              ? selectedComparison.baseCapture?.captureImage ?? undefined
+              : selectedComparison.headCapture?.captureImage ?? undefined
           }
-          diffImage={selectedComparison.captureDiff?.diffImage}
+          diffImage={selectedComparison.captureDiff?.diffImage ?? undefined}
           diffVisible={diffVisible}
           focusVisible={focusVisible}
         />

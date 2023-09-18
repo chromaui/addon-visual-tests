@@ -1,7 +1,6 @@
 export const {
   CHROMATIC_INDEX_URL,
   CHROMATIC_BASE_URL = CHROMATIC_INDEX_URL || "https://www.chromatic.com",
-  CHROMATIC_ADDON_NAME = "@chromaui/addon-visual-tests",
   CHROMATIC_API_URL = `${CHROMATIC_BASE_URL}/api`,
 } = process.env;
 
@@ -16,4 +15,4 @@ export const GIT_INFO = `${ADDON_ID}/gitInfo`;
 export const PROJECT_INFO = `${ADDON_ID}/projectInfo`;
 export const IS_OUTDATED = `${ADDON_ID}/isOutdated`;
 export const START_BUILD = `${ADDON_ID}/startBuild`;
-export const RUNNING_BUILD = `${ADDON_ID}/runningBuild`;
+export const LOCAL_BUILD_PROGRESS = `${ADDON_ID}/localBuildProgress`;
