@@ -108,13 +108,14 @@ export const Panel = ({ active, api }: PanelProps) => {
     );
   }
 
+  const localBuildIsRightBranch = gitInfo && gitInfo.branch === localBuildProgress?.branch;
   return (
     <Provider key={PANEL_ID} value={client}>
       <Sections hidden={!active}>
         <VisualTests
           projectId={projectId}
           gitInfo={gitInfo}
-          localBuildProgress={localBuildProgress}
+          localBuildProgress={localBuildIsRightBranch ? localBuildProgress : undefined}
           startDevBuild={() => emit(START_BUILD)}
           setAccessToken={setAccessToken}
           setOutdated={setOutdated}
