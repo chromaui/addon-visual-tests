@@ -39,8 +39,8 @@ const SuffixOverlay = ({
   placeholder,
   suffix,
 }: {
-  value: string;
-  placeholder: string;
+  value?: string;
+  placeholder?: string;
   suffix: ReactNode;
 }) => (
   <SuffixWrapper>

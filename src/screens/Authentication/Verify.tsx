@@ -34,7 +34,7 @@ interface VerifyProps {
 }
 
 export const Verify = ({ onBack, userCode, verificationUrl }: VerifyProps) => {
-  const dialog = React.useRef<Window>();
+  const dialog = React.useRef<Window | null>();
 
   // Close the dialog window when the screen gets unmounted.
   React.useEffect(() => () => dialog.current?.close(), []);
@@ -49,7 +49,7 @@ export const Verify = ({ onBack, userCode, verificationUrl }: VerifyProps) => {
       const top = (window.innerHeight - height) / 2 + window.screenTop;
       const options = `scrollbars=yes,width=${width},height=${height},top=${top},left=${left}`;
       dialog.current = window.open(verificationUrl, "oauth-dialog", options);
-      if (window.focus) dialog.current.focus();
+      dialog.current?.focus();
     } else {
       dialog.current = window.open(verificationUrl, "_blank");
     }

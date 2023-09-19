@@ -11,7 +11,7 @@ addons.register(ADDON_ID, (api) => {
     type: types.PANEL,
     title: "Visual Tests",
     match: ({ viewMode }) => viewMode === "story",
-    render: ({ active }) => <Panel active={active} api={api} />,
+    render: ({ active }) => <Panel active={!!active} api={api} />,
   });
 
   addons.add(SIDEBAR_TOP_ID, {

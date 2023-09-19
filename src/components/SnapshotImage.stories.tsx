@@ -66,7 +66,7 @@ export const TallerConstrained: Story = {
 
 export const CaptureError: Story = {
   args: {
-    captureImage: null,
+    captureImage: undefined,
     comparisonResult: ComparisonResult.CaptureError,
   },
 };

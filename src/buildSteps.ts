@@ -52,7 +52,7 @@ export const BUILD_STEP_CONFIG: Record<
     renderName: () => `Publish your Storybook`,
     renderProgress: ({ stepProgress }) => {
       const { numerator, denominator } = stepProgress.upload;
-      if (!denominator) return `Uploading files`;
+      if (!denominator || !numerator) return `Uploading files`;
       const { value: total, exponent } = filesize(denominator, {
         output: "object",
         round: 1,

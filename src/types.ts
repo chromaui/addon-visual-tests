@@ -45,6 +45,12 @@ export type LocalBuildProgress = {
   /** The id of the build, available after the initialize step */
   buildId?: string;
 
+  /**
+   * The branch we ran the local build on. We'll hide it if we switch branches.
+   * We grab this alongside the buildId when the build is announced.
+   */
+  branch?: string;
+
   /** Overall percentage of build progress */
   buildProgressPercentage: number;
 

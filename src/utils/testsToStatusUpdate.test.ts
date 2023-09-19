@@ -1,7 +1,7 @@
 import { TestStatus } from "../gql/graphql";
 import { testsToStatusUpdate } from "./testsToStatusUpdate";
 
-it("handles single test", () => {
+it("handles single test with no changes", () => {
   expect(
     testsToStatusUpdate([
       {
@@ -14,9 +14,27 @@ it("handles single test", () => {
     ])
   ).toMatchInlineSnapshot(`
     {
+      "story--id": null,
+    }
+  `);
+});
+
+it("handles single test with changes", () => {
+  expect(
+    testsToStatusUpdate([
+      {
+        id: "1",
+        status: TestStatus.Pending,
+        story: {
+          storyId: "story--id",
+        },
+      },
+    ])
+  ).toMatchInlineSnapshot(`
+    {
       "story--id": {
         "description": "Chromatic Visual Tests",
-        "status": undefined,
+        "status": "warn",
         "title": "Visual Tests",
       },
     }

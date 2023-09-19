@@ -4,7 +4,12 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useMutation, useQuery } from "urql";
 
 import { getFragment } from "../../gql";
-import { ReviewTestBatch, ReviewTestInputStatus, TestStatus } from "../../gql/graphql";
+import {
+  ReviewTestBatch,
+  ReviewTestInputStatus,
+  StoryTestFieldsFragment,
+  TestStatus,
+} from "../../gql/graphql";
 import { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from "../../types";
 import { statusMap, testsToStatusUpdate } from "../../utils/testsToStatusUpdate";
 import { SelectedBuildInfo, updateSelectedBuildInfo } from "../../utils/updateSelectedBuildInfo";
@@ -27,7 +32,7 @@ interface VisualTestsProps {
   projectId: string;
   gitInfo: Pick<
     GitInfoPayload,
-    "branch" | "slug" | "userEmailHash" | "committedAt" | "uncommittedHash"
+    "branch" | "slug" | "userEmailHash" | "commit" | "committedAt" | "uncommittedHash"
   >;
   localBuildProgress?: LocalBuildProgress;
   startDevBuild: () => void;
@@ -73,7 +78,7 @@ export const VisualTests = ({
     return () => clearInterval(interval);
   }, [rerun]);
 
-  const { userCanReview } = data?.viewer?.projectMembership || {};
+  const { userCanReview = false } = data?.viewer?.projectMembership || {};
 
   const [{ fetching: isReviewing }, reviewTest] = useMutation(MutationReviewTest);
 
@@ -93,27 +98,30 @@ export const VisualTests = ({
         }
         rerun();
       } catch (err) {
-        addNotification({
-          id: "chromatic/errorAccepting",
-          link: undefined,
-          content: {
-            headline: `Failed to ${
-              status === ReviewTestInputStatus.Accepted ? "accept" : "unaccept"
-            } changes`,
-            subHeadline: err.message,
-          },
-          icon: {
-            name: "cross",
-            color: "red",
-          },
-        });
+        if (err instanceof Error) {
+          addNotification({
+            id: "chromatic/errorAccepting",
+            // @ts-expect-error we need a better API for not passing a link
+            link: undefined,
+            content: {
+              headline: `Failed to ${
+                status === ReviewTestInputStatus.Accepted ? "accept" : "unaccept"
+              } changes`,
+              subHeadline: err.message,
+            },
+            icon: {
+              name: "cross",
+              color: "red",
+            },
+          });
+        }
       }
     },
     [addNotification, rerun, reviewTest]
   );
 
   const onAccept = useCallback(
-    async (testId: string, batch: ReviewTestBatch) =>
+    async (testId: StoryTestFieldsFragment["id"], batch?: ReviewTestBatch) =>
       onReview(ReviewTestInputStatus.Accepted, testId, batch),
     [onReview]
   );
@@ -131,41 +139,48 @@ export const VisualTests = ({
   const lastBuildOnBranchStoryTests = [
     ...getFragment(
       FragmentLastBuildOnBranchTestFields,
-      lastBuildOnBranch && "testsForStory" in lastBuildOnBranch
+      lastBuildOnBranch && "testsForStory" in lastBuildOnBranch && lastBuildOnBranch.testsForStory
         ? lastBuildOnBranch.testsForStory.nodes
         : []
     ),
   ];
   const lastBuildOnBranchCompletedStory =
-    lastBuildOnBranch &&
+    !!lastBuildOnBranch &&
     lastBuildOnBranchStoryTests.every(({ status }) => status !== TestStatus.InProgress);
 
   // Before we set the storyInfo, we use the lastBuildOnBranch for story data if it's ready
   const selectedBuild = getFragment(
     FragmentSelectedBuildFields,
-    data?.selectedBuild ?? (lastBuildOnBranchCompletedStory && data?.project?.lastBuildOnBranch)
+    data?.selectedBuild ??
+      (lastBuildOnBranchCompletedStory ? data?.project?.lastBuildOnBranch : undefined)
   );
 
+  const selectedBuildHasCorrectBranch = selectedBuild?.branch === gitInfo.branch;
   // Currently only used by the sidebar button to show a blue dot ("build outdated")
-  const isOutdated = selectedBuild?.uncommittedHash !== gitInfo.uncommittedHash;
+  const isOutdated =
+    !selectedBuildHasCorrectBranch ||
+    selectedBuild?.commit !== gitInfo.commit ||
+    selectedBuild?.uncommittedHash !== gitInfo.uncommittedHash;
   useEffect(() => setOutdated(isOutdated), [isOutdated, setOutdated]);
 
   // If the next build is *newer* than the current commit, we don't want to switch to the build
   const lastBuildOnBranchNewer =
     lastBuildOnBranch && lastBuildOnBranch.committedAt > gitInfo.committedAt;
-  const canSwitchToLastBuildOnBranch = lastBuildOnBranch && !lastBuildOnBranchNewer;
+  const canSwitchToLastBuildOnBranch = !!lastBuildOnBranch && !lastBuildOnBranchNewer;
 
   // We always set status to the next build's status, as when we change to a new story we'll see
   // the next builds
   const testsForStatus =
     lastBuildOnBranch &&
     "testsForStatus" in lastBuildOnBranch &&
+    lastBuildOnBranch.testsForStatus &&
     getFragment(FragmentStatusTestFields, lastBuildOnBranch.testsForStatus.nodes);
 
   const buildStatusUpdate =
-    canSwitchToLastBuildOnBranch && testsForStatus && testsToStatusUpdate(testsForStatus);
+    canSwitchToLastBuildOnBranch && testsForStatus ? testsToStatusUpdate(testsForStatus) : {};
 
   useEffect(() => {
+    // @ts-expect-error The return type of this function is wrong in the API, it should allow `null` values
     updateBuildStatus((state) => ({
       ...createEmptyStoryStatusUpdate(state),
       ...buildStatusUpdate,
@@ -194,17 +209,14 @@ export const VisualTests = ({
     [canSwitchToLastBuildOnBranch, lastBuildOnBranch?.id, storyId]
   );
 
-  const isLocalBuildStarting =
-    localBuildProgress && !["success", "error"].includes(localBuildProgress.currentStep);
-
-  return !selectedBuild || error ? (
+  return !selectedBuildHasCorrectBranch || !selectedBuild || error ? (
     <NoBuild
       {...{
         error,
         hasData: !!data,
-        hasStoryBuild: !!selectedBuild,
+        hasSelectedBuild: !!selectedBuildHasCorrectBranch && !!selectedBuild,
         startDevBuild,
-        isLocalBuildStarting,
+        localBuildProgress,
         branch: gitInfo.branch,
         setAccessToken,
       }}
@@ -214,15 +226,15 @@ export const VisualTests = ({
       {...{
         branch: gitInfo.branch,
         localBuildProgress,
-        lastBuildOnBranch,
+        ...(lastBuildOnBranch && { lastBuildOnBranch }),
         lastBuildOnBranchCompletedStory,
-        switchToLastBuildOnBranch: canSwitchToLastBuildOnBranch && switchToLastBuildOnBranch,
+        ...(canSwitchToLastBuildOnBranch && { switchToLastBuildOnBranch }),
         startDevBuild,
         userCanReview,
         isReviewing,
         onAccept,
         onUnaccept,
-        selectedBuild,
+        ...(selectedBuildHasCorrectBranch && { selectedBuild }),
         setAccessToken,
       }}
     />
