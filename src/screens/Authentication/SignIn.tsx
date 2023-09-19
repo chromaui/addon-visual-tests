@@ -11,19 +11,19 @@ import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
 
 interface SignInProps {
-  onBack: () => void;
+  onBack?: () => void;
   onSignIn: () => void;
   onSignInWithSSO: () => void;
 }
 
 export const SignIn = ({ onBack, onSignIn, onSignInWithSSO }: SignInProps) => (
   <Container>
-    {onBack ? (
+    {onBack && (
       <BackButton onClick={onBack}>
         <BackIcon />
         Back
       </BackButton>
-    ) : null}
+    )}
     <Stack alignItems="center" textAlign="center">
       <div>
         <LinkIcon />
