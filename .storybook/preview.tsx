@@ -94,7 +94,7 @@ const withTheme = (StoryFn, { globals, parameters }) => {
       </Panels>
     </>
   );
-}
+};
 
 const preview: Preview = {
   decorators: [withTheme],
@@ -107,7 +107,10 @@ const preview: Preview = {
       disable: true,
     },
     chromatic: {
-      viewports: [960],
+      modes: {
+        "Right 2-up": { theme: "right" },
+        "Bottom 2-up": { theme: "bottom" },
+      },
     },
     controls: {
       matchers: {
@@ -132,7 +135,7 @@ const preview: Preview = {
         ],
       },
     },
-  }
-}
+  },
+};
 
 export default preview;
