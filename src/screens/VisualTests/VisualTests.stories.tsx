@@ -335,34 +335,6 @@ export const NewStoryStarting: Story = {
   },
 };
 
-export const Announced: Story = {
-  args: {},
-  parameters: {
-    ...withBuilds({ selectedBuild: announcedBuild }),
-  },
-};
-
-export const Published: Story = {
-  parameters: {
-    ...withBuilds({ selectedBuild: null, lastBuildOnBranch: inProgressBuild }),
-  },
-  args: {
-    localBuildProgress: {
-      ...INITIAL_BUILD_PAYLOAD,
-      buildProgressPercentage: 60,
-      currentStep: "snapshot",
-      stepProgress: {
-        ...INITIAL_BUILD_PAYLOAD.stepProgress,
-        snapshot: {
-          startedAt: Date.now() - 5000,
-          numerator: 64,
-          denominator: 340,
-        },
-      },
-    },
-  },
-};
-
 /** At this point, we should switch to the next build */
 export const EmptyBranchLocalBuildCapturedCurrentStory = {
   parameters: {
