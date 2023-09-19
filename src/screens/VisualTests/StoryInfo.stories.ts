@@ -2,6 +2,7 @@ import { action } from "@storybook/addon-actions";
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { Browser, TestStatus } from "../../gql/graphql";
+import { screenModes } from "../../modes";
 import { makeTest, makeTests } from "../../utils/storyData";
 import { StoryInfo } from "./StoryInfo";
 
@@ -13,6 +14,11 @@ const meta = {
     startDevBuild: action("startDevBuild"),
     shouldSwitchToLastBuildOnBranch: false,
     isBuildFailed: false,
+  },
+  parameters: {
+    chromatic: {
+      modes: screenModes,
+    },
   },
 } satisfies Meta<typeof StoryInfo>;
 

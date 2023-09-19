@@ -4,6 +4,7 @@ import { findByTestId } from "@storybook/testing-library";
 import { graphql } from "msw";
 
 import { SelectProjectsQueryQuery } from "../../gql/graphql";
+import { screenModes } from "../../modes";
 import { storyWrapper } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
@@ -14,6 +15,11 @@ const meta = {
   decorators: [storyWrapper],
   args: {
     onUpdateProject: action("updateProject"),
+  },
+  parameters: {
+    chromatic: {
+      modes: screenModes,
+    },
   },
 } satisfies Meta<typeof LinkProject>;
 

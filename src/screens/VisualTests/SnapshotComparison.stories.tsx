@@ -11,6 +11,7 @@ import {
   StoryTestFieldsFragment,
   TestStatus,
 } from "../../gql/graphql";
+import { screenModes } from "../../modes";
 import { playAll } from "../../utils/playAll";
 import { makeTest, makeTests } from "../../utils/storyData";
 import { SnapshotComparison } from "./SnapshotComparison";
@@ -36,6 +37,11 @@ const meta = {
     onAccept: action("onAccept"),
     onUnaccept: action("onUnaccept"),
     baselineImageVisible: false,
+  },
+  parameters: {
+    chromatic: {
+      modes: screenModes,
+    },
   },
 } satisfies Meta<typeof SnapshotComparison>;
 

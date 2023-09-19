@@ -10,6 +10,7 @@ import {
 import type { Preview } from "@storybook/react";
 import { initialize, mswLoader } from "msw-storybook-addon";
 import React from "react";
+import { componentModes } from "../src/modes";
 
 // Initialize MSW
 initialize({
@@ -107,10 +108,7 @@ const preview: Preview = {
       disable: true,
     },
     chromatic: {
-      modes: {
-        "Right 2-up": { theme: "right" },
-        "Bottom 2-up": { theme: "bottom" },
-      },
+      modes: componentModes,
     },
     controls: {
       matchers: {

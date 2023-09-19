@@ -10,6 +10,7 @@ import { graphql } from "msw";
 import React from "react";
 import { TypedDocumentNode } from "urql";
 
+import { allModes } from "../../../.storybook/modes";
 import { INITIAL_BUILD_PAYLOAD } from "../../buildSteps";
 import type {
   LastBuildOnBranchBuildFieldsFragment,
@@ -17,6 +18,7 @@ import type {
   StoryTestFieldsFragment,
 } from "../../gql/graphql";
 import { Browser, BuildStatus, ComparisonResult, TestResult, TestStatus } from "../../gql/graphql";
+import { screenModes } from "../../modes";
 import { AnnouncedBuild, PublishedBuild, SelectedBuildWithTests } from "../../types";
 import { storyWrapper } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
@@ -170,7 +172,12 @@ const meta = {
   title: "screens/VisualTests/VisualTests",
   component: VisualTests,
   decorators: [storyWrapper, withManagerApi],
-  parameters: withBuilds({ selectedBuild: passedBuild }),
+  parameters: {
+    ...withBuilds({ selectedBuild: passedBuild }),
+    chromatic: {
+      modes: screenModes,
+    },
+  },
   argTypes: {
     addNotification: { type: "function", target: "manager-api" },
   },

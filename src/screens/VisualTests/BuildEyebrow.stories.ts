@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { fireEvent, within } from "@storybook/testing-library";
 
 import * as buildProgressStories from "../../components/BuildProgressLabel.stories";
+import { screenModes } from "../../modes";
 import { playAll } from "../../utils/playAll";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
 import { BuildEyebrow } from "./BuildEyebrow";
@@ -13,6 +14,11 @@ const meta = {
     switchToLastBuildOnBranch: action("switchToLastBuildOnBranch"),
   },
   component: BuildEyebrow,
+  parameters: {
+    chromatic: {
+      modes: screenModes,
+    },
+  },
 } satisfies Meta<typeof BuildEyebrow>;
 
 export default meta;
