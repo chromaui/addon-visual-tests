@@ -5437,10 +5437,10 @@ chownr@^2.0.0:
   resolved "https://registry.yarnpkg.com/chownr/-/chownr-2.0.0.tgz#15bfbe53d2eab4cf70f18a8cd68ebe5b3cb1dece"
   integrity sha512-bIomtDF5KGpdogkLd9VspvFzk9KfpyyGlS8YFVZl7TGPBHL5snIOnxeshwVgPteQ9b4Eydl+pVbIyE1DcvCWgQ==
 
-chromatic@7.2.0-next.1:
-  version "7.2.0-next.1"
-  resolved "https://registry.yarnpkg.com/chromatic/-/chromatic-7.2.0-next.1.tgz#e02c6260aeea0bf20754b90be4d2d4047f9bfe92"
-  integrity sha512-VPzZXfolmhCVU2QLunoH8i+NIpzLQ/Ui2Ay8bmbgv585RCG6sZSwz4AzEMB1l9CjTv6mA3csGm3zPV8Wrr3sCg==
+chromatic@^7.2.0:
+  version "7.2.0"
+  resolved "https://registry.yarnpkg.com/chromatic/-/chromatic-7.2.0.tgz#2d33c39c3efe8ffea5d0b2a83d86c13adf1c0836"
+  integrity sha512-EbuvmsM6XAVFC4EQpqR2AT2PaXY4IS8qWxxg6N10AhpRulfX2b2AtW1hUc88cCosRyztd6esxkBdj3FSKR7zVw==
 
 ci-info@^3.2.0:
   version "3.8.0"
