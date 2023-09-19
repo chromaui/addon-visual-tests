@@ -1,5 +1,5 @@
 import { styled } from "@storybook/theming";
-import React from "react";
+import React, { useEffect } from "react";
 
 import { BackButton } from "../../components/BackButton";
 import { Button } from "../../components/Button";
@@ -35,11 +35,18 @@ interface VerifyProps {
 }
 
 export const Verify = ({ onBack, userCode, verificationUrl }: VerifyProps) => {
-  const openChromatic = useChromaticDialog((eventName, payload) => {
-    if (eventName === "login") {
-      console.log(payload);
+  const [openDialog, closeDialog] = useChromaticDialog((event) => {
+    if (event.message === "login") {
+      openDialog(verificationUrl);
     }
   });
+
+  // Close the dialog on unmount, which happens automatically when poll for a token.
+  // Later (https://linear.app/chromaui/issue/AP-3549/onboarding-flow-for-new-users-to-create-a-project)
+  // we'll actually wait for the grant event and:
+  //   - grab a token immediately
+  //   - check if the user has projects, if not redirect to new project screen.
+  useEffect(() => () => closeDialog(), [closeDialog]);
 
   return (
     <Container>
@@ -60,7 +67,7 @@ export const Verify = ({ onBack, userCode, verificationUrl }: VerifyProps) => {
             ))}
           </Digits>
         </div>
-        <Button secondary onClick={() => openChromatic(verificationUrl)}>
+        <Button secondary onClick={() => openDialog(verificationUrl)}>
           Go to Chromatic
         </Button>
       </Stack>

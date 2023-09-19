@@ -4,37 +4,28 @@ import { z } from "zod";
 const dialogPayloadSchema = z.union([
   z.object({ message: z.literal("login") }),
   z.object({ message: z.literal("grant"), denied: z.boolean() }),
-  z.object({ message: z.literal("projectCreated"), projectId: z.string() }),
+  z.object({ message: z.literal("createdProject"), projectId: z.string() }),
 ]);
 
-type WithRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] };
-type Schema = WithRequired<z.infer<typeof dialogPayloadSchema>, "message">;
-type Payload<T extends { message: string }, TMessage extends string> = Omit<
-  Extract<T, { message: TMessage }>,
-  "message"
->;
+type Schema = z.infer<typeof dialogPayloadSchema>;
 
-type DialogArguments =
-  | ["login", Payload<Schema, "login">]
-  | ["grant", Payload<Schema, "grant">]
-  | ["projectCreated", Payload<Schema, "projectCreated">];
-
-export type DialogHandler = (...args: DialogArguments) => void;
+export type DialogHandler = (payload: Schema) => void;
 
 export const useChromaticDialog = (handler?: DialogHandler) => {
   const dialog = useRef<Window | null>();
   const dialogOrigin = useRef<string>();
 
-  // Close the dialog window when the screen gets unmounted.
-  useEffect(() => () => dialog.current?.close(), []);
-
   useEffect(() => {
     const handleMessage = ({ origin, data }: MessageEvent) => {
       if (origin === dialogOrigin.current) {
-        const { message, ...payload } = dialogPayloadSchema.parse(data);
-
-        // @ts-expect-error fixed this on https://github.com/chromaui/addon-visual-tests/pull/91
-        handler?.(message, payload);
+        let parsed: Schema;
+        try {
+          parsed = dialogPayloadSchema.parse(data);
+        } catch (err) {
+          // Don't log anything on parsing errors, as we can get messages from things like intercom
+          return;
+        }
+        handler?.(parsed);
       }
     };
 
@@ -43,8 +34,8 @@ export const useChromaticDialog = (handler?: DialogHandler) => {
     return () => window.removeEventListener("message", handleMessage);
   }, [handler]);
 
-  return useCallback(
-    (url: string) => {
+  return [
+    useCallback((url: string) => {
       const width = 800;
       const height = 800;
       const usePopup = window.innerWidth > width && window.innerHeight > height;
@@ -60,7 +51,8 @@ export const useChromaticDialog = (handler?: DialogHandler) => {
       }
       const { origin } = new URL(url);
       dialogOrigin.current = origin;
-    },
-    [dialog, dialogOrigin]
-  );
+    }, []),
+
+    useCallback(() => dialog.current?.close(), []),
+  ] as const;
 };
