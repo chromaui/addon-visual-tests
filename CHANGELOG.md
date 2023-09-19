@@ -1,3 +1,15 @@
+# v0.0.81 (Tue Sep 19 2023)
+
+#### 🐛 Bug Fix
+
+- Restore the chromatic dependency to `latest` [#113](https://github.com/chromaui/addon-visual-tests/pull/113) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.80 (Mon Sep 18 2023)
 
 #### 🐛 Bug Fix
