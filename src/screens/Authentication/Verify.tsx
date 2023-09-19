@@ -36,6 +36,8 @@ interface VerifyProps {
 
 export const Verify = ({ onBack, userCode, verificationUrl }: VerifyProps) => {
   const [openDialog, closeDialog] = useChromaticDialog((event) => {
+    // If the user logs in as part of the grant process, don't close the dialog,
+    // instead redirect us back to where we were trying to go.
     if (event.message === "login") {
       openDialog(verificationUrl);
     }
