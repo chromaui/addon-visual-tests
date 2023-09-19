@@ -1,6 +1,7 @@
 import { ComparisonResult } from "../gql/graphql";
 
 export const resultOrder = [
+  undefined,
   ComparisonResult.Equal,
   ComparisonResult.Fixed,
   ComparisonResult.Added,

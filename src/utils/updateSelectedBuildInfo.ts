@@ -11,7 +11,7 @@ export function updateSelectedBuildInfo(
     storyId,
   }: {
     shouldSwitchToLastBuildOnBranch: boolean;
-    lastBuildOnBranchId: string;
+    lastBuildOnBranchId?: string;
     storyId: string;
   }
 ) {

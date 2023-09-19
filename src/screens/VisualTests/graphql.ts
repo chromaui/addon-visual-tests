@@ -73,6 +73,7 @@ export const FragmentSelectedBuildFields = graphql(/* GraphQL */ `
     id
     number
     branch
+    commit
     committedAt
     uncommittedHash
     status
@@ -127,13 +128,13 @@ export const FragmentStoryTestFields = graphql(/* GraphQL */ `
         version
       }
       captureDiff {
-        diffImage {
+        diffImage(signed: true) {
           imageUrl
           imageWidth
         }
       }
       headCapture {
-        captureImage {
+        captureImage(signed: true) {
           imageUrl
           imageWidth
         }
@@ -151,7 +152,7 @@ export const FragmentStoryTestFields = graphql(/* GraphQL */ `
         }
       }
       baseCapture {
-        captureImage {
+        captureImage(signed: true) {
           imageUrl
           imageWidth
         }

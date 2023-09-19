@@ -17,6 +17,7 @@ import {
   LastBuildOnBranchBuildFieldsFragment,
   ReviewTestBatch,
   SelectedBuildFieldsFragment,
+  StoryTestFieldsFragment,
   TestResult,
 } from "../../gql/graphql";
 import { LocalBuildProgress } from "../../types";
@@ -29,15 +30,15 @@ import { Warnings } from "./Warnings";
 
 interface BuildResultsProps {
   branch: string;
-  localBuildProgress: LocalBuildProgress;
-  selectedBuild?: SelectedBuildFieldsFragment;
-  lastBuildOnBranch: LastBuildOnBranchBuildFieldsFragment;
+  localBuildProgress?: LocalBuildProgress;
+  selectedBuild: SelectedBuildFieldsFragment;
+  lastBuildOnBranch?: LastBuildOnBranchBuildFieldsFragment;
   lastBuildOnBranchCompletedStory: boolean;
   switchToLastBuildOnBranch?: () => void;
   startDevBuild: () => void;
   userCanReview: boolean;
   isReviewing: boolean;
-  onAccept: (testId: string, batch: ReviewTestBatch) => Promise<void>;
+  onAccept: (testId: StoryTestFieldsFragment["id"], batch?: ReviewTestBatch) => void;
   onUnaccept: (testId: string) => Promise<void>;
   setAccessToken: (accessToken: string | null) => void;
 }
@@ -75,29 +76,33 @@ export const BuildResults = ({
   const storyTests = [
     ...getFragment(
       FragmentStoryTestFields,
-      selectedBuild && "testsForStory" in selectedBuild ? selectedBuild.testsForStory.nodes : []
+      selectedBuild && "testsForStory" in selectedBuild && selectedBuild.testsForStory
+        ? selectedBuild.testsForStory.nodes
+        : []
     ),
   ];
 
-  const isReviewable = lastBuildOnBranch.id === selectedBuild?.id;
+  const isReviewable = lastBuildOnBranch?.id === selectedBuild?.id;
   const isStorySuperseded = !isReviewable && lastBuildOnBranchCompletedStory;
   // Do we want to encourage them to switch to the next build?
   const shouldSwitchToLastBuildOnBranch = isStorySuperseded && !!switchToLastBuildOnBranch;
 
-  const lastBuildOnBranchInProgress = lastBuildOnBranch.status === BuildStatus.InProgress;
+  const lastBuildOnBranchInProgress = lastBuildOnBranch?.status === BuildStatus.InProgress;
   const showBuildStatus =
     // We always want to show the status of the running build (until it is done)
     isLocalBuildInProgress ||
     // Even if there's no build running, we need to tell them why they can't review, unless
     // the story is superseded and the UI is already telling them
     (!isReviewable && !shouldSwitchToLastBuildOnBranch);
-  const localBuildProgressIsNextBuild =
-    localBuildProgress && localBuildProgress?.buildId === lastBuildOnBranch.id;
+  const localBuildProgressIsLastBuildOnBranch =
+    localBuildProgress && localBuildProgress?.buildId === lastBuildOnBranch?.id;
   const buildStatus = showBuildStatus && (
     <BuildEyebrow
       branch={branch}
       localBuildProgress={
-        (localBuildProgressIsNextBuild || isLocalBuildInProgress) && localBuildProgress
+        localBuildProgressIsLastBuildOnBranch || isLocalBuildInProgress
+          ? localBuildProgress
+          : undefined
       }
       lastBuildOnBranchInProgress={lastBuildOnBranchInProgress}
       switchToLastBuildOnBranch={switchToLastBuildOnBranch}

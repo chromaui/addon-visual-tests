@@ -74,6 +74,11 @@ export const Panel = ({ active, api }: PanelProps) => {
     );
 
   if (projectUpdatingFailed) {
+    // These should always be set when we get this error
+    if (!projectToken || !configFile) {
+      throw new Error(`Missing projectToken/config file after configuration failure`);
+    }
+
     return (
       <Sections hidden={!active}>
         <LinkingProjectFailed
@@ -86,6 +91,9 @@ export const Panel = ({ active, api }: PanelProps) => {
   }
 
   if (projectIdUpdated) {
+    // This should always be set when we succeed
+    if (!configFile) throw new Error(`Missing config file after configuration success`);
+
     return (
       <Provider key={PANEL_ID} value={client}>
         <Sections hidden={!active}>
@@ -100,13 +108,14 @@ export const Panel = ({ active, api }: PanelProps) => {
     );
   }
 
+  const localBuildIsRightBranch = gitInfo && gitInfo.branch === localBuildProgress?.branch;
   return (
     <Provider key={PANEL_ID} value={client}>
       <Sections hidden={!active}>
         <VisualTests
           projectId={projectId}
           gitInfo={gitInfo}
-          localBuildProgress={localBuildProgress}
+          localBuildProgress={localBuildIsRightBranch ? localBuildProgress : undefined}
           startDevBuild={() => emit(START_BUILD)}
           setAccessToken={setAccessToken}
           setOutdated={setOutdated}

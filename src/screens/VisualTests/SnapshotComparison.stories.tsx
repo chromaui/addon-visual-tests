@@ -8,6 +8,7 @@ import {
   Browser,
   CaptureErrorKind,
   ComparisonResult,
+  StoryTestFieldsFragment,
   TestResult,
   TestStatus,
 } from "../../gql/graphql";
@@ -42,7 +43,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const InProgress: Story = {
+export const InProgress = {
   args: {
     tests: makeTests({
       browsers: [Browser.Chrome, Browser.Safari],
@@ -53,15 +54,15 @@ export const InProgress: Story = {
       ],
     }),
   },
-};
+} satisfies Story;
 
-export const WithMultipleTests: Story = {};
+export const WithMultipleTests = {} satisfies Story;
 
 /**
  * Sort of confusing situation where the only comparison with changes (1200px/Saf) is on the
  * "opposite" side of the current comparison (800px/Chrome)
  */
-export const WithMultipleTestsFirstPassed: Story = {
+export const WithMultipleTestsFirstPassed = {
   args: {
     tests: makeTests({
       browsers: [Browser.Chrome, Browser.Safari],
@@ -75,7 +76,7 @@ export const WithMultipleTestsFirstPassed: Story = {
       ],
     }),
   },
-};
+} satisfies Story;
 
 export const WithMultipleTestsFirstAdded: Story = {
   args: {
@@ -116,7 +117,7 @@ export const WithSingleTest: Story = {
   args: {
     tests: [makeTest({ status: TestStatus.Pending })],
   },
-};
+} satisfies Story;
 
 export const WithSingleTestAdded: Story = {
   args: {
@@ -129,29 +130,29 @@ export const WithSingleTestAccepting: Story = {
     ...WithSingleTest.args,
     isReviewing: true,
   },
-};
+} satisfies Story;
 
-export const WithSingleTestAccepted: Story = {
+export const WithSingleTestAccepted = {
   args: {
     tests: [makeTest({ status: TestStatus.Accepted })],
   },
-};
+} satisfies Story;
 
-export const WithSingleTestOutdated: Story = {
+export const WithSingleTestOutdated = {
   args: {
     ...WithSingleTest.args,
     isReviewable: false,
   },
-};
+} satisfies Story;
 
-export const WithSingleTestShowingBaseline: Story = {
+export const WithSingleTestShowingBaseline = {
   args: {
     tests: [makeTest({ status: TestStatus.Pending })],
     baselineImageVisible: true,
   },
-};
+} satisfies Story;
 
-export const SwitchingViewport: Story = {
+export const SwitchingViewport = {
   args: {
     tests: makeTests({
       browsers: [Browser.Chrome, Browser.Safari],
@@ -181,9 +182,9 @@ export const SwitchingViewport: Story = {
     const items = await screen.findAllByText("1200px");
     await userEvent.click(items[canvasIndex]);
   }),
-};
+} satisfies Story;
 
-export const SwitchingBrowser: Story = {
+export const SwitchingBrowser = {
   args: SwitchingViewport.args,
   play: playAll(async ({ canvasElement, canvasIndex }) => {
     const canvas = within(canvasElement);
@@ -192,18 +193,18 @@ export const SwitchingBrowser: Story = {
     const items = await screen.findAllByText("Safari");
     await userEvent.click(items[canvasIndex]);
   }),
-};
+} satisfies Story;
 
-export const SwitchingTests: Story = {
+export const SwitchingTests = {
   args: SwitchingViewport.args,
   render: function RenderSwitchingTests({ ...props }: ComponentProps<typeof SnapshotComparison>) {
-    const [tests, setTests] = React.useState(null);
+    const [tests, setTests] = React.useState<StoryTestFieldsFragment[]>();
     if (!tests) setTimeout(() => setTests([makeTest({})]), 0);
     return <SnapshotComparison {...props} tests={tests || props.tests} />;
   },
-};
+} satisfies Story;
 
-export const InteractionFailure: Story = {
+export const InteractionFailure = {
   args: {
     tests: [
       makeTest({
@@ -250,22 +251,22 @@ Ignored nodes: comments, script, style
       }),
     ],
   },
-};
+} satisfies Story;
 
-export const BatchAcceptOptions: Story = {
+export const BatchAcceptOptions = {
   args: WithSingleTest.args,
   play: playAll(async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const menu = await canvas.findByRole("button", { name: "Batch accept" });
     await userEvent.click(menu);
   }),
-};
+} satisfies Story;
 
-export const BatchAcceptedBuild: Story = {
+export const BatchAcceptedBuild = {
   args: WithSingleTest.args,
   play: playAll(BatchAcceptOptions, async ({ args, canvasIndex }) => {
     const items = await screen.findAllByText("Accept entire build");
     await userEvent.click(items[canvasIndex]);
     await expect(args.onAccept).toHaveBeenCalledWith(args.tests[0].id, "BUILD");
   }),
-};
+} satisfies Story;
