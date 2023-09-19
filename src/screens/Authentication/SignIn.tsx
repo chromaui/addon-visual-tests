@@ -18,12 +18,12 @@ interface SignInProps {
 
 export const SignIn = ({ onBack, onSignIn, onSignInWithSSO }: SignInProps) => (
   <Container>
-    {onBack ? (
+    {onBack && (
       <BackButton onClick={onBack}>
         <BackIcon />
         Back
       </BackButton>
-    ) : null}
+    )}
     <Stack alignItems="center" textAlign="center">
       <div>
         <LinkIcon />
