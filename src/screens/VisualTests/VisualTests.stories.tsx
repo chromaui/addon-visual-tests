@@ -339,7 +339,6 @@ export const Announced: Story = {
 };
 
 export const Published: Story = {
-  args: {},
   parameters: {
     ...withBuilds({ selectedBuild: null, lastBuildOnBranch: inProgressBuild }),
   },
