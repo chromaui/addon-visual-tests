@@ -35,7 +35,7 @@ const Panels = styled.div<{ orientation: "right" | "bottom" }>(
     justifyContent: "center",
     alignItems: "center",
     gap: 40,
-    margin: 40,
+    padding: 40,
   }
 );
 
@@ -47,8 +47,7 @@ const Panel = styled.div<{ orientation: "right" | "bottom" }>(
   }),
   ({ theme }) => ({
     position: "relative",
-    boxSizing: "content-box",
-    border: `1px solid ${theme.color.border}`,
+    outline: `1px solid ${theme.color.border}`,
     background: theme.background.content,
     color: theme.color.defaultText,
     fontSize: theme.typography.size.s2 - 1,
@@ -107,6 +106,11 @@ const preview: Preview = {
     },
     backgrounds: {
       disable: true,
+    },
+    viewport: {
+      viewports: {
+        default: { name: "Default", styles: { width: "960px", height: "720px" } },
+      },
     },
     chromatic: {
       modes: componentModes,
