@@ -50,6 +50,8 @@ const Panel = styled.div<{ orientation: "right" | "bottom" }>(
     containerName: "storybookRoot",
     position: "relative",
     outline: `1px solid ${theme.appBorderColor}`,
+    // Add a backdrop to the outline because appBorderColor is semi-transparent
+    boxShadow: `0 0 0 1px ${theme.background.content}`,
     background: theme.background.content,
     color: theme.color.defaultText,
     fontSize: theme.typography.size.s2 - 1,
