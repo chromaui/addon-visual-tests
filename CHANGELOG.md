@@ -1,3 +1,15 @@
+# v0.0.82 (Tue Sep 19 2023)
+
+#### 🐛 Bug Fix
+
+- Filter out the local build and selected builds if they are from a previous branch [#111](https://github.com/chromaui/addon-visual-tests/pull/111) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.81 (Tue Sep 19 2023)
 
 #### 🐛 Bug Fix
