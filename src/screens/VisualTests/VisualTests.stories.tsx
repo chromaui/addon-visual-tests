@@ -115,11 +115,12 @@ const meta = {
   },
   args: {
     gitInfo: {
-      userEmailHash: "abc123",
+      userEmailHash: "xyz987",
       branch: "feature-branch",
       slug: "chromaui/addon-visual-tests",
-      uncommittedHash: "",
+      commit: "abc123",
       committedAt: Date.now() - 1000,
+      uncommittedHash: "",
     },
     storyId: "button--primary",
     projectId: "Project:id123",
@@ -275,6 +276,19 @@ export const NoChanges = {
     ),
   },
 } satisfies Story;
+
+/** We just switched branches so the selected build is out of date */
+export const NoChangesOnWrongBranch: Story = {
+  args: {
+    gitInfo: { ...meta.args.gitInfo, branch: "new-branch" },
+  },
+  parameters: {
+    ...withBuilds({ selectedBuild: passedBuild, lastBuildOnBranch: undefined }),
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304933&t=0rxMQnkxsVpVj1qy-4"
+    ),
+  },
+};
 
 /**
  * We've started a new build but it's not done yet

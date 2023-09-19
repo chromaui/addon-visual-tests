@@ -147,8 +147,10 @@ export const StoryInfo = ({
       <Info>
         <span>
           <b>
-            {changeCount && status === TestStatus.Pending
-              ? pluralize("change", changeCount, true)
+            {changeCount
+              ? `${pluralize("change", changeCount, true)}${
+                  status === TestStatus.Accepted ? " accepted" : ""
+                }`
               : "No changes"}
             {brokenCount ? `, ${pluralize("error", brokenCount, true)}` : null}
           </b>

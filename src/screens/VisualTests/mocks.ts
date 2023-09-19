@@ -122,7 +122,7 @@ export const announcedBuild = {
   id: "1",
   number: 1,
   branch: "feature-branch",
-  commit: "ecacce21db9a0f",
+  commit: "abc123",
   committedAt: Date.now() - 2000,
   uncommittedHash: "",
   status: BuildStatus.Announced,
