@@ -77,8 +77,7 @@ export const SnapshotComparison = ({
   // isNewStory is when the story itself is added and all tests should also be added
   const isNewStory = tests.every((test) => test.result === TestResult.Added);
 
-  // This checks if the specific comparison is new, but the story itself is not.
-  // Rather than determine why the test was
+  // This checks if the specific comparison is new, but the story itself is not. This indicates it was probably a new mode being added.
   const isNewTestOnExistingStory =
     selectedComparison.result === ComparisonResult.Added && !isNewStory;
 
