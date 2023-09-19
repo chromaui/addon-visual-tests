@@ -12,12 +12,13 @@ import { Text as CenterText } from "../../components/Text";
 import { getFragment } from "../../gql";
 import {
   BuildStatus,
-  NextBuildFieldsFragment,
+  LastBuildOnBranchBuildFieldsFragment,
   ReviewTestBatch,
-  StoryBuildFieldsFragment,
+  SelectedBuildFieldsFragment,
+  StoryTestFieldsFragment,
   TestResult,
 } from "../../gql/graphql";
-import { RunningBuildPayload } from "../../types";
+import { LocalBuildProgress } from "../../types";
 import { BuildEyebrow } from "./BuildEyebrow";
 import { FragmentStoryTestFields } from "./graphql";
 import { RenderSettings } from "./RenderSettings";
@@ -27,31 +28,31 @@ import { Warnings } from "./Warnings";
 
 interface BuildResultsProps {
   branch: string;
-  runningBuild: RunningBuildPayload;
-  storyBuild?: StoryBuildFieldsFragment;
-  nextBuild: NextBuildFieldsFragment;
-  nextBuildCompletedStory: boolean;
-  switchToNextBuild?: () => void;
+  localBuildProgress?: LocalBuildProgress;
+  selectedBuild: SelectedBuildFieldsFragment;
+  lastBuildOnBranch?: LastBuildOnBranchBuildFieldsFragment;
+  lastBuildOnBranchCompletedStory: boolean;
+  switchToLastBuildOnBranch?: () => void;
   startDevBuild: () => void;
   userCanReview: boolean;
   isReviewing: boolean;
-  onAccept: (testId: string, batch: ReviewTestBatch) => Promise<void>;
+  onAccept: (testId: StoryTestFieldsFragment["id"], batch?: ReviewTestBatch) => void;
   onUnaccept: (testId: string) => Promise<void>;
   setAccessToken: (accessToken: string | null) => void;
 }
 
 export const BuildResults = ({
   branch,
-  runningBuild,
-  nextBuild,
-  nextBuildCompletedStory,
-  switchToNextBuild,
+  localBuildProgress,
+  lastBuildOnBranch,
+  lastBuildOnBranchCompletedStory,
+  switchToLastBuildOnBranch,
   startDevBuild,
   userCanReview,
   isReviewing,
   onAccept,
   onUnaccept,
-  storyBuild,
+  selectedBuild,
   setAccessToken,
 }: BuildResultsProps) => {
   const [settingsVisible, setSettingsVisible] = useState(false);
@@ -59,34 +60,42 @@ export const BuildResults = ({
   const [baselineImageVisible, setBaselineImageVisible] = useState(false);
   const toggleBaselineImage = () => setBaselineImageVisible(!baselineImageVisible);
 
-  const isRunningBuildInProgress = runningBuild && runningBuild.currentStep !== "complete";
+  const isLocalBuildInProgress =
+    localBuildProgress && localBuildProgress.currentStep !== "complete";
 
   const storyTests = [
     ...getFragment(
       FragmentStoryTestFields,
-      storyBuild && "testsForStory" in storyBuild ? storyBuild.testsForStory.nodes : []
+      selectedBuild && "testsForStory" in selectedBuild && selectedBuild.testsForStory
+        ? selectedBuild.testsForStory.nodes
+        : []
     ),
   ];
 
-  const isReviewable = nextBuild.id === storyBuild?.id;
-  const isStorySuperseded = !isReviewable && nextBuildCompletedStory;
+  const isReviewable = lastBuildOnBranch?.id === selectedBuild?.id;
+  const isStorySuperseded = !isReviewable && lastBuildOnBranchCompletedStory;
   // Do we want to encourage them to switch to the next build?
-  const shouldSwitchToNextBuild = isStorySuperseded && !!switchToNextBuild;
+  const shouldSwitchToLastBuildOnBranch = isStorySuperseded && !!switchToLastBuildOnBranch;
 
-  const nextBuildInProgress = nextBuild.status === BuildStatus.InProgress;
+  const lastBuildOnBranchInProgress = lastBuildOnBranch?.status === BuildStatus.InProgress;
   const showBuildStatus =
     // We always want to show the status of the running build (until it is done)
-    isRunningBuildInProgress ||
+    isLocalBuildInProgress ||
     // Even if there's no build running, we need to tell them why they can't review, unless
     // the story is superseded and the UI is already telling them
-    (!isReviewable && !shouldSwitchToNextBuild);
-  const runningBuildIsNextBuild = runningBuild && runningBuild?.buildId === nextBuild.id;
+    (!isReviewable && !shouldSwitchToLastBuildOnBranch);
+  const localBuildProgressIsLastBuildOnBranch =
+    localBuildProgress && localBuildProgress?.buildId === lastBuildOnBranch?.id;
   const buildStatus = showBuildStatus && (
     <BuildEyebrow
       branch={branch}
-      runningBuild={(runningBuildIsNextBuild || isRunningBuildInProgress) && runningBuild}
-      nextBuildInProgress={nextBuildInProgress}
-      switchToNextBuild={switchToNextBuild}
+      localBuildProgress={
+        localBuildProgressIsLastBuildOnBranch || isLocalBuildInProgress
+          ? localBuildProgress
+          : undefined
+      }
+      lastBuildOnBranchInProgress={lastBuildOnBranchInProgress}
+      switchToLastBuildOnBranch={switchToLastBuildOnBranch}
     />
   );
 
@@ -122,9 +131,9 @@ export const BuildResults = ({
     );
   }
 
-  const { status } = storyBuild;
-  const startedAt = "startedAt" in storyBuild && storyBuild.startedAt;
-  const isStoryBuildStarting = [
+  const { status } = selectedBuild;
+  const startedAt = "startedAt" in selectedBuild && selectedBuild.startedAt;
+  const isSelectedBuildStarting = [
     BuildStatus.Announced,
     BuildStatus.Published,
     BuildStatus.Prepared,
@@ -160,14 +169,14 @@ export const BuildResults = ({
           {...{
             tests: storyTests,
             startedAt,
-            isStarting: isStoryBuildStarting,
+            isStarting: isSelectedBuildStarting,
             startDevBuild,
             isBuildFailed,
-            shouldSwitchToNextBuild,
-            switchToNextBuild,
+            shouldSwitchToLastBuildOnBranch,
+            switchToLastBuildOnBranch,
           }}
         />
-        {!isStoryBuildStarting && storyTests && storyTests.length > 0 && (
+        {!isSelectedBuildStarting && storyTests && storyTests.length > 0 && (
           <SnapshotComparison
             {...{
               tests: storyTests,
@@ -207,11 +216,11 @@ export const BuildResults = ({
           <Col style={{ overflow: "hidden", whiteSpace: "nowrap" }}>
             {baselineImageVisible ? (
               <Text style={{ marginLeft: 5, width: "100%" }}>
-                <b>Baseline</b> Build {storyBuild.number} on {storyBuild.branch}
+                <b>Baseline</b> Build {selectedBuild.number} on {selectedBuild.branch}
               </Text>
             ) : (
               <Text style={{ marginLeft: 5, width: "100%" }}>
-                <b>Latest</b> Build {storyBuild.number} on {storyBuild.branch}
+                <b>Latest</b> Build {selectedBuild.number} on {selectedBuild.branch}
               </Text>
             )}
           </Col>

@@ -25,37 +25,41 @@ export const Authentication = ({ setAccessToken, hasProjectId }: AuthenticationP
     onFailure: () => {},
   });
 
-  switch (true) {
-    case screen === "welcome" && !hasProjectId:
-      return <Welcome onNext={() => setScreen("signin")} />;
-
-    case screen === "signin" || (screen === "welcome" && hasProjectId):
-      return (
-        <SignIn
-          onBack={hasProjectId ? undefined : () => setScreen("welcome")}
-          onSignIn={() => onSignIn().then(() => setScreen("verify"))}
-          onSignInWithSSO={() => setScreen("subdomain")}
-        />
-      );
-
-    case screen === "subdomain":
-      return (
-        <SetSubdomain
-          onBack={() => setScreen("signin")}
-          onSignIn={(subdomain: string) => onSignIn(subdomain).then(() => setScreen("verify"))}
-        />
-      );
-
-    case screen === "verify":
-      return (
-        <Verify
-          onBack={() => setScreen("signin")}
-          userCode={userCode}
-          verificationUrl={verificationUrl}
-        />
-      );
-
-    default:
-      return null;
+  if (screen === "welcome" && !hasProjectId) {
+    return <Welcome onNext={() => setScreen("signin")} />;
   }
+
+  if (screen === "signin" || (screen === "welcome" && hasProjectId)) {
+    return (
+      <SignIn
+        {...(hasProjectId ? { onBack: () => setScreen("welcome") } : {})}
+        onSignIn={() => onSignIn().then(() => setScreen("verify"))}
+        onSignInWithSSO={() => setScreen("subdomain")}
+      />
+    );
+  }
+
+  if (screen === "subdomain") {
+    return (
+      <SetSubdomain
+        onBack={() => setScreen("signin")}
+        onSignIn={(subdomain: string) => onSignIn(subdomain).then(() => setScreen("verify"))}
+      />
+    );
+  }
+
+  if (screen === "verify") {
+    if (!userCode || !verificationUrl) {
+      throw new Error("Expected to have a `userCode` and `verificationUrl` if at `verify` step");
+    }
+    return (
+      <Verify
+        onBack={() => setScreen("signin")}
+        userCode={userCode}
+        verificationUrl={verificationUrl}
+      />
+    );
+  }
+
+  return null;
 };

@@ -1,12 +1,12 @@
-import { updateStoryBuildInfo } from "./updateStoryBuildInfo";
+import { updateSelectedBuildInfo } from "./updateSelectedBuildInfo";
 
 it("does nothing if there is no next build", () => {
   expect(
-    updateStoryBuildInfo(
+    updateSelectedBuildInfo(
       { storyId: "storyId" },
       {
-        shouldSwitchToNextBuild: false,
-        nextBuildId: undefined,
+        shouldSwitchToLastBuildOnBranch: false,
+        lastBuildOnBranchId: undefined,
         storyId: "storyId",
       }
     )
@@ -15,16 +15,16 @@ it("does nothing if there is no next build", () => {
 
 it("sets the story build from the next build, simple", () => {
   expect(
-    updateStoryBuildInfo(
+    updateSelectedBuildInfo(
       { storyId: "storyId" },
       {
-        shouldSwitchToNextBuild: true,
-        nextBuildId: "nextBuildId",
+        shouldSwitchToLastBuildOnBranch: true,
+        lastBuildOnBranchId: "lastBuildOnBranchId",
         storyId: "storyId",
       }
     )
   ).toEqual({
-    buildId: "nextBuildId",
+    buildId: "lastBuildOnBranchId",
     storyId: "storyId",
   });
 });
@@ -32,11 +32,11 @@ it("sets the story build from the next build, simple", () => {
 // We should remain on the "new build" screen until we see a completed story
 it("does not set the story build from the next build, if the next build should not be switched to", () => {
   expect(
-    updateStoryBuildInfo(
+    updateSelectedBuildInfo(
       { storyId: "storyId" },
       {
-        shouldSwitchToNextBuild: false,
-        nextBuildId: "nextBuildId",
+        shouldSwitchToLastBuildOnBranch: false,
+        lastBuildOnBranchId: "lastBuildOnBranchId",
         storyId: "storyId",
       }
     )
@@ -45,27 +45,27 @@ it("does not set the story build from the next build, if the next build should n
 
 it("updates the story build from the next build, simple", () => {
   expect(
-    updateStoryBuildInfo(
+    updateSelectedBuildInfo(
       { buildId: "oldBuildId", storyId: "storyId" },
       {
-        shouldSwitchToNextBuild: true,
-        nextBuildId: "nextBuildId",
+        shouldSwitchToLastBuildOnBranch: true,
+        lastBuildOnBranchId: "lastBuildOnBranchId",
         storyId: "storyId",
       }
     )
   ).toEqual({
-    buildId: "nextBuildId",
+    buildId: "lastBuildOnBranchId",
     storyId: "storyId",
   });
 });
 
 it("does not update the story build from the next build, if the next build should not be switched to", () => {
   expect(
-    updateStoryBuildInfo(
+    updateSelectedBuildInfo(
       { buildId: "oldBuildId", storyId: "storyId" },
       {
-        shouldSwitchToNextBuild: false,
-        nextBuildId: "nextBuildId",
+        shouldSwitchToLastBuildOnBranch: false,
+        lastBuildOnBranchId: "lastBuildOnBranchId",
         storyId: "storyId",
       }
     )
@@ -74,33 +74,33 @@ it("does not update the story build from the next build, if the next build shoul
 
 it("updates the storyId, simple", () => {
   expect(
-    updateStoryBuildInfo(
+    updateSelectedBuildInfo(
       {
-        buildId: "nextBuildId",
+        buildId: "lastBuildOnBranchId",
         storyId: "storyId",
       },
       {
-        shouldSwitchToNextBuild: true,
-        nextBuildId: "nextBuildId",
+        shouldSwitchToLastBuildOnBranch: true,
+        lastBuildOnBranchId: "lastBuildOnBranchId",
         storyId: "newStoryId",
       }
     )
   ).toEqual({
-    buildId: "nextBuildId",
+    buildId: "lastBuildOnBranchId",
     storyId: "newStoryId",
   });
 });
 
 it("updates the storyId, keeping the old build if the next build should not be switched to", () => {
   expect(
-    updateStoryBuildInfo(
+    updateSelectedBuildInfo(
       {
         buildId: "oldBuildId",
         storyId: "storyId",
       },
       {
-        shouldSwitchToNextBuild: false,
-        nextBuildId: "nextBuildId",
+        shouldSwitchToLastBuildOnBranch: false,
+        lastBuildOnBranchId: "lastBuildOnBranchId",
         storyId: "newStoryId",
       }
     )

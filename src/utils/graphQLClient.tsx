@@ -7,7 +7,7 @@ import { ACCESS_TOKEN_KEY, ADDON_ID, CHROMATIC_API_URL } from "../constants";
 
 export { Provider };
 
-let currentToken: string = localStorage.getItem(ACCESS_TOKEN_KEY);
+let currentToken: string | null = localStorage.getItem(ACCESS_TOKEN_KEY);
 const accessTokenSharedStateKey = `${ADDON_ID}/accessToken`;
 
 export const useAccessToken = () => {
@@ -16,7 +16,7 @@ export const useAccessToken = () => {
     token: currentToken,
   });
 
-  const updateToken = (newToken: string) => {
+  const updateToken = (newToken: string | null) => {
     currentToken = newToken;
     if (currentToken) {
       localStorage.setItem(ACCESS_TOKEN_KEY, currentToken);

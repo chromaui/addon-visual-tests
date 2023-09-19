@@ -9,14 +9,14 @@ import {
   INITIAL_BUILD_PAYLOAD,
   isKnownStep,
 } from "./buildSteps";
-import { RunningBuildPayload } from "./types";
+import { LocalBuildProgress } from "./types";
 import { useAddonState } from "./useAddonState/server";
 
 const ESTIMATED_PROGRESS_INTERVAL = 2000;
 
 const getBuildStepData = (
   task: TaskName,
-  previousBuildProgress?: RunningBuildPayload["previousBuildProgress"]
+  previousBuildProgress?: LocalBuildProgress["previousBuildProgress"]
 ) => {
   if (!isKnownStep(task)) throw new Error(`Unknown step: ${task}`);
 
@@ -44,16 +44,21 @@ const getBuildStepData = (
 
 export const onStartOrProgress =
   (
-    runningBuildState: ReturnType<typeof useAddonState<RunningBuildPayload>>,
-    timeout: ReturnType<typeof setTimeout>
+    localBuildProgress: ReturnType<typeof useAddonState<LocalBuildProgress>>,
+    timeout?: ReturnType<typeof setTimeout>
   ) =>
   ({ ...ctx }: Context, { progress, total }: { progress?: number; total?: number } = {}) => {
     clearTimeout(timeout);
 
     if (!isKnownStep(ctx.task)) return;
 
+    // We should set this right before starting so it should never be unset during a build.
+    if (!localBuildProgress.value) {
+      throw new Error("Unexpected missing value for localBuildProgress");
+    }
+
     const { buildProgressPercentage, stepProgress, previousBuildProgress } =
-      runningBuildState.value;
+      localBuildProgress.value;
 
     const { startPercentage, endPercentage, stepPercentage } = getBuildStepData(
       ctx.task,
@@ -74,11 +79,16 @@ export const onStartOrProgress =
         (ESTIMATED_PROGRESS_INTERVAL / estimateDuration) * stepPercentage;
 
       timeout = setTimeout(() => {
+        // We should set this right before starting so it should never be unset during a build.
+        if (!localBuildProgress.value) {
+          throw new Error("Unexpected missing value for localBuildProgress");
+        }
+
         // Intentionally reference the present value here (after timeout)
-        const { currentStep } = runningBuildState.value;
+        const { currentStep } = localBuildProgress.value;
         // Only update if we haven't moved on to a later step
         if (isKnownStep(currentStep) && BUILD_STEP_ORDER.indexOf(currentStep) <= stepIndex) {
-          onStartOrProgress(runningBuildState, timeout)(ctx);
+          onStartOrProgress(localBuildProgress, timeout)(ctx);
         }
       }, ESTIMATED_PROGRESS_INTERVAL);
     }
@@ -89,7 +99,7 @@ export const onStartOrProgress =
       ...(progress && total && { numerator: progress, denominator: total }),
     };
 
-    runningBuildState.value = {
+    localBuildProgress.value = {
       buildId: ctx.announcedBuild?.id,
       buildProgressPercentage: Math.min(newPercentage, endPercentage),
       currentStep: ctx.task,
@@ -99,13 +109,18 @@ export const onStartOrProgress =
 
 export const onCompleteOrError =
   (
-    runningBuildState: ReturnType<typeof useAddonState<RunningBuildPayload>>,
-    timeout: ReturnType<typeof setTimeout>
+    localBuildProgress: ReturnType<typeof useAddonState<LocalBuildProgress>>,
+    timeout?: ReturnType<typeof setTimeout>
   ) =>
   (ctx: Context, error?: { formattedError: string; originalError: Error | Error[] }) => {
     clearTimeout(timeout);
 
-    const { buildProgressPercentage, stepProgress } = runningBuildState.value;
+    // We should set this right before starting so it should never be unset during a build.
+    if (!localBuildProgress.value) {
+      throw new Error("Unexpected missing value for localBuildProgress");
+    }
+
+    const { buildProgressPercentage, stepProgress } = localBuildProgress.value;
 
     if (isKnownStep(ctx.task)) {
       stepProgress[ctx.task] = {
@@ -115,7 +130,7 @@ export const onCompleteOrError =
     }
 
     if (error) {
-      runningBuildState.value = {
+      localBuildProgress.value = {
         buildId: ctx.announcedBuild?.id,
         buildProgressPercentage,
         currentStep: "error",
@@ -128,7 +143,7 @@ export const onCompleteOrError =
     }
 
     if (ctx.task === "snapshot") {
-      runningBuildState.value = {
+      localBuildProgress.value = {
         buildId: ctx.announcedBuild?.id,
         buildProgressPercentage: 100,
         currentStep: "complete",
@@ -141,15 +156,15 @@ export const onCompleteOrError =
   };
 
 export const runChromaticBuild = async (
-  runningBuildState: ReturnType<typeof useAddonState<RunningBuildPayload>>,
+  localBuildProgress: ReturnType<typeof useAddonState<LocalBuildProgress>>,
   flags: Flags
 ) => {
   if (!flags.projectToken) throw new Error("No project token set");
 
-  runningBuildState.value = INITIAL_BUILD_PAYLOAD;
+  localBuildProgress.value = INITIAL_BUILD_PAYLOAD;
 
   // Timeout is defined here so it's shared between all handlers
-  let timeout: ReturnType<typeof setTimeout>;
+  let timeout: ReturnType<typeof setTimeout> | undefined;
 
   await run({
     // Currently we have to have these flags.
@@ -161,10 +176,10 @@ export const runChromaticBuild = async (
       // Builds initiated from the addon are always considered local
       isLocalBuild: true,
 
-      experimental_onTaskStart: onStartOrProgress(runningBuildState, timeout),
-      experimental_onTaskProgress: onStartOrProgress(runningBuildState, timeout),
-      experimental_onTaskComplete: onCompleteOrError(runningBuildState, timeout),
-      experimental_onTaskError: onCompleteOrError(runningBuildState, timeout),
+      experimental_onTaskStart: onStartOrProgress(localBuildProgress, timeout),
+      experimental_onTaskProgress: onStartOrProgress(localBuildProgress, timeout),
+      experimental_onTaskComplete: onCompleteOrError(localBuildProgress, timeout),
+      experimental_onTaskError: onCompleteOrError(localBuildProgress, timeout),
     },
   });
 };
