@@ -1,3 +1,15 @@
+# v0.0.84 (Tue Sep 19 2023)
+
+#### 🐛 Bug Fix
+
+- Open dialog to allow creating a new project [#91](https://github.com/chromaui/addon-visual-tests/pull/91) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.83 (Tue Sep 19 2023)
 
 #### 🐛 Bug Fix
