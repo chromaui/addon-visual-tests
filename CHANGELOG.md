@@ -1,3 +1,15 @@
+# v0.0.83 (Tue Sep 19 2023)
+
+#### 🐛 Bug Fix
+
+- Implement horizontal panel layout [#109](https://github.com/chromaui/addon-visual-tests/pull/109) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v0.0.82 (Tue Sep 19 2023)
 
 #### 🐛 Bug Fix

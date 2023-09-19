@@ -46,8 +46,10 @@ const Panel = styled.div<{ orientation: "right" | "bottom" }>(
     overflow: "auto",
   }),
   ({ theme }) => ({
+    containerType: "size",
+    containerName: "storybookRoot",
     position: "relative",
-    outline: `1px solid ${theme.color.border}`,
+    outline: `1px solid ${theme.appBorderColor}`,
     background: theme.background.content,
     color: theme.color.defaultText,
     fontSize: theme.typography.size.s2 - 1,
@@ -71,7 +73,16 @@ const withTheme = (StoryFn, { globals, parameters }) => {
   return theme === "light" || theme === "dark" ? (
     <ThemeProvider theme={convert(themes[theme])}>
       <Global styles={createReset} />
-      <Global styles={{ "#storybook-root": { height: "100vh", padding: 0 } }}></Global>
+      <Global
+        styles={{
+          "#storybook-root": {
+            height: "100vh",
+            padding: 0,
+            containerType: "size",
+            containerName: "storybookRoot",
+          },
+        }}
+      ></Global>
       <ThemedSetRoot />
       <StoryFn />
     </ThemeProvider>
