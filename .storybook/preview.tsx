@@ -47,7 +47,8 @@ const Panel = styled.div<{ orientation: "right" | "bottom" }>(
   }),
   ({ theme }) => ({
     position: "relative",
-    outline: `1px solid ${theme.color.border}`,
+    boxSizing: "content-box",
+    border: `1px solid ${theme.color.border}`,
     background: theme.background.content,
     color: theme.color.defaultText,
     fontSize: theme.typography.size.s2 - 1,
