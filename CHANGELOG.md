@@ -1,3 +1,51 @@
+# v0.0.82 (Tue Sep 19 2023)
+
+#### 🐛 Bug Fix
+
+- Filter out the local build and selected builds if they are from a previous branch [#111](https://github.com/chromaui/addon-visual-tests/pull/111) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.81 (Tue Sep 19 2023)
+
+#### 🐛 Bug Fix
+
+- Restore the chromatic dependency to `latest` [#113](https://github.com/chromaui/addon-visual-tests/pull/113) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.80 (Mon Sep 18 2023)
+
+#### 🐛 Bug Fix
+
+- Show "1 change accepted" [#103](https://github.com/chromaui/addon-visual-tests/pull/103) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.79 (Mon Sep 18 2023)
+
+#### 🐛 Bug Fix
+
+- Turn on strict types (!) [#110](https://github.com/chromaui/addon-visual-tests/pull/110) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.78 (Mon Sep 18 2023)
 
 #### 🐛 Bug Fix

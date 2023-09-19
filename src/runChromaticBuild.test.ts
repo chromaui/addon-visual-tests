@@ -37,6 +37,19 @@ describe("onStartOrProgress", () => {
     store.value = INITIAL_BUILD_PAYLOAD;
   });
 
+  it("sets build id and branch", () => {
+    const announcedBuild = { id: "build-id" };
+    const git = { branch: "feature-branch" };
+    onStartOrProgress(store)({ task: "initialize", announcedBuild, git } as any);
+    expect(store.value).toMatchObject({
+      buildId: "build-id",
+      branch: "feature-branch",
+      buildProgressPercentage: expect.any(Number),
+      currentStep: "initialize",
+      stepProgress: { initialize: { startedAt: expect.any(Number) } },
+    });
+  });
+
   it("sets build and step progress percentage at each step", async () => {
     expect(store.value).toMatchObject({
       buildProgressPercentage: 0,
