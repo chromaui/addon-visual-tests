@@ -1,3 +1,15 @@
+# v0.0.89 (Wed Sep 20 2023)
+
+#### 🐛 Bug Fix
+
+- Support actual modes rather than just viewports [#117](https://github.com/chromaui/addon-visual-tests/pull/117) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v0.0.88 (Wed Sep 20 2023)
 
 #### 🐛 Bug Fix
