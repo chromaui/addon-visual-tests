@@ -77,12 +77,12 @@ const StepDetail = styled.div<{ isCurrent: boolean; isPending: boolean }>(
     fontFamily: "Menlo, monospace",
     fontSize: "12px",
     lineHeight: "24px",
-    margin: "0 10px",
+    margin: "0 15px",
     "&:first-of-type": {
-      marginTop: 8,
+      marginTop: 10,
     },
     "&:last-of-type": {
-      marginBottom: 8,
+      marginBottom: 10,
     },
   })
 );
