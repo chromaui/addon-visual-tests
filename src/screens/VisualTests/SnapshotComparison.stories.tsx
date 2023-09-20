@@ -4,6 +4,7 @@ import { screen, userEvent, within } from "@storybook/testing-library";
 import React, { ComponentProps } from "react";
 
 import { Browser, ComparisonResult, StoryTestFieldsFragment, TestStatus } from "../../gql/graphql";
+import { panelModes } from "../../modes";
 import { playAll } from "../../utils/playAll";
 import { makeTest, makeTests } from "../../utils/storyData";
 import { interactionFailureTests } from "./mocks";
@@ -34,6 +35,11 @@ const meta = {
     onUnaccept: action("onUnaccept"),
     baselineImageVisible: false,
     shouldSwitchToLastBuildOnBranch: false,
+  },
+  parameters: {
+    chromatic: {
+      modes: panelModes,
+    },
   },
 } satisfies Meta<typeof SnapshotComparison>;
 

@@ -10,6 +10,7 @@ import {
 import type { Preview } from "@storybook/react";
 import { initialize, mswLoader } from "msw-storybook-addon";
 import React from "react";
+import { baseModes } from "../src/modes";
 
 // Initialize MSW
 initialize({
@@ -34,7 +35,7 @@ const Panels = styled.div<{ orientation: "right" | "bottom" }>(
     justifyContent: "center",
     alignItems: "center",
     gap: 40,
-    margin: 40,
+    padding: 40,
   }
 );
 
@@ -49,6 +50,8 @@ const Panel = styled.div<{ orientation: "right" | "bottom" }>(
     containerName: "storybookRoot",
     position: "relative",
     outline: `1px solid ${theme.appBorderColor}`,
+    // Add a backdrop to the outline because appBorderColor is semi-transparent
+    boxShadow: `0 0 0 1px ${theme.background.content}`,
     background: theme.background.content,
     color: theme.color.defaultText,
     fontSize: theme.typography.size.s2 - 1,
@@ -117,8 +120,13 @@ const preview: Preview = {
     backgrounds: {
       disable: true,
     },
+    viewport: {
+      viewports: {
+        default: { name: "Default", styles: { width: "960px", height: "720px" } },
+      },
+    },
     chromatic: {
-      viewports: [960],
+      modes: baseModes,
     },
     controls: {
       matchers: {

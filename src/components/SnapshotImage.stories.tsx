@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { ComparisonResult } from "../gql/graphql";
+import { baseModes } from "../modes";
 import { SnapshotImage } from "./SnapshotImage";
 
 const meta = {
@@ -14,6 +15,12 @@ const meta = {
     comparisonResult: ComparisonResult.Changed,
     diffVisible: false,
     focusVisible: false,
+  },
+  parameters: {
+    chromatic: {
+      // No need to test these against a dark background
+      modes: { ...baseModes, Dark: { disabled: true } },
+    },
   },
 } satisfies Meta<typeof SnapshotImage>;
 
