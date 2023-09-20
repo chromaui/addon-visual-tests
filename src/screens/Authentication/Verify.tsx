@@ -10,6 +10,7 @@ import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
 import { fetchAccessToken, TokenExchangeParameters } from "../../utils/requestAccessToken";
 import { useChromaticDialog } from "../../utils/useChromaticDialog";
+import { useErrorNotification } from "../../utils/useErrorNotification";
 
 const Digits = styled.ol(({ theme }) => ({
   display: "inline-flex",
@@ -36,10 +37,11 @@ interface VerifyProps {
 }
 
 export const Verify = ({ onBack, setAccessToken, exchangeParameters }: VerifyProps) => {
+  const onError = useErrorNotification();
+
   const { user_code: userCode, verificationUrl } = exchangeParameters;
 
   const [openDialog, closeDialog] = useChromaticDialog(async (event) => {
-    console.log(event);
     // If the user logs in as part of the grant process, don't close the dialog,
     // instead redirect us back to where we were trying to go.
     if (event.message === "login") {
@@ -47,7 +49,6 @@ export const Verify = ({ onBack, setAccessToken, exchangeParameters }: VerifyPro
     }
 
     if (event.message === "grant") {
-      console.log("grant", event.denied);
       try {
         setAccessToken(await fetchAccessToken(exchangeParameters));
 
@@ -55,7 +56,7 @@ export const Verify = ({ onBack, setAccessToken, exchangeParameters }: VerifyPro
 
         closeDialog();
       } catch (err) {
-        // TODO
+        onError("Error getting access token", err);
       }
     }
   });

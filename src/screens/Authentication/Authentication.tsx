@@ -1,9 +1,7 @@
-import { useStorybookApi } from "@storybook/manager-api";
-import { color } from "@storybook/theming";
 import React, { useCallback, useState } from "react";
 
-import { ADDON_ID } from "../../constants";
 import { initiateSignin, TokenExchangeParameters } from "../../utils/requestAccessToken";
+import { useErrorNotification } from "../../utils/useErrorNotification";
 import { SetSubdomain } from "./SetSubdomain";
 import { SignIn } from "./SignIn";
 import { Verify } from "./Verify";
@@ -17,9 +15,9 @@ interface AuthenticationProps {
 type AuthenticationScreen = "welcome" | "signin" | "subdomain" | "verify";
 
 export const Authentication = ({ setAccessToken, hasProjectId }: AuthenticationProps) => {
-  const api = useStorybookApi();
   const [screen, setScreen] = useState<AuthenticationScreen>(hasProjectId ? "signin" : "welcome");
   const [exchangeParameters, setExchangeParameters] = useState<TokenExchangeParameters>();
+  const onError = useErrorNotification();
 
   const initiateSignInAndMoveToVerify = useCallback(
     async (subdomain?: string) => {
@@ -27,23 +25,10 @@ export const Authentication = ({ setAccessToken, hasProjectId }: AuthenticationP
         setExchangeParameters(await initiateSignin(subdomain));
         setScreen("verify");
       } catch (err: any) {
-        // TODO API for this
-        api.addNotification({
-          id: `${ADDON_ID}/signin-error`,
-          content: {
-            headline: "Sign in Error",
-            subHeadline: err.toString(),
-          },
-          icon: {
-            name: "failed",
-            color: color.negative,
-          },
-          // @ts-expect-error SB needs a proper API for no link
-          link: undefined,
-        });
+        onError("Sign in Error", err);
       }
     },
-    [api]
+    [onError]
   );
 
   if (screen === "welcome" && !hasProjectId) {
