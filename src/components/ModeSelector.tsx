@@ -53,6 +53,7 @@ export const ModeSelector = ({
 
   return (
     <WithTooltip
+      key={selectedMode.name}
       hasChrome={false}
       placement="top"
       trigger="hover"
