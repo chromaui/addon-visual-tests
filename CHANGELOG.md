@@ -1,3 +1,76 @@
+# v0.0.89 (Wed Sep 20 2023)
+
+#### 🐛 Bug Fix
+
+- Support actual modes rather than just viewports [#117](https://github.com/chromaui/addon-visual-tests/pull/117) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.88 (Wed Sep 20 2023)
+
+#### 🐛 Bug Fix
+
+- Clear access token on expiration or auth error [#105](https://github.com/chromaui/addon-visual-tests/pull/105) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.87 (Wed Sep 20 2023)
+
+#### 🐛 Bug Fix
+
+- Onboarding: Show auth screen when projectId is detected [#99](https://github.com/chromaui/addon-visual-tests/pull/99) ([@ndelangen](https://github.com/ndelangen) [@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 2
+
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.86 (Wed Sep 20 2023)
+
+#### 🐛 Bug Fix
+
+- Send user back to oauth flow after login [#100](https://github.com/chromaui/addon-visual-tests/pull/100) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.85 (Wed Sep 20 2023)
+
+#### 🐛 Bug Fix
+
+- Setup modes for Chromatic [#114](https://github.com/chromaui/addon-visual-tests/pull/114) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.84 (Tue Sep 19 2023)
+
+#### 🐛 Bug Fix
+
+- Open dialog to allow creating a new project [#91](https://github.com/chromaui/addon-visual-tests/pull/91) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.83 (Tue Sep 19 2023)
 
 #### 🐛 Bug Fix

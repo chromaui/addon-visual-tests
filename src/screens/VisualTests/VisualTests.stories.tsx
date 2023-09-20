@@ -17,6 +17,7 @@ import type {
   StoryTestFieldsFragment,
 } from "../../gql/graphql";
 import { Browser, ComparisonResult, TestResult, TestStatus } from "../../gql/graphql";
+import { panelModes } from "../../modes";
 import { SelectedBuildWithTests } from "../../types";
 import { storyWrapper } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
@@ -109,7 +110,12 @@ const meta = {
   title: "screens/VisualTests/VisualTests",
   component: VisualTests,
   decorators: [storyWrapper, withManagerApi],
-  parameters: withBuilds({ selectedBuild: passedBuild }),
+  parameters: {
+    ...withBuilds({ selectedBuild: passedBuild }),
+    chromatic: {
+      modes: panelModes,
+    },
+  },
   argTypes: {
     addNotification: { type: "function", target: "manager-api" },
   },
@@ -493,7 +499,7 @@ export const AcceptingFailed = {
       ],
     },
   },
-  play: playAll(async ({ canvasElement, argsByTarget, args, argTypes }) => {
+  play: playAll(async ({ canvasElement, argsByTarget }) => {
     const button = await findByRole(canvasElement, "button", { name: "Accept" });
     await fireEvent.click(button);
     await waitFor(async () =>

@@ -157,20 +157,9 @@ export const FragmentStoryTestFields = graphql(/* GraphQL */ `
           imageWidth
         }
       }
-      viewport {
-        id
-        name
-        width
-        isDefault
-      }
     }
-    parameters {
-      viewport {
-        id
-        name
-        width
-        isDefault
-      }
+    mode {
+      name
     }
     story {
       storyId

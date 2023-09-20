@@ -5,6 +5,7 @@ import { screen, userEvent, within } from "@storybook/testing-library";
 import React from "react";
 
 import { Browser, ComparisonResult, TestStatus } from "../../gql/graphql";
+import { panelModes } from "../../modes";
 import { playAll } from "../../utils/playAll";
 import { makeTest, makeTests } from "../../utils/storyData";
 import { summarizeTests } from "../../utils/summarizeTests";
@@ -51,6 +52,11 @@ const meta = {
       </Grid>
     ),
   ],
+  parameters: {
+    chromatic: {
+      modes: panelModes,
+    },
+  },
 } satisfies Meta<typeof SnapshotControls>;
 
 export default meta;
