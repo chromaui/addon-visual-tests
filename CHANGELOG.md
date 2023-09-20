@@ -1,3 +1,15 @@
+# v0.0.88 (Wed Sep 20 2023)
+
+#### 🐛 Bug Fix
+
+- Clear access token on expiration or auth error [#105](https://github.com/chromaui/addon-visual-tests/pull/105) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v0.0.87 (Wed Sep 20 2023)
 
 #### 🐛 Bug Fix
