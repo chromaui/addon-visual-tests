@@ -37,13 +37,11 @@ const tests = [
       makeComparison({
         id: "141",
         browser: Browser.Chrome,
-        viewport: 1600,
         result: undefined,
       }),
       makeComparison({
         id: "142",
         browser: Browser.Safari,
-        viewport: 1600,
         result: ComparisonResult.Added,
       }),
     ],
@@ -88,40 +86,28 @@ it("Calculates static information correctly", () => {
       "isInProgress": true,
       "modeResults": [
         {
-          "result": "EQUAL",
-          "viewport": {
-            "id": "_1200",
-            "isDefault": true,
+          "mode": {
             "name": "1200px",
-            "width": 1200,
           },
+          "result": "EQUAL",
         },
         {
-          "result": "CAPTURE_ERROR",
-          "viewport": {
-            "id": "_800",
-            "isDefault": false,
+          "mode": {
             "name": "800px",
-            "width": 800,
           },
+          "result": "CAPTURE_ERROR",
         },
         {
-          "result": "CHANGED",
-          "viewport": {
-            "id": "_480",
-            "isDefault": false,
+          "mode": {
             "name": "480px",
-            "width": 480,
           },
+          "result": "CHANGED",
         },
         {
-          "result": "ADDED",
-          "viewport": {
-            "id": "_1600",
-            "isDefault": false,
+          "mode": {
             "name": "1600px",
-            "width": 1600,
           },
+          "result": "ADDED",
         },
       ],
       "status": "IN_PROGRESS",

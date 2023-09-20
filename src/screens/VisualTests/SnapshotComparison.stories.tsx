@@ -108,8 +108,8 @@ export const SwitchingViewport = {
         headCapture: {
           ...comparison.headCapture,
           captureImage: {
-            imageUrl: `/ProjectItem-${comparison.browser.name}-${comparison.viewport.width}.png`,
-            imageWidth: comparison.viewport.width,
+            imageUrl: `/ProjectItem-${comparison.browser.name}-${parseInt(test.mode.name, 10)}.png`,
+            imageWidth: parseInt(test.mode.name, 10),
           },
         },
       })),

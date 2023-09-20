@@ -22,16 +22,16 @@ export function summarizeTests(tests: StoryTestFieldsFragment[]) {
     changeCount,
     brokenCount,
     resultsByBrowser,
-    resultsByViewport,
-    viewportInfoById,
+    resultsByMode,
+    modesByName,
   } = tests.reduce<{
     statusCounts: { [K in TestStatus]?: number };
     isInProgress: boolean;
     changeCount: number;
     brokenCount: number;
     resultsByBrowser: Record<string, ComparisonResult | undefined>;
-    resultsByViewport: Record<string, ComparisonResult | undefined>;
-    viewportInfoById: Record<string, StoryTestFieldsFragment["parameters"]["viewport"]>;
+    resultsByMode: Record<string, ComparisonResult | undefined>;
+    modesByName: Record<string, StoryTestFieldsFragment["mode"]>;
   }>(
     (acc, test) => {
       acc.statusCounts[test.status] = (acc.statusCounts[test.status] || 0) + 1;
@@ -51,13 +51,13 @@ export function summarizeTests(tests: StoryTestFieldsFragment[]) {
           acc.resultsByBrowser[browser.id],
         ]);
       });
-      test.comparisons?.forEach(({ viewport, result }) => {
-        acc.resultsByViewport[viewport.id] = aggregateResult([
+      test.comparisons?.forEach(({ result }) => {
+        acc.resultsByMode[test.mode.name] = aggregateResult([
           result ?? undefined,
-          acc.resultsByViewport[viewport.id],
+          acc.resultsByMode[test.mode.name],
         ]);
       });
-      acc.viewportInfoById[test.parameters.viewport.id] = test.parameters.viewport;
+      acc.modesByName[test.mode.name] = test.mode;
       return acc;
     },
     {
@@ -66,8 +66,8 @@ export function summarizeTests(tests: StoryTestFieldsFragment[]) {
       changeCount: 0,
       brokenCount: 0,
       resultsByBrowser: {},
-      resultsByViewport: {},
-      viewportInfoById: {},
+      resultsByMode: {},
+      modesByName: {},
     }
   );
 
@@ -82,8 +82,8 @@ export function summarizeTests(tests: StoryTestFieldsFragment[]) {
     browser: browserInfoById[id],
     result,
   }));
-  const modeResults = Object.entries(resultsByViewport).map(([id, result]) => ({
-    viewport: viewportInfoById[id],
+  const modeResults = Object.entries(resultsByMode).map(([name, result]) => ({
+    mode: modesByName[name],
     result,
   }));
 
