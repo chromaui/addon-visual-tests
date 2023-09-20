@@ -32,7 +32,7 @@ export const Authentication = ({ setAccessToken, hasProjectId }: AuthenticationP
   if (screen === "signin" || (screen === "welcome" && hasProjectId)) {
     return (
       <SignIn
-        {...(hasProjectId ? { onBack: () => setScreen("welcome") } : {})}
+        {...(!hasProjectId ? { onBack: () => setScreen("welcome") } : {})}
         onSignIn={() => onSignIn().then(() => setScreen("verify"))}
         onSignInWithSSO={() => setScreen("subdomain")}
       />
