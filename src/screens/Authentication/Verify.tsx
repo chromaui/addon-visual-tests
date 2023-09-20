@@ -1,5 +1,5 @@
 import { styled } from "@storybook/theming";
-import React, { useEffect } from "react";
+import React from "react";
 
 import { BackButton } from "../../components/BackButton";
 import { Button } from "../../components/Button";
@@ -8,6 +8,7 @@ import { Heading } from "../../components/Heading";
 import { BackIcon } from "../../components/icons/BackIcon";
 import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
+import { fetchAccessToken, TokenExchangeParameters } from "../../utils/requestAccessToken";
 import { useChromaticDialog } from "../../utils/useChromaticDialog";
 
 const Digits = styled.ol(({ theme }) => ({
@@ -30,25 +31,34 @@ const Digits = styled.ol(({ theme }) => ({
 
 interface VerifyProps {
   onBack: () => void;
-  userCode: string;
-  verificationUrl: string;
+  setAccessToken: (token: string) => void;
+  exchangeParameters: TokenExchangeParameters;
 }
 
-export const Verify = ({ onBack, userCode, verificationUrl }: VerifyProps) => {
-  const [openDialog, closeDialog] = useChromaticDialog((event) => {
+export const Verify = ({ onBack, setAccessToken, exchangeParameters }: VerifyProps) => {
+  const { user_code: userCode, verificationUrl } = exchangeParameters;
+
+  const [openDialog, closeDialog] = useChromaticDialog(async (event) => {
+    console.log(event);
     // If the user logs in as part of the grant process, don't close the dialog,
     // instead redirect us back to where we were trying to go.
     if (event.message === "login") {
       openDialog(verificationUrl);
     }
-  });
 
-  // Close the dialog on unmount, which happens automatically when poll for a token.
-  // Later (https://linear.app/chromaui/issue/AP-3549/onboarding-flow-for-new-users-to-create-a-project)
-  // we'll actually wait for the grant event and:
-  //   - grab a token immediately
-  //   - check if the user has projects, if not redirect to new project screen.
-  useEffect(() => () => closeDialog(), [closeDialog]);
+    if (event.message === "grant") {
+      console.log("grant", event.denied);
+      try {
+        setAccessToken(await fetchAccessToken(exchangeParameters));
+
+        // TODO -- check if user has a project
+
+        closeDialog();
+      } catch (err) {
+        // TODO
+      }
+    }
+  });
 
   return (
     <Container>

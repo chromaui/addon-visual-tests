@@ -1,6 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { useStorybookApi } from "@storybook/manager-api";
+import { color } from "@storybook/theming";
+import React, { useCallback, useState } from "react";
 
-import { useSignIn } from "../../utils/useSignIn";
+import { ADDON_ID } from "../../constants";
+import { initiateSignin, TokenExchangeParameters } from "../../utils/requestAccessToken";
 import { SetSubdomain } from "./SetSubdomain";
 import { SignIn } from "./SignIn";
 import { Verify } from "./Verify";
@@ -13,16 +16,34 @@ interface AuthenticationProps {
 type AuthenticationScreen = "welcome" | "signin" | "subdomain" | "verify";
 
 export const Authentication = ({ setAccessToken }: AuthenticationProps) => {
+  const api = useStorybookApi();
   const [screen, setScreen] = useState<AuthenticationScreen>("welcome");
+  const [exchangeParameters, setExchangeParameters] = useState<TokenExchangeParameters>();
 
-  const [isMounted, setMounted] = useState(true);
-  useEffect(() => () => setMounted(false), []);
-
-  const { onSignIn, userCode, verificationUrl } = useSignIn({
-    isMounted,
-    onSuccess: setAccessToken,
-    onFailure: () => {},
-  });
+  const initiateSignInAndMoveToVerify = useCallback(
+    async (subdomain?: string) => {
+      try {
+        setExchangeParameters(await initiateSignin(subdomain));
+        setScreen("verify");
+      } catch (err: any) {
+        // TODO API for this
+        api.addNotification({
+          id: `${ADDON_ID}/signin-error`,
+          content: {
+            headline: "Sign in Error",
+            subHeadline: err.toString(),
+          },
+          icon: {
+            name: "failed",
+            color: color.negative,
+          },
+          // @ts-expect-error SB needs a proper API for no link
+          link: undefined,
+        });
+      }
+    },
+    [api]
+  );
 
   switch (screen) {
     case "welcome":
@@ -32,28 +53,25 @@ export const Authentication = ({ setAccessToken }: AuthenticationProps) => {
       return (
         <SignIn
           onBack={() => setScreen("welcome")}
-          onSignIn={() => onSignIn().then(() => setScreen("verify"))}
+          onSignIn={initiateSignInAndMoveToVerify}
           onSignInWithSSO={() => setScreen("subdomain")}
         />
       );
 
     case "subdomain":
       return (
-        <SetSubdomain
-          onBack={() => setScreen("signin")}
-          onSignIn={(subdomain: string) => onSignIn(subdomain).then(() => setScreen("verify"))}
-        />
+        <SetSubdomain onBack={() => setScreen("signin")} onSignIn={initiateSignInAndMoveToVerify} />
       );
 
     case "verify":
-      if (!userCode || !verificationUrl) {
-        throw new Error("Expected to have a `userCode` and `verificationUrl` if at `verify` step");
+      if (!exchangeParameters) {
+        throw new Error("Expected to have a `exchangeParameters` if at `verify` step");
       }
       return (
         <Verify
           onBack={() => setScreen("signin")}
-          userCode={userCode}
-          verificationUrl={verificationUrl}
+          setAccessToken={setAccessToken}
+          exchangeParameters={exchangeParameters}
         />
       );
 
