@@ -51,22 +51,22 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Welcome: Story = {
+export const Welcome = {
   parameters: withFigmaDesign(
     "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-317931&t=3EAIRe8423CpOQWY-4"
   ),
-};
+} satisfies Story;
 
-export const HasProjectId: Story = {
+export const HasProjectId = {
   parameters: withFigmaDesign(
     "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-317931&t=3EAIRe8423CpOQWY-4"
   ),
   args: {
     hasProjectId: true,
   },
-};
+} satisfies Story;
 
-export const SignIn: Story = {
+export const SignIn = {
   parameters: withFigmaDesign(
     "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-317993&t=3EAIRe8423CpOQWY-4"
   ),
@@ -90,7 +90,7 @@ export const SSO = {
   }),
 } satisfies Story;
 
-export const Verify: Story = {
+export const Verify = {
   parameters: withFigmaDesign(
     "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318063&t=3EAIRe8423CpOQWY-4"
   ),
