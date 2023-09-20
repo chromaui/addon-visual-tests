@@ -6,7 +6,7 @@ import React, { ComponentProps } from "react";
 import { Browser, ComparisonResult, StoryTestFieldsFragment, TestStatus } from "../../gql/graphql";
 import { playAll } from "../../utils/playAll";
 import { makeComparison, makeTest, makeTests } from "../../utils/storyData";
-import { interactionFailureTests } from "./mocks";
+import { interactionFailureTests, pendingBuild } from "./mocks";
 import { SnapshotComparison } from "./SnapshotComparison";
 
 const meta = {
@@ -34,12 +34,7 @@ const meta = {
     onUnaccept: action("onUnaccept"),
     baselineImageVisible: false,
     shouldSwitchToLastBuildOnBranch: false,
-    // TODO: Should probably pass in a real build here, based on whatever is in visual tests stories
-    selectedBuild: {
-      id: "build-id",
-      number: 123,
-      branch: "feature-branch",
-    } as any,
+    selectedBuild: pendingBuild,
     setSettingsVisible: action("setSettingsVisible"),
     settingsVisible: false,
     setWarningsVisible: action("setWarningsVisible"),
