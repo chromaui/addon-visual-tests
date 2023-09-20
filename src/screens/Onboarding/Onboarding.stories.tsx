@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { graphql } from "msw";
 
-import { screenModes } from "../../modes";
+import { panelModes } from "../../modes";
 import { storyWrapper } from "../../utils/graphQLClient";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
 import { Onboarding } from "./Onboarding";
@@ -11,7 +11,7 @@ const meta = {
   decorators: [storyWrapper],
   parameters: {
     chromatic: {
-      modes: screenModes,
+      modes: panelModes,
     },
     msw: {
       handlers: [

@@ -17,7 +17,7 @@ import type {
   StoryTestFieldsFragment,
 } from "../../gql/graphql";
 import { Browser, TestResult, TestStatus } from "../../gql/graphql";
-import { screenModes } from "../../modes";
+import { panelModes } from "../../modes";
 import { SelectedBuildWithTests } from "../../types";
 import { storyWrapper } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
@@ -113,7 +113,7 @@ const meta = {
   parameters: {
     ...withBuilds({ selectedBuild: passedBuild }),
     chromatic: {
-      modes: screenModes,
+      modes: panelModes,
     },
   },
   argTypes: {

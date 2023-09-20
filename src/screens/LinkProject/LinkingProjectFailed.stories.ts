@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { screenModes } from "../../modes";
+import { panelModes } from "../../modes";
 import { LinkingProjectFailed } from "./LinkingProjectFailed";
 
 const meta = {
@@ -12,7 +12,7 @@ const meta = {
   },
   parameters: {
     chromatic: {
-      modes: screenModes,
+      modes: panelModes,
     },
   },
 } satisfies Meta<typeof LinkingProjectFailed>;

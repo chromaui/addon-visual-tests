@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
 import { Browser, TestStatus } from "../../gql/graphql";
-import { screenModes } from "../../modes";
+import { panelModes } from "../../modes";
 import { makeTest, makeTests } from "../../utils/storyData";
 import { Grid } from "./SnapshotComparison";
 import { StoryInfo } from "./StoryInfo";
@@ -26,7 +26,7 @@ const meta = {
   ],
   parameters: {
     chromatic: {
-      modes: screenModes,
+      modes: panelModes,
     },
   },
 } satisfies Meta<typeof StoryInfo>;

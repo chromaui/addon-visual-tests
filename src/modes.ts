@@ -1,9 +1,9 @@
-export const componentModes = {
+export const baseModes = {
   Light: { theme: "light", viewport: "default" },
   Dark: { theme: "dark", viewport: "default" },
 };
 
-export const screenModes = {
+export const panelModes = {
   Light: { disabled: true },
   Dark: { disabled: true },
   "Right 2-up": { theme: "right", viewport: "default" },

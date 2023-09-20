@@ -4,7 +4,7 @@ import { screen, userEvent, within } from "@storybook/testing-library";
 import React, { ComponentProps } from "react";
 
 import { Browser, ComparisonResult, StoryTestFieldsFragment, TestStatus } from "../../gql/graphql";
-import { screenModes } from "../../modes";
+import { panelModes } from "../../modes";
 import { playAll } from "../../utils/playAll";
 import { makeTest, makeTests } from "../../utils/storyData";
 import { interactionFailureTests } from "./mocks";
@@ -38,7 +38,7 @@ const meta = {
   },
   parameters: {
     chromatic: {
-      modes: screenModes,
+      modes: panelModes,
     },
   },
 } satisfies Meta<typeof SnapshotComparison>;
