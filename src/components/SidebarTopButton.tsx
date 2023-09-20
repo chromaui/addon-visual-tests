@@ -65,7 +65,7 @@ export const SidebarTopButton = ({
         tooltip={
           <TooltipContent>
             <div>
-              <BuildProgressLabel localBuildProgress={localBuildProgress} />
+              <BuildProgressLabel localBuildProgress={localBuildProgress} withEmoji />
             </div>
             <ProgressTrack>
               {typeof buildProgressPercentage === "number" && (
@@ -110,7 +110,7 @@ export const SidebarTopButton = ({
       tooltip={
         <TooltipContent>
           <div>No code changes detected. Rerun tests to take new snapshots.</div>
-          <IconButton onClick={() => startBuild()}>
+          <IconButton onClick={() => startBuild()} aria-label="Rerun tests">
             <Icons icon="sync" />
             Rerun tests
           </IconButton>

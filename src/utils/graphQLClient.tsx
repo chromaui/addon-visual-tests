@@ -26,17 +26,17 @@ const setCurrentToken = (token: string | undefined) => {
   }
 };
 
-setCurrentToken(localStorage.getItem(ACCESS_TOKEN_KEY));
+setCurrentToken(localStorage.getItem(ACCESS_TOKEN_KEY) || undefined);
 
 export const useAccessToken = () => {
   // We use an object rather than a straight boolean here due to https://github.com/storybookjs/storybook/pull/23991
-  const [{ token }, setTokenState] = useAddonState<{ token: string | null }>(
+  const [{ token }, setTokenState] = useAddonState<{ token: string | undefined }>(
     `${ADDON_ID}/accessToken`,
     { token: currentToken }
   );
 
   const updateToken = React.useCallback(
-    (newToken: string) => {
+    (newToken: string | undefined) => {
       setCurrentToken(newToken);
       setTokenState({ token: currentToken });
     },
@@ -84,7 +84,7 @@ export const client = new Client({
               const { exp } = JSON.parse(atob(currentToken.split(".")[1]));
               currentTokenExpiration = exp;
             }
-            return Date.now() / 1000 > currentTokenExpiration;
+            return Date.now() / 1000 > (currentTokenExpiration || 0);
           } catch (e) {
             return true;
           }

@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { graphql } from "msw";
 
 import { ProjectQueryQuery } from "../../gql/graphql";
+import { panelModes } from "../../modes";
 import { storyWrapper } from "../../utils/graphQLClient";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
 import { LinkedProject } from "./LinkedProject";
@@ -23,6 +24,9 @@ const meta = {
   },
   decorators: [storyWrapper],
   parameters: {
+    chromatic: {
+      modes: panelModes,
+    },
     ...withGraphQLQuery("ProjectQuery", (req, res, ctx) =>
       res(
         ctx.data({

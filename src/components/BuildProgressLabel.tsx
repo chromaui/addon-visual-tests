@@ -5,13 +5,18 @@ import { LocalBuildProgress } from "../types";
 
 interface BuildProgressLabelProps {
   localBuildProgress: LocalBuildProgress;
+  withEmoji?: boolean;
 }
 
-export const BuildProgressLabel = ({ localBuildProgress }: BuildProgressLabelProps) => {
+export const BuildProgressLabel = ({
+  localBuildProgress,
+  withEmoji = false,
+}: BuildProgressLabelProps) => {
   const { emoji, renderProgress } = BUILD_STEP_CONFIG[localBuildProgress.currentStep];
+  const label = renderProgress(localBuildProgress);
   return (
-    <>
-      {emoji} {renderProgress(localBuildProgress)}
-    </>
+    <span>
+      {withEmoji && emoji} {label}
+    </span>
   );
 };

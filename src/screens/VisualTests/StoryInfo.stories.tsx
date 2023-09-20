@@ -1,8 +1,11 @@
 import { action } from "@storybook/addon-actions";
 import type { Meta, StoryObj } from "@storybook/react";
+import React from "react";
 
 import { Browser, TestStatus } from "../../gql/graphql";
+import { panelModes } from "../../modes";
 import { makeTest, makeTests } from "../../utils/storyData";
+import { Grid } from "./SnapshotComparison";
 import { StoryInfo } from "./StoryInfo";
 
 const meta = {
@@ -14,18 +17,30 @@ const meta = {
     shouldSwitchToLastBuildOnBranch: false,
     isBuildFailed: false,
   },
+  decorators: [
+    (Story) => (
+      <Grid>
+        <Story />
+      </Grid>
+    ),
+  ],
+  parameters: {
+    chromatic: {
+      modes: panelModes,
+    },
+  },
 } satisfies Meta<typeof StoryInfo>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Starting: Story = {
-  args: { isStarting: true, startedAt: null },
+  args: { isStarting: true, startedAt: undefined },
 };
 
 // Announced -> Prepared are indistiguishable from Starting currently
 export const Announced: Story = {
-  args: { isStarting: true, startedAt: null },
+  args: { isStarting: true, startedAt: undefined },
 };
 
 // The build hasn't start properly yet but is already superseded by another build

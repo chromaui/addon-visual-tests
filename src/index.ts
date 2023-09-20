@@ -29,7 +29,7 @@ const observeGitInfo = async (
   callback: (info: GitInfo, prevInfo: GitInfo) => void
 ) => {
   let prev: GitInfo;
-  let timer: NodeJS.Timeout | null = null;
+  let timer: NodeJS.Timeout | undefined;
   const act = async () => {
     const gitInfo = await getGitInfo();
     if (Object.entries(gitInfo).some(([key, value]) => prev?.[key as keyof GitInfo] !== value)) {
@@ -93,7 +93,7 @@ async function serverChannel(
   const localBuildProgress = useAddonState<LocalBuildProgress>(channel, LOCAL_BUILD_PROGRESS);
 
   channel.on(START_BUILD, async () => {
-    const { projectToken } = projectInfoState.value;
+    const { projectToken } = projectInfoState.value || {};
     await runChromaticBuild(localBuildProgress, { projectToken });
   });
 

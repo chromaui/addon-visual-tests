@@ -46,6 +46,9 @@ export const Authentication = ({ setAccessToken }: AuthenticationProps) => {
       );
 
     case "verify":
+      if (!userCode || !verificationUrl) {
+        throw new Error("Expected to have a `userCode` and `verificationUrl` if at `verify` step");
+      }
       return (
         <Verify
           onBack={() => setScreen("signin")}

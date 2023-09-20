@@ -77,12 +77,12 @@ const StepDetail = styled.div<{ isCurrent: boolean; isPending: boolean }>(
     fontFamily: "Menlo, monospace",
     fontSize: "12px",
     lineHeight: "24px",
-    margin: "0 10px",
+    margin: "0 15px",
     "&:first-of-type": {
-      marginTop: 8,
+      marginTop: 10,
     },
     "&:last-of-type": {
-      marginBottom: 8,
+      marginBottom: 10,
     },
   })
 );
@@ -93,11 +93,11 @@ const StepIcon = styled(Icons)(
 );
 
 type BuildProgressProps = {
-  localBuildProgress?: LocalBuildProgress;
+  localBuildProgress: LocalBuildProgress;
   expanded?: boolean;
 };
 
-const BuildProgress = ({ localBuildProgress, expanded }: BuildProgressProps) => {
+const BuildProgress = ({ localBuildProgress, expanded = false }: BuildProgressProps) => {
   const stepHistory = useRef<
     Partial<Record<LocalBuildProgress["currentStep"], LocalBuildProgress>>
   >({});
@@ -160,7 +160,7 @@ export const BuildEyebrow = ({
         <Header onClick={toggleExpanded}>
           <Bar percentage={localBuildProgress.buildProgressPercentage} />
           <Label>
-            <BuildProgressLabel localBuildProgress={localBuildProgress} />
+            <BuildProgressLabel localBuildProgress={localBuildProgress} withEmoji />
           </Label>
           <IconButton as="div">
             {expanded ? <Icons icon="collapse" /> : <Icons icon="expandalt" />}
@@ -180,7 +180,12 @@ export const BuildEyebrow = ({
       );
     }
     if (lastBuildOnBranchInProgress) {
-      return "⚠️ Reviewing is disabled because there's a newer build in progress on main. This can happen when a build runs in CI.";
+      return (
+        <Label>
+          Reviewing is disabled because there's a newer build in progress on main. This can happen
+          when a build runs in CI.
+        </Label>
+      );
     }
     return (
       <Label>

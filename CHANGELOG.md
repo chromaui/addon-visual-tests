@@ -1,3 +1,123 @@
+# v0.0.85 (Wed Sep 20 2023)
+
+#### 🐛 Bug Fix
+
+- Setup modes for Chromatic [#114](https://github.com/chromaui/addon-visual-tests/pull/114) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.84 (Tue Sep 19 2023)
+
+#### 🐛 Bug Fix
+
+- Open dialog to allow creating a new project [#91](https://github.com/chromaui/addon-visual-tests/pull/91) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.83 (Tue Sep 19 2023)
+
+#### 🐛 Bug Fix
+
+- Implement horizontal panel layout [#109](https://github.com/chromaui/addon-visual-tests/pull/109) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.82 (Tue Sep 19 2023)
+
+#### 🐛 Bug Fix
+
+- Filter out the local build and selected builds if they are from a previous branch [#111](https://github.com/chromaui/addon-visual-tests/pull/111) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.81 (Tue Sep 19 2023)
+
+#### 🐛 Bug Fix
+
+- Restore the chromatic dependency to `latest` [#113](https://github.com/chromaui/addon-visual-tests/pull/113) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.80 (Mon Sep 18 2023)
+
+#### 🐛 Bug Fix
+
+- Show "1 change accepted" [#103](https://github.com/chromaui/addon-visual-tests/pull/103) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.79 (Mon Sep 18 2023)
+
+#### 🐛 Bug Fix
+
+- Turn on strict types (!) [#110](https://github.com/chromaui/addon-visual-tests/pull/110) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.78 (Mon Sep 18 2023)
+
+#### 🐛 Bug Fix
+
+- Retrieve signed `captureImage` / `diffImage` URLs [#108](https://github.com/chromaui/addon-visual-tests/pull/108) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.77 (Sat Sep 16 2023)
+
+#### 🐛 Bug Fix
+
+- Show build progress on 'no build' screen [#107](https://github.com/chromaui/addon-visual-tests/pull/107) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.76 (Sat Sep 16 2023)
+
+#### 🐛 Bug Fix
+
+- Dependencies: Upgrade storybook to latest patch [#106](https://github.com/chromaui/addon-visual-tests/pull/106) ([@ndelangen](https://github.com/ndelangen))
+
+#### Authors: 1
+
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+
+---
+
 # v0.0.75 (Fri Sep 15 2023)
 
 #### 🐛 Bug Fix

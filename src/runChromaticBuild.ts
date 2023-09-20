@@ -45,12 +45,17 @@ const getBuildStepData = (
 export const onStartOrProgress =
   (
     localBuildProgress: ReturnType<typeof useAddonState<LocalBuildProgress>>,
-    timeout: ReturnType<typeof setTimeout>
+    timeout?: ReturnType<typeof setTimeout>
   ) =>
   ({ ...ctx }: Context, { progress, total }: { progress?: number; total?: number } = {}) => {
     clearTimeout(timeout);
 
     if (!isKnownStep(ctx.task)) return;
+
+    // We should set this right before starting so it should never be unset during a build.
+    if (!localBuildProgress.value) {
+      throw new Error("Unexpected missing value for localBuildProgress");
+    }
 
     const { buildProgressPercentage, stepProgress, previousBuildProgress } =
       localBuildProgress.value;
@@ -74,6 +79,11 @@ export const onStartOrProgress =
         (ESTIMATED_PROGRESS_INTERVAL / estimateDuration) * stepPercentage;
 
       timeout = setTimeout(() => {
+        // We should set this right before starting so it should never be unset during a build.
+        if (!localBuildProgress.value) {
+          throw new Error("Unexpected missing value for localBuildProgress");
+        }
+
         // Intentionally reference the present value here (after timeout)
         const { currentStep } = localBuildProgress.value;
         // Only update if we haven't moved on to a later step
@@ -91,6 +101,7 @@ export const onStartOrProgress =
 
     localBuildProgress.value = {
       buildId: ctx.announcedBuild?.id,
+      branch: ctx.git?.branch,
       buildProgressPercentage: Math.min(newPercentage, endPercentage),
       currentStep: ctx.task,
       stepProgress,
@@ -100,10 +111,15 @@ export const onStartOrProgress =
 export const onCompleteOrError =
   (
     localBuildProgress: ReturnType<typeof useAddonState<LocalBuildProgress>>,
-    timeout: ReturnType<typeof setTimeout>
+    timeout?: ReturnType<typeof setTimeout>
   ) =>
   (ctx: Context, error?: { formattedError: string; originalError: Error | Error[] }) => {
     clearTimeout(timeout);
+
+    // We should set this right before starting so it should never be unset during a build.
+    if (!localBuildProgress.value) {
+      throw new Error("Unexpected missing value for localBuildProgress");
+    }
 
     const { buildProgressPercentage, stepProgress } = localBuildProgress.value;
 
@@ -117,6 +133,7 @@ export const onCompleteOrError =
     if (error) {
       localBuildProgress.value = {
         buildId: ctx.announcedBuild?.id,
+        branch: ctx.git?.branch,
         buildProgressPercentage,
         currentStep: "error",
         stepProgress,
@@ -130,6 +147,7 @@ export const onCompleteOrError =
     if (ctx.task === "snapshot") {
       localBuildProgress.value = {
         buildId: ctx.announcedBuild?.id,
+        branch: ctx.git?.branch,
         buildProgressPercentage: 100,
         currentStep: "complete",
         stepProgress,
@@ -149,7 +167,7 @@ export const runChromaticBuild = async (
   localBuildProgress.value = INITIAL_BUILD_PAYLOAD;
 
   // Timeout is defined here so it's shared between all handlers
-  let timeout: ReturnType<typeof setTimeout>;
+  let timeout: ReturnType<typeof setTimeout> | undefined;
 
   await run({
     // Currently we have to have these flags.
