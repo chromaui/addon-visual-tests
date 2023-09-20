@@ -1,3 +1,15 @@
+# v0.0.85 (Wed Sep 20 2023)
+
+#### 🐛 Bug Fix
+
+- Setup modes for Chromatic [#114](https://github.com/chromaui/addon-visual-tests/pull/114) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v0.0.84 (Tue Sep 19 2023)
 
 #### 🐛 Bug Fix
