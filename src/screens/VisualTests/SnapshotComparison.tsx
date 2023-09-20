@@ -115,6 +115,7 @@ interface SnapshotSectionProps {
   settingsVisible: boolean;
   warningsVisible: boolean;
   hidden?: boolean;
+  storyId: string;
 }
 
 export const SnapshotComparison = ({
@@ -139,10 +140,34 @@ export const SnapshotComparison = ({
   settingsVisible,
   warningsVisible,
   hidden,
+  storyId,
 }: SnapshotSectionProps) => {
   const [diffVisible, setDiffVisible] = useState(true);
   const [focusVisible] = useState(false);
   const testControls = useTests(tests);
+
+  const prevStoryIdRef = React.useRef(storyId);
+  const prevSelectedCompsrisonIdRef = React.useRef(testControls.selectedComparison.id);
+
+  React.useEffect(() => {
+    // This component doesn't unmount when the selected build changes, so we need to reset state values
+    if (
+      prevStoryIdRef.current !== storyId ||
+      prevSelectedCompsrisonIdRef.current === testControls.selectedComparison.id
+    ) {
+      if (baselineImageVisible) toggleBaselineImage();
+      setSettingsVisible(false);
+      setWarningsVisible(false);
+    }
+    prevStoryIdRef.current = storyId;
+  }, [
+    baselineImageVisible,
+    setSettingsVisible,
+    setWarningsVisible,
+    storyId,
+    testControls,
+    toggleBaselineImage,
+  ]);
 
   const storyInfo = (
     <StoryInfo
