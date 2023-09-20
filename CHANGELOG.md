@@ -1,3 +1,15 @@
+# v0.0.86 (Wed Sep 20 2023)
+
+#### 🐛 Bug Fix
+
+- Send user back to oauth flow after login [#100](https://github.com/chromaui/addon-visual-tests/pull/100) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.85 (Wed Sep 20 2023)
 
 #### 🐛 Bug Fix
