@@ -1,4 +1,7 @@
 import type { StorybookConfig } from "@storybook/react-vite";
+import { mergeConfig } from "vite";
+import turbosnap from "vite-plugin-turbosnap";
+
 import { CHROMATIC_BASE_URL } from "../src/constants";
 
 const useDistVersion = process.env.CHROMATIC_USE_DIST_VERSION === "true";
@@ -34,14 +37,21 @@ const config: StorybookConfig = {
     name: "@storybook/react-vite",
     options: {},
   },
+  logLevel: "debug",
   staticDirs: ["../public"],
   stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|ts|tsx)"],
-  logLevel: "debug",
   refs: {
     "@storybook/components": {
       title: "@storybook/components",
       url: "https://next--635781f3500dd2c49e189caf.chromatic.com",
     },
   },
+  async viteFinal(config, { configType }) {
+    const rootDir = config.root ?? process.cwd();
+    return mergeConfig(config, {
+      plugins: configType === "PRODUCTION" ? [turbosnap({ rootDir })] : [],
+    });
+  },
 };
+
 export default config;
