@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { findByRole, userEvent } from "@storybook/testing-library";
 import { rest } from "msw";
 
+import { panelModes } from "../../modes";
 import { storyWrapper } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
@@ -15,6 +16,9 @@ const meta = {
     setAccessToken: action("setAccessToken"),
   },
   parameters: {
+    chromatic: {
+      modes: panelModes,
+    },
     msw: {
       handlers: [
         rest.post("*/authorize", (req, res, ctx) =>

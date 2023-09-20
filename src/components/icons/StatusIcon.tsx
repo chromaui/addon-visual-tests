@@ -5,7 +5,7 @@ export const StatusIcon = styled(Icons)<{ icon: "passed" | "changed" | "failed" 
   ({ icon, theme }) => ({
     width: 12,
     height: 12,
-    margin: "3px 6px",
+    margin: "3px 3px 3px 6px",
     verticalAlign: "top",
 
     color: {

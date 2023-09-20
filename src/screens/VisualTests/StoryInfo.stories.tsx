@@ -1,8 +1,11 @@
 import { action } from "@storybook/addon-actions";
 import type { Meta, StoryObj } from "@storybook/react";
+import React from "react";
 
 import { Browser, TestStatus } from "../../gql/graphql";
+import { panelModes } from "../../modes";
 import { makeTest, makeTests } from "../../utils/storyData";
+import { Grid } from "./SnapshotComparison";
 import { StoryInfo } from "./StoryInfo";
 
 const meta = {
@@ -13,6 +16,18 @@ const meta = {
     startDevBuild: action("startDevBuild"),
     shouldSwitchToLastBuildOnBranch: false,
     isBuildFailed: false,
+  },
+  decorators: [
+    (Story) => (
+      <Grid>
+        <Story />
+      </Grid>
+    ),
+  ],
+  parameters: {
+    chromatic: {
+      modes: panelModes,
+    },
   },
 } satisfies Meta<typeof StoryInfo>;
 

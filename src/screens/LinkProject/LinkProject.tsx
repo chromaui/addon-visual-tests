@@ -1,5 +1,5 @@
-import { Icons } from "@storybook/components";
-import { Avatar, Link, ListItem } from "@storybook/design-system";
+import { Icons, Link } from "@storybook/components";
+import { Avatar, ListItem } from "@storybook/design-system";
 import { styled } from "@storybook/theming";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "urql";

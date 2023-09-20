@@ -73,6 +73,7 @@ export const FragmentSelectedBuildFields = graphql(/* GraphQL */ `
     id
     number
     branch
+    commit
     committedAt
     uncommittedHash
     status
