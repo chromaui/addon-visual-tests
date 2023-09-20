@@ -92,7 +92,7 @@ export const ShowingBaseline: Story = {
   },
 } satisfies Story;
 
-export const SwitchingViewport = {
+export const SwitchingMode = {
   args: {
     tests: makeTests({
       browsers: [Browser.Chrome, Browser.Safari],
@@ -108,8 +108,8 @@ export const SwitchingViewport = {
         headCapture: {
           ...comparison.headCapture,
           captureImage: {
-            imageUrl: `/ProjectItem-${comparison.browser.name}-${comparison.viewport.width}.png`,
-            imageWidth: comparison.viewport.width,
+            imageUrl: `/ProjectItem-${comparison.browser.name}-${parseInt(test.mode.name, 10)}.png`,
+            imageWidth: parseInt(test.mode.name, 10),
           },
         },
       })),
@@ -125,7 +125,7 @@ export const SwitchingViewport = {
 } satisfies Story;
 
 export const SwitchingBrowser = {
-  args: SwitchingViewport.args,
+  args: SwitchingMode.args,
   play: playAll(async ({ canvasElement, canvasIndex }) => {
     const canvas = within(canvasElement);
     const menu = await canvas.findByRole("button", { name: "Chrome" });
@@ -136,7 +136,7 @@ export const SwitchingBrowser = {
 } satisfies Story;
 
 export const SwitchingTests = {
-  args: SwitchingViewport.args,
+  args: SwitchingMode.args,
   render: function RenderSwitchingTests({ ...props }: ComponentProps<typeof SnapshotComparison>) {
     const [tests, setTests] = React.useState<StoryTestFieldsFragment[]>();
     if (!tests) setTimeout(() => setTests([makeTest({})]), 0);
