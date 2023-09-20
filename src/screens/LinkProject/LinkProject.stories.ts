@@ -29,6 +29,7 @@ const fewProjects = {
       {
         id: "account:123",
         name: "yummly",
+        newProjectUrl: "https://www.chromatic.com/apps?accountId=123&view=createProject",
         projects: [
           {
             id: "123",
@@ -66,6 +67,7 @@ const manyProjects = {
       {
         id: "account:123",
         name: "yummly",
+        newProjectUrl: "https://www.chromatic.com/apps?accountId=123&view=createProject",
         projects: [
           {
             id: "123",
@@ -121,6 +123,7 @@ const manyProjects = {
       {
         id: "account:456",
         name: "acme corp",
+        newProjectUrl: "https://www.chromatic.com/apps?accountId=456&view=createProject",
         projects: [
           {
             id: "789",
@@ -133,6 +136,7 @@ const manyProjects = {
       {
         id: "account:4563",
         name: "third corp",
+        newProjectUrl: "https://www.chromatic.com/apps?accountId=4563&view=createProject",
         projects: [
           {
             id: "7893",
@@ -145,6 +149,7 @@ const manyProjects = {
       {
         id: "account:4564",
         name: "fourth corp",
+        newProjectUrl: "https://www.chromatic.com/apps?accountId=4564&view=createProject",
         projects: [
           {
             id: "7894",
@@ -157,6 +162,7 @@ const manyProjects = {
       {
         id: "account:4565",
         name: "fifth corp",
+        newProjectUrl: "https://www.chromatic.com/apps?accountId=4565&view=createProject",
         projects: [
           {
             id: "7895",
@@ -169,6 +175,7 @@ const manyProjects = {
       {
         id: "account:4566",
         name: "acme corp",
+        newProjectUrl: "https://www.chromatic.com/apps?accountId=4566&view=createProject",
         projects: [
           {
             id: "7896",
@@ -181,6 +188,7 @@ const manyProjects = {
       {
         id: "account:4567",
         name: "seventh corp",
+        newProjectUrl: "https://www.chromatic.com/apps?accountId=4567&view=createProject",
         projects: [
           {
             id: "7897",
@@ -193,6 +201,7 @@ const manyProjects = {
       {
         id: "account:4567",
         name: "below the fold corp",
+        newProjectUrl: "https://www.chromatic.com/apps?accountId=4567&view=createProject",
         projects: [
           {
             id: "7897",
@@ -242,19 +251,6 @@ export const SelectProjectManyProjects: Story = {
     await rightDiv.scroll({ top: rightDiv.scrollHeight });
     await leftDiv.scroll({ top: leftDiv.scrollHeight });
   }),
-};
-
-export const EmptyNoAccounts: Story = {
-  parameters: {
-    ...withSelectProjectsQuery({
-      viewer: {
-        accounts: [],
-      },
-    }),
-    ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-317038&mode=design&t=P9IPi8sOGNpjCeNs-4"
-    ),
-  },
 };
 
 export const EmptyNoProjects: Story = {

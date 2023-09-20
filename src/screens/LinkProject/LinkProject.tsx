@@ -1,7 +1,7 @@
-import { Icons } from "@storybook/components";
+import { Icons, Link } from "@storybook/components";
 import { Avatar, ListItem } from "@storybook/design-system";
 import { styled } from "@storybook/theming";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useQuery } from "urql";
 
 import { Container } from "../../components/Container";
@@ -10,7 +10,8 @@ import { Heading } from "../../components/Heading";
 import { Bar, Col, Section, Sections, Text } from "../../components/layout";
 import { Stack } from "../../components/Stack";
 import { graphql } from "../../gql";
-import { SelectProjectsQueryQuery } from "../../gql/graphql";
+import { Account, Project, SelectProjectsQueryQuery } from "../../gql/graphql";
+import { useChromaticDialog } from "../../utils/useChromaticDialog";
 
 const SelectProjectsQuery = graphql(/* GraphQL */ `
   query SelectProjectsQuery {
@@ -19,6 +20,7 @@ const SelectProjectsQuery = graphql(/* GraphQL */ `
         id
         name
         avatarUrl
+        newProjectUrl
         projects {
           id
           name
@@ -102,23 +104,31 @@ function SelectProject({
   onSelectProjectId: (projectId: string, projectToken: string) => Promise<void>;
   setAccessToken: (accessToken: string | null) => void;
 }) {
-  const [selectedAccount, setSelectedAccount] =
-    useState<NonNullable<SelectProjectsQueryQuery["viewer"]>["accounts"][number]>();
-  const [{ data, fetching, error }] = useQuery<SelectProjectsQueryQuery>({
+  const [{ data, fetching, error }, rerunProjectsQuery] = useQuery<SelectProjectsQueryQuery>({
     query: SelectProjectsQuery,
   });
+
+  // Poll for updates
+  useEffect(() => {
+    const interval = setInterval(rerunProjectsQuery, 5000);
+    return () => clearInterval(interval);
+  }, [rerunProjectsQuery]);
+
+  const [selectedAccountId, setSelectedAccountId] = useState<Account["id"]>();
+  const selectedAccount = data?.viewer?.accounts.find((a) => a.id === selectedAccountId);
+
   const onSelectAccount = React.useCallback(
     (account: NonNullable<SelectProjectsQueryQuery["viewer"]>["accounts"][number]) => {
-      setSelectedAccount(account);
+      setSelectedAccountId(account.id);
     },
-    [setSelectedAccount]
+    [setSelectedAccountId]
   );
 
   React.useEffect(() => {
-    if (data?.viewer?.accounts) {
+    if (!selectedAccountId && data?.viewer?.accounts) {
       onSelectAccount(data.viewer.accounts[0]);
     }
-  }, [data, onSelectAccount]);
+  }, [data, selectedAccountId, onSelectAccount]);
 
   const [isSelectingProject, setSelectingProject] = useState(false);
 
@@ -141,14 +151,35 @@ function SelectProject({
     [onSelectProjectId, setSelectingProject]
   );
 
+  const [createdProjectId, setCreatedProjectId] = useState<Project["id"]>();
+  const [openDialog, closeDialog] = useChromaticDialog(async (event) => {
+    if (event.message === "createdProject") {
+      // We don't know the project token yet, so we need to wait until it comes back on the query
+      // longer be necessary once we don't write tokens any more
+      // (https://linear.app/chromaui/issue/AP-3383/generate-an-app-token-for-each-build-rather-than-writing-project-token)
+      rerunProjectsQuery();
+      setCreatedProjectId(event.projectId);
+    }
+  });
+
+  // Once we find the project we created just above, close the dialog and select it
+  const createdProject =
+    createdProjectId && selectedAccount?.projects?.find((p) => p?.id.endsWith(createdProjectId));
+  useEffect(() => {
+    if (createdProject) {
+      closeDialog();
+      handleSelectProject(createdProject);
+    }
+  }, [createdProject, handleSelectProject, closeDialog]);
+
   return (
     <Sections>
       <Section grow>
         <Container>
           <Stack>
-            {fetching && <p>Loading...</p>}
+            {!data && fetching && <p>Loading...</p>}
             {error && <p>{error.message}</p>}
-            {!fetching && data?.viewer?.accounts && (
+            {data?.viewer?.accounts && (
               <>
                 <Heading>Select a Project</Heading>
                 <Text>Baselines will be used with this project.</Text>
@@ -167,7 +198,7 @@ function SelectProject({
                             />
                           }
                           onClick={() => onSelectAccount(account)}
-                          active={selectedAccount?.id === account.id}
+                          active={selectedAccountId === account.id}
                         />
                       ))}
                     </List>
@@ -187,6 +218,25 @@ function SelectProject({
                               disabled={isSelectingProject}
                             />
                           )
+                      )}
+                      {selectedAccount && (
+                        <ListItem
+                          title={
+                            // eslint-disable-next-line jsx-a11y/anchor-is-valid
+                            <Link
+                              isButton
+                              withArrow
+                              onClick={() => {
+                                if (!selectedAccount?.newProjectUrl) {
+                                  throw new Error("Unexpected missing `newProjectUrl` on account");
+                                }
+                                openDialog(selectedAccount.newProjectUrl);
+                              }}
+                            >
+                              Create project
+                            </Link>
+                          }
+                        />
                       )}
                     </List>
                   </Right>
