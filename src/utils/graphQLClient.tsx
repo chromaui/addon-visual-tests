@@ -51,9 +51,11 @@ const sessionId = uuid();
 export const client = new Client({
   url: CHROMATIC_API_URL,
   exchanges: [
-    // no cacheExchange to prevent sharing data between stories
+    // We don't use cacheExchange, because it would inadvertently share data between stories.
     mapExchange({
       onResult(result) {
+        // Not all queries contain the `viewer` field, in which case it will be `undefined`.
+        // When we do retrieve the field but the token is invalid, it will be `null`.
         if (result.data?.viewer === null) setCurrentToken(undefined);
       },
     }),
