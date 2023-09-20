@@ -201,6 +201,7 @@ export const BuildResults = ({
             setWarningsVisible,
             warningsVisible,
             setAccessToken,
+            storyId,
           }}
         />
       </Section>
