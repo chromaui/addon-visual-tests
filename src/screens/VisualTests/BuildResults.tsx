@@ -28,6 +28,7 @@ interface BuildResultsProps {
   branch: string;
   localBuildProgress?: LocalBuildProgress;
   selectedBuild: SelectedBuildFieldsFragment;
+  storyId: string;
   lastBuildOnBranch?: LastBuildOnBranchBuildFieldsFragment;
   lastBuildOnBranchCompletedStory: boolean;
   switchToLastBuildOnBranch?: () => void;
@@ -51,12 +52,25 @@ export const BuildResults = ({
   onAccept,
   onUnaccept,
   selectedBuild,
+  storyId,
   setAccessToken,
 }: BuildResultsProps) => {
   const [settingsVisible, setSettingsVisible] = useState(false);
   const [warningsVisible, setWarningsVisible] = useState(false);
   const [baselineImageVisible, setBaselineImageVisible] = useState(false);
   const toggleBaselineImage = () => setBaselineImageVisible(!baselineImageVisible);
+
+  const prevStoryIdRef = React.useRef(storyId);
+
+  React.useEffect(() => {
+    // This component doesn't unmount when the selected build changes, so we need to reset state values
+    if (prevStoryIdRef.current !== storyId) {
+      setBaselineImageVisible(false);
+      setSettingsVisible(false);
+      setWarningsVisible(false);
+    }
+    prevStoryIdRef.current = storyId;
+  }, [storyId, baselineImageVisible]);
 
   const isLocalBuildInProgress =
     localBuildProgress && localBuildProgress.currentStep !== "complete";
@@ -84,6 +98,7 @@ export const BuildResults = ({
     (!isReviewable && !shouldSwitchToLastBuildOnBranch);
   const localBuildProgressIsLastBuildOnBranch =
     localBuildProgress && localBuildProgress?.buildId === lastBuildOnBranch?.id;
+
   const buildStatus = showBuildStatus && (
     <BuildEyebrow
       branch={branch}
