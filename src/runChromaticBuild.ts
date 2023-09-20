@@ -101,6 +101,7 @@ export const onStartOrProgress =
 
     localBuildProgress.value = {
       buildId: ctx.announcedBuild?.id,
+      branch: ctx.git?.branch,
       buildProgressPercentage: Math.min(newPercentage, endPercentage),
       currentStep: ctx.task,
       stepProgress,
@@ -132,6 +133,7 @@ export const onCompleteOrError =
     if (error) {
       localBuildProgress.value = {
         buildId: ctx.announcedBuild?.id,
+        branch: ctx.git?.branch,
         buildProgressPercentage,
         currentStep: "error",
         stepProgress,
@@ -145,6 +147,7 @@ export const onCompleteOrError =
     if (ctx.task === "snapshot") {
       localBuildProgress.value = {
         buildId: ctx.announcedBuild?.id,
+        branch: ctx.git?.branch,
         buildProgressPercentage: 100,
         currentStep: "complete",
         stepProgress,

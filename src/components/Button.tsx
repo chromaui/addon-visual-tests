@@ -14,6 +14,9 @@ export const Button = styled(BaseButton)<{
       lineHeight: "14px",
       padding: "9px 12px",
       alignItems: "center",
+      "@container (min-width: 800px)": {
+        padding: "8px 10px",
+      },
       svg: {
         marginRight: 6,
       },

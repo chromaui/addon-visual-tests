@@ -1,3 +1,63 @@
+# v0.0.86 (Wed Sep 20 2023)
+
+#### 🐛 Bug Fix
+
+- Send user back to oauth flow after login [#100](https://github.com/chromaui/addon-visual-tests/pull/100) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.85 (Wed Sep 20 2023)
+
+#### 🐛 Bug Fix
+
+- Setup modes for Chromatic [#114](https://github.com/chromaui/addon-visual-tests/pull/114) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.84 (Tue Sep 19 2023)
+
+#### 🐛 Bug Fix
+
+- Open dialog to allow creating a new project [#91](https://github.com/chromaui/addon-visual-tests/pull/91) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.83 (Tue Sep 19 2023)
+
+#### 🐛 Bug Fix
+
+- Implement horizontal panel layout [#109](https://github.com/chromaui/addon-visual-tests/pull/109) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.82 (Tue Sep 19 2023)
+
+#### 🐛 Bug Fix
+
+- Filter out the local build and selected builds if they are from a previous branch [#111](https://github.com/chromaui/addon-visual-tests/pull/111) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.81 (Tue Sep 19 2023)
 
 #### 🐛 Bug Fix
