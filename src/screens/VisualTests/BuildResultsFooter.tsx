@@ -53,7 +53,7 @@ export const BuildResultsFooter = ({
           </Text>
         )}
       </Col>
-      <Col push>
+      {/* <Col push>
         <WithTooltip
           tooltip={<TooltipNote note="Render settings" />}
           trigger="hover"
@@ -70,8 +70,8 @@ export const BuildResultsFooter = ({
             <Icons icon="controls" />
           </IconButton>
         </WithTooltip>
-      </Col>
-      <Col>
+      </Col> */}
+      {/* <Col>
         <WithTooltip
           tooltip={<TooltipNote note="View warnings" />}
           trigger="hover"
@@ -89,7 +89,7 @@ export const BuildResultsFooter = ({
             <Icons icon="alert" />2
           </IconButton>
         </WithTooltip>
-      </Col>
+      </Col> */}
       <Col push>
         <FooterMenu setAccessToken={setAccessToken} />
       </Col>
