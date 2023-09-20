@@ -164,6 +164,7 @@ export const BuildResults = ({
 
       <Section grow hidden={settingsVisible || warningsVisible}>
         <SnapshotComparison
+          hidden={settingsVisible || warningsVisible}
           {...{
             tests: storyTests,
             startedAt,

@@ -18,7 +18,7 @@ export const BuildResultsFooter = ({
   settingsVisible,
 }: {
   hasBaselineSnapshot: boolean;
-  setAccessToken: (token: string) => void;
+  setAccessToken: (token: string | null) => void;
   baselineImageVisible: boolean;
   toggleBaselineImage: () => void;
   selectedBuild: SelectedBuildFieldsFragment;
