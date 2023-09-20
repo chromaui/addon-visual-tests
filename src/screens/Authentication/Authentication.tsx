@@ -7,7 +7,7 @@ import { Verify } from "./Verify";
 import { Welcome } from "./Welcome";
 
 interface AuthenticationProps {
-  setAccessToken: (token: string) => void;
+  setAccessToken: (token: string | null) => void;
 }
 
 type AuthenticationScreen = "welcome" | "signin" | "subdomain" | "verify";

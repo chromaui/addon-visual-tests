@@ -8,16 +8,16 @@ import { ACCESS_TOKEN_KEY, ADDON_ID, CHROMATIC_API_URL } from "../constants";
 
 export { Provider };
 
-let currentToken: string | undefined;
-let currentTokenExpiration: number | undefined;
-const setCurrentToken = (token: string | undefined) => {
+let currentToken: string | null;
+let currentTokenExpiration: number | null;
+const setCurrentToken = (token: string | null) => {
   try {
-    const { exp } = token ? JSON.parse(atob(token.split(".")[1])) : { exp: undefined };
+    const { exp } = token ? JSON.parse(atob(token.split(".")[1])) : { exp: null };
     currentToken = token;
     currentTokenExpiration = exp;
   } catch (e) {
-    currentToken = undefined;
-    currentTokenExpiration = undefined;
+    currentToken = null;
+    currentTokenExpiration = null;
   }
   if (currentToken) {
     localStorage.setItem(ACCESS_TOKEN_KEY, currentToken);
@@ -26,17 +26,17 @@ const setCurrentToken = (token: string | undefined) => {
   }
 };
 
-setCurrentToken(localStorage.getItem(ACCESS_TOKEN_KEY) || undefined);
+setCurrentToken(localStorage.getItem(ACCESS_TOKEN_KEY));
 
 export const useAccessToken = () => {
   // We use an object rather than a straight boolean here due to https://github.com/storybookjs/storybook/pull/23991
-  const [{ token }, setTokenState] = useAddonState<{ token: string | undefined }>(
+  const [{ token }, setTokenState] = useAddonState<{ token: string | null }>(
     `${ADDON_ID}/accessToken`,
     { token: currentToken }
   );
 
   const updateToken = React.useCallback(
-    (newToken: string | undefined) => {
+    (newToken: string | null) => {
       setCurrentToken(newToken);
       setTokenState({ token: currentToken });
     },
@@ -56,7 +56,7 @@ export const client = new Client({
       onResult(result) {
         // Not all queries contain the `viewer` field, in which case it will be `undefined`.
         // When we do retrieve the field but the token is invalid, it will be `null`.
-        if (result.data?.viewer === null) setCurrentToken(undefined);
+        if (result.data?.viewer === null) setCurrentToken(null);
       },
     }),
     authExchange(async (utils) => {
@@ -74,7 +74,7 @@ export const client = new Client({
         // If didAuthError returns true, clear the token. Ideally we should refresh the token here.
         // The operation will be retried automatically.
         async refreshAuth() {
-          setCurrentToken(undefined);
+          setCurrentToken(null);
         },
 
         // Prevent making a request if we know the token is missing, invalid or expired.
