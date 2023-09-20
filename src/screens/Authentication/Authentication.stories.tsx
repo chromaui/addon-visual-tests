@@ -14,6 +14,7 @@ const meta = {
   decorators: [storyWrapper],
   args: {
     setAccessToken: action("setAccessToken"),
+    hasProjectId: false,
   },
   parameters: {
     chromatic: {
@@ -54,7 +55,16 @@ export const Welcome = {
   parameters: withFigmaDesign(
     "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-317931&t=3EAIRe8423CpOQWY-4"
   ),
-};
+} satisfies Story;
+
+export const HasProjectId = {
+  parameters: withFigmaDesign(
+    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-317931&t=3EAIRe8423CpOQWY-4"
+  ),
+  args: {
+    hasProjectId: true,
+  },
+} satisfies Story;
 
 export const SignIn = {
   parameters: withFigmaDesign(
@@ -80,7 +90,7 @@ export const SSO = {
   }),
 } satisfies Story;
 
-export const Verify: Story = {
+export const Verify = {
   parameters: withFigmaDesign(
     "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318063&t=3EAIRe8423CpOQWY-4"
   ),
