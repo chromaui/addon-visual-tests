@@ -35,8 +35,19 @@ interface VerifyProps {
 }
 
 export const Verify = ({ onBack, userCode, verificationUrl }: VerifyProps) => {
-  const [openDialog, closeDialog] = useChromaticDialog();
-  // Close the dialog on unmount
+  const [openDialog, closeDialog] = useChromaticDialog((event) => {
+    // If the user logs in as part of the grant process, don't close the dialog,
+    // instead redirect us back to where we were trying to go.
+    if (event.message === "login") {
+      openDialog(verificationUrl);
+    }
+  });
+
+  // Close the dialog on unmount, which happens automatically when poll for a token.
+  // Later (https://linear.app/chromaui/issue/AP-3549/onboarding-flow-for-new-users-to-create-a-project)
+  // we'll actually wait for the grant event and:
+  //   - grab a token immediately
+  //   - check if the user has projects, if not redirect to new project screen.
   useEffect(() => () => closeDialog(), [closeDialog]);
 
   return (
