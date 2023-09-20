@@ -114,7 +114,7 @@ interface SnapshotSectionProps {
   setWarningsVisible: (visible: boolean) => void;
   settingsVisible: boolean;
   warningsVisible: boolean;
-  hidden: boolean;
+  hidden?: boolean;
 }
 
 export const SnapshotComparison = ({
