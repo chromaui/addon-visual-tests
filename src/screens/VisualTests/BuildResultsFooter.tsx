@@ -1,10 +1,10 @@
 import { Icons, TooltipNote, WithTooltip } from "@storybook/components";
 import React from "react";
-import { SelectedBuildFieldsFragment } from "src/gql/graphql";
 
 import { FooterMenu } from "../../components/FooterMenu";
 import { IconButton } from "../../components/IconButton";
 import { Bar, Col, Section, Sections, Text } from "../../components/layout";
+import { SelectedBuildFieldsFragment } from "../../gql/graphql";
 
 export const BuildResultsFooter = ({
   hasBaselineSnapshot,

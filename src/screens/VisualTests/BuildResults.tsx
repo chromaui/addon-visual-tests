@@ -4,10 +4,8 @@ import React, { useState } from "react";
 import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
 import { Eyebrow } from "../../components/Eyebrow";
-import { FooterMenu } from "../../components/FooterMenu";
 import { Heading } from "../../components/Heading";
-import { IconButton } from "../../components/IconButton";
-import { Bar, Col, Section, Sections, Text } from "../../components/layout";
+import { Section, Sections } from "../../components/layout";
 import { Text as CenterText } from "../../components/Text";
 import { getFragment } from "../../gql";
 import {
@@ -20,13 +18,10 @@ import {
   TestStatus,
 } from "../../gql/graphql";
 import { LocalBuildProgress } from "../../types";
-import { summarizeTests } from "../../utils/summarizeTests";
 import { BuildEyebrow } from "./BuildEyebrow";
-import { BuildResultsFooter } from "./BuildResultsFooter";
 import { FragmentStoryTestFields } from "./graphql";
 import { RenderSettings } from "./RenderSettings";
 import { SnapshotComparison } from "./SnapshotComparison";
-import { StoryInfo } from "./StoryInfo";
 import { Warnings } from "./Warnings";
 
 interface BuildResultsProps {
