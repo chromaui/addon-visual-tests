@@ -11,10 +11,10 @@ type ModeData = Pick<ViewportInfo, "id" | "name">;
  */
 export function useTests(tests: StoryTestFieldsFragment[]) {
   const [selectedBrowserId, onSelectBrowserId] = useState<BrowserData["id"]>(
-    tests[0].comparisons[0].browser.id
+    tests[0]?.comparisons[0].browser.id
   );
   const [selectedModeId, onSelectModeId] = useState<ModeData["id"]>(
-    tests[0].comparisons[0].viewport.id
+    tests[0]?.comparisons[0].viewport.id
   );
 
   const onSelectBrowser = useCallback(({ id }: BrowserData) => onSelectBrowserId(id), []);
@@ -24,8 +24,8 @@ export function useTests(tests: StoryTestFieldsFragment[]) {
     tests.find(({ parameters }) => parameters.viewport.id === selectedModeId) || tests[0];
 
   const selectedComparison =
-    selectedTest.comparisons.find(({ browser }) => browser.id === selectedBrowserId) ||
-    selectedTest.comparisons[0];
+    selectedTest?.comparisons.find(({ browser }) => browser.id === selectedBrowserId) ||
+    selectedTest?.comparisons[0];
 
   return {
     selectedTest,

@@ -52,12 +52,13 @@ export const Panel = ({ active, api }: PanelProps) => {
   } = useProjectId();
 
   // Render the Authentication flow if the user is not signed in.
-  if (!accessToken)
+  if (!accessToken) {
     return (
       <Sections hidden={!active}>
-        <Authentication key={PANEL_ID} setAccessToken={setAccessToken} />
+        <Authentication key={PANEL_ID} setAccessToken={setAccessToken} hasProjectId={!!projectId} />
       </Sections>
     );
+  }
 
   // Momentarily wait on addonState (should be very fast)
   if (projectInfoLoading || !gitInfo) {
@@ -108,13 +109,14 @@ export const Panel = ({ active, api }: PanelProps) => {
     );
   }
 
+  const localBuildIsRightBranch = gitInfo && gitInfo.branch === localBuildProgress?.branch;
   return (
     <Provider key={PANEL_ID} value={client}>
       <Sections hidden={!active}>
         <VisualTests
           projectId={projectId}
           gitInfo={gitInfo}
-          localBuildProgress={localBuildProgress}
+          localBuildProgress={localBuildIsRightBranch ? localBuildProgress : undefined}
           startDevBuild={() => emit(START_BUILD)}
           setAccessToken={setAccessToken}
           setOutdated={setOutdated}

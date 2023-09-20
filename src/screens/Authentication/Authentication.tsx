@@ -11,13 +11,14 @@ import { Welcome } from "./Welcome";
 
 interface AuthenticationProps {
   setAccessToken: (token: string) => void;
+  hasProjectId: boolean;
 }
 
 type AuthenticationScreen = "welcome" | "signin" | "subdomain" | "verify";
 
-export const Authentication = ({ setAccessToken }: AuthenticationProps) => {
+export const Authentication = ({ setAccessToken, hasProjectId }: AuthenticationProps) => {
   const api = useStorybookApi();
-  const [screen, setScreen] = useState<AuthenticationScreen>("welcome");
+  const [screen, setScreen] = useState<AuthenticationScreen>(hasProjectId ? "signin" : "welcome");
   const [exchangeParameters, setExchangeParameters] = useState<TokenExchangeParameters>();
 
   const initiateSignInAndMoveToVerify = useCallback(
@@ -45,37 +46,38 @@ export const Authentication = ({ setAccessToken }: AuthenticationProps) => {
     [api]
   );
 
-  switch (screen) {
-    case "welcome":
-      return <Welcome onNext={() => setScreen("signin")} />;
-
-    case "signin":
-      return (
-        <SignIn
-          onBack={() => setScreen("welcome")}
-          onSignIn={initiateSignInAndMoveToVerify}
-          onSignInWithSSO={() => setScreen("subdomain")}
-        />
-      );
-
-    case "subdomain":
-      return (
-        <SetSubdomain onBack={() => setScreen("signin")} onSignIn={initiateSignInAndMoveToVerify} />
-      );
-
-    case "verify":
-      if (!exchangeParameters) {
-        throw new Error("Expected to have a `exchangeParameters` if at `verify` step");
-      }
-      return (
-        <Verify
-          onBack={() => setScreen("signin")}
-          setAccessToken={setAccessToken}
-          exchangeParameters={exchangeParameters}
-        />
-      );
-
-    default:
-      return null;
+  if (screen === "welcome" && !hasProjectId) {
+    return <Welcome onNext={() => setScreen("signin")} />;
   }
+
+  if (screen === "signin" || (screen === "welcome" && hasProjectId)) {
+    return (
+      <SignIn
+        {...(!hasProjectId ? { onBack: () => setScreen("welcome") } : {})}
+        onSignIn={initiateSignInAndMoveToVerify}
+        onSignInWithSSO={() => setScreen("subdomain")}
+      />
+    );
+  }
+
+  if (screen === "subdomain") {
+    return (
+      <SetSubdomain onBack={() => setScreen("signin")} onSignIn={initiateSignInAndMoveToVerify} />
+    );
+  }
+
+  if (screen === "verify") {
+    if (!exchangeParameters) {
+      throw new Error("Expected to have a `exchangeParameters` if at `verify` step");
+    }
+    return (
+      <Verify
+        onBack={() => setScreen("signin")}
+        setAccessToken={setAccessToken}
+        exchangeParameters={exchangeParameters}
+      />
+    );
+  }
+
+  return null;
 };
