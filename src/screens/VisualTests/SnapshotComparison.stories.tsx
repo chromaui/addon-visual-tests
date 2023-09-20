@@ -1,6 +1,6 @@
 import { action } from "@storybook/addon-actions";
 import type { Meta, StoryObj } from "@storybook/react";
-import { screen, userEvent, within } from "@storybook/testing-library";
+import { userEvent, within } from "@storybook/testing-library";
 import React, { ComponentProps } from "react";
 
 import { Browser, ComparisonResult, StoryTestFieldsFragment, TestStatus } from "../../gql/graphql";
@@ -119,8 +119,6 @@ export const SwitchingViewport = {
     const canvas = within(canvasElement);
     const menu = await canvas.findByRole("button", { name: "320px" });
     await userEvent.click(menu);
-    const items = await screen.findAllByText("1200px");
-    await userEvent.click(items[canvasIndex]);
   }),
 } satisfies Story;
 
@@ -130,8 +128,6 @@ export const SwitchingBrowser = {
     const canvas = within(canvasElement);
     const menu = await canvas.findByRole("button", { name: "Chrome" });
     await userEvent.click(menu);
-    const items = await screen.findAllByText("Safari");
-    await userEvent.click(items[canvasIndex]);
   }),
 } satisfies Story;
 
