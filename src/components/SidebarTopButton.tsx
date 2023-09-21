@@ -1,5 +1,5 @@
 import { Icons, WithTooltip } from "@storybook/components";
-import { styled } from "@storybook/theming";
+import { keyframes, styled } from "@storybook/theming";
 import React, { ComponentProps } from "react";
 
 import { LocalBuildProgress } from "../types";
@@ -28,13 +28,41 @@ export const ProgressBar = styled(ProgressTrack)(({ theme }) => ({
   transition: "width 3s ease-out",
 }));
 
-export const ProgressCircle = styled.svg(({ theme }) => ({
-  position: "absolute",
-  width: `24px!important`,
-  height: `24px!important`,
-  transform: "rotate(-90deg)",
-  color: theme.color.secondary,
-}));
+const rotate = keyframes({
+  "0%": {
+    transform: "rotate(0deg)",
+  },
+  "100%": {
+    transform: "rotate(360deg)",
+  },
+});
+
+export const ProgressCircle = styled.svg<{ progress?: boolean; spinner?: boolean }>(
+  ({ progress, theme }) => ({
+    position: "absolute",
+    width: `24px!important`,
+    height: `24px!important`,
+    transform: "rotate(-90deg)",
+    color: theme.color.secondary,
+    circle: {
+      r: "10",
+      cx: "12",
+      cy: "12",
+      fill: "transparent",
+      stroke: progress ? "currentColor" : theme.background.hoverable,
+      strokeWidth: "2",
+      strokeLinecap: "round",
+      strokeDasharray: Math.PI * 20,
+    },
+  }),
+  ({ spinner, theme }) =>
+    spinner && {
+      animation: `${rotate} 1s linear infinite`,
+      circle: {
+        stroke: `${theme.color.secondary}33`,
+      },
+    }
+);
 
 export const SidebarIconButton = styled(IconButton)<ComponentProps<typeof IconButton>>(
   ({ theme }) => ({
@@ -51,11 +79,13 @@ export const SidebarTopButton = ({
   isRunning = false,
   localBuildProgress,
   startBuild,
+  stopBuild,
 }: {
   isOutdated?: boolean;
   isRunning?: boolean;
   localBuildProgress?: LocalBuildProgress;
   startBuild: () => void;
+  stopBuild: () => void;
 }) => {
   if (isRunning && localBuildProgress) {
     const { buildProgressPercentage } = localBuildProgress;
@@ -75,21 +105,17 @@ export const SidebarTopButton = ({
           </TooltipContent>
         }
       >
-        <SidebarIconButton aria-label="Run tests">
-          <Icons icon="play" />
+        <SidebarIconButton aria-label="Stop tests" onClick={() => stopBuild()}>
+          <Icons icon="stopalt" style={{ width: 10 }} />
+          <ProgressCircle xmlns="http://www.w3.org/2000/svg">
+            <circle />
+          </ProgressCircle>
+          <ProgressCircle xmlns="http://www.w3.org/2000/svg" spinner>
+            <circle strokeDashoffset={Math.PI * 20 * (1 - buildProgressPercentage / 100)} />
+          </ProgressCircle>
           {typeof buildProgressPercentage === "number" && (
-            <ProgressCircle xmlns="http://www.w3.org/2000/svg">
-              <circle
-                r="10"
-                cx="12"
-                cy="12"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeDasharray={Math.PI * 20}
-                strokeDashoffset={Math.PI * 20 * (1 - buildProgressPercentage / 100)}
-                fill="transparent"
-              />
+            <ProgressCircle xmlns="http://www.w3.org/2000/svg" progress>
+              <circle strokeDashoffset={Math.PI * 20 * (1 - buildProgressPercentage / 100)} />
             </ProgressCircle>
           )}
         </SidebarIconButton>

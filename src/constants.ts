@@ -15,4 +15,5 @@ export const GIT_INFO = `${ADDON_ID}/gitInfo`;
 export const PROJECT_INFO = `${ADDON_ID}/projectInfo`;
 export const IS_OUTDATED = `${ADDON_ID}/isOutdated`;
 export const START_BUILD = `${ADDON_ID}/startBuild`;
+export const STOP_BUILD = `${ADDON_ID}/stopBuild`;
 export const LOCAL_BUILD_PROGRESS = `${ADDON_ID}/localBuildProgress`;
