@@ -111,9 +111,8 @@ export const VisualTests = ({
             // @ts-expect-error we need a better API for not passing a link
             link: undefined,
             content: {
-              headline: `Failed to ${
-                status === ReviewTestInputStatus.Accepted ? "accept" : "unaccept"
-              } changes`,
+              headline: `Failed to ${status === ReviewTestInputStatus.Accepted ? "accept" : "unaccept"
+                } changes`,
               subHeadline: err.message,
             },
             icon: {
@@ -159,7 +158,7 @@ export const VisualTests = ({
   const selectedBuild = getFragment(
     FragmentSelectedBuildFields,
     data?.selectedBuild ??
-      (lastBuildOnBranchCompletedStory ? data?.project?.lastBuildOnBranch : undefined)
+    (lastBuildOnBranchCompletedStory ? data?.project?.lastBuildOnBranch : undefined)
   );
 
   const selectedBuildHasCorrectBranch = selectedBuild?.branch === gitInfo.branch;

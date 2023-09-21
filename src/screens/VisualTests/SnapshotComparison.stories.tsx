@@ -12,13 +12,14 @@ import {
 } from "../../gql/graphql";
 import { panelModes } from "../../modes";
 import { playAll } from "../../utils/playAll";
-import { makeTest, makeTests } from "../../utils/storyData";
-import { interactionFailureTests } from "./mocks";
+import { makeComparison, makeTest, makeTests } from "../../utils/storyData";
+import { interactionFailureTests, pendingBuild } from "./mocks";
 import { SnapshotComparison } from "./SnapshotComparison";
 
 const meta = {
   component: SnapshotComparison,
   args: {
+    storyId: "button--primary",
     tests: makeTests({
       browsers: [Browser.Chrome, Browser.Safari],
       viewports: [
@@ -41,6 +42,12 @@ const meta = {
     onUnaccept: action("onUnaccept"),
     baselineImageVisible: false,
     shouldSwitchToLastBuildOnBranch: false,
+    selectedBuild: pendingBuild,
+    setSettingsVisible: action("setSettingsVisible"),
+    settingsVisible: false,
+    setWarningsVisible: action("setWarningsVisible"),
+    warningsVisible: false,
+    setAccessToken: action("setAccessToken"),
   },
   parameters: {
     chromatic: {
@@ -138,6 +145,22 @@ export const ShowingBaseline: Story = {
     baselineImageVisible: true,
   },
 } satisfies Story;
+
+export const NoBaseline: Story = {
+  args: {
+    tests: [
+      makeTest({
+        status: TestStatus.Pending,
+        comparisons: [
+          {
+            ...makeComparison({}),
+            baseCapture: null,
+          },
+        ],
+      }),
+    ],
+  },
+};
 
 export const SwitchingMode = {
   args: {

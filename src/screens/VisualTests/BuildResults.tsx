@@ -1,15 +1,13 @@
-import { Icons, Link, TooltipNote, WithTooltip } from "@storybook/components";
+import { Icons, Link } from "@storybook/components";
 import { styled } from "@storybook/theming";
 import React, { useState } from "react";
 
 import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
 import { Eyebrow } from "../../components/Eyebrow";
-import { FooterMenu } from "../../components/FooterMenu";
 import { Heading } from "../../components/Heading";
-import { IconButton } from "../../components/IconButton";
 import { ProgressIcon } from "../../components/icons/ProgressIcon";
-import { Bar, Col, Section, Sections, Text } from "../../components/layout";
+import { Section, Sections } from "../../components/layout";
 import { Text as CenterText } from "../../components/Text";
 import { getFragment } from "../../gql";
 import {
@@ -25,13 +23,13 @@ import { BuildEyebrow } from "./BuildEyebrow";
 import { FragmentStoryTestFields } from "./graphql";
 import { RenderSettings } from "./RenderSettings";
 import { SnapshotComparison } from "./SnapshotComparison";
-import { StoryInfo } from "./StoryInfo";
 import { Warnings } from "./Warnings";
 
 interface BuildResultsProps {
   branch: string;
   localBuildProgress?: LocalBuildProgress;
   selectedBuild: SelectedBuildFieldsFragment;
+  storyId: string;
   lastBuildOnBranch?: LastBuildOnBranchBuildFieldsFragment;
   lastBuildOnBranchCompletedStory: boolean;
   switchToLastBuildOnBranch?: () => void;
@@ -63,12 +61,25 @@ export const BuildResults = ({
   onAccept,
   onUnaccept,
   selectedBuild,
+  storyId,
   setAccessToken,
 }: BuildResultsProps) => {
   const [settingsVisible, setSettingsVisible] = useState(false);
   const [warningsVisible, setWarningsVisible] = useState(false);
   const [baselineImageVisible, setBaselineImageVisible] = useState(false);
   const toggleBaselineImage = () => setBaselineImageVisible(!baselineImageVisible);
+
+  const prevStoryIdRef = React.useRef(storyId);
+
+  React.useEffect(() => {
+    // This component doesn't unmount when the selected build changes, so we need to reset state values
+    if (prevStoryIdRef.current !== storyId) {
+      setBaselineImageVisible(false);
+      setSettingsVisible(false);
+      setWarningsVisible(false);
+    }
+    prevStoryIdRef.current = storyId;
+  }, [storyId, baselineImageVisible]);
 
   const isLocalBuildInProgress =
     localBuildProgress && localBuildProgress.currentStep !== "complete";
@@ -96,6 +107,7 @@ export const BuildResults = ({
     (!isReviewable && !shouldSwitchToLastBuildOnBranch);
   const localBuildProgressIsLastBuildOnBranch =
     localBuildProgress && localBuildProgress?.buildId === lastBuildOnBranch?.id;
+
   const buildStatus = showBuildStatus && (
     <BuildEyebrow
       branch={branch}
@@ -209,6 +221,7 @@ export const BuildResults = ({
 
       <Section grow hidden={settingsVisible || warningsVisible}>
         <SnapshotComparison
+          hidden={settingsVisible || warningsVisible}
           {...{
             tests: storyTests,
             startedAt,
@@ -223,6 +236,14 @@ export const BuildResults = ({
             onAccept,
             onUnaccept,
             baselineImageVisible,
+            toggleBaselineImage,
+            selectedBuild,
+            setSettingsVisible,
+            settingsVisible,
+            setWarningsVisible,
+            warningsVisible,
+            setAccessToken,
+            storyId,
           }}
         />
       </Section>
@@ -232,75 +253,6 @@ export const BuildResults = ({
       </Section>
       <Section grow hidden={!warningsVisible}>
         <Warnings onClose={() => setWarningsVisible(false)} />
-      </Section>
-      <Section>
-        <Bar>
-          <Col>
-            <WithTooltip
-              tooltip={<TooltipNote note="Switch snapshot" />}
-              trigger="hover"
-              hasChrome={false}
-            >
-              <IconButton
-                data-testid="button-toggle-snapshot"
-                onClick={() => toggleBaselineImage()}
-              >
-                <Icons icon="transfer" />
-              </IconButton>
-            </WithTooltip>
-          </Col>
-          <Col style={{ overflow: "hidden", whiteSpace: "nowrap" }}>
-            {baselineImageVisible ? (
-              <Text style={{ marginLeft: 5, width: "100%" }}>
-                <b>Baseline</b> Build {selectedBuild.number} on {selectedBuild.branch}
-              </Text>
-            ) : (
-              <Text style={{ marginLeft: 5, width: "100%" }}>
-                <b>Latest</b> Build {selectedBuild.number} on {selectedBuild.branch}
-              </Text>
-            )}
-          </Col>
-          {/* <Col push>
-            <WithTooltip
-              tooltip={<TooltipNote note="Render settings" />}
-              trigger="hover"
-              hasChrome={false}
-            >
-            <IconButton
-              active={settingsVisible}
-              aria-label={`${settingsVisible ? "Hide" : "Show"} render settings`}
-              onClick={() => {
-                setSettingsVisible(!settingsVisible);
-                setWarningsVisible(false);
-              }}
-            >
-              <Icons icon="controls" />
-            </IconButton>
-          </WithTooltip>
-          </Col>
-          <Col>
-            <WithTooltip
-              tooltip={<TooltipNote note="View warnings" />}
-              trigger="hover"
-              hasChrome={false}
-            >
-              <IconButton
-                active={warningsVisible}
-                aria-label={`${warningsVisible ? "Hide" : "Show"} warnings`}
-                onClick={() => {
-                  setWarningsVisible(!warningsVisible);
-                  setSettingsVisible(false);
-                }}
-                status="warning"
-              >
-                <Icons icon="alert" />2
-              </IconButton>
-            </WithTooltip>
-          </Col> */}
-          <Col push>
-            <FooterMenu setAccessToken={setAccessToken} />
-          </Col>
-        </Bar>
       </Section>
     </Sections>
   );

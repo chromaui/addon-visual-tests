@@ -386,6 +386,15 @@ export const PendingLocalBuildCapturedStory = {
   },
 } satisfies Story;
 
+export const PendingBuildNewStory: Story = {
+  parameters: {
+    ...withBuilds({ selectedBuild: pendingBuildNewStory }),
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=1898-562751&mode=design&t=ciag0nGKx2OGmoSR-4"
+    ),
+  },
+};
+
 /**
  * The next build is snapshotting but hasn't yet reached this story (we didn't start it)
  */
@@ -471,15 +480,6 @@ export const NoPermissionNoChanges = {
     ),
   },
 } satisfies Story;
-
-export const PendingBuildNewStory: Story = {
-  parameters: {
-    ...withBuilds({ selectedBuild: pendingBuildNewStory }),
-    ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=1898-562751&mode=design&t=ciag0nGKx2OGmoSR-4"
-    ),
-  },
-};
 
 export const ToggleSnapshot: Story = {
   parameters: {
