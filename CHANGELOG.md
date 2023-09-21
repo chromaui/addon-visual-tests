@@ -1,3 +1,15 @@
+# v0.0.92 (Thu Sep 21 2023)
+
+#### 🐛 Bug Fix
+
+- Bug: Remove the duplicated manager entry for storybook [#119](https://github.com/chromaui/addon-visual-tests/pull/119) ([@ndelangen](https://github.com/ndelangen))
+
+#### Authors: 1
+
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+
+---
+
 # v0.0.91 (Thu Sep 21 2023)
 
 #### 🐛 Bug Fix
