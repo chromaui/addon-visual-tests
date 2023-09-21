@@ -160,6 +160,7 @@ const pendingBuildNewStory = withTests(
     comparisons: test.comparisons.map((comparison) => ({
       ...comparison,
       result: ComparisonResult.Added,
+      baseCapture: null,
     })),
   }))
 );

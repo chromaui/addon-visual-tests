@@ -1,13 +1,14 @@
-import { Icons, Link } from "@storybook/components";
+import { Icons, Link, TooltipNote, WithTooltip } from "@storybook/components";
 import { styled } from "@storybook/theming";
 import React, { useState } from "react";
 
+import { BuildProgressLabel } from "../../components/BuildProgressLabel";
 import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
 import { Eyebrow } from "../../components/Eyebrow";
 import { Heading } from "../../components/Heading";
-import { ProgressIcon } from "../../components/icons/ProgressIcon";
 import { Section, Sections } from "../../components/layout";
+import { ProgressBar, ProgressTrack } from "../../components/SidebarTopButton";
 import { Text as CenterText } from "../../components/Text";
 import { getFragment } from "../../gql";
 import {
@@ -121,8 +122,8 @@ export const BuildResults = ({
     />
   );
 
-  // If there is a build, but there are no tests yet, there is no baseline for this story. User needs to create one.
-  const isCompletelyNewStory = "testsForStory" in selectedBuild && storyTests.length === 0;
+  // If there are no tests yet, there is no baseline for this story. User needs to create one.
+  const isCompletelyNewStory = storyTests.length === 0;
 
   if (isCompletelyNewStory) {
     return (
@@ -135,20 +136,31 @@ export const BuildResults = ({
               baseline. This unlocks visual regression testing so you can see exactly what has
               changed down to the pixel.
             </CenterText>
-            <Button
-              belowText
-              small
-              secondary
-              onClick={() => startDevBuild()}
-              disabled={isLocalBuildInProgress}
-            >
-              {isLocalBuildInProgress ? (
-                <ProgressIcon parentComponent="Button" style={{ marginRight: 6 }} />
-              ) : (
-                <Icons icon="play" />
-              )}
-              Create visual test
-            </Button>
+            {localBuildProgress ? (
+              <CenterText style={{ display: "flex", flexDirection: "column", gap: 10, width: 200 }}>
+                <ProgressTrack>
+                  {typeof localBuildProgress.buildProgressPercentage === "number" && (
+                    <ProgressBar
+                      style={{ width: `${localBuildProgress.buildProgressPercentage}%` }}
+                    />
+                  )}
+                </ProgressTrack>
+                <BuildProgressLabel localBuildProgress={localBuildProgress} />
+              </CenterText>
+            ) : (
+              <>
+                <br />
+                <Button
+                  belowText
+                  small
+                  secondary
+                  onClick={() => startDevBuild()}
+                  disabled={isLocalBuildInProgress}
+                >
+                  Create visual test
+                </Button>
+              </>
+            )}
           </Container>
         </Section>
       </Sections>
