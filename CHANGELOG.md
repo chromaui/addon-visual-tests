@@ -1,3 +1,15 @@
+# v0.0.91 (Thu Sep 21 2023)
+
+#### 🐛 Bug Fix
+
+- Show a loading state in between URQL states [#104](https://github.com/chromaui/addon-visual-tests/pull/104) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.90 (Thu Sep 21 2023)
 
 #### 🐛 Bug Fix
