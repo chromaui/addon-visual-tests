@@ -136,12 +136,6 @@ export const ExistingStoryModeAdded: Story = {
   },
 };
 
-export const SingleTestAdded: Story = {
-  args: {
-    tests: [makeTest({ status: TestStatus.Pending, result: TestResult.Added })],
-  },
-};
-
 export const ShowingBaseline: Story = {
   args: {
     baselineImageVisible: true,
