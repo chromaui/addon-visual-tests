@@ -47,6 +47,7 @@ const ProjectCountQuery = graphql(/* GraphQL */ `
 
 interface VerifyProps {
   onBack: () => void;
+  hasProjectId: boolean;
   setAccessToken: (token: string) => void;
   setCreatedProjectId: (projectId: Project["id"]) => void;
   exchangeParameters: TokenExchangeParameters;
@@ -54,6 +55,7 @@ interface VerifyProps {
 
 export const Verify = ({
   onBack,
+  hasProjectId,
   setAccessToken,
   setCreatedProjectId,
   exchangeParameters,
@@ -88,8 +90,9 @@ export const Verify = ({
 
         if (!data?.viewer) throw new Error("Failed to fetch initial project list");
 
-        // The user has projects to choose from, so send them to pick one
-        if (data.viewer.projectCount > 0) {
+        // The user has projects to choose from (or the project is already selected),
+        // so send them to pick one
+        if (data.viewer.projectCount > 0 || hasProjectId) {
           setAccessToken(accessToken.current);
           closeDialog();
         } else {

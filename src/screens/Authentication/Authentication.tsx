@@ -64,6 +64,7 @@ export const Authentication = ({
     return (
       <Verify
         onBack={() => setScreen("signin")}
+        hasProjectId={hasProjectId}
         setAccessToken={setAccessToken}
         setCreatedProjectId={setCreatedProjectId}
         exchangeParameters={exchangeParameters}
