@@ -99,26 +99,7 @@ export const FirstPassed: Story = {
   },
 } satisfies Story;
 
-export const MultipleTestsFirstAdded: Story = {
-  args: {
-    tests: makeTests({
-      browsers: [Browser.Chrome, Browser.Safari],
-      viewports: [
-        {
-          status: TestStatus.Pending,
-          viewport: 800,
-          comparisonResults: [ComparisonResult.Added, ComparisonResult.Equal],
-        },
-        {
-          status: TestStatus.Pending,
-          viewport: 1200,
-        },
-      ],
-    }),
-  },
-};
-
-export const MultipleTestsAllAdded: Story = {
+export const StoryAdded: Story = {
   args: {
     tests: makeTests({
       browsers: [Browser.Chrome, Browser.Safari],
@@ -127,7 +108,28 @@ export const MultipleTestsAllAdded: Story = {
           status: TestStatus.Pending,
           result: TestResult.Added,
           viewport: 800,
-          comparisonResults: [ComparisonResult.Added, ComparisonResult.Added],
+          comparisons: [
+            makeComparison({ result: ComparisonResult.Added, baseCapture: null }),
+            makeComparison({ result: ComparisonResult.Added, baseCapture: null }),
+          ],
+        },
+      ],
+    }),
+  },
+};
+
+export const ExistingStoryModeAdded: Story = {
+  args: {
+    tests: makeTests({
+      browsers: [Browser.Chrome, Browser.Safari],
+      viewports: [
+        {
+          status: TestStatus.Pending,
+          viewport: 800,
+          comparisons: [
+            makeComparison({ result: ComparisonResult.Added, baseCapture: null }),
+            makeComparison({ result: ComparisonResult.Equal }),
+          ],
         },
       ],
     }),

@@ -98,11 +98,14 @@ const StackTrace = styled.div(({ theme }) => ({
 }));
 
 const Warning = styled.div(({ theme }) => ({
-  color: theme.color.warning,
   background: theme.background.warning,
   padding: "10px",
   lineHeight: "18px",
   position: "relative",
+}));
+
+const WarningText = styled(Text)(({ theme }) => ({
+  color: theme.color.darkest,
 }));
 
 interface SnapshotSectionProps {
@@ -210,7 +213,7 @@ export const SnapshotComparison = ({
   const { selectedTest, selectedComparison } = testControls;
 
   // isNewStory is when the story itself is added and all tests should also be added
-  const isNewStory = tests.every((test) => test.result === TestResult.Added);
+  const isNewStory = selectedTest.result === TestResult.Added;
 
   // This checks if the specific comparison is new, but the story itself is not. This indicates it was probably a new mode being added.
   const isNewTestOnExistingStory =
@@ -240,22 +243,22 @@ export const SnapshotComparison = ({
         {isInProgress && <Loader />}
         {!isInProgress && isNewStory && (
           <Warning>
-            <Text>
+            <WarningText>
               New story found. Accept this snapshot as a test baseline.{" "}
               <Link href="https://www.chromatic.com/docs/branching-and-baselines">
                 Learn More »
               </Link>
-            </Text>
+            </WarningText>
           </Warning>
         )}
         {!isInProgress && isNewTestOnExistingStory && (
           <Warning>
-            <Text>
+            <WarningText>
               New mode found. Accept this mode as a test baseline.{" "}
               <Link href="https://www.chromatic.com/docs/branching-and-baselines">
                 Learn More »
               </Link>
-            </Text>
+            </WarningText>
           </Warning>
         )}
         {!isInProgress && selectedComparison && (
