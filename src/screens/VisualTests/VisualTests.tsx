@@ -206,7 +206,7 @@ export const VisualTests = ({
       {...{
         error,
         hasData: !!data && !storyDataIsStale,
-        hasStoryBuild: !storyBuild,
+        hasStoryBuild: !!storyBuild,
         startDevBuild,
         isRunningBuildStarting,
         branch: gitInfo.branch,
