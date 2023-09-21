@@ -1,5 +1,6 @@
 import { styled } from "@storybook/theming";
-import React from "react";
+import React, { useRef } from "react";
+import { useClient } from "urql";
 
 import { BackButton } from "../../components/BackButton";
 import { Button } from "../../components/Button";
@@ -8,6 +9,9 @@ import { Heading } from "../../components/Heading";
 import { BackIcon } from "../../components/icons/BackIcon";
 import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
+import { graphql } from "../../gql";
+import { Project } from "../../gql/graphql";
+import { getFetchOptions } from "../../utils/graphQLClient";
 import { fetchAccessToken, TokenExchangeParameters } from "../../utils/requestAccessToken";
 import { useChromaticDialog } from "../../utils/useChromaticDialog";
 import { useErrorNotification } from "../../utils/useErrorNotification";
@@ -30,16 +34,38 @@ const Digits = styled.ol(({ theme }) => ({
   },
 }));
 
+const ProjectCountQuery = graphql(/* GraphQL */ `
+  query VisualTestsProjectCountQuery {
+    viewer {
+      projectCount
+      accounts {
+        newProjectUrl
+      }
+    }
+  }
+`);
+
 interface VerifyProps {
   onBack: () => void;
   setAccessToken: (token: string) => void;
+  setCreatedProjectId: (projectId: Project["id"]) => void;
   exchangeParameters: TokenExchangeParameters;
 }
 
-export const Verify = ({ onBack, setAccessToken, exchangeParameters }: VerifyProps) => {
+export const Verify = ({
+  onBack,
+  setAccessToken,
+  setCreatedProjectId,
+  exchangeParameters,
+}: VerifyProps) => {
+  const client = useClient();
   const onError = useErrorNotification();
 
   const { user_code: userCode, verificationUrl } = exchangeParameters;
+
+  // Store the access token until we are ready to pass it to `setAccessToken` (at which point
+  // the Panel will close the Authentication screen)
+  const accessToken = useRef<string>();
 
   const [openDialog, closeDialog] = useChromaticDialog(async (event) => {
     // If the user logs in as part of the grant process, don't close the dialog,
@@ -50,13 +76,43 @@ export const Verify = ({ onBack, setAccessToken, exchangeParameters }: VerifyPro
 
     if (event.message === "grant") {
       try {
-        setAccessToken(await fetchAccessToken(exchangeParameters));
+        const token = await fetchAccessToken(exchangeParameters);
+        if (!token) throw new Error("Failed to fetch an access token");
+        accessToken.current = token;
 
-        // TODO -- check if user has a project
+        const { data } = await client.query(
+          ProjectCountQuery,
+          {},
+          { fetchOptions: () => getFetchOptions(token) }
+        );
 
-        closeDialog();
+        if (!data?.viewer) throw new Error("Failed to fetch initial project list");
+
+        // The user has projects to choose from, so send them to pick one
+        if (data.viewer.projectCount > 0) {
+          setAccessToken(accessToken.current);
+          closeDialog();
+        } else {
+          // The user has no projects, so we need to get them to create one, then close the dialog
+          if (!data.viewer.accounts[0]) throw new Error("User has no accounts!");
+          if (!data.viewer.accounts[0].newProjectUrl) {
+            throw new Error("Unexpected missing project URL");
+          }
+
+          openDialog(data.viewer.accounts[0].newProjectUrl);
+        }
       } catch (err) {
-        onError("Error getting access token", err);
+        onError("Login Error", err);
+      }
+    }
+
+    if (event.message === "createdProject") {
+      if (!accessToken.current) {
+        onError("Unexpected missing access token", new Error());
+      } else {
+        setAccessToken(accessToken.current);
+        setCreatedProjectId(`Project:${event.projectId}`);
+        closeDialog();
       }
     }
   });

@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from "react";
 
+import { Project } from "../../gql/graphql";
 import { initiateSignin, TokenExchangeParameters } from "../../utils/requestAccessToken";
 import { useErrorNotification } from "../../utils/useErrorNotification";
 import { SetSubdomain } from "./SetSubdomain";
@@ -9,12 +10,17 @@ import { Welcome } from "./Welcome";
 
 interface AuthenticationProps {
   setAccessToken: (token: string) => void;
+  setCreatedProjectId: (projectId: Project["id"]) => void;
   hasProjectId: boolean;
 }
 
 type AuthenticationScreen = "welcome" | "signin" | "subdomain" | "verify";
 
-export const Authentication = ({ setAccessToken, hasProjectId }: AuthenticationProps) => {
+export const Authentication = ({
+  setAccessToken,
+  setCreatedProjectId,
+  hasProjectId,
+}: AuthenticationProps) => {
   const [screen, setScreen] = useState<AuthenticationScreen>(hasProjectId ? "signin" : "welcome");
   const [exchangeParameters, setExchangeParameters] = useState<TokenExchangeParameters>();
   const onError = useErrorNotification();
@@ -59,6 +65,7 @@ export const Authentication = ({ setAccessToken, hasProjectId }: AuthenticationP
       <Verify
         onBack={() => setScreen("signin")}
         setAccessToken={setAccessToken}
+        setCreatedProjectId={setCreatedProjectId}
         exchangeParameters={exchangeParameters}
       />
     );

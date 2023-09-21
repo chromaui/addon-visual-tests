@@ -101,7 +101,7 @@ export const fetchAccessToken = async ({
         `You have not authorized the Visual Tests addon for Chromatic, please try again`
       );
     } else if (data.access_token) {
-      return data.access_token;
+      return data.access_token as string;
     } else if (betaUserAccessDenied(data)) {
       alert("You must be a beta user to use this addon at this time.");
       return null;

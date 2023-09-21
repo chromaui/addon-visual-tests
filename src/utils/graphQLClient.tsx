@@ -31,16 +31,18 @@ export const useAccessToken = () => {
 
 const sessionId = uuid();
 
+export const getFetchOptions = (token: string | null) => ({
+  headers: {
+    accept: "*/*", // workaround for https://github.com/mswjs/msw/issues/1593
+    authorization: token ? `Bearer ${token}` : "",
+    "x-chromatic-session-id": sessionId,
+  },
+});
+
 export const client = new Client({
   url: CHROMATIC_API_URL,
   exchanges: [fetchExchange], // no cacheExchange to prevent sharing data between stories
-  fetchOptions: () => ({
-    headers: {
-      accept: "*/*", // workaround for https://github.com/mswjs/msw/issues/1593
-      authorization: currentToken ? `Bearer ${currentToken}` : "",
-      "x-chromatic-session-id": sessionId,
-    },
-  }),
+  fetchOptions: () => getFetchOptions(currentToken),
 });
 
 export const storyWrapper = (Story: any) => (
