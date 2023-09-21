@@ -66,6 +66,7 @@ export const BrowserSelector = ({
     );
   return (
     <WithTooltip
+      key={selectedBrowser.key}
       hasChrome={false}
       placement="top"
       trigger="hover"

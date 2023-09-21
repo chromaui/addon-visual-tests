@@ -208,7 +208,7 @@ export const BuildResults = ({
       )}
 
       <Section grow hidden={settingsVisible || warningsVisible}>
-        <StoryInfo
+        <SnapshotComparison
           {...{
             tests: storyTests,
             startedAt,
@@ -217,21 +217,14 @@ export const BuildResults = ({
             isBuildFailed,
             shouldSwitchToLastBuildOnBranch,
             switchToLastBuildOnBranch,
+            userCanReview,
+            isReviewable,
+            isReviewing,
+            onAccept,
+            onUnaccept,
+            baselineImageVisible,
           }}
         />
-        {!isSelectedBuildStarting && storyTests && storyTests.length > 0 && (
-          <SnapshotComparison
-            {...{
-              tests: storyTests,
-              userCanReview,
-              isReviewable,
-              isReviewing,
-              onAccept,
-              onUnaccept,
-              baselineImageVisible,
-            }}
-          />
-        )}
       </Section>
 
       <Section grow hidden={!settingsVisible}>

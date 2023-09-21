@@ -52,12 +52,13 @@ export const Panel = ({ active, api }: PanelProps) => {
   } = useProjectId();
 
   // Render the Authentication flow if the user is not signed in.
-  if (!accessToken)
+  if (!accessToken) {
     return (
       <Sections hidden={!active}>
-        <Authentication key={PANEL_ID} setAccessToken={setAccessToken} />
+        <Authentication key={PANEL_ID} setAccessToken={setAccessToken} hasProjectId={!!projectId} />
       </Sections>
     );
+  }
 
   // Momentarily wait on addonState (should be very fast)
   if (projectInfoLoading || !gitInfo) {
