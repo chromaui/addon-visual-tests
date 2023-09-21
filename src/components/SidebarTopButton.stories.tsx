@@ -58,7 +58,7 @@ export const IsRunning: Story = {
   render: WithProgress,
   play: playAll(async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const button = await canvas.findByRole("button", { name: "Run tests" });
+    const button = await canvas.findByRole("button", { name: "Stop tests" });
     // Wait one second just to ensure the screen has proper focus
     await new Promise((r) => setTimeout(r, 1000));
     await userEvent.hover(button);
