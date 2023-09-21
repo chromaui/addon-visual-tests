@@ -162,7 +162,7 @@ export const SnapshotComparison = ({
   const testControls = useTests(tests);
 
   const prevStoryIdRef = React.useRef(storyId);
-  const prevSelectedComparisonIdRef = React.useRef(testControls.selectedComparison.id);
+  const prevSelectedComparisonIdRef = React.useRef(testControls.selectedComparison?.id);
   const prevSelectedBuildIdRef = React.useRef(selectedBuild.id);
 
   React.useEffect(() => {
@@ -170,14 +170,14 @@ export const SnapshotComparison = ({
     // This is most important for the baseline image toggle because baseline can not exist for a different story.
     if (
       prevStoryIdRef.current !== storyId ||
-      prevSelectedComparisonIdRef.current !== testControls.selectedComparison.id ||
+      prevSelectedComparisonIdRef.current !== testControls.selectedComparison?.id ||
       prevSelectedBuildIdRef.current !== selectedBuild.id
     ) {
       if (baselineImageVisible) toggleBaselineImage();
       setSettingsVisible(false);
       setWarningsVisible(false);
     }
-    prevSelectedComparisonIdRef.current = testControls.selectedComparison.id;
+    prevSelectedComparisonIdRef.current = testControls.selectedComparison?.id;
     prevStoryIdRef.current = storyId;
     prevSelectedBuildIdRef.current = selectedBuild.id;
   }, [

@@ -123,7 +123,7 @@ export const BuildResults = ({
   );
 
   // If there are no tests yet, there is no baseline for this story. User needs to create one.
-  const isCompletelyNewStory = storyTests.length === 0;
+  const isCompletelyNewStory = "testsForStory" in selectedBuild && storyTests.length === 0;
 
   if (isCompletelyNewStory) {
     return (
