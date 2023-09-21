@@ -1,3 +1,39 @@
+# v0.0.92 (Thu Sep 21 2023)
+
+#### 🐛 Bug Fix
+
+- Bug: Remove the duplicated manager entry for storybook [#119](https://github.com/chromaui/addon-visual-tests/pull/119) ([@ndelangen](https://github.com/ndelangen))
+
+#### Authors: 1
+
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+
+---
+
+# v0.0.91 (Thu Sep 21 2023)
+
+#### 🐛 Bug Fix
+
+- Show a loading state in between URQL states [#104](https://github.com/chromaui/addon-visual-tests/pull/104) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.90 (Thu Sep 21 2023)
+
+#### 🐛 Bug Fix
+
+- Show label even when there is only one mode [#118](https://github.com/chromaui/addon-visual-tests/pull/118) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v0.0.89 (Wed Sep 20 2023)
 
 #### 🐛 Bug Fix
