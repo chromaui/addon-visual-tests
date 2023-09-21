@@ -1,3 +1,15 @@
+# v0.0.90 (Thu Sep 21 2023)
+
+#### 🐛 Bug Fix
+
+- Show label even when there is only one mode [#118](https://github.com/chromaui/addon-visual-tests/pull/118) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v0.0.89 (Wed Sep 20 2023)
 
 #### 🐛 Bug Fix
