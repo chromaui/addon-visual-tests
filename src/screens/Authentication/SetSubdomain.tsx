@@ -36,7 +36,7 @@ interface SetSubdomainProps {
 
 export const SetSubdomain = ({ onBack, onSignIn }: SetSubdomainProps) => {
   const [subdomain, setSubdomain] = useState("");
-  const [inputError, setInputError] = useState(null);
+  const [inputError, setInputError] = useState<string | null>(null);
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/[^a-z0-9-]/g, "");

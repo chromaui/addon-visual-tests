@@ -11,7 +11,7 @@ export const Accordions = styled.div({
 export const Accordion = styled.div(({ theme }) => ({
   padding: 15,
   lineHeight: "18px",
-  borderBottom: `1px solid ${theme.color.border}`,
+  borderBottom: `1px solid ${theme.appBorderColor}`,
 
   p: {
     margin: "10px 0",

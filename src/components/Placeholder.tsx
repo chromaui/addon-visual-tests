@@ -5,7 +5,7 @@ export const Placeholder = styled.div<{
   height?: number;
   marginLeft?: number;
   marginRight?: number;
-}>(({ theme, width = 14, height = 14, marginLeft = 7, marginRight = 14 }) => ({
+}>(({ theme, width = 14, height = 14, marginLeft = 7, marginRight = 8 }) => ({
   display: "inline-block",
   backgroundColor: theme.appBorderColor,
   borderRadius: 3,

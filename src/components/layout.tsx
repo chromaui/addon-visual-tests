@@ -11,17 +11,33 @@ export const Sections = styled.div<{ hidden?: boolean }>(
 
 export const Section = styled.div<{ grow?: boolean }>(({ grow, theme }) => ({
   flexGrow: grow ? 1 : "auto",
-  borderBottom: `1px solid ${theme.color.border}`,
+  borderBottom: `1px solid ${theme.appBorderColor}`,
   "&:last-of-type": {
     borderBottom: 0,
   },
 }));
 
-export const Row = styled.div({
-  display: "flex",
-  flexDirection: "row",
-  margin: 15,
-});
+export const Row = styled.div<{ header?: boolean }>(
+  {
+    display: "flex",
+    flexDirection: "row",
+    margin: 15,
+  },
+  ({ header, theme }) =>
+    header && {
+      margin: 0,
+      padding: 15,
+      borderBottom: `1px solid ${theme.appBorderColor}`,
+
+      "@container (min-width: 800px)": {
+        height: 40,
+        alignItems: "center",
+        justifyContent: "space-between",
+        backgroundColor: theme.background.app,
+        padding: "5px 15px",
+      },
+    }
+);
 
 export const Bar = styled(Row)({
   alignItems: "center",
@@ -34,9 +50,6 @@ export const Col = styled.div<{ push?: boolean }>(
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    "&:not(:last-of-type)": {
-      marginRight: 6,
-    },
   },
   ({ push }) => push && { marginLeft: "auto" }
 );
@@ -49,7 +62,7 @@ export const Text = styled.div(({ theme }) => ({
   },
   code: {
     fontSize: theme.typography.size.s1,
-    border: `1px solid ${theme.color.border}`,
+    border: `1px solid ${theme.appBorderColor}`,
     borderRadius: 3,
     padding: "0 3px",
   },
@@ -61,5 +74,16 @@ export const Text = styled.div(({ theme }) => ({
   },
   svg: {
     verticalAlign: "top",
+  },
+  "@container (min-width: 800px)": {
+    br: {
+      verticalAlign: "top",
+      display: "inline-block",
+      content: "''",
+      background: theme.appBorderColor,
+      width: 1,
+      height: "100%",
+      margin: "0 6px",
+    },
   },
 }));

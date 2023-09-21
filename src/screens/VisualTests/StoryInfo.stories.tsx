@@ -1,8 +1,11 @@
 import { action } from "@storybook/addon-actions";
 import type { Meta, StoryObj } from "@storybook/react";
+import React from "react";
 
 import { Browser, TestStatus } from "../../gql/graphql";
+import { panelModes } from "../../modes";
 import { makeTest, makeTests } from "../../utils/storyData";
+import { Grid } from "./SnapshotComparison";
 import { StoryInfo } from "./StoryInfo";
 
 const meta = {
@@ -11,8 +14,20 @@ const meta = {
     isStarting: false,
     startedAt: new Date(Date.now() - 1000 * 60 * 2), // 2 minutes ago
     startDevBuild: action("startDevBuild"),
-    shouldSwitchToNextBuild: false,
+    shouldSwitchToLastBuildOnBranch: false,
     isBuildFailed: false,
+  },
+  decorators: [
+    (Story) => (
+      <Grid>
+        <Story />
+      </Grid>
+    ),
+  ],
+  parameters: {
+    chromatic: {
+      modes: panelModes,
+    },
   },
 } satisfies Meta<typeof StoryInfo>;
 
@@ -20,12 +35,12 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Starting: Story = {
-  args: { isStarting: true, startedAt: null },
+  args: { isStarting: true, startedAt: undefined },
 };
 
 // Announced -> Prepared are indistiguishable from Starting currently
 export const Announced: Story = {
-  args: { isStarting: true, startedAt: null },
+  args: { isStarting: true, startedAt: undefined },
 };
 
 // The build hasn't start properly yet but is already superseded by another build
@@ -33,8 +48,8 @@ export const AnnouncedSuperseded: Story = {
   ...Announced,
   args: {
     ...Announced.args,
-    shouldSwitchToNextBuild: true,
-    switchToNextBuild: action("switchToNextBuild"),
+    shouldSwitchToLastBuildOnBranch: true,
+    switchToLastBuildOnBranch: action("switchToLastBuildOnBranch"),
   },
 };
 
@@ -53,8 +68,8 @@ export const InProgress: Story = {
 export const InProgressSuperseded: Story = {
   args: {
     tests: [makeTest({ status: TestStatus.InProgress })],
-    shouldSwitchToNextBuild: true,
-    switchToNextBuild: action("switchToNextBuild"),
+    shouldSwitchToLastBuildOnBranch: true,
+    switchToLastBuildOnBranch: action("switchToLastBuildOnBranch"),
   },
 };
 
@@ -68,8 +83,8 @@ export const PendingSuperseded: Story = {
   ...Pending,
   args: {
     ...Pending.args,
-    shouldSwitchToNextBuild: true,
-    switchToNextBuild: action("switchToNextBuild"),
+    shouldSwitchToLastBuildOnBranch: true,
+    switchToLastBuildOnBranch: action("switchToLastBuildOnBranch"),
   },
 };
 

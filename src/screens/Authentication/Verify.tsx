@@ -1,5 +1,5 @@
 import { styled } from "@storybook/theming";
-import React from "react";
+import React, { useEffect } from "react";
 
 import { BackButton } from "../../components/BackButton";
 import { Button } from "../../components/Button";
@@ -8,6 +8,7 @@ import { Heading } from "../../components/Heading";
 import { BackIcon } from "../../components/icons/BackIcon";
 import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
+import { useChromaticDialog } from "../../utils/useChromaticDialog";
 
 const Digits = styled.ol(({ theme }) => ({
   display: "inline-flex",
@@ -34,26 +35,20 @@ interface VerifyProps {
 }
 
 export const Verify = ({ onBack, userCode, verificationUrl }: VerifyProps) => {
-  const dialog = React.useRef<Window>();
-
-  // Close the dialog window when the screen gets unmounted.
-  React.useEffect(() => () => dialog.current?.close(), []);
-
-  const openChromatic = () => {
-    const width = 800;
-    const height = 800;
-    const usePopup = window.innerWidth > width && window.innerHeight > height;
-
-    if (usePopup) {
-      const left = (window.innerWidth - width) / 2 + window.screenLeft;
-      const top = (window.innerHeight - height) / 2 + window.screenTop;
-      const options = `scrollbars=yes,width=${width},height=${height},top=${top},left=${left}`;
-      dialog.current = window.open(verificationUrl, "oauth-dialog", options);
-      if (window.focus) dialog.current.focus();
-    } else {
-      dialog.current = window.open(verificationUrl, "_blank");
+  const [openDialog, closeDialog] = useChromaticDialog((event) => {
+    // If the user logs in as part of the grant process, don't close the dialog,
+    // instead redirect us back to where we were trying to go.
+    if (event.message === "login") {
+      openDialog(verificationUrl);
     }
-  };
+  });
+
+  // Close the dialog on unmount, which happens automatically when poll for a token.
+  // Later (https://linear.app/chromaui/issue/AP-3549/onboarding-flow-for-new-users-to-create-a-project)
+  // we'll actually wait for the grant event and:
+  //   - grab a token immediately
+  //   - check if the user has projects, if not redirect to new project screen.
+  useEffect(() => () => closeDialog(), [closeDialog]);
 
   return (
     <Container>
@@ -74,7 +69,7 @@ export const Verify = ({ onBack, userCode, verificationUrl }: VerifyProps) => {
             ))}
           </Digits>
         </div>
-        <Button secondary onClick={openChromatic}>
+        <Button secondary onClick={() => openDialog(verificationUrl)}>
           Go to Chromatic
         </Button>
       </Stack>
