@@ -243,6 +243,7 @@ export const VisualTests = ({
         onUnaccept,
         ...(selectedBuildHasCorrectBranch && { selectedBuild }),
         setAccessToken,
+        storyId,
       }}
     />
   );
