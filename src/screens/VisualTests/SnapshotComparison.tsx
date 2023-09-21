@@ -147,21 +147,27 @@ export const SnapshotComparison = ({
   const testControls = useTests(tests);
 
   const prevStoryIdRef = React.useRef(storyId);
-  const prevSelectedCompsrisonIdRef = React.useRef(testControls.selectedComparison.id);
+  const prevSelectedComparisonIdRef = React.useRef(testControls.selectedComparison.id);
+  const prevSelectedBuildIdRef = React.useRef(selectedBuild.id);
 
   React.useEffect(() => {
-    // This component doesn't unmount when the selected build changes, so we need to reset state values
+    // It's possible this component doesn't unmount when the selected build, comparison, or story changes, so we need to reset state values.
+    // This is most important for the baseline image toggle because baseline can not exist for a different story.
     if (
       prevStoryIdRef.current !== storyId ||
-      prevSelectedCompsrisonIdRef.current === testControls.selectedComparison.id
+      prevSelectedComparisonIdRef.current !== testControls.selectedComparison.id ||
+      prevSelectedBuildIdRef.current !== selectedBuild.id
     ) {
       if (baselineImageVisible) toggleBaselineImage();
       setSettingsVisible(false);
       setWarningsVisible(false);
     }
+    prevSelectedComparisonIdRef.current = testControls.selectedComparison.id;
     prevStoryIdRef.current = storyId;
+    prevSelectedBuildIdRef.current = selectedBuild.id;
   }, [
     baselineImageVisible,
+    selectedBuild.id,
     setSettingsVisible,
     setWarningsVisible,
     storyId,

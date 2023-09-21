@@ -15,7 +15,6 @@ import {
   SelectedBuildFieldsFragment,
   StoryTestFieldsFragment,
   TestResult,
-  TestStatus,
 } from "../../gql/graphql";
 import { LocalBuildProgress } from "../../types";
 import { BuildEyebrow } from "./BuildEyebrow";
