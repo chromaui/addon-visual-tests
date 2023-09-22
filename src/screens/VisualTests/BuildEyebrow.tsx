@@ -19,7 +19,7 @@ const Header = styled.button<{ isWarning?: boolean }>(({ isWarning, onClick, the
     display: "flex",
     width: "100%",
     lineHeight: "20px",
-    padding: "5px 5px 5px 15px",
+    padding: "5px 7px 5px 15px",
     justifyContent: "space-between",
     alignItems: "center",
     background: isWarning ? warningColor : theme.background.app,
