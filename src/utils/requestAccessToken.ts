@@ -103,6 +103,7 @@ export const fetchAccessToken = async ({
     } else if (data.access_token) {
       return data.access_token as string;
     } else if (betaUserAccessDenied(data)) {
+      // eslint-disable-next-line no-alert
       alert("You must be a beta user to use this addon at this time.");
       return null;
     }
