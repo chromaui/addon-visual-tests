@@ -1,6 +1,6 @@
 import { TooltipNote, WithTooltip } from "@storybook/components";
 import { styled } from "@storybook/theming";
-import React from "react";
+import React, { ComponentProps } from "react";
 
 import { Browser, BrowserInfo, ComparisonResult } from "../gql/graphql";
 import { aggregateResult } from "../utils/aggregateResult";
@@ -32,7 +32,7 @@ type BrowserData = Pick<BrowserInfo, "id" | "key" | "name">;
 interface BrowserSelectorProps {
   isAccepted: boolean;
   selectedBrowser: BrowserData;
-  browserResults: { browser: BrowserData; result: ComparisonResult }[];
+  browserResults: { browser: BrowserData; result?: ComparisonResult }[];
   onSelectBrowser: (browser: BrowserData) => void;
 }
 
@@ -50,18 +50,23 @@ export const BrowserSelector = ({
     icon = <StatusDotWrapper status={aggregate}>{icon}</StatusDotWrapper>;
   }
 
+  type Link = ComponentProps<typeof TooltipMenu>["links"][0];
+
   const links =
     browserResults.length > 1 &&
-    browserResults.map(({ browser, result }) => ({
-      active: selectedBrowser === browser,
-      id: browser.id,
-      onClick: () => onSelectBrowser(browser),
-      right: !isAccepted && result !== ComparisonResult.Equal && <StatusDot status={result} />,
-      title: browser.name,
-    }));
-
+    browserResults.map(
+      ({ browser, result }): Link => ({
+        active: selectedBrowser === browser,
+        id: browser.id,
+        onClick: () => onSelectBrowser(browser),
+        right: !isAccepted && result !== ComparisonResult.Equal && <StatusDot status={result} />,
+        icon: browserIcons[browser.key],
+        title: browser.name,
+      })
+    );
   return (
     <WithTooltip
+      key={selectedBrowser.key}
       hasChrome={false}
       placement="top"
       trigger="hover"

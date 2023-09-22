@@ -573,7 +573,10 @@ type Capture {
   """
   The screenshot capture image. Available if the capture was successful or was taken after an interaction error.
   """
-  captureImage: CaptureImage
+  captureImage(
+    """Whether the imageUrl should be signed with the user token."""
+    signed: Boolean
+  ): CaptureImage
 
   """Metadata about the error if the capture failed."""
   captureError: CaptureError
@@ -686,10 +689,16 @@ type CaptureDiff {
   result: CaptureDiffResult!
 
   """The diff overlay image. Available if there are visual changes."""
-  diffImage: CaptureOverlayImage
+  diffImage(
+    """Whether the imageUrl should be signed with the user token."""
+    signed: Boolean
+  ): CaptureOverlayImage
 
   """The focus overlay image. Available if there are visual changes."""
-  focusImage: CaptureOverlayImage
+  focusImage(
+    """Whether the imageUrl should be signed with the user token."""
+    signed: Boolean
+  ): CaptureOverlayImage
 }
 
 enum CaptureDiffResult {
@@ -794,7 +803,10 @@ type Story implements Node & Temporal {
   storybookUrl: URL
 
   """Image and snapshot display metadata for this story, if captured."""
-  captureImage: CaptureImage
+  captureImage(
+    """Whether the imageUrl should be signed with the user token."""
+    signed: Boolean
+  ): CaptureImage
 
   """Component that contains the story."""
   component: Component
@@ -1426,7 +1438,11 @@ type Query {
 type Account implements Node & Temporal {
   """GraphQL node identifier"""
   id: ID!
+
+  """Is this a personal account?"""
+  isPersonal: Boolean!
   avatarUrl: String
+  newProjectUrl: String
 
   """Account name, typically the repository owner."""
   name: String!
@@ -1537,12 +1553,36 @@ type User implements Node {
   username: String!
   avatarUrl: URL
   accounts: [Account!]!
+  projectMembership(projectId: ID!): ProjectMembership
 
   """When the entity was first created in Chromatic."""
   createdAt: DateTime!
 
   """When the entity was last updated or created in Chromatic."""
   updatedAt: DateTime!
+}
+
+type ProjectMembership {
+  """GraphQL node identifier"""
+  id: ID!
+  user: User
+  project: Project!
+  accessLevel: AccessLevel!
+  meetsAccessLevel(minimumAccessLevel: AccessLevel!): Boolean!
+
+  """When the entity was first created in Chromatic."""
+  createdAt: DateTime!
+
+  """When the entity was last updated or created in Chromatic."""
+  updatedAt: DateTime!
+}
+
+enum AccessLevel {
+  OWNER
+  DEVELOPER
+  REVIEWER
+  VIEWER
+  NONE
 }
 
 """A MongoDB ObjectId."""

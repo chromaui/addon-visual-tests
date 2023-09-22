@@ -5,7 +5,6 @@ import {
   StoryTestFieldsFragment,
   TestResult,
   TestStatus,
-  ViewportInfo,
 } from "../gql/graphql";
 
 export const makeBrowserInfo = (key: Browser): BrowserInfo => ({
@@ -13,13 +12,6 @@ export const makeBrowserInfo = (key: Browser): BrowserInfo => ({
   key,
   name: key.slice(0, 1) + key.slice(1).toLowerCase(),
   version: "<unknown>",
-});
-
-export const makeViewportInfo = (width: number): ViewportInfo => ({
-  id: `_${width}`,
-  name: `${width}px`,
-  width,
-  isDefault: width === 1200,
 });
 
 export const baseCapture: StoryTestFieldsFragment["comparisons"][number]["baseCapture"] = {
@@ -46,15 +38,15 @@ export const captureDiff: StoryTestFieldsFragment["comparisons"][number]["captur
 export function makeComparison(options: {
   id?: string;
   browser?: Browser;
-  viewport?: number;
   result?: ComparisonResult;
-  captureError?: StoryTestFieldsFragment["comparisons"][number]["headCapture"]["captureError"];
+  captureError?: NonNullable<
+    StoryTestFieldsFragment["comparisons"][number]["headCapture"]
+  >["captureError"];
 }): StoryTestFieldsFragment["comparisons"][number] {
   const { captureError, result = ComparisonResult.Equal } = options;
   return {
     id: options.id || "111",
     browser: makeBrowserInfo(options.browser || Browser.Chrome),
-    viewport: makeViewportInfo(options.viewport || 1200),
     result,
     baseCapture,
     headCapture: captureError ? { ...headCapture, captureError } : headCapture,
@@ -64,25 +56,25 @@ export function makeComparison(options: {
   };
 }
 
-const testResultToComparisonResult: Record<TestResult, ComparisonResult> = {
+const testResultToComparisonResult: Record<TestResult, ComparisonResult | undefined> = {
   [TestResult.Added]: ComparisonResult.Added,
   [TestResult.Changed]: ComparisonResult.Changed,
   [TestResult.Equal]: ComparisonResult.Equal,
   [TestResult.Removed]: ComparisonResult.Removed,
   [TestResult.CaptureError]: ComparisonResult.CaptureError,
   [TestResult.Fixed]: ComparisonResult.Fixed,
-  [TestResult.Skipped]: null, // Shouldn't have any comparisons
+  [TestResult.Skipped]: undefined, // Shouldn't have any comparisons
   [TestResult.SystemError]: ComparisonResult.SystemError,
 };
 
-const testStatusToTestResult: Record<TestStatus, TestResult> = {
+const testStatusToTestResult: Record<TestStatus, TestResult | undefined> = {
   [TestStatus.Failed]: TestResult.SystemError,
   [TestStatus.Broken]: TestResult.CaptureError,
   [TestStatus.Accepted]: TestResult.Changed,
   [TestStatus.Denied]: TestResult.Changed,
   [TestStatus.Pending]: TestResult.Changed,
   [TestStatus.Passed]: TestResult.Equal,
-  [TestStatus.InProgress]: null,
+  [TestStatus.InProgress]: undefined,
 };
 
 /**
@@ -97,7 +89,9 @@ export function makeTest(options: {
   browsers?: Browser[];
   viewport?: number;
   storyId?: string;
-  captureError?: StoryTestFieldsFragment["comparisons"][number]["headCapture"]["captureError"];
+  captureError?: NonNullable<
+    StoryTestFieldsFragment["comparisons"][number]["headCapture"]
+  >["captureError"];
 }): StoryTestFieldsFragment {
   const id = options.id || "11";
   const status = options.status || TestStatus.Passed;
@@ -119,8 +113,8 @@ export function makeTest(options: {
       makeComparison({
         id: `id${index}`,
         browser: browserKey,
-        viewport: viewportWidth,
-        result: options.comparisonResults?.[index] ?? testResultToComparisonResult[result],
+        result:
+          options.comparisonResults?.[index] ?? (result && testResultToComparisonResult[result]),
         captureError: options.captureError,
       })
     );
@@ -145,7 +139,7 @@ export function makeTest(options: {
     result,
     webUrl: `https://www.chromatic.com/test?appId=123&id=${id}`,
     comparisons,
-    parameters: { viewport: makeViewportInfo(viewportWidth) },
+    mode: { name: `${viewportWidth}px` },
     story: generateStory(options.storyId || "button--primary"),
   };
 }

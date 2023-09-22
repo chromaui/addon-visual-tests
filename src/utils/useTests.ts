@@ -1,9 +1,9 @@
 import { useCallback, useState } from "react";
 
-import { BrowserInfo, StoryTestFieldsFragment, ViewportInfo } from "../gql/graphql";
+import { BrowserInfo, StoryTestFieldsFragment, TestMode } from "../gql/graphql";
 
 type BrowserData = Pick<BrowserInfo, "id" | "key" | "name">;
-type ModeData = Pick<ViewportInfo, "id" | "name">;
+type ModeData = Pick<TestMode, "name">;
 
 /**
  * Pick a single test+comparison (by viewport+browser) from a set of tests
@@ -11,21 +11,17 @@ type ModeData = Pick<ViewportInfo, "id" | "name">;
  */
 export function useTests(tests: StoryTestFieldsFragment[]) {
   const [selectedBrowserId, onSelectBrowserId] = useState<BrowserData["id"]>(
-    tests[0].comparisons[0].browser.id
+    tests[0]?.comparisons[0].browser.id
   );
-  const [selectedModeId, onSelectModeId] = useState<ModeData["id"]>(
-    tests[0].comparisons[0].viewport.id
-  );
+  const [selectedModeName, onSelectModeName] = useState<ModeData["name"]>(tests[0]?.mode.name);
 
   const onSelectBrowser = useCallback(({ id }: BrowserData) => onSelectBrowserId(id), []);
-  const onSelectMode = useCallback(({ id }: ModeData) => onSelectModeId(id), []);
+  const onSelectMode = useCallback(({ name }: ModeData) => onSelectModeName(name), []);
 
-  const selectedTest =
-    tests.find(({ parameters }) => parameters.viewport.id === selectedModeId) || tests[0];
-
+  const selectedTest = tests.find(({ mode }) => mode.name === selectedModeName) || tests[0];
   const selectedComparison =
-    selectedTest.comparisons.find(({ browser }) => browser.id === selectedBrowserId) ||
-    selectedTest.comparisons[0];
+    selectedTest?.comparisons.find(({ browser }) => browser.id === selectedBrowserId) ||
+    selectedTest?.comparisons[0];
 
   return {
     selectedTest,

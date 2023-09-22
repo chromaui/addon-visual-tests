@@ -1,6 +1,7 @@
 import { action } from "@storybook/addon-actions";
+import { expect } from "@storybook/jest";
 import type { Meta, StoryObj } from "@storybook/react";
-import { userEvent, within } from "@storybook/testing-library";
+import { screen, userEvent, within } from "@storybook/testing-library";
 
 import { INITIAL_BUILD_PAYLOAD } from "../buildSteps";
 import { playAll } from "../utils/playAll";
@@ -21,6 +22,7 @@ export const Default: Story = {
     const canvas = within(canvasElement);
     const button = await canvas.findByRole("button", { name: "Run tests" });
     await userEvent.click(button);
+    await screen.findAllByRole("button", { name: "Rerun tests" });
   }),
 };
 
@@ -33,7 +35,7 @@ export const Outdated: Story = {
 export const IsRunning: Story = {
   args: {
     isRunning: true,
-    runningBuild: {
+    localBuildProgress: {
       ...INITIAL_BUILD_PAYLOAD,
       buildProgressPercentage: 40,
       currentStep: "build",
@@ -42,6 +44,9 @@ export const IsRunning: Story = {
   play: playAll(async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const button = await canvas.findByRole("button", { name: "Run tests" });
+    // Wait one second just to ensure the screen has proper focus
+    await new Promise((r) => setTimeout(r, 1000));
     await userEvent.hover(button);
+    await screen.findAllByText("🏗 Building your Storybook...");
   }),
 };

@@ -2,10 +2,10 @@
 import { TaskName } from "chromatic/node";
 import { filesize } from "filesize";
 
-import { KnownStep, RunningBuildPayload, StepProgressPayload } from "./types";
+import { KnownStep, LocalBuildProgress, StepProgressPayload } from "./types";
 
 export const isKnownStep = (
-  taskOrStep: TaskName | RunningBuildPayload["currentStep"]
+  taskOrStep: TaskName | LocalBuildProgress["currentStep"]
 ): taskOrStep is KnownStep => BUILD_STEP_ORDER.includes(taskOrStep as KnownStep);
 
 export const hasProgressEvent = (task: TaskName) => ["upload", "snapshot"].includes(task);
@@ -20,12 +20,12 @@ export const BUILD_STEP_ORDER: KnownStep[] = [
 ];
 
 export const BUILD_STEP_CONFIG: Record<
-  RunningBuildPayload["currentStep"],
+  LocalBuildProgress["currentStep"],
   {
-    key: RunningBuildPayload["currentStep"];
+    key: LocalBuildProgress["currentStep"];
     emoji: string;
     renderName: () => string;
-    renderProgress: (payload: RunningBuildPayload) => string;
+    renderProgress: (payload: LocalBuildProgress) => string;
     renderComplete: () => string;
     estimateDuration: number;
   }
@@ -52,7 +52,7 @@ export const BUILD_STEP_CONFIG: Record<
     renderName: () => `Publish your Storybook`,
     renderProgress: ({ stepProgress }) => {
       const { numerator, denominator } = stepProgress.upload;
-      if (!denominator) return `Uploading files`;
+      if (!denominator || !numerator) return `Uploading files`;
       const { value: total, exponent } = filesize(denominator, {
         output: "object",
         round: 1,

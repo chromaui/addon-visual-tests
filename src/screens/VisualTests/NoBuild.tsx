@@ -3,14 +3,15 @@ import { styled } from "@storybook/theming";
 import React from "react";
 import { CombinedError } from "urql";
 
+import { BuildProgressLabel } from "../../components/BuildProgressLabel";
 import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
 import { FooterMenu } from "../../components/FooterMenu";
 import { Heading } from "../../components/Heading";
-import { ProgressIcon } from "../../components/icons/ProgressIcon";
 import { Bar, Col, Row, Section, Sections, Text } from "../../components/layout";
+import { ProgressBar, ProgressTrack } from "../../components/SidebarTopButton";
 import { Text as CenterText } from "../../components/Text";
-import { RunningBuildPayload } from "../../types";
+import { LocalBuildProgress } from "../../types";
 
 const buildFailureUrl = "https://www.chromatic.com/docs/?";
 
@@ -25,11 +26,11 @@ const ErrorContainer = styled.div(({ theme }) => ({
 }));
 
 interface NoBuildProps {
-  queryError: CombinedError;
+  queryError?: CombinedError;
   hasData: boolean;
-  hasStoryBuild: boolean;
+  hasSelectedBuild: boolean;
   startDevBuild: () => void;
-  runningBuild: RunningBuildPayload;
+  localBuildProgress?: LocalBuildProgress;
   branch: string;
   setAccessToken: (accessToken: string | null) => void;
 }
@@ -37,14 +38,58 @@ interface NoBuildProps {
 export const NoBuild = ({
   queryError,
   hasData,
-  hasStoryBuild,
+  hasSelectedBuild,
   startDevBuild,
-  runningBuild,
+  localBuildProgress,
   branch,
   setAccessToken,
 }: NoBuildProps) => {
-  const isRunningBuildStarting =
-    runningBuild && !["success", "error"].includes(runningBuild?.currentStep);
+  const button = (
+    <Button small secondary onClick={startDevBuild}>
+      <Icons icon="play" />
+      Take snapshots
+    </Button>
+  );
+
+  let contents;
+  if (localBuildProgress) {
+    if (localBuildProgress.currentStep === "error") {
+      const firstError = Array.isArray(localBuildProgress.originalError)
+        ? localBuildProgress.originalError[0]
+        : localBuildProgress.originalError;
+      contents = (
+        <>
+          <ErrorContainer>
+            <b>Build failed:</b> <code>{firstError?.message || "Unknown Error"}</code>{" "}
+            <Link target="_new" href={buildFailureUrl} withArrow>
+              Learn more
+            </Link>
+          </ErrorContainer>
+          <br />
+          {button}
+        </>
+      );
+    } else {
+      contents = (
+        <CenterText style={{ display: "flex", flexDirection: "column", gap: 10, width: 200 }}>
+          <ProgressTrack>
+            {typeof localBuildProgress.buildProgressPercentage === "number" && (
+              <ProgressBar style={{ width: `${localBuildProgress.buildProgressPercentage}%` }} />
+            )}
+          </ProgressTrack>
+          <BuildProgressLabel localBuildProgress={localBuildProgress} />
+        </CenterText>
+      );
+    }
+  } else {
+    contents = (
+      <>
+        <br />
+        {button}
+      </>
+    );
+  }
+
   return (
     <Sections>
       <Section grow>
@@ -58,36 +103,17 @@ export const NoBuild = ({
 
         {!hasData && <Loader />}
 
-        {hasData && !hasStoryBuild && !queryError && (
+        {hasData && !hasSelectedBuild && !queryError && (
           <Container>
             <Heading>Create a test baseline</Heading>
             <CenterText>
               Take an image snapshot of each story to save their &quot;last known good state&quot;
               as test baselines.
             </CenterText>
-            {runningBuild?.currentStep === "error" ? (
-              <ErrorContainer>
-                <b>Build failed:</b> <code>{[].concat(runningBuild.originalError)[0].message}</code>{" "}
-                <Link target="_new" href={buildFailureUrl} withArrow>
-                  Learn more
-                </Link>
-              </ErrorContainer>
-            ) : (
-              <br />
-            )}
-
-            <Button small secondary onClick={startDevBuild} disabled={isRunningBuildStarting}>
-              {isRunningBuildStarting ? (
-                <ProgressIcon parentComponent="Button" style={{ marginRight: 6 }} />
-              ) : (
-                <Icons icon="play" />
-              )}
-              Take snapshots
-            </Button>
+            {contents}
           </Container>
         )}
       </Section>
-
       <Section>
         <Bar>
           <Col>

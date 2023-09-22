@@ -4,8 +4,8 @@ import pluralize from "pluralize";
 import React, { useEffect, useRef } from "react";
 
 import { SidebarTopButton } from "./components/SidebarTopButton";
-import { ADDON_ID, IS_OUTDATED, RUNNING_BUILD, START_BUILD } from "./constants";
-import { RunningBuildPayload } from "./types";
+import { ADDON_ID, IS_OUTDATED, LOCAL_BUILD_PROGRESS, START_BUILD } from "./constants";
+import { LocalBuildProgress } from "./types";
 import { useAddonState } from "./useAddonState/manager";
 import { useAccessToken } from "./utils/graphQLClient";
 import { useProjectId } from "./utils/useProjectId";
@@ -22,15 +22,15 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
   const isLoggedIn = !!accessToken;
 
   const [isOutdated] = useAddonState<boolean>(IS_OUTDATED);
-  const [runningBuild] = useAddonState<RunningBuildPayload>(RUNNING_BUILD);
-  const isRunning = !!runningBuild && runningBuild.currentStep !== "complete";
+  const [localBuildProgress] = useAddonState<LocalBuildProgress>(LOCAL_BUILD_PROGRESS);
+  const isRunning = !!localBuildProgress && localBuildProgress.currentStep !== "complete";
 
-  const lastStep = useRef(runningBuild?.currentStep);
+  const lastStep = useRef(localBuildProgress?.currentStep);
   useEffect(() => {
-    if (runningBuild?.currentStep === lastStep.current) return;
-    lastStep.current = runningBuild?.currentStep;
+    if (localBuildProgress?.currentStep === lastStep.current) return;
+    lastStep.current = localBuildProgress?.currentStep;
 
-    if (runningBuild?.currentStep === "initialize") {
+    if (localBuildProgress?.currentStep === "initialize") {
       addNotification({
         id: `${ADDON_ID}/build-initialize`,
         content: {
@@ -41,33 +41,35 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
           name: "passed",
           color: color.positive,
         },
+        // @ts-expect-error SB needs a proper API for no link
         link: undefined,
       });
       setTimeout(() => clearNotification(`${ADDON_ID}/build-initialize`), 10_000);
     }
 
-    if (runningBuild?.currentStep === "complete") {
+    if (localBuildProgress?.currentStep === "complete") {
       addNotification({
         id: `${ADDON_ID}/build-complete`,
         content: {
           headline: "Build complete",
           // eslint-disable-next-line no-nested-ternary
-          subHeadline: runningBuild.errorCount
-            ? `Encountered ${pluralize("component error", runningBuild.errorCount, true)}`
-            : runningBuild.changeCount
-            ? `Found ${pluralize("change", runningBuild.changeCount, true)}`
+          subHeadline: localBuildProgress.errorCount
+            ? `Encountered ${pluralize("component error", localBuildProgress.errorCount, true)}`
+            : localBuildProgress.changeCount
+            ? `Found ${pluralize("change", localBuildProgress.changeCount, true)}`
             : "No visual changes detected",
         },
         icon: {
           name: "passed",
           color: color.positive,
         },
+        // @ts-expect-error SB needs a proper API for no link
         link: undefined,
       });
       setTimeout(() => clearNotification(`${ADDON_ID}/build-complete`), 10_000);
     }
 
-    if (runningBuild?.currentStep === "error") {
+    if (localBuildProgress?.currentStep === "error") {
       addNotification({
         id: `${ADDON_ID}/build-error`,
         content: {
@@ -78,15 +80,16 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
           name: "failed",
           color: color.negative,
         },
+        // @ts-expect-error SB needs a proper API for no link
         link: undefined,
       });
     }
   }, [
     addNotification,
     clearNotification,
-    runningBuild?.currentStep,
-    runningBuild?.errorCount,
-    runningBuild?.changeCount,
+    localBuildProgress?.currentStep,
+    localBuildProgress?.errorCount,
+    localBuildProgress?.changeCount,
   ]);
 
   const emit = useChannel({});
@@ -100,7 +103,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
     <SidebarTopButton
       isOutdated={isOutdated}
       isRunning={isRunning}
-      runningBuild={runningBuild}
+      localBuildProgress={localBuildProgress}
       startBuild={startBuild}
     />
   );
