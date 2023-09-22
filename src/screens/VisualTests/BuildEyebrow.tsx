@@ -174,7 +174,11 @@ export const BuildEyebrow = ({
     const isWarning = ["aborted", "error"].includes(localBuildProgress.currentStep);
     return (
       <>
-        <Header onClick={isWarning ? undefined : toggleExpanded} isWarning={isWarning}>
+        <Header
+          as={isWarning ? "div" : "button"}
+          onClick={isWarning ? undefined : toggleExpanded}
+          isWarning={isWarning}
+        >
           <Bar percentage={localBuildProgress.buildProgressPercentage} isWarning={isWarning} />
           <Label>
             <BuildProgressLabel localBuildProgress={localBuildProgress} withEmoji />
