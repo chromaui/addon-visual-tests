@@ -5,11 +5,9 @@ import { ComparisonResult } from "../gql/graphql";
 import { ModeSelector } from "./ModeSelector";
 
 const viewport800Px = {
-  id: "_800",
   name: "800px",
 };
 const viewport1200Px = {
-  id: "_1200",
   name: "1200px",
 };
 
@@ -29,7 +27,7 @@ export const WithSingleViewportChanged: Story = {
     selectedMode: viewport1200Px,
     modeResults: [
       {
-        viewport: viewport1200Px,
+        mode: viewport1200Px,
         result: ComparisonResult.Changed,
       },
     ],
@@ -42,7 +40,7 @@ export const WithSingleViewportAccepted: Story = {
     selectedMode: viewport1200Px,
     modeResults: [
       {
-        viewport: viewport1200Px,
+        mode: viewport1200Px,
         result: ComparisonResult.Changed,
       },
     ],
@@ -54,7 +52,7 @@ export const WithSingleViewportEqual: Story = {
     selectedMode: viewport1200Px,
     modeResults: [
       {
-        viewport: viewport1200Px,
+        mode: viewport1200Px,
         result: ComparisonResult.Equal,
       },
     ],
@@ -66,7 +64,7 @@ export const WithSingleViewportError: Story = {
     selectedMode: viewport1200Px,
     modeResults: [
       {
-        viewport: viewport1200Px,
+        mode: viewport1200Px,
         result: ComparisonResult.CaptureError,
       },
     ],
@@ -78,11 +76,11 @@ export const WithManyViewportsEqual: Story = {
     selectedMode: viewport800Px,
     modeResults: [
       {
-        viewport: viewport800Px,
+        mode: viewport800Px,
         result: ComparisonResult.Equal,
       },
       {
-        viewport: viewport1200Px,
+        mode: viewport1200Px,
         result: ComparisonResult.Equal,
       },
     ],
@@ -94,11 +92,11 @@ export const WithManyViewportsSecondSelected: Story = {
     selectedMode: viewport1200Px,
     modeResults: [
       {
-        viewport: viewport800Px,
+        mode: viewport800Px,
         result: ComparisonResult.Equal,
       },
       {
-        viewport: viewport1200Px,
+        mode: viewport1200Px,
         result: ComparisonResult.Changed,
       },
     ],
@@ -110,11 +108,11 @@ export const WithManyViewportsVaried: Story = {
     selectedMode: viewport800Px,
     modeResults: [
       {
-        viewport: viewport800Px,
+        mode: viewport800Px,
         result: ComparisonResult.Equal,
       },
       {
-        viewport: viewport1200Px,
+        mode: viewport1200Px,
         result: ComparisonResult.Changed,
       },
     ],

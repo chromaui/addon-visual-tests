@@ -1,3 +1,76 @@
+# v0.0.92 (Thu Sep 21 2023)
+
+#### 🐛 Bug Fix
+
+- Bug: Remove the duplicated manager entry for storybook [#119](https://github.com/chromaui/addon-visual-tests/pull/119) ([@ndelangen](https://github.com/ndelangen))
+
+#### Authors: 1
+
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+
+---
+
+# v0.0.91 (Thu Sep 21 2023)
+
+#### 🐛 Bug Fix
+
+- Show a loading state in between URQL states [#104](https://github.com/chromaui/addon-visual-tests/pull/104) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.90 (Thu Sep 21 2023)
+
+#### 🐛 Bug Fix
+
+- Show label even when there is only one mode [#118](https://github.com/chromaui/addon-visual-tests/pull/118) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.89 (Wed Sep 20 2023)
+
+#### 🐛 Bug Fix
+
+- Support actual modes rather than just viewports [#117](https://github.com/chromaui/addon-visual-tests/pull/117) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.88 (Wed Sep 20 2023)
+
+#### 🐛 Bug Fix
+
+- Clear access token on expiration or auth error [#105](https://github.com/chromaui/addon-visual-tests/pull/105) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.87 (Wed Sep 20 2023)
+
+#### 🐛 Bug Fix
+
+- Onboarding: Show auth screen when projectId is detected [#99](https://github.com/chromaui/addon-visual-tests/pull/99) ([@ndelangen](https://github.com/ndelangen) [@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 2
+
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.86 (Wed Sep 20 2023)
 
 #### 🐛 Bug Fix

@@ -3,13 +3,16 @@ import { Icon } from "@storybook/design-system";
 import { styled } from "@storybook/theming";
 import React from "react";
 
-import { ComparisonResult, ViewportInfo } from "../gql/graphql";
+import { ComparisonResult, TestMode } from "../gql/graphql";
 import { aggregateResult } from "../utils/aggregateResult";
 import { ArrowIcon } from "./icons/ArrowIcon";
 import { StatusDot, StatusDotWrapper } from "./StatusDot";
 import { TooltipMenu } from "./TooltipMenu";
 
 const IconWrapper = styled.div(({ theme }) => ({
+  display: "inline-flex",
+  alignItems: "center",
+  gap: 6,
   height: 14,
   margin: "7px 7px",
   color: `${theme.color.defaultText}99`,
@@ -18,13 +21,13 @@ const IconWrapper = styled.div(({ theme }) => ({
   },
 }));
 
-type ModeData = Pick<ViewportInfo, "id" | "name">;
+type ModeData = Pick<TestMode, "name">;
 
 interface ModeSelectorProps {
   isAccepted: boolean;
   selectedMode: ModeData;
-  onSelectMode: (viewport: ModeData) => void;
-  modeResults: { viewport: ModeData; result?: ComparisonResult }[];
+  onSelectMode: (mode: ModeData) => void;
+  modeResults: { mode: ModeData; result?: ComparisonResult }[];
 }
 
 export const ModeSelector = ({
@@ -43,21 +46,22 @@ export const ModeSelector = ({
 
   const links =
     modeResults.length > 1 &&
-    modeResults.map(({ viewport, result }) => ({
-      id: viewport.id,
-      title: viewport.name,
+    modeResults.map(({ mode, result }) => ({
+      id: mode.name,
+      title: mode.name,
       right: !isAccepted && result !== ComparisonResult.Equal && <StatusDot status={result} />,
-      onClick: () => onSelectMode(viewport),
-      active: selectedMode === viewport,
+      onClick: () => onSelectMode(mode),
+      active: selectedMode.name === mode.name,
     }));
 
   return (
     <WithTooltip
+      key={selectedMode.name}
       hasChrome={false}
       placement="top"
       trigger="hover"
       tooltip={
-        <TooltipNote note={links ? "Switch mode" : `View mode: ${modeResults[0].viewport.name}`} />
+        <TooltipNote note={links ? "Switch mode" : `View mode: ${modeResults[0].mode.name}`} />
       }
     >
       {links ? (
@@ -67,7 +71,10 @@ export const ModeSelector = ({
           <ArrowIcon icon="arrowdown" />
         </TooltipMenu>
       ) : (
-        <IconWrapper>{icon}</IconWrapper>
+        <IconWrapper>
+          {icon}
+          {selectedMode.name}
+        </IconWrapper>
       )}
     </WithTooltip>
   );

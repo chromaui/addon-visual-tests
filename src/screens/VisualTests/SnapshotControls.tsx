@@ -17,6 +17,32 @@ import {
 import { summarizeTests } from "../../utils/summarizeTests";
 import { useTests } from "../../utils/useTests";
 
+const Controls = styled.div({
+  gridArea: "controls",
+  display: "flex",
+  alignItems: "center",
+  margin: "8px 10px",
+  gap: 6,
+
+  "@container (min-width: 800px)": {
+    flexDirection: "row-reverse",
+  },
+});
+
+const Actions = styled.div(({ theme }) => ({
+  gridArea: "actions",
+  margin: "8px 10px",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "flex-end",
+
+  "@container (min-width: 800px)": {
+    borderLeft: `1px solid ${theme.appBorderColor}`,
+    paddingLeft: 8,
+    marginLeft: 0,
+  },
+}));
+
 type TestSummary = ReturnType<typeof summarizeTests>;
 type TestControls = ReturnType<typeof useTests>;
 
@@ -38,32 +64,6 @@ interface SnapshotSectionProps {
   diffVisible: boolean;
   setDiffVisible: (visible: boolean) => void;
 }
-
-const Controls = styled.div(({ theme }) => ({
-  gridArea: "controls",
-  display: "flex",
-  alignItems: "center",
-  margin: "8px 10px",
-  gap: 6,
-
-  "@container (min-width: 800px)": {
-    flexDirection: "row-reverse",
-  },
-}));
-
-const Actions = styled.div(({ theme }) => ({
-  gridArea: "actions",
-  margin: "8px 10px",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "flex-end",
-
-  "@container (min-width: 800px)": {
-    borderLeft: `1px solid ${theme.appBorderColor}`,
-    paddingLeft: 8,
-    marginLeft: 0,
-  },
-}));
 
 export const SnapshotControls = ({
   status,
@@ -102,7 +102,7 @@ export const SnapshotControls = ({
         {modeResults.length > 0 && (
           <ModeSelector
             isAccepted={status === TestStatus.Accepted}
-            selectedMode={selectedTest.parameters.viewport}
+            selectedMode={selectedTest.mode}
             modeResults={modeResults}
             onSelectMode={onSelectMode}
           />

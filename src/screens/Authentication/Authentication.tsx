@@ -9,7 +9,7 @@ import { Verify } from "./Verify";
 import { Welcome } from "./Welcome";
 
 interface AuthenticationProps {
-  setAccessToken: (token: string) => void;
+  setAccessToken: (token: string | null) => void;
   setCreatedProjectId: (projectId: Project["id"]) => void;
   hasProjectId: boolean;
 }
