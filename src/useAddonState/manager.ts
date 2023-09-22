@@ -49,6 +49,6 @@ export function useAddonState<T>(key: string) {
 
   return [
     apiGetAddonState<T>(api, key),
-    useCallback((value: T) => apiSetAddonState(api, key, value), [api, key]),
+    useCallback((value: T | undefined) => apiSetAddonState(api, key, value), [api, key]),
   ] as const;
 }

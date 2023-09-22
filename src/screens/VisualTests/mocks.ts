@@ -1,3 +1,4 @@
+import { BUILD_STEP_CONFIG, INITIAL_BUILD_PAYLOAD } from "../../buildSteps";
 import {
   AnnouncedBuild,
   Browser,
@@ -182,3 +183,78 @@ export const failedBuild = {
   ...passedBuild,
   status: BuildStatus.Failed,
 } satisfies CompletedBuild;
+
+const mapObject = <T, U>(obj: Record<string, T>, fn: (value: T, key: string) => U) =>
+  Object.fromEntries(Object.entries(obj).map(([key, value]) => [key, fn(value, key)]));
+
+const durations = mapObject(BUILD_STEP_CONFIG, (step) => step.estimateDuration);
+const totalDuration = Object.values(durations).reduce((total, duration) => total + duration, 0);
+const startTimes = mapObject(
+  {
+    initialize: 0,
+    build: durations.initialize,
+    upload: durations.initialize + durations.build,
+    verify: durations.initialize + durations.build + durations.upload,
+    snapshot: durations.initialize + durations.build + durations.upload + durations.verify,
+  },
+  (startTime) => Date.now() - totalDuration + startTime
+);
+
+export const initializeStep = {
+  ...INITIAL_BUILD_PAYLOAD.stepProgress,
+  initialize: {
+    startedAt: startTimes.initialize,
+  },
+};
+
+export const buildStep = {
+  ...initializeStep,
+  initialize: {
+    startedAt: startTimes.initialize,
+    completedAt: startTimes.initialize + durations.initialize,
+  },
+  build: {
+    startedAt: startTimes.build,
+  },
+};
+
+export const uploadStep = {
+  ...buildStep,
+  build: {
+    startedAt: startTimes.build,
+    completedAt: startTimes.build + durations.build,
+  },
+  upload: {
+    startedAt: startTimes.upload,
+  },
+};
+
+export const verifyStep = {
+  ...uploadStep,
+  upload: {
+    startedAt: startTimes.upload,
+    completedAt: startTimes.upload + durations.upload,
+  },
+  verify: {
+    startedAt: startTimes.verify,
+  },
+};
+
+export const snapshotStep = {
+  ...verifyStep,
+  verify: {
+    startedAt: startTimes.verify,
+    completedAt: startTimes.verify + durations.verify,
+  },
+  snapshot: {
+    startedAt: startTimes.snapshot,
+  },
+};
+
+export const completeStep = {
+  ...snapshotStep,
+  snapshot: {
+    startedAt: startTimes.snapshot,
+    completedAt: startTimes.snapshot + durations.snapshot,
+  },
+};

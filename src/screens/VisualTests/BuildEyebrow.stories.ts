@@ -11,6 +11,7 @@ import { BuildEyebrow } from "./BuildEyebrow";
 const meta = {
   args: {
     branch: "feature",
+    dismissBuildError: action("dismissBuildError"),
     switchToLastBuildOnBranch: action("switchToLastBuildOnBranch"),
   },
   component: BuildEyebrow,
@@ -63,6 +64,18 @@ export const Snapshot: Story = {
 export const Complete: Story = {
   args: buildProgressStories.Complete.args,
   parameters: buildProgressStories.Complete.parameters,
+  play: expandEyebrow,
+};
+
+export const Error: Story = {
+  args: buildProgressStories.Error.args,
+  parameters: buildProgressStories.Error.parameters,
+  play: expandEyebrow,
+};
+
+export const Aborted: Story = {
+  args: buildProgressStories.Aborted.args,
+  parameters: buildProgressStories.Aborted.parameters,
   play: expandEyebrow,
 };
 

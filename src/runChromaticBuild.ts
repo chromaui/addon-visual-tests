@@ -125,13 +125,6 @@ export const onCompleteOrError =
 
     const { buildProgressPercentage, stepProgress } = localBuildProgress.value;
 
-    if (isKnownStep(ctx.task)) {
-      stepProgress[ctx.task] = {
-        ...stepProgress[ctx.task],
-        completedAt: Date.now(),
-      };
-    }
-
     if (error) {
       localBuildProgress.value = {
         buildId: ctx.announcedBuild?.id,
@@ -144,6 +137,13 @@ export const onCompleteOrError =
         previousBuildProgress: stepProgress,
       };
       return;
+    }
+
+    if (isKnownStep(ctx.task)) {
+      stepProgress[ctx.task] = {
+        ...stepProgress[ctx.task],
+        completedAt: Date.now(),
+      };
     }
 
     if (ctx.task === "snapshot") {

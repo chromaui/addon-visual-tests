@@ -29,20 +29,22 @@ const createEmptyStoryStatusUpdate = (state: API_StatusState) => {
 };
 
 interface VisualTestsProps {
-  projectId: string;
-  gitInfo: Pick<
-    GitInfoPayload,
-    "branch" | "slug" | "userEmailHash" | "commit" | "committedAt" | "uncommittedHash"
-  >;
+  dismissBuildError: () => void;
   localBuildProgress?: LocalBuildProgress;
   startDevBuild: () => void;
   setAccessToken: (accessToken: string | null) => void;
   setOutdated: (isOutdated: boolean) => void;
   updateBuildStatus: UpdateStatusFunction;
+  projectId: string;
+  gitInfo: Pick<
+    GitInfoPayload,
+    "branch" | "slug" | "userEmailHash" | "commit" | "committedAt" | "uncommittedHash"
+  >;
   storyId: string;
 }
 
 export const VisualTests = ({
+  dismissBuildError,
   localBuildProgress,
   startDevBuild,
   setAccessToken,
@@ -225,6 +227,7 @@ export const VisualTests = ({
     <BuildResults
       {...{
         branch: gitInfo.branch,
+        dismissBuildError,
         localBuildProgress,
         ...(lastBuildOnBranch && { lastBuildOnBranch }),
         lastBuildOnBranchCompletedStory,

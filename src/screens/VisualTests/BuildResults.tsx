@@ -23,11 +23,11 @@ import { BuildEyebrow } from "./BuildEyebrow";
 import { FragmentStoryTestFields } from "./graphql";
 import { RenderSettings } from "./RenderSettings";
 import { SnapshotComparison } from "./SnapshotComparison";
-import { StoryInfo } from "./StoryInfo";
 import { Warnings } from "./Warnings";
 
 interface BuildResultsProps {
   branch: string;
+  dismissBuildError: () => void;
   localBuildProgress?: LocalBuildProgress;
   selectedBuild: SelectedBuildFieldsFragment;
   lastBuildOnBranch?: LastBuildOnBranchBuildFieldsFragment;
@@ -43,6 +43,7 @@ interface BuildResultsProps {
 
 export const BuildResults = ({
   branch,
+  dismissBuildError,
   localBuildProgress,
   lastBuildOnBranch,
   lastBuildOnBranchCompletedStory,
@@ -89,6 +90,7 @@ export const BuildResults = ({
   const buildStatus = showBuildStatus && (
     <BuildEyebrow
       branch={branch}
+      dismissBuildError={dismissBuildError}
       localBuildProgress={
         localBuildProgressIsLastBuildOnBranch || isLocalBuildInProgress
           ? localBuildProgress

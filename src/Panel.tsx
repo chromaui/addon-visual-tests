@@ -32,7 +32,8 @@ export const Panel = ({ active, api }: PanelProps) => {
   const { storyId } = useStorybookState();
 
   const [gitInfo] = useAddonState<GitInfoPayload>(GIT_INFO);
-  const [localBuildProgress] = useAddonState<LocalBuildProgress>(LOCAL_BUILD_PROGRESS);
+  const [localBuildProgress, setLocalBuildProgress] =
+    useAddonState<LocalBuildProgress>(LOCAL_BUILD_PROGRESS);
   const [, setOutdated] = useAddonState<boolean>(IS_OUTDATED);
   const emit = useChannel({});
 
@@ -109,18 +110,19 @@ export const Panel = ({ active, api }: PanelProps) => {
     );
   }
 
-  const localBuildIsRightBranch = gitInfo && gitInfo.branch === localBuildProgress?.branch;
+  const localBuildIsRightBranch = gitInfo.branch === localBuildProgress?.branch;
   return (
     <Provider key={PANEL_ID} value={client}>
       <Sections hidden={!active}>
         <VisualTests
-          projectId={projectId}
-          gitInfo={gitInfo}
+          dismissBuildError={() => setLocalBuildProgress(undefined)}
           localBuildProgress={localBuildIsRightBranch ? localBuildProgress : undefined}
           startDevBuild={() => emit(START_BUILD)}
           setAccessToken={setAccessToken}
           setOutdated={setOutdated}
           updateBuildStatus={updateBuildStatus}
+          projectId={projectId}
+          gitInfo={gitInfo}
           storyId={storyId}
         />
       </Sections>
