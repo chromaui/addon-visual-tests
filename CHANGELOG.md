@@ -1,3 +1,15 @@
+# v0.0.94 (Fri Sep 22 2023)
+
+#### 🐛 Bug Fix
+
+- Setup TurboSnap [#115](https://github.com/chromaui/addon-visual-tests/pull/115) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v0.0.93 (Fri Sep 22 2023)
 
 #### 🐛 Bug Fix
