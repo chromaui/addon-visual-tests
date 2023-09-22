@@ -1,3 +1,15 @@
+# v0.0.93 (Fri Sep 22 2023)
+
+#### 🐛 Bug Fix
+
+- Clear the filter when removing the sidebar toggle button [#120](https://github.com/chromaui/addon-visual-tests/pull/120) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.92 (Thu Sep 21 2023)
 
 #### 🐛 Bug Fix
