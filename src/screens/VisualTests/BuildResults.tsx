@@ -70,18 +70,6 @@ export const BuildResults = ({
   const [baselineImageVisible, setBaselineImageVisible] = useState(false);
   const toggleBaselineImage = () => setBaselineImageVisible(!baselineImageVisible);
 
-  const prevStoryIdRef = React.useRef(storyId);
-
-  React.useEffect(() => {
-    // This component doesn't unmount when the selected build changes, so we need to reset state values
-    if (prevStoryIdRef.current !== storyId) {
-      setBaselineImageVisible(false);
-      setSettingsVisible(false);
-      setWarningsVisible(false);
-    }
-    prevStoryIdRef.current = storyId;
-  }, [storyId, baselineImageVisible]);
-
   const isLocalBuildInProgress =
     localBuildProgress && localBuildProgress.currentStep !== "complete";
 
