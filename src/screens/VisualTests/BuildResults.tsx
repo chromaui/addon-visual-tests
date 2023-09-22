@@ -2,13 +2,12 @@ import { Icons, Link, TooltipNote, WithTooltip } from "@storybook/components";
 import { styled } from "@storybook/theming";
 import React, { useState } from "react";
 
-import { BuildProgressLabel } from "../../components/BuildProgressLabel";
+import { BuildProgressInline } from "../../components/BuildProgressBarInline";
 import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
 import { Eyebrow } from "../../components/Eyebrow";
 import { Heading } from "../../components/Heading";
 import { Section, Sections } from "../../components/layout";
-import { ProgressBar, ProgressTrack } from "../../components/SidebarTopButton";
 import { Text as CenterText } from "../../components/Text";
 import { getFragment } from "../../gql";
 import {
@@ -125,16 +124,7 @@ export const BuildResults = ({
               changed down to the pixel.
             </CenterText>
             {localBuildProgress ? (
-              <CenterText style={{ display: "flex", flexDirection: "column", gap: 10, width: 200 }}>
-                <ProgressTrack>
-                  {typeof localBuildProgress.buildProgressPercentage === "number" && (
-                    <ProgressBar
-                      style={{ width: `${localBuildProgress.buildProgressPercentage}%` }}
-                    />
-                  )}
-                </ProgressTrack>
-                <BuildProgressLabel localBuildProgress={localBuildProgress} />
-              </CenterText>
+              <BuildProgressInline localBuildProgress={localBuildProgress} />
             ) : (
               <>
                 <br />
