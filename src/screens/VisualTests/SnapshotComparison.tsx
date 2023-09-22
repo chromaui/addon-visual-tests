@@ -58,7 +58,6 @@ const HeaderSection = styled.div(({ theme }) => ({
   position: "sticky",
   zIndex: 10,
   top: 0,
-  borderBottom: `1px solid ${theme.appBorderColor}`,
   background: theme.background.app,
 }));
 
