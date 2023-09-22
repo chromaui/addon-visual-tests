@@ -11,6 +11,7 @@ import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
 import { graphql } from "../../gql";
 import { Project } from "../../gql/graphql";
+import { getFetchOptions } from "../../utils/graphQLClient";
 import { fetchAccessToken, TokenExchangeParameters } from "../../utils/requestAccessToken";
 import { useChromaticDialog } from "../../utils/useChromaticDialog";
 import { useErrorNotification } from "../../utils/useErrorNotification";
@@ -82,7 +83,7 @@ export const Verify = ({
         accessToken.current = token;
 
         // Override token for this query but don't store it yet until they've created a project
-        const fetchOptions = { headers: { Authorization: `Bearer ${token}` } };
+        const fetchOptions = getFetchOptions(token);
         const { data } = await client.query(ProjectCountQuery, {}, { fetchOptions });
 
         if (!data?.viewer) throw new Error("Failed to fetch initial project list");
