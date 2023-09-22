@@ -21,7 +21,7 @@ import { panelModes } from "../../modes";
 import { SelectedBuildWithTests } from "../../types";
 import { storyWrapper } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
-import { makeTest } from "../../utils/storyData";
+import { makeComparison, makeTest } from "../../utils/storyData";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
 import { QueryBuild } from "./graphql";
 import {
@@ -36,6 +36,8 @@ import {
   passedTests,
   pendingBuild,
   pendingTests,
+  pendingTestsNewMode,
+  pendingTestsNewStory,
   startedBuild,
 } from "./mocks";
 import { VisualTests } from "./VisualTests";
@@ -254,7 +256,7 @@ export const EmptyBranchLocalBuildCapturing = {
 } satisfies Story;
 
 // There is a build, but this story is new (not on the build at all)
-export const NewStory: Story = {
+export const StoryAddedNotInBuild: Story = {
   parameters: {
     ...withBuilds({ selectedBuild: newStoryNoTests }),
     ...withFigmaDesign(
@@ -263,7 +265,7 @@ export const NewStory: Story = {
   },
 };
 
-export const NewStoryStarting: Story = {
+export const StoryAddedNotInBuildStarting: Story = {
   parameters: {
     ...withBuilds({
       selectedBuild: newStoryNoTests,
@@ -281,6 +283,49 @@ export const NewStoryStarting: Story = {
         initialize: { startedAt: Date.now() - 1000 },
       },
     },
+  },
+};
+
+export const StoryAddedInSelectedBuild: Story = {
+  parameters: {
+    ...withBuilds({
+      selectedBuild: withTests(pendingBuild, pendingTestsNewStory),
+    }),
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=1898-562751&mode=design&t=ciag0nGKx2OGmoSR-4"
+    ),
+  },
+};
+
+// This case isn't handled
+export const StoryAddedInLastBuildOnBranchNotInSelected: Story = {
+  parameters: {
+    ...withBuilds({
+      selectedBuild: withTests(pendingBuild, []),
+      lastBuildOnBranch: withTests(pendingBuild, pendingTestsNewStory),
+    }),
+  },
+};
+
+export const StoryAddedAndAccepted = {
+  parameters: {
+    ...withBuilds({
+      selectedBuild: withTests(pendingBuild, [
+        makeTest({
+          result: TestResult.Added,
+          status: TestStatus.Accepted,
+          comparisonResults: [ComparisonResult.Added],
+        }),
+      ]),
+    }),
+  },
+};
+
+export const ModeAddedInSelectedBuild: Story = {
+  parameters: {
+    ...withBuilds({
+      selectedBuild: withTests(pendingBuild, pendingTestsNewMode),
+    }),
   },
 };
 
@@ -386,15 +431,6 @@ export const PendingLocalBuildCapturedStory = {
     ),
   },
 } satisfies Story;
-
-export const PendingBuildNewStory: Story = {
-  parameters: {
-    ...withBuilds({ selectedBuild: pendingBuildNewStory }),
-    ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=1898-562751&mode=design&t=ciag0nGKx2OGmoSR-4"
-    ),
-  },
-};
 
 /**
  * The next build is snapshotting but hasn't yet reached this story (we didn't start it)

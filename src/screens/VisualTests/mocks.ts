@@ -11,7 +11,7 @@ import {
   TestResult,
   TestStatus,
 } from "../../gql/graphql";
-import { makeBrowserInfo, makeTest, makeTests } from "../../utils/storyData";
+import { makeBrowserInfo, makeComparison, makeTest, makeTests } from "../../utils/storyData";
 
 export const passedTests = makeTests({
   browsers: [Browser.Chrome, Browser.Safari],
@@ -32,6 +32,35 @@ export const pendingTests = makeTests({
     },
     { status: TestStatus.Passed, viewport: 800 },
     { status: TestStatus.Passed, viewport: 1200 },
+  ],
+});
+
+export const pendingTestsNewStory = makeTests({
+  storyId: "button--new-story",
+  browsers: [Browser.Chrome, Browser.Safari],
+  viewports: [
+    {
+      viewport: 480,
+      result: TestResult.Added,
+      comparisons: [
+        makeComparison({ result: ComparisonResult.Added }),
+        makeComparison({ result: ComparisonResult.Added }),
+      ],
+    },
+  ],
+});
+
+export const pendingTestsNewMode = makeTests({
+  browsers: [Browser.Chrome, Browser.Safari],
+  viewports: [
+    {
+      viewport: 480,
+      result: TestResult.Changed,
+      comparisons: [
+        makeComparison({ result: ComparisonResult.Added }),
+        makeComparison({ result: ComparisonResult.Equal }),
+      ],
+    },
   ],
 });
 
@@ -58,6 +87,18 @@ export const acceptedTests = makeTests({
     },
     { status: TestStatus.Passed, viewport: 800 },
     { status: TestStatus.Passed, viewport: 1200 },
+  ],
+});
+
+export const acceptedTestsNewStory = makeTests({
+  browsers: [Browser.Chrome, Browser.Safari],
+  viewports: [
+    {
+      status: TestStatus.Accepted,
+      result: TestResult.Added,
+      viewport: 480,
+      comparisonResults: [ComparisonResult.Added, ComparisonResult.Added],
+    },
   ],
 });
 
