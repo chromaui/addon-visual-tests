@@ -111,17 +111,16 @@ const withTheme = (StoryFn, { globals, parameters }) => {
   );
 };
 
-const withManagerApi: Decorator = (Story, { argsByTarget }) =>
-  console.log({ argsByTarget }) || (
-    <ManagerContext.Provider
-      value={{
-        api: { addNotification: argsByTarget["manager-api"]?.addNotification } as API,
-        state: {} as State,
-      }}
-    >
-      <Story />
-    </ManagerContext.Provider>
-  );
+const withManagerApi: Decorator = (Story, { argsByTarget }) => (
+  <ManagerContext.Provider
+    value={{
+      api: { addNotification: argsByTarget["manager-api"]?.addNotification } as API,
+      state: {} as State,
+    }}
+  >
+    <Story />
+  </ManagerContext.Provider>
+);
 
 const preview: Preview = {
   decorators: [withTheme, withManagerApi],
