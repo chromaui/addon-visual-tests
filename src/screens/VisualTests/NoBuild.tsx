@@ -13,7 +13,7 @@ import { ProgressBar, ProgressTrack } from "../../components/SidebarTopButton";
 import { Text as CenterText } from "../../components/Text";
 import { LocalBuildProgress } from "../../types";
 
-const buildFailureUrl = "https://www.chromatic.com/docs/?";
+const buildFailureUrl = "https://www.chromatic.com/docs/setup/#troubleshooting";
 
 const ErrorContainer = styled.div(({ theme }) => ({
   display: "block",
