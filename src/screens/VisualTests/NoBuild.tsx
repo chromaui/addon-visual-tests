@@ -22,7 +22,7 @@ const ErrorContainer = styled.div(({ theme }) => ({
   border: "1px solid #E69D0033",
   borderRadius: "2px",
   padding: "15px 20px",
-  margin: "10px",
+  margin: "10px 10px 18px 10px",
 }));
 
 interface NoBuildProps {
@@ -65,7 +65,7 @@ export const NoBuild = ({
               Learn more
             </Link>
           </ErrorContainer>
-          <br />
+
           {button}
         </>
       );
