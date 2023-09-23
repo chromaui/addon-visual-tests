@@ -11,38 +11,54 @@ import {
 } from "../../components/Accordions";
 
 interface RenderSettingsProps {
+  pixelDiff: number | undefined;
   onClose: () => void;
 }
 
-export const RenderSettings = ({ onClose }: RenderSettingsProps) => {
+function isSquare(number: number) {
+  const sqrt = Math.sqrt(number);
+  return Math.floor(sqrt) === sqrt;
+}
+
+export const RenderSettings = ({ pixelDiff, onClose }: RenderSettingsProps) => {
   return (
     <Accordions>
       <Accordion>
         <Heading>
-          Render settings
+          Render details
           <InfoIcon icon="info" />
           <CloseButton onClick={onClose}>
             <CloseIcon icon="close" aria-label="Close" />
           </CloseButton>
         </Heading>
-        <p>
+        {/* <p>
           <ItemIcon icon="timer" />
           Delay: 300ms
         </p>
         <p>
           <ItemIcon icon="stop" />
           Animation pause: End
-        </p>
+        </p> */}
         <p>
           <ItemIcon icon="contrast" />
-          Threshold: 0.2
+          Pixel Diff: {pixelDiff ? `${pixelDiff} pixels` : "No diff, that's boring!"}
         </p>
         <p>
-          <ItemIcon icon="paragraph" />
-          Anti-alias: Included
+          {pixelDiff &&
+            (isSquare(pixelDiff) ? (
+              <>
+                <ItemIcon icon="paragraph" />
+                YOUR CODE IS <b>ABC12</b>
+              </>
+            ) : (
+              <>
+                <ItemIcon icon="paragraph" />
+                That's a fun diff but sometime's its hip to be square
+              </>
+            ))}
         </p>
       </Accordion>
-      <Accordion>
+      {/* <Accordion>
         <Heading>
           Bounding box
           <InfoIcon icon="info" />
@@ -53,7 +69,7 @@ export const RenderSettings = ({ onClose }: RenderSettingsProps) => {
           <dt>Height:</dt>
           <dd>Hug contents</dd>
         </dl>
-      </Accordion>
+      </Accordion> */}
     </Accordions>
   );
 };

@@ -16,7 +16,7 @@ export const BuildProgressLabel = ({
   const label = renderProgress(localBuildProgress);
   return (
     <span>
-      {withEmoji && emoji} {label}
+      {withEmoji && emoji} {label} TOM
     </span>
   );
 };
