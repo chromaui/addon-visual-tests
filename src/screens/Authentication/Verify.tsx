@@ -1,5 +1,6 @@
 import { styled } from "@storybook/theming";
-import React, { useEffect } from "react";
+import React, { useRef } from "react";
+import { useClient } from "urql";
 
 import { BackButton } from "../../components/BackButton";
 import { Button } from "../../components/Button";
@@ -8,7 +9,12 @@ import { Heading } from "../../components/Heading";
 import { BackIcon } from "../../components/icons/BackIcon";
 import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
+import { graphql } from "../../gql";
+import { Project } from "../../gql/graphql";
+import { getFetchOptions } from "../../utils/graphQLClient";
+import { fetchAccessToken, TokenExchangeParameters } from "../../utils/requestAccessToken";
 import { useChromaticDialog } from "../../utils/useChromaticDialog";
+import { useErrorNotification } from "../../utils/useErrorNotification";
 
 const Digits = styled.ol(({ theme }) => ({
   display: "inline-flex",
@@ -28,27 +34,89 @@ const Digits = styled.ol(({ theme }) => ({
   },
 }));
 
+const ProjectCountQuery = graphql(/* GraphQL */ `
+  query VisualTestsProjectCountQuery {
+    viewer {
+      projectCount
+      accounts {
+        newProjectUrl
+      }
+    }
+  }
+`);
+
 interface VerifyProps {
   onBack: () => void;
-  userCode: string;
-  verificationUrl: string;
+  hasProjectId: boolean;
+  setAccessToken: (token: string) => void;
+  setCreatedProjectId: (projectId: Project["id"]) => void;
+  exchangeParameters: TokenExchangeParameters;
 }
 
-export const Verify = ({ onBack, userCode, verificationUrl }: VerifyProps) => {
-  const [openDialog, closeDialog] = useChromaticDialog((event) => {
+export const Verify = ({
+  onBack,
+  hasProjectId,
+  setAccessToken,
+  setCreatedProjectId,
+  exchangeParameters,
+}: VerifyProps) => {
+  const client = useClient();
+  const onError = useErrorNotification();
+
+  const { user_code: userCode, verificationUrl } = exchangeParameters;
+
+  // Store the access token until we are ready to pass it to `setAccessToken` (at which point
+  // the Panel will close the Authentication screen)
+  const accessToken = useRef<string>();
+
+  const [openDialog, closeDialog] = useChromaticDialog(async (event) => {
     // If the user logs in as part of the grant process, don't close the dialog,
     // instead redirect us back to where we were trying to go.
     if (event.message === "login") {
       openDialog(verificationUrl);
     }
-  });
 
-  // Close the dialog on unmount, which happens automatically when poll for a token.
-  // Later (https://linear.app/chromaui/issue/AP-3549/onboarding-flow-for-new-users-to-create-a-project)
-  // we'll actually wait for the grant event and:
-  //   - grab a token immediately
-  //   - check if the user has projects, if not redirect to new project screen.
-  useEffect(() => () => closeDialog(), [closeDialog]);
+    if (event.message === "grant") {
+      try {
+        const token = await fetchAccessToken(exchangeParameters);
+        if (!token) throw new Error("Failed to fetch an access token");
+        accessToken.current = token;
+
+        // Override token for this query but don't store it yet until they've created a project
+        const fetchOptions = getFetchOptions(token);
+        const { data } = await client.query(ProjectCountQuery, {}, { fetchOptions });
+
+        if (!data?.viewer) throw new Error("Failed to fetch initial project list");
+
+        // The user has projects to choose from (or the project is already selected),
+        // so send them to pick one
+        if (data.viewer.projectCount > 0 || hasProjectId) {
+          setAccessToken(accessToken.current);
+          closeDialog();
+        } else {
+          // The user has no projects, so we need to get them to create one, then close the dialog
+          if (!data.viewer.accounts[0]) throw new Error("User has no accounts!");
+          if (!data.viewer.accounts[0].newProjectUrl) {
+            throw new Error("Unexpected missing project URL");
+          }
+
+          openDialog(data.viewer.accounts[0].newProjectUrl);
+        }
+      } catch (err) {
+        onError("Login Error", err);
+      }
+    }
+
+    if (event.message === "createdProject") {
+      if (!accessToken.current) {
+        onError("Unexpected missing access token", new Error());
+      } else {
+        setAccessToken(accessToken.current);
+        setCreatedProjectId(`Project:${event.projectId}`);
+        closeDialog();
+      }
+    }
+  });
 
   return (
     <Container>

@@ -48,6 +48,14 @@ export const useAccessToken = () => {
 
 const sessionId = uuid();
 
+export const getFetchOptions = (token?: string) => ({
+  headers: {
+    Accept: "*/*",
+    ...(token && { Authorization: `Bearer ${token}` }),
+    "X-Chromatic-Session-ID": sessionId,
+  },
+});
+
 export const client = new Client({
   url: CHROMATIC_API_URL,
   exchanges: [
@@ -95,12 +103,7 @@ export const client = new Client({
     }),
     fetchExchange,
   ],
-  fetchOptions: () => ({
-    headers: {
-      Accept: "*/*", // workaround for https://github.com/mswjs/msw/issues/1593
-      "X-Chromatic-Session-ID": sessionId,
-    },
-  }),
+  fetchOptions: getFetchOptions(), // Auth header (token) is handled by authExchange
 });
 
 export const storyWrapper = (Story: any) => (
