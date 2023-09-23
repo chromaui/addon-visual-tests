@@ -112,6 +112,9 @@ export const BuildResults = ({
   // If there are no tests yet, there is no baseline for this story. User needs to create one.
   const isCompletelyNewStory = "testsForStory" in selectedBuild && storyTests.length === 0;
 
+  const isLocalBuildProgressOnSelectedBuild =
+    selectedBuild.id !== `Build:${localBuildProgress?.buildId}`;
+
   if (isCompletelyNewStory) {
     return (
       <Sections>
@@ -123,7 +126,7 @@ export const BuildResults = ({
               baseline. This unlocks visual regression testing so you can see exactly what has
               changed down to the pixel.
             </CenterText>
-            {localBuildProgress ? (
+            {localBuildProgress && isLocalBuildProgressOnSelectedBuild ? (
               <BuildProgressInline localBuildProgress={localBuildProgress} />
             ) : (
               <>

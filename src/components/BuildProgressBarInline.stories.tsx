@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
 import { INITIAL_BUILD_PAYLOAD } from "../buildSteps";
-import { withFigmaDesign } from "../utils/withFigmaDesign";
 import { BuildProgressInline } from "./BuildProgressBarInline";
 import { Container } from "./Container";
 

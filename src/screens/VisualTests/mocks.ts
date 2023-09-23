@@ -90,18 +90,6 @@ export const acceptedTests = makeTests({
   ],
 });
 
-export const acceptedTestsNewStory = makeTests({
-  browsers: [Browser.Chrome, Browser.Safari],
-  viewports: [
-    {
-      status: TestStatus.Accepted,
-      result: TestResult.Added,
-      viewport: 480,
-      comparisonResults: [ComparisonResult.Added, ComparisonResult.Added],
-    },
-  ],
-});
-
 export const brokenTests = inProgressTests.map((test) => ({
   ...test,
   status: TestStatus.Broken,

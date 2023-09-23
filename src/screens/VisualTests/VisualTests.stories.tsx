@@ -286,6 +286,23 @@ export const StoryAddedNotInBuildStarting: Story = {
   },
 };
 
+export const StoryAddedNotInBuildCompletedLocalProgressIsOnSelectedBuild: Story = {
+  parameters: {
+    ...withBuilds({
+      selectedBuild: withTests({ ...pendingBuild, id: "Build:shared-id" }, []),
+      lastBuildOnBranch: withTests(pendingBuild, pendingTestsNewStory),
+    }),
+  },
+  args: {
+    localBuildProgress: {
+      ...INITIAL_BUILD_PAYLOAD,
+      buildId: "shared-id",
+      buildProgressPercentage: 100,
+      currentStep: "complete",
+    },
+  },
+};
+
 export const StoryAddedInSelectedBuild: Story = {
   parameters: {
     ...withBuilds({
