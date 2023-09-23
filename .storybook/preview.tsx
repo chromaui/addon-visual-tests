@@ -1,3 +1,4 @@
+import { API, ManagerContext, State } from "@storybook/manager-api";
 import {
   Global,
   ThemeProvider,
@@ -7,7 +8,7 @@ import {
   styled,
   useTheme,
 } from "@storybook/theming";
-import type { Preview } from "@storybook/react";
+import type { Decorator, Preview } from "@storybook/react";
 import { initialize, mswLoader } from "msw-storybook-addon";
 import React from "react";
 import { baseModes } from "../src/modes";
@@ -110,8 +111,20 @@ const withTheme = (StoryFn, { globals, parameters }) => {
   );
 };
 
+const withManagerApi: Decorator = (Story, { argsByTarget }) =>
+  console.log({ argsByTarget }) || (
+    <ManagerContext.Provider
+      value={{
+        api: { addNotification: argsByTarget["manager-api"]?.addNotification } as API,
+        state: {} as State,
+      }}
+    >
+      <Story />
+    </ManagerContext.Provider>
+  );
+
 const preview: Preview = {
-  decorators: [withTheme],
+  decorators: [withTheme, withManagerApi],
   loaders: [mswLoader],
   parameters: {
     actions: {

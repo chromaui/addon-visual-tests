@@ -1,4 +1,4 @@
-import { ManagerContext, useAddonState } from "@storybook/manager-api";
+import { useAddonState } from "@storybook/manager-api";
 import { authExchange } from "@urql/exchange-auth";
 import React from "react";
 import { Client, fetchExchange, mapExchange, Provider } from "urql";
@@ -108,9 +108,6 @@ export const client = new Client({
 
 export const storyWrapper = (Story: any) => (
   <Provider value={client}>
-    {/* We could probably add addNotification as an action to api */}
-    <ManagerContext.Provider value={{ api: {}, state: {} } as any}>
-      <Story />
-    </ManagerContext.Provider>
+    <Story />
   </Provider>
 );
