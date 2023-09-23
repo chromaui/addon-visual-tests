@@ -1,3 +1,16 @@
+# v0.0.95 (Sat Sep 23 2023)
+
+#### 🐛 Bug Fix
+
+- When granting consent, immediately get access code rather than polling [#116](https://github.com/chromaui/addon-visual-tests/pull/116) ([@tmeasday](https://github.com/tmeasday) [@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 2
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.94 (Fri Sep 22 2023)
 
 #### 🐛 Bug Fix
