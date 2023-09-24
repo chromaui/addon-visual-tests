@@ -87,12 +87,10 @@ export const BuildResults = ({
     test.comparisons.find((c) => c.result === ComparisonResult.Changed)
   )?.[0]?.captureDiff?.diffImage?.imageUrl;
   useEffect(() => {
-    console.log({ firstDiffImage });
     if (firstDiffImage) {
       const img = new Image();
       img.src = firstDiffImage;
       img.crossOrigin = "Anonymous";
-      console.log(img);
       img.onload = () => {
         const canvas = document.createElement("canvas");
 
@@ -109,7 +107,6 @@ export const BuildResults = ({
             }
           }
         }
-        console.log({ nPixels });
         setPixelDiff(nPixels);
       };
     }
