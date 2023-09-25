@@ -15,9 +15,8 @@ interface RenderSettingsProps {
   onClose: () => void;
 }
 
-function isSquare(number: number) {
-  const sqrt = Math.sqrt(number);
-  return Math.floor(sqrt) === sqrt;
+function isMultipleOfFour(number: number) {
+  return Math.floor(number / 4) === number / 4;
 }
 
 export const RenderSettings = ({ pixelDiff, onClose }: RenderSettingsProps) => {
@@ -45,7 +44,7 @@ export const RenderSettings = ({ pixelDiff, onClose }: RenderSettingsProps) => {
         </p>
         <p>
           {pixelDiff &&
-            (isSquare(pixelDiff) ? (
+            (isMultipleOfFour(pixelDiff) ? (
               <>
                 <ItemIcon icon="paragraph" />
                 YOUR CODE IS <b>ABC12</b>
@@ -53,7 +52,7 @@ export const RenderSettings = ({ pixelDiff, onClose }: RenderSettingsProps) => {
             ) : (
               <>
                 <ItemIcon icon="paragraph" />
-                That's a fun diff but sometime's its hip to be square
+                That's a fun diff but wouldn't one four times bigger be better?
               </>
             ))}
         </p>
