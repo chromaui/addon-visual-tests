@@ -218,21 +218,17 @@ export const SnapshotComparison = ({
   );
 
   // This checks if the specific comparison is new, but the story itself is not. This indicates it was probably a new mode being added.
-  const hasNewMode =
+  const isNewMode =
     !isNewStory &&
-    tests.some(
-      ({ result, status }) => result === TestResult.Added && status !== TestStatus.Accepted
-    );
+    selectedTest.result === TestResult.Added &&
+    selectedTest.status !== TestStatus.Accepted;
 
   // If any of the tests has a new comparison, and the test isn't new it is a new browser.
-  const hasNewBrowser =
+  const isNewBrowser =
     !isNewStory &&
-    tests.some(
-      (test) =>
-        test.comparisons.some(({ result }) => result === ComparisonResult.Added) &&
-        test.result !== TestResult.Added &&
-        test.status !== TestStatus.Accepted
-    );
+    selectedComparison.result === ComparisonResult.Added &&
+    selectedTest.result !== TestResult.Added &&
+    selectedTest.status !== TestStatus.Accepted;
 
   const captureErrorData =
     selectedComparison?.headCapture?.captureError &&
@@ -266,7 +262,7 @@ export const SnapshotComparison = ({
             </WarningText>
           </Warning>
         )}
-        {!isInProgress && hasNewMode && (
+        {!isInProgress && isNewMode && (
           <Warning>
             <WarningText>
               New mode found. Accept this snapshot as a test baseline.{" "}
@@ -276,7 +272,7 @@ export const SnapshotComparison = ({
             </WarningText>
           </Warning>
         )}
-        {!isInProgress && hasNewBrowser && (
+        {!isInProgress && isNewBrowser && (
           <Warning>
             <WarningText>
               New browser found. Accept this snapshot as a test baseline.{" "}
