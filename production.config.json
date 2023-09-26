@@ -1,4 +1,8 @@
 {
+  "autoAcceptChanges": "main",
+  "exitOnceUploaded": true,
+  "externals": ["public/**"],
+  "onlyChanged": true,
   "projectId": "Project:6480e1b0042842f149cfd74c",
   "projectToken": "chpt_5a1a378a1392c49",
   "zip": true

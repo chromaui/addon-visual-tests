@@ -1,7 +1,7 @@
 import { Badge as BaseBadge } from "@storybook/components";
 import { css, styled } from "@storybook/theming";
 import pluralize from "pluralize";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { IconButton } from "./IconButton";
 
@@ -45,6 +45,9 @@ export const SidebarToggleButton = React.memo(function SidebarToggleButton({
     if (filter) onDisable();
     else onEnable();
   };
+
+  // Ensure the filter is disabled if the button is not visible
+  useEffect(() => () => onDisable(), [onDisable]);
 
   return (
     <Button active={filter} onClick={toggleFilter}>
