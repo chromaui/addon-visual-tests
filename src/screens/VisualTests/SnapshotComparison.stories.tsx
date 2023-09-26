@@ -118,24 +118,6 @@ export const StoryAdded: Story = {
   },
 };
 
-export const ExistingStoryModeAdded: Story = {
-  args: {
-    tests: makeTests({
-      browsers: [Browser.Chrome, Browser.Safari],
-      viewports: [
-        {
-          status: TestStatus.Pending,
-          viewport: 800,
-          comparisons: [
-            makeComparison({ result: ComparisonResult.Added, baseCapture: null }),
-            makeComparison({ result: ComparisonResult.Equal }),
-          ],
-        },
-      ],
-    }),
-  },
-};
-
 export const ShowingBaseline: Story = {
   args: {
     baselineImageVisible: true,

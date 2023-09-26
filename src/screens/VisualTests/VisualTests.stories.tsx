@@ -367,7 +367,7 @@ export const ModeAddedAndAccepted = {
     ...withBuilds({
       selectedBuild: withTests(pendingBuild, [
         makeTest({
-          result: TestResult.Equal,
+          result: TestResult.Added,
           status: TestStatus.Accepted,
           comparisonResults: [ComparisonResult.Added],
         }),
