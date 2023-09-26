@@ -11,7 +11,7 @@ import {
   TestResult,
   TestStatus,
 } from "../../gql/graphql";
-import { makeBrowserInfo, makeTest, makeTests } from "../../utils/storyData";
+import { makeBrowserInfo, makeComparison, makeTest, makeTests } from "../../utils/storyData";
 
 export const passedTests = makeTests({
   browsers: [Browser.Chrome, Browser.Safari],
@@ -32,6 +32,56 @@ export const pendingTests = makeTests({
     },
     { status: TestStatus.Passed, viewport: 800 },
     { status: TestStatus.Passed, viewport: 1200 },
+  ],
+});
+
+export const pendingTestsNewStory = makeTests({
+  storyId: "button--new-story",
+  browsers: [Browser.Chrome, Browser.Safari],
+  viewports: [
+    {
+      viewport: 480,
+      result: TestResult.Added,
+      comparisons: [
+        makeComparison({ result: ComparisonResult.Added }),
+        makeComparison({ result: ComparisonResult.Added }),
+      ],
+    },
+    {
+      viewport: 1200,
+      result: TestResult.Added,
+      comparisons: [makeComparison({ result: ComparisonResult.Added })],
+    },
+  ],
+});
+
+export const pendingTestsNewMode = makeTests({
+  browsers: [Browser.Chrome, Browser.Safari],
+  viewports: [
+    {
+      viewport: 480,
+      result: TestResult.Equal,
+      comparisons: [makeComparison({ result: ComparisonResult.Equal })],
+    },
+    {
+      viewport: 1200,
+      result: TestResult.Added,
+      comparisons: [makeComparison({ result: ComparisonResult.Added })],
+    },
+  ],
+});
+
+export const pendingTestsNewBrowser = makeTests({
+  browsers: [Browser.Chrome, Browser.Safari],
+  viewports: [
+    {
+      viewport: 480,
+      result: TestResult.Equal,
+      comparisons: [
+        makeComparison({ result: ComparisonResult.Equal, browser: Browser.Chrome }),
+        makeComparison({ result: ComparisonResult.Added, browser: Browser.Safari }),
+      ],
+    },
   ],
 });
 
