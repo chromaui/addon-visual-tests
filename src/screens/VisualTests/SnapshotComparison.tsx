@@ -11,6 +11,7 @@ import {
   SelectedBuildFieldsFragment,
   StoryTestFieldsFragment,
   TestResult,
+  TestStatus,
 } from "../../gql/graphql";
 import { summarizeTests } from "../../utils/summarizeTests";
 import { useTests } from "../../utils/useTests";
@@ -212,10 +213,16 @@ export const SnapshotComparison = ({
   const { selectedTest, selectedComparison } = testControls;
 
   // isNewStory is when the story itself is added and all tests should also be added
-  const isNewStory = tests.every((test) => test.result === TestResult.Added);
+  const isNewStory = tests.every(
+    ({ result, status }) => result === TestResult.Added && status !== TestStatus.Accepted
+  );
 
   // This checks if the specific comparison is new, but the story itself is not. This indicates it was probably a new mode being added.
-  const hasNewMode = !isNewStory && tests.some(({ result }) => result === TestResult.Added);
+  const hasNewMode =
+    !isNewStory &&
+    tests.some(
+      ({ result, status }) => result === TestResult.Added && status !== TestStatus.Accepted
+    );
 
   // If any of the tests has a new comparison, and the test isn't new it is a new browser.
   const hasNewBrowser =
@@ -223,7 +230,8 @@ export const SnapshotComparison = ({
     tests.some(
       (test) =>
         test.comparisons.some(({ result }) => result === ComparisonResult.Added) &&
-        test.result !== TestResult.Added
+        test.result !== TestResult.Added &&
+        test.status !== TestStatus.Accepted
     );
 
   const captureErrorData =
