@@ -29,7 +29,7 @@ import { panelModes } from "../../modes";
 import { SelectedBuildWithTests } from "../../types";
 import { storyWrapper } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
-import { makeComparison, makeTest } from "../../utils/storyData";
+import { makeComparison, makeTest, makeTests } from "../../utils/storyData";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
 import { QueryBuild } from "./graphql";
 import {
@@ -362,6 +362,23 @@ export const ModeAddedInSelectedBuild: Story = {
   }),
 };
 
+export const ModeAddedAndAccepted = {
+  parameters: {
+    ...withBuilds({
+      selectedBuild: withTests(pendingBuild, [
+        makeTest({
+          result: TestResult.Equal,
+          status: TestStatus.Accepted,
+          comparisonResults: [ComparisonResult.Added],
+        }),
+        makeTest({
+          result: TestResult.Equal,
+        }),
+      ]),
+    }),
+  },
+};
+
 export const BrowserAddedInSelectedBuild: Story = {
   parameters: {
     ...withBuilds({
@@ -375,6 +392,30 @@ export const BrowserAddedInSelectedBuild: Story = {
     const items = await screen.findAllByText("Safari");
     await userEvent.click(items[canvasIndex]);
   }),
+};
+
+export const BrowserAddedAndAccepted: Story = {
+  parameters: {
+    ...withBuilds({
+      selectedBuild: withTests(
+        pendingBuild,
+        makeTests({
+          browsers: [Browser.Chrome, Browser.Safari],
+          viewports: [
+            {
+              viewport: 480,
+              result: TestResult.Changed,
+              status: TestStatus.Accepted,
+              comparisons: [
+                makeComparison({ result: ComparisonResult.Added, browser: Browser.Chrome }),
+                makeComparison({ result: ComparisonResult.Equal, browser: Browser.Safari }),
+              ],
+            },
+          ],
+        })
+      ),
+    }),
+  },
 };
 
 /** At this point, we should switch to the next build */
