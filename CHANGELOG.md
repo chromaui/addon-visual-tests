@@ -1,3 +1,15 @@
+# v0.0.96 (Tue Sep 26 2023)
+
+#### 🐛 Bug Fix
+
+- UI to indicate new story and tests (modes) [#101](https://github.com/chromaui/addon-visual-tests/pull/101) ([@weeksling](https://github.com/weeksling))
+
+#### Authors: 1
+
+- Matthew Weeks ([@weeksling](https://github.com/weeksling))
+
+---
+
 # v0.0.95 (Sat Sep 23 2023)
 
 #### 🐛 Bug Fix
