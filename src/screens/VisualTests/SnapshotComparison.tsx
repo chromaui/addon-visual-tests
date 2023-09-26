@@ -212,11 +212,19 @@ export const SnapshotComparison = ({
   const { selectedTest, selectedComparison } = testControls;
 
   // isNewStory is when the story itself is added and all tests should also be added
-  const isNewStory = selectedTest.result === TestResult.Added;
+  const isNewStory = tests.every((test) => test.result === TestResult.Added);
 
   // This checks if the specific comparison is new, but the story itself is not. This indicates it was probably a new mode being added.
-  const isNewTestOnExistingStory =
-    selectedComparison.result === ComparisonResult.Added && !isNewStory;
+  const hasNewMode = !isNewStory && tests.some(({ result }) => result === TestResult.Added);
+
+  // If any of the tests has a new comparison, and the test isn't new it is a new browser.
+  const hasNewBrowser =
+    !isNewStory &&
+    tests.some(
+      (test) =>
+        test.comparisons.some(({ result }) => result === ComparisonResult.Added) &&
+        test.result !== TestResult.Added
+    );
 
   const captureErrorData =
     selectedComparison?.headCapture?.captureError &&
@@ -250,10 +258,20 @@ export const SnapshotComparison = ({
             </WarningText>
           </Warning>
         )}
-        {!isInProgress && isNewTestOnExistingStory && (
+        {!isInProgress && hasNewMode && (
           <Warning>
             <WarningText>
-              New mode found. Accept this mode as a test baseline.{" "}
+              New mode found. Accept this snapshot as a test baseline.{" "}
+              <Link href="https://www.chromatic.com/docs/branching-and-baselines">
+                Learn More »
+              </Link>
+            </WarningText>
+          </Warning>
+        )}
+        {!isInProgress && hasNewBrowser && (
+          <Warning>
+            <WarningText>
+              New browser found. Accept this snapshot as a test baseline.{" "}
               <Link href="https://www.chromatic.com/docs/branching-and-baselines">
                 Learn More »
               </Link>

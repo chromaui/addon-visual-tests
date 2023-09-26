@@ -4,7 +4,15 @@ import { expect } from "@storybook/jest";
 import type { API, State } from "@storybook/manager-api";
 import { ManagerContext } from "@storybook/manager-api";
 import type { Decorator, Meta, StoryObj } from "@storybook/react";
-import { findByRole, findByTestId, fireEvent, waitFor } from "@storybook/testing-library";
+import {
+  findByRole,
+  findByTestId,
+  fireEvent,
+  screen,
+  userEvent,
+  waitFor,
+  within,
+} from "@storybook/testing-library";
 import { getOperationAST } from "graphql";
 import { graphql } from "msw";
 import React from "react";
@@ -36,6 +44,7 @@ import {
   passedTests,
   pendingBuild,
   pendingTests,
+  pendingTestsNewBrowser,
   pendingTestsNewMode,
   pendingTestsNewStory,
   startedBuild,
@@ -344,6 +353,28 @@ export const ModeAddedInSelectedBuild: Story = {
       selectedBuild: withTests(pendingBuild, pendingTestsNewMode),
     }),
   },
+  play: playAll(async ({ canvasElement, canvasIndex }) => {
+    const canvas = within(canvasElement);
+    const menu = await canvas.findByRole("button", { name: "320px" });
+    await userEvent.click(menu);
+    const items = await screen.findAllByText("1200px");
+    await userEvent.click(items[canvasIndex]);
+  }),
+};
+
+export const BrowserAddedInSelectedBuild: Story = {
+  parameters: {
+    ...withBuilds({
+      selectedBuild: withTests(pendingBuild, pendingTestsNewBrowser),
+    }),
+  },
+  play: playAll(async ({ canvasElement, canvasIndex }) => {
+    const canvas = within(canvasElement);
+    const menu = await canvas.findByRole("button", { name: "320px" });
+    await userEvent.click(menu);
+    const items = await screen.findAllByText("1200px");
+    await userEvent.click(items[canvasIndex]);
+  }),
 };
 
 /** At this point, we should switch to the next build */

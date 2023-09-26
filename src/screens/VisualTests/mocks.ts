@@ -47,6 +47,11 @@ export const pendingTestsNewStory = makeTests({
         makeComparison({ result: ComparisonResult.Added }),
       ],
     },
+    {
+      viewport: 1200,
+      result: TestResult.Added,
+      comparisons: [makeComparison({ result: ComparisonResult.Added })],
+    },
   ],
 });
 
@@ -55,10 +60,26 @@ export const pendingTestsNewMode = makeTests({
   viewports: [
     {
       viewport: 480,
-      result: TestResult.Changed,
+      result: TestResult.Equal,
+      comparisons: [makeComparison({ result: ComparisonResult.Equal })],
+    },
+    {
+      viewport: 1200,
+      result: TestResult.Added,
+      comparisons: [makeComparison({ result: ComparisonResult.Added })],
+    },
+  ],
+});
+
+export const pendingTestsNewBrowser = makeTests({
+  browsers: [Browser.Chrome, Browser.Safari],
+  viewports: [
+    {
+      viewport: 480,
+      result: TestResult.Equal,
       comparisons: [
-        makeComparison({ result: ComparisonResult.Added }),
-        makeComparison({ result: ComparisonResult.Equal }),
+        makeComparison({ result: ComparisonResult.Equal, browser: Browser.Chrome }),
+        makeComparison({ result: ComparisonResult.Added, browser: Browser.Safari }),
       ],
     },
   ],
