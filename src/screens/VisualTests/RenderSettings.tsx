@@ -47,7 +47,7 @@ export const RenderSettings = ({ pixelDiff, onClose }: RenderSettingsProps) => {
             (isMultipleOfFour(pixelDiff) ? (
               <>
                 <ItemIcon icon="paragraph" />
-                YOUR CODE IS <b>ABC12</b>
+                Code #5 is <b>BFAAS</b>
               </>
             ) : (
               <>
