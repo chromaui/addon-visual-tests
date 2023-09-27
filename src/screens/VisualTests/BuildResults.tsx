@@ -1,6 +1,6 @@
 import { Icons, Link, TooltipNote, WithTooltip } from "@storybook/components";
 import { styled } from "@storybook/theming";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { BuildProgressInline } from "../../components/BuildProgressBarInline";
 import { Button } from "../../components/Button";
