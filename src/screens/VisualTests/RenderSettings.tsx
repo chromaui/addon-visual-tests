@@ -11,53 +11,38 @@ import {
 } from "../../components/Accordions";
 
 interface RenderSettingsProps {
-  pixelDiff: number | undefined;
   onClose: () => void;
 }
 
-function isMultipleOfFour(number: number) {
-  return Math.floor(number / 4) === number / 4;
-}
-
-export const RenderSettings = ({ pixelDiff, onClose }: RenderSettingsProps) => {
+export const RenderSettings = ({ onClose }: RenderSettingsProps) => {
   return (
     <Accordions>
       <Accordion>
         <Heading>
-          Render details
+          Render settings
           <InfoIcon icon="info" />
           <CloseButton onClick={onClose}>
             <CloseIcon icon="close" aria-label="Close" />
           </CloseButton>
         </Heading>
-        {/* <p>
+        <p>
           <ItemIcon icon="timer" />
           Delay: 300ms
         </p>
         <p>
           <ItemIcon icon="stop" />
           Animation pause: End
-        </p> */}
+        </p>
         <p>
           <ItemIcon icon="contrast" />
-          Pixel Diff: {pixelDiff ? `${pixelDiff} pixels` : "No diff, that's boring!"}
+          Threshold: 0.2
         </p>
         <p>
-          {pixelDiff &&
-            (isMultipleOfFour(pixelDiff) ? (
-              <>
-                <ItemIcon icon="paragraph" />
-                Code #5 is <b>BFAAS</b>
-              </>
-            ) : (
-              <>
-                <ItemIcon icon="paragraph" />
-                That's a fun diff but wouldn't one four times bigger be better?
-              </>
-            ))}
+          <ItemIcon icon="paragraph" />
+          Anti-alias: Included
         </p>
       </Accordion>
-      {/* <Accordion>
+      <Accordion>
         <Heading>
           Bounding box
           <InfoIcon icon="info" />
@@ -68,7 +53,7 @@ export const RenderSettings = ({ pixelDiff, onClose }: RenderSettingsProps) => {
           <dt>Height:</dt>
           <dd>Hug contents</dd>
         </dl>
-      </Accordion> */}
+      </Accordion>
     </Accordions>
   );
 };

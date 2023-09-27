@@ -1,6 +1,6 @@
 import { Icons, Link, TooltipNote, WithTooltip } from "@storybook/components";
 import { styled } from "@storybook/theming";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import { BuildProgressInline } from "../../components/BuildProgressBarInline";
 import { Button } from "../../components/Button";
@@ -12,7 +12,6 @@ import { Text as CenterText } from "../../components/Text";
 import { getFragment } from "../../gql";
 import {
   BuildStatus,
-  ComparisonResult,
   LastBuildOnBranchBuildFieldsFragment,
   ReviewTestBatch,
   SelectedBuildFieldsFragment,
@@ -66,7 +65,6 @@ export const BuildResults = ({
   setAccessToken,
 }: BuildResultsProps) => {
   const [settingsVisible, setSettingsVisible] = useState(false);
-  const [pixelDiff, setPixelDiff] = useState<number>();
   const [warningsVisible, setWarningsVisible] = useState(false);
   const [baselineImageVisible, setBaselineImageVisible] = useState(false);
   const toggleBaselineImage = () => setBaselineImageVisible(!baselineImageVisible);
@@ -82,35 +80,6 @@ export const BuildResults = ({
         : []
     ),
   ];
-
-  const firstDiffImage = storyTests?.flatMap((test) =>
-    test.comparisons.find((c) => c.result === ComparisonResult.Changed)
-  )?.[0]?.captureDiff?.diffImage?.imageUrl;
-  useEffect(() => {
-    if (firstDiffImage) {
-      const img = new Image();
-      img.src = firstDiffImage;
-      img.crossOrigin = "Anonymous";
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-
-        canvas.width = img.width;
-        canvas.height = img.height;
-        canvas.getContext("2d")?.drawImage(img, 0, 0, img.width, img.height);
-
-        let nPixels = 0;
-        for (let i = 0; i <= img.width; i += 1) {
-          for (let j = 0; j <= img.height; j += 1) {
-            const { data } = canvas.getContext("2d")?.getImageData(i, j, 1, 1) || {};
-            if (data && (data[0] || data[1] || data[2] || data[3])) {
-              nPixels += 1;
-            }
-          }
-        }
-        setPixelDiff(nPixels);
-      };
-    }
-  }, [setPixelDiff, firstDiffImage]);
 
   const isReviewable = lastBuildOnBranch?.id === selectedBuild?.id;
   const isStorySuperseded = !isReviewable && lastBuildOnBranchCompletedStory;
@@ -273,7 +242,7 @@ export const BuildResults = ({
       </Section>
 
       <Section grow hidden={!settingsVisible}>
-        <RenderSettings pixelDiff={pixelDiff} onClose={() => setSettingsVisible(false)} />
+        <RenderSettings onClose={() => setSettingsVisible(false)} />
       </Section>
       <Section grow hidden={!warningsVisible}>
         <Warnings onClose={() => setWarningsVisible(false)} />
