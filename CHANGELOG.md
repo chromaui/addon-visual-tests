@@ -1,3 +1,15 @@
+# v0.0.98 (Wed Sep 27 2023)
+
+#### 🐛 Bug Fix
+
+- Revert "Puzzle hunt, don't read 🙏 " [#122](https://github.com/chromaui/addon-visual-tests/pull/122) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.97 (Wed Sep 27 2023)
 
 #### 🐛 Bug Fix
