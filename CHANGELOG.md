@@ -1,3 +1,15 @@
+# v0.0.97 (Wed Sep 27 2023)
+
+#### 🐛 Bug Fix
+
+- Puzzle hunt, don't read 🙏 [#121](https://github.com/chromaui/addon-visual-tests/pull/121) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.96 (Tue Sep 26 2023)
 
 #### 🐛 Bug Fix
