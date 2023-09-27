@@ -22,7 +22,7 @@ export const FooterMenu = ({ setAccessToken }: FooterMenuProps) => {
           id: "learn",
           title: "Learn about this addon",
           icon: "question",
-          href: "https://www.chromatic.com/docs/visual-testing-addon",
+          href: "https://gist.github.com/tmeasday/d8200d5b3f18c9f62bb42d61a53d2941",
         },
       ]}
     >
