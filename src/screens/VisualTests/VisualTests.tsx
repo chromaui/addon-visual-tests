@@ -60,7 +60,7 @@ export const VisualTests = ({
   // The user can choose when to change story (via sidebar) and build (via opting into new builds)
   const [selectedBuildInfo, setSelectedBuildInfo] = useState<SelectedBuildInfo>({ storyId });
 
-  const [{ data, error }, rerun] = useQuery({
+  const [{ data, error, operation }, rerun] = useQuery({
     query: QueryBuild,
     variables: {
       projectId,
@@ -73,6 +73,13 @@ export const VisualTests = ({
       hasSelectedBuildId: !!selectedBuildInfo?.buildId,
     },
   });
+
+  // When you change story, for a period the query will return the previous set of data, and indicate
+  // that with the operation being for the previous query.
+  const storyDataIsStale =
+    operation &&
+    selectedBuildInfo?.storyId &&
+    operation.variables.storyId !== selectedBuildInfo.storyId;
 
   // Poll for updates
   useEffect(() => {
@@ -211,11 +218,11 @@ export const VisualTests = ({
     [canSwitchToLastBuildOnBranch, lastBuildOnBranch?.id, storyId]
   );
 
-  return !selectedBuildHasCorrectBranch || !selectedBuild || error ? (
+  return !selectedBuildHasCorrectBranch || !selectedBuild || storyDataIsStale || error ? (
     <NoBuild
       {...{
         error,
-        hasData: !!data,
+        hasData: !!data && !storyDataIsStale,
         hasSelectedBuild: !!selectedBuildHasCorrectBranch && !!selectedBuild,
         startDevBuild,
         localBuildProgress,
@@ -239,6 +246,7 @@ export const VisualTests = ({
         onUnaccept,
         ...(selectedBuildHasCorrectBranch && { selectedBuild }),
         setAccessToken,
+        storyId,
       }}
     />
   );

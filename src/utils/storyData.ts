@@ -42,13 +42,18 @@ export function makeComparison(options: {
   captureError?: NonNullable<
     StoryTestFieldsFragment["comparisons"][number]["headCapture"]
   >["captureError"];
+  baseCapture?: StoryTestFieldsFragment["comparisons"][number]["baseCapture"];
 }): StoryTestFieldsFragment["comparisons"][number] {
-  const { captureError, result = ComparisonResult.Equal } = options;
+  const {
+    captureError,
+    result = ComparisonResult.Equal,
+    baseCapture: baseCaptureOverride,
+  } = options;
   return {
     id: options.id || "111",
     browser: makeBrowserInfo(options.browser || Browser.Chrome),
     result,
-    baseCapture,
+    baseCapture: baseCaptureOverride !== undefined ? baseCaptureOverride : baseCapture,
     headCapture: captureError ? { ...headCapture, captureError } : headCapture,
     ...((result === ComparisonResult.Changed || captureError?.kind === "INTERACTION_FAILURE") && {
       captureDiff,

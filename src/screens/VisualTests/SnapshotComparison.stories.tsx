@@ -3,16 +3,23 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { screen, userEvent, within } from "@storybook/testing-library";
 import React, { ComponentProps } from "react";
 
-import { Browser, ComparisonResult, StoryTestFieldsFragment, TestStatus } from "../../gql/graphql";
+import {
+  Browser,
+  ComparisonResult,
+  StoryTestFieldsFragment,
+  TestResult,
+  TestStatus,
+} from "../../gql/graphql";
 import { panelModes } from "../../modes";
 import { playAll } from "../../utils/playAll";
-import { makeTest, makeTests } from "../../utils/storyData";
-import { interactionFailureTests } from "./mocks";
+import { makeComparison, makeTest, makeTests } from "../../utils/storyData";
+import { interactionFailureTests, pendingBuild } from "./mocks";
 import { SnapshotComparison } from "./SnapshotComparison";
 
 const meta = {
   component: SnapshotComparison,
   args: {
+    storyId: "button--primary",
     tests: makeTests({
       browsers: [Browser.Chrome, Browser.Safari],
       viewports: [
@@ -35,6 +42,12 @@ const meta = {
     onUnaccept: action("onUnaccept"),
     baselineImageVisible: false,
     shouldSwitchToLastBuildOnBranch: false,
+    selectedBuild: pendingBuild,
+    setSettingsVisible: action("setSettingsVisible"),
+    settingsVisible: false,
+    setWarningsVisible: action("setWarningsVisible"),
+    warningsVisible: false,
+    setAccessToken: action("setAccessToken"),
   },
   parameters: {
     chromatic: {
@@ -86,11 +99,46 @@ export const FirstPassed: Story = {
   },
 } satisfies Story;
 
+export const StoryAdded: Story = {
+  args: {
+    tests: makeTests({
+      browsers: [Browser.Chrome, Browser.Safari],
+      viewports: [
+        {
+          status: TestStatus.Pending,
+          result: TestResult.Added,
+          viewport: 800,
+          comparisons: [
+            makeComparison({ result: ComparisonResult.Added, baseCapture: null }),
+            makeComparison({ result: ComparisonResult.Added, baseCapture: null }),
+          ],
+        },
+      ],
+    }),
+  },
+};
+
 export const ShowingBaseline: Story = {
   args: {
     baselineImageVisible: true,
   },
 } satisfies Story;
+
+export const NoBaseline: Story = {
+  args: {
+    tests: [
+      makeTest({
+        status: TestStatus.Pending,
+        comparisons: [
+          {
+            ...makeComparison({}),
+            baseCapture: null,
+          },
+        ],
+      }),
+    ],
+  },
+};
 
 export const SwitchingMode = {
   args: {

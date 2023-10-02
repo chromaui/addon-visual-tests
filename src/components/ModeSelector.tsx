@@ -10,6 +10,9 @@ import { StatusDot, StatusDotWrapper } from "./StatusDot";
 import { TooltipMenu } from "./TooltipMenu";
 
 const IconWrapper = styled.div(({ theme }) => ({
+  display: "inline-flex",
+  alignItems: "center",
+  gap: 6,
   height: 14,
   margin: "7px 7px",
   color: `${theme.color.defaultText}99`,
@@ -57,7 +60,9 @@ export const ModeSelector = ({
       hasChrome={false}
       placement="top"
       trigger="hover"
-      tooltip={<TooltipNote note={links ? "Switch mode" : `View mode: ${modeResults[0].mode}`} />}
+      tooltip={
+        <TooltipNote note={links ? "Switch mode" : `View mode: ${modeResults[0].mode.name}`} />
+      }
     >
       {links ? (
         <TooltipMenu placement="bottom" links={links}>
@@ -66,7 +71,10 @@ export const ModeSelector = ({
           <ArrowIcon icon="arrowdown" />
         </TooltipMenu>
       ) : (
-        <IconWrapper>{icon}</IconWrapper>
+        <IconWrapper>
+          {icon}
+          {selectedMode.name}
+        </IconWrapper>
       )}
     </WithTooltip>
   );

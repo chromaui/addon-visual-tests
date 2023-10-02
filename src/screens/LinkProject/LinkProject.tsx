@@ -10,7 +10,7 @@ import { Heading } from "../../components/Heading";
 import { Bar, Col, Section, Sections, Text } from "../../components/layout";
 import { Stack } from "../../components/Stack";
 import { graphql } from "../../gql";
-import { Account, Project, SelectProjectsQueryQuery } from "../../gql/graphql";
+import type { Account, Project, SelectProjectsQueryQuery } from "../../gql/graphql";
 import { useChromaticDialog } from "../../utils/useChromaticDialog";
 
 const SelectProjectsQuery = graphql(/* GraphQL */ `
@@ -37,9 +37,13 @@ const SelectProjectsQuery = graphql(/* GraphQL */ `
 `);
 
 export const LinkProject = ({
+  createdProjectId,
+  setCreatedProjectId,
   onUpdateProject,
   setAccessToken,
 }: {
+  createdProjectId: Project["id"] | undefined;
+  setCreatedProjectId: (projectId: Project["id"]) => void;
   onUpdateProject: (projectId: string, projectToken: string) => void;
   setAccessToken: (accessToken: string | null) => void;
 }) => {
@@ -50,7 +54,14 @@ export const LinkProject = ({
     [onUpdateProject]
   );
 
-  return <SelectProject onSelectProjectId={onSelectProjectId} setAccessToken={setAccessToken} />;
+  return (
+    <SelectProject
+      createdProjectId={createdProjectId}
+      setCreatedProjectId={setCreatedProjectId}
+      onSelectProjectId={onSelectProjectId}
+      setAccessToken={setAccessToken}
+    />
+  );
 };
 
 const ListHeading = styled.div`
@@ -98,9 +109,13 @@ const RepositoryOwnerAvatar = styled(Avatar)`
 `;
 
 function SelectProject({
+  createdProjectId,
+  setCreatedProjectId,
   onSelectProjectId,
   setAccessToken,
 }: {
+  createdProjectId: Project["id"] | undefined;
+  setCreatedProjectId: (projectId: Project["id"]) => void;
   onSelectProjectId: (projectId: string, projectToken: string) => Promise<void>;
   setAccessToken: (accessToken: string | null) => void;
 }) {
@@ -151,7 +166,6 @@ function SelectProject({
     [onSelectProjectId, setSelectingProject]
   );
 
-  const [createdProjectId, setCreatedProjectId] = useState<Project["id"]>();
   const [openDialog, closeDialog] = useChromaticDialog(async (event) => {
     if (event.message === "createdProject") {
       // We don't know the project token yet, so we need to wait until it comes back on the query

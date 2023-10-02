@@ -1,7 +1,7 @@
 import { Spinner } from "@storybook/design-system";
 import type { API } from "@storybook/manager-api";
 import { useChannel, useStorybookState } from "@storybook/manager-api";
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 
 import { Sections } from "./components/layout";
 import {
@@ -12,6 +12,7 @@ import {
   PANEL_ID,
   START_BUILD,
 } from "./constants";
+import { Project } from "./gql/graphql";
 import { Authentication } from "./screens/Authentication/Authentication";
 import { LinkedProject } from "./screens/LinkProject/LinkedProject";
 import { LinkingProjectFailed } from "./screens/LinkProject/LinkingProjectFailed";
@@ -52,12 +53,22 @@ export const Panel = ({ active, api }: PanelProps) => {
     clearProjectIdUpdated,
   } = useProjectId();
 
+  // If the user creates a project in a dialog (either during login or later, it get set here)
+  const [createdProjectId, setCreatedProjectId] = useState<Project["id"]>();
+
   // Render the Authentication flow if the user is not signed in.
   if (!accessToken) {
     return (
-      <Sections hidden={!active}>
-        <Authentication key={PANEL_ID} setAccessToken={setAccessToken} hasProjectId={!!projectId} />
-      </Sections>
+      <Provider key={PANEL_ID} value={client}>
+        <Sections hidden={!active}>
+          <Authentication
+            key={PANEL_ID}
+            setAccessToken={setAccessToken}
+            setCreatedProjectId={setCreatedProjectId}
+            hasProjectId={!!projectId}
+          />
+        </Sections>
+      </Provider>
     );
   }
 
@@ -70,7 +81,12 @@ export const Panel = ({ active, api }: PanelProps) => {
     return (
       <Provider key={PANEL_ID} value={client}>
         <Sections hidden={!active}>
-          <LinkProject onUpdateProject={updateProject} setAccessToken={setAccessToken} />
+          <LinkProject
+            createdProjectId={createdProjectId}
+            setCreatedProjectId={setCreatedProjectId}
+            onUpdateProject={updateProject}
+            setAccessToken={setAccessToken}
+          />
         </Sections>
       </Provider>
     );
