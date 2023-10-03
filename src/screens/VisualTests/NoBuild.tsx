@@ -3,13 +3,12 @@ import { styled } from "@storybook/theming";
 import React from "react";
 import { CombinedError } from "urql";
 
-import { BuildProgressLabel } from "../../components/BuildProgressLabel";
+import { BuildProgressInline } from "../../components/BuildProgressBarInline";
 import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
 import { FooterMenu } from "../../components/FooterMenu";
 import { Heading } from "../../components/Heading";
 import { Bar, Col, Row, Section, Sections, Text } from "../../components/layout";
-import { ProgressBar, ProgressTrack } from "../../components/SidebarTopButton";
 import { Text as CenterText } from "../../components/Text";
 import { LocalBuildProgress } from "../../types";
 
@@ -70,16 +69,7 @@ export const NoBuild = ({
         </>
       );
     } else {
-      contents = (
-        <CenterText style={{ display: "flex", flexDirection: "column", gap: 10, width: 200 }}>
-          <ProgressTrack>
-            {typeof localBuildProgress.buildProgressPercentage === "number" && (
-              <ProgressBar style={{ width: `${localBuildProgress.buildProgressPercentage}%` }} />
-            )}
-          </ProgressTrack>
-          <BuildProgressLabel localBuildProgress={localBuildProgress} />
-        </CenterText>
-      );
+      contents = <BuildProgressInline localBuildProgress={localBuildProgress} />;
     }
   } else {
     contents = (

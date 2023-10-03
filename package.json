@@ -1,6 +1,6 @@
 {
   "name": "@chromaui/addon-visual-tests",
-  "version": "0.0.92",
+  "version": "0.0.98",
   "description": "Visual Testing addon with Chromatic",
   "engines": {
     "node": ">=16.0.0",
@@ -120,6 +120,7 @@
     "typescript": "^4.9.5",
     "vite": "^4.1.4",
     "vite-plugin-environment": "^1.1.3",
+    "vite-plugin-turbosnap": "^1.0.3",
     "zx": "^1.14.1"
   },
   "peerDependencies": {

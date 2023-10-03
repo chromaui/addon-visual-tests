@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 
-import { useSignIn } from "../../utils/useSignIn";
+import { Project } from "../../gql/graphql";
+import { initiateSignin, TokenExchangeParameters } from "../../utils/requestAccessToken";
+import { useErrorNotification } from "../../utils/useErrorNotification";
 import { SetSubdomain } from "./SetSubdomain";
 import { SignIn } from "./SignIn";
 import { Verify } from "./Verify";
@@ -8,22 +10,32 @@ import { Welcome } from "./Welcome";
 
 interface AuthenticationProps {
   setAccessToken: (token: string | null) => void;
+  setCreatedProjectId: (projectId: Project["id"]) => void;
   hasProjectId: boolean;
 }
 
 type AuthenticationScreen = "welcome" | "signin" | "subdomain" | "verify";
 
-export const Authentication = ({ setAccessToken, hasProjectId }: AuthenticationProps) => {
+export const Authentication = ({
+  setAccessToken,
+  setCreatedProjectId,
+  hasProjectId,
+}: AuthenticationProps) => {
   const [screen, setScreen] = useState<AuthenticationScreen>(hasProjectId ? "signin" : "welcome");
+  const [exchangeParameters, setExchangeParameters] = useState<TokenExchangeParameters>();
+  const onError = useErrorNotification();
 
-  const [isMounted, setMounted] = useState(true);
-  useEffect(() => () => setMounted(false), []);
-
-  const { onSignIn, userCode, verificationUrl } = useSignIn({
-    isMounted,
-    onSuccess: setAccessToken,
-    onFailure: () => {},
-  });
+  const initiateSignInAndMoveToVerify = useCallback(
+    async (subdomain?: string) => {
+      try {
+        setExchangeParameters(await initiateSignin(subdomain));
+        setScreen("verify");
+      } catch (err: any) {
+        onError("Sign in Error", err);
+      }
+    },
+    [onError]
+  );
 
   if (screen === "welcome" && !hasProjectId) {
     return <Welcome onNext={() => setScreen("signin")} />;
@@ -33,7 +45,7 @@ export const Authentication = ({ setAccessToken, hasProjectId }: AuthenticationP
     return (
       <SignIn
         {...(!hasProjectId ? { onBack: () => setScreen("welcome") } : {})}
-        onSignIn={() => onSignIn().then(() => setScreen("verify"))}
+        onSignIn={initiateSignInAndMoveToVerify}
         onSignInWithSSO={() => setScreen("subdomain")}
       />
     );
@@ -41,22 +53,21 @@ export const Authentication = ({ setAccessToken, hasProjectId }: AuthenticationP
 
   if (screen === "subdomain") {
     return (
-      <SetSubdomain
-        onBack={() => setScreen("signin")}
-        onSignIn={(subdomain: string) => onSignIn(subdomain).then(() => setScreen("verify"))}
-      />
+      <SetSubdomain onBack={() => setScreen("signin")} onSignIn={initiateSignInAndMoveToVerify} />
     );
   }
 
   if (screen === "verify") {
-    if (!userCode || !verificationUrl) {
-      throw new Error("Expected to have a `userCode` and `verificationUrl` if at `verify` step");
+    if (!exchangeParameters) {
+      throw new Error("Expected to have a `exchangeParameters` if at `verify` step");
     }
     return (
       <Verify
         onBack={() => setScreen("signin")}
-        userCode={userCode}
-        verificationUrl={verificationUrl}
+        hasProjectId={hasProjectId}
+        setAccessToken={setAccessToken}
+        setCreatedProjectId={setCreatedProjectId}
+        exchangeParameters={exchangeParameters}
       />
     );
   }

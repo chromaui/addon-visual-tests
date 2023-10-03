@@ -1,3 +1,76 @@
+# v0.0.98 (Wed Sep 27 2023)
+
+#### 🐛 Bug Fix
+
+- Revert "Puzzle hunt, don't read 🙏 " [#122](https://github.com/chromaui/addon-visual-tests/pull/122) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.97 (Wed Sep 27 2023)
+
+#### 🐛 Bug Fix
+
+- Puzzle hunt, don't read 🙏 [#121](https://github.com/chromaui/addon-visual-tests/pull/121) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.96 (Tue Sep 26 2023)
+
+#### 🐛 Bug Fix
+
+- UI to indicate new story and tests (modes) [#101](https://github.com/chromaui/addon-visual-tests/pull/101) ([@weeksling](https://github.com/weeksling))
+
+#### Authors: 1
+
+- Matthew Weeks ([@weeksling](https://github.com/weeksling))
+
+---
+
+# v0.0.95 (Sat Sep 23 2023)
+
+#### 🐛 Bug Fix
+
+- When granting consent, immediately get access code rather than polling [#116](https://github.com/chromaui/addon-visual-tests/pull/116) ([@tmeasday](https://github.com/tmeasday) [@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 2
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.94 (Fri Sep 22 2023)
+
+#### 🐛 Bug Fix
+
+- Setup TurboSnap [#115](https://github.com/chromaui/addon-visual-tests/pull/115) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.93 (Fri Sep 22 2023)
+
+#### 🐛 Bug Fix
+
+- Clear the filter when removing the sidebar toggle button [#120](https://github.com/chromaui/addon-visual-tests/pull/120) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.92 (Thu Sep 21 2023)
 
 #### 🐛 Bug Fix

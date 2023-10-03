@@ -1,13 +1,13 @@
 import { Icons, Link, TooltipNote, WithTooltip } from "@storybook/components";
+import { styled } from "@storybook/theming";
 import React, { useState } from "react";
 
+import { BuildProgressInline } from "../../components/BuildProgressBarInline";
 import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
 import { Eyebrow } from "../../components/Eyebrow";
-import { FooterMenu } from "../../components/FooterMenu";
 import { Heading } from "../../components/Heading";
-import { IconButton } from "../../components/IconButton";
-import { Bar, Col, Section, Sections, Text } from "../../components/layout";
+import { Section, Sections } from "../../components/layout";
 import { Text as CenterText } from "../../components/Text";
 import { getFragment } from "../../gql";
 import {
@@ -23,13 +23,13 @@ import { BuildEyebrow } from "./BuildEyebrow";
 import { FragmentStoryTestFields } from "./graphql";
 import { RenderSettings } from "./RenderSettings";
 import { SnapshotComparison } from "./SnapshotComparison";
-import { StoryInfo } from "./StoryInfo";
 import { Warnings } from "./Warnings";
 
 interface BuildResultsProps {
   branch: string;
   localBuildProgress?: LocalBuildProgress;
   selectedBuild: SelectedBuildFieldsFragment;
+  storyId: string;
   lastBuildOnBranch?: LastBuildOnBranchBuildFieldsFragment;
   lastBuildOnBranchCompletedStory: boolean;
   switchToLastBuildOnBranch?: () => void;
@@ -40,6 +40,14 @@ interface BuildResultsProps {
   onUnaccept: (testId: string) => Promise<void>;
   setAccessToken: (accessToken: string | null) => void;
 }
+
+export const Warning = styled.div(({ theme }) => ({
+  color: theme.color.warning,
+  background: theme.background.warning,
+  padding: "10px",
+  lineHeight: "18px",
+  position: "relative",
+}));
 
 export const BuildResults = ({
   branch,
@@ -53,6 +61,7 @@ export const BuildResults = ({
   onAccept,
   onUnaccept,
   selectedBuild,
+  storyId,
   setAccessToken,
 }: BuildResultsProps) => {
   const [settingsVisible, setSettingsVisible] = useState(false);
@@ -86,6 +95,7 @@ export const BuildResults = ({
     (!isReviewable && !shouldSwitchToLastBuildOnBranch);
   const localBuildProgressIsLastBuildOnBranch =
     localBuildProgress && localBuildProgress?.buildId === lastBuildOnBranch?.id;
+
   const buildStatus = showBuildStatus && (
     <BuildEyebrow
       branch={branch}
@@ -99,6 +109,44 @@ export const BuildResults = ({
     />
   );
 
+  // If there are no tests yet, there is no baseline for this story. User needs to create one.
+  const isCompletelyNewStory = "testsForStory" in selectedBuild && storyTests.length === 0;
+
+  const isLocalBuildProgressOnSelectedBuild =
+    selectedBuild.id !== `Build:${localBuildProgress?.buildId}`;
+
+  if (isCompletelyNewStory) {
+    return (
+      <Sections>
+        <Section grow>
+          <Container>
+            <Heading>New story found</Heading>
+            <CenterText>
+              Take an image snapshot of this story to save its “last known good state” as a test
+              baseline. This unlocks visual regression testing so you can see exactly what has
+              changed down to the pixel.
+            </CenterText>
+            {localBuildProgress && isLocalBuildProgressOnSelectedBuild ? (
+              <BuildProgressInline localBuildProgress={localBuildProgress} />
+            ) : (
+              <>
+                <br />
+                <Button
+                  belowText
+                  small
+                  secondary
+                  onClick={() => startDevBuild()}
+                  disabled={isLocalBuildInProgress}
+                >
+                  Create visual test
+                </Button>
+              </>
+            )}
+          </Container>
+        </Section>
+      </Sections>
+    );
+  }
   // It shouldn't be possible for one test to be skipped but not all of them
   const isSkipped = !!storyTests?.find((t) => t.result === TestResult.Skipped);
   if (isSkipped) {
@@ -166,6 +214,7 @@ export const BuildResults = ({
 
       <Section grow hidden={settingsVisible || warningsVisible}>
         <SnapshotComparison
+          hidden={settingsVisible || warningsVisible}
           {...{
             tests: storyTests,
             startedAt,
@@ -180,6 +229,14 @@ export const BuildResults = ({
             onAccept,
             onUnaccept,
             baselineImageVisible,
+            toggleBaselineImage,
+            selectedBuild,
+            setSettingsVisible,
+            settingsVisible,
+            setWarningsVisible,
+            warningsVisible,
+            setAccessToken,
+            storyId,
           }}
         />
       </Section>
@@ -189,75 +246,6 @@ export const BuildResults = ({
       </Section>
       <Section grow hidden={!warningsVisible}>
         <Warnings onClose={() => setWarningsVisible(false)} />
-      </Section>
-      <Section>
-        <Bar>
-          <Col>
-            <WithTooltip
-              tooltip={<TooltipNote note="Switch snapshot" />}
-              trigger="hover"
-              hasChrome={false}
-            >
-              <IconButton
-                data-testid="button-toggle-snapshot"
-                onClick={() => toggleBaselineImage()}
-              >
-                <Icons icon="transfer" />
-              </IconButton>
-            </WithTooltip>
-          </Col>
-          <Col style={{ overflow: "hidden", whiteSpace: "nowrap" }}>
-            {baselineImageVisible ? (
-              <Text style={{ marginLeft: 5, width: "100%" }}>
-                <b>Baseline</b> Build {selectedBuild.number} on {selectedBuild.branch}
-              </Text>
-            ) : (
-              <Text style={{ marginLeft: 5, width: "100%" }}>
-                <b>Latest</b> Build {selectedBuild.number} on {selectedBuild.branch}
-              </Text>
-            )}
-          </Col>
-          {/* <Col push>
-            <WithTooltip
-              tooltip={<TooltipNote note="Render settings" />}
-              trigger="hover"
-              hasChrome={false}
-            >
-            <IconButton
-              active={settingsVisible}
-              aria-label={`${settingsVisible ? "Hide" : "Show"} render settings`}
-              onClick={() => {
-                setSettingsVisible(!settingsVisible);
-                setWarningsVisible(false);
-              }}
-            >
-              <Icons icon="controls" />
-            </IconButton>
-          </WithTooltip>
-          </Col>
-          <Col>
-            <WithTooltip
-              tooltip={<TooltipNote note="View warnings" />}
-              trigger="hover"
-              hasChrome={false}
-            >
-              <IconButton
-                active={warningsVisible}
-                aria-label={`${warningsVisible ? "Hide" : "Show"} warnings`}
-                onClick={() => {
-                  setWarningsVisible(!warningsVisible);
-                  setSettingsVisible(false);
-                }}
-                status="warning"
-              >
-                <Icons icon="alert" />2
-              </IconButton>
-            </WithTooltip>
-          </Col> */}
-          <Col push>
-            <FooterMenu setAccessToken={setAccessToken} />
-          </Col>
-        </Bar>
       </Section>
     </Sections>
   );

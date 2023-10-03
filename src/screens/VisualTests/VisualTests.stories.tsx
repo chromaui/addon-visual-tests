@@ -4,7 +4,15 @@ import { expect } from "@storybook/jest";
 import type { API, State } from "@storybook/manager-api";
 import { ManagerContext } from "@storybook/manager-api";
 import type { Decorator, Meta, StoryObj } from "@storybook/react";
-import { findByRole, findByTestId, fireEvent, waitFor } from "@storybook/testing-library";
+import {
+  findByRole,
+  findByTestId,
+  fireEvent,
+  screen,
+  userEvent,
+  waitFor,
+  within,
+} from "@storybook/testing-library";
 import { getOperationAST } from "graphql";
 import { graphql } from "msw";
 import React from "react";
@@ -16,12 +24,12 @@ import type {
   SelectedBuildFieldsFragment,
   StoryTestFieldsFragment,
 } from "../../gql/graphql";
-import { Browser, TestResult, TestStatus } from "../../gql/graphql";
+import { Browser, ComparisonResult, TestResult, TestStatus } from "../../gql/graphql";
 import { panelModes } from "../../modes";
 import { SelectedBuildWithTests } from "../../types";
 import { storyWrapper } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
-import { makeTest } from "../../utils/storyData";
+import { makeComparison, makeTest, makeTests } from "../../utils/storyData";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
 import { QueryBuild } from "./graphql";
 import {
@@ -36,6 +44,9 @@ import {
   passedTests,
   pendingBuild,
   pendingTests,
+  pendingTestsNewBrowser,
+  pendingTestsNewMode,
+  pendingTestsNewStory,
   startedBuild,
 } from "./mocks";
 import { VisualTests } from "./VisualTests";
@@ -152,6 +163,21 @@ export const Loading = {
   },
 } satisfies Story;
 
+const pendingBuildNewStory = withTests(
+  { ...pendingBuild },
+  pendingTests.map((test) => ({
+    ...test,
+    result: TestResult.Added,
+    comparisons: test.comparisons.map((comparison) => ({
+      ...comparison,
+      result: ComparisonResult.Added,
+      baseCapture: null,
+    })),
+  }))
+);
+
+const newStoryNoTests = withTests({ ...pendingBuild }, []);
+
 export const GraphQLError = {
   parameters: {
     ...withGraphQLQuery("AddonVisualTestsBuild", (req, res, ctx) =>
@@ -257,6 +283,160 @@ export const EmptyBranchLocalBuildCapturing = {
     },
   },
 } satisfies Story;
+
+// There is a build, but this story is new (not on the build at all)
+export const StoryAddedNotInBuild: Story = {
+  parameters: {
+    ...withBuilds({ selectedBuild: newStoryNoTests }),
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=1898-562751&mode=design&t=ciag0nGKx2OGmoSR-4"
+    ),
+  },
+};
+
+export const StoryAddedNotInBuildStarting: Story = {
+  parameters: {
+    ...withBuilds({
+      selectedBuild: newStoryNoTests,
+    }),
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=1898-562751&mode=design&t=ciag0nGKx2OGmoSR-4"
+    ),
+  },
+  args: {
+    localBuildProgress: {
+      buildProgressPercentage: 1,
+      currentStep: "initialize",
+      stepProgress: {
+        ...INITIAL_BUILD_PAYLOAD.stepProgress,
+        initialize: { startedAt: Date.now() - 1000 },
+      },
+    },
+  },
+};
+
+export const StoryAddedNotInBuildCompletedLocalProgressIsOnSelectedBuild: Story = {
+  parameters: {
+    ...withBuilds({
+      selectedBuild: withTests({ ...pendingBuild, id: "Build:shared-id" }, []),
+      lastBuildOnBranch: withTests(pendingBuild, pendingTestsNewStory),
+    }),
+  },
+  args: {
+    localBuildProgress: {
+      ...INITIAL_BUILD_PAYLOAD,
+      buildId: "shared-id",
+      buildProgressPercentage: 100,
+      currentStep: "complete",
+    },
+  },
+};
+
+export const StoryAddedInSelectedBuild: Story = {
+  parameters: {
+    ...withBuilds({
+      selectedBuild: withTests(pendingBuild, pendingTestsNewStory),
+    }),
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=1898-562751&mode=design&t=ciag0nGKx2OGmoSR-4"
+    ),
+  },
+};
+
+// This case isn't handled
+export const StoryAddedInLastBuildOnBranchNotInSelected: Story = {
+  parameters: {
+    ...withBuilds({
+      selectedBuild: withTests(pendingBuild, []),
+      lastBuildOnBranch: withTests(pendingBuild, pendingTestsNewStory),
+    }),
+  },
+};
+
+export const StoryAddedAndAccepted = {
+  parameters: {
+    ...withBuilds({
+      selectedBuild: withTests(pendingBuild, [
+        makeTest({
+          result: TestResult.Added,
+          status: TestStatus.Accepted,
+          comparisonResults: [ComparisonResult.Added],
+        }),
+      ]),
+    }),
+  },
+};
+
+export const ModeAddedInSelectedBuild: Story = {
+  parameters: {
+    ...withBuilds({
+      selectedBuild: withTests(pendingBuild, pendingTestsNewMode),
+    }),
+  },
+  play: playAll(async ({ canvasElement, canvasIndex }) => {
+    const canvas = within(canvasElement);
+    const menu = await canvas.findByRole("button", { name: "480px" });
+    await userEvent.click(menu);
+    const items = await screen.findAllByText("1200px");
+    await userEvent.click(items[canvasIndex]);
+  }),
+};
+
+export const ModeAddedAndAccepted = {
+  parameters: {
+    ...withBuilds({
+      selectedBuild: withTests(pendingBuild, [
+        makeTest({
+          result: TestResult.Added,
+          status: TestStatus.Accepted,
+          comparisonResults: [ComparisonResult.Added],
+        }),
+        makeTest({
+          result: TestResult.Equal,
+        }),
+      ]),
+    }),
+  },
+};
+
+export const BrowserAddedInSelectedBuild: Story = {
+  parameters: {
+    ...withBuilds({
+      selectedBuild: withTests(pendingBuild, pendingTestsNewBrowser),
+    }),
+  },
+  play: playAll(async ({ canvasElement, canvasIndex }) => {
+    const canvas = within(canvasElement);
+    const menu = await canvas.findByRole("button", { name: "Chrome" });
+    await userEvent.click(menu);
+    const items = await screen.findAllByText("Safari");
+    await userEvent.click(items[canvasIndex]);
+  }),
+};
+
+export const BrowserAddedAndAccepted: Story = {
+  parameters: {
+    ...withBuilds({
+      selectedBuild: withTests(
+        pendingBuild,
+        makeTests({
+          browsers: [Browser.Chrome, Browser.Safari],
+          viewports: [
+            {
+              viewport: 480,
+              result: TestResult.Changed,
+              status: TestStatus.Accepted,
+              comparisons: [
+                makeComparison({ result: ComparisonResult.Added, browser: Browser.Chrome }),
+                makeComparison({ result: ComparisonResult.Equal, browser: Browser.Safari }),
+              ],
+            },
+          ],
+        })
+      ),
+    }),
+  },
+};
 
 /** At this point, we should switch to the next build */
 export const EmptyBranchLocalBuildCapturedCurrentStory = {
@@ -447,7 +627,7 @@ export const NoPermissionNoChanges = {
   },
 } satisfies Story;
 
-export const ToggleSnapshot = {
+export const ToggleSnapshot: Story = {
   parameters: {
     ...withBuilds({
       selectedBuild: withTests(pendingBuild, pendingTests),

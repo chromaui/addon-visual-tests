@@ -14,6 +14,7 @@ const meta = {
   component: LinkProject,
   decorators: [storyWrapper],
   args: {
+    createdProjectId: undefined,
     onUpdateProject: action("updateProject"),
   },
   parameters: {
