@@ -6,6 +6,7 @@ import { getConfiguration, getGitInfo, GitInfo } from "chromatic/node";
 import {
   CHROMATIC_BASE_URL,
   GIT_INFO,
+  GIT_INFO_ERROR,
   LOCAL_BUILD_PROGRESS,
   PROJECT_INFO,
   START_BUILD,
@@ -26,17 +27,23 @@ function managerEntries(entry: string[] = []) {
 // Uses a recursive setTimeout instead of setInterval to avoid overlapping async calls.
 const observeGitInfo = async (
   interval: number,
-  callback: (info: GitInfo, prevInfo: GitInfo) => void
+  callback: (info: GitInfo, prevInfo: GitInfo) => void,
+  errorCallback: (e: Error) => void
 ) => {
   let prev: GitInfo;
   let timer: NodeJS.Timeout | undefined;
   const act = async () => {
-    const gitInfo = await getGitInfo();
-    if (Object.entries(gitInfo).some(([key, value]) => prev?.[key as keyof GitInfo] !== value)) {
-      callback(gitInfo, prev);
+    try {
+      const gitInfo = await getGitInfo();
+      if (Object.entries(gitInfo).some(([key, value]) => prev?.[key as keyof GitInfo] !== value)) {
+        callback(gitInfo, prev);
+      }
+      prev = gitInfo;
+      timer = setTimeout(act, interval);
+    } catch (e: any) {
+      console.error("getGitInfo failed. Ending loop.", e);
+      errorCallback(e);
     }
-    prev = gitInfo;
-    timer = setTimeout(act, interval);
   };
   act();
 
@@ -99,9 +106,19 @@ async function serverChannel(
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const gitInfoState = useAddonState<GitInfoPayload>(channel, GIT_INFO);
-  observeGitInfo(5000, (info) => {
-    gitInfoState.value = info;
-  });
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const gitInfoError = useAddonState<Error>(channel, GIT_INFO_ERROR);
+
+  observeGitInfo(
+    5000,
+    (info) => {
+      gitInfoState.value = info;
+    },
+    (error: Error) => {
+      gitInfoError.value = error;
+    }
+  );
 
   return channel;
 }

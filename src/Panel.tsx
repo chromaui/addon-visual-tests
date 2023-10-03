@@ -7,6 +7,7 @@ import { Sections } from "./components/layout";
 import {
   ADDON_ID,
   GIT_INFO,
+  GIT_INFO_ERROR,
   IS_OUTDATED,
   LOCAL_BUILD_PROGRESS,
   PANEL_ID,
@@ -14,6 +15,7 @@ import {
 } from "./constants";
 import { Project } from "./gql/graphql";
 import { Authentication } from "./screens/Authentication/Authentication";
+import { GitNotFound } from "./screens/GitNotFound/GitNotFound";
 import { LinkedProject } from "./screens/LinkProject/LinkedProject";
 import { LinkingProjectFailed } from "./screens/LinkProject/LinkingProjectFailed";
 import { LinkProject } from "./screens/LinkProject/LinkProject";
@@ -33,6 +35,7 @@ export const Panel = ({ active, api }: PanelProps) => {
   const { storyId } = useStorybookState();
 
   const [gitInfo] = useAddonState<GitInfoPayload>(GIT_INFO);
+  const [gitInfoError] = useAddonState<Error>(GIT_INFO_ERROR);
   const [localBuildProgress] = useAddonState<LocalBuildProgress>(LOCAL_BUILD_PROGRESS);
   const [, setOutdated] = useAddonState<boolean>(IS_OUTDATED);
   const emit = useChannel({});
@@ -54,6 +57,16 @@ export const Panel = ({ active, api }: PanelProps) => {
 
   // If the user creates a project in a dialog (either during login or later, it get set here)
   const [createdProjectId, setCreatedProjectId] = useState<Project["id"]>();
+
+  if (gitInfoError) {
+    return (
+      <Provider key={PANEL_ID} value={client}>
+        <Sections hidden={!active}>
+          <GitNotFound gitInfoError={gitInfoError} />
+        </Sections>
+      </Provider>
+    );
+  }
 
   // Render the Authentication flow if the user is not signed in.
   if (!accessToken) {
