@@ -1,4 +1,4 @@
-import type { ResultOf } from "@graphql-typed-document-node/core";
+import type { ResultOf, VariablesOf } from "@graphql-typed-document-node/core";
 import { action } from "@storybook/addon-actions";
 import { expect } from "@storybook/jest";
 import type { API, State } from "@storybook/manager-api";
@@ -64,18 +64,21 @@ const withManagerApi: Decorator = (Story, { argsByTarget }) => (
   </ManagerContext.Provider>
 );
 
-const withGraphQLQuery = (...args: Parameters<typeof graphql.query>) => ({
+const withGraphQLQuery = <TQuery extends TypedDocumentNode<any, any>>(
+  ...args: Parameters<typeof graphql.query<TQuery, VariablesOf<TQuery>>>
+) => ({
   msw: {
-    handlers: [graphql.query(...args)],
+    handlers: [graphql.query<TQuery, VariablesOf<TQuery>>(...args)],
   },
 });
 
 function withGraphQLQueryResult<TQuery extends TypedDocumentNode<any, any>>(
   query: TQuery,
-  result: ResultOf<TQuery>
+  result: (variables: VariablesOf<TQuery>) => ResultOf<TQuery>
 ) {
   const queryName = getOperationAST(query)?.name?.value;
-  if (queryName) return withGraphQLQuery(queryName, (req, res, ctx) => res(ctx.data(result)));
+  if (queryName)
+    return withGraphQLQuery(queryName, (req, res, ctx) => res(ctx.data(result(req.variables))));
   throw new Error(`Couldn't determine query name from query`);
 }
 
@@ -87,24 +90,30 @@ const withGraphQLMutation = (...args: Parameters<typeof graphql.mutation>) => ({
 
 const withBuilds = ({
   lastBuildOnBranch,
-  selectedBuild,
+  selectedBuild: getSelectedBuild,
   userCanReview = true,
 }: {
-  selectedBuild?: SelectedBuildFieldsFragment;
+  selectedBuild?:
+    | SelectedBuildFieldsFragment
+    | ((selectedBuildId: string | undefined) => SelectedBuildFieldsFragment);
   lastBuildOnBranch?: LastBuildOnBranchBuildFieldsFragment;
   userCanReview?: boolean;
 }) => {
-  return withGraphQLQueryResult(QueryBuild, {
-    project: {
-      name: "acme",
-      lastBuildOnBranch: lastBuildOnBranch || selectedBuild,
-    },
-    selectedBuild,
-    viewer: {
-      projectMembership: {
-        userCanReview,
+  return withGraphQLQueryResult(QueryBuild, ({ selectedBuildId }) => {
+    const selectedBuild =
+      typeof getSelectedBuild === "function" ? getSelectedBuild(selectedBuildId) : getSelectedBuild;
+    return {
+      project: {
+        name: "acme",
+        lastBuildOnBranch: lastBuildOnBranch || selectedBuild,
       },
-    },
+      selectedBuild,
+      viewer: {
+        projectMembership: {
+          userCanReview,
+        },
+      },
+    };
   });
 };
 
@@ -155,26 +164,13 @@ type Story = StoryObj<typeof meta>;
 export const Loading = {
   parameters: {
     ...withGraphQLQuery("AddonVisualTestsBuild", (req, res, ctx) =>
-      res(ctx.status(200), ctx.data({}), ctx.delay("infinite"))
+      res(ctx.status(200), ctx.data({} as any), ctx.delay("infinite"))
     ),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304933&t=0rxMQnkxsVpVj1qy-4"
     ),
   },
 } satisfies Story;
-
-const pendingBuildNewStory = withTests(
-  { ...pendingBuild },
-  pendingTests.map((test) => ({
-    ...test,
-    result: TestResult.Added,
-    comparisons: test.comparisons.map((comparison) => ({
-      ...comparison,
-      result: ComparisonResult.Added,
-      baseCapture: null,
-    })),
-  }))
-);
 
 const newStoryNoTests = withTests({ ...pendingBuild }, []);
 
@@ -284,6 +280,40 @@ export const EmptyBranchLocalBuildCapturing = {
   },
 } satisfies Story;
 
+/** At this point, we should switch to the next build */
+export const EmptyBranchLocalBuildCapturedCurrentStory = {
+  parameters: {
+    ...withBuilds({
+      selectedBuild: undefined,
+      lastBuildOnBranch: withTests(pendingBuild, pendingTests),
+    }),
+  },
+  args: {
+    localBuildProgress: {
+      ...EmptyBranchLocalBuildCapturing.args.localBuildProgress,
+      buildProgressPercentage: 90,
+      stepProgress: {
+        ...EmptyBranchLocalBuildCapturing.args.localBuildProgress.stepProgress,
+        snapshot: {
+          ...EmptyBranchLocalBuildCapturing.args.localBuildProgress.stepProgress.snapshot,
+          numerator: 310,
+        },
+      },
+    },
+  },
+} satisfies Story;
+
+/** Complete builds should always be switched to */
+export const EmptyBranchCIBuildPending = {
+  parameters: {
+    ...withBuilds({
+      selectedBuild: undefined,
+      lastBuildOnBranch: withTests(pendingBuild, pendingTests),
+    }),
+  },
+  // In theory we might have a complete running build here, it should behave the same either way
+} satisfies Story;
+
 // There is a build, but this story is new (not on the build at all)
 export const StoryAddedNotInBuild: Story = {
   parameters: {
@@ -347,8 +377,11 @@ export const StoryAddedInSelectedBuild: Story = {
 export const StoryAddedInLastBuildOnBranchNotInSelected: Story = {
   parameters: {
     ...withBuilds({
-      selectedBuild: withTests(pendingBuild, []),
-      lastBuildOnBranch: withTests(pendingBuild, pendingTestsNewStory),
+      selectedBuild: (selectedBuildId) =>
+        selectedBuildId === "2"
+          ? withTests({ ...pendingBuild, id: "2" }, pendingTestsNewStory)
+          : withTests(pendingBuild, []),
+      lastBuildOnBranch: withTests({ ...pendingBuild, id: "2" }, pendingTestsNewStory),
     }),
   },
 };
@@ -437,40 +470,6 @@ export const BrowserAddedAndAccepted: Story = {
     }),
   },
 };
-
-/** At this point, we should switch to the next build */
-export const EmptyBranchLocalBuildCapturedCurrentStory = {
-  parameters: {
-    ...withBuilds({
-      selectedBuild: undefined,
-      lastBuildOnBranch: withTests(pendingBuild, pendingTests),
-    }),
-  },
-  args: {
-    localBuildProgress: {
-      ...EmptyBranchLocalBuildCapturing.args.localBuildProgress,
-      buildProgressPercentage: 90,
-      stepProgress: {
-        ...EmptyBranchLocalBuildCapturing.args.localBuildProgress.stepProgress,
-        snapshot: {
-          ...EmptyBranchLocalBuildCapturing.args.localBuildProgress.stepProgress.snapshot,
-          numerator: 310,
-        },
-      },
-    },
-  },
-} satisfies Story;
-
-/** Complete builds should always be switched to */
-export const EmptyBranchCIBuildPending = {
-  parameters: {
-    ...withBuilds({
-      selectedBuild: undefined,
-      lastBuildOnBranch: withTests(pendingBuild, pendingTests),
-    }),
-  },
-  // In theory we might have a complete running build here, it should behave the same either way
-} satisfies Story;
 
 export const NoChanges = {
   parameters: {
