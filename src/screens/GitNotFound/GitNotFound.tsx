@@ -1,13 +1,11 @@
-import { Code } from "@storybook/components";
 import { Icon, Link } from "@storybook/design-system";
 import { styled } from "@storybook/theming";
 import React from "react";
 
-import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
 import { Heading } from "../../components/Heading";
 import { VisualTestsIcon } from "../../components/icons/VisualTestsIcon";
-import { Col, Row, Section } from "../../components/layout";
+import { Section } from "../../components/layout";
 import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
 
@@ -45,13 +43,7 @@ export const GitNotFound = ({ gitInfoError }: GitNotFoundProps) => (
         </Text>
       </div>
       <InfoSection>
-        <Col>
-          <Icon icon="lock" />
-        </Col>
-        {/* <Col>
-          <b>Git not detected</b>
-          This addon requires Git to associate test results with commits and branches.
-        </Col> */}
+        <Icon icon="lock" />
         <InfoSectionText>
           <b>Git not detected</b>
           <br />

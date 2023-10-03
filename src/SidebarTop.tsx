@@ -107,7 +107,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
         content: {
           headline: "Git not detected",
           subHeadline:
-            "The visual tests addon requires Git to associate test results with commits and branches.",
+            "The visual tests addon requires Git to associate test results with commits and branches. Set up Git and restart storybook to continue.",
         },
         icon: {
           name: "lock",
