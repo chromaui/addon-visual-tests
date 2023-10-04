@@ -27,10 +27,11 @@ function managerEntries(entry: string[] = []) {
 // Uses a recursive setTimeout instead of setInterval to avoid overlapping async calls.
 const observeGitInfo = async (
   interval: number,
-  callback: (info: GitInfo, prevInfo: GitInfo) => void,
+  callback: (info: GitInfo, prevInfo?: GitInfo) => void,
   errorCallback: (e: Error) => void
 ) => {
-  let prev: GitInfo;
+  let prev: GitInfo | undefined;
+  let prevError: Error | undefined;
   let timer: NodeJS.Timeout | undefined;
   const act = async () => {
     try {
@@ -39,10 +40,16 @@ const observeGitInfo = async (
         callback(gitInfo, prev);
       }
       prev = gitInfo;
+      prevError = undefined;
       timer = setTimeout(act, interval);
     } catch (e: any) {
-      console.error(`Failed to fetch git info, with error:\n${e}`);
-      errorCallback(e);
+      if (prevError?.message !== e.message) {
+        console.error(`Failed to fetch git info, with error:\n${e}`);
+        errorCallback(e);
+      }
+      prev = undefined;
+      prevError = e;
+      timer = setTimeout(act, interval);
     }
   };
   act();
@@ -113,6 +120,7 @@ async function serverChannel(
   observeGitInfo(
     5000,
     (info) => {
+      gitInfoError.value = undefined;
       gitInfoState.value = info;
     },
     (error: Error) => {
