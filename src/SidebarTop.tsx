@@ -100,24 +100,6 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
     localBuildProgress?.changeCount,
   ]);
 
-  useEffect(() => {
-    if (gitInfoError?.message) {
-      addNotification({
-        id: `${ADDON_ID}/git-info-error`,
-        content: {
-          headline: "Git not detected",
-          subHeadline:
-            "The visual tests addon requires Git to associate test results with commits and branches. Set up Git and restart storybook to continue.",
-        },
-        icon: {
-          name: "lock",
-          color: "negative",
-        },
-        // @ts-expect-error SB needs a proper API for no link
-        link: undefined,
-      });
-    }
-  }, [addNotification, gitInfoError?.message]);
   const emit = useChannel({});
   const startBuild = () => emit(START_BUILD);
 
