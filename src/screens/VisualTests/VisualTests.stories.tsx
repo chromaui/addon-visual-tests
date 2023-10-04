@@ -239,6 +239,26 @@ export const EmptyBranchLocalBuildUploading = {
   },
 } satisfies Story;
 
+export const NoStoryBuildRunningBuildFailed: Story = {
+  args: {
+    localBuildProgress: {
+      ...INITIAL_BUILD_PAYLOAD,
+      currentStep: "error",
+      originalError: new Error("Something failed"),
+      formattedError: "🚨 Something failed!!",
+    },
+  },
+  parameters: {
+    ...withBuilds({
+      selectedBuild: undefined,
+      lastBuildOnBranch: undefined,
+    }),
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=3305-114569&mode=design&t=OKHjqJzqTsOx3IXJ-0"
+    ),
+  },
+};
+
 /** This story should maintain the "no build" UI with a progress bar */
 export const EmptyBranchLocalBuildCapturing = {
   parameters: {
