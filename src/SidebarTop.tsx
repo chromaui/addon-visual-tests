@@ -4,13 +4,7 @@ import pluralize from "pluralize";
 import React, { useEffect, useRef } from "react";
 
 import { SidebarTopButton } from "./components/SidebarTopButton";
-import {
-  ADDON_ID,
-  GIT_INFO_ERROR,
-  IS_OUTDATED,
-  LOCAL_BUILD_PROGRESS,
-  START_BUILD,
-} from "./constants";
+import { ADDON_ID, IS_OUTDATED, LOCAL_BUILD_PROGRESS, START_BUILD } from "./constants";
 import { LocalBuildProgress } from "./types";
 import { useAddonState } from "./useAddonState/manager";
 import { useAccessToken } from "./utils/graphQLClient";
@@ -30,8 +24,6 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
   const [isOutdated] = useAddonState<boolean>(IS_OUTDATED);
   const [localBuildProgress] = useAddonState<LocalBuildProgress>(LOCAL_BUILD_PROGRESS);
   const isRunning = !!localBuildProgress && localBuildProgress.currentStep !== "complete";
-
-  const [gitInfoError] = useAddonState<Error>(GIT_INFO_ERROR);
 
   const lastStep = useRef(localBuildProgress?.currentStep);
   useEffect(() => {
@@ -103,7 +95,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
   const emit = useChannel({});
   const startBuild = () => emit(START_BUILD);
 
-  if (!projectId || isLoggedIn === false || gitInfoError) {
+  if (!projectId || isLoggedIn === false) {
     return null;
   }
 
