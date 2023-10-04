@@ -1,3 +1,16 @@
+# v0.0.99 (Wed Oct 04 2023)
+
+#### 🐛 Bug Fix
+
+- Add a UI state for an error on the first build [#95](https://github.com/chromaui/addon-visual-tests/pull/95) ([@tmeasday](https://github.com/tmeasday) [@weeksling](https://github.com/weeksling))
+
+#### Authors: 2
+
+- Matthew Weeks ([@weeksling](https://github.com/weeksling))
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.98 (Wed Sep 27 2023)
 
 #### 🐛 Bug Fix
