@@ -1,3 +1,15 @@
+# v0.0.100 (Wed Oct 04 2023)
+
+#### 🐛 Bug Fix
+
+- git is required for visual test addon via chromatic cli [#126](https://github.com/chromaui/addon-visual-tests/pull/126) ([@weeksling](https://github.com/weeksling))
+
+#### Authors: 1
+
+- Matthew Weeks ([@weeksling](https://github.com/weeksling))
+
+---
+
 # v0.0.99 (Wed Oct 04 2023)
 
 #### 🐛 Bug Fix
