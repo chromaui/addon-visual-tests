@@ -41,7 +41,7 @@ const observeGitInfo = async (
       prev = gitInfo;
       timer = setTimeout(act, interval);
     } catch (e: any) {
-      console.error("getGitInfo failed. Ending loop.", e);
+      console.error(`Failed to fetch git info, with error:\n${e}`);
       errorCallback(e);
     }
   };
