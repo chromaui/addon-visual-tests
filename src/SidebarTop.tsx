@@ -64,8 +64,8 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
           subHeadline: localBuildProgress.errorCount
             ? `Encountered ${pluralize("component error", localBuildProgress.errorCount, true)}`
             : localBuildProgress.changeCount
-              ? `Found ${pluralize("change", localBuildProgress.changeCount, true)}`
-              : "No visual changes detected",
+            ? `Found ${pluralize("change", localBuildProgress.changeCount, true)}`
+            : "No visual changes detected",
         },
         icon: {
           name: "passed",
