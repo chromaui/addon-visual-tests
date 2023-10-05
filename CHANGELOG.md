@@ -1,3 +1,15 @@
+# v0.0.102 (Thu Oct 05 2023)
+
+#### 🐛 Bug Fix
+
+- Refactor uses of `useDialog` to pass memoized callbacks [#125](https://github.com/chromaui/addon-visual-tests/pull/125) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.101 (Thu Oct 05 2023)
 
 #### 🐛 Bug Fix
