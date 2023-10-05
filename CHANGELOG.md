@@ -1,3 +1,15 @@
+# v0.0.101 (Thu Oct 05 2023)
+
+#### 🐛 Bug Fix
+
+- fix docs link for visual test requirements [#127](https://github.com/chromaui/addon-visual-tests/pull/127) ([@weeksling](https://github.com/weeksling))
+
+#### Authors: 1
+
+- Matthew Weeks ([@weeksling](https://github.com/weeksling))
+
+---
+
 # v0.0.100 (Wed Oct 04 2023)
 
 #### 🐛 Bug Fix
