@@ -1,3 +1,16 @@
+# v0.0.103 (Sun Oct 08 2023)
+
+#### 🐛 Bug Fix
+
+- Upgrade deprecated checkout@v2 to v3 [#128](https://github.com/chromaui/addon-visual-tests/pull/128) ([@chromatic-support](https://github.com/chromatic-support) [@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 2
+
+- [@chromatic-support](https://github.com/chromatic-support)
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v0.0.102 (Thu Oct 05 2023)
 
 #### 🐛 Bug Fix
