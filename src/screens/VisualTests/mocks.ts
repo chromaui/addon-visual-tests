@@ -276,6 +276,8 @@ export const uploadStep = {
   },
   upload: {
     startedAt: startTimes.upload,
+    numerator: 4_200_000,
+    denominator: 123_000_000,
   },
 };
 
@@ -298,6 +300,8 @@ export const snapshotStep = {
   },
   snapshot: {
     startedAt: startTimes.snapshot,
+    numerator: 25,
+    denominator: 50,
   },
 };
 
