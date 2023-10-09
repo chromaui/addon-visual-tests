@@ -1,5 +1,5 @@
 import { styled } from "@storybook/theming";
-import React, { useRef } from "react";
+import React, { useCallback, useRef } from "react";
 import { useClient } from "urql";
 
 import { BackButton } from "../../components/BackButton";
@@ -13,7 +13,7 @@ import { graphql } from "../../gql";
 import { Project } from "../../gql/graphql";
 import { getFetchOptions } from "../../utils/graphQLClient";
 import { fetchAccessToken, TokenExchangeParameters } from "../../utils/requestAccessToken";
-import { useChromaticDialog } from "../../utils/useChromaticDialog";
+import { DialogHandler, useChromaticDialog } from "../../utils/useChromaticDialog";
 import { useErrorNotification } from "../../utils/useErrorNotification";
 
 const Digits = styled.ol(({ theme }) => ({
@@ -69,54 +69,70 @@ export const Verify = ({
   // the Panel will close the Authentication screen)
   const accessToken = useRef<string>();
 
-  const [openDialog, closeDialog] = useChromaticDialog(async (event) => {
-    // If the user logs in as part of the grant process, don't close the dialog,
-    // instead redirect us back to where we were trying to go.
-    if (event.message === "login") {
-      openDialog(verificationUrl);
-    }
+  const openDialogRef = useRef<(url: string) => void>();
+  const closeDialogRef = useRef<() => void>();
+  const handler = useCallback<DialogHandler>(
+    async (event) => {
+      // If the user logs in as part of the grant process, don't close the dialog,
+      // instead redirect us back to where we were trying to go.
+      if (event.message === "login") {
+        openDialogRef.current?.(verificationUrl);
+      }
 
-    if (event.message === "grant") {
-      try {
-        const token = await fetchAccessToken(exchangeParameters);
-        if (!token) throw new Error("Failed to fetch an access token");
-        accessToken.current = token;
+      if (event.message === "grant") {
+        try {
+          const token = await fetchAccessToken(exchangeParameters);
+          if (!token) throw new Error("Failed to fetch an access token");
+          accessToken.current = token;
 
-        // Override token for this query but don't store it yet until they've created a project
-        const fetchOptions = getFetchOptions(token);
-        const { data } = await client.query(ProjectCountQuery, {}, { fetchOptions });
+          // Override token for this query but don't store it yet until they've created a project
+          const fetchOptions = getFetchOptions(token);
+          const { data } = await client.query(ProjectCountQuery, {}, { fetchOptions });
 
-        if (!data?.viewer) throw new Error("Failed to fetch initial project list");
+          if (!data?.viewer) throw new Error("Failed to fetch initial project list");
 
-        // The user has projects to choose from (or the project is already selected),
-        // so send them to pick one
-        if (data.viewer.projectCount > 0 || hasProjectId) {
-          setAccessToken(accessToken.current);
-          closeDialog();
-        } else {
-          // The user has no projects, so we need to get them to create one, then close the dialog
-          if (!data.viewer.accounts[0]) throw new Error("User has no accounts!");
-          if (!data.viewer.accounts[0].newProjectUrl) {
-            throw new Error("Unexpected missing project URL");
+          // The user has projects to choose from (or the project is already selected),
+          // so send them to pick one
+          if (data.viewer.projectCount > 0 || hasProjectId) {
+            setAccessToken(accessToken.current);
+            closeDialogRef.current?.();
+          } else {
+            // The user has no projects, so we need to get them to create one, then close the dialog
+            if (!data.viewer.accounts[0]) throw new Error("User has no accounts!");
+            if (!data.viewer.accounts[0].newProjectUrl) {
+              throw new Error("Unexpected missing project URL");
+            }
+
+            openDialogRef.current?.(data.viewer.accounts[0].newProjectUrl);
           }
-
-          openDialog(data.viewer.accounts[0].newProjectUrl);
+        } catch (err) {
+          onError("Login Error", err);
         }
-      } catch (err) {
-        onError("Login Error", err);
       }
-    }
 
-    if (event.message === "createdProject") {
-      if (!accessToken.current) {
-        onError("Unexpected missing access token", new Error());
-      } else {
-        setAccessToken(accessToken.current);
-        setCreatedProjectId(`Project:${event.projectId}`);
-        closeDialog();
+      if (event.message === "createdProject") {
+        if (!accessToken.current) {
+          onError("Unexpected missing access token", new Error());
+        } else {
+          setAccessToken(accessToken.current);
+          setCreatedProjectId(`Project:${event.projectId}`);
+          closeDialogRef.current?.();
+        }
       }
-    }
-  });
+    },
+    [
+      verificationUrl,
+      exchangeParameters,
+      client,
+      hasProjectId,
+      setAccessToken,
+      onError,
+      setCreatedProjectId,
+    ]
+  );
+  const [openDialog, closeDialog] = useChromaticDialog(handler);
+  openDialogRef.current = openDialog;
+  closeDialogRef.current = closeDialog;
 
   return (
     <Container>

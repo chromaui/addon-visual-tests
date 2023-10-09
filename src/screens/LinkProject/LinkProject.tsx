@@ -1,7 +1,7 @@
 import { Icons, Link } from "@storybook/components";
 import { Avatar, ListItem } from "@storybook/design-system";
 import { styled } from "@storybook/theming";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useQuery } from "urql";
 
 import { Container } from "../../components/Container";
@@ -11,7 +11,7 @@ import { Bar, Col, Section, Sections, Text } from "../../components/layout";
 import { Stack } from "../../components/Stack";
 import { graphql } from "../../gql";
 import type { Account, Project, SelectProjectsQueryQuery } from "../../gql/graphql";
-import { useChromaticDialog } from "../../utils/useChromaticDialog";
+import { DialogHandler, useChromaticDialog } from "../../utils/useChromaticDialog";
 
 const SelectProjectsQuery = graphql(/* GraphQL */ `
   query SelectProjectsQuery {
@@ -166,15 +166,20 @@ function SelectProject({
     [onSelectProjectId, setSelectingProject]
   );
 
-  const [openDialog, closeDialog] = useChromaticDialog(async (event) => {
-    if (event.message === "createdProject") {
-      // We don't know the project token yet, so we need to wait until it comes back on the query
-      // longer be necessary once we don't write tokens any more
-      // (https://linear.app/chromaui/issue/AP-3383/generate-an-app-token-for-each-build-rather-than-writing-project-token)
-      rerunProjectsQuery();
-      setCreatedProjectId(event.projectId);
-    }
-  });
+  const handler = useCallback<DialogHandler>(
+    async (event) => {
+      if (event.message === "createdProject") {
+        // We don't know the project token yet, so we need to wait until it comes back on the query
+        // longer be necessary once we don't write tokens any more
+        // (https://linear.app/chromaui/issue/AP-3383/generate-an-app-token-for-each-build-rather-than-writing-project-token)
+        rerunProjectsQuery();
+        setCreatedProjectId(event.projectId);
+      }
+    },
+    [rerunProjectsQuery, setCreatedProjectId]
+  );
+
+  const [openDialog, closeDialog] = useChromaticDialog(handler);
 
   // Once we find the project we created just above, close the dialog and select it
   const createdProject =

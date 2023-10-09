@@ -60,7 +60,7 @@ export const VisualTests = ({
   // The user can choose when to change story (via sidebar) and build (via opting into new builds)
   const [selectedBuildInfo, setSelectedBuildInfo] = useState<SelectedBuildInfo>({ storyId });
 
-  const [{ data, error, operation }, rerun] = useQuery({
+  const [{ data, error: queryError, operation }, rerunQuery] = useQuery({
     query: QueryBuild,
     variables: {
       projectId,
@@ -83,9 +83,9 @@ export const VisualTests = ({
 
   // Poll for updates
   useEffect(() => {
-    const interval = setInterval(rerun, 5000);
+    const interval = setInterval(rerunQuery, 5000);
     return () => clearInterval(interval);
-  }, [rerun]);
+  }, [rerunQuery]);
 
   const { userCanReview = false } = data?.viewer?.projectMembership || {};
 
@@ -105,7 +105,7 @@ export const VisualTests = ({
         if (reviewError) {
           throw reviewError;
         }
-        rerun();
+        rerunQuery();
       } catch (err) {
         if (err instanceof Error) {
           addNotification({
@@ -126,7 +126,7 @@ export const VisualTests = ({
         }
       }
     },
-    [addNotification, rerun, reviewTest]
+    [addNotification, rerunQuery, reviewTest]
   );
 
   const onAccept = useCallback(
@@ -218,10 +218,10 @@ export const VisualTests = ({
     [canSwitchToLastBuildOnBranch, lastBuildOnBranch?.id, storyId]
   );
 
-  return !selectedBuildHasCorrectBranch || !selectedBuild || storyDataIsStale || error ? (
+  return !selectedBuildHasCorrectBranch || !selectedBuild || storyDataIsStale || queryError ? (
     <NoBuild
       {...{
-        error,
+        queryError,
         hasData: !!data && !storyDataIsStale,
         hasSelectedBuild: !!selectedBuildHasCorrectBranch && !!selectedBuild,
         startDevBuild,

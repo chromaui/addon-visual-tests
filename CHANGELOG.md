@@ -1,3 +1,65 @@
+# v0.0.103 (Sun Oct 08 2023)
+
+#### 🐛 Bug Fix
+
+- Upgrade deprecated checkout@v2 to v3 [#128](https://github.com/chromaui/addon-visual-tests/pull/128) ([@chromatic-support](https://github.com/chromatic-support) [@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 2
+
+- [@chromatic-support](https://github.com/chromatic-support)
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.102 (Thu Oct 05 2023)
+
+#### 🐛 Bug Fix
+
+- Refactor uses of `useDialog` to pass memoized callbacks [#125](https://github.com/chromaui/addon-visual-tests/pull/125) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
+# v0.0.101 (Thu Oct 05 2023)
+
+#### 🐛 Bug Fix
+
+- fix docs link for visual test requirements [#127](https://github.com/chromaui/addon-visual-tests/pull/127) ([@weeksling](https://github.com/weeksling))
+
+#### Authors: 1
+
+- Matthew Weeks ([@weeksling](https://github.com/weeksling))
+
+---
+
+# v0.0.100 (Wed Oct 04 2023)
+
+#### 🐛 Bug Fix
+
+- git is required for visual test addon via chromatic cli [#126](https://github.com/chromaui/addon-visual-tests/pull/126) ([@weeksling](https://github.com/weeksling))
+
+#### Authors: 1
+
+- Matthew Weeks ([@weeksling](https://github.com/weeksling))
+
+---
+
+# v0.0.99 (Wed Oct 04 2023)
+
+#### 🐛 Bug Fix
+
+- Add a UI state for an error on the first build [#95](https://github.com/chromaui/addon-visual-tests/pull/95) ([@tmeasday](https://github.com/tmeasday) [@weeksling](https://github.com/weeksling))
+
+#### Authors: 2
+
+- Matthew Weeks ([@weeksling](https://github.com/weeksling))
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.98 (Wed Sep 27 2023)
 
 #### 🐛 Bug Fix
