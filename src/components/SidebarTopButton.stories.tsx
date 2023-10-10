@@ -1,6 +1,7 @@
 import { action } from "@storybook/addon-actions";
 import type { Meta, StoryObj } from "@storybook/react";
 import { screen, userEvent, within } from "@storybook/testing-library";
+import isChromatic from "chromatic/isChromatic";
 import React, { ComponentProps, useEffect, useState } from "react";
 
 import { INITIAL_BUILD_PAYLOAD } from "../buildSteps";
@@ -36,6 +37,7 @@ export const Outdated: Story = {
 const WithProgress = (props: ComponentProps<typeof SidebarTopButton>) => {
   const [buildProgressPercentage, setProgress] = useState(20);
   useEffect(() => {
+    if (isChromatic()) return () => {};
     const interval = setInterval(() => {
       setProgress((p) => (p < 100 ? p + 1 : 0));
     }, 300);
