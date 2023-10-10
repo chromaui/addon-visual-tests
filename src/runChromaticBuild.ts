@@ -188,7 +188,7 @@ export const runChromaticBuild = async (
       experimental_onTaskProgress: onStartOrProgress(localBuildProgress, timeout),
       experimental_onTaskComplete: onCompleteOrError(localBuildProgress, timeout),
       experimental_onTaskError: onCompleteOrError(localBuildProgress, timeout),
-      experimental_abortSignal: abortController.signal,
+      experimental_abortSignal: abortController?.signal,
     },
   });
 };
