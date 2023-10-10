@@ -57,7 +57,7 @@ const ParentGrid = styled.div(({ theme }) => ({
 const HeaderSection = styled.div(({ theme }) => ({
   gridArea: "header",
   position: "sticky",
-  zIndex: 10,
+  zIndex: 1,
   top: 0,
   background: theme.background.app,
 }));
@@ -71,7 +71,7 @@ const MainSection = styled.div(({ theme }) => ({
 const FooterSection = styled.div(({ theme }) => ({
   gridArea: "footer",
   position: "sticky",
-  zIndex: 10,
+  zIndex: 1,
   bottom: 0,
   borderTop: `1px solid ${theme.appBorderColor}`,
   background: theme.background.app,
