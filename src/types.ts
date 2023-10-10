@@ -56,7 +56,7 @@ export type LocalBuildProgress = {
 
   // Possibly this should be a type exported by the CLI -- these correspond to tasks
   /** The step of the build process we have reached */
-  currentStep: KnownStep | "error" | "complete";
+  currentStep: KnownStep | "aborted" | "complete" | "error";
 
   /** Number of visual changes detected */
   changeCount?: number;

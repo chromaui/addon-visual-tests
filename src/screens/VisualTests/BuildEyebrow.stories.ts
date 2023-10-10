@@ -1,4 +1,5 @@
 import { action } from "@storybook/addon-actions";
+import { expect } from "@storybook/jest";
 import type { Meta, StoryObj } from "@storybook/react";
 import { fireEvent, within } from "@storybook/testing-library";
 
@@ -11,6 +12,7 @@ import { BuildEyebrow } from "./BuildEyebrow";
 const meta = {
   args: {
     branch: "feature",
+    dismissBuildError: action("dismissBuildError"),
     switchToLastBuildOnBranch: action("switchToLastBuildOnBranch"),
   },
   component: BuildEyebrow,
@@ -28,6 +30,13 @@ const expandEyebrow = playAll(async ({ canvasElement }) => {
   const canvas = within(canvasElement);
   const button = await canvas.findByRole("button");
   await fireEvent.click(button);
+});
+
+const dismissEyebrow = playAll(async ({ args, canvasElement }) => {
+  const canvas = within(canvasElement);
+  const button = await canvas.findByRole("button");
+  await fireEvent.click(button);
+  await expect(args.dismissBuildError).toHaveBeenCalled();
 });
 
 export const Initialize: Story = {
@@ -64,6 +73,18 @@ export const Complete: Story = {
   args: buildProgressStories.Complete.args,
   parameters: buildProgressStories.Complete.parameters,
   play: expandEyebrow,
+};
+
+export const Error: Story = {
+  args: buildProgressStories.Error.args,
+  parameters: buildProgressStories.Error.parameters,
+  play: dismissEyebrow,
+};
+
+export const Aborted: Story = {
+  args: buildProgressStories.Aborted.args,
+  parameters: buildProgressStories.Aborted.parameters,
+  play: dismissEyebrow,
 };
 
 export const NewBuildRunning: Story = {

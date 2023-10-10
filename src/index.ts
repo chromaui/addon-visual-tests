@@ -10,8 +10,9 @@ import {
   LOCAL_BUILD_PROGRESS,
   PROJECT_INFO,
   START_BUILD,
+  STOP_BUILD,
 } from "./constants";
-import { runChromaticBuild } from "./runChromaticBuild";
+import { runChromaticBuild, stopChromaticBuild } from "./runChromaticBuild";
 import { GitInfoPayload, LocalBuildProgress, ProjectInfoPayload } from "./types";
 import { useAddonState } from "./useAddonState/server";
 import { updateChromaticConfig } from "./utils/updateChromaticConfig";
@@ -110,6 +111,8 @@ async function serverChannel(
     const { projectToken } = projectInfoState.value || {};
     await runChromaticBuild(localBuildProgress, { projectToken });
   });
+
+  channel.on(STOP_BUILD, stopChromaticBuild);
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const gitInfoState = useAddonState<GitInfoPayload>(channel, GIT_INFO);

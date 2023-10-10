@@ -14,6 +14,8 @@ import { useAddonState } from "./useAddonState/server";
 
 const ESTIMATED_PROGRESS_INTERVAL = 2000;
 
+let abortController: AbortController | undefined;
+
 const getBuildStepData = (
   task: TaskName,
   previousBuildProgress?: LocalBuildProgress["previousBuildProgress"]
@@ -123,25 +125,25 @@ export const onCompleteOrError =
 
     const { buildProgressPercentage, stepProgress } = localBuildProgress.value;
 
-    if (isKnownStep(ctx.task)) {
-      stepProgress[ctx.task] = {
-        ...stepProgress[ctx.task],
-        completedAt: Date.now(),
-      };
-    }
-
     if (error) {
       localBuildProgress.value = {
         buildId: ctx.announcedBuild?.id,
         branch: ctx.git?.branch,
         buildProgressPercentage,
-        currentStep: "error",
+        currentStep: abortController?.signal.aborted ? "aborted" : "error",
         stepProgress,
         formattedError: error.formattedError,
         originalError: error.originalError,
         previousBuildProgress: stepProgress,
       };
       return;
+    }
+
+    if (isKnownStep(ctx.task)) {
+      stepProgress[ctx.task] = {
+        ...stepProgress[ctx.task],
+        completedAt: Date.now(),
+      };
     }
 
     if (ctx.task === "snapshot") {
@@ -169,6 +171,9 @@ export const runChromaticBuild = async (
   // Timeout is defined here so it's shared between all handlers
   let timeout: ReturnType<typeof setTimeout> | undefined;
 
+  abortController?.abort();
+  abortController = new AbortController();
+
   await run({
     // Currently we have to have these flags.
     // We should move the checks to after flags have been parsed into options.
@@ -183,6 +188,11 @@ export const runChromaticBuild = async (
       experimental_onTaskProgress: onStartOrProgress(localBuildProgress, timeout),
       experimental_onTaskComplete: onCompleteOrError(localBuildProgress, timeout),
       experimental_onTaskError: onCompleteOrError(localBuildProgress, timeout),
+      experimental_abortSignal: abortController?.signal,
     },
   });
+};
+
+export const stopChromaticBuild = () => {
+  abortController?.abort(new Error("Build canceled from Storybook"));
 };
