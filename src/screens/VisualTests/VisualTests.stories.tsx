@@ -591,6 +591,15 @@ export const Pending = {
   },
 } satisfies Story;
 
+export const FirstBuildOnProject = {
+  parameters: {
+    ...withBuilds({
+      selectedBuild: withTests({ ...acceptedBuild, number: 1 }, acceptedTests),
+      lastBuildOnBranch: undefined,
+    }),
+  },
+};
+
 export const NoPermission = {
   parameters: {
     ...withBuilds({

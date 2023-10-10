@@ -212,6 +212,9 @@ export const SnapshotComparison = ({
   const { isInProgress } = testSummary;
   const { selectedTest, selectedComparison } = testControls;
 
+  // This works for the very first build, but it is possible that the first build failed, and the second build is the first successful build with all tests accepted.
+  const isFirstBuild = selectedBuild?.number === 1;
+
   // isNewStory is when the story itself is added and all tests should also be added
   const isNewStory = tests.every(
     ({ result, status }) => result === TestResult.Added && status !== TestStatus.Accepted
@@ -252,10 +255,20 @@ export const SnapshotComparison = ({
 
       <MainSection>
         {isInProgress && <Loader />}
-        {!isInProgress && isNewStory && (
+        {!isInProgress && isNewStory && !isFirstBuild && (
           <Warning>
             <WarningText>
               New story found. Accept this snapshot as a test baseline.{" "}
+              <Link href="https://www.chromatic.com/docs/branching-and-baselines">
+                Learn More »
+              </Link>
+            </WarningText>
+          </Warning>
+        )}
+        {!isInProgress && isFirstBuild && (
+          <Warning>
+            <WarningText>
+              First build on this project. Baseline created and auto-accepted.{" "}
               <Link href="https://www.chromatic.com/docs/branching-and-baselines">
                 Learn More »
               </Link>
