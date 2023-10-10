@@ -1,3 +1,16 @@
+# v0.0.105 (Tue Oct 10 2023)
+
+#### 🐛 Bug Fix
+
+- Allow build cancelation [#123](https://github.com/chromaui/addon-visual-tests/pull/123) ([@ghengeveld](https://github.com/ghengeveld) [@chromatic-support](https://github.com/chromatic-support))
+
+#### Authors: 2
+
+- [@chromatic-support](https://github.com/chromatic-support)
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v0.0.104 (Tue Oct 10 2023)
 
 #### 🐛 Bug Fix
