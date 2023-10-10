@@ -12,7 +12,6 @@ import {
   within,
 } from "@storybook/testing-library";
 import React from "react";
-import { satisfies } from "semver";
 
 import { INITIAL_BUILD_PAYLOAD } from "../../buildSteps";
 import type {
