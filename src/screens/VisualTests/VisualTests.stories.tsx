@@ -1,9 +1,7 @@
-import type { ResultOf, VariablesOf } from "@graphql-typed-document-node/core";
+import { VariablesOf } from "@graphql-typed-document-node/core";
 import { action } from "@storybook/addon-actions";
 import { expect } from "@storybook/jest";
-import type { API, State } from "@storybook/manager-api";
-import { ManagerContext } from "@storybook/manager-api";
-import type { Decorator, Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react";
 import {
   findByRole,
   findByTestId,
@@ -13,20 +11,22 @@ import {
   waitFor,
   within,
 } from "@storybook/testing-library";
-import { getOperationAST } from "graphql";
-import { graphql } from "msw";
 import React from "react";
-import { TypedDocumentNode } from "urql";
+import { satisfies } from "semver";
 
 import { INITIAL_BUILD_PAYLOAD } from "../../buildSteps";
 import type {
   LastBuildOnBranchBuildFieldsFragment,
+  MakeOptional,
   SelectedBuildFieldsFragment,
-  StoryTestFieldsFragment,
 } from "../../gql/graphql";
 import { Browser, ComparisonResult, TestResult, TestStatus } from "../../gql/graphql";
 import { panelModes } from "../../modes";
-import { SelectedBuildWithTests } from "../../types";
+import {
+  withGraphQLMutationParameters,
+  withGraphQLQueryParameters,
+  withGraphQLQueryResultParameters,
+} from "../../utils/gqlStoryHelpers";
 import { storyWrapper } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
 import { makeComparison, makeTest, makeTests } from "../../utils/storyData";
@@ -48,45 +48,11 @@ import {
   pendingTestsNewMode,
   pendingTestsNewStory,
   startedBuild,
+  withTests,
 } from "./mocks";
 import { VisualTests } from "./VisualTests";
 
 const browsers = [Browser.Chrome, Browser.Safari];
-
-const withManagerApi: Decorator = (Story, { argsByTarget }) => (
-  <ManagerContext.Provider
-    value={{
-      api: { addNotification: argsByTarget["manager-api"].addNotification } as API,
-      state: {} as State,
-    }}
-  >
-    <Story />
-  </ManagerContext.Provider>
-);
-
-const withGraphQLQuery = <TQuery extends TypedDocumentNode<any, any>>(
-  ...args: Parameters<typeof graphql.query<TQuery, VariablesOf<TQuery>>>
-) => ({
-  msw: {
-    handlers: [graphql.query<TQuery, VariablesOf<TQuery>>(...args)],
-  },
-});
-
-function withGraphQLQueryResult<TQuery extends TypedDocumentNode<any, any>>(
-  query: TQuery,
-  result: (variables: VariablesOf<TQuery>) => ResultOf<TQuery>
-) {
-  const queryName = getOperationAST(query)?.name?.value;
-  if (queryName)
-    return withGraphQLQuery(queryName, (req, res, ctx) => res(ctx.data(result(req.variables))));
-  throw new Error(`Couldn't determine query name from query`);
-}
-
-const withGraphQLMutation = (...args: Parameters<typeof graphql.mutation>) => ({
-  msw: {
-    handlers: [graphql.mutation(...args)],
-  },
-});
 
 const withBuilds = ({
   lastBuildOnBranch,
@@ -99,7 +65,7 @@ const withBuilds = ({
   lastBuildOnBranch?: LastBuildOnBranchBuildFieldsFragment;
   userCanReview?: boolean;
 }) => {
-  return withGraphQLQueryResult(QueryBuild, ({ selectedBuildId }) => {
+  return withGraphQLQueryResultParameters(QueryBuild, ({ selectedBuildId }) => {
     const selectedBuild =
       typeof getSelectedBuild === "function" ? getSelectedBuild(selectedBuildId) : getSelectedBuild;
     return {
@@ -117,27 +83,62 @@ const withBuilds = ({
   });
 };
 
-const withTests = <T extends SelectedBuildWithTests>(
-  build: T,
-  fullTests: StoryTestFieldsFragment[]
-) => ({
-  ...build,
-  testsForStatus: { nodes: fullTests },
-  testsForStory: { nodes: fullTests },
-});
+// Map the input args to result of the AddonVisualTestsBuild query
+type LastOrSelectedBuildFragment = SelectedBuildFieldsFragment &
+  LastBuildOnBranchBuildFieldsFragment;
+type SelectedBuildInput =
+  | {
+      /** Choose the selected build from these based on selectedBuildId */
+      selectedBuilds?: LastOrSelectedBuildFragment[];
+    }
+  | {
+      /** Note the id of the selected build needs to match the selectedBuildId */
+      selectedBuild?: LastOrSelectedBuildFragment;
+    };
+type QueryInput = SelectedBuildInput & {
+  lastBuildOnBranch?: LastOrSelectedBuildFragment;
+  userCanReview?: boolean;
+};
+function mapQuery(
+  { lastBuildOnBranch, userCanReview = true, ...input }: QueryInput,
+  { selectedBuildId }: VariablesOf<typeof QueryBuild>
+) {
+  const possibleSelectedBuilds =
+    ("selectedBuild" in input && input.selectedBuild && [input.selectedBuild]) ||
+    ("selectedBuilds" in input && input.selectedBuilds) ||
+    [];
+  if (lastBuildOnBranch) possibleSelectedBuilds.push(lastBuildOnBranch);
+  const selectedBuild = possibleSelectedBuilds.find((b) => b.id === selectedBuildId);
 
+  console.log({ possibleSelectedBuilds, lastBuildOnBranch, selectedBuild, selectedBuildId });
+  return {
+    project: {
+      name: "acme",
+      lastBuildOnBranch: lastBuildOnBranch || selectedBuild,
+    },
+    selectedBuild,
+    viewer: {
+      projectMembership: {
+        userCanReview,
+      },
+    },
+  };
+}
+
+type StoryArgs = Parameters<typeof VisualTests>[0] & {
+  addNotification: () => void;
+  $graphql?: { AddonVisualTestsBuild: QueryInput };
+};
 const meta = {
   title: "screens/VisualTests/VisualTests",
   component: VisualTests,
-  decorators: [storyWrapper, withManagerApi],
-  parameters: {
-    ...withBuilds({ selectedBuild: passedBuild }),
-    chromatic: {
-      modes: panelModes,
-    },
-  },
+  decorators: [storyWrapper],
+  parameters: { chromatic: { modes: panelModes } },
   argTypes: {
     addNotification: { type: "function", target: "manager-api" },
+    $graphql: {
+      AddonVisualTestsBuild: { map: mapQuery },
+    },
   },
   args: {
     gitInfo: {
@@ -155,15 +156,16 @@ const meta = {
     setOutdated: action("setOutdated"),
     updateBuildStatus: action("updateBuildStatus") as any,
     addNotification: action("addNotification"),
+    $graphql: { AddonVisualTestsBuild: {} },
   },
-} satisfies Meta<Parameters<typeof VisualTests>[0] & { addNotification: () => void }>;
+} satisfies Meta<StoryArgs>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<MakeOptional<StoryArgs, keyof typeof meta.args>>;
 
 export const Loading = {
   parameters: {
-    ...withGraphQLQuery("AddonVisualTestsBuild", (req, res, ctx) =>
+    ...withGraphQLQueryParameters("AddonVisualTestsBuild", (req, res, ctx) =>
       res(ctx.status(200), ctx.data({} as any), ctx.delay("infinite"))
     ),
     ...withFigmaDesign(
@@ -172,21 +174,18 @@ export const Loading = {
   },
 } satisfies Story;
 
-const newStoryNoTests = withTests({ ...pendingBuild }, []);
-
 export const GraphQLError = {
   parameters: {
-    ...withGraphQLQuery("AddonVisualTestsBuild", (req, res, ctx) =>
+    ...withGraphQLQueryParameters("AddonVisualTestsBuild", (req, res, ctx) =>
       res(ctx.status(200), ctx.errors([{ message: "Something went wrong on the server" }]))
     ),
   },
 } satisfies Story;
 
 export const EmptyBranch = {
-  parameters: {
-    ...withBuilds({ selectedBuild: undefined }),
-  },
-  render: ({ ...args }) => {
+  // @ts-expect-error Type conflict due to us explicitly defining `StoryArgs` above,
+  // as it cannot be auto-inferred from meta
+  render: (args: typeof meta.args) => {
     // custom render for mapping `updateBuildStatus` to a function which is mocked, but returns data instead of a function
     return (
       <VisualTests
@@ -214,6 +213,7 @@ export const EmptyBranchStartedLocalBuild = {
       },
     },
   },
+  // @ts-expect-error as above
 } satisfies Story;
 
 export const EmptyBranchLocalBuildUploading = {
@@ -233,9 +233,10 @@ export const EmptyBranchLocalBuildUploading = {
       },
     },
   },
+  // @ts-expect-error as above
 } satisfies Story;
 
-export const NoStoryBuildRunningBuildFailed: Story = {
+export const NoStoryBuildRunningBuildFailed = {
   args: {
     localBuildProgress: {
       ...INITIAL_BUILD_PAYLOAD,
@@ -245,15 +246,11 @@ export const NoStoryBuildRunningBuildFailed: Story = {
     },
   },
   parameters: {
-    ...withBuilds({
-      selectedBuild: undefined,
-      lastBuildOnBranch: undefined,
-    }),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=3305-114569&mode=design&t=OKHjqJzqTsOx3IXJ-0"
     ),
   },
-};
+} satisfies Story;
 
 /** This story should maintain the "no build" UI with a progress bar */
 export const EmptyBranchLocalBuildCapturing = {
@@ -282,13 +279,12 @@ export const EmptyBranchLocalBuildCapturing = {
 
 /** At this point, we should switch to the next build */
 export const EmptyBranchLocalBuildCapturedCurrentStory = {
-  parameters: {
-    ...withBuilds({
-      selectedBuild: undefined,
-      lastBuildOnBranch: withTests(pendingBuild, pendingTests),
-    }),
-  },
   args: {
+    $graphql: {
+      AddonVisualTestsBuild: {
+        lastBuildOnBranch: withTests(pendingBuild, pendingTests),
+      },
+    },
     localBuildProgress: {
       ...EmptyBranchLocalBuildCapturing.args.localBuildProgress,
       buildProgressPercentage: 90,
@@ -305,35 +301,31 @@ export const EmptyBranchLocalBuildCapturedCurrentStory = {
 
 /** Complete builds should always be switched to */
 export const EmptyBranchCIBuildPending = {
-  parameters: {
-    ...withBuilds({
-      selectedBuild: undefined,
-      lastBuildOnBranch: withTests(pendingBuild, pendingTests),
-    }),
+  args: {
+    $graphql: EmptyBranchLocalBuildCapturedCurrentStory.args.$graphql,
   },
   // In theory we might have a complete running build here, it should behave the same either way
 } satisfies Story;
 
 // There is a build, but this story is new (not on the build at all)
-export const StoryAddedNotInBuild: Story = {
-  parameters: {
-    ...withBuilds({ selectedBuild: newStoryNoTests }),
-    ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=1898-562751&mode=design&t=ciag0nGKx2OGmoSR-4"
-    ),
-  },
-};
-
-export const StoryAddedNotInBuildStarting: Story = {
-  parameters: {
-    ...withBuilds({
-      selectedBuild: newStoryNoTests,
-    }),
-    ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=1898-562751&mode=design&t=ciag0nGKx2OGmoSR-4"
-    ),
-  },
+export const StoryAddedNotInBuild = {
   args: {
+    $graphql: {
+      AddonVisualTestsBuild: {
+        selectedBuild: withTests({ ...pendingBuild }, []),
+      },
+    },
+  },
+  parameters: {
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=1898-562751&mode=design&t=ciag0nGKx2OGmoSR-4"
+    ),
+  },
+} satisfies Story;
+
+export const StoryAddedNotInBuildStarting = {
+  args: {
+    $graphql: StoryAddedNotInBuild.args?.$graphql,
     localBuildProgress: {
       buildProgressPercentage: 1,
       currentStep: "initialize",
@@ -343,16 +335,21 @@ export const StoryAddedNotInBuildStarting: Story = {
       },
     },
   },
-};
-
-export const StoryAddedNotInBuildCompletedLocalProgressIsOnSelectedBuild: Story = {
   parameters: {
-    ...withBuilds({
-      selectedBuild: withTests({ ...pendingBuild, id: "Build:shared-id" }, []),
-      lastBuildOnBranch: withTests(pendingBuild, pendingTestsNewStory),
-    }),
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=1898-562751&mode=design&t=ciag0nGKx2OGmoSR-4"
+    ),
   },
+} satisfies Story;
+
+export const StoryAddedNotInBuildCompletedLocalProgressIsOnSelectedBuild = {
   args: {
+    $graphql: {
+      AddonVisualTestsBuild: {
+        lastBuildOnBranch: withTests(pendingBuild, pendingTestsNewStory),
+        selectedBuild: withTests({ ...pendingBuild, id: "Build:shared-id" }, []),
+      },
+    },
     localBuildProgress: {
       ...INITIAL_BUILD_PAYLOAD,
       buildId: "shared-id",
@@ -360,51 +357,57 @@ export const StoryAddedNotInBuildCompletedLocalProgressIsOnSelectedBuild: Story 
       currentStep: "complete",
     },
   },
-};
+} satisfies Story;
 
-export const StoryAddedInSelectedBuild: Story = {
+export const StoryAddedInSelectedBuild = {
+  args: {
+    $graphql: {
+      AddonVisualTestsBuild: {
+        lastBuildOnBranch: withTests(pendingBuild, pendingTestsNewStory),
+      },
+    },
+  },
   parameters: {
-    ...withBuilds({
-      selectedBuild: withTests(pendingBuild, pendingTestsNewStory),
-    }),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=1898-562751&mode=design&t=ciag0nGKx2OGmoSR-4"
     ),
   },
-};
+} satisfies Story;
 
-// This case isn't handled
-export const StoryAddedInLastBuildOnBranchNotInSelected: Story = {
-  parameters: {
-    ...withBuilds({
-      selectedBuild: (selectedBuildId) =>
-        selectedBuildId === "2"
-          ? withTests({ ...pendingBuild, id: "2" }, pendingTestsNewStory)
-          : withTests(pendingBuild, []),
-      lastBuildOnBranch: withTests({ ...pendingBuild, id: "2" }, pendingTestsNewStory),
-    }),
+export const StoryAddedInLastBuildOnBranchNotInSelected = {
+  args: {
+    $graphql: {
+      AddonVisualTestsBuild: {
+        lastBuildOnBranch: withTests({ ...pendingBuild, id: "2" }, pendingTestsNewStory),
+        selectedBuild: withTests(pendingBuild, []),
+      },
+    },
   },
-};
+} satisfies Story;
 
 export const StoryAddedAndAccepted = {
-  parameters: {
-    ...withBuilds({
-      selectedBuild: withTests(pendingBuild, [
-        makeTest({
-          result: TestResult.Added,
-          status: TestStatus.Accepted,
-          comparisonResults: [ComparisonResult.Added],
-        }),
-      ]),
-    }),
+  args: {
+    $graphql: {
+      AddonVisualTestsBuild: {
+        lastBuildOnBranch: withTests(pendingBuild, [
+          makeTest({
+            result: TestResult.Added,
+            status: TestStatus.Accepted,
+            comparisonResults: [ComparisonResult.Added],
+          }),
+        ]),
+      },
+    },
   },
-};
+} satisfies Story;
 
-export const ModeAddedInSelectedBuild: Story = {
-  parameters: {
-    ...withBuilds({
-      selectedBuild: withTests(pendingBuild, pendingTestsNewMode),
-    }),
+export const ModeAddedInSelectedBuild = {
+  args: {
+    $graphql: {
+      AddonVisualTestsBuild: {
+        lastBuildOnBranch: withTests(pendingBuild, pendingTestsNewMode),
+      },
+    },
   },
   play: playAll(async ({ canvasElement, canvasIndex }) => {
     const canvas = within(canvasElement);
@@ -413,30 +416,34 @@ export const ModeAddedInSelectedBuild: Story = {
     const items = await screen.findAllByText("1200px");
     await userEvent.click(items[canvasIndex]);
   }),
-};
+} satisfies Story;
 
 export const ModeAddedAndAccepted = {
-  parameters: {
-    ...withBuilds({
-      selectedBuild: withTests(pendingBuild, [
-        makeTest({
-          result: TestResult.Added,
-          status: TestStatus.Accepted,
-          comparisonResults: [ComparisonResult.Added],
-        }),
-        makeTest({
-          result: TestResult.Equal,
-        }),
-      ]),
-    }),
+  args: {
+    $graphql: {
+      AddonVisualTestsBuild: {
+        lastBuildOnBranch: withTests(pendingBuild, [
+          makeTest({
+            result: TestResult.Added,
+            status: TestStatus.Accepted,
+            comparisonResults: [ComparisonResult.Added],
+          }),
+          makeTest({
+            result: TestResult.Equal,
+          }),
+        ]),
+      },
+    },
   },
-};
+} satisfies Story;
 
-export const BrowserAddedInSelectedBuild: Story = {
-  parameters: {
-    ...withBuilds({
-      selectedBuild: withTests(pendingBuild, pendingTestsNewBrowser),
-    }),
+export const BrowserAddedInSelectedBuild = {
+  args: {
+    $graphql: {
+      AddonVisualTestsBuild: {
+        lastBuildOnBranch: withTests(pendingBuild, pendingTestsNewBrowser),
+      },
+    },
   },
   play: playAll(async ({ canvasElement, canvasIndex }) => {
     const canvas = within(canvasElement);
@@ -445,37 +452,43 @@ export const BrowserAddedInSelectedBuild: Story = {
     const items = await screen.findAllByText("Safari");
     await userEvent.click(items[canvasIndex]);
   }),
-};
+} satisfies Story;
 
 export const BrowserAddedAndAccepted: Story = {
-  parameters: {
-    ...withBuilds({
-      selectedBuild: withTests(
-        pendingBuild,
-        makeTests({
-          browsers: [Browser.Chrome, Browser.Safari],
-          viewports: [
-            {
-              viewport: 480,
-              result: TestResult.Changed,
-              status: TestStatus.Accepted,
-              comparisons: [
-                makeComparison({ result: ComparisonResult.Added, browser: Browser.Chrome }),
-                makeComparison({ result: ComparisonResult.Equal, browser: Browser.Safari }),
-              ],
-            },
-          ],
-        })
-      ),
-    }),
+  args: {
+    $graphql: {
+      AddonVisualTestsBuild: {
+        lastBuildOnBranch: withTests(
+          pendingBuild,
+          makeTests({
+            browsers: [Browser.Chrome, Browser.Safari],
+            viewports: [
+              {
+                viewport: 480,
+                result: TestResult.Changed,
+                status: TestStatus.Accepted,
+                comparisons: [
+                  makeComparison({ result: ComparisonResult.Added, browser: Browser.Chrome }),
+                  makeComparison({ result: ComparisonResult.Equal, browser: Browser.Safari }),
+                ],
+              },
+            ],
+          })
+        ),
+      },
+    },
   },
 };
 
 export const NoChanges = {
+  args: {
+    $graphql: {
+      AddonVisualTestsBuild: {
+        lastBuildOnBranch: withTests(passedBuild, passedTests),
+      },
+    },
+  },
   parameters: {
-    ...withBuilds({
-      selectedBuild: withTests(passedBuild, passedTests),
-    }),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304933&t=0rxMQnkxsVpVj1qy-4"
     ),
@@ -483,8 +496,9 @@ export const NoChanges = {
 } satisfies Story;
 
 /** We just switched branches so the selected build is out of date */
-export const NoChangesOnWrongBranch: Story = {
+export const NoChangesOnWrongBranch = {
   args: {
+    ...NoChanges.args,
     gitInfo: { ...meta.args.gitInfo, branch: "new-branch" },
   },
   parameters: {
@@ -493,7 +507,7 @@ export const NoChangesOnWrongBranch: Story = {
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304933&t=0rxMQnkxsVpVj1qy-4"
     ),
   },
-};
+} satisfies Story;
 
 /**
  * We've started a new build but it's not done yet
@@ -501,11 +515,11 @@ export const NoChangesOnWrongBranch: Story = {
 export const PendingLocalBuildStarting = {
   args: {
     ...EmptyBranchStartedLocalBuild.args,
-  },
-  parameters: {
-    ...withBuilds({
-      selectedBuild: withTests(pendingBuild, pendingTests),
-    }),
+    $graphql: {
+      AddonVisualTestsBuild: {
+        lastBuildOnBranch: withTests(pendingBuild, pendingTests),
+      },
+    },
   },
 } satisfies Story;
 
@@ -513,14 +527,14 @@ export const PendingLocalBuildStarting = {
  * As above but we started the next build
  */
 export const PendingLocalBuildCapturing = {
-  parameters: {
-    ...withBuilds({
-      selectedBuild: withTests(pendingBuild, pendingTests),
-      lastBuildOnBranch: withTests({ ...startedBuild, id: "2" }, inProgressTests),
-    }),
-  },
   args: {
-    ...EmptyBranchLocalBuildCapturing.args,
+    ...EmptyBranchStartedLocalBuild.args,
+    $graphql: {
+      AddonVisualTestsBuild: {
+        lastBuildOnBranch: withTests({ ...startedBuild, id: "2" }, inProgressTests),
+        selectedBuild: withTests(pendingBuild, pendingTests),
+      },
+    },
   },
 } satisfies Story;
 
@@ -528,12 +542,16 @@ export const PendingLocalBuildCapturing = {
  * The next build is snapshotting and has captured this story
  */
 export const PendingLocalBuildCapturedStory = {
-  ...PendingLocalBuildCapturing,
+  args: {
+    ...EmptyBranchStartedLocalBuild.args,
+    $graphql: {
+      AddonVisualTestsBuild: {
+        lastBuildOnBranch: withTests({ ...startedBuild, id: "2" }, pendingTests),
+        selectedBuild: withTests(pendingBuild, pendingTests),
+      },
+    },
+  },
   parameters: {
-    ...withBuilds({
-      selectedBuild: withTests(pendingBuild, pendingTests),
-      lastBuildOnBranch: withTests({ ...startedBuild, id: "2" }, pendingTests),
-    }),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2303-374529&t=qjmuGHxoALrVuhvX-0"
     ),
@@ -544,15 +562,19 @@ export const PendingLocalBuildCapturedStory = {
  * The next build is snapshotting but hasn't yet reached this story (we didn't start it)
  */
 export const PendingCIBuildInProgress = {
-  parameters: PendingLocalBuildCapturing.parameters,
+  args: {
+    $graphql: PendingLocalBuildCapturing.args.$graphql,
+  },
 } satisfies Story;
 
 /**
  * The next build is snapshotting and has captured this story
  */
 export const PendingCIBuildCapturedStory = {
+  args: {
+    $graphql: PendingLocalBuildCapturedStory.args.$graphql,
+  },
   parameters: {
-    ...PendingLocalBuildCapturedStory.parameters,
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2303-374529&t=qjmuGHxoALrVuhvX-0"
     ),
@@ -560,15 +582,21 @@ export const PendingCIBuildCapturedStory = {
 } satisfies Story;
 
 export const Pending = {
+  args: {
+    $graphql: {
+      AddonVisualTestsBuild: {
+        lastBuildOnBranch: withTests(pendingBuild, pendingTests),
+      },
+    },
+  },
   parameters: {
-    ...withBuilds({
-      selectedBuild: withTests(pendingBuild, pendingTests),
-    }),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304718&t=0rxMQnkxsVpVj1qy-4"
     ),
   },
-  render: ({ ...args }) => {
+  // @ts-expect-error Type conflict due to us explicitly defining `StoryArgs` above,
+  // as it cannot be auto-inferred from meta
+  render: ({ ...args }: typeof meta.args) => {
     // custom render for mapping `updateBuildStatus` to a function which is mocked, but returns data instead of a function
     return (
       <VisualTests
@@ -591,11 +619,15 @@ export const Pending = {
 } satisfies Story;
 
 export const NoPermission = {
+  args: {
+    $graphql: {
+      AddonVisualTestsBuild: {
+        lastBuildOnBranch: withTests(pendingBuild, pendingTests),
+        userCanReview: false,
+      },
+    },
+  },
   parameters: {
-    ...withBuilds({
-      selectedBuild: withTests(pendingBuild, pendingTests),
-      userCanReview: false,
-    }),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2127-449276&mode=design&t=gIM40WT0324ynPQD-4"
     ),
@@ -603,11 +635,15 @@ export const NoPermission = {
 } satisfies Story;
 
 export const NoPermissionRunning = {
+  args: {
+    $graphql: {
+      AddonVisualTestsBuild: {
+        lastBuildOnBranch: withTests(startedBuild, inProgressTests),
+        userCanReview: false,
+      },
+    },
+  },
   parameters: {
-    ...withBuilds({
-      selectedBuild: withTests(startedBuild, inProgressTests),
-      userCanReview: false,
-    }),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2127-449276&mode=design&t=gIM40WT0324ynPQD-4"
     ),
@@ -615,11 +651,15 @@ export const NoPermissionRunning = {
 } satisfies Story;
 
 export const NoPermissionNoChanges = {
+  args: {
+    $graphql: {
+      AddonVisualTestsBuild: {
+        lastBuildOnBranch: withTests(passedBuild, passedTests),
+        userCanReview: false,
+      },
+    },
+  },
   parameters: {
-    ...withBuilds({
-      selectedBuild: withTests(passedBuild, passedTests),
-      userCanReview: false,
-    }),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2127-449276&mode=design&t=gIM40WT0324ynPQD-4"
     ),
@@ -627,10 +667,8 @@ export const NoPermissionNoChanges = {
 } satisfies Story;
 
 export const ToggleSnapshot: Story = {
+  args: { ...Pending.args },
   parameters: {
-    ...withBuilds({
-      selectedBuild: withTests(pendingBuild, pendingTests),
-    }),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=1782%3A446732&mode=design&t=krpUfPW0tIoADqu5-1"
     ),
@@ -642,17 +680,11 @@ export const ToggleSnapshot: Story = {
 } satisfies Story;
 
 export const Accepting = {
+  args: { ...Pending.args },
   parameters: {
-    msw: {
-      handlers: [
-        ...withBuilds({
-          selectedBuild: withTests(pendingBuild, pendingTests),
-        }).msw.handlers,
-        ...withGraphQLMutation("ReviewTest", (req, res, ctx) =>
-          res(ctx.status(200), ctx.data({}), ctx.delay("infinite"))
-        ).msw.handlers,
-      ],
-    },
+    ...withGraphQLMutationParameters("ReviewTest", (req, res, ctx) =>
+      res(ctx.status(200), ctx.data({}), ctx.delay("infinite"))
+    ),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304718&t=0rxMQnkxsVpVj1qy-4"
     ),
@@ -664,17 +696,11 @@ export const Accepting = {
 } satisfies Story;
 
 export const AcceptingFailed = {
+  args: { ...Accepting.args },
   parameters: {
-    msw: {
-      handlers: [
-        ...withBuilds({
-          selectedBuild: withTests(pendingBuild, pendingTests),
-        }).msw.handlers,
-        ...withGraphQLMutation("ReviewTest", (req, res, ctx) =>
-          res(ctx.status(200), ctx.errors([{ message: "Accepting failed" }]))
-        ).msw.handlers,
-      ],
-    },
+    ...withGraphQLMutationParameters("ReviewTest", (req, res, ctx) =>
+      res(ctx.status(200), ctx.errors([{ message: "Accepting failed" }]))
+    ),
   },
   play: playAll(async ({ canvasElement, argsByTarget }) => {
     const button = await findByRole(canvasElement, "button", { name: "Accept" });
@@ -686,10 +712,14 @@ export const AcceptingFailed = {
 } satisfies Story;
 
 export const Accepted = {
+  args: {
+    $graphql: {
+      AddonVisualTestsBuild: {
+        lastBuildOnBranch: withTests(acceptedBuild, acceptedTests),
+      },
+    },
+  },
   parameters: {
-    ...withBuilds({
-      selectedBuild: withTests(acceptedBuild, acceptedTests),
-    }),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-305053&t=0rxMQnkxsVpVj1qy-4"
     ),
@@ -699,20 +729,22 @@ export const Accepted = {
 export const Skipped = {
   args: {
     storyId: "button--tertiary",
+    $graphql: {
+      AddonVisualTestsBuild: {
+        lastBuildOnBranch: withTests(pendingBuild, [
+          makeTest({
+            id: "31",
+            status: TestStatus.Passed,
+            result: TestResult.Skipped,
+            browsers,
+            viewport: 1200,
+            storyId: "button--tertiary",
+          }),
+        ]),
+      },
+    },
   },
   parameters: {
-    ...withBuilds({
-      selectedBuild: withTests(pendingBuild, [
-        makeTest({
-          id: "31",
-          status: TestStatus.Passed,
-          result: TestResult.Skipped,
-          browsers,
-          viewport: 1200,
-          storyId: "button--tertiary",
-        }),
-      ]),
-    }),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2255-42087&t=a8NRPgQk3kXMyxqZ-0"
     ),
@@ -720,10 +752,14 @@ export const Skipped = {
 } satisfies Story;
 
 export const CaptureError = {
+  args: {
+    $graphql: {
+      AddonVisualTestsBuild: {
+        lastBuildOnBranch: withTests(brokenBuild, brokenTests),
+      },
+    },
+  },
   parameters: {
-    ...withBuilds({
-      selectedBuild: withTests(brokenBuild, brokenTests),
-    }),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-305053&t=0rxMQnkxsVpVj1qy-4"
     ),
@@ -731,10 +767,14 @@ export const CaptureError = {
 } satisfies Story;
 
 export const InteractionFailure = {
+  args: {
+    $graphql: {
+      AddonVisualTestsBuild: {
+        lastBuildOnBranch: withTests(brokenBuild, interactionFailureTests),
+      },
+    },
+  },
   parameters: {
-    ...withBuilds({
-      selectedBuild: withTests(brokenBuild, interactionFailureTests),
-    }),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-305053&t=0rxMQnkxsVpVj1qy-4"
     ),
@@ -742,38 +782,44 @@ export const InteractionFailure = {
 } satisfies Story;
 
 export const InfrastructureError = {
-  parameters: {
-    ...withBuilds({
-      selectedBuild: failedBuild,
-    }),
+  args: {
+    $graphql: {
+      AddonVisualTestsBuild: {
+        lastBuildOnBranch: failedBuild,
+      },
+    },
   },
 } satisfies Story;
 
 /** The new build is newer than the story build (but we didn't run it) */
 export const CIBuildNewer = {
-  parameters: {
-    ...withBuilds({
-      selectedBuild: withTests(pendingBuild, pendingTests),
-      lastBuildOnBranch: {
-        ...withTests(pendingBuild, pendingTests),
-        id: "2",
-        committedAt: meta.args.gitInfo.committedAt,
+  args: {
+    $graphql: {
+      AddonVisualTestsBuild: {
+        selectedBuild: withTests(pendingBuild, pendingTests),
+        lastBuildOnBranch: {
+          ...withTests(pendingBuild, pendingTests),
+          id: "2",
+          committedAt: meta.args.gitInfo.committedAt,
+        },
       },
-    }),
+    },
   },
 } satisfies Story;
 
 /** The new build is newer than the story build and the git info */
 export const CIBuildNewerThanCommit = {
-  parameters: {
-    ...withBuilds({
-      selectedBuild: withTests(pendingBuild, pendingTests),
-      lastBuildOnBranch: {
-        ...withTests(pendingBuild, pendingTests),
-        id: "2",
-        committedAt: meta.args.gitInfo.committedAt + 1,
+  args: {
+    $graphql: {
+      AddonVisualTestsBuild: {
+        selectedBuild: withTests(pendingBuild, pendingTests),
+        lastBuildOnBranch: {
+          ...withTests(pendingBuild, pendingTests),
+          id: "2",
+          committedAt: meta.args.gitInfo.committedAt + 1,
+        },
       },
-    }),
+    },
   },
 } satisfies Story;
 

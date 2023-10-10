@@ -23,7 +23,7 @@ import { BuildEyebrow } from "./BuildEyebrow";
 import { FragmentStoryTestFields } from "./graphql";
 import { RenderSettings } from "./RenderSettings";
 import { SnapshotComparison } from "./SnapshotComparison";
-import { Warnings } from "./Warnings";
+import { Warnings } from "../../utils/Warnings";
 
 interface BuildResultsProps {
   branch: string;

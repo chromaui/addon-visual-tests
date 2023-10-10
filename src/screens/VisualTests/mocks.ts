@@ -8,10 +8,21 @@ import {
   CompletedBuild,
   PublishedBuild,
   StartedBuild,
+  StoryTestFieldsFragment,
   TestResult,
   TestStatus,
 } from "../../gql/graphql";
+import { SelectedBuildWithTests } from "../../types";
 import { makeBrowserInfo, makeComparison, makeTest, makeTests } from "../../utils/storyData";
+
+export const withTests = <T extends SelectedBuildWithTests>(
+  build: T,
+  fullTests: StoryTestFieldsFragment[]
+) => ({
+  ...build,
+  testsForStatus: { nodes: fullTests },
+  testsForStory: { nodes: fullTests },
+});
 
 export const passedTests = makeTests({
   browsers: [Browser.Chrome, Browser.Safari],
