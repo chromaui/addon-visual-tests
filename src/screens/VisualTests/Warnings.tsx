@@ -1,9 +1,15 @@
 import { Icons } from "@storybook/components";
 import React from "react";
 
-import { Accordion, Accordions, CloseButton, CloseIcon, Heading } from "../components/Accordions";
-import { Badge } from "../components/Badge";
-import { Button } from "../components/Button";
+import {
+  Accordion,
+  Accordions,
+  CloseButton,
+  CloseIcon,
+  Heading,
+} from "../../components/Accordions";
+import { Badge } from "../../components/Badge";
+import { Button } from "../../components/Button";
 
 interface WarningsProps {
   onClose: () => void;
