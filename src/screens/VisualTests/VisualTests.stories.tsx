@@ -118,6 +118,7 @@ const meta = {
   },
   args: {
     setSelectedBuildInfo: action("setSelectedBuildInfo"),
+    dismissBuildError: action("dismissBuildError"),
     gitInfo: {
       userEmailHash: "xyz987",
       branch: "feature-branch",
@@ -623,6 +624,23 @@ export const PendingCIBuildCapturedStory = {
   },
   // Should behave the same as when the local build captures the current story
   play: PendingLocalBuildCapturedStory.play,
+} satisfies Story;
+
+/**
+ * Now what happens when the user actually clicks to change story?
+ */
+export const PendingCIBuildCapturedStoryAndUserChangedStory = {
+  args: {
+    selectedBuildInfo: { buildId: pendingBuild.id, storyId: "old--story" },
+    $graphql: PendingLocalBuildCapturedStory.args.$graphql,
+  },
+  parameters: {
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2303-374529&t=qjmuGHxoALrVuhvX-0"
+    ),
+  },
+  // In this case, we *should* switch to the new build
+  play: EmptyBranchLocalBuildCapturedCurrentStory.play,
 } satisfies Story;
 
 export const Pending = {
