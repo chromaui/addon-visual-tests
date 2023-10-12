@@ -118,6 +118,7 @@ const meta = {
   },
   args: {
     setSelectedBuildInfo: action("setSelectedBuildInfo"),
+    dismissBuildError: action("dismissBuildError"),
     gitInfo: {
       userEmailHash: "xyz987",
       branch: "feature-branch",
