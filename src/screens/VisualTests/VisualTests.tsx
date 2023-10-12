@@ -189,7 +189,6 @@ export const VisualTests = ({
     canSwitchToLastBuildOnBranch && testsForStatus ? testsToStatusUpdate(testsForStatus) : {};
 
   useEffect(() => {
-    // @ts-expect-error The return type of this function is wrong in the API, it should allow `null` values
     updateBuildStatus((state) => ({
       ...createEmptyStoryStatusUpdate(state),
       ...buildStatusUpdate,
