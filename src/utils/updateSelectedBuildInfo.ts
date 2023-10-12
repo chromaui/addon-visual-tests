@@ -15,6 +15,9 @@ export function updateSelectedBuildInfo(
     storyId: string;
   }
 ) {
+  // Never touch the selected build if we don't change story
+  if (oldSelectedBuildInfo?.storyId === storyId) return oldSelectedBuildInfo;
+
   if (!shouldSwitchToLastBuildOnBranch) {
     if (!oldSelectedBuildInfo) return undefined;
 
