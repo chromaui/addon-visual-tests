@@ -58,7 +58,7 @@ type LastOrSelectedBuildFragment = SelectedBuildFieldsFragment &
   LastBuildOnBranchBuildFieldsFragment;
 
 type QueryInput = {
-  /** If `lastBuildOnBranch` is unset, there will be no last build */
+  /** If `lastBuildOnBranch` is unset, there will be no last build on the branch */
   lastBuildOnBranch?: LastOrSelectedBuildFragment;
 
   /** If `selectedBuild` is unset, `lastBuildOnBranch` will be used *if* it matches `selectedBuildId` */
@@ -70,6 +70,10 @@ function mapQuery(
   { lastBuildOnBranch, selectedBuild: selectedBuildInput, userCanReview = true }: QueryInput,
   { selectedBuildId }: VariablesOf<typeof QueryBuild>
 ) {
+  if (selectedBuildInput && selectedBuildInput?.id !== selectedBuildId) {
+    throw new Error("Invalid story, selectedBuild does not match selectedBuildId");
+  }
+
   const selectedBuild =
     selectedBuildInput ??
     (lastBuildOnBranch?.id === selectedBuildId ? lastBuildOnBranch : undefined);
