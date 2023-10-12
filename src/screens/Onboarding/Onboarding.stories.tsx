@@ -1,14 +1,25 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { findByRole, userEvent } from "@storybook/testing-library";
 import { graphql, HttpResponse } from "msw";
 
+import { INITIAL_BUILD_PAYLOAD } from "../../buildSteps";
 import { panelModes } from "../../modes";
 import { storyWrapper } from "../../utils/graphQLClient";
+import { playAll } from "../../utils/playAll";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
 import { Onboarding } from "./Onboarding";
 
 const meta = {
   component: Onboarding,
   decorators: [storyWrapper],
+  args: {
+    queryError: undefined,
+    hasData: true,
+    hasSelectedBuild: false,
+    startDevBuild: () => { },
+    localBuildProgress: undefined,
+    branch: "main",
+  },
   parameters: {
     chromatic: {
       modes: panelModes,
@@ -45,18 +56,39 @@ export const Default: Story = {
 };
 
 export const InProgress: Story = {
+  args: {
+    localBuildProgress: {
+      ...INITIAL_BUILD_PAYLOAD,
+    },
+  },
   parameters: withFigmaDesign(
     "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318374&t=3EAIRe8423CpOQWY-4"
   ),
 };
 
 export const BaselineSaved: Story = {
+  args: {
+    localBuildProgress: {
+      ...INITIAL_BUILD_PAYLOAD,
+      buildProgressPercentage: 100,
+      currentStep: "complete",
+    },
+  },
   parameters: withFigmaDesign(
     "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318539&t=3EAIRe8423CpOQWY-4"
   ),
 };
 
 export const MakeAChange: Story = {
+  args: {
+    ...BaselineSaved.args,
+  },
+  play: playAll(async ({ canvasElement }) => {
+    const button = await findByRole(canvasElement, "button", {
+      name: "Catch a UI change",
+    });
+    await userEvent.click(button);
+  }),
   parameters: withFigmaDesign(
     "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318908&t=3EAIRe8423CpOQWY-4"
   ),
