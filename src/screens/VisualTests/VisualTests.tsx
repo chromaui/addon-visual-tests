@@ -29,8 +29,8 @@ const createEmptyStoryStatusUpdate = (state: API_StatusState) => {
 };
 
 interface VisualTestsProps {
-  selectedBuildId?: string;
-  setSelectedBuildId: (id: string) => void;
+  selectedBuildInfo?: SelectedBuildInfo;
+  setSelectedBuildInfo: ReturnType<typeof useState<SelectedBuildInfo>>[1];
   projectId: string;
   gitInfo: Pick<
     GitInfoPayload,
@@ -45,8 +45,8 @@ interface VisualTestsProps {
 }
 
 export const VisualTestsWithoutSelectedBuildId = ({
-  selectedBuildId,
-  setSelectedBuildId,
+  selectedBuildInfo,
+  setSelectedBuildInfo,
   localBuildProgress,
   startDevBuild,
   setAccessToken,
@@ -67,8 +67,8 @@ export const VisualTestsWithoutSelectedBuildId = ({
       branch: gitInfo.branch || "",
       ...(gitInfo.slug ? { slug: gitInfo.slug } : {}),
       gitUserEmailHash: gitInfo.userEmailHash,
-      selectedBuildId: selectedBuildId || "",
-      hasSelectedBuildId: !!selectedBuildId,
+      selectedBuildId: selectedBuildInfo?.buildId || "",
+      hasSelectedBuildId: !!selectedBuildInfo,
     },
   });
 
@@ -195,16 +195,23 @@ export const VisualTestsWithoutSelectedBuildId = ({
 
   const shouldSwitchToLastBuildOnBranch =
     canSwitchToLastBuildOnBranch && lastBuildOnBranchCompletedStory;
+
   // Ensure we are holding the right story build
   useEffect(() => {
-    if (shouldSwitchToLastBuildOnBranch) {
-      setSelectedBuildId(lastBuildOnBranch?.id);
-    }
-  }, [setSelectedBuildId, shouldSwitchToLastBuildOnBranch, lastBuildOnBranch?.id]);
+    setSelectedBuildInfo((oldSelectedBuildInfo) =>
+      updateSelectedBuildInfo(oldSelectedBuildInfo, {
+        shouldSwitchToLastBuildOnBranch,
+        lastBuildOnBranchId: lastBuildOnBranch?.id,
+        storyId,
+      })
+    );
+  }, [shouldSwitchToLastBuildOnBranch, lastBuildOnBranch?.id, storyId, setSelectedBuildInfo]);
 
   const switchToLastBuildOnBranch = useCallback(
-    () => canSwitchToLastBuildOnBranch && setSelectedBuildId(lastBuildOnBranch.id),
-    [setSelectedBuildId, canSwitchToLastBuildOnBranch, lastBuildOnBranch?.id]
+    () =>
+      canSwitchToLastBuildOnBranch &&
+      setSelectedBuildInfo({ buildId: lastBuildOnBranch.id, storyId }),
+    [setSelectedBuildInfo, canSwitchToLastBuildOnBranch, lastBuildOnBranch?.id, storyId]
   );
 
   return !selectedBuildHasCorrectBranch || !selectedBuild || storyDataIsStale || queryError ? (
@@ -244,14 +251,14 @@ export const VisualTestsWithoutSelectedBuildId = ({
 // selected build id in the stories and be super explicit about what happens when the
 // selected build & last build on branch are out of sync.
 //
-// If the selectedBuildId is internal state of the component it is harder to do this,
+// If the selectedBuildInfo is internal state of the component it is harder to do this,
 // as we need to change the query results over time.
 export const VisualTests = (
-  props: Omit<VisualTestsProps, "selectedBuildId" | "setSelectedBuildId">
+  props: Omit<VisualTestsProps, "selectedBuildInfo" | "setSelectedBuildInfo">
 ) => {
-  const [selectedBuildId, setSelectedBuildId] = useState<string>();
+  const [selectedBuildInfo, setSelectedBuildInfo] = useState<SelectedBuildInfo>();
 
   return (
-    <VisualTestsWithoutSelectedBuildId {...{ selectedBuildId, setSelectedBuildId, ...props }} />
+    <VisualTestsWithoutSelectedBuildId {...{ selectedBuildInfo, setSelectedBuildInfo, ...props }} />
   );
 };
