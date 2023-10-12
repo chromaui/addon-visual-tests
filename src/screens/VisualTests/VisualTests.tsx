@@ -154,12 +154,22 @@ export const VisualTestsWithoutSelectedBuildId = ({
     !!lastBuildOnBranch &&
     lastBuildOnBranchStoryTests.every(({ status }) => status !== TestStatus.InProgress);
 
+  // We may end up using the lastBuildOnBranch as selected build if we know we are about
+  // to switch to it.
+  const selectedBuildFromData = getFragment(FragmentSelectedBuildFields, data?.selectedBuild);
+
+  const selectedBuildHasStory =
+    selectedBuildFromData &&
+    "testsForStory" in selectedBuildFromData &&
+    selectedBuildFromData.testsForStory?.nodes?.length;
+
   // Before we set the storyInfo, we use the lastBuildOnBranch for story data if it's ready
-  const selectedBuild = getFragment(
-    FragmentSelectedBuildFields,
-    data?.selectedBuild ??
-      (lastBuildOnBranchCompletedStory ? data?.project?.lastBuildOnBranch : undefined)
-  );
+  const selectedBuild = selectedBuildHasStory
+    ? selectedBuildFromData
+    : getFragment(
+        FragmentSelectedBuildFields,
+        lastBuildOnBranchCompletedStory ? data?.project?.lastBuildOnBranch : undefined
+      );
 
   const selectedBuildHasCorrectBranch = selectedBuild?.branch === gitInfo.branch;
   // Currently only used by the sidebar button to show a blue dot ("build outdated")
@@ -195,19 +205,30 @@ export const VisualTestsWithoutSelectedBuildId = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(buildStatusUpdate), updateBuildStatus]);
 
+  // Should means "we'd like you to but we'll let you decide"
   const shouldSwitchToLastBuildOnBranch =
     canSwitchToLastBuildOnBranch && lastBuildOnBranchCompletedStory;
+
+  // Force means "we are going to change you to this build"
+  const forceSwitchToLastBuildOnBranch = shouldSwitchToLastBuildOnBranch && !selectedBuildHasStory;
 
   // Ensure we are holding the right story build
   useEffect(() => {
     setSelectedBuildInfo((oldSelectedBuildInfo) =>
       updateSelectedBuildInfo(oldSelectedBuildInfo, {
         shouldSwitchToLastBuildOnBranch,
+        forceSwitchToLastBuildOnBranch,
         lastBuildOnBranchId: lastBuildOnBranch?.id,
         storyId,
       })
     );
-  }, [shouldSwitchToLastBuildOnBranch, lastBuildOnBranch?.id, storyId, setSelectedBuildInfo]);
+  }, [
+    shouldSwitchToLastBuildOnBranch,
+    forceSwitchToLastBuildOnBranch,
+    lastBuildOnBranch?.id,
+    storyId,
+    setSelectedBuildInfo,
+  ]);
 
   const switchToLastBuildOnBranch = useCallback(
     () =>

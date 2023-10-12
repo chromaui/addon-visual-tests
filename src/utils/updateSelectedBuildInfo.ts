@@ -7,16 +7,20 @@ export function updateSelectedBuildInfo(
   oldSelectedBuildInfo: SelectedBuildInfo | undefined,
   {
     shouldSwitchToLastBuildOnBranch,
+    forceSwitchToLastBuildOnBranch,
     lastBuildOnBranchId,
     storyId,
   }: {
     shouldSwitchToLastBuildOnBranch: boolean;
+    forceSwitchToLastBuildOnBranch: boolean;
     lastBuildOnBranchId?: string;
     storyId: string;
   }
 ) {
   // Never touch the selected build if we don't change story
-  if (oldSelectedBuildInfo?.storyId === storyId) return oldSelectedBuildInfo;
+  if (oldSelectedBuildInfo?.storyId === storyId && !forceSwitchToLastBuildOnBranch) {
+    return oldSelectedBuildInfo;
+  }
 
   if (!shouldSwitchToLastBuildOnBranch) {
     if (!oldSelectedBuildInfo) return undefined;

@@ -373,10 +373,6 @@ export const StoryAddedInSelectedBuild = {
   },
 } satisfies Story;
 
-/**
- * Although this state doesn't immediately render the captured story (it probably should),
- * it should switch to the lastBuildOnBranch immediately.
- */
 export const StoryAddedInLastBuildOnBranchNotInSelected = {
   args: {
     selectedBuildInfo: { buildId: pendingBuild.id, storyId: meta.args.storyId },
