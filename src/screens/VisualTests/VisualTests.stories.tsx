@@ -353,14 +353,27 @@ export const StoryAddedInSelectedBuild = {
   },
 } satisfies Story;
 
+/**
+ * Although this state doesn't immediately render the captured story (it probably should),
+ * it should switch to the lastBuildOnBranch immediately.
+ */
 export const StoryAddedInLastBuildOnBranchNotInSelected = {
   args: {
+    selectedBuildId: pendingBuild.id,
     $graphql: {
       AddonVisualTestsBuild: {
         lastBuildOnBranch: withTests({ ...pendingBuild, id: "2" }, pendingTestsNewStory),
         selectedBuild: withTests(pendingBuild, []),
       },
     },
+  },
+  play: async ({ args, argsByTarget }) => {
+    const graphqlArgs = argsByTarget.graphql?.$graphql as typeof args.$graphql; // We need to type argsByTarget
+    await waitFor(() => {
+      expect(args.setSelectedBuildId).toHaveBeenCalledWith(
+        graphqlArgs?.AddonVisualTestsBuild?.lastBuildOnBranch?.id
+      );
+    });
   },
 } satisfies Story;
 
@@ -518,7 +531,7 @@ export const PendingLocalBuildStarting = {
  */
 export const PendingLocalBuildCapturing = {
   args: {
-    ...EmptyBranchStartedLocalBuild.args,
+    ...EmptyBranchLocalBuildCapturing.args,
     selectedBuildId: pendingBuild.id,
     $graphql: {
       AddonVisualTestsBuild: {
@@ -534,7 +547,7 @@ export const PendingLocalBuildCapturing = {
  */
 export const PendingLocalBuildCapturedStory = {
   args: {
-    ...EmptyBranchStartedLocalBuild.args,
+    ...EmptyBranchLocalBuildCapturing.args,
     selectedBuildId: pendingBuild.id,
     $graphql: {
       AddonVisualTestsBuild: {
