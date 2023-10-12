@@ -10,7 +10,7 @@ export const isKnownStep = (
 
 export const hasProgressEvent = (task: TaskName) => ["upload", "snapshot"].includes(task);
 
-// Note this does not include the "complete" and "error" steps
+// Note this does not include the "aborted", "complete" and "error" steps
 export const BUILD_STEP_ORDER: KnownStep[] = [
   "initialize",
   "build",
@@ -90,6 +90,14 @@ export const BUILD_STEP_CONFIG: Record<
   },
 
   // These are special steps that are not part of the build process
+  aborted: {
+    key: "aborted",
+    emoji: "✋",
+    renderName: () => `Build canceled`,
+    renderProgress: () => `Build canceled`,
+    renderComplete: () => `Build canceled`,
+    estimateDuration: 0,
+  },
   complete: {
     key: "complete",
     emoji: "🎉",

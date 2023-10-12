@@ -10,6 +10,7 @@ import {
   IS_OUTDATED,
   LOCAL_BUILD_PROGRESS,
   START_BUILD,
+  STOP_BUILD,
 } from "./constants";
 import { LocalBuildProgress } from "./types";
 import { useAddonState } from "./useAddonState/manager";
@@ -29,7 +30,9 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
 
   const [isOutdated] = useAddonState<boolean>(IS_OUTDATED);
   const [localBuildProgress] = useAddonState<LocalBuildProgress>(LOCAL_BUILD_PROGRESS);
-  const isRunning = !!localBuildProgress && localBuildProgress.currentStep !== "complete";
+  const isRunning =
+    !!localBuildProgress &&
+    !["aborted", "complete", "error"].includes(localBuildProgress.currentStep);
 
   const [gitInfoError] = useAddonState<Error>(GIT_INFO_ERROR);
 
@@ -53,6 +56,23 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
         link: undefined,
       });
       setTimeout(() => clearNotification(`${ADDON_ID}/build-initialize`), 10_000);
+    }
+
+    if (localBuildProgress?.currentStep === "aborted") {
+      addNotification({
+        id: `${ADDON_ID}/build-aborted`,
+        content: {
+          headline: "Build canceled",
+          subHeadline: "Aborted by user.",
+        },
+        icon: {
+          name: "failed",
+          color: color.negative,
+        },
+        // @ts-expect-error SB needs a proper API for no link
+        link: undefined,
+      });
+      setTimeout(() => clearNotification(`${ADDON_ID}/build-aborted`), 10_000);
     }
 
     if (localBuildProgress?.currentStep === "complete") {
@@ -102,6 +122,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
 
   const emit = useChannel({});
   const startBuild = () => emit(START_BUILD);
+  const stopBuild = () => emit(STOP_BUILD);
 
   if (!projectId || isLoggedIn === false || gitInfoError) {
     return null;
@@ -113,6 +134,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
       isRunning={isRunning}
       localBuildProgress={localBuildProgress}
       startBuild={startBuild}
+      stopBuild={stopBuild}
     />
   );
 };

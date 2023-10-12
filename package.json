@@ -1,6 +1,6 @@
 {
   "name": "@chromaui/addon-visual-tests",
-  "version": "0.0.103",
+  "version": "0.0.105",
   "description": "Visual Testing addon with Chromatic",
   "engines": {
     "node": ">=16.0.0",
@@ -60,7 +60,7 @@
   "dependencies": {
     "@storybook/design-system": "^7.15.15",
     "@urql/exchange-auth": "^2.1.6",
-    "chromatic": "^7.2.0",
+    "chromatic": "^7.2.3",
     "date-fns": "^2.30.0",
     "filesize": "^10.0.12",
     "jsonfile": "^6.1.0",

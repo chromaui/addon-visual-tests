@@ -27,6 +27,7 @@ import { Warnings } from "./Warnings";
 
 interface BuildResultsProps {
   branch: string;
+  dismissBuildError: () => void;
   localBuildProgress?: LocalBuildProgress;
   selectedBuild: SelectedBuildFieldsFragment;
   storyId: string;
@@ -51,6 +52,7 @@ export const Warning = styled.div(({ theme }) => ({
 
 export const BuildResults = ({
   branch,
+  dismissBuildError,
   localBuildProgress,
   lastBuildOnBranch,
   lastBuildOnBranchCompletedStory,
@@ -99,6 +101,7 @@ export const BuildResults = ({
   const buildStatus = showBuildStatus && (
     <BuildEyebrow
       branch={branch}
+      dismissBuildError={dismissBuildError}
       localBuildProgress={
         localBuildProgressIsLastBuildOnBranch || isLocalBuildInProgress
           ? localBuildProgress

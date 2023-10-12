@@ -1,6 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { INITIAL_BUILD_PAYLOAD } from "../buildSteps";
+import {
+  buildStep,
+  completeStep,
+  initializeStep,
+  snapshotStep,
+  uploadStep,
+  verifyStep,
+} from "../screens/VisualTests/mocks";
 import { withFigmaDesign } from "../utils/withFigmaDesign";
 import { BuildProgressLabel } from "./BuildProgressLabel";
 
@@ -13,7 +21,10 @@ type Story = StoryObj<typeof meta>;
 
 export const Initialize: Story = {
   args: {
-    localBuildProgress: INITIAL_BUILD_PAYLOAD,
+    localBuildProgress: {
+      ...INITIAL_BUILD_PAYLOAD,
+      stepProgress: initializeStep,
+    },
   },
   parameters: withFigmaDesign(
     "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2892-73423&mode=design&t=gIM40WT0324ynPQD-4"
@@ -23,9 +34,10 @@ export const Initialize: Story = {
 export const Build: Story = {
   args: {
     localBuildProgress: {
-      ...INITIAL_BUILD_PAYLOAD,
+      ...Initialize.args.localBuildProgress,
       buildProgressPercentage: 8,
       currentStep: "build",
+      stepProgress: buildStep,
     },
   },
   parameters: withFigmaDesign(
@@ -36,17 +48,10 @@ export const Build: Story = {
 export const Upload: Story = {
   args: {
     localBuildProgress: {
-      ...INITIAL_BUILD_PAYLOAD,
+      ...Build.args.localBuildProgress,
       buildProgressPercentage: 25,
       currentStep: "upload",
-      stepProgress: {
-        ...INITIAL_BUILD_PAYLOAD.stepProgress,
-        upload: {
-          startedAt: Date.now() - 3000,
-          numerator: 4_200_000,
-          denominator: 123_000_000,
-        },
-      },
+      stepProgress: uploadStep,
     },
   },
   parameters: withFigmaDesign(
@@ -57,9 +62,10 @@ export const Upload: Story = {
 export const Verify: Story = {
   args: {
     localBuildProgress: {
-      ...INITIAL_BUILD_PAYLOAD,
+      ...Upload.args.localBuildProgress,
       buildProgressPercentage: 50,
       currentStep: "verify",
+      stepProgress: verifyStep,
     },
   },
   parameters: withFigmaDesign(
@@ -73,14 +79,7 @@ export const Snapshot: Story = {
       ...INITIAL_BUILD_PAYLOAD,
       buildProgressPercentage: 75,
       currentStep: "snapshot",
-      stepProgress: {
-        ...INITIAL_BUILD_PAYLOAD.stepProgress,
-        snapshot: {
-          startedAt: Date.now() - 5000,
-          numerator: 25,
-          denominator: 50,
-        },
-      },
+      stepProgress: snapshotStep,
     },
   },
   parameters: withFigmaDesign(
@@ -94,9 +93,32 @@ export const Complete: Story = {
       ...INITIAL_BUILD_PAYLOAD,
       currentStep: "complete",
       buildProgressPercentage: 100,
+      stepProgress: completeStep,
     },
   },
   parameters: withFigmaDesign(
     "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2892-74801&mode=design&t=gIM40WT0324ynPQD-4"
   ),
+};
+
+export const Error: Story = {
+  args: {
+    localBuildProgress: {
+      ...INITIAL_BUILD_PAYLOAD,
+      currentStep: "error",
+      buildProgressPercentage: 30,
+      stepProgress: buildStep,
+    },
+  },
+};
+
+export const Aborted: Story = {
+  args: {
+    localBuildProgress: {
+      ...INITIAL_BUILD_PAYLOAD,
+      currentStep: "aborted",
+      buildProgressPercentage: 50,
+      stepProgress: uploadStep,
+    },
+  },
 };
