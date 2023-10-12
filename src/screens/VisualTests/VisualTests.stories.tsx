@@ -340,6 +340,7 @@ export const StoryAddedNotInBuildStarting = {
 
 export const StoryAddedNotInBuildCompletedLocalProgressIsOnSelectedBuild = {
   args: {
+    selectedBuildInfo: { buildId: "Build:shared-id", storyId: meta.args.storyId },
     $graphql: {
       AddonVisualTestsBuild: {
         lastBuildOnBranch: withTests(pendingBuild, pendingTestsNewStory),
