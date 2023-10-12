@@ -153,7 +153,7 @@ const withManagerApi: Decorator = (Story, { argsByTarget }) => (
  * }
  */
 export const graphQLArgLoader: Loader = async ({ argTypes, argsByTarget, parameters }) => {
-  const handlers = Object.entries(argsByTarget.graphql.$graphql || []).map(
+  const handlers = Object.entries(argsByTarget.graphql?.$graphql || []).map(
     ([argName, inputResult]: [string, any]) =>
       graphql.query(argName, (req, res, ctx) => {
         const result = argTypes.$graphql[argName]?.map?.(inputResult, req.variables) ?? inputResult;

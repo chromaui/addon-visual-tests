@@ -49,41 +49,36 @@ import {
   startedBuild,
   withTests,
 } from "./mocks";
-import { VisualTests } from "./VisualTests";
+import { VisualTests, VisualTestsWithoutSelectedBuildId } from "./VisualTests";
 
 const browsers = [Browser.Chrome, Browser.Safari];
-// Map the input args to result of the AddonVisualTestsBuild query
+
+// A build that satisfies both the result of each part of the query. We just use
+// builds that satsify both to make our lives easier
 type LastOrSelectedBuildFragment = SelectedBuildFieldsFragment &
   LastBuildOnBranchBuildFieldsFragment;
-type SelectedBuildInput =
-  | {
-      /** Choose the selected build from these based on selectedBuildId */
-      selectedBuilds?: LastOrSelectedBuildFragment[];
-    }
-  | {
-      /** Note the id of the selected build needs to match the selectedBuildId */
-      selectedBuild?: LastOrSelectedBuildFragment;
-    };
-type QueryInput = SelectedBuildInput & {
+
+type QueryInput = {
+  /** If `lastBuildOnBranch` is unset, there will be no last build */
   lastBuildOnBranch?: LastOrSelectedBuildFragment;
+
+  /** If `selectedBuild` is unset, `lastBuildOnBranch` will be used *if* it matches `selectedBuildId` */
+  selectedBuild?: LastOrSelectedBuildFragment;
+
   userCanReview?: boolean;
 };
 function mapQuery(
-  { lastBuildOnBranch, userCanReview = true, ...input }: QueryInput,
+  { lastBuildOnBranch, selectedBuild: selectedBuildInput, userCanReview = true }: QueryInput,
   { selectedBuildId }: VariablesOf<typeof QueryBuild>
 ) {
-  const possibleSelectedBuilds =
-    ("selectedBuild" in input && input.selectedBuild && [input.selectedBuild]) ||
-    ("selectedBuilds" in input && input.selectedBuilds) ||
-    [];
-  if (lastBuildOnBranch) possibleSelectedBuilds.push(lastBuildOnBranch);
-  const selectedBuild = possibleSelectedBuilds.find((b) => b.id === selectedBuildId);
+  const selectedBuild =
+    selectedBuildInput ??
+    (lastBuildOnBranch?.id === selectedBuildId ? lastBuildOnBranch : undefined);
 
-  console.log({ possibleSelectedBuilds, lastBuildOnBranch, selectedBuild, selectedBuildId });
   return {
     project: {
       name: "acme",
-      lastBuildOnBranch: lastBuildOnBranch || selectedBuild,
+      lastBuildOnBranch,
     },
     selectedBuild,
     viewer: {
@@ -94,13 +89,13 @@ function mapQuery(
   };
 }
 
-type StoryArgs = Parameters<typeof VisualTests>[0] & {
+type StoryArgs = Parameters<typeof VisualTestsWithoutSelectedBuildId>[0] & {
   addNotification: () => void;
-  $graphql?: { AddonVisualTestsBuild: QueryInput };
+  $graphql?: { AddonVisualTestsBuild?: QueryInput };
 };
 const meta = {
   title: "screens/VisualTests/VisualTests",
-  component: VisualTests,
+  component: VisualTestsWithoutSelectedBuildId,
   decorators: [storyWrapper],
   parameters: { chromatic: { modes: panelModes } },
   argTypes: {
@@ -110,6 +105,7 @@ const meta = {
     },
   },
   args: {
+    setSelectedBuildId: action("setSelectedBuildId"),
     gitInfo: {
       userEmailHash: "xyz987",
       branch: "feature-branch",
@@ -133,6 +129,7 @@ export default meta;
 type Story = StoryObj<MakeOptional<StoryArgs, keyof typeof meta.args>>;
 
 export const Loading = {
+  args: { $graphql: {} },
   parameters: {
     ...withGraphQLQueryParameters("AddonVisualTestsBuild", (req, res, ctx) =>
       res(ctx.status(200), ctx.data({} as any), ctx.delay("infinite"))
@@ -144,6 +141,7 @@ export const Loading = {
 } satisfies Story;
 
 export const GraphQLError = {
+  args: { $graphql: {} },
   parameters: {
     ...withGraphQLQueryParameters("AddonVisualTestsBuild", (req, res, ctx) =>
       res(ctx.status(200), ctx.errors([{ message: "Something went wrong on the server" }]))
@@ -245,7 +243,10 @@ export const EmptyBranchLocalBuildCapturing = {
   },
 } satisfies Story;
 
-/** At this point, we should switch to the next build */
+/**
+ * As soon as we get a capture for the current story, we should switch to it, which both means
+ * rendering it in the UI, as well as switching the selected build to it.
+ */
 export const EmptyBranchLocalBuildCapturedCurrentStory = {
   args: {
     $graphql: {
@@ -265,6 +266,14 @@ export const EmptyBranchLocalBuildCapturedCurrentStory = {
       },
     },
   },
+  play: async ({ args, argsByTarget }) => {
+    const graphqlArgs = argsByTarget.graphql?.$graphql as typeof args.$graphql; // We need to type argsByTarget
+    await waitFor(() => {
+      expect(args.setSelectedBuildId).toHaveBeenCalledWith(
+        graphqlArgs?.AddonVisualTestsBuild?.lastBuildOnBranch?.id
+      );
+    });
+  },
 } satisfies Story;
 
 /** Complete builds should always be switched to */
@@ -272,12 +281,13 @@ export const EmptyBranchCIBuildPending = {
   args: {
     $graphql: EmptyBranchLocalBuildCapturedCurrentStory.args.$graphql,
   },
-  // In theory we might have a complete running build here, it should behave the same either way
+  play: EmptyBranchLocalBuildCapturedCurrentStory.play,
 } satisfies Story;
 
-// There is a build, but this story is new (not on the build at all)
+// There is a selected build, but this story is new (not on the build at all)
 export const StoryAddedNotInBuild = {
   args: {
+    selectedBuildId: pendingBuild.id,
     $graphql: {
       AddonVisualTestsBuild: {
         lastBuildOnBranch: withTests({ ...pendingBuild }, []),
@@ -293,7 +303,7 @@ export const StoryAddedNotInBuild = {
 
 export const StoryAddedNotInBuildStarting = {
   args: {
-    $graphql: StoryAddedNotInBuild.args?.$graphql,
+    ...StoryAddedNotInBuild.args,
     localBuildProgress: {
       buildProgressPercentage: 1,
       currentStep: "initialize",
@@ -329,6 +339,7 @@ export const StoryAddedNotInBuildCompletedLocalProgressIsOnSelectedBuild = {
 
 export const StoryAddedInSelectedBuild = {
   args: {
+    selectedBuildId: pendingBuild.id,
     $graphql: {
       AddonVisualTestsBuild: {
         lastBuildOnBranch: withTests(pendingBuild, pendingTestsNewStory),
@@ -355,6 +366,7 @@ export const StoryAddedInLastBuildOnBranchNotInSelected = {
 
 export const StoryAddedAndAccepted = {
   args: {
+    selectedBuildId: pendingBuild.id,
     $graphql: {
       AddonVisualTestsBuild: {
         lastBuildOnBranch: withTests(pendingBuild, [
@@ -371,6 +383,7 @@ export const StoryAddedAndAccepted = {
 
 export const ModeAddedInSelectedBuild = {
   args: {
+    selectedBuildId: pendingBuild.id,
     $graphql: {
       AddonVisualTestsBuild: {
         lastBuildOnBranch: withTests(pendingBuild, pendingTestsNewMode),
@@ -388,6 +401,7 @@ export const ModeAddedInSelectedBuild = {
 
 export const ModeAddedAndAccepted = {
   args: {
+    selectedBuildId: pendingBuild.id,
     $graphql: {
       AddonVisualTestsBuild: {
         lastBuildOnBranch: withTests(pendingBuild, [
@@ -407,6 +421,7 @@ export const ModeAddedAndAccepted = {
 
 export const BrowserAddedInSelectedBuild = {
   args: {
+    selectedBuildId: pendingBuild.id,
     $graphql: {
       AddonVisualTestsBuild: {
         lastBuildOnBranch: withTests(pendingBuild, pendingTestsNewBrowser),
@@ -424,6 +439,7 @@ export const BrowserAddedInSelectedBuild = {
 
 export const BrowserAddedAndAccepted: Story = {
   args: {
+    selectedBuildId: pendingBuild.id,
     $graphql: {
       AddonVisualTestsBuild: {
         lastBuildOnBranch: withTests(
@@ -450,6 +466,7 @@ export const BrowserAddedAndAccepted: Story = {
 
 export const NoChanges = {
   args: {
+    selectedBuildId: passedBuild.id,
     $graphql: {
       AddonVisualTestsBuild: {
         lastBuildOnBranch: withTests(passedBuild, passedTests),
@@ -466,9 +483,9 @@ export const NoChanges = {
 /** We just switched branches so the selected build is out of date */
 export const NoChangesOnWrongBranch = {
   args: {
+    selectedBuildId: passedBuild.id,
     $graphql: {
       AddonVisualTestsBuild: {
-        // FIXME: it doesn't currently work to do this
         selectedBuild: withTests(passedBuild, passedTests),
       },
     },
@@ -487,6 +504,7 @@ export const NoChangesOnWrongBranch = {
 export const PendingLocalBuildStarting = {
   args: {
     ...EmptyBranchStartedLocalBuild.args,
+    selectedBuildId: pendingBuild.id,
     $graphql: {
       AddonVisualTestsBuild: {
         lastBuildOnBranch: withTests(pendingBuild, pendingTests),
@@ -501,6 +519,7 @@ export const PendingLocalBuildStarting = {
 export const PendingLocalBuildCapturing = {
   args: {
     ...EmptyBranchStartedLocalBuild.args,
+    selectedBuildId: pendingBuild.id,
     $graphql: {
       AddonVisualTestsBuild: {
         lastBuildOnBranch: withTests({ ...startedBuild, id: "2" }, inProgressTests),
@@ -516,6 +535,7 @@ export const PendingLocalBuildCapturing = {
 export const PendingLocalBuildCapturedStory = {
   args: {
     ...EmptyBranchStartedLocalBuild.args,
+    selectedBuildId: pendingBuild.id,
     $graphql: {
       AddonVisualTestsBuild: {
         lastBuildOnBranch: withTests({ ...startedBuild, id: "2" }, pendingTests),
@@ -527,6 +547,23 @@ export const PendingLocalBuildCapturedStory = {
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2303-374529&t=qjmuGHxoALrVuhvX-0"
     ),
+  },
+  play: async ({ canvasElement, args, argsByTarget }) => {
+    // Ensure we don't switch to the new build, the user has to opt-in
+    expect(args.setSelectedBuildId).not.toHaveBeenCalled();
+
+    // Now opt in
+    const viewLatestSnapshot = (
+      await within(canvasElement).findAllByText("View latest snapshot")
+    )[0];
+    await userEvent.click(viewLatestSnapshot);
+
+    const graphqlArgs = argsByTarget.graphql?.$graphql as typeof args.$graphql; // We need to type argsByTarget
+    await waitFor(() => {
+      expect(args.setSelectedBuildId).toHaveBeenCalledWith(
+        graphqlArgs?.AddonVisualTestsBuild?.lastBuildOnBranch?.id
+      );
+    });
   },
 } satisfies Story;
 
@@ -551,10 +588,13 @@ export const PendingCIBuildCapturedStory = {
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2303-374529&t=qjmuGHxoALrVuhvX-0"
     ),
   },
+  // Should behave the same as when the local build captures the current story
+  play: PendingLocalBuildCapturedStory.play,
 } satisfies Story;
 
 export const Pending = {
   args: {
+    selectedBuildId: pendingBuild.id,
     $graphql: {
       AddonVisualTestsBuild: {
         lastBuildOnBranch: withTests(pendingBuild, pendingTests),
@@ -592,6 +632,7 @@ export const Pending = {
 
 export const NoPermission = {
   args: {
+    selectedBuildId: pendingBuild.id,
     $graphql: {
       AddonVisualTestsBuild: {
         lastBuildOnBranch: withTests(pendingBuild, pendingTests),
@@ -608,6 +649,7 @@ export const NoPermission = {
 
 export const NoPermissionRunning = {
   args: {
+    selectedBuildId: startedBuild.id,
     $graphql: {
       AddonVisualTestsBuild: {
         lastBuildOnBranch: withTests(startedBuild, inProgressTests),
@@ -624,6 +666,7 @@ export const NoPermissionRunning = {
 
 export const NoPermissionNoChanges = {
   args: {
+    selectedBuildId: passedBuild.id,
     $graphql: {
       AddonVisualTestsBuild: {
         lastBuildOnBranch: withTests(passedBuild, passedTests),
@@ -685,6 +728,7 @@ export const AcceptingFailed = {
 
 export const Accepted = {
   args: {
+    selectedBuildId: acceptedBuild.id,
     $graphql: {
       AddonVisualTestsBuild: {
         lastBuildOnBranch: withTests(acceptedBuild, acceptedTests),
@@ -701,6 +745,7 @@ export const Accepted = {
 export const Skipped = {
   args: {
     storyId: "button--tertiary",
+    selectedBuildId: pendingBuild.id,
     $graphql: {
       AddonVisualTestsBuild: {
         lastBuildOnBranch: withTests(pendingBuild, [
@@ -725,6 +770,7 @@ export const Skipped = {
 
 export const CaptureError = {
   args: {
+    selectedBuildId: brokenBuild.id,
     $graphql: {
       AddonVisualTestsBuild: {
         lastBuildOnBranch: withTests(brokenBuild, brokenTests),
@@ -740,6 +786,7 @@ export const CaptureError = {
 
 export const InteractionFailure = {
   args: {
+    selectedBuildId: brokenBuild.id,
     $graphql: {
       AddonVisualTestsBuild: {
         lastBuildOnBranch: withTests(brokenBuild, interactionFailureTests),
@@ -755,6 +802,7 @@ export const InteractionFailure = {
 
 export const InfrastructureError = {
   args: {
+    selectedBuildId: failedBuild.id,
     $graphql: {
       AddonVisualTestsBuild: {
         lastBuildOnBranch: failedBuild,
@@ -777,6 +825,8 @@ export const CIBuildNewer = {
       },
     },
   },
+  // Similarly to a captured story, we should only switch when the user is ready
+  play: PendingLocalBuildCapturedStory.play,
 } satisfies Story;
 
 /** The new build is newer than the story build and the git info */
@@ -792,6 +842,10 @@ export const CIBuildNewerThanCommit = {
         },
       },
     },
+  },
+  play: async ({ args }) => {
+    // We should not switch
+    expect(args.setSelectedBuildId).not.toHaveBeenCalled();
   },
 } satisfies Story;
 
