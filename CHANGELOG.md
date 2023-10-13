@@ -1,3 +1,15 @@
+# v0.0.107 (Fri Oct 13 2023)
+
+#### 🐛 Bug Fix
+
+- Handle unexpected errors from the runChromaticBuild method (cli misconfigured, missing build commmand, etc) [#132](https://github.com/chromaui/addon-visual-tests/pull/132) ([@weeksling](https://github.com/weeksling))
+
+#### Authors: 1
+
+- Matthew Weeks ([@weeksling](https://github.com/weeksling))
+
+---
+
 # v0.0.106 (Fri Oct 13 2023)
 
 #### 🐛 Bug Fix
