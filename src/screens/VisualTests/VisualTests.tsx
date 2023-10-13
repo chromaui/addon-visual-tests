@@ -29,6 +29,8 @@ const createEmptyStoryStatusUpdate = (state: API_StatusState) => {
 };
 
 interface VisualTestsProps {
+  selectedBuildInfo?: SelectedBuildInfo;
+  setSelectedBuildInfo: ReturnType<typeof useState<SelectedBuildInfo>>[1];
   dismissBuildError: () => void;
   localBuildProgress?: LocalBuildProgress;
   startDevBuild: () => void;
@@ -43,7 +45,9 @@ interface VisualTestsProps {
   storyId: string;
 }
 
-export const VisualTests = ({
+export const VisualTestsWithoutSelectedBuildId = ({
+  selectedBuildInfo,
+  setSelectedBuildInfo,
   dismissBuildError,
   localBuildProgress,
   startDevBuild,
@@ -56,10 +60,6 @@ export const VisualTests = ({
 }: VisualTestsProps) => {
   const { addNotification } = useStorybookApi();
 
-  // The storyId and buildId that drive the test(s) we are currently looking at
-  // The user can choose when to change story (via sidebar) and build (via opting into new builds)
-  const [selectedBuildInfo, setSelectedBuildInfo] = useState<SelectedBuildInfo>({ storyId });
-
   const [{ data, error: queryError, operation }, rerunQuery] = useQuery({
     query: QueryBuild,
     variables: {
@@ -70,16 +70,13 @@ export const VisualTests = ({
       ...(gitInfo.slug ? { slug: gitInfo.slug } : {}),
       gitUserEmailHash: gitInfo.userEmailHash,
       selectedBuildId: selectedBuildInfo?.buildId || "",
-      hasSelectedBuildId: !!selectedBuildInfo?.buildId,
+      hasSelectedBuildId: !!selectedBuildInfo,
     },
   });
 
   // When you change story, for a period the query will return the previous set of data, and indicate
   // that with the operation being for the previous query.
-  const storyDataIsStale =
-    operation &&
-    selectedBuildInfo?.storyId &&
-    operation.variables.storyId !== selectedBuildInfo.storyId;
+  const storyDataIsStale = operation && storyId && operation.variables.storyId !== storyId;
 
   // Poll for updates
   useEffect(() => {
@@ -200,6 +197,7 @@ export const VisualTests = ({
 
   const shouldSwitchToLastBuildOnBranch =
     canSwitchToLastBuildOnBranch && lastBuildOnBranchCompletedStory;
+
   // Ensure we are holding the right story build
   useEffect(() => {
     setSelectedBuildInfo((oldSelectedBuildInfo) =>
@@ -209,13 +207,13 @@ export const VisualTests = ({
         storyId,
       })
     );
-  }, [shouldSwitchToLastBuildOnBranch, lastBuildOnBranch?.id, storyId]);
+  }, [shouldSwitchToLastBuildOnBranch, lastBuildOnBranch?.id, storyId, setSelectedBuildInfo]);
 
   const switchToLastBuildOnBranch = useCallback(
     () =>
       canSwitchToLastBuildOnBranch &&
-      setSelectedBuildInfo({ storyId, buildId: lastBuildOnBranch.id }),
-    [canSwitchToLastBuildOnBranch, lastBuildOnBranch?.id, storyId]
+      setSelectedBuildInfo({ buildId: lastBuildOnBranch.id, storyId }),
+    [setSelectedBuildInfo, canSwitchToLastBuildOnBranch, lastBuildOnBranch?.id, storyId]
   );
 
   return !selectedBuildHasCorrectBranch || !selectedBuild || storyDataIsStale || queryError ? (
@@ -249,5 +247,21 @@ export const VisualTests = ({
         storyId,
       }}
     />
+  );
+};
+
+// We split this part of the component out for testing purposes, so we can control the
+// selected build id in the stories and be super explicit about what happens when the
+// selected build & last build on branch are out of sync.
+//
+// If the selectedBuildInfo is internal state of the component it is harder to do this,
+// as we need to change the query results over time.
+export const VisualTests = (
+  props: Omit<VisualTestsProps, "selectedBuildInfo" | "setSelectedBuildInfo">
+) => {
+  const [selectedBuildInfo, setSelectedBuildInfo] = useState<SelectedBuildInfo>();
+
+  return (
+    <VisualTestsWithoutSelectedBuildId {...{ selectedBuildInfo, setSelectedBuildInfo, ...props }} />
   );
 };

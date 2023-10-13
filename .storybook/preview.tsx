@@ -8,10 +8,11 @@ import {
   styled,
   useTheme,
 } from "@storybook/theming";
-import type { Decorator, Preview } from "@storybook/react";
+import type { Decorator, Loader, Preview } from "@storybook/react";
 import { initialize, mswLoader } from "msw-storybook-addon";
 import React from "react";
 import { baseModes } from "../src/modes";
+import { graphql } from "msw";
 
 // Initialize MSW
 initialize({
@@ -122,9 +123,53 @@ const withManagerApi: Decorator = (Story, { argsByTarget }) => (
   </ManagerContext.Provider>
 );
 
+/**
+ * An experiment with targeted args for GraphQL. This loader will serve a graphql
+ * response for any arg nested under $graphql.
+ * We serve the arg value for the query by the name of arg name, e.g.
+ *
+ * {
+ *   args: {
+ *     $graphql: {
+ *       AddonVisualTestsBuild: { project: { name: 'acme', ... } },
+ *     },
+ *   },
+ * }
+ *
+ * Additionally, if you want to map the arg (optionally based on variables),
+ * you can set `argTypes.$graphql.X.map`,
+ *
+ * eg.
+ *
+ * {
+ *   argTypes: {
+ *     $graphql: {
+ *       AddonVisualTestsBuild: {
+ *         map: ({ lastBuildOnBranch }, { selectedBuildId }) =>
+ *          ({ project: { name: 'acme', ... } }),
+ *       },
+ *     },
+ *   },
+ * }
+ */
+export const graphQLArgLoader: Loader = async ({ argTypes, argsByTarget, parameters }) => {
+  const handlers = Object.entries(argsByTarget.graphql?.$graphql || []).map(
+    ([argName, inputResult]: [string, any]) =>
+      graphql.query(argName, (req, res, ctx) => {
+        const result = argTypes.$graphql[argName]?.map?.(inputResult, req.variables) ?? inputResult;
+
+        return res(ctx.data(result));
+      })
+  );
+
+  return mswLoader({
+    parameters: { msw: { handlers: [...handlers, ...(parameters.msw?.handlers || [])] } },
+  });
+};
+
 const preview: Preview = {
   decorators: [withTheme, withManagerApi],
-  loaders: [mswLoader],
+  loaders: [graphQLArgLoader],
   parameters: {
     actions: {
       argTypesRegex: "^on[A-Z].*",
@@ -147,6 +192,9 @@ const preview: Preview = {
       },
     },
     layout: "fullscreen",
+  },
+  argTypes: {
+    $graphql: { target: "graphql" },
   },
   globalTypes: {
     theme: {

@@ -1,10 +1,10 @@
 export interface SelectedBuildInfo {
   storyId: string;
-  buildId?: string;
+  buildId: string;
 }
 
 export function updateSelectedBuildInfo(
-  oldSelectedBuildInfo: SelectedBuildInfo,
+  oldSelectedBuildInfo: SelectedBuildInfo | undefined,
   {
     shouldSwitchToLastBuildOnBranch,
     lastBuildOnBranchId,
@@ -16,9 +16,12 @@ export function updateSelectedBuildInfo(
   }
 ) {
   if (!shouldSwitchToLastBuildOnBranch) {
+    if (!oldSelectedBuildInfo) return undefined;
+
     return { ...oldSelectedBuildInfo, storyId };
   }
 
+  if (!lastBuildOnBranchId) throw new Error("Impossible state");
   return {
     buildId: lastBuildOnBranchId,
     storyId,
