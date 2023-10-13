@@ -1,3 +1,15 @@
+# v0.0.106 (Fri Oct 13 2023)
+
+#### 🐛 Bug Fix
+
+- Refactor Visual Tests stories to more closely control selected story [#124](https://github.com/chromaui/addon-visual-tests/pull/124) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.105 (Tue Oct 10 2023)
 
 #### 🐛 Bug Fix
