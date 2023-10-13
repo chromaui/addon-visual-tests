@@ -109,7 +109,11 @@ async function serverChannel(
 
   channel.on(START_BUILD, async () => {
     const { projectToken } = projectInfoState.value || {};
-    await runChromaticBuild(localBuildProgress, { projectToken });
+    try {
+      await runChromaticBuild(localBuildProgress, { projectToken });
+    } catch (e) {
+      console.error(`Failed to run Chromatic build, with error:\n${e}`);
+    }
   });
 
   channel.on(STOP_BUILD, stopChromaticBuild);
