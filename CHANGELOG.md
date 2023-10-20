@@ -1,3 +1,17 @@
+# v0.0.108 (Fri Oct 20 2023)
+
+#### 🐛 Bug Fix
+
+- Prevent stories from targeting production API and upgrade GraphQL & MSW [#135](https://github.com/chromaui/addon-visual-tests/pull/135) ([@ghengeveld](https://github.com/ghengeveld))
+- Implement "No access" screen [#134](https://github.com/chromaui/addon-visual-tests/pull/134) ([@chromatic-support](https://github.com/chromatic-support) [@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 2
+
+- [@chromatic-support](https://github.com/chromatic-support)
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v0.0.107 (Fri Oct 13 2023)
 
 #### 🐛 Bug Fix
