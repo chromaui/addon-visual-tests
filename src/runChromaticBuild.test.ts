@@ -15,6 +15,7 @@ const store = {
     this.state = newValue;
   },
   on() {},
+  off() {},
 };
 
 describe("runChromaticBuild", () => {
