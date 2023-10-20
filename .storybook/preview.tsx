@@ -1,18 +1,19 @@
 import { API, ManagerContext, State } from "@storybook/manager-api";
+import type { Decorator, Loader, Preview } from "@storybook/react";
 import {
   Global,
   ThemeProvider,
-  themes,
-  createReset,
   convert,
+  createReset,
   styled,
+  themes,
   useTheme,
 } from "@storybook/theming";
-import type { Decorator, Loader, Preview } from "@storybook/react";
+import { graphql } from "msw";
 import { initialize, mswLoader } from "msw-storybook-addon";
 import React from "react";
+
 import { baseModes } from "../src/modes";
-import { graphql } from "msw";
 
 // Initialize MSW
 initialize({

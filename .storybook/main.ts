@@ -49,6 +49,7 @@ const config: StorybookConfig = {
   async viteFinal(config, { configType }) {
     const rootDir = config.root ?? process.cwd();
     return mergeConfig(config, {
+      define: { "process.env": { CHROMATIC_API_URL: "/api" } },
       plugins: configType === "PRODUCTION" ? [turbosnap({ rootDir })] : [],
     });
   },
