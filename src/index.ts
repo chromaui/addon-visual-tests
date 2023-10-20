@@ -14,7 +14,7 @@ import {
 } from "./constants";
 import { runChromaticBuild, stopChromaticBuild } from "./runChromaticBuild";
 import { GitInfoPayload, LocalBuildProgress, ProjectInfoPayload } from "./types";
-import { useAddonState } from "./useAddonState/server";
+import { SharedState } from "./utils/SharedState";
 import { updateChromaticConfig } from "./utils/updateChromaticConfig";
 
 /**
@@ -68,14 +68,13 @@ async function serverChannel(
   const configuration = await getConfiguration(configFile);
   const { projectId: initialProjectId, projectToken: initialProjectToken } = configuration;
 
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const projectInfoState = useAddonState<ProjectInfoPayload>(channel, PROJECT_INFO);
+  const projectInfoState = SharedState.subscribe<ProjectInfoPayload>(PROJECT_INFO, channel);
   projectInfoState.value = initialProjectId
     ? { projectId: initialProjectId, projectToken: initialProjectToken }
     : {};
 
   let lastProjectToken = initialProjectToken;
-  projectInfoState.on("change", async ({ projectId, projectToken }) => {
+  projectInfoState.on("change", async ({ projectId, projectToken } = {}) => {
     if (!projectId || !projectToken) return;
     if (projectToken === lastProjectToken) return;
     lastProjectToken = projectToken;
@@ -104,8 +103,10 @@ async function serverChannel(
     }
   });
 
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const localBuildProgress = useAddonState<LocalBuildProgress>(channel, LOCAL_BUILD_PROGRESS);
+  const localBuildProgress = SharedState.subscribe<LocalBuildProgress>(
+    LOCAL_BUILD_PROGRESS,
+    channel
+  );
 
   channel.on(START_BUILD, async () => {
     const { projectToken } = projectInfoState.value || {};
@@ -118,11 +119,9 @@ async function serverChannel(
 
   channel.on(STOP_BUILD, stopChromaticBuild);
 
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const gitInfoState = useAddonState<GitInfoPayload>(channel, GIT_INFO);
+  const gitInfoState = SharedState.subscribe<GitInfoPayload>(GIT_INFO, channel);
 
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const gitInfoError = useAddonState<Error>(channel, GIT_INFO_ERROR);
+  const gitInfoError = SharedState.subscribe<Error>(GIT_INFO_ERROR, channel);
 
   observeGitInfo(
     5000,

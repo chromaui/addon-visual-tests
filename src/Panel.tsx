@@ -21,8 +21,8 @@ import { LinkingProjectFailed } from "./screens/LinkProject/LinkingProjectFailed
 import { LinkProject } from "./screens/LinkProject/LinkProject";
 import { VisualTests } from "./screens/VisualTests/VisualTests";
 import { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from "./types";
-import { useAddonState } from "./useAddonState/manager";
 import { client, Provider, useAccessToken } from "./utils/graphQLClient";
+import { useAddonState } from "./utils/useAddonState";
 import { useProjectId } from "./utils/useProjectId";
 
 interface PanelProps {

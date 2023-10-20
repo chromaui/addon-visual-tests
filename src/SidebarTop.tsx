@@ -13,8 +13,8 @@ import {
   STOP_BUILD,
 } from "./constants";
 import { LocalBuildProgress } from "./types";
-import { useAddonState } from "./useAddonState/manager";
 import { useAccessToken } from "./utils/graphQLClient";
+import { useAddonState } from "./utils/useAddonState";
 import { useProjectId } from "./utils/useProjectId";
 
 interface SidebarTopProps {
