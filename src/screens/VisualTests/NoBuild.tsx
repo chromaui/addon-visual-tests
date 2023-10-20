@@ -102,11 +102,11 @@ export const NoBuild = ({
       return (
         <Container>
           <Heading>Project not found</Heading>
-          <CenterText>You may not have access to this project, or it may not exist.</CenterText>
+          <CenterText>You may not have access to this project or it may not exist.</CenterText>
           <br />
           {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
           <Link isButton onClick={() => setAccessToken(null)} withArrow>
-            Log out
+            Switch account
           </Link>
         </Container>
       );
