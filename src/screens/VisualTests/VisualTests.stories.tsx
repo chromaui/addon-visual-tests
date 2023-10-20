@@ -162,6 +162,15 @@ export const GraphQLError = {
   },
 } satisfies Story;
 
+export const NoAccess = {
+  args: { $graphql: {} },
+  parameters: {
+    ...withGraphQLQueryParameters("AddonVisualTestsBuild", (req, res, ctx) =>
+      res(ctx.status(200), ctx.data({ project: null } as any))
+    ),
+  },
+} satisfies Story;
+
 export const EmptyBranch = {
   // @ts-expect-error Type conflict due to us explicitly defining `StoryArgs` above,
   // as it cannot be auto-inferred from meta
