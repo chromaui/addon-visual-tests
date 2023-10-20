@@ -27,6 +27,7 @@ const ErrorContainer = styled.div(({ theme }) => ({
 interface NoBuildProps {
   queryError?: CombinedError;
   hasData: boolean;
+  hasProject: boolean;
   hasSelectedBuild: boolean;
   startDevBuild: () => void;
   localBuildProgress?: LocalBuildProgress;
@@ -37,26 +38,36 @@ interface NoBuildProps {
 export const NoBuild = ({
   queryError,
   hasData,
+  hasProject,
   hasSelectedBuild,
   startDevBuild,
   localBuildProgress,
   branch,
   setAccessToken,
 }: NoBuildProps) => {
-  const button = (
-    <Button small secondary onClick={startDevBuild}>
-      <Icons icon="play" />
-      Take snapshots
-    </Button>
-  );
+  const getDetails = () => {
+    const button = (
+      <Button small secondary onClick={startDevBuild}>
+        <Icons icon="play" />
+        Take snapshots
+      </Button>
+    );
 
-  let contents;
-  if (localBuildProgress) {
+    if (!localBuildProgress) {
+      return (
+        <>
+          <br />
+          {button}
+        </>
+      );
+    }
+
     if (localBuildProgress.currentStep === "error") {
       const firstError = Array.isArray(localBuildProgress.originalError)
         ? localBuildProgress.originalError[0]
         : localBuildProgress.originalError;
-      contents = (
+
+      return (
         <>
           <ErrorContainer>
             <b>Build failed:</b> <code>{firstError?.message || "Unknown Error"}</code>{" "}
@@ -64,58 +75,76 @@ export const NoBuild = ({
               Learn more
             </Link>
           </ErrorContainer>
-
           {button}
         </>
       );
-    } else {
-      contents = <BuildProgressInline localBuildProgress={localBuildProgress} />;
     }
-  } else {
-    contents = (
-      <>
-        <br />
-        {button}
-      </>
-    );
-  }
+
+    return <BuildProgressInline localBuildProgress={localBuildProgress} />;
+  };
+
+  const getContent = () => {
+    if (queryError) {
+      return (
+        <Row>
+          <Col>
+            <Text>{queryError.message}</Text>
+          </Col>
+        </Row>
+      );
+    }
+
+    if (!hasData) {
+      return <Loader />;
+    }
+
+    if (!hasProject) {
+      return (
+        <Container>
+          <Heading>Project not found</Heading>
+          <CenterText>You may not have access to this project or it may not exist.</CenterText>
+          <br />
+          {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+          <Link isButton onClick={() => setAccessToken(null)} withArrow>
+            Switch account
+          </Link>
+        </Container>
+      );
+    }
+
+    if (!hasSelectedBuild) {
+      return (
+        <Container>
+          <Heading>Create a test baseline</Heading>
+          <CenterText>
+            Take an image snapshot of each story to save their &quot;last known good state&quot; as
+            test baselines.
+          </CenterText>
+          {getDetails()}
+        </Container>
+      );
+    }
+
+    return null;
+  };
 
   return (
     <Sections>
-      <Section grow>
-        {queryError && (
-          <Row>
+      <Section grow>{getContent()}</Section>
+      {hasData && !queryError && hasProject && (
+        <Section>
+          <Bar>
             <Col>
-              <Text>{queryError.message}</Text>
+              <Text style={{ marginLeft: 5 }}>
+                {hasData && !queryError ? `Waiting for build on ${branch}` : "Loading..."}
+              </Text>
             </Col>
-          </Row>
-        )}
-
-        {!hasData && <Loader />}
-
-        {hasData && !hasSelectedBuild && !queryError && (
-          <Container>
-            <Heading>Create a test baseline</Heading>
-            <CenterText>
-              Take an image snapshot of each story to save their &quot;last known good state&quot;
-              as test baselines.
-            </CenterText>
-            {contents}
-          </Container>
-        )}
-      </Section>
-      <Section>
-        <Bar>
-          <Col>
-            <Text style={{ marginLeft: 5 }}>
-              {hasData ? `Waiting for build on ${branch}` : "Loading..."}
-            </Text>
-          </Col>
-          <Col push>
-            <FooterMenu setAccessToken={setAccessToken} />
-          </Col>
-        </Bar>
-      </Section>
+            <Col push>
+              <FooterMenu setAccessToken={setAccessToken} />
+            </Col>
+          </Bar>
+        </Section>
+      )}
     </Sections>
   );
 };

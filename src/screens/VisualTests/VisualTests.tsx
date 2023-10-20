@@ -221,6 +221,7 @@ export const VisualTestsWithoutSelectedBuildId = ({
       {...{
         queryError,
         hasData: !!data && !storyDataIsStale,
+        hasProject: !!data?.project,
         hasSelectedBuild: !!selectedBuildHasCorrectBranch && !!selectedBuild,
         startDevBuild,
         localBuildProgress,
