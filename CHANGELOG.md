@@ -1,3 +1,16 @@
+# v0.0.109 (Mon Oct 23 2023)
+
+#### 🐛 Bug Fix
+
+- Replace `useAddonState` hook implementation to fix state sync bug [#133](https://github.com/chromaui/addon-visual-tests/pull/133) ([@chromatic-support](https://github.com/chromatic-support) [@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 2
+
+- [@chromatic-support](https://github.com/chromatic-support)
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v0.0.108 (Fri Oct 20 2023)
 
 #### 🐛 Bug Fix
