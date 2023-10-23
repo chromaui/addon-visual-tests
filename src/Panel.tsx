@@ -21,9 +21,9 @@ import { LinkingProjectFailed } from "./screens/LinkProject/LinkingProjectFailed
 import { LinkProject } from "./screens/LinkProject/LinkProject";
 import { VisualTests } from "./screens/VisualTests/VisualTests";
 import { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from "./types";
-import { useAddonState } from "./useAddonState/manager";
 import { client, Provider, useAccessToken } from "./utils/graphQLClient";
 import { useProjectId } from "./utils/useProjectId";
+import { useSharedState } from "./utils/useSharedState";
 
 interface PanelProps {
   active: boolean;
@@ -34,11 +34,11 @@ export const Panel = ({ active, api }: PanelProps) => {
   const [accessToken, setAccessToken] = useAccessToken();
   const { storyId } = useStorybookState();
 
-  const [gitInfo] = useAddonState<GitInfoPayload>(GIT_INFO);
-  const [gitInfoError] = useAddonState<Error>(GIT_INFO_ERROR);
+  const [gitInfo] = useSharedState<GitInfoPayload>(GIT_INFO);
+  const [gitInfoError] = useSharedState<Error>(GIT_INFO_ERROR);
   const [localBuildProgress, setLocalBuildProgress] =
-    useAddonState<LocalBuildProgress>(LOCAL_BUILD_PROGRESS);
-  const [, setOutdated] = useAddonState<boolean>(IS_OUTDATED);
+    useSharedState<LocalBuildProgress>(LOCAL_BUILD_PROGRESS);
+  const [, setOutdated] = useSharedState<boolean>(IS_OUTDATED);
   const emit = useChannel({});
 
   const updateBuildStatus = useCallback<UpdateStatusFunction>(

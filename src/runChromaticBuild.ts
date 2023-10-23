@@ -10,7 +10,7 @@ import {
   isKnownStep,
 } from "./buildSteps";
 import { LocalBuildProgress } from "./types";
-import { useAddonState } from "./useAddonState/server";
+import { SharedState } from "./utils/SharedState";
 
 const ESTIMATED_PROGRESS_INTERVAL = 2000;
 
@@ -46,7 +46,7 @@ const getBuildStepData = (
 
 export const onStartOrProgress =
   (
-    localBuildProgress: ReturnType<typeof useAddonState<LocalBuildProgress>>,
+    localBuildProgress: ReturnType<typeof SharedState.subscribe<LocalBuildProgress>>,
     timeout?: ReturnType<typeof setTimeout>
   ) =>
   ({ ...ctx }: Context, { progress, total }: { progress?: number; total?: number } = {}) => {
@@ -112,7 +112,7 @@ export const onStartOrProgress =
 
 export const onCompleteOrError =
   (
-    localBuildProgress: ReturnType<typeof useAddonState<LocalBuildProgress>>,
+    localBuildProgress: ReturnType<typeof SharedState.subscribe<LocalBuildProgress>>,
     timeout?: ReturnType<typeof setTimeout>
   ) =>
   (ctx: Context, error?: { formattedError: string; originalError: Error | Error[] }) => {
@@ -161,7 +161,7 @@ export const onCompleteOrError =
   };
 
 export const runChromaticBuild = async (
-  localBuildProgress: ReturnType<typeof useAddonState<LocalBuildProgress>>,
+  localBuildProgress: ReturnType<typeof SharedState.subscribe<LocalBuildProgress>>,
   flags: Flags
 ) => {
   if (!flags.projectToken) throw new Error("No project token set");

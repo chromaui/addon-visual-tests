@@ -13,9 +13,9 @@ import {
   STOP_BUILD,
 } from "./constants";
 import { LocalBuildProgress } from "./types";
-import { useAddonState } from "./useAddonState/manager";
 import { useAccessToken } from "./utils/graphQLClient";
 import { useProjectId } from "./utils/useProjectId";
+import { useSharedState } from "./utils/useSharedState";
 
 interface SidebarTopProps {
   api: API;
@@ -28,13 +28,13 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
   const [accessToken] = useAccessToken();
   const isLoggedIn = !!accessToken;
 
-  const [isOutdated] = useAddonState<boolean>(IS_OUTDATED);
-  const [localBuildProgress] = useAddonState<LocalBuildProgress>(LOCAL_BUILD_PROGRESS);
+  const [isOutdated] = useSharedState<boolean>(IS_OUTDATED);
+  const [localBuildProgress] = useSharedState<LocalBuildProgress>(LOCAL_BUILD_PROGRESS);
   const isRunning =
     !!localBuildProgress &&
     !["aborted", "complete", "error"].includes(localBuildProgress.currentStep);
 
-  const [gitInfoError] = useAddonState<Error>(GIT_INFO_ERROR);
+  const [gitInfoError] = useSharedState<Error>(GIT_INFO_ERROR);
 
   const lastStep = useRef(localBuildProgress?.currentStep);
   useEffect(() => {
