@@ -3,7 +3,7 @@ import { useCallback, useRef, useState } from "react";
 
 import { SharedState } from "./SharedState";
 
-export function useAddonState<T>(key: string) {
+export function useSharedState<T>(key: string) {
   const channel = useStorybookApi().getChannel();
   if (!channel) throw new Error("Channel not available");
 

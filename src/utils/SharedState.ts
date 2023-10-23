@@ -1,7 +1,7 @@
 import type { Channel } from "@storybook/channels";
 
-export const GET_VALUE = `experimental_useAddonState_getValue`;
-export const SET_VALUE = `experimental_useAddonState_setValue`;
+export const GET_VALUE = `experimental_useSharedState_getValue`;
+export const SET_VALUE = `experimental_useSharedState_setValue`;
 
 export class SharedState<T = any> {
   channel: Pick<Channel, "emit" | "on" | "off">;

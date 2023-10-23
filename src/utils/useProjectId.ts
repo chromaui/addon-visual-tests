@@ -2,10 +2,10 @@ import { useState } from "react";
 
 import { PROJECT_INFO } from "../constants";
 import { ProjectInfoPayload } from "../types";
-import { useAddonState } from "./useAddonState";
+import { useSharedState } from "./useSharedState";
 
 export const useProjectId = () => {
-  const [projectInfo, setProjectInfo] = useAddonState<ProjectInfoPayload>(PROJECT_INFO);
+  const [projectInfo, setProjectInfo] = useSharedState<ProjectInfoPayload>(PROJECT_INFO);
 
   // Once we've seen the state of the update, we can "clear" it to move on
   const [clearUpdated, setClearUpdated] = useState(false);
