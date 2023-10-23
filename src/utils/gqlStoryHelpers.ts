@@ -2,7 +2,7 @@
 
 import type { ResultOf, VariablesOf } from "@graphql-typed-document-node/core";
 import { getOperationAST } from "graphql";
-import { graphql } from "msw";
+import { graphql, HttpResponse } from "msw";
 import { TypedDocumentNode } from "urql";
 
 export const withGraphQLQueryParameters = <TQuery extends TypedDocumentNode<any, any>>(
@@ -18,11 +18,12 @@ export function withGraphQLQueryResultParameters<TQuery extends TypedDocumentNod
   result: (variables: VariablesOf<TQuery>) => ResultOf<TQuery>
 ) {
   const queryName = getOperationAST(query)?.name?.value;
-  if (queryName)
-    return withGraphQLQueryParameters(queryName, (req, res, ctx) =>
-      res(ctx.data(result(req.variables)))
-    );
-  throw new Error(`Couldn't determine query name from query`);
+  if (!queryName) {
+    throw new Error(`Couldn't determine query name from query`);
+  }
+  return withGraphQLQueryParameters(queryName, ({ variables }) =>
+    HttpResponse.json({ data: result(variables) })
+  );
 }
 
 export const withGraphQLMutationParameters = (...args: Parameters<typeof graphql.mutation>) => ({
