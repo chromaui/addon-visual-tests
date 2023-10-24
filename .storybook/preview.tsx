@@ -13,7 +13,7 @@ import { HttpResponse, graphql } from "msw";
 import React from "react";
 
 import { baseModes } from "../src/modes";
-import { initialize, mswLoader } from "./mswDecorator";
+import { initialize, mswLoader } from "msw-storybook-addon";
 
 // Initialize MSW
 initialize({

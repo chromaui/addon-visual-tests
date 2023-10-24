@@ -9928,10 +9928,10 @@ ms@2.1.3, ms@^2.1.1:
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.3.tgz#574c8138ce1d2b5861f0b44579dbadd60c6615b2"
   integrity sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==
 
-msw-storybook-addon@^1.9.0:
-  version "1.9.0"
-  resolved "https://registry.yarnpkg.com/msw-storybook-addon/-/msw-storybook-addon-1.9.0.tgz#951e86dd862201f401a06e22f78d760342860f6b"
-  integrity sha512-+5ki9SZYF0+IEMW9n4fzkuRa02o5lf9Xf6nfAvWqYvwdLtcpmcwdBRkkFTh+wLTZv010+Ui+P6ZYEVJ0e8wMyw==
+msw-storybook-addon@2.0.0--canary.122.b3ed3b1.0:
+  version "2.0.0--canary.122.b3ed3b1.0"
+  resolved "https://registry.yarnpkg.com/msw-storybook-addon/-/msw-storybook-addon-2.0.0--canary.122.b3ed3b1.0.tgz#4cce8652882f10819bde3d10da5d2a58308a043a"
+  integrity sha512-HZn9B6MCdfHpgm5wQ92A0K3moXDCDTxPRjWWH6C/4myg3KmsD0kwiaE14vWO49A4+TG10yXMGqIll2NjIMtnQg==
   dependencies:
     is-node-process "^1.0.1"
 
