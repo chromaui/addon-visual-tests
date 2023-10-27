@@ -373,10 +373,6 @@ export const StoryAddedInSelectedBuild = {
   },
 } satisfies Story;
 
-/**
- * Although this state doesn't immediately render the captured story (it probably should),
- * it should switch to the lastBuildOnBranch immediately.
- */
 export const StoryAddedInLastBuildOnBranchNotInSelected = {
   args: {
     selectedBuildInfo: { buildId: pendingBuild.id, storyId: meta.args.storyId },
@@ -574,30 +570,29 @@ export const PendingLocalBuildCapturedStory = {
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2303-374529&t=qjmuGHxoALrVuhvX-0"
     ),
   },
-  // NOTE: this does not current work, the story is auto-selected
-  // play: async ({ canvasElement, args, argsByTarget }) => {
-  //   // We have to wait a moment for the story to render
-  //   const canvas = within(canvasElement);
-  //   await canvas.findAllByText("Latest");
+  play: async ({ canvasElement, args, argsByTarget }) => {
+    // We have to wait a moment for the story to render
+    const canvas = within(canvasElement);
+    await canvas.findAllByText("Latest");
 
-  //   // Ensure we don't switch to the new build, the user has to opt-in
-  //   mock(args.setSelectedBuildInfo!).mock.calls.forEach(([updater]) => {
-  //     const result = typeof updater === "function" ? updater(args.selectedBuildInfo) : updater;
-  //     expect(result).toEqual(args.selectedBuildInfo); // Unchanged
-  //   });
+    // Ensure we don't switch to the new build, the user has to opt-in
+    mock(args.setSelectedBuildInfo!).mock.calls.forEach(([updater]) => {
+      const result = typeof updater === "function" ? updater(args.selectedBuildInfo) : updater;
+      expect(result).toEqual(args.selectedBuildInfo); // Unchanged
+    });
 
-  //   // Now opt in
-  //   const viewLatestSnapshot = (await canvas.findAllByText("View latest snapshot"))[0];
-  //   await userEvent.click(viewLatestSnapshot);
+    // Now opt in
+    const viewLatestSnapshot = (await canvas.findAllByText("View latest snapshot"))[0];
+    await userEvent.click(viewLatestSnapshot);
 
-  //   const graphqlArgs = argsByTarget.graphql?.$graphql as typeof args.$graphql; // We need to type argsByTarget
-  //   await waitFor(() => {
-  //     expect(args.setSelectedBuildInfo).toHaveBeenCalledWith({
-  //       buildId: graphqlArgs?.AddonVisualTestsBuild?.lastBuildOnBranch?.id,
-  //       storyId: meta.args.storyId,
-  //     });
-  //   });
-  // },
+    const graphqlArgs = argsByTarget.graphql?.$graphql as typeof args.$graphql; // We need to type argsByTarget
+    await waitFor(() => {
+      expect(args.setSelectedBuildInfo).toHaveBeenCalledWith({
+        buildId: graphqlArgs?.AddonVisualTestsBuild?.lastBuildOnBranch?.id,
+        storyId: meta.args.storyId,
+      });
+    });
+  },
 } satisfies Story;
 
 /**
@@ -623,9 +618,25 @@ export const PendingCIBuildCapturedStory = {
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2303-374529&t=qjmuGHxoALrVuhvX-0"
     ),
   },
-  // NOTE: this does not current work, the story is auto-selected
   // Should behave the same as when the local build captures the current story
-  // play: PendingLocalBuildCapturedStory.play,
+  play: PendingLocalBuildCapturedStory.play,
+} satisfies Story;
+
+/**
+ * Now what happens when the user actually clicks to change story?
+ */
+export const PendingCIBuildCapturedStoryAndUserChangedStory = {
+  args: {
+    selectedBuildInfo: { buildId: pendingBuild.id, storyId: "old--story" },
+    $graphql: PendingLocalBuildCapturedStory.args.$graphql,
+  },
+  parameters: {
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2303-374529&t=qjmuGHxoALrVuhvX-0"
+    ),
+  },
+  // In this case, we *should* switch to the new build
+  play: EmptyBranchLocalBuildCapturedCurrentStory.play,
 } satisfies Story;
 
 export const Pending = {
@@ -863,8 +874,7 @@ export const CIBuildNewer = {
     },
   },
   // Similarly to a captured story, we should only switch when the user is ready
-  // NOTE: this does not current work, the story is auto-selected
-  // play: PendingLocalBuildCapturedStory.play,
+  play: PendingLocalBuildCapturedStory.play,
 } satisfies Story;
 
 /** The new build is newer than the story build and the git info */
