@@ -20,21 +20,11 @@
   "license": "MIT",
   "author": "Chromatic <support@chromatic.com>",
   "exports": {
-    ".": {
-      "require": "./dist/index.js",
-      "import": "./dist/index.mjs",
-      "types": "./dist/index.d.ts"
-    },
-    "./manager": {
-      "require": "./dist/manager.js",
-      "import": "./dist/manager.mjs",
-      "types": "./dist/manager.d.ts"
-    },
+    ".": "./dist/index.js",
+    "./manager": "./dist/manager.mjs",
     "./package.json": "./package.json"
   },
   "main": "dist/index.js",
-  "module": "dist/index.mjs",
-  "types": "dist/index.d.ts",
   "files": [
     "dist/**/*",
     "README.md",
