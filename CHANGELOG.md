@@ -1,3 +1,15 @@
+# v0.0.111 (Mon Oct 30 2023)
+
+#### 🐛 Bug Fix
+
+- Fix package configuration to be in line with tsup configuration [#137](https://github.com/chromaui/addon-visual-tests/pull/137) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v0.0.110 (Mon Oct 30 2023)
 
 #### 🐛 Bug Fix
