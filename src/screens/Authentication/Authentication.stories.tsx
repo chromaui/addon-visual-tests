@@ -1,7 +1,7 @@
 import { action } from "@storybook/addon-actions";
 import type { Meta, StoryObj } from "@storybook/react";
 import { findByRole, userEvent } from "@storybook/testing-library";
-import { rest } from "msw";
+import { http, HttpResponse } from "msw";
 
 import { panelModes } from "../../modes";
 import { storyWrapper } from "../../utils/graphQLClient";
@@ -22,26 +22,22 @@ const meta = {
     },
     msw: {
       handlers: [
-        rest.post("*/authorize", (req, res, ctx) =>
-          res(
-            ctx.json({
-              device_code: "chdc_95a7123d17a84851abcdefc869ec0741",
-              user_code: "123 123",
-              verification_uri: "https://www.chromatic.com/connect/chromaui:addon-visual-tests",
-              verification_uri_complete:
-                "https://www.chromatic.com/connect/chromaui:addon-visual-tests?code=123123",
-              expires_in: 300,
-              interval: 5,
-            })
-          )
+        http.post("*/authorize", () =>
+          HttpResponse.json({
+            device_code: "chdc_95a7123d17a84851abcdefc869ec0741",
+            user_code: "123 123",
+            verification_uri: "https://www.chromatic.com/connect/chromaui:addon-visual-tests",
+            verification_uri_complete:
+              "https://www.chromatic.com/connect/chromaui:addon-visual-tests?code=123123",
+            expires_in: 300,
+            interval: 5,
+          })
         ),
-        rest.post("*/token", (req, res, ctx) =>
-          res(
-            ctx.json({
-              error: "authorization_pending",
-              error_description: "Authorization is pending approval",
-            })
-          )
+        http.post("*/token", () =>
+          HttpResponse.json({
+            error: "authorization_pending",
+            error_description: "Authorization is pending approval",
+          })
         ),
       ],
     },

@@ -13,6 +13,7 @@ import {
   waitFor,
   within,
 } from "@storybook/testing-library";
+import { delay, HttpResponse } from "msw";
 import React from "react";
 
 import { INITIAL_BUILD_PAYLOAD } from "../../buildSteps";
@@ -144,9 +145,7 @@ type Story = StoryObj<MakeOptional<StoryArgs, keyof typeof meta.args>>;
 export const Loading = {
   args: { $graphql: {} },
   parameters: {
-    ...withGraphQLQueryParameters("AddonVisualTestsBuild", (req, res, ctx) =>
-      res(ctx.status(200), ctx.data({} as any), ctx.delay("infinite"))
-    ),
+    ...withGraphQLQueryParameters("AddonVisualTestsBuild", () => delay("infinite")),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304933&t=0rxMQnkxsVpVj1qy-4"
     ),
@@ -156,8 +155,8 @@ export const Loading = {
 export const GraphQLError = {
   args: { $graphql: {} },
   parameters: {
-    ...withGraphQLQueryParameters("AddonVisualTestsBuild", (req, res, ctx) =>
-      res(ctx.status(200), ctx.errors([{ message: "Something went wrong on the server" }]))
+    ...withGraphQLQueryParameters("AddonVisualTestsBuild", () =>
+      HttpResponse.json({ errors: [{ message: "Something went wrong on the server" }] })
     ),
   },
 } satisfies Story;
@@ -165,8 +164,8 @@ export const GraphQLError = {
 export const NoAccess = {
   args: { $graphql: {} },
   parameters: {
-    ...withGraphQLQueryParameters("AddonVisualTestsBuild", (req, res, ctx) =>
-      res(ctx.status(200), ctx.data({ project: null } as any))
+    ...withGraphQLQueryParameters("AddonVisualTestsBuild", () =>
+      HttpResponse.json({ data: { project: null } } as any)
     ),
   },
 } satisfies Story;
@@ -742,9 +741,7 @@ export const ToggleSnapshot: Story = {
 export const Accepting = {
   args: { ...Pending.args },
   parameters: {
-    ...withGraphQLMutationParameters("ReviewTest", (req, res, ctx) =>
-      res(ctx.status(200), ctx.data({}), ctx.delay("infinite"))
-    ),
+    ...withGraphQLMutationParameters("ReviewTest", () => delay("infinite")),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304718&t=0rxMQnkxsVpVj1qy-4"
     ),
@@ -758,8 +755,8 @@ export const Accepting = {
 export const AcceptingFailed = {
   args: { ...Accepting.args },
   parameters: {
-    ...withGraphQLMutationParameters("ReviewTest", (req, res, ctx) =>
-      res(ctx.status(200), ctx.errors([{ message: "Accepting failed" }]))
+    ...withGraphQLMutationParameters("ReviewTest", () =>
+      HttpResponse.json({ errors: [{ message: "Accepting failed" }] })
     ),
   },
   play: playAll(async ({ canvasElement, argsByTarget }) => {
