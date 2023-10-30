@@ -1,7 +1,10 @@
 dist/
 node_modules/
-storybook-static/
-build-storybook.log
 .DS_Store
 .env
 yarn-error.log
+storybook-static/
+build-storybook.log
+chromatic.log
+chromatic-build-*.xml
+chromatic-diagnostics.json
