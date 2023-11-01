@@ -1,15 +1,23 @@
 import { Icons, TooltipNote, WithTooltip } from "@storybook/components";
 import React from "react";
 
+import { BrowserSelector } from "../../components/BrowserSelector";
 import { FooterMenu } from "../../components/FooterMenu";
 import { IconButton } from "../../components/IconButton";
-import { Bar, Col, Section, Text } from "../../components/layout";
+import { Bar, Col, Section, Sections, Text } from "../../components/layout";
+import { ModeSelector } from "../../components/ModeSelector";
+import { SelectedBuildFieldsFragment, TestStatus } from "../../gql/graphql";
+import { summarizeTests } from "../../utils/summarizeTests";
 import { useControlsDispatch, useControlsState } from "./ControlsContext";
 import { useSelectedBuildState, useSelectedStoryState } from "./SelectedBuildContext";
 
 export const BuildResultsFooter = ({
+  browserResults,
+  modeResults,
   setAccessToken,
 }: {
+  browserResults: ReturnType<typeof summarizeTests>["browserResults"];
+  modeResults: ReturnType<typeof summarizeTests>["modeResults"];
   setAccessToken: (token: string | null) => void;
 }) => {
   const { baselineImageVisible } = useControlsState();
@@ -46,6 +54,22 @@ export const BuildResultsFooter = ({
             </Text>
           )}
         </Col>
+        {/* {modeResults.length > 0 && (
+          <ModeSelector
+            isAccepted={storyState.summary.status === TestStatus.Accepted}
+            selectedMode={storyState.selectedTest.mode}
+            modeResults={modeResults}
+            onSelectMode={storyState.onSelectMode}
+          />
+        )}
+        {browserResults.length > 0 && (
+          <BrowserSelector
+            isAccepted={storyState.summary.status === TestStatus.Accepted}
+            selectedBrowser={storyState.selectedComparison.browser}
+            browserResults={browserResults}
+            onSelectBrowser={storyState.onSelectBrowser}
+          />
+        )} */}
         {/* <Col push>
         <WithTooltip
           tooltip={<TooltipNote note="Render settings" />}
