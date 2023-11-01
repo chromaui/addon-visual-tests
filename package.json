@@ -20,8 +20,12 @@
   "license": "MIT",
   "author": "Chromatic <support@chromatic.com>",
   "exports": {
-    ".": "./dist/index.js",
-    "./manager": "./dist/manager.mjs",
+    ".": {
+      "require": "./dist/index.js"
+    },
+    "./manager": {
+      "import": "./dist/manager.mjs"
+    },
     "./package.json": "./package.json"
   },
   "main": "dist/index.js",
