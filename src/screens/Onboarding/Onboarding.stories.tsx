@@ -93,6 +93,22 @@ export const MakeAChange: Story = {
     });
     await userEvent.click(button);
   }),
+  render: (args) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [gitInfo, setGitInfo] = React.useState(args.gitInfo);
+    return (
+      <>
+        <button
+          type="button"
+          style={{ position: "absolute", right: 0, bottom: 0 }}
+          onClick={() => setGitInfo({ branch: "main", uncommittedHash: "changed-hash" })}
+        >
+          Change Git
+        </button>
+        <meta.component {...args} gitInfo={gitInfo} />
+      </>
+    );
+  },
   parameters: withFigmaDesign(
     "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318908&t=3EAIRe8423CpOQWY-4"
   ),
@@ -116,16 +132,23 @@ export const ChangesDetected: Story = {
   render: (args) => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const [gitInfo, setGitInfo] = React.useState(args.gitInfo);
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [localBuildProgress, setLocalBuildProgress] = React.useState(args.localBuildProgress);
     return (
       <>
         <button
           type="button"
-          style={{ opacity: 0, position: "absolute" }}
+          style={{ position: "absolute", right: 0, bottom: 0 }}
           onClick={() => setGitInfo({ branch: "main", uncommittedHash: "changed-hash" })}
         >
           Change Git
         </button>
-        <meta.component {...args} gitInfo={gitInfo} />
+        <meta.component
+          {...args}
+          gitInfo={gitInfo}
+          startDevBuild={() => setLocalBuildProgress(INITIAL_BUILD_PAYLOAD)}
+          localBuildProgress={localBuildProgress}
+        />
       </>
     );
   },
@@ -138,11 +161,40 @@ export const RunningFirstTest: Story = {
   ...ChangesDetected,
   args: {
     ...ChangesDetected.args,
-    localBuildProgress: {
-      ...INITIAL_BUILD_PAYLOAD,
-      buildProgressPercentage: 8,
-      currentStep: "build",
-    },
+  },
+  play: playAll(async ({ canvasElement }) => {
+    const button = await findByRole(canvasElement, "button", {
+      name: "Catch a UI change",
+    });
+    await userEvent.click(button);
+
+    const gitButton = await findByRole(canvasElement, "button", {
+      name: "Change Git",
+    });
+    await userEvent.click(gitButton);
+  }),
+  render: (args) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [gitInfo, setGitInfo] = React.useState(args.gitInfo);
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [localBuildProgress, setLocalBuildProgress] = React.useState(args.localBuildProgress);
+    return (
+      <>
+        <button
+          type="button"
+          style={{ position: "absolute", right: 0, bottom: 0 }}
+          onClick={() => setGitInfo({ branch: "main", uncommittedHash: "changed-hash" })}
+        >
+          Change Git
+        </button>
+        <meta.component
+          {...args}
+          gitInfo={gitInfo}
+          startDevBuild={() => setLocalBuildProgress(INITIAL_BUILD_PAYLOAD)}
+          localBuildProgress={localBuildProgress}
+        />
+      </>
+    );
   },
   parameters: withFigmaDesign(
     "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318481&t=3EAIRe8423CpOQWY-4"
@@ -150,6 +202,36 @@ export const RunningFirstTest: Story = {
 };
 
 export const ChangesFound: Story = {
+  ...RunningFirstTest,
+  render: (args) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [gitInfo, setGitInfo] = React.useState(args.gitInfo);
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [localBuildProgress, setLocalBuildProgress] = React.useState(args.localBuildProgress);
+    return (
+      <>
+        <button
+          type="button"
+          style={{ position: "absolute", right: 0, bottom: 0 }}
+          onClick={() => setGitInfo({ branch: "main", uncommittedHash: "changed-hash" })}
+        >
+          Change Git
+        </button>
+        <meta.component
+          {...args}
+          gitInfo={gitInfo}
+          startDevBuild={() =>
+            setLocalBuildProgress({
+              INITIAL_BUILD_PAYLOAD,
+              buildProgressPercentage: 100,
+              currentStep: "complete",
+            })
+          }
+          localBuildProgress={localBuildProgress}
+        />
+      </>
+    );
+  },
   parameters: withFigmaDesign(
     "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=352-258984&t=3EAIRe8423CpOQWY-4"
   ),
