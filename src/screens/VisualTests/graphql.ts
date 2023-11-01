@@ -21,6 +21,10 @@ export const QueryBuild = graphql(/* GraphQL */ `
         ...LastBuildOnBranchBuildFields
         ...SelectedBuildFields @skip(if: $hasSelectedBuildId)
       }
+      lastBuild {
+        id
+        slug
+      }
     }
     selectedBuild: build(id: $selectedBuildId) @include(if: $hasSelectedBuildId) {
       ...SelectedBuildFields

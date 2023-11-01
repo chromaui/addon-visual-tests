@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { findByRole, userEvent } from "@storybook/testing-library";
 import { graphql, HttpResponse } from "msw";
+import React from "react";
 
 import { INITIAL_BUILD_PAYLOAD } from "../../buildSteps";
 import { panelModes } from "../../modes";
@@ -18,7 +19,10 @@ const meta = {
     hasSelectedBuild: false,
     startDevBuild: () => { },
     localBuildProgress: undefined,
-    branch: "main",
+    gitInfo: {
+      uncommittedHash: "123",
+      branch: "main",
+    },
   },
   parameters: {
     chromatic: {
@@ -95,12 +99,51 @@ export const MakeAChange: Story = {
 };
 
 export const ChangesDetected: Story = {
+  args: {
+    ...BaselineSaved.args,
+  },
+  play: playAll(async ({ canvasElement }) => {
+    const button = await findByRole(canvasElement, "button", {
+      name: "Catch a UI change",
+    });
+    await userEvent.click(button);
+
+    const gitButton = await findByRole(canvasElement, "button", {
+      name: "Change Git",
+    });
+    await userEvent.click(gitButton);
+  }),
+  render: (args) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [gitInfo, setGitInfo] = React.useState(args.gitInfo);
+    return (
+      <>
+        <button
+          type="button"
+          style={{ opacity: 0, position: "absolute" }}
+          onClick={() => setGitInfo({ branch: "main", uncommittedHash: "changed-hash" })}
+        >
+          Change Git
+        </button>
+        <meta.component {...args} gitInfo={gitInfo} />
+      </>
+    );
+  },
   parameters: withFigmaDesign(
     "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-319115&t=3EAIRe8423CpOQWY-4"
   ),
 };
 
 export const RunningFirstTest: Story = {
+  ...ChangesDetected,
+  args: {
+    ...ChangesDetected.args,
+    localBuildProgress: {
+      ...INITIAL_BUILD_PAYLOAD,
+      buildProgressPercentage: 8,
+      currentStep: "build",
+    },
+  },
   parameters: withFigmaDesign(
     "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318481&t=3EAIRe8423CpOQWY-4"
   ),
