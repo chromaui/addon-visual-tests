@@ -122,7 +122,6 @@ interface SnapshotSectionProps {
   onAccept: (testId: StoryTestFieldsFragment["id"], batch?: ReviewTestBatch) => void;
   onUnaccept: (testId: StoryTestFieldsFragment["id"]) => void;
   setAccessToken: (accessToken: string | null) => void;
-  selectedBuild: SelectedBuildFieldsFragment;
   hidden?: boolean;
   storyId: string;
 }

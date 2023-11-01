@@ -14,6 +14,8 @@ import { interactionFailureTests, pendingBuild, pendingTests, withTests } from "
 import { SelectedBuildProvider } from "./SelectedBuildContext";
 import { SnapshotComparison } from "./SnapshotComparison";
 
+const build = { ...pendingBuild, startedAt: new Date() };
+
 const meta = {
   component: SnapshotComparison,
   decorators: [
@@ -30,14 +32,13 @@ const meta = {
     onAccept: action("onAccept"),
     onUnaccept: action("onUnaccept"),
     shouldSwitchToLastBuildOnBranch: false,
-    selectedBuild: pendingBuild,
     setAccessToken: action("setAccessToken"),
   },
   parameters: {
     chromatic: {
       modes: panelModes,
     },
-    selectedBuild: withTests(pendingBuild, pendingTests),
+    selectedBuild: withTests(build, pendingTests),
   },
 } satisfies Meta<typeof SnapshotComparison>;
 
@@ -47,7 +48,7 @@ type Story = StoryObj<typeof meta>;
 export const InProgress = {
   parameters: {
     selectedBuild: withTests(
-      pendingBuild,
+      build,
       makeTests({
         browsers: [Browser.Chrome, Browser.Safari],
         viewports: [
@@ -74,7 +75,7 @@ export const Default = {} satisfies Story;
 export const FirstPassed: Story = {
   parameters: {
     selectedBuild: withTests(
-      pendingBuild,
+      build,
       makeTests({
         browsers: [Browser.Chrome, Browser.Safari],
         viewports: [
@@ -93,7 +94,7 @@ export const FirstPassed: Story = {
 export const StoryAdded: Story = {
   parameters: {
     selectedBuild: withTests(
-      pendingBuild,
+      build,
       makeTests({
         browsers: [Browser.Chrome, Browser.Safari],
         viewports: [
@@ -120,7 +121,7 @@ export const ShowingBaseline: Story = {
 
 export const NoBaseline: Story = {
   parameters: {
-    selectedBuild: withTests(pendingBuild, [
+    selectedBuild: withTests(build, [
       makeTest({
         status: TestStatus.Pending,
         comparisons: [
@@ -137,7 +138,7 @@ export const NoBaseline: Story = {
 export const SwitchingMode = {
   parameters: {
     selectedBuild: withTests(
-      pendingBuild,
+      build,
       makeTests({
         browsers: [Browser.Chrome, Browser.Safari],
         viewports: [
@@ -190,7 +191,7 @@ export const SwitchingTests = {
     { parameters }: StoryContext<any>
   ) {
     const [build, setBuild] = React.useState<any>();
-    if (!build) setTimeout(() => setBuild(withTests(pendingBuild, [makeTest({})])), 0);
+    if (!build) setTimeout(() => setBuild(withTests(build, [makeTest({})])), 0);
     return (
       <SelectedBuildProvider watchState={build || parameters.selectedBuild}>
         <SnapshotComparison {...props} />
@@ -201,6 +202,6 @@ export const SwitchingTests = {
 
 export const InteractionFailure = {
   parameters: {
-    selectedBuild: withTests(pendingBuild, interactionFailureTests),
+    selectedBuild: withTests(build, interactionFailureTests),
   },
 };
