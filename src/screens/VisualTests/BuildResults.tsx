@@ -1,6 +1,6 @@
-import { Icons, Link, TooltipNote, WithTooltip } from "@storybook/components";
+import { Icons, Link } from "@storybook/components";
 import { styled } from "@storybook/theming";
-import React, { useState } from "react";
+import React from "react";
 
 import { BuildProgressInline } from "../../components/BuildProgressBarInline";
 import { Button } from "../../components/Button";
@@ -9,19 +9,18 @@ import { Eyebrow } from "../../components/Eyebrow";
 import { Heading } from "../../components/Heading";
 import { Section, Sections } from "../../components/layout";
 import { Text as CenterText } from "../../components/Text";
-import { getFragment } from "../../gql";
 import {
   BuildStatus,
   LastBuildOnBranchBuildFieldsFragment,
   ReviewTestBatch,
-  SelectedBuildFieldsFragment,
   StoryTestFieldsFragment,
   TestResult,
 } from "../../gql/graphql";
 import { LocalBuildProgress } from "../../types";
 import { BuildEyebrow } from "./BuildEyebrow";
-import { FragmentStoryTestFields } from "./graphql";
+import { useControlsDispatch, useControlsState } from "./ControlsContext";
 import { RenderSettings } from "./RenderSettings";
+import { useSelectedBuildState, useSelectedStoryState } from "./SelectedBuildContext";
 import { SnapshotComparison } from "./SnapshotComparison";
 import { Warnings } from "./Warnings";
 
@@ -29,10 +28,9 @@ interface BuildResultsProps {
   branch: string;
   dismissBuildError: () => void;
   localBuildProgress?: LocalBuildProgress;
-  selectedBuild: SelectedBuildFieldsFragment;
   storyId: string;
   lastBuildOnBranch?: LastBuildOnBranchBuildFieldsFragment;
-  lastBuildOnBranchCompletedStory: boolean;
+  lastBuildOnBranchIsReady: boolean;
   switchToLastBuildOnBranch?: () => void;
   startDevBuild: () => void;
   userCanReview: boolean;
@@ -55,36 +53,28 @@ export const BuildResults = ({
   dismissBuildError,
   localBuildProgress,
   lastBuildOnBranch,
-  lastBuildOnBranchCompletedStory,
+  lastBuildOnBranchIsReady,
   switchToLastBuildOnBranch,
   startDevBuild,
   userCanReview,
   isReviewing,
   onAccept,
   onUnaccept,
-  selectedBuild,
   storyId,
   setAccessToken,
 }: BuildResultsProps) => {
-  const [settingsVisible, setSettingsVisible] = useState(false);
-  const [warningsVisible, setWarningsVisible] = useState(false);
-  const [baselineImageVisible, setBaselineImageVisible] = useState(false);
-  const toggleBaselineImage = () => setBaselineImageVisible(!baselineImageVisible);
+  const { settingsVisible, warningsVisible } = useControlsState();
+  const { toggleSettings, toggleWarnings } = useControlsDispatch();
+
+  const selectedBuild = useSelectedBuildState();
+  const selectedStory = useSelectedStoryState();
+  if (!selectedBuild) throw new Error("No selected build");
 
   const isLocalBuildInProgress =
     localBuildProgress && localBuildProgress.currentStep !== "complete";
 
-  const storyTests = [
-    ...getFragment(
-      FragmentStoryTestFields,
-      selectedBuild && "testsForStory" in selectedBuild && selectedBuild.testsForStory
-        ? selectedBuild.testsForStory.nodes
-        : []
-    ),
-  ];
-
-  const isReviewable = lastBuildOnBranch?.id === selectedBuild?.id;
-  const isStorySuperseded = !isReviewable && lastBuildOnBranchCompletedStory;
+  const isReviewable = lastBuildOnBranch?.id === selectedBuild.id;
+  const isStorySuperseded = !isReviewable && lastBuildOnBranchIsReady;
   // Do we want to encourage them to switch to the next build?
   const shouldSwitchToLastBuildOnBranch = isStorySuperseded && !!switchToLastBuildOnBranch;
 
@@ -112,13 +102,12 @@ export const BuildResults = ({
     />
   );
 
-  // If there are no tests yet, there is no baseline for this story. User needs to create one.
-  const isCompletelyNewStory = "testsForStory" in selectedBuild && storyTests.length === 0;
+  const isNewStory = selectedStory?.hasTests && selectedStory?.tests.length === 0;
 
   const isLocalBuildProgressOnSelectedBuild =
     selectedBuild.id !== `Build:${localBuildProgress?.buildId}`;
 
-  if (isCompletelyNewStory) {
+  if (isNewStory) {
     return (
       <Sections>
         <Section grow>
@@ -151,7 +140,7 @@ export const BuildResults = ({
     );
   }
   // It shouldn't be possible for one test to be skipped but not all of them
-  const isSkipped = !!storyTests?.find((t) => t.result === TestResult.Skipped);
+  const isSkipped = !!selectedStory?.tests?.find((t) => t.result === TestResult.Skipped);
   if (isSkipped) {
     return (
       <Sections>
@@ -183,7 +172,6 @@ export const BuildResults = ({
   }
 
   const { status } = selectedBuild;
-  const startedAt = "startedAt" in selectedBuild && selectedBuild.startedAt;
   const isSelectedBuildStarting = [
     BuildStatus.Announced,
     BuildStatus.Published,
@@ -219,8 +207,6 @@ export const BuildResults = ({
         <SnapshotComparison
           hidden={settingsVisible || warningsVisible}
           {...{
-            tests: storyTests,
-            startedAt,
             isStarting: isSelectedBuildStarting,
             startDevBuild,
             isBuildFailed,
@@ -231,13 +217,7 @@ export const BuildResults = ({
             isReviewing,
             onAccept,
             onUnaccept,
-            baselineImageVisible,
-            toggleBaselineImage,
             selectedBuild,
-            setSettingsVisible,
-            settingsVisible,
-            setWarningsVisible,
-            warningsVisible,
             setAccessToken,
             storyId,
           }}
@@ -245,10 +225,10 @@ export const BuildResults = ({
       </Section>
 
       <Section grow hidden={!settingsVisible}>
-        <RenderSettings onClose={() => setSettingsVisible(false)} />
+        <RenderSettings onClose={() => toggleSettings(false)} />
       </Section>
       <Section grow hidden={!warningsVisible}>
-        <Warnings onClose={() => setWarningsVisible(false)} />
+        <Warnings onClose={() => toggleWarnings(false)} />
       </Section>
     </Sections>
   );

@@ -4,14 +4,15 @@ import { findByRole, userEvent } from "@storybook/testing-library";
 import { rest } from "msw";
 
 import { panelModes } from "../../modes";
-import { storyWrapper } from "../../utils/graphQLClient";
+import { GraphQLClientProvider } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
+import { storyWrapper } from "../../utils/storyWrapper";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
 import { Authentication } from "./Authentication";
 
 const meta = {
   component: Authentication,
-  decorators: [storyWrapper],
+  decorators: [storyWrapper(GraphQLClientProvider)],
   args: {
     setAccessToken: action("setAccessToken"),
     hasProjectId: false,

@@ -4,7 +4,8 @@ import { graphql } from "msw";
 
 import { ProjectQueryQuery } from "../../gql/graphql";
 import { panelModes } from "../../modes";
-import { storyWrapper } from "../../utils/graphQLClient";
+import { GraphQLClientProvider } from "../../utils/graphQLClient";
+import { storyWrapper } from "../../utils/storyWrapper";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
 import { LinkedProject } from "./LinkedProject";
 
@@ -22,7 +23,7 @@ const meta = {
     goToNext: action("goToNext"),
     setAccessToken: action("setAccessToken"),
   },
-  decorators: [storyWrapper],
+  decorators: [storyWrapper(GraphQLClientProvider)],
   parameters: {
     chromatic: {
       modes: panelModes,

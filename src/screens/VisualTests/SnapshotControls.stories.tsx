@@ -2,13 +2,14 @@ import { action } from "@storybook/addon-actions";
 import { expect } from "@storybook/jest";
 import type { Meta, StoryObj } from "@storybook/react";
 import { screen, userEvent, within } from "@storybook/testing-library";
-import React from "react";
 
 import { Browser, ComparisonResult, TestStatus } from "../../gql/graphql";
 import { panelModes } from "../../modes";
 import { playAll } from "../../utils/playAll";
 import { makeTest, makeTests } from "../../utils/storyData";
+import { storyWrapper } from "../../utils/storyWrapper";
 import { summarizeTests } from "../../utils/summarizeTests";
+import { ControlsProvider } from "./ControlsContext";
 import { Grid } from "./SnapshotComparison";
 import { SnapshotControls } from "./SnapshotControls";
 
@@ -20,6 +21,10 @@ const withTests = (tests: ReturnType<typeof makeTests>) => ({
 
 const meta = {
   component: SnapshotControls,
+  decorators: [
+    storyWrapper(ControlsProvider, () => ({ initialState: { diffVisible: true } })),
+    storyWrapper(Grid),
+  ],
   args: {
     ...withTests(
       makeTests({
@@ -42,16 +47,7 @@ const meta = {
     isReviewing: false,
     onAccept: action("onAccept"),
     onUnaccept: action("onUnaccept"),
-    diffVisible: true,
-    setDiffVisible: action("setDiffVisible"),
   },
-  decorators: [
-    (Story) => (
-      <Grid>
-        <Story />
-      </Grid>
-    ),
-  ],
   parameters: {
     chromatic: {
       modes: panelModes,

@@ -1,7 +1,7 @@
 import { Loader } from "@storybook/components";
 import { Link } from "@storybook/design-system";
 import { styled } from "@storybook/theming";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import { Text } from "../../components/layout";
 import { SnapshotImage } from "../../components/SnapshotImage";
@@ -16,6 +16,8 @@ import {
 import { summarizeTests } from "../../utils/summarizeTests";
 import { useTests } from "../../utils/useTests";
 import { BuildResultsFooter } from "./BuildResultsFooter";
+import { useControlsDispatch, useControlsState } from "./ControlsContext";
+import { useSelectedBuildState, useSelectedStoryState } from "./SelectedBuildContext";
 import { SnapshotControls } from "./SnapshotControls";
 import { StoryInfo } from "./StoryInfo";
 
@@ -109,8 +111,6 @@ const WarningText = styled(Text)(({ theme }) => ({
 }));
 
 interface SnapshotSectionProps {
-  tests?: StoryTestFieldsFragment[];
-  startedAt: Date;
   isStarting: boolean;
   startDevBuild: () => void;
   isBuildFailed: boolean;
@@ -119,23 +119,15 @@ interface SnapshotSectionProps {
   userCanReview: boolean;
   isReviewable: boolean;
   isReviewing: boolean;
-  baselineImageVisible: boolean;
-  toggleBaselineImage: () => void;
   onAccept: (testId: StoryTestFieldsFragment["id"], batch?: ReviewTestBatch) => void;
   onUnaccept: (testId: StoryTestFieldsFragment["id"]) => void;
   setAccessToken: (accessToken: string | null) => void;
   selectedBuild: SelectedBuildFieldsFragment;
-  setSettingsVisible: (visible: boolean) => void;
-  setWarningsVisible: (visible: boolean) => void;
-  settingsVisible: boolean;
-  warningsVisible: boolean;
   hidden?: boolean;
   storyId: string;
 }
 
 export const SnapshotComparison = ({
-  tests = [],
-  startedAt,
   isStarting,
   startDevBuild,
   isBuildFailed,
@@ -146,23 +138,21 @@ export const SnapshotComparison = ({
   isReviewing,
   onAccept,
   onUnaccept,
-  baselineImageVisible,
-  toggleBaselineImage,
   setAccessToken,
-  selectedBuild,
-  setSettingsVisible,
-  setWarningsVisible,
-  settingsVisible,
-  warningsVisible,
   hidden,
   storyId,
 }: SnapshotSectionProps) => {
-  const [diffVisible, setDiffVisible] = useState(true);
-  const [focusVisible] = useState(false);
-  const testControls = useTests(tests);
+  const { baselineImageVisible, diffVisible, focusVisible } = useControlsState();
+  const { toggleBaselineImage, toggleSettings, toggleWarnings } = useControlsDispatch();
+
+  const selectedBuild = useSelectedBuildState();
+  const startedAt: Date = "startedAt" in selectedBuild && selectedBuild.startedAt;
+
+  const selectedStory = useSelectedStoryState();
+  const { tests } = selectedStory;
 
   const prevStoryIdRef = React.useRef(storyId);
-  const prevSelectedComparisonIdRef = React.useRef(testControls.selectedComparison?.id);
+  const prevSelectedComparisonIdRef = React.useRef(selectedStory.selectedComparison?.id);
   const prevSelectedBuildIdRef = React.useRef(selectedBuild.id);
 
   React.useEffect(() => {
@@ -170,24 +160,23 @@ export const SnapshotComparison = ({
     // This is most important for the baseline image toggle because baseline can not exist for a different story.
     if (
       prevStoryIdRef.current !== storyId ||
-      prevSelectedComparisonIdRef.current !== testControls.selectedComparison?.id ||
+      prevSelectedComparisonIdRef.current !== selectedStory.selectedComparison?.id ||
       prevSelectedBuildIdRef.current !== selectedBuild.id
     ) {
-      if (baselineImageVisible) toggleBaselineImage();
-      setSettingsVisible(false);
-      setWarningsVisible(false);
+      toggleBaselineImage(false);
+      toggleSettings(false);
+      toggleWarnings(false);
     }
-    prevSelectedComparisonIdRef.current = testControls.selectedComparison?.id;
+    prevSelectedComparisonIdRef.current = selectedStory.selectedComparison?.id;
     prevStoryIdRef.current = storyId;
     prevSelectedBuildIdRef.current = selectedBuild.id;
   }, [
-    baselineImageVisible,
     selectedBuild.id,
-    setSettingsVisible,
-    setWarningsVisible,
     storyId,
-    testControls,
+    selectedStory,
     toggleBaselineImage,
+    toggleSettings,
+    toggleWarnings,
   ]);
 
   const storyInfo = (
@@ -210,7 +199,7 @@ export const SnapshotComparison = ({
 
   const testSummary = summarizeTests(tests);
   const { isInProgress } = testSummary;
-  const { selectedTest, selectedComparison } = testControls;
+  const { selectedTest, selectedComparison } = selectedStory;
 
   // isNewStory is when the story itself is added and all tests should also be added
   const isNewStory = tests.every(
@@ -242,9 +231,10 @@ export const SnapshotComparison = ({
           {storyInfo}
 
           <SnapshotControls
-            {...testControls}
+            selectedBuild={selectedBuild}
+            hasBaselineSnapshot={!!selectedComparison?.baseCapture?.captureImage}
+            {...selectedStory}
             {...testSummary}
-            {...{ diffVisible, setDiffVisible }}
             {...{ userCanReview, isReviewable, isReviewing, onAccept, onUnaccept }}
           />
         </Grid>
@@ -309,17 +299,7 @@ export const SnapshotComparison = ({
         )}
       </MainSection>
       <FooterSection>
-        <BuildResultsFooter
-          hasBaselineSnapshot={!!selectedComparison?.baseCapture?.captureImage}
-          setAccessToken={setAccessToken}
-          baselineImageVisible={baselineImageVisible}
-          selectedBuild={selectedBuild}
-          toggleBaselineImage={toggleBaselineImage}
-          setSettingsVisible={setSettingsVisible}
-          setWarningsVisible={setWarningsVisible}
-          settingsVisible={settingsVisible}
-          warningsVisible={warningsVisible}
-        />
+        <BuildResultsFooter setAccessToken={setAccessToken} {...testSummary} />
       </FooterSection>
     </ParentGrid>
   );

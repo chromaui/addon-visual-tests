@@ -2,13 +2,14 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { graphql } from "msw";
 
 import { panelModes } from "../../modes";
-import { storyWrapper } from "../../utils/graphQLClient";
+import { GraphQLClientProvider } from "../../utils/graphQLClient";
+import { storyWrapper } from "../../utils/storyWrapper";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
 import { Onboarding } from "./Onboarding";
 
 const meta = {
   component: Onboarding,
-  decorators: [storyWrapper],
+  decorators: [storyWrapper(GraphQLClientProvider)],
   parameters: {
     chromatic: {
       modes: panelModes,

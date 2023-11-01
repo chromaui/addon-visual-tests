@@ -5,14 +5,15 @@ import { graphql } from "msw";
 
 import { SelectProjectsQueryQuery } from "../../gql/graphql";
 import { panelModes } from "../../modes";
-import { storyWrapper } from "../../utils/graphQLClient";
+import { GraphQLClientProvider } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
+import { storyWrapper } from "../../utils/storyWrapper";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
 import { LinkProject } from "./LinkProject";
 
 const meta = {
   component: LinkProject,
-  decorators: [storyWrapper],
+  decorators: [storyWrapper(GraphQLClientProvider)],
   args: {
     createdProjectId: undefined,
     onUpdateProject: action("updateProject"),

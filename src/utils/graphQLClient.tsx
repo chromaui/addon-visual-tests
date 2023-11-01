@@ -106,8 +106,6 @@ export const client = new Client({
   fetchOptions: getFetchOptions(), // Auth header (token) is handled by authExchange
 });
 
-export const storyWrapper = (Story: any) => (
-  <Provider value={client}>
-    <Story />
-  </Provider>
-);
+export const GraphQLClientProvider = ({ children }: { children: React.ReactNode }) => {
+  return <Provider value={client}>{children}</Provider>;
+};
