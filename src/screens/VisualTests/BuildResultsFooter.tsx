@@ -1,60 +1,24 @@
-import { Icons, TooltipNote, WithTooltip } from "@storybook/components";
 import React from "react";
 
 import { BrowserSelector } from "../../components/BrowserSelector";
 import { FooterMenu } from "../../components/FooterMenu";
-import { IconButton } from "../../components/IconButton";
-import { Bar, Col, Section, Sections, Text } from "../../components/layout";
+import { Bar, Col, Section } from "../../components/layout";
 import { ModeSelector } from "../../components/ModeSelector";
-import { SelectedBuildFieldsFragment, TestStatus } from "../../gql/graphql";
-import { summarizeTests } from "../../utils/summarizeTests";
-import { useControlsDispatch, useControlsState } from "./ControlsContext";
-import { useSelectedBuildState, useSelectedStoryState } from "./SelectedBuildContext";
+import { TestStatus } from "../../gql/graphql";
+import { useSelectedStoryState } from "./SelectedBuildContext";
 
 export const BuildResultsFooter = ({
-  browserResults,
-  modeResults,
   setAccessToken,
 }: {
-  browserResults: ReturnType<typeof summarizeTests>["browserResults"];
-  modeResults: ReturnType<typeof summarizeTests>["modeResults"];
   setAccessToken: (token: string | null) => void;
 }) => {
-  const { baselineImageVisible } = useControlsState();
-  const { toggleBaselineImage } = useControlsDispatch();
-  const selectedBuild = useSelectedBuildState();
   const storyState = useSelectedStoryState();
-
-  const hasBaselineSnapshot = !!storyState.selectedComparison?.baseCapture?.captureImage;
+  const { browserResults, modeResults } = storyState.summary;
 
   return (
     <Section>
       <Bar>
-        {hasBaselineSnapshot && (
-          <Col>
-            <WithTooltip
-              tooltip={<TooltipNote note="Switch snapshot" />}
-              trigger="hover"
-              hasChrome={false}
-            >
-              <IconButton aria-label="Switch snapshot" onClick={() => toggleBaselineImage()}>
-                <Icons icon="transfer" />
-              </IconButton>
-            </WithTooltip>
-          </Col>
-        )}
-        <Col style={{ overflow: "hidden", whiteSpace: "nowrap" }}>
-          {baselineImageVisible ? (
-            <Text style={{ marginLeft: 5, width: "100%" }}>
-              <b>Baseline</b> Build {selectedBuild.number} on {selectedBuild.branch}
-            </Text>
-          ) : (
-            <Text style={{ marginLeft: 5, width: "100%" }}>
-              <b>Latest</b> Build {selectedBuild.number} on {selectedBuild.branch}
-            </Text>
-          )}
-        </Col>
-        {/* {modeResults.length > 0 && (
+        {modeResults.length > 0 && (
           <ModeSelector
             isAccepted={storyState.summary.status === TestStatus.Accepted}
             selectedMode={storyState.selectedTest.mode}
@@ -69,7 +33,7 @@ export const BuildResultsFooter = ({
             browserResults={browserResults}
             onSelectBrowser={storyState.onSelectBrowser}
           />
-        )} */}
+        )}
         {/* <Col push>
         <WithTooltip
           tooltip={<TooltipNote note="Render settings" />}

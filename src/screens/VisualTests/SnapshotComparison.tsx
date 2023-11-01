@@ -1,20 +1,18 @@
 import { Loader } from "@storybook/components";
 import { Link } from "@storybook/design-system";
 import { styled } from "@storybook/theming";
-import React, { useState } from "react";
+import React from "react";
 
 import { Text } from "../../components/layout";
 import { SnapshotImage } from "../../components/SnapshotImage";
 import {
   ComparisonResult,
   ReviewTestBatch,
-  SelectedBuildFieldsFragment,
   StoryTestFieldsFragment,
   TestResult,
   TestStatus,
 } from "../../gql/graphql";
 import { summarizeTests } from "../../utils/summarizeTests";
-import { useTests } from "../../utils/useTests";
 import { BuildResultsFooter } from "./BuildResultsFooter";
 import { useControlsDispatch, useControlsState } from "./ControlsContext";
 import { useSelectedBuildState, useSelectedStoryState } from "./SelectedBuildContext";
@@ -230,10 +228,6 @@ export const SnapshotComparison = ({
           {storyInfo}
 
           <SnapshotControls
-            selectedBuild={selectedBuild}
-            hasBaselineSnapshot={!!selectedComparison?.baseCapture?.captureImage}
-            {...selectedStory}
-            {...testSummary}
             {...{ userCanReview, isReviewable, isReviewing, onAccept, onUnaccept }}
           />
         </Grid>
