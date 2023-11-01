@@ -13,6 +13,7 @@ import {
 import { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from "../../types";
 import { statusMap, testsToStatusUpdate } from "../../utils/testsToStatusUpdate";
 import { SelectedBuildInfo, updateSelectedBuildInfo } from "../../utils/updateSelectedBuildInfo";
+import { Onboarding } from "../Onboarding/Onboarding";
 import { BuildResults } from "./BuildResults";
 import {
   FragmentLastBuildOnBranchBuildFields,
@@ -88,6 +89,9 @@ export const VisualTestsWithoutSelectedBuildId = ({
 
   const [{ fetching: isReviewing }, reviewTest] = useMutation(MutationReviewTest);
 
+  // if there is no initial build, make them go through onboarding. This will not survive a refresh if they run the initial build step and restart storybook before they've run it.
+  const [shouldShowOnboarding, setShouldShowOnboarding] = useState(() => !data?.project?.lastBuild);
+
   const onReview = useCallback(
     async (
       status: ReviewTestInputStatus.Accepted | ReviewTestInputStatus.Pending,
@@ -110,9 +114,8 @@ export const VisualTestsWithoutSelectedBuildId = ({
             // @ts-expect-error we need a better API for not passing a link
             link: undefined,
             content: {
-              headline: `Failed to ${
-                status === ReviewTestInputStatus.Accepted ? "accept" : "unaccept"
-              } changes`,
+              headline: `Failed to ${status === ReviewTestInputStatus.Accepted ? "accept" : "unaccept"
+                } changes`,
               subHeadline: err.message,
             },
             icon: {
@@ -158,7 +161,7 @@ export const VisualTestsWithoutSelectedBuildId = ({
   const selectedBuild = getFragment(
     FragmentSelectedBuildFields,
     data?.selectedBuild ??
-      (lastBuildOnBranchCompletedStory ? data?.project?.lastBuildOnBranch : undefined)
+    (lastBuildOnBranchCompletedStory ? data?.project?.lastBuildOnBranch : undefined)
   );
 
   const selectedBuildHasCorrectBranch = selectedBuild?.branch === gitInfo.branch;
@@ -216,6 +219,24 @@ export const VisualTestsWithoutSelectedBuildId = ({
     [setSelectedBuildInfo, canSwitchToLastBuildOnBranch, lastBuildOnBranch?.id, storyId]
   );
 
+  if (shouldShowOnboarding) {
+    return (
+      <Onboarding
+        {...{
+          gitInfo,
+          projectId,
+          setShouldShowOnboarding,
+          setAccessToken,
+          startDevBuild,
+          updateBuildStatus,
+          onCompleteOnboarding: () => {
+            setShouldShowOnboarding(false);
+            // TODO: Use a mutation to set a flag `hasOnboardedVTAddon. Similar to the `hasOnboarded` flag in Chromatic webapp
+          },
+        }}
+      />
+    );
+  }
   return !selectedBuildHasCorrectBranch || !selectedBuild || storyDataIsStale || queryError ? (
     <NoBuild
       {...{

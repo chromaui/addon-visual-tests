@@ -1,4 +1,5 @@
 import { Icons } from "@storybook/components";
+import { Icon } from "@storybook/design-system";
 import React from "react";
 import { CombinedError, gql, useQuery } from "urql";
 
@@ -9,7 +10,7 @@ import { Heading } from "../../components/Heading";
 import { VisualTestsIcon } from "../../components/icons/VisualTestsIcon";
 import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
-import { LocalBuildProgress } from "../../types";
+import { GitInfoPayload, LocalBuildProgress } from "../../types";
 
 const ProjectQuery = gql`
   query ProjectQuery($projectId: ID!) {
@@ -26,34 +27,26 @@ const ProjectQuery = gql`
 `;
 
 interface NoBuildProps {
-  queryError?: CombinedError;
-  hasData: boolean;
-  hasSelectedBuild: boolean;
+  // queryError?: CombinedError;
+  // hasData: boolean;
+  // hasSelectedBuild: boolean;
   startDevBuild: () => void;
   localBuildProgress?: LocalBuildProgress;
-  branch: string;
+  gitInfo: Pick<GitInfoPayload, "uncommittedHash" | "branch">;
 }
 
-export const Onboarding = ({
-  queryError,
-  hasData,
-  hasSelectedBuild,
-  startDevBuild,
-  localBuildProgress,
-  branch,
-}: NoBuildProps) => {
-  // TODO: Remove and match other components loading pattern
-  const [{ data, fetching, error }] = useQuery({
-    query: ProjectQuery,
-    variables: { projectId: "5fa3f227c1c504002259feba" },
-  });
+type OnboardingScreen = "onboarding" | "catchAChange" | "changesDetected";
+
+export const Onboarding = ({ startDevBuild, localBuildProgress, gitInfo }: NoBuildProps) => {
+  const screen = React.useState<OnboardingScreen>();
 
   const [catchAChange, setCatchAChange] = React.useState(false);
   const [initialGitHash, setInitialGitHash] = React.useState("");
   const onCatchAChange = () => {
-    setInitialGitHash("Give it a value");
+    setInitialGitHash(gitInfo.uncommittedHash);
     setCatchAChange(true);
   };
+  const [runningSecondBuild, setRunningSecondBuild] = React.useState(false);
 
   // TODO: Add stories and logic for error handling
   if (localBuildProgress && localBuildProgress.currentStep === "error") {
@@ -61,7 +54,6 @@ export const Onboarding = ({
   }
 
   if (!localBuildProgress) {
-    // TODO: When the build is complete, prompt user to make a change
     return (
       <Container>
         <Stack>
@@ -79,7 +71,12 @@ export const Onboarding = ({
     );
   }
 
-  if (localBuildProgress && localBuildProgress.currentStep === "complete") {
+  if (
+    localBuildProgress &&
+    localBuildProgress.currentStep === "complete" &&
+    !catchAChange &&
+    !runningSecondBuild
+  ) {
     return (
       <Container>
         <Stack>
@@ -89,14 +86,19 @@ export const Onboarding = ({
           <img src="/Snapshot-Preview.png" alt="Snapshot Preview" />
           <p>Let’s see the superpower of catching visual changes.</p>
           <Button small secondary onClick={onCatchAChange}>
-            Catch a UI Change
+            Catch a UI change
           </Button>
         </Stack>
       </Container>
     );
   }
 
-  if (localBuildProgress && localBuildProgress.currentStep === "complete" && catchAChange) {
+  if (
+    localBuildProgress &&
+    localBuildProgress.currentStep === "complete" &&
+    catchAChange &&
+    initialGitHash === gitInfo.uncommittedHash
+  ) {
     return (
       <Container>
         <Stack>
@@ -111,9 +113,46 @@ export const Onboarding = ({
           <p>Change the layout</p>
 
           <p>Let’s see the superpower of catching visual changes.</p>
-          <Button small secondary onClick={onCatchAChange}>
-            Catch a UI Change
-          </Button>
+          {initialGitHash === gitInfo.uncommittedHash ? (
+            <p>Make a change to this story</p>
+          ) : (
+            <p>Changes detecte!</p>
+          )}
+        </Stack>
+      </Container>
+    );
+  }
+
+  if (
+    localBuildProgress &&
+    localBuildProgress.currentStep === "complete" &&
+    catchAChange &&
+    initialGitHash !== gitInfo.uncommittedHash
+  ) {
+    return (
+      <Container>
+        <Stack>
+          <VisualTestsIcon />
+          <Heading>Changes detected</Heading>
+          <Text>
+            Time to run your first visual test! Visual tests will pinpoint the exact changes made to
+            this Story.
+          </Text>
+          {localBuildProgress ? (
+            <BuildProgressInline localBuildProgress={localBuildProgress} />
+          ) : (
+            <Button
+              small
+              secondary
+              onClick={() => {
+                setRunningSecondBuild(true);
+                startDevBuild();
+              }}
+            >
+              <Icons icon="play" />
+              Run visual tests
+            </Button>
+          )}
         </Stack>
       </Container>
     );
@@ -136,13 +175,5 @@ export const Onboarding = ({
     );
   }
   // TODO: We shouldn't need a default case like this
-  return (
-    <Container>
-      <Stack>
-        {fetching && <p>Loading...</p>}
-        {error && <p>{error.message}</p>}
-        {data?.project && { Content }}
-      </Stack>
-    </Container>
-  );
+  return <Container>No Screen Selected</Container>;
 };
