@@ -87,6 +87,7 @@ export const SnapshotControls = ({
     return (
       <Controls>
         <Placeholder />
+        {modeResults.length > 1 && <Placeholder width={50} marginLeft={-5} />}
         <Placeholder />
         <Placeholder />
       </Controls>
