@@ -19,13 +19,17 @@ const browserIcons = {
   [Browser.Edge]: <EdgeIcon alt="Edge" aria-label="Edge" />,
 } as const;
 
-const IconWrapper = styled.div({
+const IconWrapper = styled.div(({ theme }) => ({
+  display: "inline-flex",
+  alignItems: "center",
+  gap: 6,
   height: 16,
   margin: "6px 7px",
+  color: `${theme.color.defaultText}99`,
   svg: {
     verticalAlign: "top",
   },
-});
+}));
 
 type BrowserData = Pick<BrowserInfo, "id" | "key" | "name">;
 
@@ -79,10 +83,14 @@ export const BrowserSelector = ({
       {links ? (
         <TooltipMenu placement="bottom" links={links}>
           {icon}
+          {selectedBrowser.name}
           <ArrowIcon icon="arrowdown" />
         </TooltipMenu>
       ) : (
-        <IconWrapper>{icon}</IconWrapper>
+        <IconWrapper>
+          {icon}
+          {selectedBrowser.name}
+        </IconWrapper>
       )}
     </WithTooltip>
   );
