@@ -172,6 +172,11 @@ export const RunningFirstTest: Story = {
       name: "Change Git",
     });
     await userEvent.click(gitButton);
+
+    const runTestsButton = await findByRole(canvasElement, "button", {
+      name: "Run visual tests",
+    });
+    await userEvent.click(runTestsButton);
   }),
   render: (args) => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -190,7 +195,13 @@ export const RunningFirstTest: Story = {
         <meta.component
           {...args}
           gitInfo={gitInfo}
-          startDevBuild={() => setLocalBuildProgress(INITIAL_BUILD_PAYLOAD)}
+          startDevBuild={() =>
+            setLocalBuildProgress({
+              ...INITIAL_BUILD_PAYLOAD,
+              currentStep: "upload",
+              buildProgressPercentage: 30,
+            })
+          }
           localBuildProgress={localBuildProgress}
         />
       </>
