@@ -5,14 +5,12 @@ import React from "react";
 import { BrowserSelector } from "../../components/BrowserSelector";
 import { IconButton } from "../../components/IconButton";
 import { ProgressIcon } from "../../components/icons/ProgressIcon";
-import { Text } from "../../components/layout";
 import { ModeSelector } from "../../components/ModeSelector";
 import { Placeholder } from "../../components/Placeholder";
 import { TooltipMenu } from "../../components/TooltipMenu";
 import {
   ComparisonResult,
   ReviewTestBatch,
-  SelectedBuildFieldsFragment,
   StoryTestFieldsFragment,
   TestStatus,
 } from "../../gql/graphql";
@@ -38,7 +36,6 @@ const Actions = styled.div(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   justifyContent: "flex-end",
-  // gap: 6,
 
   "@container (min-width: 800px)": {
     borderLeft: `1px solid ${theme.appBorderColor}`,
@@ -51,7 +48,6 @@ type TestSummary = ReturnType<typeof summarizeTests>;
 type TestControls = ReturnType<typeof useTests>;
 
 interface SnapshotSectionProps {
-  selectedBuild: SelectedBuildFieldsFragment;
   selectedTest: StoryTestFieldsFragment;
   selectedComparison: StoryTestFieldsFragment["comparisons"][0];
   status: TestSummary["status"];
@@ -66,16 +62,13 @@ interface SnapshotSectionProps {
   isReviewing: boolean;
   onAccept: (testId: StoryTestFieldsFragment["id"], batch?: ReviewTestBatch) => void;
   onUnaccept: (testId: StoryTestFieldsFragment["id"]) => void;
-  hasBaselineSnapshot: boolean;
 }
 
 export const SnapshotControls = ({
   status,
   changeCount,
-  selectedBuild,
   selectedTest,
   selectedComparison,
-  hasBaselineSnapshot,
   userCanReview,
   isInProgress,
   isReviewable,
@@ -87,8 +80,8 @@ export const SnapshotControls = ({
   onSelectMode,
   onSelectBrowser,
 }: SnapshotSectionProps) => {
-  const { diffVisible, baselineImageVisible } = useControlsState();
-  const { toggleDiff, toggleBaselineImage } = useControlsDispatch();
+  const { diffVisible } = useControlsState();
+  const { toggleDiff } = useControlsDispatch();
 
   if (isInProgress)
     return (
@@ -121,27 +114,6 @@ export const SnapshotControls = ({
             onSelectBrowser={onSelectBrowser}
           />
         )}
-        {/* {hasBaselineSnapshot && (
-          <WithTooltip
-            tooltip={<TooltipNote note="Switch snapshot" />}
-            trigger="hover"
-            hasChrome={false}
-          >
-            <IconButton data-testid="button-toggle-snapshot" onClick={() => toggleBaselineImage()}>
-              <Icons icon="transfer" />
-            </IconButton>
-          </WithTooltip>
-        )}
-        {baselineImageVisible ? (
-          <Text style={{ marginLeft: 5, width: "100%" }}>
-            <b>Baseline</b> Build {selectedBuild.number} on {selectedBuild.branch}
-          </Text>
-        ) : (
-          <Text style={{ marginLeft: 5, width: "100%" }}>
-            <b>Latest</b> Build {selectedBuild.number} on {selectedBuild.branch}
-          </Text>
-        )} */}
-
         {selectedComparison?.result === ComparisonResult.Changed && (
           <WithTooltip
             tooltip={<TooltipNote note="Toggle diff" />}
