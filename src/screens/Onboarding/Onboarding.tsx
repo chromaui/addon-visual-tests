@@ -127,7 +127,8 @@ export const Onboarding = ({ startDevBuild, localBuildProgress, gitInfo }: NoBui
     localBuildProgress &&
     localBuildProgress.currentStep === "complete" &&
     catchAChange &&
-    initialGitHash !== gitInfo.uncommittedHash
+    initialGitHash !== gitInfo.uncommittedHash &&
+    !runningSecondBuild
   ) {
     return (
       <Container>
@@ -138,7 +139,7 @@ export const Onboarding = ({ startDevBuild, localBuildProgress, gitInfo }: NoBui
             Time to run your first visual test! Visual tests will pinpoint the exact changes made to
             this Story.
           </Text>
-          {localBuildProgress ? (
+          {localBuildProgress.currentStep !== "complete" ? (
             <BuildProgressInline localBuildProgress={localBuildProgress} />
           ) : (
             <Button
@@ -157,6 +158,30 @@ export const Onboarding = ({ startDevBuild, localBuildProgress, gitInfo }: NoBui
       </Container>
     );
   }
+
+  if (
+    localBuildProgress &&
+    catchAChange &&
+    initialGitHash !== gitInfo.uncommittedHash &&
+    runningSecondBuild
+  ) {
+    return (
+      <Container>
+        <Stack>
+          <VisualTestsIcon />
+          <Heading>Changes detected</Heading>
+          <Text>
+            Time to run your first visual test! Visual tests will pinpoint the exact changes made to
+            this Story.
+          </Text>
+          <BuildProgressInline localBuildProgress={localBuildProgress} />
+        </Stack>
+      </Container>
+    );
+  }
+
+  // And then, somehow, we need to enter into the popup guided tour with "Changes found!" pointing to real changes.
+  // What if there are no changes in the latest build? Do we just assume that there are? Do we need to show the onboarding multiple times? At least until there are changes?
 
   if (localBuildProgress && localBuildProgress.currentStep !== "error") {
     // When the build is in progress, show the build progress bar
