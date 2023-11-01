@@ -190,10 +190,10 @@ export const SwitchingTests = {
     { ...props }: ComponentProps<typeof SnapshotComparison>,
     { parameters }: StoryContext<any>
   ) {
-    const [build, setBuild] = React.useState<any>();
-    if (!build) setTimeout(() => setBuild(withTests(build, [makeTest({})])), 0);
+    const [activeBuild, setBuild] = React.useState<any>();
+    if (!activeBuild) setTimeout(() => setBuild(withTests(build, [makeTest({})])), 0);
     return (
-      <SelectedBuildProvider watchState={build || parameters.selectedBuild}>
+      <SelectedBuildProvider watchState={activeBuild || parameters.selectedBuild}>
         <SnapshotComparison {...props} />
       </SelectedBuildProvider>
     );
