@@ -10,6 +10,7 @@ import { makeTest, makeTests } from "../../utils/storyData";
 import { storyWrapper } from "../../utils/storyWrapper";
 import { summarizeTests } from "../../utils/summarizeTests";
 import { ControlsProvider } from "./ControlsContext";
+import { ReviewTestProvider } from "./ReviewTestContext";
 import { Grid } from "./SnapshotComparison";
 import { SnapshotControls } from "./SnapshotControls";
 
@@ -22,6 +23,16 @@ const withTests = (tests: ReturnType<typeof makeTests>) => ({
 const meta = {
   component: SnapshotControls,
   decorators: [
+    storyWrapper(ReviewTestProvider, (ctx) => ({
+      watchState: {
+        isReviewing: false,
+        userCanReview: true,
+        buildIsReviewable: true,
+        acceptTest: action("acceptTest"),
+        unacceptTest: action("unacceptTest"),
+        ...ctx.parameters.reviewTest,
+      },
+    })),
     storyWrapper(ControlsProvider, () => ({ initialState: { diffVisible: true } })),
     storyWrapper(Grid),
   ],
@@ -42,11 +53,6 @@ const meta = {
     ),
     onSelectMode: action("onSelectMode"),
     onSelectBrowser: action("onSelectBrowser"),
-    userCanReview: true,
-    isReviewable: true,
-    isReviewing: false,
-    onAccept: action("onAccept"),
-    onUnaccept: action("onUnaccept"),
   },
   parameters: {
     chromatic: {
@@ -78,9 +84,11 @@ export const WithMultipleTestsInProgress = {
 } satisfies Story;
 
 export const WithSingleTestAccepting = {
-  args: {
-    ...WithSingleTest.args,
-    isReviewing: true,
+  args: WithSingleTest.args,
+  parameters: {
+    reviewTest: {
+      isReviewing: true,
+    },
   },
 } satisfies Story;
 
@@ -89,9 +97,11 @@ export const WithSingleTestAccepted = {
 } satisfies Story;
 
 export const WithSingleTestUnreviewable = {
-  args: {
-    ...WithSingleTest.args,
-    isReviewable: false,
+  args: WithSingleTest.args,
+  parameters: {
+    reviewTest: {
+      buildIsReviewable: false,
+    },
   },
 } satisfies Story;
 

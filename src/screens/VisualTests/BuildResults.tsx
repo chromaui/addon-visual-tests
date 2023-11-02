@@ -9,17 +9,12 @@ import { Eyebrow } from "../../components/Eyebrow";
 import { Heading } from "../../components/Heading";
 import { Section, Sections } from "../../components/layout";
 import { Text as CenterText } from "../../components/Text";
-import {
-  BuildStatus,
-  LastBuildOnBranchBuildFieldsFragment,
-  ReviewTestBatch,
-  StoryTestFieldsFragment,
-  TestResult,
-} from "../../gql/graphql";
+import { BuildStatus, LastBuildOnBranchBuildFieldsFragment, TestResult } from "../../gql/graphql";
 import { LocalBuildProgress } from "../../types";
 import { BuildEyebrow } from "./BuildEyebrow";
 import { useControlsDispatch, useControlsState } from "./ControlsContext";
 import { RenderSettings } from "./RenderSettings";
+import { useReviewTestState } from "./ReviewTestContext";
 import { useSelectedBuildState, useSelectedStoryState } from "./SelectedBuildContext";
 import { SnapshotComparison } from "./SnapshotComparison";
 import { Warnings } from "./Warnings";
@@ -33,10 +28,6 @@ interface BuildResultsProps {
   lastBuildOnBranchIsReady: boolean;
   switchToLastBuildOnBranch?: () => void;
   startDevBuild: () => void;
-  userCanReview: boolean;
-  isReviewing: boolean;
-  onAccept: (testId: StoryTestFieldsFragment["id"], batch?: ReviewTestBatch) => void;
-  onUnaccept: (testId: string) => Promise<void>;
   setAccessToken: (accessToken: string | null) => void;
 }
 
@@ -56,10 +47,6 @@ export const BuildResults = ({
   lastBuildOnBranchIsReady,
   switchToLastBuildOnBranch,
   startDevBuild,
-  userCanReview,
-  isReviewing,
-  onAccept,
-  onUnaccept,
   storyId,
   setAccessToken,
 }: BuildResultsProps) => {
@@ -68,13 +55,13 @@ export const BuildResults = ({
 
   const selectedBuild = useSelectedBuildState();
   const selectedStory = useSelectedStoryState();
-  if (!selectedBuild) throw new Error("No selected build");
+
+  const { buildIsReviewable, userCanReview } = useReviewTestState();
 
   const isLocalBuildInProgress =
     localBuildProgress && localBuildProgress.currentStep !== "complete";
 
-  const isReviewable = lastBuildOnBranch?.id === selectedBuild.id;
-  const isStorySuperseded = !isReviewable && lastBuildOnBranchIsReady;
+  const isStorySuperseded = !buildIsReviewable && lastBuildOnBranchIsReady;
   // Do we want to encourage them to switch to the next build?
   const shouldSwitchToLastBuildOnBranch = isStorySuperseded && !!switchToLastBuildOnBranch;
 
@@ -84,7 +71,7 @@ export const BuildResults = ({
     isLocalBuildInProgress ||
     // Even if there's no build running, we need to tell them why they can't review, unless
     // the story is superseded and the UI is already telling them
-    (!isReviewable && !shouldSwitchToLastBuildOnBranch);
+    (!buildIsReviewable && !shouldSwitchToLastBuildOnBranch);
   const localBuildProgressIsLastBuildOnBranch =
     localBuildProgress && localBuildProgress?.buildId === lastBuildOnBranch?.id;
 
@@ -178,7 +165,7 @@ export const BuildResults = ({
     BuildStatus.Prepared,
   ].includes(status);
   const isBuildFailed = status === BuildStatus.Failed;
-  const isReviewLocked = status === BuildStatus.Pending && (!userCanReview || !isReviewable);
+  const isReviewLocked = status === BuildStatus.Pending && (!userCanReview || !buildIsReviewable);
 
   return (
     <Sections>
@@ -212,11 +199,6 @@ export const BuildResults = ({
             isBuildFailed,
             shouldSwitchToLastBuildOnBranch,
             switchToLastBuildOnBranch,
-            userCanReview,
-            isReviewable,
-            isReviewing,
-            onAccept,
-            onUnaccept,
             selectedBuild,
             setAccessToken,
             storyId,

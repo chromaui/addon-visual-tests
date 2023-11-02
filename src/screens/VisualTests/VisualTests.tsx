@@ -4,12 +4,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useMutation, useQuery } from "urql";
 
 import { getFragment } from "../../gql";
-import {
-  ReviewTestBatch,
-  ReviewTestInputStatus,
-  StoryTestFieldsFragment,
-  TestStatus,
-} from "../../gql/graphql";
+import { ReviewTestBatch, ReviewTestInputStatus, TestStatus } from "../../gql/graphql";
 import { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from "../../types";
 import { statusMap, testsToStatusUpdate } from "../../utils/testsToStatusUpdate";
 import { SelectedBuildInfo, updateSelectedBuildInfo } from "../../utils/updateSelectedBuildInfo";
@@ -23,6 +18,7 @@ import {
   QueryBuild,
 } from "./graphql";
 import { NoBuild } from "./NoBuild";
+import { ReviewTestProvider } from "./ReviewTestContext";
 import { SelectedBuildProvider } from "./SelectedBuildContext";
 
 const createEmptyStoryStatusUpdate = (state: API_StatusState) => {
@@ -133,6 +129,55 @@ const useBuild = ({
   };
 };
 
+interface ReviewTestInput {
+  testId: string;
+  status: ReviewTestInputStatus.Accepted | ReviewTestInputStatus.Pending;
+  batch?: ReviewTestBatch;
+}
+
+const useReview = ({
+  buildIsReviewable,
+  userCanReview,
+  onReviewSuccess,
+  onReviewError,
+}: {
+  buildIsReviewable: boolean;
+  userCanReview: boolean;
+  onReviewSuccess?: (input: ReviewTestInput) => void;
+  onReviewError?: (err: any, input: ReviewTestInput) => void;
+}) => {
+  const [{ fetching: isReviewing }, runMutation] = useMutation(MutationReviewTest);
+
+  const reviewTest = useCallback(
+    async (input: ReviewTestInput) => {
+      try {
+        if (!buildIsReviewable) throw new Error("Build is not reviewable");
+        if (!userCanReview) throw new Error("No permission to review tests");
+        const { error } = await runMutation({ input });
+        if (error) throw error;
+        onReviewSuccess?.(input);
+      } catch (err) {
+        onReviewError?.(err, input);
+      }
+    },
+    [onReviewSuccess, onReviewError, runMutation, buildIsReviewable, userCanReview]
+  );
+
+  const acceptTest = useCallback(
+    (testId: string, batch: ReviewTestBatch = ReviewTestBatch.Spec) =>
+      reviewTest({ status: ReviewTestInputStatus.Accepted, testId, batch }),
+    [reviewTest]
+  );
+
+  const unacceptTest = useCallback(
+    (testId: string, batch: ReviewTestBatch = ReviewTestBatch.Spec) =>
+      reviewTest({ status: ReviewTestInputStatus.Pending, testId, batch }),
+    [reviewTest]
+  );
+
+  return { isReviewing, acceptTest, unacceptTest, buildIsReviewable, userCanReview };
+};
+
 export const VisualTestsWithoutSelectedBuildId = ({
   selectedBuildInfo,
   setSelectedBuildInfo,
@@ -165,6 +210,31 @@ export const VisualTestsWithoutSelectedBuildId = ({
     storyId,
     gitInfo,
     selectedBuildInfo,
+  });
+
+  const reviewState = useReview({
+    buildIsReviewable: !!selectedBuild && selectedBuild.id === lastBuildOnBranch?.id,
+    userCanReview,
+    onReviewSuccess: rerunQuery,
+    onReviewError: (err, update) => {
+      if (err instanceof Error) {
+        addNotification({
+          id: "chromatic/errorAccepting",
+          // @ts-expect-error we need a better API for not passing a link
+          link: undefined,
+          content: {
+            headline: `Failed to ${
+              update.status === ReviewTestInputStatus.Accepted ? "accept" : "unaccept"
+            } changes`,
+            subHeadline: err.message,
+          },
+          icon: {
+            name: "cross",
+            color: "red",
+          },
+        });
+      }
+    },
   });
 
   // Currently only used by the sidebar button to show a blue dot ("build outdated")
@@ -215,57 +285,6 @@ export const VisualTestsWithoutSelectedBuildId = ({
     [setSelectedBuildInfo, lastBuildOnBranchIsSelectable, lastBuildOnBranch?.id, storyId]
   );
 
-  const [{ fetching: isReviewing }, reviewTest] = useMutation(MutationReviewTest);
-
-  const onReview = useCallback(
-    async (
-      status: ReviewTestInputStatus.Accepted | ReviewTestInputStatus.Pending,
-      testId: string,
-      batch?: ReviewTestBatch
-    ) => {
-      try {
-        const { error: reviewError } = await reviewTest({
-          input: { testId, status, batch },
-        });
-
-        if (reviewError) {
-          throw reviewError;
-        }
-        rerunQuery();
-      } catch (err) {
-        if (err instanceof Error) {
-          addNotification({
-            id: "chromatic/errorAccepting",
-            // @ts-expect-error we need a better API for not passing a link
-            link: undefined,
-            content: {
-              headline: `Failed to ${
-                status === ReviewTestInputStatus.Accepted ? "accept" : "unaccept"
-              } changes`,
-              subHeadline: err.message,
-            },
-            icon: {
-              name: "cross",
-              color: "red",
-            },
-          });
-        }
-      }
-    },
-    [addNotification, rerunQuery, reviewTest]
-  );
-
-  const onAccept = useCallback(
-    async (testId: StoryTestFieldsFragment["id"], batch?: ReviewTestBatch) =>
-      onReview(ReviewTestInputStatus.Accepted, testId, batch),
-    [onReview]
-  );
-
-  const onUnaccept = useCallback(
-    async (testId: string) => onReview(ReviewTestInputStatus.Pending, testId),
-    [onReview]
-  );
-
   return !selectedBuild || !hasSelectedBuild || !hasData || queryError ? (
     <NoBuild
       {...{
@@ -280,25 +299,23 @@ export const VisualTestsWithoutSelectedBuildId = ({
       }}
     />
   ) : (
-    <SelectedBuildProvider watchState={selectedBuild}>
-      <BuildResults
-        {...{
-          branch: gitInfo.branch,
-          dismissBuildError,
-          localBuildProgress,
-          ...(lastBuildOnBranch && { lastBuildOnBranch }),
-          lastBuildOnBranchIsReady,
-          ...(lastBuildOnBranchIsSelectable && { switchToLastBuildOnBranch }),
-          startDevBuild,
-          userCanReview,
-          isReviewing,
-          onAccept,
-          onUnaccept,
-          setAccessToken,
-          storyId,
-        }}
-      />
-    </SelectedBuildProvider>
+    <ReviewTestProvider watchState={reviewState}>
+      <SelectedBuildProvider watchState={selectedBuild}>
+        <BuildResults
+          {...{
+            branch: gitInfo.branch,
+            dismissBuildError,
+            localBuildProgress,
+            ...(lastBuildOnBranch && { lastBuildOnBranch }),
+            lastBuildOnBranchIsReady,
+            ...(lastBuildOnBranchIsSelectable && { switchToLastBuildOnBranch }),
+            startDevBuild,
+            setAccessToken,
+            storyId,
+          }}
+        />
+      </SelectedBuildProvider>
+    </ReviewTestProvider>
   );
 };
 

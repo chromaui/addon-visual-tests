@@ -1,20 +1,12 @@
 import { Loader } from "@storybook/components";
 import { Link } from "@storybook/design-system";
 import { styled } from "@storybook/theming";
-import React, { useState } from "react";
+import React from "react";
 
 import { Text } from "../../components/layout";
 import { SnapshotImage } from "../../components/SnapshotImage";
-import {
-  ComparisonResult,
-  ReviewTestBatch,
-  SelectedBuildFieldsFragment,
-  StoryTestFieldsFragment,
-  TestResult,
-  TestStatus,
-} from "../../gql/graphql";
+import { ComparisonResult, TestResult, TestStatus } from "../../gql/graphql";
 import { summarizeTests } from "../../utils/summarizeTests";
-import { useTests } from "../../utils/useTests";
 import { BuildResultsFooter } from "./BuildResultsFooter";
 import { useControlsDispatch, useControlsState } from "./ControlsContext";
 import { useSelectedBuildState, useSelectedStoryState } from "./SelectedBuildContext";
@@ -116,11 +108,6 @@ interface SnapshotSectionProps {
   isBuildFailed: boolean;
   shouldSwitchToLastBuildOnBranch: boolean;
   switchToLastBuildOnBranch?: () => void;
-  userCanReview: boolean;
-  isReviewable: boolean;
-  isReviewing: boolean;
-  onAccept: (testId: StoryTestFieldsFragment["id"], batch?: ReviewTestBatch) => void;
-  onUnaccept: (testId: StoryTestFieldsFragment["id"]) => void;
   setAccessToken: (accessToken: string | null) => void;
   hidden?: boolean;
   storyId: string;
@@ -132,11 +119,6 @@ export const SnapshotComparison = ({
   isBuildFailed,
   shouldSwitchToLastBuildOnBranch,
   switchToLastBuildOnBranch,
-  userCanReview,
-  isReviewable,
-  isReviewing,
-  onAccept,
-  onUnaccept,
   setAccessToken,
   hidden,
   storyId,
@@ -228,14 +210,7 @@ export const SnapshotComparison = ({
       <HeaderSection>
         <Grid>
           {storyInfo}
-
-          <SnapshotControls
-            selectedBuild={selectedBuild}
-            hasBaselineSnapshot={!!selectedComparison?.baseCapture?.captureImage}
-            {...selectedStory}
-            {...testSummary}
-            {...{ userCanReview, isReviewable, isReviewing, onAccept, onUnaccept }}
-          />
+          <SnapshotControls {...selectedStory} {...testSummary} />
         </Grid>
       </HeaderSection>
 
