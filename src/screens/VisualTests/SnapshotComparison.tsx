@@ -5,13 +5,7 @@ import React from "react";
 
 import { Text } from "../../components/layout";
 import { SnapshotImage } from "../../components/SnapshotImage";
-import {
-  ComparisonResult,
-  ReviewTestBatch,
-  StoryTestFieldsFragment,
-  TestResult,
-  TestStatus,
-} from "../../gql/graphql";
+import { ComparisonResult, TestResult, TestStatus } from "../../gql/graphql";
 import { summarizeTests } from "../../utils/summarizeTests";
 import { BuildResultsFooter } from "./BuildResultsFooter";
 import { useControlsDispatch, useControlsState } from "./ControlsContext";
@@ -114,11 +108,6 @@ interface SnapshotSectionProps {
   isBuildFailed: boolean;
   shouldSwitchToLastBuildOnBranch: boolean;
   switchToLastBuildOnBranch?: () => void;
-  userCanReview: boolean;
-  isReviewable: boolean;
-  isReviewing: boolean;
-  onAccept: (testId: StoryTestFieldsFragment["id"], batch?: ReviewTestBatch) => void;
-  onUnaccept: (testId: StoryTestFieldsFragment["id"]) => void;
   setAccessToken: (accessToken: string | null) => void;
   hidden?: boolean;
   storyId: string;
@@ -130,11 +119,6 @@ export const SnapshotComparison = ({
   isBuildFailed,
   shouldSwitchToLastBuildOnBranch,
   switchToLastBuildOnBranch,
-  userCanReview,
-  isReviewable,
-  isReviewing,
-  onAccept,
-  onUnaccept,
   setAccessToken,
   hidden,
   storyId,
@@ -226,10 +210,7 @@ export const SnapshotComparison = ({
       <HeaderSection>
         <Grid>
           {storyInfo}
-
-          <SnapshotControls
-            {...{ userCanReview, isReviewable, isReviewing, onAccept, onUnaccept }}
-          />
+          <SnapshotControls />
         </Grid>
       </HeaderSection>
 

@@ -11,6 +11,7 @@ import { makeComparison, makeTest, makeTests } from "../../utils/storyData";
 import { storyWrapper } from "../../utils/storyWrapper";
 import { ControlsProvider } from "./ControlsContext";
 import { interactionFailureTests, pendingBuild, pendingTests, withTests } from "./mocks";
+import { ReviewTestProvider } from "./ReviewTestContext";
 import { SelectedBuildProvider } from "./SelectedBuildContext";
 import { SnapshotComparison } from "./SnapshotComparison";
 
@@ -19,18 +20,23 @@ const build = { ...pendingBuild, startedAt: new Date() };
 const meta = {
   component: SnapshotComparison,
   decorators: [
+    storyWrapper(ReviewTestProvider, (ctx) => ({
+      watchState: {
+        isReviewing: false,
+        userCanReview: true,
+        buildIsReviewable: true,
+        acceptTest: action("acceptTest"),
+        unacceptTest: action("unacceptTest"),
+        ...ctx.parameters.reviewTest,
+      },
+    })),
     storyWrapper(SelectedBuildProvider, (ctx) => ({ watchState: ctx.parameters.selectedBuild })),
     storyWrapper(ControlsProvider),
   ],
   args: {
     storyId: "button--primary",
-    userCanReview: true,
     isStarting: false,
     isBuildFailed: false,
-    isReviewable: true,
-    isReviewing: false,
-    onAccept: action("onAccept"),
-    onUnaccept: action("onUnaccept"),
     shouldSwitchToLastBuildOnBranch: false,
     setAccessToken: action("setAccessToken"),
   },

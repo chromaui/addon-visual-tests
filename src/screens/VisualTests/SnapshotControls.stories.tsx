@@ -1,15 +1,16 @@
-import { action } from "@storybook/addon-actions";
 import { expect } from "@storybook/jest";
 import type { Meta, StoryObj } from "@storybook/react";
 import { screen, userEvent, within } from "@storybook/testing-library";
 
 import { Browser, ComparisonResult, TestStatus } from "../../gql/graphql";
 import { panelModes } from "../../modes";
+import { action } from "../../utils/action";
 import { playAll } from "../../utils/playAll";
 import { makeTest, makeTests } from "../../utils/storyData";
 import { storyWrapper } from "../../utils/storyWrapper";
 import { summarizeTests } from "../../utils/summarizeTests";
 import { ControlsProvider } from "./ControlsContext";
+import { ReviewTestProvider } from "./ReviewTestContext";
 import { Grid } from "./SnapshotComparison";
 import { SnapshotControls } from "./SnapshotControls";
 
@@ -22,6 +23,7 @@ const withTests = (tests: ReturnType<typeof makeTests>) => ({
 const meta = {
   component: SnapshotControls,
   decorators: [
+    storyWrapper(ReviewTestProvider, (ctx) => ({ watchState: ctx.parameters.reviewTest })),
     storyWrapper(ControlsProvider, () => ({ initialState: { diffVisible: true } })),
     storyWrapper(Grid),
   ],
@@ -42,15 +44,17 @@ const meta = {
     ),
     onSelectMode: action("onSelectMode"),
     onSelectBrowser: action("onSelectBrowser"),
-    userCanReview: true,
-    isReviewable: true,
-    isReviewing: false,
-    onAccept: action("onAccept"),
-    onUnaccept: action("onUnaccept"),
   },
   parameters: {
     chromatic: {
       modes: panelModes,
+    },
+    reviewTest: {
+      isReviewing: false,
+      userCanReview: true,
+      buildIsReviewable: true,
+      acceptTest: action("acceptTest"),
+      unacceptTest: action("unacceptTest"),
     },
   },
 } satisfies Meta<typeof SnapshotControls>;
@@ -78,9 +82,12 @@ export const WithMultipleTestsInProgress = {
 } satisfies Story;
 
 export const WithSingleTestAccepting = {
-  args: {
-    ...WithSingleTest.args,
-    isReviewing: true,
+  args: WithSingleTest.args,
+  parameters: {
+    reviewTest: {
+      ...meta.parameters.reviewTest,
+      isReviewing: true,
+    },
   },
 } satisfies Story;
 
@@ -89,9 +96,12 @@ export const WithSingleTestAccepted = {
 } satisfies Story;
 
 export const WithSingleTestUnreviewable = {
-  args: {
-    ...WithSingleTest.args,
-    isReviewable: false,
+  args: WithSingleTest.args,
+  parameters: {
+    reviewTest: {
+      ...meta.parameters.reviewTest,
+      buildIsReviewable: false,
+    },
   },
 } satisfies Story;
 
@@ -136,9 +146,12 @@ export const BatchAcceptOptions = {
 } satisfies Story;
 
 export const BatchAcceptedBuild = {
-  play: playAll(BatchAcceptOptions, async ({ args, canvasIndex }) => {
+  play: playAll(BatchAcceptOptions, async ({ args, canvasIndex, parameters }) => {
     const items = await screen.findAllByText("Accept entire build");
     await userEvent.click(items[canvasIndex]);
-    await expect(args.onAccept).toHaveBeenCalledWith(args.selectedTest.id, "BUILD");
+    await expect(parameters.reviewTest.acceptTest).toHaveBeenCalledWith(
+      args.selectedTest.id,
+      "BUILD"
+    );
   }),
 } satisfies Story;
