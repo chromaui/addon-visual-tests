@@ -31,6 +31,13 @@ const IconWrapper = styled.div(({ theme }) => ({
   },
 }));
 
+const Label = styled.span({
+  display: "none",
+  "@container (min-width: 300px)": {
+    display: "inline-block",
+  },
+});
+
 type BrowserData = Pick<BrowserInfo, "id" | "key" | "name">;
 
 interface BrowserSelectorProps {
@@ -83,13 +90,13 @@ export const BrowserSelector = ({
       {links ? (
         <TooltipMenu placement="bottom" links={links}>
           {icon}
-          {selectedBrowser.name}
+          <Label>{selectedBrowser.name}</Label>
           <ArrowIcon icon="arrowdown" />
         </TooltipMenu>
       ) : (
         <IconWrapper>
           {icon}
-          {selectedBrowser.name}
+          <Label>{selectedBrowser.name}</Label>
         </IconWrapper>
       )}
     </WithTooltip>
