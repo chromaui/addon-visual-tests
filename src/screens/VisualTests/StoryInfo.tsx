@@ -37,7 +37,7 @@ const Info = styled.div(({ theme }) => ({
       fontSize: "inherit",
     },
 
-    "& > *:first-child": {
+    "& > span:first-of-type": {
       display: "inline-flex",
       alignItems: "center",
       height: 24,
@@ -133,12 +133,14 @@ export const StoryInfo = ({
   } else if (shouldSwitchToLastBuildOnBranch) {
     details = (
       <Info>
-        <b>
-          {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-          <Link isButton onClick={switchToLastBuildOnBranch}>
-            View latest snapshot
-          </Link>
-        </b>
+        <span>
+          <b>
+            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+            <Link isButton onClick={switchToLastBuildOnBranch}>
+              View latest snapshot
+            </Link>
+          </b>
+        </span>
         <span>Newer test results are available for this story</span>
       </Info>
     );
