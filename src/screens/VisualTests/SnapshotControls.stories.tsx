@@ -1,10 +1,10 @@
-import { action } from "@storybook/addon-actions";
 import { expect } from "@storybook/jest";
 import type { Meta, StoryObj } from "@storybook/react";
 import { screen, userEvent, within } from "@storybook/testing-library";
 
 import { Browser, ComparisonResult, TestStatus } from "../../gql/graphql";
 import { panelModes } from "../../modes";
+import { action } from "../../utils/action";
 import { playAll } from "../../utils/playAll";
 import { makeTest, makeTests } from "../../utils/storyData";
 import { storyWrapper } from "../../utils/storyWrapper";
@@ -23,16 +23,7 @@ const withTests = (tests: ReturnType<typeof makeTests>) => ({
 const meta = {
   component: SnapshotControls,
   decorators: [
-    storyWrapper(ReviewTestProvider, (ctx) => ({
-      watchState: {
-        isReviewing: false,
-        userCanReview: true,
-        buildIsReviewable: true,
-        acceptTest: action("acceptTest"),
-        unacceptTest: action("unacceptTest"),
-        ...ctx.parameters.reviewTest,
-      },
-    })),
+    storyWrapper(ReviewTestProvider, (ctx) => ({ watchState: ctx.parameters.reviewTest })),
     storyWrapper(ControlsProvider, () => ({ initialState: { diffVisible: true } })),
     storyWrapper(Grid),
   ],
@@ -57,6 +48,13 @@ const meta = {
   parameters: {
     chromatic: {
       modes: panelModes,
+    },
+    reviewTest: {
+      isReviewing: false,
+      userCanReview: true,
+      buildIsReviewable: true,
+      acceptTest: action("acceptTest"),
+      unacceptTest: action("unacceptTest"),
     },
   },
 } satisfies Meta<typeof SnapshotControls>;
@@ -87,6 +85,7 @@ export const WithSingleTestAccepting = {
   args: WithSingleTest.args,
   parameters: {
     reviewTest: {
+      ...meta.parameters.reviewTest,
       isReviewing: true,
     },
   },
@@ -100,6 +99,7 @@ export const WithSingleTestUnreviewable = {
   args: WithSingleTest.args,
   parameters: {
     reviewTest: {
+      ...meta.parameters.reviewTest,
       buildIsReviewable: false,
     },
   },
@@ -146,9 +146,12 @@ export const BatchAcceptOptions = {
 } satisfies Story;
 
 export const BatchAcceptedBuild = {
-  play: playAll(BatchAcceptOptions, async ({ args, canvasIndex }) => {
+  play: playAll(BatchAcceptOptions, async ({ args, canvasIndex, parameters }) => {
     const items = await screen.findAllByText("Accept entire build");
     await userEvent.click(items[canvasIndex]);
-    await expect(args.onAccept).toHaveBeenCalledWith(args.selectedTest.id, "BUILD");
+    await expect(parameters.reviewTest.acceptTest).toHaveBeenCalledWith(
+      args.selectedTest.id,
+      "BUILD"
+    );
   }),
 } satisfies Story;
