@@ -19,7 +19,10 @@ export function BuildProgressInline({
   localBuildProgress: LocalBuildProgress;
 }) {
   return (
-    <ProgressTextWrapper style={{ display: "flex", flexDirection: "column", gap: 10, width: 200 }}>
+    <ProgressTextWrapper
+      as="div"
+      style={{ display: "flex", flexDirection: "column", gap: 10, width: 200 }}
+    >
       <ProgressTrack>
         {typeof localBuildProgress.buildProgressPercentage === "number" && (
           <ProgressBar style={{ width: `${localBuildProgress.buildProgressPercentage}%` }} />
