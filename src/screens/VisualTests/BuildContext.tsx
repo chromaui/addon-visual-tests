@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useEffect, useMemo } from "react";
 import { useQuery } from "urql";
 
 import { getFragment } from "../../gql";
@@ -132,25 +132,21 @@ export const BuildProvider = ({
   children: React.ReactNode;
   watchState?: BuildInfo;
 }) => {
-  const [state, setState] = useState<BuildInfo>(watchState);
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => setState(watchState), [JSON.stringify(watchState)]);
-
-  const hasTests = !!state?.selectedBuild && "testsForStory" in state.selectedBuild;
+  const hasTests = !!watchState?.selectedBuild && "testsForStory" in watchState.selectedBuild;
   const testsForStory =
-    state?.selectedBuild &&
-    "testsForStory" in state.selectedBuild &&
-    state.selectedBuild.testsForStory?.nodes;
+    watchState?.selectedBuild &&
+    "testsForStory" in watchState.selectedBuild &&
+    watchState.selectedBuild.testsForStory?.nodes;
   const tests = [...getFragment(FragmentStoryTestFields, testsForStory || [])];
   const summary = summarizeTests(tests);
-  const testData = useTests(tests);
 
-  useControlsDispatch().toggleDiff(summary.changeCount > 0);
+  const { toggleDiff } = useControlsDispatch();
+  useEffect(() => toggleDiff(summary.changeCount > 0), [toggleDiff, summary.changeCount]);
 
   return (
-    <BuildContext.Provider value={state}>
-      <StoryContext.Provider value={{ hasTests, tests, summary, ...testData }}>
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    <BuildContext.Provider value={useMemo(() => watchState, [JSON.stringify(watchState)])}>
+      <StoryContext.Provider value={{ hasTests, tests, summary, ...useTests(tests) }}>
         {children}
       </StoryContext.Provider>
     </BuildContext.Provider>
