@@ -49,7 +49,8 @@ export const BuildResults = ({
   const { settingsVisible, warningsVisible } = useControlsState();
   const { toggleSettings, toggleWarnings } = useControlsDispatch();
 
-  const { lastBuildOnBranch, lastBuildOnBranchIsReady } = useBuildState();
+  const { lastBuildOnBranch, lastBuildOnBranchIsReady, lastBuildOnBranchIsSelectable } =
+    useBuildState();
 
   const selectedBuild = useSelectedBuildState();
   const selectedStory = useSelectedStoryState();
@@ -59,9 +60,12 @@ export const BuildResults = ({
   const isLocalBuildInProgress =
     !!localBuildProgress && localBuildProgress.currentStep !== "complete";
 
-  const isStorySuperseded = !buildIsReviewable && lastBuildOnBranchIsReady;
   // Do we want to encourage them to switch to the next build?
-  const shouldSwitchToLastBuildOnBranch = isStorySuperseded && !!switchToLastBuildOnBranch;
+  const shouldSwitchToLastBuildOnBranch =
+    !buildIsReviewable &&
+    lastBuildOnBranchIsReady &&
+    lastBuildOnBranchIsSelectable &&
+    !!switchToLastBuildOnBranch;
 
   const lastBuildOnBranchInProgress = lastBuildOnBranch?.status === BuildStatus.InProgress;
   const showBuildStatus =
