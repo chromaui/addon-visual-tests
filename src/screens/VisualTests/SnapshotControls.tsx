@@ -8,9 +8,9 @@ import { Text } from "../../components/layout";
 import { Placeholder } from "../../components/Placeholder";
 import { TooltipMenu } from "../../components/TooltipMenu";
 import { ComparisonResult, ReviewTestBatch, TestStatus } from "../../gql/graphql";
+import { useSelectedBuildState, useSelectedStoryState } from "./BuildContext";
 import { useControlsDispatch, useControlsState } from "./ControlsContext";
 import { useReviewTestState } from "./ReviewTestContext";
-import { useSelectedBuildState, useSelectedStoryState } from "./SelectedBuildContext";
 
 const Controls = styled.div({
   gridArea: "controls",
