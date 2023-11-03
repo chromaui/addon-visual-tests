@@ -1,7 +1,7 @@
 import { action } from "@storybook/addon-actions";
 import type { Meta, StoryObj } from "@storybook/react";
 import { findByTestId } from "@storybook/testing-library";
-import { graphql } from "msw";
+import { delay, graphql, HttpResponse } from "msw";
 
 import { SelectProjectsQueryQuery } from "../../gql/graphql";
 import { panelModes } from "../../modes";
@@ -224,7 +224,7 @@ const withGraphQLQuery = (...args: Parameters<typeof graphql.query>) => ({
 });
 
 const withSelectProjectsQuery = (projectResult: SelectProjectsQueryQuery) =>
-  withGraphQLQuery("SelectProjectsQuery", (req, res, ctx) => res(ctx.data(projectResult)));
+  withGraphQLQuery("SelectProjectsQuery", () => HttpResponse.json({ data: projectResult }));
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -276,9 +276,7 @@ export const EmptyNoProjects: Story = {
 
 export const Loading: Story = {
   parameters: {
-    ...withGraphQLQuery("SelectProjectsQuery", (req, res, ctx) =>
-      res(ctx.status(200), ctx.data({}), ctx.delay("infinite"))
-    ),
+    ...withGraphQLQuery("SelectProjectsQuery", () => delay("infinite")),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-317038&mode=design&t=P9IPi8sOGNpjCeNs-4"
     ),

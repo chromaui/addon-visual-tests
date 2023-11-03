@@ -1,30 +1,26 @@
 import { defineConfig } from "tsup";
 
+// We're not building an API for consumption by other projects. Instead, Storybook will bundle
+// everything in the end, which is why we don't compile dts or sourcemaps.
 export default defineConfig((options) => [
   {
-    entry: ["src/index.ts"],
-    splitting: false,
-    minify: !options.watch,
-    format: ["cjs"],
-    dts: false,
-    treeshake: true,
-    sourcemap: true,
     clean: !options.watch,
+    entry: ["src/index.ts"],
+    format: ["cjs"],
     platform: "node",
+    splitting: false,
+    treeshake: true,
     esbuildOptions(options) {
       options.conditions = ["module"];
     },
   },
   {
-    entry: ["src/manager.tsx"],
-    splitting: false,
-    minify: !options.watch,
-    format: ["esm"],
-    dts: false,
-    treeshake: true,
-    sourcemap: true,
     clean: !options.watch,
+    entry: ["src/manager.tsx"],
+    format: ["esm"],
     platform: "browser",
+    splitting: false,
+    treeshake: true,
     esbuildOptions(options) {
       options.conditions = ["module"];
     },

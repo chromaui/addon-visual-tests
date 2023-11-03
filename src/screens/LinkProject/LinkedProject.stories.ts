@@ -1,6 +1,6 @@
 import { action } from "@storybook/addon-actions";
 import type { Meta, StoryObj } from "@storybook/react";
-import { graphql } from "msw";
+import { graphql, HttpResponse } from "msw";
 
 import { ProjectQueryQuery } from "../../gql/graphql";
 import { panelModes } from "../../modes";
@@ -28,9 +28,9 @@ const meta = {
     chromatic: {
       modes: panelModes,
     },
-    ...withGraphQLQuery("ProjectQuery", (req, res, ctx) =>
-      res(
-        ctx.data({
+    ...withGraphQLQuery("ProjectQuery", () =>
+      HttpResponse.json({
+        data: {
           project: {
             id: "789",
             name: "acme",
@@ -40,8 +40,8 @@ const meta = {
               number: 123,
             },
           },
-        } satisfies ProjectQueryQuery)
-      )
+        } satisfies ProjectQueryQuery,
+      })
     ),
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-317094&t=435fylbu7gUQNEgq-4"
