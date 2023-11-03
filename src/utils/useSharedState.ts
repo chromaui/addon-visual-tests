@@ -18,12 +18,9 @@ export function useSharedState<T>(key: string) {
 
   return [
     state,
-    useCallback(
-      (newValue: T | undefined) => {
-        setState(newValue);
-        sharedStateRef.current.value = newValue;
-      },
-      [sharedStateRef]
-    ),
+    useCallback((newValue: T | undefined) => {
+      setState(newValue);
+      sharedStateRef.current.value = newValue;
+    }, []),
   ] as const;
 }
