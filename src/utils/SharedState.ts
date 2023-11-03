@@ -3,13 +3,20 @@ import type { Channel } from "@storybook/channels";
 export const GET_VALUE = `experimental_useSharedState_getValue`;
 export const SET_VALUE = `experimental_useSharedState_setValue`;
 
+type ChannelLike = Pick<Channel, "emit" | "on" | "off">;
+
+const instances = new Map<string, SharedState>();
+
 export class SharedState<T = any> {
-  channel: Pick<Channel, "emit" | "on" | "off">;
+  channel: ChannelLike;
+
+  listeners: ((value: T | undefined) => void)[];
 
   state: { [key: string]: { index: number; value: T | undefined } };
 
-  constructor(channel: Pick<Channel, "emit" | "on" | "off">) {
+  constructor(channel: ChannelLike) {
     this.channel = channel;
+    this.listeners = [];
     this.state = {};
 
     this.channel.on(SET_VALUE, (key: string, value: T | undefined, index: number) => {
@@ -35,14 +42,16 @@ export class SharedState<T = any> {
     this.channel.emit(SET_VALUE, key, value, index);
   }
 
-  static subscribe<T>(key: string, channel: Pick<Channel, "emit" | "on" | "off">) {
-    const sharedState = new SharedState<T>(channel);
-    const listeners: ((value: T | undefined) => void)[] = [];
+  static subscribe<T>(key: string, channel: ChannelLike) {
+    const sharedState = instances.get(key) || new SharedState(channel);
 
-    sharedState.channel.on(SET_VALUE, (k: string, v: T | undefined) => {
-      if (k !== key) return;
-      listeners.forEach((listener) => listener(v));
-    });
+    if (!instances.has(key)) {
+      instances.set(key, sharedState);
+      sharedState.channel.on(SET_VALUE, (k: string, v: T | undefined) => {
+        if (k !== key) return;
+        sharedState.listeners.forEach((listener) => listener(v));
+      });
+    }
 
     return {
       get value(): T | undefined {
@@ -55,13 +64,13 @@ export class SharedState<T = any> {
 
       on(event: "change", callback: (value: T | undefined) => void) {
         if (event !== "change") throw new Error("unsupported event");
-        listeners.push(callback);
+        sharedState.listeners.push(callback);
       },
 
       off(event: "change", callback: (value: T | undefined) => void) {
         if (event !== "change") throw new Error("unsupported event");
-        const index = listeners.indexOf(callback);
-        if (index >= 0) listeners.splice(index, 1);
+        const index = sharedState.listeners.indexOf(callback);
+        if (index >= 0) sharedState.listeners.splice(index, 1);
       },
     };
   }
