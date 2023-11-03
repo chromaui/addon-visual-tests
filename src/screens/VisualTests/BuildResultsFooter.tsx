@@ -4,8 +4,8 @@ import React from "react";
 import { FooterMenu } from "../../components/FooterMenu";
 import { IconButton } from "../../components/IconButton";
 import { Bar, Col, Section, Text } from "../../components/layout";
+import { useSelectedBuildState, useSelectedStoryState } from "./BuildContext";
 import { useControlsDispatch, useControlsState } from "./ControlsContext";
-import { useSelectedBuildState, useSelectedStoryState } from "./SelectedBuildContext";
 
 export const BuildResultsFooter = ({
   setAccessToken,

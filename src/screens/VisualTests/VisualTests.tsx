@@ -1,25 +1,18 @@
 import { useStorybookApi } from "@storybook/manager-api";
 import type { API_StatusState } from "@storybook/types";
 import React, { useCallback, useEffect, useState } from "react";
-import { useMutation, useQuery } from "urql";
+import { useMutation } from "urql";
 
 import { getFragment } from "../../gql";
-import { ReviewTestBatch, ReviewTestInputStatus, TestStatus } from "../../gql/graphql";
+import { ReviewTestBatch, ReviewTestInputStatus } from "../../gql/graphql";
 import { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from "../../types";
-import { statusMap, testsToStatusUpdate } from "../../utils/testsToStatusUpdate";
+import { testsToStatusUpdate } from "../../utils/testsToStatusUpdate";
 import { SelectedBuildInfo, updateSelectedBuildInfo } from "../../utils/updateSelectedBuildInfo";
+import { BuildProvider, useBuild } from "./BuildContext";
 import { BuildResults } from "./BuildResults";
-import {
-  FragmentLastBuildOnBranchBuildFields,
-  FragmentLastBuildOnBranchTestFields,
-  FragmentSelectedBuildFields,
-  FragmentStatusTestFields,
-  MutationReviewTest,
-  QueryBuild,
-} from "./graphql";
+import { FragmentStatusTestFields, MutationReviewTest } from "./graphql";
 import { NoBuild } from "./NoBuild";
 import { ReviewTestProvider } from "./ReviewTestContext";
-import { SelectedBuildProvider } from "./SelectedBuildContext";
 
 const createEmptyStoryStatusUpdate = (state: API_StatusState) => {
   return Object.fromEntries(Object.entries(state).map(([id]) => [id, null]));
@@ -41,93 +34,6 @@ interface VisualTestsProps {
   >;
   storyId: string;
 }
-
-const useBuild = ({
-  projectId,
-  storyId,
-  gitInfo,
-  selectedBuildInfo,
-}: {
-  projectId: string;
-  storyId: string;
-  gitInfo: Pick<
-    GitInfoPayload,
-    "branch" | "slug" | "userEmailHash" | "commit" | "committedAt" | "uncommittedHash"
-  >;
-  selectedBuildInfo?: SelectedBuildInfo;
-}) => {
-  const [{ data, error: queryError, operation }, rerunQuery] = useQuery({
-    query: QueryBuild,
-    variables: {
-      projectId,
-      storyId,
-      testStatuses: Object.keys(statusMap) as any as TestStatus[],
-      branch: gitInfo.branch || "",
-      ...(gitInfo.slug ? { slug: gitInfo.slug } : {}),
-      gitUserEmailHash: gitInfo.userEmailHash,
-      selectedBuildId: selectedBuildInfo?.buildId || "",
-      hasSelectedBuildId: !!selectedBuildInfo,
-    },
-  });
-
-  // Poll for updates
-  useEffect(() => {
-    const interval = setInterval(rerunQuery, 5000);
-    return () => clearInterval(interval);
-  }, [rerunQuery]);
-
-  // When you change story, for a period the query will return the previous set of data, and indicate
-  // that with the operation being for the previous query.
-  const storyDataIsStale = operation && storyId && operation.variables.storyId !== storyId;
-
-  const lastBuildOnBranch = getFragment(
-    FragmentLastBuildOnBranchBuildFields,
-    data?.project?.lastBuildOnBranch
-  );
-
-  const lastBuildOnBranchStoryTests = [
-    ...getFragment(
-      FragmentLastBuildOnBranchTestFields,
-      lastBuildOnBranch && "testsForStory" in lastBuildOnBranch && lastBuildOnBranch.testsForStory
-        ? lastBuildOnBranch.testsForStory.nodes
-        : []
-    ),
-  ];
-
-  // If the last build is *newer* than the current head commit, we don't want to select it
-  // as our local code wouldn't yet have the changes made in that build.
-  const lastBuildOnBranchIsNewer = lastBuildOnBranch?.committedAt > gitInfo.committedAt;
-  const lastBuildOnBranchIsSelectable = !!lastBuildOnBranch && !lastBuildOnBranchIsNewer;
-
-  // If any tests for the current story are still in progress, we aren't ready to select the build
-  const lastBuildOnBranchIsReady =
-    !!lastBuildOnBranch &&
-    lastBuildOnBranchStoryTests.every((t) => t.status !== TestStatus.InProgress);
-
-  // If we didn't explicitly select a build, select the last build on the branch (if any)
-  const selectedBuild = getFragment(
-    FragmentSelectedBuildFields,
-    data?.selectedBuild ?? (lastBuildOnBranchIsReady ? data?.project?.lastBuildOnBranch : undefined)
-  );
-
-  return {
-    hasData: !!data && !storyDataIsStale,
-    hasProject: !!data?.project,
-    hasSelectedBuild: selectedBuild?.branch === gitInfo.branch,
-    lastBuildOnBranch,
-    lastBuildOnBranchIsNewer,
-    lastBuildOnBranchIsReady,
-    lastBuildOnBranchIsSelectable,
-    selectedBuild,
-    selectedBuildMatchesGit:
-      selectedBuild?.branch === gitInfo.branch &&
-      selectedBuild?.commit === gitInfo.commit &&
-      selectedBuild?.uncommittedHash === gitInfo.uncommittedHash,
-    rerunQuery,
-    queryError,
-    userCanReview: !!data?.viewer?.projectMembership?.userCanReview,
-  };
-};
 
 interface ReviewTestInput {
   testId: string;
@@ -193,6 +99,8 @@ export const VisualTestsWithoutSelectedBuildId = ({
 }: VisualTestsProps) => {
   const { addNotification } = useStorybookApi();
 
+  const buildInfo = useBuild({ projectId, storyId, gitInfo, selectedBuildInfo });
+
   const {
     hasData,
     hasProject,
@@ -205,12 +113,7 @@ export const VisualTestsWithoutSelectedBuildId = ({
     queryError,
     rerunQuery,
     userCanReview,
-  } = useBuild({
-    projectId,
-    storyId,
-    gitInfo,
-    selectedBuildInfo,
-  });
+  } = buildInfo;
 
   const reviewState = useReview({
     buildIsReviewable: !!selectedBuild && selectedBuild.id === lastBuildOnBranch?.id,
@@ -298,21 +201,19 @@ export const VisualTestsWithoutSelectedBuildId = ({
     />
   ) : (
     <ReviewTestProvider watchState={reviewState}>
-      <SelectedBuildProvider watchState={selectedBuild}>
+      <BuildProvider watchState={buildInfo}>
         <BuildResults
           {...{
             branch: gitInfo.branch,
             dismissBuildError,
             localBuildProgress,
-            ...(lastBuildOnBranch && { lastBuildOnBranch }),
-            lastBuildOnBranchIsReady,
-            ...(lastBuildOnBranchIsSelectable && { switchToLastBuildOnBranch }),
+            switchToLastBuildOnBranch,
             startDevBuild,
             setAccessToken,
             storyId,
           }}
         />
-      </SelectedBuildProvider>
+      </BuildProvider>
     </ReviewTestProvider>
   );
 };

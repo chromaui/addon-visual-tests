@@ -4,18 +4,39 @@ import { findByRole, fireEvent, screen, userEvent, within } from "@storybook/tes
 import type { StoryContext } from "@storybook/types";
 import React, { ComponentProps } from "react";
 
-import { Browser, ComparisonResult, TestResult, TestStatus } from "../../gql/graphql";
+import {
+  Browser,
+  ComparisonResult,
+  SelectedBuildFieldsFragment,
+  TestResult,
+  TestStatus,
+} from "../../gql/graphql";
 import { panelModes } from "../../modes";
 import { playAll } from "../../utils/playAll";
 import { makeComparison, makeTest, makeTests } from "../../utils/storyData";
 import { storyWrapper } from "../../utils/storyWrapper";
+import { BuildProvider } from "./BuildContext";
 import { ControlsProvider } from "./ControlsContext";
 import { interactionFailureTests, pendingBuild, pendingTests, withTests } from "./mocks";
 import { ReviewTestProvider } from "./ReviewTestContext";
-import { SelectedBuildProvider } from "./SelectedBuildContext";
 import { SnapshotComparison } from "./SnapshotComparison";
 
 const build = { ...pendingBuild, startedAt: new Date() };
+
+const buildInfo = (selectedBuild?: SelectedBuildFieldsFragment) => ({
+  hasData: true,
+  hasProject: true,
+  hasSelectedBuild: !!selectedBuild,
+  lastBuildOnBranch: undefined,
+  lastBuildOnBranchIsNewer: false,
+  lastBuildOnBranchIsReady: false,
+  lastBuildOnBranchIsSelectable: false,
+  selectedBuild,
+  selectedBuildMatchesGit: true,
+  rerunQuery: () => {},
+  queryError: undefined,
+  userCanReview: true,
+});
 
 const meta = {
   component: SnapshotComparison,
@@ -30,7 +51,7 @@ const meta = {
         ...ctx.parameters.reviewTest,
       },
     })),
-    storyWrapper(SelectedBuildProvider, (ctx) => ({ watchState: ctx.parameters.selectedBuild })),
+    storyWrapper(BuildProvider, (ctx) => ({ watchState: buildInfo(ctx.parameters.selectedBuild) })),
     storyWrapper(ControlsProvider),
   ],
   args: {
@@ -199,9 +220,9 @@ export const SwitchingTests = {
     const [activeBuild, setBuild] = React.useState<any>();
     if (!activeBuild) setTimeout(() => setBuild(withTests(build, [makeTest({})])), 0);
     return (
-      <SelectedBuildProvider watchState={activeBuild || parameters.selectedBuild}>
+      <BuildProvider watchState={buildInfo(activeBuild || parameters.selectedBuild)}>
         <SnapshotComparison {...props} />
-      </SelectedBuildProvider>
+      </BuildProvider>
     );
   },
 } satisfies Story;
