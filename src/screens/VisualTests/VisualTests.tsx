@@ -243,8 +243,6 @@ export const VisualTestsWithoutSelectedBuildId = ({
   // We always set status to the next build's status, as when we change to a new story we'll see
   // the next builds
   useEffect(() => {
-    // if (!lastBuildOnBranchIsSelectable) return;
-
     const testsForStatus =
       lastBuildOnBranch &&
       "testsForStatus" in lastBuildOnBranch &&
@@ -258,7 +256,7 @@ export const VisualTestsWithoutSelectedBuildId = ({
     }));
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lastBuildOnBranchIsSelectable, JSON.stringify(lastBuildOnBranch), updateBuildStatus]);
+  }, [JSON.stringify(lastBuildOnBranch), updateBuildStatus]);
 
   // Auto-select the last build on branch if it's selectable and ready
   useEffect(() => {
