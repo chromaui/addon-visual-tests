@@ -57,7 +57,7 @@ export const BuildResults = ({
   const { buildIsReviewable, userCanReview } = useReviewTestState();
 
   const isLocalBuildInProgress =
-    localBuildProgress && localBuildProgress.currentStep !== "complete";
+    !!localBuildProgress && localBuildProgress.currentStep !== "complete";
 
   const isStorySuperseded = !buildIsReviewable && lastBuildOnBranchIsReady;
   // Do we want to encourage them to switch to the next build?
