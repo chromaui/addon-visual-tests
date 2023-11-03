@@ -1,3 +1,15 @@
+# v0.0.113 (Fri Nov 03 2023)
+
+#### 🐛 Bug Fix
+
+- Fix warnings in browser console [#141](https://github.com/chromaui/addon-visual-tests/pull/141) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v0.0.112 (Thu Nov 02 2023)
 
 #### 🐛 Bug Fix
