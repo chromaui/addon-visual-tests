@@ -9,13 +9,13 @@ import { Eyebrow } from "../../components/Eyebrow";
 import { Heading } from "../../components/Heading";
 import { Section, Sections } from "../../components/layout";
 import { Text as CenterText } from "../../components/Text";
-import { BuildStatus, LastBuildOnBranchBuildFieldsFragment, TestResult } from "../../gql/graphql";
+import { BuildStatus, TestResult } from "../../gql/graphql";
 import { LocalBuildProgress } from "../../types";
+import { useBuildState, useSelectedBuildState, useSelectedStoryState } from "./BuildContext";
 import { BuildEyebrow } from "./BuildEyebrow";
 import { useControlsDispatch, useControlsState } from "./ControlsContext";
 import { RenderSettings } from "./RenderSettings";
 import { useReviewTestState } from "./ReviewTestContext";
-import { useSelectedBuildState, useSelectedStoryState } from "./SelectedBuildContext";
 import { SnapshotComparison } from "./SnapshotComparison";
 import { Warnings } from "./Warnings";
 
@@ -23,10 +23,8 @@ interface BuildResultsProps {
   branch: string;
   dismissBuildError: () => void;
   localBuildProgress?: LocalBuildProgress;
-  storyId: string;
-  lastBuildOnBranch?: LastBuildOnBranchBuildFieldsFragment;
-  lastBuildOnBranchIsReady: boolean;
   switchToLastBuildOnBranch?: () => void;
+  storyId: string;
   startDevBuild: () => void;
   setAccessToken: (accessToken: string | null) => void;
 }
@@ -43,8 +41,6 @@ export const BuildResults = ({
   branch,
   dismissBuildError,
   localBuildProgress,
-  lastBuildOnBranch,
-  lastBuildOnBranchIsReady,
   switchToLastBuildOnBranch,
   startDevBuild,
   storyId,
@@ -52,6 +48,8 @@ export const BuildResults = ({
 }: BuildResultsProps) => {
   const { settingsVisible, warningsVisible } = useControlsState();
   const { toggleSettings, toggleWarnings } = useControlsDispatch();
+
+  const { lastBuildOnBranch, lastBuildOnBranchIsReady } = useBuildState();
 
   const selectedBuild = useSelectedBuildState();
   const selectedStory = useSelectedStoryState();

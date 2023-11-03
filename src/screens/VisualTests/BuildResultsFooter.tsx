@@ -5,7 +5,7 @@ import { FooterMenu } from "../../components/FooterMenu";
 import { Bar, Col, Section } from "../../components/layout";
 import { ModeSelector } from "../../components/ModeSelector";
 import { TestStatus } from "../../gql/graphql";
-import { useSelectedStoryState } from "./SelectedBuildContext";
+import { useSelectedStoryState } from "./BuildContext";
 
 export const BuildResultsFooter = ({
   setAccessToken,

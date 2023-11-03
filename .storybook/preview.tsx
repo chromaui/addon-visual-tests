@@ -9,21 +9,21 @@ import {
   themes,
   useTheme,
 } from "@storybook/theming";
-import { graphql } from "msw";
-import { initialize, mswLoader } from "msw-storybook-addon";
+import { HttpResponse, graphql } from "msw";
 import React from "react";
 
 import { baseModes } from "../src/modes";
+import { initialize, mswLoader } from "msw-storybook-addon";
 
 // Initialize MSW
 initialize({
   onUnhandledRequest(req) {
-    if (req.url.origin !== document.location.origin) {
+    if (new URL(req.url).origin !== document.location.origin) {
       console.error(
         `[MSW] %s %s %s (UNHANDLED)`,
         new Date().toTimeString().slice(0, 8),
         req.method.toUpperCase(),
-        req.url.href
+        req.url
       );
     }
   },
@@ -156,10 +156,9 @@ const withManagerApi: Decorator = (Story, { argsByTarget }) => (
 export const graphQLArgLoader: Loader = async ({ argTypes, argsByTarget, parameters }) => {
   const handlers = Object.entries(argsByTarget.graphql?.$graphql || []).map(
     ([argName, inputResult]: [string, any]) =>
-      graphql.query(argName, (req, res, ctx) => {
-        const result = argTypes.$graphql[argName]?.map?.(inputResult, req.variables) ?? inputResult;
-
-        return res(ctx.data(result));
+      graphql.query(argName, ({ variables }) => {
+        const result = argTypes.$graphql[argName]?.map?.(inputResult, variables) ?? inputResult;
+        return HttpResponse.json({ data: result });
       })
   );
 

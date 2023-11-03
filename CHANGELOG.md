@@ -1,3 +1,39 @@
+# v0.0.112 (Thu Nov 02 2023)
+
+#### 🐛 Bug Fix
+
+- Fix package exports [#140](https://github.com/chromaui/addon-visual-tests/pull/140) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.111 (Mon Oct 30 2023)
+
+#### 🐛 Bug Fix
+
+- Fix package configuration to be in line with tsup configuration [#137](https://github.com/chromaui/addon-visual-tests/pull/137) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.110 (Mon Oct 30 2023)
+
+#### 🐛 Bug Fix
+
+- Upgrade to MSW 2.0 [#136](https://github.com/chromaui/addon-visual-tests/pull/136) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v0.0.109 (Mon Oct 23 2023)
 
 #### 🐛 Bug Fix

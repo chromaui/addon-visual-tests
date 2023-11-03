@@ -7,9 +7,9 @@ import { Text } from "../../components/layout";
 import { SnapshotImage } from "../../components/SnapshotImage";
 import { ComparisonResult, TestResult, TestStatus } from "../../gql/graphql";
 import { summarizeTests } from "../../utils/summarizeTests";
+import { useSelectedBuildState, useSelectedStoryState } from "./BuildContext";
 import { BuildResultsFooter } from "./BuildResultsFooter";
 import { useControlsDispatch, useControlsState } from "./ControlsContext";
-import { useSelectedBuildState, useSelectedStoryState } from "./SelectedBuildContext";
 import { SnapshotControls } from "./SnapshotControls";
 import { StoryInfo } from "./StoryInfo";
 

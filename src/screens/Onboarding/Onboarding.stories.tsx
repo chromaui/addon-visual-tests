@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { graphql } from "msw";
+import { graphql, HttpResponse } from "msw";
 
 import { panelModes } from "../../modes";
 import { GraphQLClientProvider } from "../../utils/graphQLClient";
@@ -16,9 +16,9 @@ const meta = {
     },
     msw: {
       handlers: [
-        graphql.query("ProjectQuery", (req, res, ctx) =>
-          res(
-            ctx.data({
+        graphql.query("ProjectQuery", () =>
+          HttpResponse.json({
+            data: {
               project: {
                 id: "123",
                 name: "acme",
@@ -28,8 +28,8 @@ const meta = {
                   number: 123,
                 },
               },
-            })
-          )
+            },
+          })
         ),
       ],
     },
