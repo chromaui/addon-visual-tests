@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 import { PROJECT_INFO } from "../constants";
 import { ProjectInfoPayload } from "../types";
@@ -10,13 +10,16 @@ export const useProjectId = () => {
   // Once we've seen the state of the update, we can "clear" it to move on
   const [clearUpdated, setClearUpdated] = useState(false);
 
-  const updateProject = (newProjectId: string, newProjectToken: string) => {
-    setClearUpdated(false);
-    setProjectInfo({
-      projectId: newProjectId,
-      projectToken: newProjectToken,
-    });
-  };
+  const updateProject = useCallback(
+    (newProjectId: string, newProjectToken: string) => {
+      setClearUpdated(false);
+      setProjectInfo({
+        projectId: newProjectId,
+        projectToken: newProjectToken,
+      });
+    },
+    [setProjectInfo]
+  );
 
   const { projectId, projectToken, written, configFile } = projectInfo || {};
   return {
