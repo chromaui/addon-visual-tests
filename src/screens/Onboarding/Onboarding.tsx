@@ -1,13 +1,14 @@
-import { Icons, P } from "@storybook/components";
+import { Icons } from "@storybook/components";
 import { Icon } from "@storybook/design-system";
 import React from "react";
-import { CombinedError, gql, useQuery } from "urql";
+import { gql } from "urql";
 
 import { BuildProgressInline } from "../../components/BuildProgressBarInline";
 import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
 import { Heading } from "../../components/Heading";
 import { VisualTestsIcon } from "../../components/icons/VisualTestsIcon";
+import { Row, Section } from "../../components/layout";
 import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
 import { GitInfoPayload, LocalBuildProgress } from "../../types";
@@ -30,7 +31,7 @@ interface NoBuildProps {
   // queryError?: CombinedError;
   // hasData: boolean;
   // hasSelectedBuild: boolean;
-  setShouldShowOnboarding: (shouldShowOnboarding: boolean) => void;
+  onCompleteOnboarding: () => void;
   startDevBuild: () => void;
   localBuildProgress?: LocalBuildProgress;
   gitInfo: Pick<GitInfoPayload, "uncommittedHash" | "branch">;
@@ -42,7 +43,7 @@ export const Onboarding = ({
   startDevBuild,
   localBuildProgress,
   gitInfo,
-  setShouldShowOnboarding,
+  onCompleteOnboarding,
 }: NoBuildProps) => {
   const screen = React.useState<OnboardingScreen>();
 
@@ -54,10 +55,6 @@ export const Onboarding = ({
   };
   const [runningSecondBuild, setRunningSecondBuild] = React.useState(false);
 
-  const onCompleteOnboarding = () => {
-    console.log("hmmmm... It should be done by now.");
-    setShouldShowOnboarding(false);
-  };
   console.log({ localBuildProgress, catchAChange, runningSecondBuild });
   // TODO: This design for an error in the Onboarding is incomplete
   if (localBuildProgress && localBuildProgress.currentStep === "error") {
@@ -159,12 +156,44 @@ export const Onboarding = ({
             In your code, adjust the markup, styling, or assets to see how visual testing works.
             Don’t worry, you can undo it later. Here are a few ideas to get you started.
           </Text>
-          <p>Shift the color palette</p>
-          <p>Embiggen the type</p>
-          <p>Change the layout</p>
-
-          <p>Let’s see the superpower of catching visual changes.</p>
-          <p>Make a change to this story</p>
+          {/* TODO: Fix the alignment of these */}
+          <Stack style={{ display: "flex", alignItems: "flex-start", gap: "8px" }}>
+            <Row style={{ margin: 0, alignItems: "center", gap: "10px" }}>
+              <img
+                src="/onboarding-color-palette.png"
+                alt="Color Palette"
+                style={{ width: 32, height: 32 }}
+              />
+              Shift the color palette
+            </Row>
+            <Row style={{ margin: 0, alignItems: "center", gap: "10px" }}>
+              <img
+                src="/onboarding-embiggen.png"
+                alt="Embiggen"
+                style={{ width: 32, height: 32 }}
+              />{" "}
+              Embiggen the type
+            </Row>
+            <Row style={{ margin: 0, alignItems: "center", gap: "10px" }}>
+              <img
+                src="/onboarding-color-palette.png"
+                alt="Color Palette"
+                style={{ width: 32, height: 32 }}
+              />
+              Change the layout
+            </Row>
+            <Row style={{ margin: 0, alignItems: "center", gap: "10px" }}>
+              <img
+                src="/onboarding-adjust-size.png"
+                style={{ width: 32, height: 32 }}
+                alt="Color Palette"
+              />
+              <p>Adjust the size or scale</p>
+            </Row>
+          </Stack>
+          <Button tertiary style={{ cursor: "default" }}>
+            Awaiting changes...
+          </Button>
         </Stack>
       </Container>
     );
@@ -209,7 +238,6 @@ export const Onboarding = ({
     catchAChange &&
     localBuildProgress.currentStep !== "error" &&
     localBuildProgress.currentStep !== "complete" &&
-    initialGitHash !== gitInfo.uncommittedHash &&
     runningSecondBuild
   ) {
     return (
@@ -219,7 +247,7 @@ export const Onboarding = ({
           <Heading>Changes detected</Heading>
           <Text>
             Time to run your first visual test! Visual tests will pinpoint the exact changes made to
-            this Story.
+            this Story
           </Text>
           <BuildProgressInline localBuildProgress={localBuildProgress} />
         </Stack>
@@ -237,7 +265,11 @@ export const Onboarding = ({
             Any time you want to run tests, tap that button in the sidebar to see exactly what
             changed across your Storybook.
           </Text>
-          <img src="/example-button-noargs.png" alt="Start build button noargs" />
+          <img
+            style={{ maxWidth: "100%" }}
+            src="/example-button-noargs.png"
+            alt="Start build button noargs"
+          />
         </Stack>
         <Button small secondary onClick={onCompleteOnboarding}>
           Got it
