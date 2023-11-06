@@ -1,3 +1,4 @@
+import { action } from "@storybook/addon-actions";
 import type { Meta, StoryObj } from "@storybook/react";
 import { findByRole, userEvent } from "@storybook/testing-library";
 import { graphql, HttpResponse } from "msw";
@@ -14,10 +15,11 @@ const meta = {
   component: Onboarding,
   decorators: [storyWrapper],
   args: {
-    queryError: undefined,
-    hasData: true,
-    hasSelectedBuild: false,
+    // queryError: undefined,
+    // hasData: true,
+    // hasSelectedBuild: false,
     startDevBuild: () => { },
+    setShouldShowOnboarding: action("setShouldShowOnboarding"),
     localBuildProgress: undefined,
     gitInfo: {
       uncommittedHash: "123",
@@ -233,7 +235,7 @@ export const ChangesFound: Story = {
           gitInfo={gitInfo}
           startDevBuild={() =>
             setLocalBuildProgress({
-              INITIAL_BUILD_PAYLOAD,
+              ...INITIAL_BUILD_PAYLOAD,
               buildProgressPercentage: 100,
               currentStep: "complete",
             })
@@ -249,6 +251,26 @@ export const ChangesFound: Story = {
 };
 
 export const Done: Story = {
+  parameters: withFigmaDesign(
+    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318693&t=3EAIRe8423CpOQWY-4"
+  ),
+};
+
+// TODO: This design for an error in the Onboarding is incomplete
+export const Error: Story = {
+  args: {
+    localBuildProgress: {
+      ...INITIAL_BUILD_PAYLOAD,
+      buildProgressPercentage: 100,
+      currentStep: "error",
+      originalError: {
+        message:
+          "\u001b[31m✖\u001b[39m \u001b[1mFailed to verify your Storybook\u001b[22m\nBuild verification timed out",
+        name: "Error",
+      },
+    },
+  },
+  // TODO: Review the actual design with MA to determine what this should look like.
   parameters: withFigmaDesign(
     "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318693&t=3EAIRe8423CpOQWY-4"
   ),

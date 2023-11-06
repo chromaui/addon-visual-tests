@@ -1,4 +1,4 @@
-import { Icons } from "@storybook/components";
+import { Icons, P } from "@storybook/components";
 import { Icon } from "@storybook/design-system";
 import React from "react";
 import { CombinedError, gql, useQuery } from "urql";
@@ -30,6 +30,7 @@ interface NoBuildProps {
   // queryError?: CombinedError;
   // hasData: boolean;
   // hasSelectedBuild: boolean;
+  setShouldShowOnboarding: (shouldShowOnboarding: boolean) => void;
   startDevBuild: () => void;
   localBuildProgress?: LocalBuildProgress;
   gitInfo: Pick<GitInfoPayload, "uncommittedHash" | "branch">;
@@ -37,7 +38,12 @@ interface NoBuildProps {
 
 type OnboardingScreen = "onboarding" | "catchAChange" | "changesDetected";
 
-export const Onboarding = ({ startDevBuild, localBuildProgress, gitInfo }: NoBuildProps) => {
+export const Onboarding = ({
+  startDevBuild,
+  localBuildProgress,
+  gitInfo,
+  setShouldShowOnboarding,
+}: NoBuildProps) => {
   const screen = React.useState<OnboardingScreen>();
 
   const [catchAChange, setCatchAChange] = React.useState(false);
@@ -48,11 +54,33 @@ export const Onboarding = ({ startDevBuild, localBuildProgress, gitInfo }: NoBui
   };
   const [runningSecondBuild, setRunningSecondBuild] = React.useState(false);
 
-  // TODO: Add stories and logic for error handling
+  const onCompleteOnboarding = () => {
+    console.log("hmmmm... It should be done by now.");
+    setShouldShowOnboarding(false);
+  };
+  console.log({ localBuildProgress, catchAChange, runningSecondBuild });
+  // TODO: This design for an error in the Onboarding is incomplete
   if (localBuildProgress && localBuildProgress.currentStep === "error") {
-    return <p>{localBuildProgress.formattedError}</p>;
+    return (
+      <Container>
+        <Stack>
+          <h1>Something went wrong</h1>
+          <p>
+            {Array.isArray(localBuildProgress.originalError)
+              ? localBuildProgress.originalError[0]?.message
+              : localBuildProgress.originalError?.message}
+          </p>
+          <Button small secondary onClick={startDevBuild}>
+            Try again
+          </Button>
+        </Stack>
+      </Container>
+    );
   }
 
+  // TODO: After running a first build, this screen should show the catchAChange screen. But if the user restarts Storybook, it comes back to this screen.
+  // Oddly, this seems to be because project.lastBuild is undefined in GraphQL, so at least it doesn't skip out of the onboarding flow.
+  // But we'll need some check to see if one build was run to prompt them to make a change and run another
   if (!localBuildProgress) {
     return (
       <Container>
@@ -66,6 +94,29 @@ export const Onboarding = ({ startDevBuild, localBuildProgress, gitInfo }: NoBui
           <Button small secondary onClick={startDevBuild}>
             Take snapshots
           </Button>
+        </Stack>
+      </Container>
+    );
+  }
+
+  if (
+    localBuildProgress &&
+    localBuildProgress.currentStep !== "error" &&
+    localBuildProgress.currentStep !== "complete" &&
+    !catchAChange &&
+    !runningSecondBuild
+  ) {
+    // When the build is in progress, show the build progress bar
+    return (
+      <Container>
+        <Stack>
+          <VisualTestsIcon />
+          <Heading>Get started with visual testing</Heading>
+          <Text>
+            Take an image snapshot of each story to save their “last known good state” as test
+            baselines.{" "}
+          </Text>
+          <BuildProgressInline localBuildProgress={localBuildProgress} />
         </Stack>
       </Container>
     );
@@ -113,16 +164,13 @@ export const Onboarding = ({ startDevBuild, localBuildProgress, gitInfo }: NoBui
           <p>Change the layout</p>
 
           <p>Let’s see the superpower of catching visual changes.</p>
-          {initialGitHash === gitInfo.uncommittedHash ? (
-            <p>Make a change to this story</p>
-          ) : (
-            <p>Changes detecte!</p>
-          )}
+          <p>Make a change to this story</p>
         </Stack>
       </Container>
     );
   }
 
+  // If the first build is done, changes were detected, and the second build hasn't started yet.
   if (
     localBuildProgress &&
     localBuildProgress.currentStep === "complete" &&
@@ -139,29 +187,28 @@ export const Onboarding = ({ startDevBuild, localBuildProgress, gitInfo }: NoBui
             Time to run your first visual test! Visual tests will pinpoint the exact changes made to
             this Story.
           </Text>
-          {localBuildProgress.currentStep !== "complete" ? (
-            <BuildProgressInline localBuildProgress={localBuildProgress} />
-          ) : (
-            <Button
-              small
-              secondary
-              onClick={() => {
-                setRunningSecondBuild(true);
-                startDevBuild();
-              }}
-            >
-              <Icons icon="play" />
-              Run visual tests
-            </Button>
-          )}
+          <Button
+            small
+            secondary
+            onClick={() => {
+              setRunningSecondBuild(true);
+              startDevBuild();
+            }}
+          >
+            <Icons icon="play" />
+            Run visual tests
+          </Button>
         </Stack>
       </Container>
     );
   }
 
+  // If the first build is done, changes were detected, and the second build is in progress.
   if (
     localBuildProgress &&
     catchAChange &&
+    localBuildProgress.currentStep !== "error" &&
+    localBuildProgress.currentStep !== "complete" &&
     initialGitHash !== gitInfo.uncommittedHash &&
     runningSecondBuild
   ) {
@@ -180,25 +227,27 @@ export const Onboarding = ({ startDevBuild, localBuildProgress, gitInfo }: NoBui
     );
   }
 
-  // And then, somehow, we need to enter into the popup guided tour with "Changes found!" pointing to real changes.
-  // What if there are no changes in the latest build? Do we just assume that there are? Do we need to show the onboarding multiple times? At least until there are changes?
-
-  if (localBuildProgress && localBuildProgress.currentStep !== "error") {
-    // When the build is in progress, show the build progress bar
+  // If the second build has been run and is complete, show the results
+  if (localBuildProgress && localBuildProgress.currentStep === "complete" && runningSecondBuild) {
     return (
       <Container>
         <Stack>
-          <VisualTestsIcon />
-          <Heading>Get started with visual testing</Heading>
+          <Heading>You've got the basics down.</Heading>
           <Text>
-            Take an image snapshot of each story to save their “last known good state” as test
-            baselines.{" "}
+            Any time you want to run tests, tap that button in the sidebar to see exactly what
+            changed across your Storybook.
           </Text>
-          <BuildProgressInline localBuildProgress={localBuildProgress} />
+          <img src="/example-button-noargs.png" alt="Start build button noargs" />
         </Stack>
+        <Button small secondary onClick={onCompleteOnboarding}>
+          Got it
+        </Button>
       </Container>
     );
   }
+  // And then, somehow, we need to enter into the popup guided tour with "Changes found!" pointing to real changes.
+  // What if there are no changes in the latest build? Do we just assume that there are? Do we need to show the onboarding multiple times? At least until there are changes?
+
   // TODO: We shouldn't need a default case like this
   return <Container>No Screen Selected</Container>;
 };
