@@ -90,7 +90,13 @@ export const VisualTestsWithoutSelectedBuildId = ({
   const [{ fetching: isReviewing }, reviewTest] = useMutation(MutationReviewTest);
 
   // if there is no initial build, make them go through onboarding. This will not survive a refresh if they run the initial build step and restart storybook before they've run it.
-  const [shouldShowOnboarding, setShouldShowOnboarding] = useState(() => !data?.project?.lastBuild);
+  // TODO: This heuristic does not work. project.lastBuild is null if the previous build had errors (but completed) and isn't reliable even when the build works.
+  // As well, we probably want users to see the onboarding at least once, even if the project does have a lastBuild.
+  // It also does not wait for the query to complete (data.project.lastBuildOnBranch is undefined because data.project is undefined on first render) before rendering, so it always shows onboarding.
+  const [shouldShowOnboarding, setShouldShowOnboarding] = useState(
+    () => !data?.project?.lastBuildOnBranch
+  );
+  console.log({ shouldShowOnboarding, project: data?.project });
 
   const onReview = useCallback(
     async (
@@ -229,6 +235,7 @@ export const VisualTestsWithoutSelectedBuildId = ({
           setAccessToken,
           startDevBuild,
           updateBuildStatus,
+          localBuildProgress,
           onCompleteOnboarding: () => {
             setShouldShowOnboarding(false);
             // TODO: Use a mutation to set a flag `hasOnboardedVTAddon. Similar to the `hasOnboarded` flag in Chromatic webapp
