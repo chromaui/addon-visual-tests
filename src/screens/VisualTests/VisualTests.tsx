@@ -93,6 +93,8 @@ export const VisualTestsWithoutSelectedBuildId = ({
   // TODO: This heuristic does not work. project.lastBuild is null if the previous build had errors (but completed) and isn't reliable even when the build works.
   // As well, we probably want users to see the onboarding at least once, even if the project does have a lastBuild.
   // It also does not wait for the query to complete (data.project.lastBuildOnBranch is undefined because data.project is undefined on first render) before rendering, so it always shows onboarding.
+  // Better to use some sort of onboarding flag on the user object so that it can be shown to everyone.
+  // And we should probably show it on the first build anyways, I think.
   const [shouldShowOnboarding, setShouldShowOnboarding] = useState(
     () => !data?.project?.lastBuildOnBranch
   );
