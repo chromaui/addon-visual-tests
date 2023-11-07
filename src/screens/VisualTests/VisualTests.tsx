@@ -96,7 +96,7 @@ export const VisualTestsWithoutSelectedBuildId = ({
   // Better to use some sort of onboarding flag on the user object so that it can be shown to everyone.
   // And we should probably show it on the first build anyways, I think.
   const [shouldShowOnboarding, setShouldShowOnboarding] = useState(
-    () => false //! data?.project?.lastBuildOnBranch
+    () => !data?.project?.lastBuildOnBranch
   );
   console.log({ shouldShowOnboarding, project: data?.project });
 

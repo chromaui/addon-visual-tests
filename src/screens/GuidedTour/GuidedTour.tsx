@@ -28,11 +28,13 @@ interface TourProps {
 }
 
 // type OnboardingScreen = "onboarding" | "catchAChange" | "changesDetected";
-
 export const GuidedTour = ({ api }: TourProps) => {
   // This will just be shown by default for now. Need to figure out when we should display it.
   const [stepIndex, setStepIndex] = React.useState<number>(0);
-  const steps: GuidedTourStep[] = [
+  const nextStep = () => {
+    setStepIndex((prev) => prev + 1);
+  };
+  const steps: Partial<GuidedTourStep>[] = [
     {
       target: "#changes-found-filter",
       title: "Changes found",
@@ -45,12 +47,17 @@ export const GuidedTour = ({ api }: TourProps) => {
         </>
       ),
       placement: "top",
+      spotlightClicks: true,
+      disableBeacon: true,
+      onNextButtonClick: nextStep,
     },
     {
       target: "#storybook-explorer-tree > div",
       title: "Stories with changes",
       content: <>Here you have a filtered list of only stories with changes.</>,
       placement: "right",
+      disableBeacon: true,
+      onNextButtonClick: nextStep,
     },
     {
       target: "#panel-tab-content",
@@ -58,7 +65,9 @@ export const GuidedTour = ({ api }: TourProps) => {
       content: (
         <>The results of the changes are shown here highlighting changes down to the pixel.</>
       ),
+      disableBeacon: true,
       placement: "left",
+      onNextButtonClick: nextStep,
     },
     {
       target: "#button-diff-visible",
@@ -69,6 +78,8 @@ export const GuidedTour = ({ api }: TourProps) => {
           out.
         </>
       ),
+      onNextButtonClick: nextStep,
+      disableBeacon: true,
       placement: "bottom",
     },
     {
@@ -80,6 +91,8 @@ export const GuidedTour = ({ api }: TourProps) => {
           you know which you are looking at.
         </>
       ),
+      onNextButtonClick: nextStep,
+      disableBeacon: true,
       placement: "bottom",
     },
     {
@@ -91,6 +104,8 @@ export const GuidedTour = ({ api }: TourProps) => {
           undone.
         </>
       ),
+      disableBeacon: true,
+      onNextButtonClick: nextStep,
       placement: "bottom",
     },
     {
@@ -101,6 +116,7 @@ export const GuidedTour = ({ api }: TourProps) => {
           You’ve got the basics down! You can always Unaccept if you’re not happy with the changes.
         </>
       ),
+      onNextButtonClick: nextStep,
     },
     {
       target: "#button-run-tests",
@@ -111,13 +127,15 @@ export const GuidedTour = ({ api }: TourProps) => {
           across your Storybook.
         </>
       ),
+      disableBeacon: true,
+      onNextButtonClick: nextStep,
     },
   ];
   return (
     <Joyride
       steps={steps}
       continuous
-      // stepIndex={stepIndex}
+      stepIndex={stepIndex}
       spotlightPadding={0}
       hideBackButton
       disableCloseOnEsc
