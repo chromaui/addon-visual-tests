@@ -36,7 +36,11 @@ export const BuildResultsFooter = ({
             trigger="hover"
             hasChrome={false}
           >
-            <IconButton data-testid="button-toggle-snapshot" onClick={() => toggleBaselineImage()}>
+            <IconButton
+              data-testid="button-toggle-snapshot"
+              id="button-toggle-snapshot"
+              onClick={() => toggleBaselineImage()}
+            >
               <Icons icon="transfer" />
             </IconButton>
           </WithTooltip>

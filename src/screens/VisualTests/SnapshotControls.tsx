@@ -123,6 +123,7 @@ export const SnapshotControls = ({
           >
             <IconButton
               data-testid="button-diff-visible"
+              id="button-diff-visible"
               active={diffVisible}
               onClick={() => setDiffVisible(!diffVisible)}
             >

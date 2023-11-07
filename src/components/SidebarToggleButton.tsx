@@ -50,7 +50,7 @@ export const SidebarToggleButton = React.memo(function SidebarToggleButton({
   useEffect(() => () => onDisable(), [onDisable]);
 
   return (
-    <Button active={filter} onClick={toggleFilter}>
+    <Button id="changes-found-filter" active={filter} onClick={toggleFilter}>
       <Badge status="warning" data-badge={filter}>
         {count}
       </Badge>
