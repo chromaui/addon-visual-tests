@@ -1,3 +1,15 @@
+# v0.0.114 (Wed Nov 08 2023)
+
+#### 🐛 Bug Fix
+
+- Filter `lastBuildOnBranch` by `repositoryOwnerName` rather than `slug` [#142](https://github.com/chromaui/addon-visual-tests/pull/142) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v0.0.113 (Fri Nov 03 2023)
 
 #### 🐛 Bug Fix
