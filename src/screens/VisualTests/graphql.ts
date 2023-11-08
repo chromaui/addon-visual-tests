@@ -5,7 +5,7 @@ export const QueryBuild = graphql(/* GraphQL */ `
     $projectId: ID!
     $branch: String!
     $gitUserEmailHash: String!
-    $slug: String
+    $repositoryOwnerName: String
     $storyId: String!
     $testStatuses: [TestStatus!]!
     $selectedBuildId: ID!
@@ -15,7 +15,7 @@ export const QueryBuild = graphql(/* GraphQL */ `
       name
       lastBuildOnBranch: lastBuild(
         branches: [$branch]
-        slug: $slug
+        repositoryOwnerName: $repositoryOwnerName
         localBuilds: { localBuildEmailHash: $gitUserEmailHash }
       ) {
         ...LastBuildOnBranchBuildFields
