@@ -108,10 +108,10 @@ async function serverChannel(
     channel
   );
 
-  channel.on(START_BUILD, async () => {
-    const { projectToken } = projectInfoState.value || {};
+  channel.on(START_BUILD, async ({ accessToken }) => {
+    const { projectId } = projectInfoState.value || {};
     try {
-      await runChromaticBuild(localBuildProgress, { projectToken });
+      await runChromaticBuild(localBuildProgress, { userToken: accessToken, projectId });
     } catch (e) {
       console.error(`Failed to run Chromatic build, with error:\n${e}`);
     }

@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 // eslint-disable-next-line import/no-unresolved
-import { Context, Flags, run, TaskName } from "chromatic/node";
+import { Context, Flags, Options, run, TaskName } from "chromatic/node";
 
 import {
   BUILD_STEP_CONFIG,
@@ -162,9 +162,10 @@ export const onCompleteOrError =
 
 export const runChromaticBuild = async (
   localBuildProgress: ReturnType<typeof SharedState.subscribe<LocalBuildProgress>>,
-  flags: Flags
+  options: Options
 ) => {
-  if (!flags.projectToken) throw new Error("No project token set");
+  if (!options.projectId) throw new Error("Missing projectId");
+  if (!options.userToken) throw new Error("Missing userToken");
 
   localBuildProgress.value = INITIAL_BUILD_PAYLOAD;
 
@@ -175,10 +176,9 @@ export const runChromaticBuild = async (
   abortController = new AbortController();
 
   await run({
-    // Currently we have to have these flags.
-    // We should move the checks to after flags have been parsed into options.
-    flags,
     options: {
+      ...options,
+
       // We might want to drop this later and instead record "uncommitted hashes" on builds
       forceRebuild: true,
       // Builds initiated from the addon are always considered local

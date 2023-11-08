@@ -146,7 +146,7 @@ export const Panel = ({ active, api }: PanelProps) => {
         <VisualTests
           dismissBuildError={() => setLocalBuildProgress(undefined)}
           localBuildProgress={localBuildIsRightBranch ? localBuildProgress : undefined}
-          startDevBuild={() => emit(START_BUILD)}
+          startDevBuild={() => emit(START_BUILD, { accessToken })}
           setAccessToken={setAccessToken}
           setOutdated={setOutdated}
           updateBuildStatus={updateBuildStatus}
