@@ -39,7 +39,7 @@ export const useBuild = ({
       storyId,
       testStatuses: Object.keys(statusMap) as any as TestStatus[],
       branch: gitInfo.branch || "",
-      ...(gitInfo.slug ? { slug: gitInfo.slug } : {}),
+      ...(gitInfo.slug ? { repositoryOwnerName: gitInfo.slug.split("/", 1)[0] } : {}),
       gitUserEmailHash: gitInfo.userEmailHash,
       selectedBuildId: selectedBuildInfo?.buildId || "",
       hasSelectedBuildId: !!selectedBuildInfo,
