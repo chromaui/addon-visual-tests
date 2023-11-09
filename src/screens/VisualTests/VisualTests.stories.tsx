@@ -152,11 +152,11 @@ export const Loading = {
   },
 } satisfies Story;
 
-export const GraphQLError = {
+export const NotFound = {
   args: { $graphql: {} },
   parameters: {
     ...withGraphQLQueryParameters("AddonVisualTestsBuild", () =>
-      HttpResponse.json({ errors: [{ message: "Something went wrong on the server" }] })
+      HttpResponse.json({ data: { project: null } } as any)
     ),
   },
 } satisfies Story;
@@ -165,7 +165,25 @@ export const NoAccess = {
   args: { $graphql: {} },
   parameters: {
     ...withGraphQLQueryParameters("AddonVisualTestsBuild", () =>
-      HttpResponse.json({ data: { project: null } } as any)
+      HttpResponse.json({
+        errors: [
+          {
+            extensions: { code: "FORBIDDEN" },
+            locations: [{ line: 13, column: 3 }],
+            message: "No Access",
+            path: ["selectedBuild"],
+          },
+        ],
+      } as any)
+    ),
+  },
+} satisfies Story;
+
+export const ServerError = {
+  args: { $graphql: {} },
+  parameters: {
+    ...withGraphQLQueryParameters("AddonVisualTestsBuild", () =>
+      HttpResponse.json({ errors: [{ message: "Something went wrong on the server" }] })
     ),
   },
 } satisfies Story;
