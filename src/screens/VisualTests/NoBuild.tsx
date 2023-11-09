@@ -84,13 +84,35 @@ export const NoBuild = ({
   };
 
   const getContent = () => {
-    if (queryError) {
+    if (queryError?.networkError) {
       return (
-        <Row>
-          <Col>
-            <Text>{queryError.message}</Text>
-          </Col>
-        </Row>
+        <Container>
+          <Heading>Network error</Heading>
+          <CenterText>{queryError.networkError}</CenterText>
+          <br />
+          {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+          <Link isButton onClick={() => setAccessToken(null)} withArrow>
+            Switch account
+          </Link>
+        </Container>
+      );
+    }
+
+    if (queryError?.graphQLErrors?.length) {
+      return (
+        <Container>
+          <Heading>{queryError.graphQLErrors[0].message}</Heading>
+          <CenterText>
+            {queryError.graphQLErrors[0].extensions.code === "FORBIDDEN"
+              ? "You may have insufficient permissions. Try logging out and back in again."
+              : "Try logging out or clear your browser's local storage."}
+          </CenterText>
+          <br />
+          {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+          <Link isButton onClick={() => setAccessToken(null)} withArrow>
+            Switch account
+          </Link>
+        </Container>
       );
     }
 
