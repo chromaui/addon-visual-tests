@@ -1,3 +1,15 @@
+# v0.0.115 (Thu Nov 09 2023)
+
+#### 🐛 Bug Fix
+
+- Explain the `No Access` error and offer a way out [#146](https://github.com/chromaui/addon-visual-tests/pull/146) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v0.0.114 (Wed Nov 08 2023)
 
 #### 🐛 Bug Fix
