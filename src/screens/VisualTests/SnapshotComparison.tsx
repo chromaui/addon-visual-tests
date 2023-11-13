@@ -16,12 +16,22 @@ import { StoryInfo } from "./StoryInfo";
 export const Grid = styled.div(({ theme }) => ({
   display: "grid",
   gridTemplateAreas: `
-    "info actions"
-    "label controls"
+    "info info"
+    "controls actions"
+    "label label"
   `,
-  gridTemplateColumns: "1fr auto",
-  gridTemplateRows: "auto 40px",
+  gridTemplateColumns: "1fr fit-content(50%)",
+  gridTemplateRows: "auto auto 40px",
   borderBottom: `1px solid ${theme.appBorderColor}`,
+
+  "@container (min-width: 300px)": {
+    gridTemplateAreas: `
+      "info actions"
+      "label controls"
+    `,
+    gridTemplateColumns: "1fr auto",
+    gridTemplateRows: "auto 40px",
+  },
 
   "@container (min-width: 800px)": {
     backgroundColor: theme.background.app,

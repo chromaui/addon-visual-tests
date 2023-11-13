@@ -28,12 +28,15 @@ const Label = styled.div({
 
 const Controls = styled.div({
   gridArea: "controls",
-  margin: "8px 15px",
+  marginRight: 6,
   display: "flex",
   alignItems: "center",
   justifyContent: "flex-end",
   gap: 6,
 
+  "@container (min-width: 300px)": {
+    margin: "8px 15px",
+  },
   "@container (min-width: 800px)": {
     margin: 8,
   },
@@ -41,12 +44,15 @@ const Controls = styled.div({
 
 const Actions = styled.div(({ theme }) => ({
   gridArea: "actions",
-  margin: "8px 15px",
+  marginRight: 15,
   display: "flex",
   alignItems: "center",
   justifyContent: "flex-end",
   gap: 6,
 
+  "@container (min-width: 300px)": {
+    margin: "8px 15px",
+  },
   "@container (min-width: 800px)": {
     borderLeft: `1px solid ${theme.appBorderColor}`,
     paddingLeft: 8,
