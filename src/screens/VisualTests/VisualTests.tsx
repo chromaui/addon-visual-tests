@@ -143,23 +143,22 @@ export const VisualTestsWithoutSelectedBuildId = ({
   // Currently only used by the sidebar button to show a blue dot ("build outdated")
   useEffect(() => setOutdated(!selectedBuildMatchesGit), [selectedBuildMatchesGit, setOutdated]);
 
-  // We always set status to the next build's status, as when we change to a new story we'll see
-  // the next builds
+  // We always set status to the next build's status, as when we change to a new story we'll see the
+  // next builds. The status update is calculated outside useEffect so it only reruns when changed.
+  const testsForStatus =
+    lastBuildOnBranch &&
+    "testsForStatus" in lastBuildOnBranch &&
+    lastBuildOnBranch.testsForStatus?.nodes &&
+    getFragment(FragmentStatusTestFields, lastBuildOnBranch.testsForStatus.nodes);
+  const statusUpdate = lastBuildOnBranchIsSelectable && testsToStatusUpdate(testsForStatus || []);
   useEffect(() => {
-    const testsForStatus =
-      lastBuildOnBranch &&
-      "testsForStatus" in lastBuildOnBranch &&
-      lastBuildOnBranch.testsForStatus?.nodes &&
-      getFragment(FragmentStatusTestFields, lastBuildOnBranch.testsForStatus.nodes);
-
     // @ts-expect-error The return type of this function is wrong in the API, it should allow `null` values
     updateBuildStatus((state) => ({
       ...createEmptyStoryStatusUpdate(state),
-      ...testsToStatusUpdate(testsForStatus || []),
+      ...statusUpdate,
     }));
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(lastBuildOnBranch), updateBuildStatus]);
+  }, [JSON.stringify(statusUpdate), updateBuildStatus]);
 
   // Auto-select the last build on branch if it's selectable and ready
   useEffect(() => {
@@ -207,7 +206,7 @@ export const VisualTestsWithoutSelectedBuildId = ({
             branch: gitInfo.branch,
             dismissBuildError,
             localBuildProgress,
-            switchToLastBuildOnBranch,
+            ...(lastBuildOnBranchIsSelectable && { switchToLastBuildOnBranch }),
             startDevBuild,
             setAccessToken,
             storyId,
