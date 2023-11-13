@@ -6,26 +6,42 @@ import { IconButton } from "../../components/IconButton";
 import { ProgressIcon } from "../../components/icons/ProgressIcon";
 import { Text } from "../../components/layout";
 import { Placeholder } from "../../components/Placeholder";
+import { SplitButton } from "../../components/SplitButton";
 import { TooltipMenu } from "../../components/TooltipMenu";
 import { ComparisonResult, ReviewTestBatch, TestStatus } from "../../gql/graphql";
 import { useSelectedBuildState, useSelectedStoryState } from "./BuildContext";
 import { useControlsDispatch, useControlsState } from "./ControlsContext";
 import { useReviewTestState } from "./ReviewTestContext";
 
-const Controls = styled.div({
-  gridArea: "controls",
+const Label = styled.div({
+  gridArea: "label",
+  margin: "8px 15px",
   display: "flex",
   alignItems: "center",
-  margin: "8px 10px",
+  justifyContent: "flex-start",
+  gap: 6,
 
   "@container (min-width: 800px)": {
-    flexDirection: "row-reverse",
+    margin: 8,
+  },
+});
+
+const Controls = styled.div({
+  gridArea: "controls",
+  margin: "8px 15px",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "flex-end",
+  gap: 6,
+
+  "@container (min-width: 800px)": {
+    margin: 8,
   },
 });
 
 const Actions = styled.div(({ theme }) => ({
   gridArea: "actions",
-  margin: "8px 10px",
+  margin: "8px 15px",
   display: "flex",
   alignItems: "center",
   justifyContent: "flex-end",
@@ -64,30 +80,34 @@ export const SnapshotControls = () => {
 
   return (
     <>
+      <Label>
+        {baselineImageVisible ? (
+          <Text style={{ width: "100%" }}>
+            <b>Baseline</b>
+            {/* on {selectedBuild.branch} */}
+          </Text>
+        ) : (
+          <Text style={{ width: "100%" }}>
+            <b>Latest</b> on {selectedBuild.branch}
+          </Text>
+        )}
+      </Label>
+
       <Controls>
         {hasBaselineSnapshot && (
           <WithTooltip
-            tooltip={<TooltipNote note="Switch snapshot" />}
+            tooltip={<TooltipNote note="Toggle baseline" />}
             trigger="hover"
             hasChrome={false}
           >
             <IconButton
-              data-testid="button-toggle-snapshot"
+              active={baselineImageVisible}
               aria-label={baselineImageVisible ? "Show latest snapshot" : "Show baseline snapshot"}
               onClick={() => toggleBaselineImage()}
             >
               <Icons icon="transfer" />
             </IconButton>
           </WithTooltip>
-        )}
-        {baselineImageVisible ? (
-          <Text style={{ marginLeft: 5, width: "100%" }}>
-            <b>Baseline</b> Build {selectedBuild.number} on {selectedBuild.branch}
-          </Text>
-        ) : (
-          <Text style={{ marginLeft: 5, width: "100%" }}>
-            <b>Latest</b> Build {selectedBuild.number} on {selectedBuild.branch}
-          </Text>
         )}
 
         {selectedComparison?.result === ComparisonResult.Changed && (
@@ -97,7 +117,6 @@ export const SnapshotControls = () => {
             hasChrome={false}
           >
             <IconButton
-              data-testid="button-diff-visible"
               active={diffVisible}
               aria-label={diffVisible ? "Hide diff" : "Show diff"}
               onClick={() => toggleDiff(!diffVisible)}
@@ -111,20 +130,20 @@ export const SnapshotControls = () => {
       {(isAcceptable || isUnacceptable) && (
         <Actions>
           {userCanReview && buildIsReviewable && isAcceptable && (
-            <>
+            <div>
               <WithTooltip
                 tooltip={<TooltipNote note="Accept this snapshot" />}
                 trigger="hover"
                 hasChrome={false}
               >
-                <IconButton
-                  secondary
+                <SplitButton
                   disabled={isReviewing}
                   aria-label="Accept test"
                   onClick={() => acceptTest(selectedTest.id)}
+                  side="left"
                 >
                   Accept
-                </IconButton>
+                </SplitButton>
               </WithTooltip>
               <TooltipMenu
                 placement="bottom"
@@ -156,16 +175,16 @@ export const SnapshotControls = () => {
                 ]}
               >
                 {(active) => (
-                  <IconButton secondary active={active} aria-label="Batch accept">
+                  <SplitButton active={active} aria-label="Batch accept" side="right">
                     {isReviewing ? (
                       <ProgressIcon parentComponent="IconButton" />
                     ) : (
                       <Icons icon="batchaccept" />
                     )}
-                  </IconButton>
+                  </SplitButton>
                 )}
               </TooltipMenu>
-            </>
+            </div>
           )}
 
           {userCanReview && buildIsReviewable && isUnacceptable && (

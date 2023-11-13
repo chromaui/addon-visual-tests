@@ -16,8 +16,8 @@ import { StoryInfo } from "./StoryInfo";
 export const Grid = styled.div(({ theme }) => ({
   display: "grid",
   gridTemplateAreas: `
-    "info button"
-    "controls actions"
+    "info actions"
+    "label controls"
   `,
   gridTemplateColumns: "1fr auto",
   gridTemplateRows: "auto 40px",
@@ -25,7 +25,7 @@ export const Grid = styled.div(({ theme }) => ({
 
   "@container (min-width: 800px)": {
     backgroundColor: theme.background.app,
-    gridTemplateAreas: `"info controls actions button"`,
+    gridTemplateAreas: `"info label controls actions"`,
     gridTemplateColumns: "1fr auto auto auto",
     gridTemplateRows: "40px",
   },
