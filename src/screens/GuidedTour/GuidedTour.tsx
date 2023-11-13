@@ -24,11 +24,11 @@ interface TourProps {
   // queryError?: CombinedError;
   // hasData: boolean;
   // hasSelectedBuild: boolean;
-  api: API;
+  // api: API;
 }
 
 // type OnboardingScreen = "onboarding" | "catchAChange" | "changesDetected";
-export const GuidedTour = ({ api }: TourProps) => {
+export const GuidedTour = ({ }: TourProps) => {
   // This will just be shown by default for now. Need to figure out when we should display it.
   const [stepIndex, setStepIndex] = React.useState<number>(0);
   const nextStep = () => {

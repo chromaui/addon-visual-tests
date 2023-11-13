@@ -159,7 +159,6 @@ export const Panel = ({ active, api }: PanelProps) => {
           />
         </ControlsProvider>
       </Sections>
-      <GuidedTour api={api} />
     </Provider>
   );
 };

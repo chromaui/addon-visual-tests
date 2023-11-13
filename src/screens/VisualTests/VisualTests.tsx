@@ -8,6 +8,7 @@ import { ReviewTestBatch, ReviewTestInputStatus } from "../../gql/graphql";
 import { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from "../../types";
 import { testsToStatusUpdate } from "../../utils/testsToStatusUpdate";
 import { SelectedBuildInfo, updateSelectedBuildInfo } from "../../utils/updateSelectedBuildInfo";
+import { GuidedTour } from "../GuidedTour/GuidedTour";
 import { Onboarding } from "../Onboarding/Onboarding";
 import { BuildProvider, useBuild } from "./BuildContext";
 import { BuildResults } from "./BuildResults";
@@ -100,13 +101,6 @@ export const VisualTestsWithoutSelectedBuildId = ({
 }: VisualTestsProps) => {
   const { addNotification } = useStorybookApi();
 
-  // if there is no initial build, make them go through onboarding. This will not survive a refresh if they run the initial build step and restart storybook before they've run it.
-  // TODO: This heuristic does not work. project.lastBuild is null if the previous build had errors (but completed) and isn't reliable even when the build works.
-  // As well, we probably want users to see the onboarding at least once, even if the project does have a lastBuild.
-  // It also does not wait for the query to complete (data.project.lastBuildOnBranch is undefined because data.project is undefined on first render) before rendering, so it always shows onboarding.
-  // Better to use some sort of onboarding flag on the user object so that it can be shown to everyone.
-  // And we should probably show it on the first build anyways, I think.
-
   const buildInfo = useBuild({ projectId, storyId, gitInfo, selectedBuildInfo });
 
   const {
@@ -123,7 +117,17 @@ export const VisualTestsWithoutSelectedBuildId = ({
     userCanReview,
   } = buildInfo;
 
+  // if there is no initial build, make them go through onboarding. This will not survive a refresh if they run the initial build step and restart storybook before they've run it.
+  // TODO: This heuristic does not work. project.lastBuild is null if the previous build had errors (but completed) and isn't reliable even when the build works.
+  // As well, we probably want users to see the onboarding at least once, even if the project does have a lastBuild.
+  // It also does not wait for the query to complete (data.project.lastBuildOnBranch is undefined because data.project is undefined on first render) before rendering, so it always shows onboarding.
+  // Better to use some sort of onboarding flag on the user object so that it can be shown to everyone.
+  // And we should probably show it on the first build anyways, I think.
+
   const [shouldShowOnboarding, setShouldShowOnboarding] = useState(() => !lastBuildOnBranch);
+
+  // This behaviour should be dynamic, but for now we'll just show it to everyone
+  const [shouldShowGuidedTour, setShouldShowGuidedTour] = useState(true);
 
   const reviewState = useReview({
     buildIsReviewable: !!selectedBuild && selectedBuild.id === lastBuildOnBranch?.id,
@@ -200,48 +204,55 @@ export const VisualTestsWithoutSelectedBuildId = ({
         {...{
           gitInfo,
           projectId,
-          setShouldShowOnboarding,
           setAccessToken,
           startDevBuild,
           updateBuildStatus,
           localBuildProgress,
           onCompleteOnboarding: () => {
             setShouldShowOnboarding(false);
+            setShouldShowGuidedTour(true);
             // TODO: Use a mutation to set a flag `hasOnboardedVTAddon. Similar to the `hasOnboarded` flag in Chromatic webapp
           },
         }}
       />
     );
   }
-  return !selectedBuild || !hasSelectedBuild || !hasData || queryError ? (
-    <NoBuild
-      {...{
-        queryError,
-        hasData,
-        hasProject,
-        hasSelectedBuild,
-        startDevBuild,
-        localBuildProgress,
-        branch: gitInfo.branch,
-        setAccessToken,
-      }}
-    />
-  ) : (
-    <ReviewTestProvider watchState={reviewState}>
-      <BuildProvider watchState={buildInfo}>
-        <BuildResults
+  return (
+    <>
+      {!selectedBuild || !hasSelectedBuild || !hasData || queryError ? (
+        <NoBuild
           {...{
-            branch: gitInfo.branch,
-            dismissBuildError,
-            localBuildProgress,
-            ...(lastBuildOnBranchIsSelectable && { switchToLastBuildOnBranch }),
+            queryError,
+            hasData,
+            hasProject,
+            hasSelectedBuild,
             startDevBuild,
+            localBuildProgress,
+            branch: gitInfo.branch,
             setAccessToken,
-            storyId,
           }}
         />
-      </BuildProvider>
-    </ReviewTestProvider>
+      ) : (
+        <ReviewTestProvider watchState={reviewState}>
+          <BuildProvider watchState={buildInfo}>
+            <BuildResults
+              {...{
+                branch: gitInfo.branch,
+                dismissBuildError,
+                localBuildProgress,
+                ...(lastBuildOnBranch && { lastBuildOnBranch }),
+                ...(canSwitchToLastBuildOnBranch && { switchToLastBuildOnBranch }),
+                startDevBuild,
+                userCanReview,
+                setAccessToken,
+                storyId,
+              }}
+            />
+          </BuildProvider>
+        </ReviewTestProvider>
+      )}
+      {shouldShowGuidedTour && <GuidedTour />}
+    </>
   );
 };
 
