@@ -1,47 +1,43 @@
 import { expect } from "@storybook/jest";
 import type { Meta, StoryObj } from "@storybook/react";
-import { screen, userEvent, within } from "@storybook/testing-library";
+import { fireEvent, screen, userEvent, within } from "@storybook/testing-library";
 
-import { Browser, ComparisonResult, TestStatus } from "../../gql/graphql";
+import { SelectedBuildFieldsFragment } from "../../gql/graphql";
 import { panelModes } from "../../modes";
 import { action } from "../../utils/action";
 import { playAll } from "../../utils/playAll";
-import { makeTest, makeTests } from "../../utils/storyData";
 import { storyWrapper } from "../../utils/storyWrapper";
-import { summarizeTests } from "../../utils/summarizeTests";
+import { BuildProvider } from "./BuildContext";
 import { ControlsProvider } from "./ControlsContext";
+import { acceptedTests, inProgressTests, pendingBuild, pendingTests, withTests } from "./mocks";
 import { ReviewTestProvider } from "./ReviewTestContext";
 import { Grid } from "./SnapshotComparison";
 import { SnapshotControls } from "./SnapshotControls";
 
-const withTests = (tests: ReturnType<typeof makeTests>) => ({
-  ...summarizeTests(tests),
-  selectedTest: tests[0],
-  selectedComparison: tests[0].comparisons[0],
+const buildInfo = (selectedBuild?: SelectedBuildFieldsFragment) => ({
+  hasData: true,
+  hasProject: true,
+  hasSelectedBuild: !!selectedBuild,
+  lastBuildOnBranch: undefined,
+  lastBuildOnBranchIsNewer: false,
+  lastBuildOnBranchIsReady: false,
+  lastBuildOnBranchIsSelectable: false,
+  selectedBuild,
+  selectedBuildMatchesGit: true,
+  rerunQuery: () => {},
+  queryError: undefined,
+  userCanReview: true,
 });
 
 const meta = {
   component: SnapshotControls,
   decorators: [
     storyWrapper(ReviewTestProvider, (ctx) => ({ watchState: ctx.parameters.reviewTest })),
+    storyWrapper(BuildProvider, (ctx) => ({ watchState: buildInfo(ctx.parameters.selectedBuild) })),
     storyWrapper(ControlsProvider, () => ({ initialState: { diffVisible: true } })),
     storyWrapper(Grid),
   ],
   args: {
-    ...withTests(
-      makeTests({
-        browsers: [Browser.Chrome, Browser.Safari],
-        viewports: [
-          {
-            status: TestStatus.Pending,
-            viewport: 480,
-            comparisonResults: [ComparisonResult.Changed, ComparisonResult.Equal],
-          },
-          { status: TestStatus.Passed, viewport: 800 },
-          { status: TestStatus.Passed, viewport: 1200 },
-        ],
-      })
-    ),
     onSelectMode: action("onSelectMode"),
     onSelectBrowser: action("onSelectBrowser"),
   },
@@ -56,33 +52,22 @@ const meta = {
       acceptTest: action("acceptTest"),
       unacceptTest: action("unacceptTest"),
     },
+    selectedBuild: withTests(pendingBuild, pendingTests),
   },
 } satisfies Meta<typeof SnapshotControls>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const WithSingleTest = {
-  args: withTests([makeTest({ status: TestStatus.Pending })]),
-} satisfies Story;
+export const Default = {} satisfies Story;
 
-export const WithSingleTestInProgress = {
-  args: {
-    ...WithSingleTest.args,
-    isInProgress: true,
+export const InProgress = {
+  parameters: {
+    selectedBuild: withTests(pendingBuild, inProgressTests),
   },
 } satisfies Story;
 
-export const WithMultipleTests = {} satisfies Story;
-
-export const WithMultipleTestsInProgress = {
-  args: {
-    isInProgress: true,
-  },
-} satisfies Story;
-
-export const WithSingleTestAccepting = {
-  args: WithSingleTest.args,
+export const Accepting = {
   parameters: {
     reviewTest: {
       ...meta.parameters.reviewTest,
@@ -91,12 +76,13 @@ export const WithSingleTestAccepting = {
   },
 } satisfies Story;
 
-export const WithSingleTestAccepted = {
-  args: withTests([makeTest({ status: TestStatus.Accepted })]),
+export const Accepted = {
+  parameters: {
+    selectedBuild: withTests(pendingBuild, acceptedTests),
+  },
 } satisfies Story;
 
-export const WithSingleTestUnreviewable = {
-  args: WithSingleTest.args,
+export const Unreviewable = {
   parameters: {
     reviewTest: {
       ...meta.parameters.reviewTest,
@@ -105,35 +91,19 @@ export const WithSingleTestUnreviewable = {
   },
 } satisfies Story;
 
-export const SelectViewport = {
+export const ToggleDiff = {
   play: playAll(async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const menu = await canvas.findByRole("button", { name: "480px" });
-    await userEvent.click(menu);
+    const button = await canvas.findByRole("button", { name: "Hide diff" });
+    fireEvent.click(button);
   }),
 } satisfies Story;
 
-export const SelectedViewport = {
-  play: playAll(SelectViewport, async ({ args, canvasIndex }) => {
-    const items = await screen.findAllByText("1200px");
-    await userEvent.click(items[canvasIndex]);
-    expect(args.onSelectMode).toHaveBeenCalledWith(expect.objectContaining({ name: "1200px" }));
-  }),
-} satisfies Story;
-
-export const SelectBrowser = {
+export const ToggleBaseline = {
   play: playAll(async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const menu = await canvas.findByRole("button", { name: "Chrome" });
-    await userEvent.click(menu);
-  }),
-} satisfies Story;
-
-export const SelectedBrowser = {
-  play: playAll(SelectBrowser, async ({ args, canvasIndex }) => {
-    const items = await screen.findAllByText("Safari");
-    await userEvent.click(items[canvasIndex]);
-    expect(args.onSelectBrowser).toHaveBeenCalledWith(expect.objectContaining({ name: "Safari" }));
+    const button = await canvas.findByRole("button", { name: "Show baseline snapshot" });
+    fireEvent.click(button);
   }),
 } satisfies Story;
 
@@ -146,11 +116,11 @@ export const BatchAcceptOptions = {
 } satisfies Story;
 
 export const BatchAcceptedBuild = {
-  play: playAll(BatchAcceptOptions, async ({ args, canvasIndex, parameters }) => {
+  play: playAll(BatchAcceptOptions, async ({ canvasIndex, parameters }) => {
     const items = await screen.findAllByText("Accept entire build");
     await userEvent.click(items[canvasIndex]);
     await expect(parameters.reviewTest.acceptTest).toHaveBeenCalledWith(
-      args.selectedTest.id,
+      parameters.selectedBuild.testsForStory.nodes[0].id,
       "BUILD"
     );
   }),

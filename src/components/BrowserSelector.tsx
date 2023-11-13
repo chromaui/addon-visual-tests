@@ -13,10 +13,10 @@ import { StatusDot, StatusDotWrapper } from "./StatusDot";
 import { TooltipMenu } from "./TooltipMenu";
 
 const browserIcons = {
-  [Browser.Chrome]: <ChromeIcon alt="Chrome" aria-label="Chrome" />,
-  [Browser.Firefox]: <FirefoxIcon alt="Firefox" aria-label="Firefox" />,
-  [Browser.Safari]: <SafariIcon alt="Safari" aria-label="Safari" />,
-  [Browser.Edge]: <EdgeIcon alt="Edge" aria-label="Edge" />,
+  [Browser.Chrome]: <ChromeIcon alt="Chrome" />,
+  [Browser.Firefox]: <FirefoxIcon alt="Firefox" />,
+  [Browser.Safari]: <SafariIcon alt="Safari" />,
+  [Browser.Edge]: <EdgeIcon alt="Edge" />,
 } as const;
 
 const IconWrapper = styled.div(({ theme }) => ({

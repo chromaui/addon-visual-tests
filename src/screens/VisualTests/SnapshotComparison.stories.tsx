@@ -142,7 +142,7 @@ export const StoryAdded: Story = {
 
 export const ShowingBaseline: Story = {
   play: playAll(async ({ canvasElement }) => {
-    fireEvent.click(await findByRole(canvasElement, "button", { name: "Switch snapshot" }));
+    fireEvent.click(await findByRole(canvasElement, "button", { name: "Show baseline snapshot" }));
   }),
 } satisfies Story;
 

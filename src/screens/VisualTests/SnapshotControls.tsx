@@ -71,7 +71,11 @@ export const SnapshotControls = () => {
             trigger="hover"
             hasChrome={false}
           >
-            <IconButton data-testid="button-toggle-snapshot" onClick={() => toggleBaselineImage()}>
+            <IconButton
+              data-testid="button-toggle-snapshot"
+              aria-label={baselineImageVisible ? "Show latest snapshot" : "Show baseline snapshot"}
+              onClick={() => toggleBaselineImage()}
+            >
               <Icons icon="transfer" />
             </IconButton>
           </WithTooltip>
@@ -95,6 +99,7 @@ export const SnapshotControls = () => {
             <IconButton
               data-testid="button-diff-visible"
               active={diffVisible}
+              aria-label={diffVisible ? "Hide diff" : "Show diff"}
               onClick={() => toggleDiff(!diffVisible)}
             >
               <Icons icon="contrast" />
@@ -115,6 +120,7 @@ export const SnapshotControls = () => {
                 <IconButton
                   secondary
                   disabled={isReviewing}
+                  aria-label="Accept test"
                   onClick={() => acceptTest(selectedTest.id)}
                 >
                   Accept
@@ -168,7 +174,11 @@ export const SnapshotControls = () => {
               trigger="hover"
               hasChrome={false}
             >
-              <IconButton disabled={isReviewing} onClick={() => unacceptTest(selectedTest.id)}>
+              <IconButton
+                disabled={isReviewing}
+                aria-label="Unaccept test"
+                onClick={() => unacceptTest(selectedTest.id)}
+              >
                 <Icons icon="undo" />
                 Unaccept
               </IconButton>
