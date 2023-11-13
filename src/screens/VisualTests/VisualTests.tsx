@@ -206,7 +206,7 @@ export const VisualTestsWithoutSelectedBuildId = ({
             branch: gitInfo.branch,
             dismissBuildError,
             localBuildProgress,
-            switchToLastBuildOnBranch,
+            ...(lastBuildOnBranchIsSelectable && { switchToLastBuildOnBranch }),
             startDevBuild,
             setAccessToken,
             storyId,
