@@ -1,3 +1,15 @@
+# v0.0.116 (Mon Nov 13 2023)
+
+#### 🐛 Bug Fix
+
+- Refactor state management to useContext and useReducer [#138](https://github.com/chromaui/addon-visual-tests/pull/138) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v0.0.115 (Thu Nov 09 2023)
 
 #### 🐛 Bug Fix
