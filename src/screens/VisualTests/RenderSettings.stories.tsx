@@ -3,13 +3,14 @@ import { graphql, HttpResponse } from "msw";
 
 import { ProjectQueryQuery } from "../../gql/graphql";
 import { panelModes } from "../../modes";
-import { storyWrapper } from "../../utils/graphQLClient";
+import { GraphQLClientProvider } from "../../utils/graphQLClient";
+import { storyWrapper } from "../../utils/storyWrapper";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
 import { RenderSettings } from "./RenderSettings";
 
 const meta = {
   component: RenderSettings,
-  decorators: [storyWrapper],
+  decorators: [storyWrapper(GraphQLClientProvider)],
   parameters: {
     chromatic: {
       modes: panelModes,

@@ -11,7 +11,7 @@ type ModeData = Pick<TestMode, "name">;
  */
 export function useTests(tests: StoryTestFieldsFragment[]) {
   const [selectedBrowserId, onSelectBrowserId] = useState<BrowserData["id"]>(
-    tests[0]?.comparisons[0].browser.id
+    tests[0]?.comparisons[0]?.browser.id
   );
   const [selectedModeName, onSelectModeName] = useState<ModeData["name"]>(tests[0]?.mode.name);
 

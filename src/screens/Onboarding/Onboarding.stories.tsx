@@ -6,14 +6,15 @@ import React from "react";
 
 import { INITIAL_BUILD_PAYLOAD } from "../../buildSteps";
 import { panelModes } from "../../modes";
-import { storyWrapper } from "../../utils/graphQLClient";
+import { GraphQLClientProvider } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
+import { storyWrapper } from "../../utils/storyWrapper";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
 import { Onboarding } from "./Onboarding";
 
 const meta = {
   component: Onboarding,
-  decorators: [storyWrapper],
+  decorators: [storyWrapper(GraphQLClientProvider)],
   args: {
     // queryError: undefined,
     // hasData: true,

@@ -5,8 +5,8 @@ import { action } from "@storybook/addon-actions";
 import { expect } from "@storybook/jest";
 import type { Meta, StoryObj } from "@storybook/react";
 import {
+  findByLabelText,
   findByRole,
-  findByTestId,
   fireEvent,
   screen,
   userEvent,
@@ -28,10 +28,12 @@ import {
   withGraphQLMutationParameters,
   withGraphQLQueryParameters,
 } from "../../utils/gqlStoryHelpers";
-import { storyWrapper } from "../../utils/graphQLClient";
+import { GraphQLClientProvider } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
 import { makeComparison, makeTest, makeTests } from "../../utils/storyData";
+import { storyWrapper } from "../../utils/storyWrapper";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
+import { ControlsProvider } from "./ControlsContext";
 import { QueryBuild } from "./graphql";
 import {
   acceptedBuild,
@@ -109,7 +111,7 @@ type StoryArgs = Parameters<typeof VisualTestsWithoutSelectedBuildId>[0] & {
 const meta = {
   title: "screens/VisualTests/VisualTests",
   component: VisualTestsWithoutSelectedBuildId,
-  decorators: [storyWrapper],
+  decorators: [storyWrapper(ControlsProvider), storyWrapper(GraphQLClientProvider)],
   parameters: { chromatic: { modes: panelModes } },
   argTypes: {
     addNotification: { type: "function", target: "manager-api" },
@@ -751,7 +753,7 @@ export const ToggleSnapshot: Story = {
     ),
   },
   play: playAll(async ({ canvasElement }) => {
-    const button = await findByTestId(canvasElement, "button-toggle-snapshot");
+    const button = await findByLabelText(canvasElement, "Switch snapshot");
     await fireEvent.click(button);
   }),
 } satisfies Story;

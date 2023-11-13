@@ -20,6 +20,7 @@ import { GuidedTour } from "./screens/GuidedTour/GuidedTour";
 import { LinkedProject } from "./screens/LinkProject/LinkedProject";
 import { LinkingProjectFailed } from "./screens/LinkProject/LinkingProjectFailed";
 import { LinkProject } from "./screens/LinkProject/LinkProject";
+import { ControlsProvider } from "./screens/VisualTests/ControlsContext";
 import { VisualTests } from "./screens/VisualTests/VisualTests";
 import { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from "./types";
 import { client, Provider, useAccessToken } from "./utils/graphQLClient";
@@ -144,17 +145,19 @@ export const Panel = ({ active, api }: PanelProps) => {
   return (
     <Provider key={PANEL_ID} value={client}>
       <Sections hidden={!active}>
-        <VisualTests
-          dismissBuildError={() => setLocalBuildProgress(undefined)}
-          localBuildProgress={localBuildIsRightBranch ? localBuildProgress : undefined}
-          startDevBuild={() => emit(START_BUILD)}
-          setAccessToken={setAccessToken}
-          setOutdated={setOutdated}
-          updateBuildStatus={updateBuildStatus}
-          projectId={projectId}
-          gitInfo={gitInfo}
-          storyId={storyId}
-        />
+        <ControlsProvider>
+          <VisualTests
+            dismissBuildError={() => setLocalBuildProgress(undefined)}
+            localBuildProgress={localBuildIsRightBranch ? localBuildProgress : undefined}
+            startDevBuild={() => emit(START_BUILD)}
+            setAccessToken={setAccessToken}
+            setOutdated={setOutdated}
+            updateBuildStatus={updateBuildStatus}
+            projectId={projectId}
+            gitInfo={gitInfo}
+            storyId={storyId}
+          />
+        </ControlsProvider>
       </Sections>
       <GuidedTour api={api} />
     </Provider>
