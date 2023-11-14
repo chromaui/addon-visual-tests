@@ -18,7 +18,6 @@ export const IconButton: React.FC<IconButtonProps> = styled(BaseIconButton)<Icon
     margin: 0,
     color: active || secondary ? theme.color.secondary : `${theme.color.defaultText}99`,
     fontWeight: "normal",
-    lineHeight: "18px",
     "& > svg": {
       width: "auto",
     },
