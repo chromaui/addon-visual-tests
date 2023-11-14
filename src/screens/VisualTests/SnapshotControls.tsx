@@ -87,7 +87,7 @@ export const SnapshotControls = () => {
   return (
     <>
       <Controls>
-        {hasBaselineSnapshot && (
+        {hasBaselineSnapshot ? (
           <WithTooltip
             tooltip={
               <TooltipNote
@@ -103,6 +103,17 @@ export const SnapshotControls = () => {
             >
               <Icons icon="transfer" />
               {baselineImageVisible ? "Baseline" : "Latest"}
+            </IconButton>
+          </WithTooltip>
+        ) : (
+          <WithTooltip
+            tooltip={<TooltipNote note="No baseline available" />}
+            trigger="hover"
+            hasChrome={false}
+          >
+            <IconButton disabled aria-label="No baseline available">
+              <Icons icon="transfer" />
+              Latest
             </IconButton>
           </WithTooltip>
         )}

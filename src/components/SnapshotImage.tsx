@@ -91,6 +91,8 @@ export const SnapshotImage = ({
   const hasDiff = captureImage && diffImage && comparisonResult === ComparisonResult.Changed;
   const hasError = comparisonResult === ComparisonResult.CaptureError;
   const containerProps = hasDiff ? { as: "a" as any, href: testUrl, target: "_blank" } : {};
+  const showDiff = hasDiff && diffVisible;
+  const showFocus = hasDiff && focusImage && focusVisible;
 
   return (
     <Container {...props} {...containerProps}>
@@ -98,16 +100,17 @@ export const SnapshotImage = ({
         <img
           alt={`Snapshot for the '${storyName}' story of the '${componentName}' component`}
           src={captureImage.imageUrl}
+          style={{ opacity: showDiff && !showFocus ? 0.7 : 1 }}
         />
       )}
-      {hasDiff && diffVisible && (
+      {showDiff && (
         <img
           alt=""
           src={diffImage.imageUrl}
           style={{ maxWidth: `${(diffImage.imageWidth / captureImage.imageWidth) * 100}%` }}
         />
       )}
-      {hasDiff && focusImage && focusVisible && (
+      {showFocus && (
         <img
           alt=""
           src={focusImage.imageUrl}
