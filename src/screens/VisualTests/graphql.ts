@@ -53,7 +53,7 @@ export const FragmentLastBuildOnBranchBuildFields = graphql(/* GraphQL */ `
     }
     ... on CompletedBuild {
       result
-      testsForStatus: tests(statuses: $testStatuses) {
+      testsForStatus: tests(first: 1000, statuses: $testStatuses) {
         nodes {
           ...StatusTestFields
         }
