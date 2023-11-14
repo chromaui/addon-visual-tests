@@ -9,7 +9,7 @@ import { Placeholder } from "../../components/Placeholder";
 import { SplitButton } from "../../components/SplitButton";
 import { TooltipMenu } from "../../components/TooltipMenu";
 import { ComparisonResult, ReviewTestBatch, TestStatus } from "../../gql/graphql";
-import { useSelectedBuildState, useSelectedStoryState } from "./BuildContext";
+import { useSelectedStoryState } from "./BuildContext";
 import { useControlsDispatch, useControlsState } from "./ControlsContext";
 import { useReviewTestState } from "./ReviewTestContext";
 
@@ -64,7 +64,6 @@ export const SnapshotControls = () => {
   const { baselineImageVisible, diffVisible, focusVisible } = useControlsState();
   const { toggleBaselineImage, toggleDiff, toggleFocus } = useControlsDispatch();
 
-  const selectedBuild = useSelectedBuildState();
   const { selectedTest, selectedComparison, summary } = useSelectedStoryState();
   const { changeCount, isInProgress } = summary;
 
@@ -86,6 +85,12 @@ export const SnapshotControls = () => {
 
   return (
     <>
+      <Label>
+        <Text>
+          <b>{baselineImageVisible ? "Baseline snapshot" : "Latest snapshot"}</b>
+        </Text>
+      </Label>
+
       <Controls>
         {hasBaselineSnapshot ? (
           <WithTooltip
@@ -102,7 +107,7 @@ export const SnapshotControls = () => {
               onClick={() => toggleBaselineImage()}
             >
               <Icons icon="transfer" />
-              {baselineImageVisible ? "Baseline" : "Latest"}
+              Switch
             </IconButton>
           </WithTooltip>
         ) : (
