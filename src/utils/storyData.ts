@@ -33,6 +33,10 @@ export const captureDiff: StoryTestFieldsFragment["comparisons"][number]["captur
     imageUrl: "/B-comparison.png",
     imageWidth: 880,
   },
+  focusImage: {
+    imageUrl: "/B-focus.png",
+    imageWidth: 880,
+  },
 };
 
 export function makeComparison(options: {

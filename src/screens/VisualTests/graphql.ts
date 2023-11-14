@@ -132,6 +132,10 @@ export const FragmentStoryTestFields = graphql(/* GraphQL */ `
           imageUrl
           imageWidth
         }
+        focusImage(signed: true) {
+          imageUrl
+          imageWidth
+        }
       }
       headCapture {
         captureImage(signed: true) {

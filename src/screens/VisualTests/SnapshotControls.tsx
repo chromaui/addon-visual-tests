@@ -61,8 +61,8 @@ const Actions = styled.div(({ theme }) => ({
 }));
 
 export const SnapshotControls = () => {
-  const { diffVisible, baselineImageVisible } = useControlsState();
-  const { toggleDiff, toggleBaselineImage } = useControlsDispatch();
+  const { baselineImageVisible, diffVisible, focusVisible } = useControlsState();
+  const { toggleBaselineImage, toggleDiff, toggleFocus } = useControlsDispatch();
 
   const selectedBuild = useSelectedBuildState();
   const { selectedTest, selectedComparison, summary } = useSelectedStoryState();
@@ -86,50 +86,56 @@ export const SnapshotControls = () => {
 
   return (
     <>
-      <Label>
-        {baselineImageVisible ? (
-          <Text style={{ width: "100%" }}>
-            <b>Baseline</b>
-            {/* on {selectedBuild.branch} */}
-          </Text>
-        ) : (
-          <Text style={{ width: "100%" }}>
-            <b>Latest</b> on {selectedBuild.branch}
-          </Text>
-        )}
-      </Label>
-
       <Controls>
         {hasBaselineSnapshot && (
           <WithTooltip
-            tooltip={<TooltipNote note="Toggle baseline" />}
+            tooltip={
+              <TooltipNote
+                note={baselineImageVisible ? "Show latest snapshot" : "Show baseline snapshot"}
+              />
+            }
             trigger="hover"
             hasChrome={false}
           >
             <IconButton
-              active={baselineImageVisible}
               aria-label={baselineImageVisible ? "Show latest snapshot" : "Show baseline snapshot"}
               onClick={() => toggleBaselineImage()}
             >
               <Icons icon="transfer" />
+              {baselineImageVisible ? "Baseline" : "Latest"}
             </IconButton>
           </WithTooltip>
         )}
 
         {selectedComparison?.result === ComparisonResult.Changed && (
-          <WithTooltip
-            tooltip={<TooltipNote note="Toggle diff" />}
-            trigger="hover"
-            hasChrome={false}
-          >
-            <IconButton
-              active={diffVisible}
-              aria-label={diffVisible ? "Hide diff" : "Show diff"}
-              onClick={() => toggleDiff(!diffVisible)}
+          <>
+            <WithTooltip
+              tooltip={<TooltipNote note={focusVisible ? "Hide spotlight" : "Show spotlight"} />}
+              trigger="hover"
+              hasChrome={false}
             >
-              <Icons icon="contrast" />
-            </IconButton>
-          </WithTooltip>
+              <IconButton
+                active={focusVisible}
+                aria-label={focusVisible ? "Hide spotlight" : "Show spotlight"}
+                onClick={() => toggleFocus(!focusVisible)}
+              >
+                <Icons icon="location" />
+              </IconButton>
+            </WithTooltip>
+            <WithTooltip
+              tooltip={<TooltipNote note={diffVisible ? "Hide diff" : "Show diff"} />}
+              trigger="hover"
+              hasChrome={false}
+            >
+              <IconButton
+                active={diffVisible}
+                aria-label={diffVisible ? "Hide diff" : "Show diff"}
+                onClick={() => toggleDiff(!diffVisible)}
+              >
+                <Icons icon="contrast" />
+              </IconButton>
+            </WithTooltip>
+          </>
         )}
       </Controls>
 

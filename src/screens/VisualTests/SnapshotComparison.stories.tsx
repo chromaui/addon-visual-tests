@@ -94,6 +94,22 @@ export const InProgress = {
 
 export const Default = {} satisfies Story;
 
+export const Spotlight = {
+  play: playAll(async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = await canvas.findByRole("button", { name: "Show spotlight" });
+    await userEvent.click(button);
+  }),
+} satisfies Story;
+
+export const SpotlightOnly = {
+  play: playAll(Spotlight, async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = await canvas.findByRole("button", { name: "Hide diff" });
+    await userEvent.click(button);
+  }),
+} satisfies Story;
+
 /**
  * Sort of confusing situation where the only comparison with changes (1200px/Safari) is on the
  * "opposite" side of the current comparison (800px/Chrome). In this case we still show the first

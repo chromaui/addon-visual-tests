@@ -268,6 +268,7 @@ export const SnapshotComparison = ({
                 : selectedComparison.headCapture?.captureImage ?? undefined
             }
             diffImage={selectedComparison.captureDiff?.diffImage ?? undefined}
+            focusImage={selectedComparison.captureDiff?.focusImage ?? undefined}
             diffVisible={diffVisible}
             focusVisible={focusVisible}
           />
