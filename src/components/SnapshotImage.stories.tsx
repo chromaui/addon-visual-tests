@@ -45,7 +45,9 @@ export const Wider: Story = {
   args: {
     captureImage: { imageUrl: "/shapes-wider.png", imageWidth: 768 },
     diffImage: { imageUrl: "/shapes-comparison.png", imageWidth: 768 },
+    focusImage: { imageUrl: "/shapes-focus.png", imageWidth: 768 },
     diffVisible: true,
+    focusVisible: true,
   },
 };
 
@@ -60,7 +62,9 @@ export const Taller: Story = {
   args: {
     captureImage: { imageUrl: "/shapes-taller.png", imageWidth: 588 },
     diffImage: { imageUrl: "/shapes-comparison.png", imageWidth: 768 },
+    focusImage: { imageUrl: "/shapes-focus.png", imageWidth: 768 },
     diffVisible: true,
+    focusVisible: true,
   },
 };
 
