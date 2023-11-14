@@ -162,51 +162,54 @@ export const SnapshotControls = () => {
                 <SplitButton
                   disabled={isReviewing}
                   aria-label="Accept test"
-                  onClick={() => acceptTest(selectedTest.id)}
+                  onClick={() => acceptTest(selectedTest.id, ReviewTestBatch.Spec)}
                   side="left"
                 >
                   Accept
                 </SplitButton>
               </WithTooltip>
-              <TooltipMenu
-                placement="bottom"
-                links={[
-                  {
-                    id: "acceptStory",
-                    title: "Accept story",
-                    center: "Accept all unreviewed changes to this story",
-                    onClick: () => acceptTest(selectedTest.id, ReviewTestBatch.Spec),
-                    disabled: isReviewing,
-                    loading: isReviewing,
-                  },
-                  {
-                    id: "acceptComponent",
-                    title: "Accept component",
-                    center: "Accept all unreviewed changes for this component",
-                    onClick: () => acceptTest(selectedTest.id, ReviewTestBatch.Component),
-                    disabled: isReviewing,
-                    loading: isReviewing,
-                  },
-                  {
-                    id: "acceptBuild",
-                    title: "Accept entire build",
-                    center: "Accept all unreviewed changes for every story in the Storybook",
-                    onClick: () => acceptTest(selectedTest.id, ReviewTestBatch.Build),
-                    disabled: isReviewing,
-                    loading: isReviewing,
-                  },
-                ]}
+              <WithTooltip
+                tooltip={<TooltipNote note="Batch accept options" />}
+                trigger="hover"
+                hasChrome={false}
               >
-                {(active) => (
-                  <SplitButton active={active} aria-label="Batch accept" side="right">
-                    {isReviewing ? (
-                      <ProgressIcon parentComponent="IconButton" />
-                    ) : (
-                      <Icons icon="batchaccept" />
-                    )}
-                  </SplitButton>
-                )}
-              </TooltipMenu>
+                <TooltipMenu
+                  placement="bottom"
+                  links={[
+                    {
+                      id: "acceptComponent",
+                      title: "Accept component",
+                      center: "Accept all unreviewed changes for this component",
+                      onClick: () => acceptTest(selectedTest.id, ReviewTestBatch.Component),
+                      disabled: isReviewing,
+                      loading: isReviewing,
+                    },
+                    {
+                      id: "acceptBuild",
+                      title: "Accept entire build",
+                      center: "Accept all unreviewed changes for every story in the Storybook",
+                      onClick: () => acceptTest(selectedTest.id, ReviewTestBatch.Build),
+                      disabled: isReviewing,
+                      loading: isReviewing,
+                    },
+                  ]}
+                >
+                  {(active) => (
+                    <SplitButton
+                      active={active}
+                      disabled={isReviewing}
+                      aria-label="Batch accept"
+                      side="right"
+                    >
+                      {isReviewing ? (
+                        <ProgressIcon parentComponent="IconButton" />
+                      ) : (
+                        <Icons icon="batchaccept" />
+                      )}
+                    </SplitButton>
+                  )}
+                </TooltipMenu>
+              </WithTooltip>
             </div>
           )}
 
