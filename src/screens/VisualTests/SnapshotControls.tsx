@@ -155,13 +155,13 @@ export const SnapshotControls = () => {
           {userCanReview && buildIsReviewable && isAcceptable && (
             <div>
               <WithTooltip
-                tooltip={<TooltipNote note="Accept this snapshot" />}
+                tooltip={<TooltipNote note="Accept story" />}
                 trigger="hover"
                 hasChrome={false}
               >
                 <SplitButton
                   disabled={isReviewing}
-                  aria-label="Accept test"
+                  aria-label="Accept story"
                   onClick={() => acceptTest(selectedTest.id, ReviewTestBatch.Spec)}
                   side="left"
                 >
