@@ -25,7 +25,7 @@ interface TourProps {
   // queryError?: CombinedError;
   // hasData: boolean;
   // hasSelectedBuild: boolean;
-  api: API;
+  managerApi: API;
 }
 
 // type OnboardingScreen = "onboarding" | "catchAChange" | "changesDetected";
@@ -38,6 +38,10 @@ export const GuidedTour = ({ managerApi }: TourProps) => {
 
   // Make sure the addon panel is open
   React.useEffect(() => {
+    // Make sure a story is selected so addon panel can open.
+    managerApi.jumpToStory(1);
+
+    // Make sure the addon panel is open on the visual tests tab.
     managerApi.togglePanel(true);
     managerApi.togglePanelPosition("right");
     managerApi.setSelectedPanel(PANEL_ID);
