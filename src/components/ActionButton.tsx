@@ -67,22 +67,24 @@ export const ActionButton: React.FC<ActionButtonProps> = styled(IconButton)<Acti
     transition: "background-color 150ms",
     "@container (min-width: 300px)": {
       height: 32,
+      width: containsIcon ? 32 : "auto",
       padding: containsIcon ? "9px 8px" : 9,
     },
     "@container (min-width: 800px)": {
       height: 28,
+      width: containsIcon ? 28 : "auto",
       padding: containsIcon ? "8px 6px" : 8,
     },
   }),
   themeColors,
   ({ side }) => ({
     ...(side === "left" && {
-      borderRightWidth: 0,
+      borderRightWidth: 1,
       borderTopRightRadius: 0,
       borderBottomRightRadius: 0,
     }),
     ...(side === "right" && {
-      borderLeftWidth: 1,
+      borderLeftWidth: 0,
       borderTopLeftRadius: 0,
       borderBottomLeftRadius: 0,
     }),
