@@ -3,6 +3,7 @@ import React from "react";
 import Joyride from "react-joyride";
 import { gql } from "urql";
 
+import { PANEL_ID } from "../../constants";
 import { Tooltip, TooltipProps } from "./Tooltip";
 
 const ProjectQuery = gql`
@@ -28,7 +29,7 @@ interface TourProps {
 }
 
 // type OnboardingScreen = "onboarding" | "catchAChange" | "changesDetected";
-export const GuidedTour = ({ api }: TourProps) => {
+export const GuidedTour = ({ managerApi }: TourProps) => {
   // This will just be shown by default for now. Need to figure out when we should display it.
   const [stepIndex, setStepIndex] = React.useState<number>(0);
   const nextStep = () => {
@@ -37,10 +38,10 @@ export const GuidedTour = ({ api }: TourProps) => {
 
   // Make sure the addon panel is open
   React.useEffect(() => {
-    api.togglePanel(true);
-    api.togglePanelPosition("right");
-    api.setSelectedPanel("addon-visual-tests");
-  }, [api]);
+    managerApi.togglePanel(true);
+    managerApi.togglePanelPosition("right");
+    managerApi.setSelectedPanel(PANEL_ID);
+  }, [managerApi]);
 
   const steps: Partial<GuidedTourStep>[] = [
     {

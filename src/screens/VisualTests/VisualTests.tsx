@@ -3,6 +3,7 @@ import type { API_StatusState } from "@storybook/types";
 import React, { useCallback, useEffect, useState } from "react";
 import { useMutation } from "urql";
 
+import { PANEL_ID } from "../../constants";
 import { getFragment } from "../../gql";
 import { ReviewTestBatch, ReviewTestInputStatus } from "../../gql/graphql";
 import { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from "../../types";
@@ -139,9 +140,6 @@ export const VisualTestsWithoutSelectedBuildId = ({
     });
     const buildExistsForBranch = !!(lastBuildOnBranch && lastBuildOnBranchIsReady);
     if (buildExistsForBranch) {
-      // managerApi.togglePanel(true);
-      // managerApi.togglePanelPosition("right");
-      // managerApi.setSelectedPanel("addon-visual-tests");
       setShouldShowGuidedTour(true);
     }
   }, [lastBuildOnBranch, lastBuildOnBranchIsReady]);
@@ -269,7 +267,7 @@ export const VisualTestsWithoutSelectedBuildId = ({
           </BuildProvider>
         </ReviewTestProvider>
       )}
-      {shouldShowGuidedTour && <GuidedTour api={managerApi} />}
+      {shouldShowGuidedTour && <GuidedTour managerApi={managerApi} />}
     </>
   );
 };
