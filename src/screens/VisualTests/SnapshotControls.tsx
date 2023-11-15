@@ -23,7 +23,7 @@ const Label = styled.div(({ theme }) => ({
 
   span: {
     display: "none",
-    "@container (min-width: 400px)": {
+    "@container (min-width: 300px)": {
       display: "initial",
     },
   },
@@ -56,7 +56,7 @@ const Actions = styled.div(({ theme }) => ({
   justifyContent: "flex-end",
   gap: 6,
 
-  "@container (min-width: 400px)": {
+  "@container (min-width: 300px)": {
     margin: "8px 15px",
   },
   "@container (min-width: 800px)": {

@@ -24,7 +24,7 @@ export const Grid = styled.div(({ theme }) => ({
   gridTemplateRows: "auto auto 40px",
   borderBottom: `1px solid ${theme.appBorderColor}`,
 
-  "@container (min-width: 400px)": {
+  "@container (min-width: 300px)": {
     gridTemplateAreas: `
       "info actions"
       "label controls"
@@ -75,7 +75,6 @@ const FooterSection = styled.div(({ theme }) => ({
   zIndex: 1,
   bottom: 0,
   borderTop: `1px solid ${theme.appBorderColor}`,
-  background: theme.background.app,
 }));
 
 const Divider = styled.div(({ children, theme }) => ({
