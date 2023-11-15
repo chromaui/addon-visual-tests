@@ -1,9 +1,12 @@
 import { type API } from "@storybook/manager-api";
+import { useTheme } from "@storybook/theming";
 import React from "react";
-import Joyride from "react-joyride";
+import Joyride, { CallBackProps } from "react-joyride";
 import { gql } from "urql";
 
 import { PANEL_ID } from "../../constants";
+import { ENABLE_FILTER } from "../../SidebarBottom";
+import { Confetti } from "./Confetti";
 import { Tooltip, TooltipProps } from "./Tooltip";
 
 const ProjectQuery = gql`
@@ -30,12 +33,7 @@ interface TourProps {
 
 // type OnboardingScreen = "onboarding" | "catchAChange" | "changesDetected";
 export const GuidedTour = ({ managerApi }: TourProps) => {
-  // This will just be shown by default for now. Need to figure out when we should display it.
-  const [stepIndex, setStepIndex] = React.useState<number>(0);
-  const nextStep = () => {
-    setStepIndex((prev) => prev + 1);
-  };
-
+  const theme = useTheme();
   // Make sure the addon panel is open
   React.useEffect(() => {
     // Make sure a story is selected so addon panel can open.
@@ -45,6 +43,23 @@ export const GuidedTour = ({ managerApi }: TourProps) => {
     managerApi.togglePanel(true);
     managerApi.togglePanelPosition("right");
     managerApi.setSelectedPanel(PANEL_ID);
+  }, [managerApi]);
+
+  const [showConfetti, setShowConfetti] = React.useState(false);
+  // This will just be shown by default for now. Need to figure out when we should display it.
+  const [stepIndex, setStepIndex] = React.useState<number>(0);
+  const nextStep = (...args) => {
+    setStepIndex((prev) => prev + 1);
+    if (stepIndex === 5) {
+      setShowConfetti(true);
+    }
+  };
+
+  React.useEffect(() => {
+    // Listen for internal event to indicate a filter was set before moving to next step.
+    managerApi.once(ENABLE_FILTER, () => {
+      setStepIndex(1);
+    });
   }, [managerApi]);
 
   const steps: Partial<GuidedTourStep>[] = [
@@ -70,9 +85,7 @@ export const GuidedTour = ({ managerApi }: TourProps) => {
       },
       placement: "top",
       disableBeacon: true,
-      disableOverlayClose: true,
       hideNextButton: true,
-      hideFooter: true,
       spotlightClicks: true,
     },
     {
@@ -156,57 +169,70 @@ export const GuidedTour = ({ managerApi }: TourProps) => {
     },
   ];
   return (
-    <Joyride
-      steps={steps}
-      continuous
-      stepIndex={stepIndex}
-      spotlightPadding={0}
-      hideBackButton
-      disableCloseOnEsc
-      disableOverlayClose
-      disableScrolling
-      hideCloseButton
-      // Not needed in our tour because we only show individual steps. Storybook tour requires writing a story.
-      // callback={(data: CallBackProps) => {
-      //   if (!isFinalStep && data.status === STATUS.FINISHED) {
-      //     onFirstTourDone();
-      //   }
-      // }}
-      floaterProps={{
-        options: {
-          offset: {
-            offset: "0, 6",
+    <>
+      {showConfetti && (
+        <Confetti
+          numberOfPieces={800}
+          recycle={false}
+          tweenDuration={20000}
+          onConfettiComplete={(confetti) => {
+            confetti?.reset();
+            setShowConfetti(false);
+          }}
+        />
+      )}
+      <Joyride
+        steps={steps}
+        continuous
+        stepIndex={stepIndex}
+        spotlightPadding={0}
+        hideBackButton
+        disableCloseOnEsc
+        disableOverlayClose
+        disableScrolling
+        hideCloseButton
+        // Not needed in our tour because we only show individual steps. Storybook tour requires writing a story.
+        // callback={(data: CallBackProps) => {
+        // if (!isFinalStep && data.status === STATUS.FINISHED) {
+        //   onFirstTourDone();
+        // }
+        // }}
+        floaterProps={{
+          options: {
+            offset: {
+              offset: "0, 6",
+            },
           },
-        },
-        styles: {
-          floater: {
-            padding: 0,
-            paddingLeft: 8,
-            paddingTop: 8,
-            // filter:
-            //   theme.base === "light"
-            //     ? "drop-shadow(0px 5px 5px rgba(0,0,0,0.05)) drop-shadow(0 1px 3px rgba(0,0,0,0.1))"
-            //     : "drop-shadow(#fff5 0px 0px 0.5px) drop-shadow(#fff5 0px 0px 0.5px)",
+          styles: {
+            floater: {
+              padding: 0,
+              paddingLeft: 8,
+              paddingTop: 8,
+              filter:
+                theme.base === "light"
+                  ? "drop-shadow(0px 5px 5px rgba(0,0,0,0.05)) drop-shadow(0 1px 3px rgba(0,0,0,0.1))"
+                  : "drop-shadow(#fff5 0px 0px 0.5px) drop-shadow(#fff5 0px 0px 0.5px)",
+            },
           },
-        },
-      }}
-      tooltipComponent={Tooltip}
-    // styles={{
-    //   overlay: {
-    //     mixBlendMode: "unset",
-    //     backgroundColor: "none",
-    //   },
-    //   spotlight: {
-    //     backgroundColor: "none",
-    //     border: `solid 2px ${theme.color.secondary}`,
-    //     boxShadow: "0px 0px 0px 9999px rgba(0,0,0,0.4)",
-    //   },
-    //   options: {
-    //     zIndex: 10000,
-    //     primaryColor: theme.color.secondary,
-    //     arrowColor: theme.base === "dark" ? "#292A2C" : theme.color.lightest,
-    //   },
-    // }}
-    />
+        }}
+        tooltipComponent={Tooltip}
+        styles={{
+          overlay: {
+            mixBlendMode: "unset",
+            backgroundColor: "none",
+          },
+          spotlight: {
+            backgroundColor: "none",
+            border: `solid 2px ${theme.color.secondary}`,
+            boxShadow: "0px 0px 0px 9999px rgba(0,0,0,0.4)",
+          },
+          options: {
+            zIndex: 10000,
+            primaryColor: theme.color.secondary,
+            arrowColor: theme.base === "dark" ? "#292A2C" : theme.color.lightest,
+          },
+        }}
+      />
+    </>
   );
 };
