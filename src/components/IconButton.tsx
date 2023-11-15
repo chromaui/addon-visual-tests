@@ -1,12 +1,20 @@
 import { IconButton as BaseIconButton } from "@storybook/components";
-import { styled } from "@storybook/theming";
+import { styled, type Theme } from "@storybook/theming";
 import { ComponentProps } from "react";
+
+const getStatusStyles = (theme: Theme, status?: IconButtonProps["status"]) =>
+  (status &&
+    {
+      positive: { color: theme.color.positiveText },
+      warning: { color: theme.color.warningText },
+    }[status]) ||
+  {};
 
 interface IconButtonProps extends ComponentProps<typeof BaseIconButton> {
   active?: boolean;
   as?: string;
   secondary?: boolean;
-  status?: "warning";
+  status?: "positive" | "warning";
 }
 
 export const IconButton: React.FC<IconButtonProps> = styled(BaseIconButton)<IconButtonProps>(
@@ -22,7 +30,7 @@ export const IconButton: React.FC<IconButtonProps> = styled(BaseIconButton)<Icon
       width: "auto",
     },
   }),
-  ({ active, status, theme }) => (!active && status ? { color: theme.color.warningText } : {}),
+  ({ active, status, theme }) => !active && getStatusStyles(theme, status),
   ({ active, theme }) => {
     const isLightTheme = theme.background.content === theme.color.lightest;
     const activeBg = isLightTheme ? "rgb(241,248,255)" : "rgb(28,37,45)";

@@ -33,7 +33,6 @@ export const Row = styled.div<{ header?: boolean }>(
         height: 40,
         alignItems: "center",
         justifyContent: "space-between",
-        backgroundColor: theme.background.app,
         padding: "5px 15px",
       },
     }

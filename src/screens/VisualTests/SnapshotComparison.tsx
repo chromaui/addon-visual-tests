@@ -17,14 +17,14 @@ export const Grid = styled.div(({ theme }) => ({
   display: "grid",
   gridTemplateAreas: `
     "info info"
-    "controls actions"
-    "label label"
+    "actions actions"
+    "label controls"
   `,
   gridTemplateColumns: "1fr fit-content(50%)",
   gridTemplateRows: "auto auto 40px",
   borderBottom: `1px solid ${theme.appBorderColor}`,
 
-  "@container (min-width: 300px)": {
+  "@container (min-width: 400px)": {
     gridTemplateAreas: `
       "info actions"
       "label controls"
@@ -34,7 +34,6 @@ export const Grid = styled.div(({ theme }) => ({
   },
 
   "@container (min-width: 800px)": {
-    backgroundColor: theme.background.app,
     gridTemplateAreas: `"info label controls actions"`,
     gridTemplateColumns: "auto 1fr auto auto",
     gridTemplateRows: "40px",
@@ -50,7 +49,6 @@ const ParentGrid = styled.div(({ theme }) => ({
   `,
   gridTemplateColumns: "1fr",
   gridTemplateRows: "auto 1fr auto",
-  backgroundColor: theme.background.app,
   height: "100%",
 
   "&[hidden]": {
@@ -63,7 +61,6 @@ const HeaderSection = styled.div(({ theme }) => ({
   position: "sticky",
   zIndex: 1,
   top: 0,
-  background: theme.background.app,
 }));
 
 const MainSection = styled.div(({ theme }) => ({
@@ -220,7 +217,7 @@ export const SnapshotComparison = ({
       <HeaderSection>
         <Grid>
           {storyInfo}
-          <SnapshotControls />
+          <SnapshotControls startDevBuild={startDevBuild} />
         </Grid>
       </HeaderSection>
 
