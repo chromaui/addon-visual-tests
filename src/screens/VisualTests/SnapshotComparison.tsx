@@ -36,7 +36,7 @@ export const Grid = styled.div(({ theme }) => ({
   "@container (min-width: 800px)": {
     backgroundColor: theme.background.app,
     gridTemplateAreas: `"info label controls actions"`,
-    gridTemplateColumns: "1fr auto auto auto",
+    gridTemplateColumns: "auto 1fr auto auto",
     gridTemplateRows: "40px",
   },
 }));

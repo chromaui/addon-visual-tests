@@ -13,7 +13,7 @@ import { useSelectedStoryState } from "./BuildContext";
 import { useControlsDispatch, useControlsState } from "./ControlsContext";
 import { useReviewTestState } from "./ReviewTestContext";
 
-const Label = styled.div({
+const Label = styled.div(({ theme }) => ({
   gridArea: "label",
   margin: "8px 15px",
   display: "flex",
@@ -22,9 +22,11 @@ const Label = styled.div({
   gap: 6,
 
   "@container (min-width: 800px)": {
-    margin: 8,
+    borderLeft: `1px solid ${theme.appBorderColor}`,
+    paddingLeft: 10,
+    marginLeft: 0,
   },
-});
+}));
 
 const Controls = styled.div({
   gridArea: "controls",
@@ -92,7 +94,7 @@ export const SnapshotControls = () => {
       </Label>
 
       <Controls>
-        {hasBaselineSnapshot ? (
+        {hasBaselineSnapshot && (
           <WithTooltip
             tooltip={
               <TooltipNote
@@ -108,17 +110,6 @@ export const SnapshotControls = () => {
             >
               <Icons icon="transfer" />
               Switch
-            </IconButton>
-          </WithTooltip>
-        ) : (
-          <WithTooltip
-            tooltip={<TooltipNote note="No baseline available" />}
-            trigger="hover"
-            hasChrome={false}
-          >
-            <IconButton disabled aria-label="No baseline available">
-              <Icons icon="transfer" />
-              Latest
             </IconButton>
           </WithTooltip>
         )}

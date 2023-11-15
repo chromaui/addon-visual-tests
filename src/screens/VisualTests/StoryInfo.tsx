@@ -29,7 +29,7 @@ const Info = styled.div(({ theme }) => ({
   },
 
   "@container (min-width: 800px)": {
-    margin: "6px 15px",
+    margin: "6px 10px 6px 15px",
     alignItems: "center",
     flexDirection: "row",
 
