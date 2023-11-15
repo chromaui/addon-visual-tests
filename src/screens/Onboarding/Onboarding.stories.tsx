@@ -20,7 +20,6 @@ const meta = {
     // hasData: true,
     // hasSelectedBuild: false,
     startDevBuild: () => { },
-    setShouldShowOnboarding: action("setShouldShowOnboarding"),
     localBuildProgress: undefined,
     gitInfo: {
       uncommittedHash: "123",

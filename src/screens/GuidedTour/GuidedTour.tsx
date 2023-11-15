@@ -51,13 +51,24 @@ export const GuidedTour = ({ api }: TourProps) => {
           The visual tests addon will detect changes in all of your stories and allow you to review
           them before opening a pull request.
           <br />
+          <br />
           Click this button to see the changes in the sidebar.
         </>
       ),
+      floaterProps: {
+        target: "#changes-found-filter",
+        options: {
+          preventOverflow: {
+            boundariesElement: "window",
+          },
+        },
+      },
       placement: "top",
-      spotlightClicks: true,
       disableBeacon: true,
-      onNextButtonClick: nextStep,
+      disableOverlayClose: true,
+      hideNextButton: true,
+      hideFooter: true,
+      spotlightClicks: true,
     },
     {
       target: "#storybook-explorer-tree > div",

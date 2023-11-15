@@ -117,17 +117,34 @@ export const VisualTestsWithoutSelectedBuildId = ({
     userCanReview,
   } = buildInfo;
 
-  // if there is no initial build, make them go through onboarding. This will not survive a refresh if they run the initial build step and restart storybook before they've run it.
-  // TODO: This heuristic does not work. project.lastBuild is null if the previous build had errors (but completed) and isn't reliable even when the build works.
-  // As well, we probably want users to see the onboarding at least once, even if the project does have a lastBuild.
-  // It also does not wait for the query to complete (data.project.lastBuildOnBranch is undefined because data.project is undefined on first render) before rendering, so it always shows onboarding.
-  // Better to use some sort of onboarding flag on the user object so that it can be shown to everyone.
-  // And we should probably show it on the first build anyways, I think.
+  // TODO: We probably want users to see the onboarding at least once, even if the project does have a lastBuild.
+  // TODO: Include and check !hasOnboardedVTAddon flag on the user object so that it can be shown to everyone.
 
-  const [shouldShowOnboarding, setShouldShowOnboarding] = useState(() => !lastBuildOnBranch);
+  const [shouldShowInitalOnboarding, setShouldShowInitialOnboarding] = useState(false);
+  useEffect(() => {
+    console.log("setting shouldShowInitialOnboarding", !lastBuildOnBranch, {
+      lastBuildOnBranch,
+      lastBuildOnBranchIsReady,
+    });
+    setShouldShowInitialOnboarding(!lastBuildOnBranch || !lastBuildOnBranchIsReady);
+  }, [lastBuildOnBranch, lastBuildOnBranchIsReady]);
 
   // This behaviour should be dynamic, but for now we'll just show it to everyone
-  const [shouldShowGuidedTour, setShouldShowGuidedTour] = useState(true);
+  // TODO: Set shouldShowGuidedTour by user's tour status (or a query param) and if there is a build with changes
+  const [shouldShowGuidedTour, setShouldShowGuidedTour] = useState(false);
+  useEffect(() => {
+    console.log("setting shouldShowGuidedTour", !!(lastBuildOnBranch && lastBuildOnBranchIsReady), {
+      lastBuildOnBranch,
+      lastBuildOnBranchIsReady,
+    });
+    const buildExistsForBranch = !!(lastBuildOnBranch && lastBuildOnBranchIsReady);
+    if (buildExistsForBranch) {
+      // managerApi.togglePanel(true);
+      // managerApi.togglePanelPosition("right");
+      // managerApi.setSelectedPanel("addon-visual-tests");
+      setShouldShowGuidedTour(true);
+    }
+  }, [lastBuildOnBranch, lastBuildOnBranchIsReady]);
 
   const reviewState = useReview({
     buildIsReviewable: !!selectedBuild && selectedBuild.id === lastBuildOnBranch?.id,
@@ -198,7 +215,8 @@ export const VisualTestsWithoutSelectedBuildId = ({
     [setSelectedBuildInfo, lastBuildOnBranchIsSelectable, lastBuildOnBranch?.id, storyId]
   );
 
-  if (shouldShowOnboarding) {
+  // TODO: This should just show along with the guided tour, right?
+  if (shouldShowInitalOnboarding) {
     return (
       <Onboarding
         {...{
@@ -209,7 +227,7 @@ export const VisualTestsWithoutSelectedBuildId = ({
           updateBuildStatus,
           localBuildProgress,
           onCompleteOnboarding: () => {
-            setShouldShowOnboarding(false);
+            setShouldShowInitialOnboarding(false);
             setShouldShowGuidedTour(true);
             // TODO: Use a mutation to set a flag `hasOnboardedVTAddon. Similar to the `hasOnboarded` flag in Chromatic webapp
           },
@@ -241,7 +259,7 @@ export const VisualTestsWithoutSelectedBuildId = ({
                 dismissBuildError,
                 localBuildProgress,
                 ...(lastBuildOnBranch && { lastBuildOnBranch }),
-                ...(canSwitchToLastBuildOnBranch && { switchToLastBuildOnBranch }),
+                ...(lastBuildOnBranchIsSelectable && { switchToLastBuildOnBranch }),
                 startDevBuild,
                 userCanReview,
                 setAccessToken,
