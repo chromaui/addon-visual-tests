@@ -24,16 +24,24 @@ interface TourProps {
   // queryError?: CombinedError;
   // hasData: boolean;
   // hasSelectedBuild: boolean;
-  // api: API;
+  api: API;
 }
 
 // type OnboardingScreen = "onboarding" | "catchAChange" | "changesDetected";
-export const GuidedTour = ({ }: TourProps) => {
+export const GuidedTour = ({ api }: TourProps) => {
   // This will just be shown by default for now. Need to figure out when we should display it.
   const [stepIndex, setStepIndex] = React.useState<number>(0);
   const nextStep = () => {
     setStepIndex((prev) => prev + 1);
   };
+
+  // Make sure the addon panel is open
+  React.useEffect(() => {
+    api.togglePanel(true);
+    api.togglePanelPosition("right");
+    api.setSelectedPanel("addon-visual-tests");
+  }, [api]);
+
   const steps: Partial<GuidedTourStep>[] = [
     {
       target: "#changes-found-filter",

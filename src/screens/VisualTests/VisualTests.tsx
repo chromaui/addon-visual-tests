@@ -99,8 +99,8 @@ export const VisualTestsWithoutSelectedBuildId = ({
   gitInfo,
   storyId,
 }: VisualTestsProps) => {
-  const { addNotification } = useStorybookApi();
-
+  const managerApi = useStorybookApi();
+  const { addNotification } = managerApi;
   const buildInfo = useBuild({ projectId, storyId, gitInfo, selectedBuildInfo });
 
   const {
@@ -251,7 +251,7 @@ export const VisualTestsWithoutSelectedBuildId = ({
           </BuildProvider>
         </ReviewTestProvider>
       )}
-      {shouldShowGuidedTour && <GuidedTour />}
+      {shouldShowGuidedTour && <GuidedTour api={managerApi} />}
     </>
   );
 };
