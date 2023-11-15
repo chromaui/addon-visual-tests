@@ -110,7 +110,7 @@ export const ToggleBaseline = {
 export const BatchAcceptOptions = {
   play: playAll(async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const menu = await canvas.findByRole("button", { name: "Batch accept" });
+    const menu = await canvas.findByRole("button", { name: "Batch accept options" });
     await userEvent.click(menu);
   }),
 } satisfies Story;

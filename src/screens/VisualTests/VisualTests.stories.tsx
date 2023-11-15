@@ -767,7 +767,7 @@ export const Accepting = {
     ),
   },
   play: playAll(async ({ canvasElement }) => {
-    const button = await findByRole(canvasElement, "button", { name: "Accept story" });
+    const button = await findByRole(canvasElement, "button", { name: "Accept this story" });
     await fireEvent.click(button);
   }),
 } satisfies Story;
@@ -780,7 +780,7 @@ export const AcceptingFailed = {
     ),
   },
   play: playAll(async ({ canvasElement, argsByTarget }) => {
-    const button = await findByRole(canvasElement, "button", { name: "Accept story" });
+    const button = await findByRole(canvasElement, "button", { name: "Accept this story" });
     await fireEvent.click(button);
     await waitFor(async () =>
       expect(argsByTarget["manager-api"].addNotification).toHaveBeenCalled()
