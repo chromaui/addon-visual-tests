@@ -176,7 +176,7 @@ export const NoBaseline: Story = {
       }),
     ]),
   },
-};
+} satisfies Story;
 
 export const SwitchingMode = {
   parameters: {

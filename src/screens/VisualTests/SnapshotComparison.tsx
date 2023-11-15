@@ -61,6 +61,7 @@ const HeaderSection = styled.div(({ theme }) => ({
   position: "sticky",
   zIndex: 1,
   top: 0,
+  background: theme.background.content,
 }));
 
 const MainSection = styled.div(({ theme }) => ({
@@ -75,6 +76,7 @@ const FooterSection = styled.div(({ theme }) => ({
   zIndex: 1,
   bottom: 0,
   borderTop: `1px solid ${theme.appBorderColor}`,
+  background: theme.background.content,
 }));
 
 const Divider = styled.div(({ children, theme }) => ({
