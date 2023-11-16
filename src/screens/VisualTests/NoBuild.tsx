@@ -18,6 +18,7 @@ const buildFailureUrl = "https://www.chromatic.com/docs/setup/#troubleshooting";
 const ErrorContainer = styled.div(({ theme }) => ({
   display: "block",
   minWidth: "80%",
+  color: theme.color.darker,
   background: "#FFF5CF",
   border: "1px solid #E69D0033",
   borderRadius: "2px",
