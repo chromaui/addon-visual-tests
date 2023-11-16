@@ -2,6 +2,7 @@ import { action } from "@storybook/addon-actions";
 import type { Meta, StoryObj } from "@storybook/react";
 import { findByRole, fireEvent, screen, userEvent, within } from "@storybook/testing-library";
 import type { StoryContext } from "@storybook/types";
+import { delay, http } from "msw";
 import React, { ComponentProps } from "react";
 
 import {
@@ -92,6 +93,14 @@ export const InProgress = {
   },
 } satisfies Story;
 
+export const Loading = {
+  parameters: {
+    msw: {
+      handlers: [http.get("/B.png", () => delay("infinite"))],
+    },
+  },
+} satisfies Story;
+
 export const Default = {} satisfies Story;
 
 export const Spotlight = {
@@ -160,6 +169,15 @@ export const ShowingBaseline: Story = {
   play: playAll(async ({ canvasElement }) => {
     fireEvent.click(await findByRole(canvasElement, "button", { name: "Show baseline snapshot" }));
   }),
+} satisfies Story;
+
+export const BaselineLoading: Story = {
+  ...ShowingBaseline,
+  parameters: {
+    msw: {
+      handlers: [http.get("/A.png", () => delay("infinite"))],
+    },
+  },
 } satisfies Story;
 
 export const NoBaseline: Story = {

@@ -99,6 +99,7 @@ export const SnapshotImage = ({
       {captureImage && (
         <img
           alt={`Snapshot for the '${storyName}' story of the '${componentName}' component`}
+          key={captureImage.imageUrl}
           src={captureImage.imageUrl}
           style={{ opacity: showDiff && !showFocus ? 0.7 : 1 }}
         />
