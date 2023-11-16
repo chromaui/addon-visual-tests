@@ -5,7 +5,14 @@ import { useMutation } from "urql";
 
 import { PANEL_ID } from "../../constants";
 import { getFragment } from "../../gql";
-import { ReviewTestBatch, ReviewTestInputStatus } from "../../gql/graphql";
+import {
+  BuildStatus,
+  LastBuildOnBranchBuildFieldsFragment,
+  ReviewTestBatch,
+  ReviewTestInputStatus,
+  TestResult,
+  TestStatus,
+} from "../../gql/graphql";
 import { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from "../../types";
 import { testsToStatusUpdate } from "../../utils/testsToStatusUpdate";
 import { SelectedBuildInfo, updateSelectedBuildInfo } from "../../utils/updateSelectedBuildInfo";
@@ -13,7 +20,11 @@ import { GuidedTour } from "../GuidedTour/GuidedTour";
 import { Onboarding } from "../Onboarding/Onboarding";
 import { BuildProvider, useBuild } from "./BuildContext";
 import { BuildResults } from "./BuildResults";
-import { FragmentStatusTestFields, MutationReviewTest } from "./graphql";
+import {
+  FragmentLastBuildOnBranchTestFields,
+  FragmentStatusTestFields,
+  MutationReviewTest,
+} from "./graphql";
 import { NoBuild } from "./NoBuild";
 import { ReviewTestProvider } from "./ReviewTestContext";
 
@@ -87,6 +98,34 @@ const useReview = ({
   return { isReviewing, acceptTest, unacceptTest, buildIsReviewable, userCanReview };
 };
 
+const useOnboarding = ({ lastBuildOnBranch }: ReturnType<typeof useBuild>) => {
+  const [hasCompletedWalkthrough, setHasCompletedWalkthrough] = React.useState(
+    () => localStorage.getItem("hasCompletedWalkthrough") === "true"
+  );
+  const completeWalkthrough = React.useCallback(() => {
+    setHasCompletedWalkthrough(true);
+    localStorage.setItem("hasCompletedWalkthrough", "true");
+  }, []);
+
+  const lastBuildHasChanges = React.useMemo(() => {
+    const tests =
+      lastBuildOnBranch &&
+      getFragment(
+        FragmentLastBuildOnBranchTestFields,
+        ("testsForStory" in lastBuildOnBranch && lastBuildOnBranch?.testsForStory?.nodes) || []
+      );
+    return tests?.some((t) => t.status === TestStatus.Pending && t.result === TestResult.Changed);
+  }, [lastBuildOnBranch]);
+
+  const showOnboarding = !lastBuildOnBranch || !lastBuildHasChanges || !hasCompletedWalkthrough;
+
+  return {
+    showOnboarding,
+    showGuidedTour: !showOnboarding && !hasCompletedWalkthrough,
+    completeWalkthrough,
+  };
+};
+
 export const VisualTestsWithoutSelectedBuildId = ({
   selectedBuildInfo,
   setSelectedBuildInfo,
@@ -117,52 +156,6 @@ export const VisualTestsWithoutSelectedBuildId = ({
     rerunQuery,
     userCanReview,
   } = buildInfo;
-
-  // TODO: We probably want users to see the onboarding at least once, even if the project does have a lastBuild.
-  // TODO: Include and check !hasOnboardedVTAddon flag on the user object so that it can be shown to everyone.
-
-  const [hasCompletedWalkthrough, setHasCompletedWaklthrough] = useState(false);
-  const [shouldShowInitalOnboarding, setShouldShowInitialOnboarding] = useState(false);
-  useEffect(() => {
-    console.log("setting shouldShowInitialOnboarding", !lastBuildOnBranch, {
-      lastBuildOnBranch,
-      lastBuildOnBranchIsReady,
-      hasCompletedWalkthrough,
-      shouldShowInitalOnboarding:
-        !lastBuildOnBranch || !lastBuildOnBranchIsReady || !hasCompletedWalkthrough,
-    });
-    setShouldShowInitialOnboarding(
-      !lastBuildOnBranch || !lastBuildOnBranchIsReady || !hasCompletedWalkthrough
-    );
-  }, [lastBuildOnBranch, lastBuildOnBranchIsReady, hasCompletedWalkthrough]);
-
-  // This behaviour should be dynamic, but for now we'll just show it to everyone
-  // TODO: Set shouldShowGuidedTour by user's tour status (or a query param) and if there is a build with changes
-  const [shouldShowGuidedTour, setShouldShowGuidedTour] = useState(false);
-  useEffect(() => {
-    console.log("setting shouldShowGuidedTour", !!(lastBuildOnBranch && lastBuildOnBranchIsReady), {
-      lastBuildOnBranch,
-      lastBuildOnBranchIsReady,
-    });
-    const buildExistsForBranch = !!(lastBuildOnBranch && lastBuildOnBranchIsReady);
-    if (buildExistsForBranch) {
-      setShouldShowGuidedTour(true && !hasCompletedWalkthrough);
-    }
-  }, [lastBuildOnBranch, lastBuildOnBranchIsReady, hasCompletedWalkthrough]);
-
-  const skipWalkthrough = () => {
-    // TODO: This actually needs to run the mutation to skip the walkthrough from now on.
-    setShouldShowGuidedTour(false);
-    setShouldShowInitialOnboarding(false);
-    setHasCompletedWaklthrough(true);
-  };
-
-  const completeWalkthrough = () => {
-    // TODO: This actually needs to run the mutation to finish the walkthrough from now on.
-    setShouldShowGuidedTour(false);
-    setShouldShowInitialOnboarding(false);
-    setHasCompletedWaklthrough(true);
-  };
 
   const reviewState = useReview({
     buildIsReviewable: !!selectedBuild && selectedBuild.id === lastBuildOnBranch?.id,
@@ -233,8 +226,9 @@ export const VisualTestsWithoutSelectedBuildId = ({
     [setSelectedBuildInfo, lastBuildOnBranchIsSelectable, lastBuildOnBranch?.id, storyId]
   );
 
-  // TODO: This should just show along with the guided tour, right?
-  if (shouldShowInitalOnboarding) {
+  const { showOnboarding, showGuidedTour, completeWalkthrough } = useOnboarding(buildInfo);
+
+  if (showOnboarding) {
     return (
       <Onboarding
         {...{
@@ -244,13 +238,12 @@ export const VisualTestsWithoutSelectedBuildId = ({
           startDevBuild,
           updateBuildStatus,
           localBuildProgress,
+          selectedBuild,
           hasSelectedBuild: !!lastBuildOnBranch,
           onCompleteOnboarding: () => {
-            setShouldShowInitialOnboarding(false);
-            setShouldShowGuidedTour(true);
-            // TODO: Use a mutation to set a flag `hasOnboardedVTAddon. Similar to the `hasOnboarded` flag in Chromatic webapp
+            // Actually, completing a build with changes should finish the onboarding, right?
           },
-          skipWalkthrough,
+          skipWalkthrough: completeWalkthrough,
         }}
       />
     );
@@ -289,10 +282,10 @@ export const VisualTestsWithoutSelectedBuildId = ({
           </BuildProvider>
         </ReviewTestProvider>
       )}
-      {shouldShowGuidedTour && (
+      {showGuidedTour && (
         <GuidedTour
           managerApi={managerApi}
-          skipWalkthrough={skipWalkthrough}
+          skipWalkthrough={completeWalkthrough}
           completeWalkthrough={completeWalkthrough}
         />
       )}
