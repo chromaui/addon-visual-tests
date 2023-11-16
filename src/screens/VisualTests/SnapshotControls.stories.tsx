@@ -38,8 +38,7 @@ const meta = {
     storyWrapper(Grid),
   ],
   args: {
-    onSelectMode: action("onSelectMode"),
-    onSelectBrowser: action("onSelectBrowser"),
+    startDevBuild: action("startDevBuild"),
   },
   parameters: {
     chromatic: {
