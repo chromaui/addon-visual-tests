@@ -17,7 +17,7 @@ export const Container = styled.div<{ href?: string; target?: string }>(
       maxWidth: "100%",
       transition: "filter 0.1s ease-in-out",
     },
-    "img + img": {
+    "img[data-overlay]": {
       position: "absolute",
       opacity: 0.7,
       pointerEvents: "none",
@@ -69,7 +69,9 @@ interface SnapshotImageProps {
   storyName?: NonNullable<Test["story"]>["name"];
   testUrl: Test["webUrl"];
   comparisonResult?: ComparisonResult;
-  captureImage?: Pick<CaptureImage, "imageUrl" | "imageWidth">;
+  latestImage?: Pick<CaptureImage, "imageUrl" | "imageWidth">;
+  baselineImage?: Pick<CaptureImage, "imageUrl" | "imageWidth">;
+  baselineImageVisible?: boolean;
   diffImage?: Pick<CaptureOverlayImage, "imageUrl" | "imageWidth">;
   focusImage?: Pick<CaptureOverlayImage, "imageUrl" | "imageWidth">;
   diffVisible: boolean;
@@ -81,14 +83,16 @@ export const SnapshotImage = ({
   storyName,
   testUrl,
   comparisonResult,
-  captureImage,
+  latestImage,
+  baselineImage,
+  baselineImageVisible,
   diffImage,
   focusImage,
   diffVisible,
   focusVisible,
   ...props
 }: SnapshotImageProps & ComponentProps<typeof Container>) => {
-  const hasDiff = captureImage && diffImage && comparisonResult === ComparisonResult.Changed;
+  const hasDiff = latestImage && diffImage && comparisonResult === ComparisonResult.Changed;
   const hasError = comparisonResult === ComparisonResult.CaptureError;
   const containerProps = hasDiff ? { as: "a" as any, href: testUrl, target: "_blank" } : {};
   const showDiff = hasDiff && diffVisible;
@@ -96,30 +100,44 @@ export const SnapshotImage = ({
 
   return (
     <Container {...props} {...containerProps}>
-      {captureImage && (
+      {latestImage && (
         <img
-          alt={`Snapshot for the '${storyName}' story of the '${componentName}' component`}
-          key={captureImage.imageUrl}
-          src={captureImage.imageUrl}
-          style={{ opacity: showDiff && !showFocus ? 0.7 : 1 }}
+          alt={`Latest snapshot for the '${storyName}' story of the '${componentName}' component`}
+          src={latestImage.imageUrl}
+          style={{
+            opacity: showDiff && !showFocus ? 0.7 : 1,
+            display: baselineImageVisible ? "none" : "block",
+          }}
+        />
+      )}
+      {baselineImage && (
+        <img
+          alt={`Baseline snapshot for the '${storyName}' story of the '${componentName}' component`}
+          src={baselineImage.imageUrl}
+          style={{
+            opacity: showDiff && !showFocus ? 0.7 : 1,
+            display: baselineImageVisible ? "block" : "none",
+          }}
         />
       )}
       {showDiff && (
         <img
           alt=""
+          data-overlay="diff"
           src={diffImage.imageUrl}
-          style={{ maxWidth: `${(diffImage.imageWidth / captureImage.imageWidth) * 100}%` }}
+          style={{ maxWidth: `${(diffImage.imageWidth / latestImage.imageWidth) * 100}%` }}
         />
       )}
       {showFocus && (
         <img
           alt=""
+          data-overlay="focus"
           src={focusImage.imageUrl}
-          style={{ maxWidth: `${(focusImage.imageWidth / captureImage.imageWidth) * 100}%` }}
+          style={{ maxWidth: `${(focusImage.imageWidth / latestImage.imageWidth) * 100}%` }}
         />
       )}
       {hasDiff && <Icons icon="sharealt" />}
-      {hasError && !captureImage && (
+      {hasError && !latestImage && (
         <div>
           <Icons icon="photo" />
           <Text>

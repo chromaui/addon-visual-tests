@@ -260,11 +260,9 @@ export const SnapshotComparison = ({
             storyName={selectedTest.story?.name}
             testUrl={selectedTest.webUrl}
             comparisonResult={selectedComparison.result ?? undefined}
-            captureImage={
-              baselineImageVisible
-                ? selectedComparison.baseCapture?.captureImage ?? undefined
-                : selectedComparison.headCapture?.captureImage ?? undefined
-            }
+            latestImage={selectedComparison.headCapture?.captureImage ?? undefined}
+            baselineImage={selectedComparison.baseCapture?.captureImage ?? undefined}
+            baselineImageVisible={baselineImageVisible}
             diffImage={selectedComparison.captureDiff?.diffImage ?? undefined}
             focusImage={selectedComparison.captureDiff?.focusImage ?? undefined}
             diffVisible={diffVisible}
