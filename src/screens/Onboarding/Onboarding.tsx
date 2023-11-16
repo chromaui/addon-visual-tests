@@ -27,35 +27,38 @@ const ProjectQuery = gql`
   }
 `;
 
-interface NoBuildProps {
-  // queryError?: CombinedError;
-  // hasData: boolean;
-  // hasSelectedBuild: boolean;
+interface OnboardingProps {
+  hasSelectedBuild: boolean;
   onCompleteOnboarding: () => void;
+  skipWalkthrough: () => void;
   startDevBuild: () => void;
   localBuildProgress?: LocalBuildProgress;
   gitInfo: Pick<GitInfoPayload, "uncommittedHash" | "branch">;
 }
 
-type OnboardingScreen = "onboarding" | "catchAChange" | "changesDetected";
-
 export const Onboarding = ({
   startDevBuild,
   localBuildProgress,
+  hasSelectedBuild,
   gitInfo,
   onCompleteOnboarding,
-}: NoBuildProps) => {
-  const screen = React.useState<OnboardingScreen>();
-
+  skipWalkthrough,
+}: OnboardingProps) => {
   const [catchAChange, setCatchAChange] = React.useState(false);
   const [initialGitHash, setInitialGitHash] = React.useState("");
+
   const onCatchAChange = () => {
     setInitialGitHash(gitInfo.uncommittedHash);
     setCatchAChange(true);
   };
   const [runningSecondBuild, setRunningSecondBuild] = React.useState(false);
 
-  console.log({ localBuildProgress, catchAChange, runningSecondBuild });
+  console.log({
+    localBuildProgress,
+    catchAChange,
+    runningSecondBuild,
+    hasSelectedBuild,
+  });
   // TODO: This design for an error in the Onboarding is incomplete
   if (localBuildProgress && localBuildProgress.currentStep === "error") {
     return (
@@ -137,6 +140,9 @@ export const Onboarding = ({
             Catch a UI change
           </Button>
         </Stack>
+        <Button link onClick={skipWalkthrough}>
+          Skip walkthrough
+        </Button>
       </Container>
     );
   }

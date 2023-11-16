@@ -121,14 +121,20 @@ export const VisualTestsWithoutSelectedBuildId = ({
   // TODO: We probably want users to see the onboarding at least once, even if the project does have a lastBuild.
   // TODO: Include and check !hasOnboardedVTAddon flag on the user object so that it can be shown to everyone.
 
+  const [hasCompletedWalkthrough, setHasCompletedWaklthrough] = useState(false);
   const [shouldShowInitalOnboarding, setShouldShowInitialOnboarding] = useState(false);
   useEffect(() => {
     console.log("setting shouldShowInitialOnboarding", !lastBuildOnBranch, {
       lastBuildOnBranch,
       lastBuildOnBranchIsReady,
+      hasCompletedWalkthrough,
+      shouldShowInitalOnboarding:
+        !lastBuildOnBranch || !lastBuildOnBranchIsReady || !hasCompletedWalkthrough,
     });
-    setShouldShowInitialOnboarding(!lastBuildOnBranch || !lastBuildOnBranchIsReady);
-  }, [lastBuildOnBranch, lastBuildOnBranchIsReady]);
+    setShouldShowInitialOnboarding(
+      !lastBuildOnBranch || !lastBuildOnBranchIsReady || !hasCompletedWalkthrough
+    );
+  }, [lastBuildOnBranch, lastBuildOnBranchIsReady, hasCompletedWalkthrough]);
 
   // This behaviour should be dynamic, but for now we'll just show it to everyone
   // TODO: Set shouldShowGuidedTour by user's tour status (or a query param) and if there is a build with changes
@@ -140,9 +146,23 @@ export const VisualTestsWithoutSelectedBuildId = ({
     });
     const buildExistsForBranch = !!(lastBuildOnBranch && lastBuildOnBranchIsReady);
     if (buildExistsForBranch) {
-      setShouldShowGuidedTour(true);
+      setShouldShowGuidedTour(true && !hasCompletedWalkthrough);
     }
-  }, [lastBuildOnBranch, lastBuildOnBranchIsReady]);
+  }, [lastBuildOnBranch, lastBuildOnBranchIsReady, hasCompletedWalkthrough]);
+
+  const skipWalkthrough = () => {
+    // TODO: This actually needs to run the mutation to skip the walkthrough from now on.
+    setShouldShowGuidedTour(false);
+    setShouldShowInitialOnboarding(false);
+    setHasCompletedWaklthrough(true);
+  };
+
+  const completeWalkthrough = () => {
+    // TODO: This actually needs to run the mutation to finish the walkthrough from now on.
+    setShouldShowGuidedTour(false);
+    setShouldShowInitialOnboarding(false);
+    setHasCompletedWaklthrough(true);
+  };
 
   const reviewState = useReview({
     buildIsReviewable: !!selectedBuild && selectedBuild.id === lastBuildOnBranch?.id,
@@ -224,11 +244,13 @@ export const VisualTestsWithoutSelectedBuildId = ({
           startDevBuild,
           updateBuildStatus,
           localBuildProgress,
+          hasSelectedBuild: !!lastBuildOnBranch,
           onCompleteOnboarding: () => {
             setShouldShowInitialOnboarding(false);
             setShouldShowGuidedTour(true);
             // TODO: Use a mutation to set a flag `hasOnboardedVTAddon. Similar to the `hasOnboarded` flag in Chromatic webapp
           },
+          skipWalkthrough,
         }}
       />
     );
@@ -267,7 +289,13 @@ export const VisualTestsWithoutSelectedBuildId = ({
           </BuildProvider>
         </ReviewTestProvider>
       )}
-      {shouldShowGuidedTour && <GuidedTour managerApi={managerApi} />}
+      {shouldShowGuidedTour && (
+        <GuidedTour
+          managerApi={managerApi}
+          skipWalkthrough={skipWalkthrough}
+          completeWalkthrough={completeWalkthrough}
+        />
+      )}
     </>
   );
 };

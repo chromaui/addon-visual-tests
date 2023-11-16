@@ -25,14 +25,17 @@ const ProjectQuery = gql`
 type GuidedTourStep = TooltipProps["step"];
 
 interface TourProps {
-  // queryError?: CombinedError;
-  // hasData: boolean;
-  // hasSelectedBuild: boolean;
+  skipWalkthrough: () => void;
+  completeWalkthrough: () => void;
   managerApi: API;
 }
 
 // type OnboardingScreen = "onboarding" | "catchAChange" | "changesDetected";
-export const GuidedTour = ({ managerApi }: TourProps) => {
+export const GuidedTour = ({
+  managerApi,
+  skipWalkthrough: onSkipWalkthroughButtonClick,
+  completeWalkthrough: onCompleteWalkthroughButtonClick,
+}: TourProps) => {
   const theme = useTheme();
   // Make sure the addon panel is open
   React.useEffect(() => {
@@ -87,6 +90,7 @@ export const GuidedTour = ({ managerApi }: TourProps) => {
       disableBeacon: true,
       hideNextButton: true,
       spotlightClicks: true,
+      onSkipWalkthroughButtonClick,
     },
     {
       target: "#storybook-explorer-tree > div",
@@ -95,6 +99,7 @@ export const GuidedTour = ({ managerApi }: TourProps) => {
       placement: "right",
       disableBeacon: true,
       onNextButtonClick: nextStep,
+      onSkipWalkthroughButtonClick,
     },
     {
       target: "#panel-tab-content",
@@ -105,6 +110,7 @@ export const GuidedTour = ({ managerApi }: TourProps) => {
       disableBeacon: true,
       placement: "left",
       onNextButtonClick: nextStep,
+      onSkipWalkthroughButtonClick,
     },
     {
       target: "#button-diff-visible",
@@ -116,6 +122,7 @@ export const GuidedTour = ({ managerApi }: TourProps) => {
         </>
       ),
       onNextButtonClick: nextStep,
+      onSkipWalkthroughButtonClick,
       disableBeacon: true,
       placement: "bottom",
     },
@@ -129,6 +136,7 @@ export const GuidedTour = ({ managerApi }: TourProps) => {
         </>
       ),
       onNextButtonClick: nextStep,
+      onSkipWalkthroughButtonClick,
       disableBeacon: true,
       placement: "bottom",
     },
@@ -144,6 +152,7 @@ export const GuidedTour = ({ managerApi }: TourProps) => {
       disableBeacon: true,
       onNextButtonClick: nextStep,
       placement: "bottom",
+      onSkipWalkthroughButtonClick,
     },
     {
       target: "#button-accept",
@@ -154,6 +163,7 @@ export const GuidedTour = ({ managerApi }: TourProps) => {
         </>
       ),
       onNextButtonClick: nextStep,
+      onSkipWalkthroughButtonClick,
     },
     {
       target: "#button-run-tests",
@@ -166,6 +176,7 @@ export const GuidedTour = ({ managerApi }: TourProps) => {
       ),
       disableBeacon: true,
       onNextButtonClick: nextStep,
+      // onCompleteWalkthroughButtonClick,
     },
   ];
   return (
@@ -197,6 +208,7 @@ export const GuidedTour = ({ managerApi }: TourProps) => {
         //   onFirstTourDone();
         // }
         // }}
+        showSkipButton
         floaterProps={{
           options: {
             offset: {
