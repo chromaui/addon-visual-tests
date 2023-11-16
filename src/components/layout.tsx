@@ -2,6 +2,7 @@ import { styled } from "@storybook/theming";
 
 export const Sections = styled.div<{ hidden?: boolean }>(
   {
+    containerType: "size",
     display: "flex",
     flexDirection: "column",
     height: "100%",
@@ -11,9 +12,8 @@ export const Sections = styled.div<{ hidden?: boolean }>(
 
 export const Section = styled.div<{ grow?: boolean }>(({ grow, theme }) => ({
   flexGrow: grow ? 1 : "auto",
-  borderBottom: `1px solid ${theme.appBorderColor}`,
-  "&:last-of-type": {
-    borderBottom: 0,
+  "& + &": {
+    borderBottom: `1px solid ${theme.appBorderColor}`,
   },
 }));
 
