@@ -164,6 +164,7 @@ export const FragmentStoryTestFields = graphql(/* GraphQL */ `
     }
     mode {
       name
+      globals
     }
     story {
       storyId

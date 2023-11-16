@@ -148,7 +148,7 @@ export function makeTest(options: {
     result,
     webUrl: `https://www.chromatic.com/test?appId=123&id=${id}`,
     comparisons,
-    mode: { name: `${viewportWidth}px` },
+    mode: { name: `${viewportWidth}px`, globals: {} },
     story: generateStory(options.storyId || "button--primary"),
   };
 }
