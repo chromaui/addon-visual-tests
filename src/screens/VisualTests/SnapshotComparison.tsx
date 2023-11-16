@@ -183,7 +183,16 @@ export const SnapshotComparison = ({
   );
 
   if (isStarting || !tests.length) {
-    return <Grid>{storyInfo}</Grid>;
+    return (
+      <ParentGrid hidden={hidden}>
+        <HeaderSection>
+          <Grid>{storyInfo}</Grid>
+        </HeaderSection>
+        <FooterSection>
+          <BuildResultsFooter setAccessToken={setAccessToken} />
+        </FooterSection>
+      </ParentGrid>
+    );
   }
 
   const testSummary = summarizeTests(tests);

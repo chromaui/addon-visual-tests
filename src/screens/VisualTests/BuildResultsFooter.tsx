@@ -16,7 +16,7 @@ export const BuildResultsFooter = ({
   const { browserResults, modeResults } = storyState.summary;
 
   return (
-    <Section>
+    <Section last>
       <Bar>
         {modeResults.length > 0 && (
           <ModeSelector

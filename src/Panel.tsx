@@ -61,10 +61,12 @@ export const Panel = ({ active, api }: PanelProps) => {
   const [createdProjectId, setCreatedProjectId] = useState<Project["id"]>();
 
   if (gitInfoError) {
+    // eslint-disable-next-line no-console
+    console.error(gitInfoError);
     return (
       <Provider key={PANEL_ID} value={client}>
         <Sections hidden={!active}>
-          <GitNotFound gitInfoError={gitInfoError} />
+          <GitNotFound gitInfoError={gitInfoError} setAccessToken={setAccessToken} />
         </Sections>
       </Provider>
     );
@@ -117,6 +119,7 @@ export const Panel = ({ active, api }: PanelProps) => {
           projectId={projectId}
           projectToken={projectToken}
           configFile={configFile}
+          setAccessToken={setAccessToken}
         />
       </Sections>
     );

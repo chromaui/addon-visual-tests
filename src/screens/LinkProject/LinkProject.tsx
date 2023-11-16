@@ -5,9 +5,9 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useQuery } from "urql";
 
 import { Container } from "../../components/Container";
-import { FooterMenu } from "../../components/FooterMenu";
+import { FooterSection } from "../../components/FooterSection";
 import { Heading } from "../../components/Heading";
-import { Bar, Col, Section, Sections, Text } from "../../components/layout";
+import { Section, Sections, Text } from "../../components/layout";
 import { Stack } from "../../components/Stack";
 import { graphql } from "../../gql";
 import type { Account, Project, SelectProjectsQueryQuery } from "../../gql/graphql";
@@ -265,14 +265,7 @@ function SelectProject({
           </Stack>
         </Container>
       </Section>
-      <Section>
-        <Bar>
-          <Col push />
-          <Col>
-            <FooterMenu setAccessToken={setAccessToken} />
-          </Col>
-        </Bar>
-      </Section>
+      <FooterSection setAccessToken={setAccessToken} />
     </Sections>
   );
 }
