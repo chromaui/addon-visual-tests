@@ -25,7 +25,6 @@ const SelectProjectsQuery = graphql(/* GraphQL */ `
           id
           name
           webUrl
-          projectToken
           lastBuild {
             branch
             number
@@ -44,12 +43,12 @@ export const LinkProject = ({
 }: {
   createdProjectId: Project["id"] | undefined;
   setCreatedProjectId: (projectId: Project["id"]) => void;
-  onUpdateProject: (projectId: string, projectToken: string) => void;
+  onUpdateProject: (projectId: string) => void;
   setAccessToken: (accessToken: string | null) => void;
 }) => {
   const onSelectProjectId = React.useCallback(
-    async (selectedProjectId: string, projectToken: string) => {
-      await onUpdateProject(selectedProjectId, projectToken);
+    async (selectedProjectId: string) => {
+      await onUpdateProject(selectedProjectId);
     },
     [onUpdateProject]
   );
@@ -116,7 +115,7 @@ function SelectProject({
 }: {
   createdProjectId: Project["id"] | undefined;
   setCreatedProjectId: (projectId: Project["id"]) => void;
-  onSelectProjectId: (projectId: string, projectToken: string) => Promise<void>;
+  onSelectProjectId: (projectId: string) => Promise<void>;
   setAccessToken: (accessToken: string | null) => void;
 }) {
   const [{ data, fetching, error }, rerunProjectsQuery] = useQuery<SelectProjectsQueryQuery>({
@@ -156,8 +155,7 @@ function SelectProject({
       >
     ) => {
       setSelectingProject(true);
-      const { id: projectId, projectToken } = project;
-      onSelectProjectId(projectId, projectToken);
+      onSelectProjectId(project.id);
       const timer = setTimeout(() => {
         setSelectingProject(false);
       }, 1000);

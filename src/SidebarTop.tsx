@@ -121,7 +121,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
   ]);
 
   const emit = useChannel({});
-  const startBuild = () => emit(START_BUILD);
+  const startBuild = () => emit(START_BUILD, { accessToken });
   const stopBuild = () => emit(STOP_BUILD);
 
   if (!projectId || isLoggedIn === false || gitInfoError) {

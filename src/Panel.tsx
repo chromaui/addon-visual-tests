@@ -50,7 +50,6 @@ export const Panel = ({ active, api }: PanelProps) => {
   const {
     loading: projectInfoLoading,
     projectId,
-    projectToken,
     configFile,
     updateProject,
     projectUpdatingFailed,
@@ -110,15 +109,14 @@ export const Panel = ({ active, api }: PanelProps) => {
 
   if (projectUpdatingFailed) {
     // These should always be set when we get this error
-    if (!projectToken || !configFile) {
-      throw new Error(`Missing projectToken/config file after configuration failure`);
+    if (!configFile) {
+      throw new Error(`Missing config file after configuration failure`);
     }
 
     return (
       <Sections hidden={!active}>
         <LinkingProjectFailed
           projectId={projectId}
-          projectToken={projectToken}
           configFile={configFile}
           setAccessToken={setAccessToken}
         />
@@ -153,7 +151,7 @@ export const Panel = ({ active, api }: PanelProps) => {
             dismissBuildError={() => setLocalBuildProgress(undefined)}
             isOutdated={!!isOutdated}
             localBuildProgress={localBuildIsRightBranch ? localBuildProgress : undefined}
-            startDevBuild={() => emit(START_BUILD)}
+            startDevBuild={() => emit(START_BUILD, { accessToken })}
             setAccessToken={setAccessToken}
             setOutdated={setOutdated}
             updateBuildStatus={updateBuildStatus}

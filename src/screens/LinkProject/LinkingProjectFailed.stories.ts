@@ -7,7 +7,6 @@ const meta = {
   component: LinkingProjectFailed,
   args: {
     projectId: "Project:abc123",
-    projectToken: "xzy789",
     configFile: "chromatic.config.json",
   },
   parameters: {

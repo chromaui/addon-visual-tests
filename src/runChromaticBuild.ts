@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 // eslint-disable-next-line import/no-unresolved
-import { Context, Flags, run, TaskName } from "chromatic/node";
+import { Context, InitialContext, Options, run, TaskName } from "chromatic/node";
 
 import {
   BUILD_STEP_CONFIG,
@@ -115,7 +115,10 @@ export const onCompleteOrError =
     localBuildProgress: ReturnType<typeof SharedState.subscribe<LocalBuildProgress>>,
     timeout?: ReturnType<typeof setTimeout>
   ) =>
-  (ctx: Context, error?: { formattedError: string; originalError: Error | Error[] }) => {
+  (
+    ctx: Context | InitialContext,
+    error?: { formattedError: string; originalError: Error | Error[] }
+  ) => {
     clearTimeout(timeout);
 
     // We should set this right before starting so it should never be unset during a build.
@@ -139,14 +142,14 @@ export const onCompleteOrError =
       return;
     }
 
-    if (isKnownStep(ctx.task)) {
+    if (ctx.task && isKnownStep(ctx.task)) {
       stepProgress[ctx.task] = {
         ...stepProgress[ctx.task],
         completedAt: Date.now(),
       };
     }
 
-    if (ctx.task === "snapshot") {
+    if (ctx.build && ctx.task === "snapshot") {
       localBuildProgress.value = {
         buildId: ctx.announcedBuild?.id,
         branch: ctx.git?.branch,
@@ -162,9 +165,10 @@ export const onCompleteOrError =
 
 export const runChromaticBuild = async (
   localBuildProgress: ReturnType<typeof SharedState.subscribe<LocalBuildProgress>>,
-  flags: Flags
+  options: Partial<Options>
 ) => {
-  if (!flags.projectToken) throw new Error("No project token set");
+  if (!options.projectId) throw new Error("Missing projectId");
+  if (!options.userToken) throw new Error("Missing userToken");
 
   localBuildProgress.value = INITIAL_BUILD_PAYLOAD;
 
@@ -177,10 +181,9 @@ export const runChromaticBuild = async (
   process.env.SB_TESTBUILD = "true";
 
   await run({
-    // Currently we have to have these flags.
-    // We should move the checks to after flags have been parsed into options.
-    flags,
     options: {
+      ...options,
+
       // We might want to drop this later and instead record "uncommitted hashes" on builds
       forceRebuild: true,
       // Builds initiated from the addon are always considered local

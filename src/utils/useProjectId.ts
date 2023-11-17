@@ -11,21 +11,17 @@ export const useProjectId = () => {
   const [clearUpdated, setClearUpdated] = useState(false);
 
   const updateProject = useCallback(
-    (newProjectId: string, newProjectToken: string) => {
+    (newProjectId: string) => {
       setClearUpdated(false);
-      setProjectInfo({
-        projectId: newProjectId,
-        projectToken: newProjectToken,
-      });
+      setProjectInfo({ projectId: newProjectId });
     },
     [setProjectInfo]
   );
 
-  const { projectId, projectToken, written, configFile } = projectInfo || {};
+  const { projectId, written, configFile } = projectInfo || {};
   return {
     loading: !projectInfo,
     projectId,
-    projectToken,
     configFile,
     updateProject,
     projectUpdatingFailed: !clearUpdated && written === false,
