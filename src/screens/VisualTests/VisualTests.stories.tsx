@@ -106,6 +106,7 @@ function mock<T extends (...args: any[]) => any>(f: T) {
 
 type StoryArgs = Parameters<typeof VisualTestsWithoutSelectedBuildId>[0] & {
   addNotification: () => void;
+  getUrlState: () => { queryParams: { [key: string]: string } };
   $graphql?: { AddonVisualTestsBuild?: QueryInput };
 };
 const meta = {
@@ -115,6 +116,7 @@ const meta = {
   parameters: { chromatic: { modes: panelModes } },
   argTypes: {
     addNotification: { type: "function", target: "manager-api" },
+    getUrlState: { type: "function", target: "manager-api" },
     $graphql: {
       AddonVisualTestsBuild: { map: mapQuery },
     },
@@ -138,6 +140,7 @@ const meta = {
     setOutdated: action("setOutdated"),
     updateBuildStatus: action("updateBuildStatus") as any,
     addNotification: action("addNotification"),
+    getUrlState: () => ({ queryParams: {} }),
     $graphql: { AddonVisualTestsBuild: {} },
   },
 } satisfies Meta<StoryArgs>;

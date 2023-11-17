@@ -1,11 +1,17 @@
-import { useStorybookApi } from "@storybook/manager-api";
+import { API, useStorybookApi } from "@storybook/manager-api";
 import type { API_StatusState } from "@storybook/types";
 import React, { useCallback, useEffect, useState } from "react";
 import { useMutation } from "urql";
 
 import { HAS_COMPLETED_ONBOARDING_KEY } from "../../constants";
 import { getFragment } from "../../gql";
-import { ReviewTestBatch, ReviewTestInputStatus, TestResult, TestStatus } from "../../gql/graphql";
+import {
+  ReviewTestBatch,
+  ReviewTestInputStatus,
+  Test,
+  TestResult,
+  TestStatus,
+} from "../../gql/graphql";
 import { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from "../../types";
 import { testsToStatusUpdate } from "../../utils/testsToStatusUpdate";
 import { SelectedBuildInfo, updateSelectedBuildInfo } from "../../utils/updateSelectedBuildInfo";
@@ -14,6 +20,7 @@ import { Onboarding } from "../Onboarding/Onboarding";
 import { BuildProvider, useBuild } from "./BuildContext";
 import { BuildResults } from "./BuildResults";
 import {
+  FragmentLastBuildOnBranchBuildFields,
   FragmentLastBuildOnBranchTestFields,
   FragmentStatusTestFields,
   MutationReviewTest,
@@ -92,9 +99,14 @@ const useReview = ({
   return { isReviewing, acceptTest, unacceptTest, buildIsReviewable, userCanReview };
 };
 
-const useOnboarding = ({ lastBuildOnBranch }: ReturnType<typeof useBuild>) => {
+const useOnboarding = (
+  { lastBuildOnBranch, selectedBuild }: ReturnType<typeof useBuild>,
+  managerApi?: Pick<API, "getUrlState">
+) => {
+  // Force the onboarding to show by adding ?vtaOnboarding=true to the URL
+  const forceOnboardingParam = managerApi?.getUrlState?.().queryParams.vtaOnboarding === "true";
   const [hasCompletedWalkthrough, setHasCompletedWalkthrough] = React.useState(
-    () => localStorage.getItem(HAS_COMPLETED_ONBOARDING_KEY) === "true"
+    () => !forceOnboardingParam && localStorage.getItem(HAS_COMPLETED_ONBOARDING_KEY) === "true"
   );
   const completeWalkthrough = React.useCallback(() => {
     setHasCompletedWalkthrough(true);
@@ -102,13 +114,20 @@ const useOnboarding = ({ lastBuildOnBranch }: ReturnType<typeof useBuild>) => {
   }, []);
 
   const lastBuildHasChanges = React.useMemo(() => {
-    const tests =
-      lastBuildOnBranch &&
-      getFragment(
-        FragmentLastBuildOnBranchTestFields,
-        ("testsForStory" in lastBuildOnBranch && lastBuildOnBranch?.testsForStory?.nodes) || []
-      );
-    return tests?.some((t) => t.status === TestStatus.Pending && t.result === TestResult.Changed);
+    // For somer reason the fragment doesn't recognize the testsForStatus field
+    // const tests: Test =
+    //   lastBuildOnBranch &&
+    //   getFragment(
+    //     FragmentLastBuildOnBranchBuildFields,
+    //     ("testsForStatus" in lastBuildOnBranch && lastBuildOnBranch?.testsForStatus?.nodes) || []
+    //   );
+
+    const tests: Test[] = ((lastBuildOnBranch &&
+      "testsForStatus" in lastBuildOnBranch &&
+      lastBuildOnBranch?.testsForStatus?.nodes) ||
+      []) as Test[];
+
+    return tests.some((t) => t.status === TestStatus.Pending && t.result === TestResult.Changed);
   }, [lastBuildOnBranch]);
 
   const showOnboarding = !hasCompletedWalkthrough && (!lastBuildOnBranch || !lastBuildHasChanges);
@@ -118,10 +137,20 @@ const useOnboarding = ({ lastBuildOnBranch }: ReturnType<typeof useBuild>) => {
       showGuidedTour: !showOnboarding && !hasCompletedWalkthrough,
       completeWalkthrough,
       lastBuildOnBranch,
+      selectedBuild,
       lastBuildHasChanges,
       hasCompletedWalkthrough,
+      forceOnboardingParam,
     });
-  }, [showOnboarding, hasCompletedWalkthrough, completeWalkthrough, lastBuildOnBranch]);
+  }, [
+    showOnboarding,
+    hasCompletedWalkthrough,
+    completeWalkthrough,
+    lastBuildOnBranch?.id,
+    lastBuildHasChanges,
+    selectedBuild?.id,
+    forceOnboardingParam,
+  ]);
   return {
     showOnboarding,
     showGuidedTour: !showOnboarding && !hasCompletedWalkthrough,
@@ -144,7 +173,7 @@ export const VisualTestsWithoutSelectedBuildId = ({
   storyId,
 }: VisualTestsProps) => {
   const managerApi = useStorybookApi();
-  const { addNotification } = managerApi;
+  const { addNotification, getUrlState } = managerApi;
   const buildInfo = useBuild({ projectId, storyId, gitInfo, selectedBuildInfo });
 
   const {
@@ -230,7 +259,9 @@ export const VisualTestsWithoutSelectedBuildId = ({
     [setSelectedBuildInfo, lastBuildOnBranchIsSelectable, lastBuildOnBranch?.id, storyId]
   );
 
-  const { showOnboarding, showGuidedTour, completeWalkthrough } = useOnboarding(buildInfo);
+  const { showOnboarding, showGuidedTour, completeWalkthrough } = useOnboarding(buildInfo, {
+    getUrlState,
+  });
 
   if (showOnboarding) {
     return (

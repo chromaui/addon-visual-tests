@@ -46,7 +46,7 @@ export const FragmentLastBuildOnBranchBuildFields = graphql(/* GraphQL */ `
     ... on StartedBuild {
       testsForStatus: tests(first: 1000, statuses: $testStatuses) {
         nodes {
-          ...StatusTestFields
+          ...LastBuildOnBranchTestFields
         }
       }
       testsForStory: tests(storyId: $storyId) {
@@ -59,7 +59,7 @@ export const FragmentLastBuildOnBranchBuildFields = graphql(/* GraphQL */ `
       result
       testsForStatus: tests(first: 1000, statuses: $testStatuses) {
         nodes {
-          ...StatusTestFields
+          ...LastBuildOnBranchTestFields
         }
       }
       testsForStory: tests(storyId: $storyId) {
@@ -104,6 +104,7 @@ export const FragmentStatusTestFields = graphql(/* GraphQL */ `
   fragment StatusTestFields on Test {
     id
     status
+    result
     story {
       storyId
     }

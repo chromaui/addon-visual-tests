@@ -65,7 +65,13 @@ export const Onboarding = ({
       runningSecondBuild,
       selectedBuild,
     });
-  }, [localBuildProgress, runningSecondBuild, showCatchAChange, showInitialBuild, selectedBuild]);
+  }, [
+    localBuildProgress,
+    runningSecondBuild,
+    showCatchAChange,
+    showInitialBuild,
+    selectedBuild?.id,
+  ]);
 
   // TODO: This design for an error in the Onboarding is incomplete
   if (localBuildProgress && localBuildProgress.currentStep === "error") {
@@ -206,6 +212,9 @@ export const Onboarding = ({
           <Button tertiary style={{ cursor: "default" }}>
             Awaiting changes...
           </Button>
+          <Button link onClick={skipWalkthrough}>
+            Skip walkthrough
+          </Button>
         </Stack>
       </Container>
     );
@@ -265,7 +274,7 @@ export const Onboarding = ({
   // TODO: Hmmm this is the same UI as the first build, but if user has already onboarded. Maybe these first steps are just not a part of onboarding?
   if (localBuildProgress && localBuildProgress.currentStep === "complete" && runningSecondBuild) {
     return (
-      <Container>
+      <Container style={{ overflowY: "auto" }}>
         <Stack>
           <Heading>Nice. You saved your stories as a test baseline.</Heading>
           <Text>This story was indexed and snapshotted in a standardized cloud browser.</Text>

@@ -116,7 +116,7 @@ const withTheme = (StoryFn, { globals, parameters }) => {
 const withManagerApi: Decorator = (Story, { argsByTarget }) => (
   <ManagerContext.Provider
     value={{
-      api: { addNotification: argsByTarget["manager-api"]?.addNotification } as API,
+      api: { addNotification: argsByTarget["manager-api"]?.addNotification, getUrlState: argsByTarget["manager-api"]?.getUrlState } as API,
       state: {} as State,
     }}
   >
