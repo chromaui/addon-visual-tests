@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 // eslint-disable-next-line import/no-unresolved
-import { Context, Flags, Options, run, TaskName } from "chromatic/node";
+import { Context, InitialContext, Options, run, TaskName } from "chromatic/node";
 
 import {
   BUILD_STEP_CONFIG,
@@ -115,7 +115,10 @@ export const onCompleteOrError =
     localBuildProgress: ReturnType<typeof SharedState.subscribe<LocalBuildProgress>>,
     timeout?: ReturnType<typeof setTimeout>
   ) =>
-  (ctx: Context, error?: { formattedError: string; originalError: Error | Error[] }) => {
+  (
+    ctx: Context | InitialContext,
+    error?: { formattedError: string; originalError: Error | Error[] }
+  ) => {
     clearTimeout(timeout);
 
     // We should set this right before starting so it should never be unset during a build.
@@ -139,14 +142,14 @@ export const onCompleteOrError =
       return;
     }
 
-    if (isKnownStep(ctx.task)) {
+    if (ctx.task && isKnownStep(ctx.task)) {
       stepProgress[ctx.task] = {
         ...stepProgress[ctx.task],
         completedAt: Date.now(),
       };
     }
 
-    if (ctx.task === "snapshot") {
+    if (ctx.build && ctx.task === "snapshot") {
       localBuildProgress.value = {
         buildId: ctx.announcedBuild?.id,
         branch: ctx.git?.branch,
@@ -162,7 +165,7 @@ export const onCompleteOrError =
 
 export const runChromaticBuild = async (
   localBuildProgress: ReturnType<typeof SharedState.subscribe<LocalBuildProgress>>,
-  options: Options
+  options: Partial<Options>
 ) => {
   if (!options.projectId) throw new Error("Missing projectId");
   if (!options.userToken) throw new Error("Missing userToken");

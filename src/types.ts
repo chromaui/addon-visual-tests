@@ -20,7 +20,6 @@ export type GitInfoPayload = Omit<GitInfo, "committerEmail" | "committerName">;
 
 export type ProjectInfoPayload = {
   projectId?: string;
-  projectToken?: string;
   written?: boolean;
   configFile?: string;
 };
