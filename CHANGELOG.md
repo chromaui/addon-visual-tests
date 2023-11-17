@@ -1,3 +1,15 @@
+# v0.0.118 (Fri Nov 17 2023)
+
+#### 🐛 Bug Fix
+
+- TestBuild: Add `SB_TESTBUILD` env-variable to switch on `--test` buildMode in storybook [#147](https://github.com/chromaui/addon-visual-tests/pull/147) ([@ndelangen](https://github.com/ndelangen))
+
+#### Authors: 1
+
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+
+---
+
 # v0.0.117 (Fri Nov 17 2023)
 
 #### 🐛 Bug Fix
