@@ -66,7 +66,13 @@ const Actions = styled.div(({ theme }) => ({
   },
 }));
 
-export const SnapshotControls = ({ startDevBuild }: { startDevBuild: () => void }) => {
+export const SnapshotControls = ({
+  isOutdated,
+  startDevBuild,
+}: {
+  isOutdated: boolean;
+  startDevBuild: () => void;
+}) => {
   const { baselineImageVisible, diffVisible, focusVisible } = useControlsState();
   const { toggleBaselineImage, toggleDiff, toggleFocus } = useControlsDispatch();
 
@@ -295,17 +301,17 @@ export const SnapshotControls = ({ startDevBuild }: { startDevBuild: () => void 
           )}
 
           <WithTooltip
-            tooltip={<TooltipNote note="Run new build" />}
+            tooltip={<TooltipNote note={isOutdated ? "Run new tests" : "Rerun tests"} />}
             trigger="hover"
             hasChrome={false}
           >
             <ActionButton
               containsIcon
               secondary
-              aria-label="Run new build"
+              aria-label={isOutdated ? "Run new tests" : "Rerun tests"}
               onClick={() => startDevBuild()}
             >
-              <Icons icon="play" />
+              <Icons icon={isOutdated ? "play" : "sync"} />
             </ActionButton>
           </WithTooltip>
         </Actions>

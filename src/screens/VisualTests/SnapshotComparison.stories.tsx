@@ -57,6 +57,7 @@ const meta = {
   ],
   args: {
     storyId: "button--primary",
+    isOutdated: false,
     isStarting: false,
     isBuildFailed: false,
     shouldSwitchToLastBuildOnBranch: false,

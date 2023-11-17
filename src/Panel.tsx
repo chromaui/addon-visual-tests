@@ -37,6 +37,7 @@ export const Panel = ({ active, api }: PanelProps) => {
 
   const [gitInfo] = useSharedState<GitInfoPayload>(GIT_INFO);
   const [gitInfoError] = useSharedState<Error>(GIT_INFO_ERROR);
+  const [isOutdated] = useSharedState<boolean>(IS_OUTDATED);
   const [localBuildProgress, setLocalBuildProgress] =
     useSharedState<LocalBuildProgress>(LOCAL_BUILD_PROGRESS);
   const [, setOutdated] = useSharedState<boolean>(IS_OUTDATED);
@@ -150,6 +151,7 @@ export const Panel = ({ active, api }: PanelProps) => {
         <ControlsProvider>
           <VisualTests
             dismissBuildError={() => setLocalBuildProgress(undefined)}
+            isOutdated={!!isOutdated}
             localBuildProgress={localBuildIsRightBranch ? localBuildProgress : undefined}
             startDevBuild={() => emit(START_BUILD)}
             setAccessToken={setAccessToken}

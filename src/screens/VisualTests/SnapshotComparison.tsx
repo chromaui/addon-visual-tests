@@ -114,7 +114,8 @@ const WarningText = styled(Text)(({ theme }) => ({
   color: theme.color.darkest,
 }));
 
-interface SnapshotSectionProps {
+interface SnapshotComparisonProps {
+  isOutdated: boolean;
   isStarting: boolean;
   startDevBuild: () => void;
   isBuildFailed: boolean;
@@ -126,6 +127,7 @@ interface SnapshotSectionProps {
 }
 
 export const SnapshotComparison = ({
+  isOutdated,
   isStarting,
   startDevBuild,
   isBuildFailed,
@@ -134,7 +136,7 @@ export const SnapshotComparison = ({
   setAccessToken,
   hidden,
   storyId,
-}: SnapshotSectionProps) => {
+}: SnapshotComparisonProps) => {
   const { baselineImageVisible, diffVisible, focusVisible } = useControlsState();
   const { toggleBaselineImage, toggleSettings, toggleWarnings } = useControlsDispatch();
 
@@ -231,7 +233,7 @@ export const SnapshotComparison = ({
       <HeaderSection>
         <Grid>
           {storyInfo}
-          <SnapshotControls startDevBuild={startDevBuild} />
+          <SnapshotControls isOutdated={isOutdated} startDevBuild={startDevBuild} />
         </Grid>
       </HeaderSection>
 

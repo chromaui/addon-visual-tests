@@ -120,6 +120,7 @@ const meta = {
     },
   },
   args: {
+    isOutdated: false,
     setSelectedBuildInfo: action("setSelectedBuildInfo"),
     dismissBuildError: action("dismissBuildError"),
     gitInfo: {

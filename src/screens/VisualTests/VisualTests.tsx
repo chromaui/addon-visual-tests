@@ -19,6 +19,7 @@ const createEmptyStoryStatusUpdate = (state: API_StatusState) => {
 };
 
 interface VisualTestsProps {
+  isOutdated: boolean;
   selectedBuildInfo?: SelectedBuildInfo;
   setSelectedBuildInfo: ReturnType<typeof useState<SelectedBuildInfo>>[1];
   dismissBuildError: () => void;
@@ -85,6 +86,7 @@ const useReview = ({
 };
 
 export const VisualTestsWithoutSelectedBuildId = ({
+  isOutdated,
   selectedBuildInfo,
   setSelectedBuildInfo,
   dismissBuildError,
@@ -205,6 +207,7 @@ export const VisualTestsWithoutSelectedBuildId = ({
           {...{
             branch: gitInfo.branch,
             dismissBuildError,
+            isOutdated,
             localBuildProgress,
             ...(lastBuildOnBranchIsSelectable && { switchToLastBuildOnBranch }),
             startDevBuild,

@@ -23,6 +23,7 @@ import { Warnings } from "./Warnings";
 interface BuildResultsProps {
   branch: string;
   dismissBuildError: () => void;
+  isOutdated: boolean;
   localBuildProgress?: LocalBuildProgress;
   switchToLastBuildOnBranch?: () => void;
   storyId: string;
@@ -41,6 +42,7 @@ export const Warning = styled.div(({ theme }) => ({
 export const BuildResults = ({
   branch,
   dismissBuildError,
+  isOutdated,
   localBuildProgress,
   switchToLastBuildOnBranch,
   startDevBuild,
@@ -199,6 +201,7 @@ export const BuildResults = ({
         <SnapshotComparison
           hidden={settingsVisible || warningsVisible}
           {...{
+            isOutdated,
             isStarting: isSelectedBuildStarting,
             startDevBuild,
             isBuildFailed,
