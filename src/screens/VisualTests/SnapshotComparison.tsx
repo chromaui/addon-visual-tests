@@ -62,6 +62,10 @@ const HeaderSection = styled.div(({ theme }) => ({
   zIndex: 1,
   top: 0,
   background: theme.background.content,
+
+  "@container (min-width: 800px)": {
+    background: theme.background.app,
+  },
 }));
 
 const MainSection = styled.div(({ theme }) => ({
