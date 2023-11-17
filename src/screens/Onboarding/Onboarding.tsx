@@ -11,7 +11,7 @@ import { VisualTestsIcon } from "../../components/icons/VisualTestsIcon";
 import { Row, Section } from "../../components/layout";
 import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
-import { GitInfoPayload, LocalBuildProgress } from "../../types";
+import { GitInfoPayload, LocalBuildProgress, SelectedBuildWithTests } from "../../types";
 
 const ProjectQuery = gql`
   query ProjectQuery($projectId: ID!) {
@@ -28,36 +28,38 @@ const ProjectQuery = gql`
 `;
 
 interface OnboardingProps {
-  hasSelectedBuild: boolean;
   onCompleteOnboarding: () => void;
   skipWalkthrough: () => void;
   startDevBuild: () => void;
+  selectedBuild?: SelectedBuildWithTests;
   localBuildProgress?: LocalBuildProgress;
   gitInfo: Pick<GitInfoPayload, "uncommittedHash" | "branch">;
 }
-
 export const Onboarding = ({
   startDevBuild,
   localBuildProgress,
-  hasSelectedBuild,
+  selectedBuild,
   gitInfo,
   onCompleteOnboarding,
   skipWalkthrough,
 }: OnboardingProps) => {
-  const [catchAChange, setCatchAChange] = React.useState(false);
-  const [initialGitHash, setInitialGitHash] = React.useState("");
+  const showInitialBuild = !selectedBuild;
+  const showCatchAChange = !!selectedBuild;
+  const [initialGitHash, setInitialGitHash] = React.useState(gitInfo.uncommittedHash);
 
   const onCatchAChange = () => {
     setInitialGitHash(gitInfo.uncommittedHash);
-    setCatchAChange(true);
+    setShowCatchAChange(true);
   };
+
   const [runningSecondBuild, setRunningSecondBuild] = React.useState(false);
 
   console.log({
     localBuildProgress,
-    catchAChange,
+    showCatchAChange,
     runningSecondBuild,
-    hasSelectedBuild,
+    selectedBuild,
+    showInitialBuild,
   });
   // TODO: This design for an error in the Onboarding is incomplete
   if (localBuildProgress && localBuildProgress.currentStep === "error") {
@@ -73,15 +75,18 @@ export const Onboarding = ({
           <Button small secondary onClick={startDevBuild}>
             Try again
           </Button>
+          <Button link onClick={skipWalkthrough}>
+            Skip walkthrough
+          </Button>
         </Stack>
       </Container>
     );
   }
 
-  // TODO: After running a first build, this screen should show the catchAChange screen. But if the user restarts Storybook, it comes back to this screen.
+  // TODO: After running a first build, this screen should show the showCatchAChange screen. But if the user restarts Storybook, it comes back to this screen.
   // Oddly, this seems to be because project.lastBuild is undefined in GraphQL, so at least it doesn't skip out of the onboarding flow.
   // But we'll need some check to see if one build was run to prompt them to make a change and run another
-  if (!localBuildProgress) {
+  if (showInitialBuild && !localBuildProgress) {
     return (
       <Container>
         <Stack>
@@ -100,11 +105,10 @@ export const Onboarding = ({
   }
 
   if (
+    showInitialBuild &&
     localBuildProgress &&
     localBuildProgress.currentStep !== "error" &&
-    localBuildProgress.currentStep !== "complete" &&
-    !catchAChange &&
-    !runningSecondBuild
+    localBuildProgress.currentStep !== "complete"
   ) {
     // When the build is in progress, show the build progress bar
     return (
@@ -114,7 +118,7 @@ export const Onboarding = ({
           <Heading>Get started with visual testing</Heading>
           <Text>
             Take an image snapshot of each story to save their “last known good state” as test
-            baselines.{" "}
+            baselines.
           </Text>
           <BuildProgressInline localBuildProgress={localBuildProgress} />
         </Stack>
@@ -122,10 +126,11 @@ export const Onboarding = ({
     );
   }
 
+  // This doesn't work now that showCatchAChange isn't a state variable
   if (
     localBuildProgress &&
     localBuildProgress.currentStep === "complete" &&
-    !catchAChange &&
+    !showCatchAChange &&
     !runningSecondBuild
   ) {
     return (
@@ -147,12 +152,7 @@ export const Onboarding = ({
     );
   }
 
-  if (
-    localBuildProgress &&
-    localBuildProgress.currentStep === "complete" &&
-    catchAChange &&
-    initialGitHash === gitInfo.uncommittedHash
-  ) {
+  if (showCatchAChange && initialGitHash === gitInfo.uncommittedHash) {
     return (
       <Container>
         <Stack>
@@ -206,13 +206,7 @@ export const Onboarding = ({
   }
 
   // If the first build is done, changes were detected, and the second build hasn't started yet.
-  if (
-    localBuildProgress &&
-    localBuildProgress.currentStep === "complete" &&
-    catchAChange &&
-    initialGitHash !== gitInfo.uncommittedHash &&
-    !runningSecondBuild
-  ) {
+  if (showCatchAChange && initialGitHash !== gitInfo.uncommittedHash && !runningSecondBuild) {
     return (
       <Container>
         <Stack>
@@ -241,10 +235,10 @@ export const Onboarding = ({
   // If the first build is done, changes were detected, and the second build is in progress.
   if (
     localBuildProgress &&
-    catchAChange &&
+    showCatchAChange &&
+    runningSecondBuild &&
     localBuildProgress.currentStep !== "error" &&
-    localBuildProgress.currentStep !== "complete" &&
-    runningSecondBuild
+    localBuildProgress.currentStep !== "complete"
   ) {
     return (
       <Container>
@@ -287,5 +281,20 @@ export const Onboarding = ({
   // What if there are no changes in the latest build? Do we just assume that there are? Do we need to show the onboarding multiple times? At least until there are changes?
 
   // TODO: We shouldn't need a default case like this
-  return <Container>No Screen Selected</Container>;
+  return (
+    <Container>
+      No Screen Selected
+      <br />
+      <br />
+      <span>
+        {JSON.stringify({
+          localBuildProgress,
+          showCatchAChange,
+          showInitialBuild,
+          runningSecondBuild,
+          hasSelectedBuild: !!selectedBuild,
+        })}
+      </span>
+    </Container>
+  );
 };

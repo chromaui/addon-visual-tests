@@ -113,6 +113,7 @@ export const FragmentStatusTestFields = graphql(/* GraphQL */ `
 export const FragmentLastBuildOnBranchTestFields = graphql(/* GraphQL */ `
   fragment LastBuildOnBranchTestFields on Test {
     status
+    result
   }
 `);
 
