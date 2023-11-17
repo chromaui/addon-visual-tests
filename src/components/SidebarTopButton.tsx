@@ -1,4 +1,4 @@
-import { Icons, WithTooltip } from "@storybook/components";
+import { Icons, TooltipNote, WithTooltip } from "@storybook/components";
 import { keyframes, styled } from "@storybook/theming";
 import React, { ComponentProps } from "react";
 
@@ -124,11 +124,17 @@ export const SidebarTopButton = ({
   }
 
   return isOutdated ? (
-    <SidebarIconButton aria-label="Run tests" onClick={() => startBuild()}>
-      <StatusDotWrapper status="notification">
-        <Icons icon="play" />
-      </StatusDotWrapper>
-    </SidebarIconButton>
+    <WithTooltip
+      tooltip={<TooltipNote note="Code changes detected; click to run tests" />}
+      trigger="hover"
+      hasChrome={false}
+    >
+      <SidebarIconButton aria-label="Run tests" onClick={() => startBuild()}>
+        <StatusDotWrapper status="notification">
+          <Icons icon="play" />
+        </StatusDotWrapper>
+      </SidebarIconButton>
+    </WithTooltip>
   ) : (
     <WithTooltip
       trigger="click"

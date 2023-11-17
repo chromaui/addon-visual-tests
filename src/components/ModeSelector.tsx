@@ -21,6 +21,13 @@ const IconWrapper = styled.div(({ theme }) => ({
   },
 }));
 
+const Label = styled.span({
+  display: "none",
+  "@container (min-width: 300px)": {
+    display: "inline-block",
+  },
+});
+
 type ModeData = Pick<TestMode, "name">;
 
 interface ModeSelectorProps {
@@ -67,13 +74,13 @@ export const ModeSelector = ({
       {links ? (
         <TooltipMenu placement="bottom" links={links}>
           {icon}
-          {selectedMode.name}
+          <Label>{selectedMode.name}</Label>
           <ArrowIcon icon="arrowdown" />
         </TooltipMenu>
       ) : (
         <IconWrapper>
           {icon}
-          {selectedMode.name}
+          <Label>{selectedMode.name}</Label>
         </IconWrapper>
       )}
     </WithTooltip>

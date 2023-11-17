@@ -6,6 +6,7 @@ import { BuildProgressInline } from "../../components/BuildProgressBarInline";
 import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
 import { Eyebrow } from "../../components/Eyebrow";
+import { FooterSection } from "../../components/FooterSection";
 import { Heading } from "../../components/Heading";
 import { Section, Sections } from "../../components/layout";
 import { Text as CenterText } from "../../components/Text";
@@ -22,6 +23,7 @@ import { Warnings } from "./Warnings";
 interface BuildResultsProps {
   branch: string;
   dismissBuildError: () => void;
+  isOutdated: boolean;
   localBuildProgress?: LocalBuildProgress;
   switchToLastBuildOnBranch?: () => void;
   storyId: string;
@@ -40,6 +42,7 @@ export const Warning = styled.div(({ theme }) => ({
 export const BuildResults = ({
   branch,
   dismissBuildError,
+  isOutdated,
   localBuildProgress,
   switchToLastBuildOnBranch,
   startDevBuild,
@@ -125,6 +128,7 @@ export const BuildResults = ({
             )}
           </Container>
         </Section>
+        <FooterSection setAccessToken={setAccessToken} />
       </Sections>
     );
   }
@@ -156,6 +160,7 @@ export const BuildResults = ({
             </Button>
           </Container>
         </Section>
+        <FooterSection setAccessToken={setAccessToken} />
       </Sections>
     );
   }
@@ -192,10 +197,11 @@ export const BuildResults = ({
         </Eyebrow>
       )}
 
-      <Section grow hidden={settingsVisible || warningsVisible}>
+      <Section grow last hidden={settingsVisible || warningsVisible}>
         <SnapshotComparison
           hidden={settingsVisible || warningsVisible}
           {...{
+            isOutdated,
             isStarting: isSelectedBuildStarting,
             startDevBuild,
             isBuildFailed,
@@ -208,10 +214,10 @@ export const BuildResults = ({
         />
       </Section>
 
-      <Section grow hidden={!settingsVisible}>
+      <Section grow last hidden={!settingsVisible}>
         <RenderSettings onClose={() => toggleSettings(false)} />
       </Section>
-      <Section grow hidden={!warningsVisible}>
+      <Section grow last hidden={!warningsVisible}>
         <Warnings onClose={() => toggleWarnings(false)} />
       </Section>
     </Sections>

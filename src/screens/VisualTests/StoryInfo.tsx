@@ -29,7 +29,7 @@ const Info = styled.div(({ theme }) => ({
   },
 
   "@container (min-width: 800px)": {
-    margin: "6px 15px",
+    margin: "6px 10px 6px 15px",
     alignItems: "center",
     flexDirection: "row",
 
@@ -37,19 +37,21 @@ const Info = styled.div(({ theme }) => ({
       fontSize: "inherit",
     },
 
+    "[data-hidden-large]": {
+      display: "none",
+    },
+
     "& > span:first-of-type": {
       display: "inline-flex",
       alignItems: "center",
       height: 24,
-      marginRight: 10,
-      paddingRight: 10,
-      borderRight: `1px solid ${theme.appBorderColor}`,
+      marginRight: 6,
     },
   },
 }));
 
-const CTA = styled.div({
-  gridArea: "button",
+const Actions = styled.div({
+  gridArea: "actions",
   display: "flex",
   justifySelf: "end",
   justifyContent: "center",
@@ -165,16 +167,16 @@ export const StoryInfo = ({
         </span>
         <small>
           {modeResults.length > 0 && (
-            <span>
+            <span data-hidden-large>
               {pluralize("mode", modeResults.length, true)}
               {", "}
               {pluralize("browser", browserResults.length, true)}
             </span>
           )}
-          {modeResults.length > 0 && " • "}
+          {modeResults.length > 0 && <span data-hidden-large> • </span>}
           {isInProgress && <span>Test in progress...</span>}
           {!isInProgress && startedAt && (
-            <span title={new Date(startedAt).toUTCString()}>{startedAgo}</span>
+            <span title={new Date(startedAt).toUTCString()}>Ran {startedAgo}</span>
           )}
         </small>
       </Info>
@@ -186,7 +188,7 @@ export const StoryInfo = ({
       {details}
 
       {showButton && (
-        <CTA>
+        <Actions>
           <Button small secondary onClick={startDevBuild} disabled={buttonInProgress}>
             {buttonInProgress ? (
               <ProgressIcon parentComponent="Button" style={{ marginRight: 6 }} />
@@ -195,17 +197,8 @@ export const StoryInfo = ({
             )}
             {isErrored ? "Rerun" : "Run"} tests
           </Button>
-        </CTA>
+        </Actions>
       )}
-
-      {/* Disabled for now until we implement the test screen */}
-      {/* {!isOutdated && changeCount > 0 && (
-          <Col push>
-            <Button small secondary={isPending} tertiary={!isPending}>
-              {isPending ? "Verify changes" : "View changes"}
-            </Button>
-          </Col>
-        )} */}
     </>
   );
 };

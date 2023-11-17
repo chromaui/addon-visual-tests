@@ -3,16 +3,8 @@ import type { API_StatusState } from "@storybook/types";
 import React, { useCallback, useEffect, useState } from "react";
 import { useMutation } from "urql";
 
-import { PANEL_ID } from "../../constants";
 import { getFragment } from "../../gql";
-import {
-  BuildStatus,
-  LastBuildOnBranchBuildFieldsFragment,
-  ReviewTestBatch,
-  ReviewTestInputStatus,
-  TestResult,
-  TestStatus,
-} from "../../gql/graphql";
+import { ReviewTestBatch, ReviewTestInputStatus, TestResult, TestStatus } from "../../gql/graphql";
 import { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from "../../types";
 import { testsToStatusUpdate } from "../../utils/testsToStatusUpdate";
 import { SelectedBuildInfo, updateSelectedBuildInfo } from "../../utils/updateSelectedBuildInfo";
@@ -33,6 +25,7 @@ const createEmptyStoryStatusUpdate = (state: API_StatusState) => {
 };
 
 interface VisualTestsProps {
+  isOutdated: boolean;
   selectedBuildInfo?: SelectedBuildInfo;
   setSelectedBuildInfo: ReturnType<typeof useState<SelectedBuildInfo>>[1];
   dismissBuildError: () => void;
@@ -127,6 +120,7 @@ const useOnboarding = ({ lastBuildOnBranch }: ReturnType<typeof useBuild>) => {
 };
 
 export const VisualTestsWithoutSelectedBuildId = ({
+  isOutdated,
   selectedBuildInfo,
   setSelectedBuildInfo,
   dismissBuildError,
@@ -257,9 +251,12 @@ export const VisualTestsWithoutSelectedBuildId = ({
             hasData,
             hasProject,
             hasSelectedBuild,
-            startDevBuild,
-            localBuildProgress,
             branch: gitInfo.branch,
+            dismissBuildError,
+            isOutdated,
+            localBuildProgress,
+            ...(lastBuildOnBranchIsSelectable && { switchToLastBuildOnBranch }),
+            startDevBuild,
             setAccessToken,
           }}
         />

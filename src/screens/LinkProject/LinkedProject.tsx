@@ -5,9 +5,9 @@ import { useQuery } from "urql";
 
 import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
-import { FooterMenu } from "../../components/FooterMenu";
+import { FooterSection } from "../../components/FooterSection";
 import { Heading } from "../../components/Heading";
-import { Bar, Col, Section, Sections, Text } from "../../components/layout";
+import { Col, Section, Sections, Text } from "../../components/layout";
 import { Stack } from "../../components/Stack";
 import { graphql } from "../../gql";
 import { ProjectQueryQuery } from "../../gql/graphql";
@@ -79,21 +79,22 @@ export const LinkedProject = ({
           </Stack>
         </Container>
       </Section>
-      <Section>
-        <Bar>
-          <Col>
-            {data?.project?.lastBuild && (
-              <Text style={{ marginLeft: 5 }}>
-                Last build: {data.project.lastBuild.number} on branch{" "}
-                {data.project.lastBuild.branch}
-              </Text>
-            )}
-          </Col>
-          <Col push>
-            <FooterMenu setAccessToken={setAccessToken} />
-          </Col>
-        </Bar>
-      </Section>
+      <FooterSection
+        setAccessToken={setAccessToken}
+        render={({ menu }) => (
+          <>
+            <Col>
+              {data?.project?.lastBuild && (
+                <Text style={{ marginLeft: 5 }}>
+                  Last build: {data.project.lastBuild.number} on branch{" "}
+                  {data.project.lastBuild.branch}
+                </Text>
+              )}
+            </Col>
+            <Col push>{menu}</Col>
+          </>
+        )}
+      />
     </Sections>
   );
 };

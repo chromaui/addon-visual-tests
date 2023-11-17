@@ -120,6 +120,7 @@ const meta = {
     },
   },
   args: {
+    isOutdated: false,
     setSelectedBuildInfo: action("setSelectedBuildInfo"),
     dismissBuildError: action("dismissBuildError"),
     gitInfo: {
@@ -753,7 +754,7 @@ export const ToggleSnapshot: Story = {
     ),
   },
   play: playAll(async ({ canvasElement }) => {
-    const button = await findByLabelText(canvasElement, "Switch snapshot");
+    const button = await findByLabelText(canvasElement, "Show baseline snapshot");
     await fireEvent.click(button);
   }),
 } satisfies Story;
@@ -767,7 +768,7 @@ export const Accepting = {
     ),
   },
   play: playAll(async ({ canvasElement }) => {
-    const button = await findByRole(canvasElement, "button", { name: "Accept" });
+    const button = await findByRole(canvasElement, "button", { name: "Accept this story" });
     await fireEvent.click(button);
   }),
 } satisfies Story;
@@ -780,7 +781,7 @@ export const AcceptingFailed = {
     ),
   },
   play: playAll(async ({ canvasElement, argsByTarget }) => {
-    const button = await findByRole(canvasElement, "button", { name: "Accept" });
+    const button = await findByRole(canvasElement, "button", { name: "Accept this story" });
     await fireEvent.click(button);
     await waitFor(async () =>
       expect(argsByTarget["manager-api"].addNotification).toHaveBeenCalled()

@@ -2,6 +2,7 @@ import { styled } from "@storybook/theming";
 
 export const Sections = styled.div<{ hidden?: boolean }>(
   {
+    containerType: "size",
     display: "flex",
     flexDirection: "column",
     height: "100%",
@@ -9,12 +10,9 @@ export const Sections = styled.div<{ hidden?: boolean }>(
   ({ hidden }) => hidden && { display: "none" }
 );
 
-export const Section = styled.div<{ grow?: boolean }>(({ grow, theme }) => ({
+export const Section = styled.div<{ grow?: boolean; last?: boolean }>(({ grow, last, theme }) => ({
   flexGrow: grow ? 1 : "auto",
-  borderBottom: `1px solid ${theme.appBorderColor}`,
-  "&:last-of-type": {
-    borderBottom: 0,
-  },
+  borderBottom: last ? "none" : `1px solid ${theme.appBorderColor}`,
 }));
 
 export const Row = styled.div<{ header?: boolean }>(
@@ -33,7 +31,6 @@ export const Row = styled.div<{ header?: boolean }>(
         height: 40,
         alignItems: "center",
         justifyContent: "space-between",
-        backgroundColor: theme.background.app,
         padding: "5px 15px",
       },
     }

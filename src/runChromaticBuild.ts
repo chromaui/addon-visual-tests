@@ -174,6 +174,8 @@ export const runChromaticBuild = async (
   abortController?.abort();
   abortController = new AbortController();
 
+  process.env.SB_TESTBUILD = "true";
+
   await run({
     // Currently we have to have these flags.
     // We should move the checks to after flags have been parsed into options.
