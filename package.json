@@ -1,6 +1,6 @@
 {
   "name": "@chromaui/addon-visual-tests",
-  "version": "0.0.117",
+  "version": "0.0.118",
   "description": "Visual Testing addon with Chromatic",
   "engines": {
     "node": ">=16.0.0",
