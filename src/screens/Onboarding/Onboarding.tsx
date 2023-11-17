@@ -53,12 +53,14 @@ export const Onboarding = ({
   };
   const [runningSecondBuild, setRunningSecondBuild] = React.useState(false);
 
-  console.log({
-    localBuildProgress,
-    catchAChange,
-    runningSecondBuild,
-    hasSelectedBuild,
-  });
+  React.useEffect(() => {
+    console.log("Inside Onboarding component", {
+      localBuildProgress,
+      catchAChange,
+      runningSecondBuild,
+      hasSelectedBuild,
+    });
+  }, [localBuildProgress, catchAChange, runningSecondBuild, hasSelectedBuild]);
   // TODO: This design for an error in the Onboarding is incomplete
   if (localBuildProgress && localBuildProgress.currentStep === "error") {
     return (
@@ -262,23 +264,22 @@ export const Onboarding = ({
   }
 
   // If the second build has been run and is complete, show the results
+  // TODO: Hmmm this is the same UI as the first build, but if user has already onboarded. Maybe these first steps are just not a part of onboarding?
   if (localBuildProgress && localBuildProgress.currentStep === "complete" && runningSecondBuild) {
     return (
       <Container>
         <Stack>
-          <Heading>You've got the basics down.</Heading>
-          <Text>
-            Any time you want to run tests, tap that button in the sidebar to see exactly what
-            changed across your Storybook.
-          </Text>
+          <Heading>Nice. You saved your stories as a test baseline.</Heading>
+          <Text>This story was indexed and snapshotted in a standardized cloud browser.</Text>
           <img
             style={{ maxWidth: "100%" }}
             src="/example-button-noargs.png"
             alt="Start build button noargs"
           />
         </Stack>
+        <Text>You're ready to start testing!</Text>
         <Button small secondary onClick={onCompleteOnboarding}>
-          Got it
+          Done!
         </Button>
       </Container>
     );

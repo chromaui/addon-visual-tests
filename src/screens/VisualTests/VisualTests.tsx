@@ -3,6 +3,7 @@ import type { API_StatusState } from "@storybook/types";
 import React, { useCallback, useEffect, useState } from "react";
 import { useMutation } from "urql";
 
+import { HAS_COMPLETED_ONBOARDING_KEY } from "../../constants";
 import { getFragment } from "../../gql";
 import { ReviewTestBatch, ReviewTestInputStatus, TestResult, TestStatus } from "../../gql/graphql";
 import { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from "../../types";
@@ -93,11 +94,11 @@ const useReview = ({
 
 const useOnboarding = ({ lastBuildOnBranch }: ReturnType<typeof useBuild>) => {
   const [hasCompletedWalkthrough, setHasCompletedWalkthrough] = React.useState(
-    () => localStorage.getItem("hasCompletedWalkthrough") === "true"
+    () => localStorage.getItem(HAS_COMPLETED_ONBOARDING_KEY) === "true"
   );
   const completeWalkthrough = React.useCallback(() => {
     setHasCompletedWalkthrough(true);
-    localStorage.setItem("hasCompletedWalkthrough", "true");
+    localStorage.setItem(HAS_COMPLETED_ONBOARDING_KEY, "true");
   }, []);
 
   const lastBuildHasChanges = React.useMemo(() => {
@@ -110,8 +111,17 @@ const useOnboarding = ({ lastBuildOnBranch }: ReturnType<typeof useBuild>) => {
     return tests?.some((t) => t.status === TestStatus.Pending && t.result === TestResult.Changed);
   }, [lastBuildOnBranch]);
 
-  const showOnboarding = !lastBuildOnBranch || !lastBuildHasChanges || !hasCompletedWalkthrough;
-
+  const showOnboarding = !hasCompletedWalkthrough && (!lastBuildOnBranch || !lastBuildHasChanges);
+  useEffect(() => {
+    console.log("useOnboarding hook", {
+      showOnboarding,
+      showGuidedTour: !showOnboarding && !hasCompletedWalkthrough,
+      completeWalkthrough,
+      lastBuildOnBranch,
+      lastBuildHasChanges,
+      hasCompletedWalkthrough,
+    });
+  }, [showOnboarding, hasCompletedWalkthrough, completeWalkthrough, lastBuildOnBranch]);
   return {
     showOnboarding,
     showGuidedTour: !showOnboarding && !hasCompletedWalkthrough,
