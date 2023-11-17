@@ -87,24 +87,28 @@ it("Calculates static information correctly", () => {
       "modeResults": [
         {
           "mode": {
+            "globals": {},
             "name": "1200px",
           },
           "result": "EQUAL",
         },
         {
           "mode": {
+            "globals": {},
             "name": "800px",
           },
           "result": "CAPTURE_ERROR",
         },
         {
           "mode": {
+            "globals": {},
             "name": "480px",
           },
           "result": "CHANGED",
         },
         {
           "mode": {
+            "globals": {},
             "name": "1600px",
           },
           "result": "ADDED",

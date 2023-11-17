@@ -19,6 +19,7 @@ import { GitNotFound } from "./screens/GitNotFound/GitNotFound";
 import { LinkedProject } from "./screens/LinkProject/LinkedProject";
 import { LinkingProjectFailed } from "./screens/LinkProject/LinkingProjectFailed";
 import { LinkProject } from "./screens/LinkProject/LinkProject";
+import { ControlsProvider } from "./screens/VisualTests/ControlsContext";
 import { VisualTests } from "./screens/VisualTests/VisualTests";
 import { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from "./types";
 import { client, Provider, useAccessToken } from "./utils/graphQLClient";
@@ -36,6 +37,7 @@ export const Panel = ({ active, api }: PanelProps) => {
 
   const [gitInfo] = useSharedState<GitInfoPayload>(GIT_INFO);
   const [gitInfoError] = useSharedState<Error>(GIT_INFO_ERROR);
+  const [isOutdated] = useSharedState<boolean>(IS_OUTDATED);
   const [localBuildProgress, setLocalBuildProgress] =
     useSharedState<LocalBuildProgress>(LOCAL_BUILD_PROGRESS);
   const [, setOutdated] = useSharedState<boolean>(IS_OUTDATED);
@@ -60,10 +62,12 @@ export const Panel = ({ active, api }: PanelProps) => {
   const [createdProjectId, setCreatedProjectId] = useState<Project["id"]>();
 
   if (gitInfoError) {
+    // eslint-disable-next-line no-console
+    console.error(gitInfoError);
     return (
       <Provider key={PANEL_ID} value={client}>
         <Sections hidden={!active}>
-          <GitNotFound gitInfoError={gitInfoError} />
+          <GitNotFound gitInfoError={gitInfoError} setAccessToken={setAccessToken} />
         </Sections>
       </Provider>
     );
@@ -116,6 +120,7 @@ export const Panel = ({ active, api }: PanelProps) => {
           projectId={projectId}
           projectToken={projectToken}
           configFile={configFile}
+          setAccessToken={setAccessToken}
         />
       </Sections>
     );
@@ -143,17 +148,20 @@ export const Panel = ({ active, api }: PanelProps) => {
   return (
     <Provider key={PANEL_ID} value={client}>
       <Sections hidden={!active}>
-        <VisualTests
-          dismissBuildError={() => setLocalBuildProgress(undefined)}
-          localBuildProgress={localBuildIsRightBranch ? localBuildProgress : undefined}
-          startDevBuild={() => emit(START_BUILD, { accessToken })}
-          setAccessToken={setAccessToken}
-          setOutdated={setOutdated}
-          updateBuildStatus={updateBuildStatus}
-          projectId={projectId}
-          gitInfo={gitInfo}
-          storyId={storyId}
-        />
+        <ControlsProvider>
+          <VisualTests
+            dismissBuildError={() => setLocalBuildProgress(undefined)}
+            isOutdated={!!isOutdated}
+            localBuildProgress={localBuildIsRightBranch ? localBuildProgress : undefined}
+            startDevBuild={() => emit(START_BUILD, { accessToken })}
+            setAccessToken={setAccessToken}
+            setOutdated={setOutdated}
+            updateBuildStatus={updateBuildStatus}
+            projectId={projectId}
+            gitInfo={gitInfo}
+            storyId={storyId}
+          />
+        </ControlsProvider>
       </Sections>
     </Provider>
   );

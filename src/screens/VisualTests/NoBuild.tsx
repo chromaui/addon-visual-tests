@@ -7,6 +7,7 @@ import { BuildProgressInline } from "../../components/BuildProgressBarInline";
 import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
 import { FooterMenu } from "../../components/FooterMenu";
+import { FooterSection } from "../../components/FooterSection";
 import { Heading } from "../../components/Heading";
 import { Bar, Col, Row, Section, Sections, Text } from "../../components/layout";
 import { Text as CenterText } from "../../components/Text";
@@ -17,6 +18,7 @@ const buildFailureUrl = "https://www.chromatic.com/docs/setup/#troubleshooting";
 const ErrorContainer = styled.div(({ theme }) => ({
   display: "block",
   minWidth: "80%",
+  color: theme.color.darker,
   background: "#FFF5CF",
   border: "1px solid #E69D0033",
   borderRadius: "2px",
@@ -84,13 +86,35 @@ export const NoBuild = ({
   };
 
   const getContent = () => {
-    if (queryError) {
+    if (queryError?.networkError) {
       return (
-        <Row>
-          <Col>
-            <Text>{queryError.message}</Text>
-          </Col>
-        </Row>
+        <Container>
+          <Heading>Network error</Heading>
+          <CenterText>{queryError.networkError.message}</CenterText>
+          <br />
+          {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+          <Link isButton onClick={() => setAccessToken(null)} withArrow>
+            Log out
+          </Link>
+        </Container>
+      );
+    }
+
+    if (queryError?.graphQLErrors?.length) {
+      return (
+        <Container>
+          <Heading>{queryError.graphQLErrors[0].message}</Heading>
+          <CenterText>
+            {queryError.graphQLErrors[0].extensions.code === "FORBIDDEN"
+              ? "You may have insufficient permissions. Try logging out and back in again."
+              : "Try logging out or clear your browser's local storage."}
+          </CenterText>
+          <br />
+          {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+          <Link isButton onClick={() => setAccessToken(null)} withArrow>
+            Log out
+          </Link>
+        </Container>
       );
     }
 
@@ -131,20 +155,19 @@ export const NoBuild = ({
   return (
     <Sections>
       <Section grow>{getContent()}</Section>
-      {hasData && !queryError && hasProject && (
-        <Section>
-          <Bar>
+      <FooterSection
+        setAccessToken={setAccessToken}
+        render={({ menu }) => (
+          <>
             <Col>
-              <Text style={{ marginLeft: 5 }}>
-                {hasData && !queryError ? `Waiting for build on ${branch}` : "Loading..."}
-              </Text>
+              {hasData && !queryError && hasProject && (
+                <Text style={{ marginLeft: 5 }}>Waiting for build on {branch}</Text>
+              )}
             </Col>
-            <Col push>
-              <FooterMenu setAccessToken={setAccessToken} />
-            </Col>
-          </Bar>
-        </Section>
-      )}
+            <Col push>{menu}</Col>
+          </>
+        )}
+      />
     </Sections>
   );
 };

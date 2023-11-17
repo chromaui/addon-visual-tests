@@ -1,38 +1,41 @@
 import { Loader } from "@storybook/components";
 import { Link } from "@storybook/design-system";
 import { styled } from "@storybook/theming";
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 import { Text } from "../../components/layout";
 import { SnapshotImage } from "../../components/SnapshotImage";
-import {
-  ComparisonResult,
-  ReviewTestBatch,
-  SelectedBuildFieldsFragment,
-  StoryTestFieldsFragment,
-  TestResult,
-  TestStatus,
-} from "../../gql/graphql";
+import { ComparisonResult, TestResult, TestStatus } from "../../gql/graphql";
 import { summarizeTests } from "../../utils/summarizeTests";
-import { useTests } from "../../utils/useTests";
+import { useSelectedBuildState, useSelectedStoryState } from "./BuildContext";
 import { BuildResultsFooter } from "./BuildResultsFooter";
+import { useControlsDispatch, useControlsState } from "./ControlsContext";
 import { SnapshotControls } from "./SnapshotControls";
 import { StoryInfo } from "./StoryInfo";
 
 export const Grid = styled.div(({ theme }) => ({
   display: "grid",
   gridTemplateAreas: `
-    "info button"
-    "controls actions"
+    "info info"
+    "actions actions"
+    "label controls"
   `,
-  gridTemplateColumns: "1fr auto",
-  gridTemplateRows: "auto 40px",
+  gridTemplateColumns: "1fr fit-content(50%)",
+  gridTemplateRows: "auto auto 40px",
   borderBottom: `1px solid ${theme.appBorderColor}`,
 
+  "@container (min-width: 300px)": {
+    gridTemplateAreas: `
+      "info actions"
+      "label controls"
+    `,
+    gridTemplateColumns: "1fr auto",
+    gridTemplateRows: "auto 40px",
+  },
+
   "@container (min-width: 800px)": {
-    backgroundColor: theme.background.app,
-    gridTemplateAreas: `"info controls actions button"`,
-    gridTemplateColumns: "1fr auto auto auto",
+    gridTemplateAreas: `"info label controls actions"`,
+    gridTemplateColumns: "auto 1fr auto auto",
     gridTemplateRows: "40px",
   },
 }));
@@ -46,7 +49,6 @@ const ParentGrid = styled.div(({ theme }) => ({
   `,
   gridTemplateColumns: "1fr",
   gridTemplateRows: "auto 1fr auto",
-  backgroundColor: theme.background.app,
   height: "100%",
 
   "&[hidden]": {
@@ -59,7 +61,11 @@ const HeaderSection = styled.div(({ theme }) => ({
   position: "sticky",
   zIndex: 1,
   top: 0,
-  background: theme.background.app,
+  background: theme.background.content,
+
+  "@container (min-width: 800px)": {
+    background: theme.background.app,
+  },
 }));
 
 const MainSection = styled.div(({ theme }) => ({
@@ -74,7 +80,7 @@ const FooterSection = styled.div(({ theme }) => ({
   zIndex: 1,
   bottom: 0,
   borderTop: `1px solid ${theme.appBorderColor}`,
-  background: theme.background.app,
+  background: theme.background.content,
 }));
 
 const Divider = styled.div(({ children, theme }) => ({
@@ -108,61 +114,40 @@ const WarningText = styled(Text)(({ theme }) => ({
   color: theme.color.darkest,
 }));
 
-interface SnapshotSectionProps {
-  tests?: StoryTestFieldsFragment[];
-  startedAt: Date;
+interface SnapshotComparisonProps {
+  isOutdated: boolean;
   isStarting: boolean;
   startDevBuild: () => void;
   isBuildFailed: boolean;
   shouldSwitchToLastBuildOnBranch: boolean;
   switchToLastBuildOnBranch?: () => void;
-  userCanReview: boolean;
-  isReviewable: boolean;
-  isReviewing: boolean;
-  baselineImageVisible: boolean;
-  toggleBaselineImage: () => void;
-  onAccept: (testId: StoryTestFieldsFragment["id"], batch?: ReviewTestBatch) => void;
-  onUnaccept: (testId: StoryTestFieldsFragment["id"]) => void;
   setAccessToken: (accessToken: string | null) => void;
-  selectedBuild: SelectedBuildFieldsFragment;
-  setSettingsVisible: (visible: boolean) => void;
-  setWarningsVisible: (visible: boolean) => void;
-  settingsVisible: boolean;
-  warningsVisible: boolean;
   hidden?: boolean;
   storyId: string;
 }
 
 export const SnapshotComparison = ({
-  tests = [],
-  startedAt,
+  isOutdated,
   isStarting,
   startDevBuild,
   isBuildFailed,
   shouldSwitchToLastBuildOnBranch,
   switchToLastBuildOnBranch,
-  userCanReview,
-  isReviewable,
-  isReviewing,
-  onAccept,
-  onUnaccept,
-  baselineImageVisible,
-  toggleBaselineImage,
   setAccessToken,
-  selectedBuild,
-  setSettingsVisible,
-  setWarningsVisible,
-  settingsVisible,
-  warningsVisible,
   hidden,
   storyId,
-}: SnapshotSectionProps) => {
-  const [diffVisible, setDiffVisible] = useState(true);
-  const [focusVisible] = useState(false);
-  const testControls = useTests(tests);
+}: SnapshotComparisonProps) => {
+  const { baselineImageVisible, diffVisible, focusVisible } = useControlsState();
+  const { toggleBaselineImage, toggleSettings, toggleWarnings } = useControlsDispatch();
+
+  const selectedBuild = useSelectedBuildState();
+  const startedAt: Date = "startedAt" in selectedBuild && selectedBuild.startedAt;
+
+  const selectedStory = useSelectedStoryState();
+  const { tests } = selectedStory;
 
   const prevStoryIdRef = React.useRef(storyId);
-  const prevSelectedComparisonIdRef = React.useRef(testControls.selectedComparison?.id);
+  const prevSelectedComparisonIdRef = React.useRef(selectedStory.selectedComparison?.id);
   const prevSelectedBuildIdRef = React.useRef(selectedBuild.id);
 
   React.useEffect(() => {
@@ -170,24 +155,23 @@ export const SnapshotComparison = ({
     // This is most important for the baseline image toggle because baseline can not exist for a different story.
     if (
       prevStoryIdRef.current !== storyId ||
-      prevSelectedComparisonIdRef.current !== testControls.selectedComparison?.id ||
+      prevSelectedComparisonIdRef.current !== selectedStory.selectedComparison?.id ||
       prevSelectedBuildIdRef.current !== selectedBuild.id
     ) {
-      if (baselineImageVisible) toggleBaselineImage();
-      setSettingsVisible(false);
-      setWarningsVisible(false);
+      toggleBaselineImage(false);
+      toggleSettings(false);
+      toggleWarnings(false);
     }
-    prevSelectedComparisonIdRef.current = testControls.selectedComparison?.id;
+    prevSelectedComparisonIdRef.current = selectedStory.selectedComparison?.id;
     prevStoryIdRef.current = storyId;
     prevSelectedBuildIdRef.current = selectedBuild.id;
   }, [
-    baselineImageVisible,
     selectedBuild.id,
-    setSettingsVisible,
-    setWarningsVisible,
     storyId,
-    testControls,
+    selectedStory,
     toggleBaselineImage,
+    toggleSettings,
+    toggleWarnings,
   ]);
 
   const storyInfo = (
@@ -205,12 +189,21 @@ export const SnapshotComparison = ({
   );
 
   if (isStarting || !tests.length) {
-    return <Grid>{storyInfo}</Grid>;
+    return (
+      <ParentGrid hidden={hidden}>
+        <HeaderSection>
+          <Grid>{storyInfo}</Grid>
+        </HeaderSection>
+        <FooterSection>
+          <BuildResultsFooter setAccessToken={setAccessToken} />
+        </FooterSection>
+      </ParentGrid>
+    );
   }
 
   const testSummary = summarizeTests(tests);
   const { isInProgress } = testSummary;
-  const { selectedTest, selectedComparison } = testControls;
+  const { selectedTest, selectedComparison } = selectedStory;
 
   // isNewStory is when the story itself is added and all tests should also be added
   const isNewStory = tests.every(
@@ -240,13 +233,7 @@ export const SnapshotComparison = ({
       <HeaderSection>
         <Grid>
           {storyInfo}
-
-          <SnapshotControls
-            {...testControls}
-            {...testSummary}
-            {...{ diffVisible, setDiffVisible }}
-            {...{ userCanReview, isReviewable, isReviewing, onAccept, onUnaccept }}
-          />
+          <SnapshotControls isOutdated={isOutdated} startDevBuild={startDevBuild} />
         </Grid>
       </HeaderSection>
 
@@ -288,12 +275,11 @@ export const SnapshotComparison = ({
             storyName={selectedTest.story?.name}
             testUrl={selectedTest.webUrl}
             comparisonResult={selectedComparison.result ?? undefined}
-            captureImage={
-              baselineImageVisible
-                ? selectedComparison.baseCapture?.captureImage ?? undefined
-                : selectedComparison.headCapture?.captureImage ?? undefined
-            }
+            latestImage={selectedComparison.headCapture?.captureImage ?? undefined}
+            baselineImage={selectedComparison.baseCapture?.captureImage ?? undefined}
+            baselineImageVisible={baselineImageVisible}
             diffImage={selectedComparison.captureDiff?.diffImage ?? undefined}
+            focusImage={selectedComparison.captureDiff?.focusImage ?? undefined}
             diffVisible={diffVisible}
             focusVisible={focusVisible}
           />
@@ -309,17 +295,7 @@ export const SnapshotComparison = ({
         )}
       </MainSection>
       <FooterSection>
-        <BuildResultsFooter
-          hasBaselineSnapshot={!!selectedComparison?.baseCapture?.captureImage}
-          setAccessToken={setAccessToken}
-          baselineImageVisible={baselineImageVisible}
-          selectedBuild={selectedBuild}
-          toggleBaselineImage={toggleBaselineImage}
-          setSettingsVisible={setSettingsVisible}
-          setWarningsVisible={setWarningsVisible}
-          settingsVisible={settingsVisible}
-          warningsVisible={warningsVisible}
-        />
+        <BuildResultsFooter setAccessToken={setAccessToken} {...testSummary} />
       </FooterSection>
     </ParentGrid>
   );

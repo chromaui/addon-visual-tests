@@ -1,6 +1,6 @@
 {
   "name": "@chromaui/addon-visual-tests",
-  "version": "0.0.113",
+  "version": "0.0.117",
   "description": "Visual Testing addon with Chromatic",
   "engines": {
     "node": ">=16.0.0",
@@ -102,6 +102,7 @@
     "msw": "^2.0.0",
     "msw-storybook-addon": "2.0.0--canary.122.b3ed3b1.0",
     "npm-run-all": "^4.1.5",
+    "polished": "^4.2.2",
     "prettier": "^2.8.8",
     "prompts": "^2.4.2",
     "prop-types": "^15.8.1",

@@ -1,44 +1,33 @@
-import { Icons, Link, TooltipNote, WithTooltip } from "@storybook/components";
+import { Icons, Link } from "@storybook/components";
 import { styled } from "@storybook/theming";
-import React, { useState } from "react";
+import React from "react";
 
 import { BuildProgressInline } from "../../components/BuildProgressBarInline";
 import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
 import { Eyebrow } from "../../components/Eyebrow";
+import { FooterSection } from "../../components/FooterSection";
 import { Heading } from "../../components/Heading";
 import { Section, Sections } from "../../components/layout";
 import { Text as CenterText } from "../../components/Text";
-import { getFragment } from "../../gql";
-import {
-  BuildStatus,
-  LastBuildOnBranchBuildFieldsFragment,
-  ReviewTestBatch,
-  SelectedBuildFieldsFragment,
-  StoryTestFieldsFragment,
-  TestResult,
-} from "../../gql/graphql";
+import { BuildStatus, TestResult } from "../../gql/graphql";
 import { LocalBuildProgress } from "../../types";
+import { useBuildState, useSelectedBuildState, useSelectedStoryState } from "./BuildContext";
 import { BuildEyebrow } from "./BuildEyebrow";
-import { FragmentStoryTestFields } from "./graphql";
+import { useControlsDispatch, useControlsState } from "./ControlsContext";
 import { RenderSettings } from "./RenderSettings";
+import { useReviewTestState } from "./ReviewTestContext";
 import { SnapshotComparison } from "./SnapshotComparison";
 import { Warnings } from "./Warnings";
 
 interface BuildResultsProps {
   branch: string;
   dismissBuildError: () => void;
+  isOutdated: boolean;
   localBuildProgress?: LocalBuildProgress;
-  selectedBuild: SelectedBuildFieldsFragment;
-  storyId: string;
-  lastBuildOnBranch?: LastBuildOnBranchBuildFieldsFragment;
-  lastBuildOnBranchCompletedStory: boolean;
   switchToLastBuildOnBranch?: () => void;
+  storyId: string;
   startDevBuild: () => void;
-  userCanReview: boolean;
-  isReviewing: boolean;
-  onAccept: (testId: StoryTestFieldsFragment["id"], batch?: ReviewTestBatch) => void;
-  onUnaccept: (testId: string) => Promise<void>;
   setAccessToken: (accessToken: string | null) => void;
 }
 
@@ -53,40 +42,33 @@ export const Warning = styled.div(({ theme }) => ({
 export const BuildResults = ({
   branch,
   dismissBuildError,
+  isOutdated,
   localBuildProgress,
-  lastBuildOnBranch,
-  lastBuildOnBranchCompletedStory,
   switchToLastBuildOnBranch,
   startDevBuild,
-  userCanReview,
-  isReviewing,
-  onAccept,
-  onUnaccept,
-  selectedBuild,
   storyId,
   setAccessToken,
 }: BuildResultsProps) => {
-  const [settingsVisible, setSettingsVisible] = useState(false);
-  const [warningsVisible, setWarningsVisible] = useState(false);
-  const [baselineImageVisible, setBaselineImageVisible] = useState(false);
-  const toggleBaselineImage = () => setBaselineImageVisible(!baselineImageVisible);
+  const { settingsVisible, warningsVisible } = useControlsState();
+  const { toggleSettings, toggleWarnings } = useControlsDispatch();
+
+  const { lastBuildOnBranch, lastBuildOnBranchIsReady, lastBuildOnBranchIsSelectable } =
+    useBuildState();
+
+  const selectedBuild = useSelectedBuildState();
+  const selectedStory = useSelectedStoryState();
+
+  const { buildIsReviewable, userCanReview } = useReviewTestState();
 
   const isLocalBuildInProgress =
-    localBuildProgress && localBuildProgress.currentStep !== "complete";
+    !!localBuildProgress && localBuildProgress.currentStep !== "complete";
 
-  const storyTests = [
-    ...getFragment(
-      FragmentStoryTestFields,
-      selectedBuild && "testsForStory" in selectedBuild && selectedBuild.testsForStory
-        ? selectedBuild.testsForStory.nodes
-        : []
-    ),
-  ];
-
-  const isReviewable = lastBuildOnBranch?.id === selectedBuild?.id;
-  const isStorySuperseded = !isReviewable && lastBuildOnBranchCompletedStory;
   // Do we want to encourage them to switch to the next build?
-  const shouldSwitchToLastBuildOnBranch = isStorySuperseded && !!switchToLastBuildOnBranch;
+  const shouldSwitchToLastBuildOnBranch =
+    !buildIsReviewable &&
+    lastBuildOnBranchIsReady &&
+    lastBuildOnBranchIsSelectable &&
+    !!switchToLastBuildOnBranch;
 
   const lastBuildOnBranchInProgress = lastBuildOnBranch?.status === BuildStatus.InProgress;
   const showBuildStatus =
@@ -94,7 +76,7 @@ export const BuildResults = ({
     isLocalBuildInProgress ||
     // Even if there's no build running, we need to tell them why they can't review, unless
     // the story is superseded and the UI is already telling them
-    (!isReviewable && !shouldSwitchToLastBuildOnBranch);
+    (!buildIsReviewable && !shouldSwitchToLastBuildOnBranch);
   const localBuildProgressIsLastBuildOnBranch =
     localBuildProgress && localBuildProgress?.buildId === lastBuildOnBranch?.id;
 
@@ -112,13 +94,12 @@ export const BuildResults = ({
     />
   );
 
-  // If there are no tests yet, there is no baseline for this story. User needs to create one.
-  const isCompletelyNewStory = "testsForStory" in selectedBuild && storyTests.length === 0;
+  const isNewStory = selectedStory?.hasTests && selectedStory?.tests.length === 0;
 
   const isLocalBuildProgressOnSelectedBuild =
     selectedBuild.id !== `Build:${localBuildProgress?.buildId}`;
 
-  if (isCompletelyNewStory) {
+  if (isNewStory) {
     return (
       <Sections>
         <Section grow>
@@ -147,11 +128,12 @@ export const BuildResults = ({
             )}
           </Container>
         </Section>
+        <FooterSection setAccessToken={setAccessToken} />
       </Sections>
     );
   }
   // It shouldn't be possible for one test to be skipped but not all of them
-  const isSkipped = !!storyTests?.find((t) => t.result === TestResult.Skipped);
+  const isSkipped = !!selectedStory?.tests?.find((t) => t.result === TestResult.Skipped);
   if (isSkipped) {
     return (
       <Sections>
@@ -178,19 +160,19 @@ export const BuildResults = ({
             </Button>
           </Container>
         </Section>
+        <FooterSection setAccessToken={setAccessToken} />
       </Sections>
     );
   }
 
   const { status } = selectedBuild;
-  const startedAt = "startedAt" in selectedBuild && selectedBuild.startedAt;
   const isSelectedBuildStarting = [
     BuildStatus.Announced,
     BuildStatus.Published,
     BuildStatus.Prepared,
   ].includes(status);
   const isBuildFailed = status === BuildStatus.Failed;
-  const isReviewLocked = status === BuildStatus.Pending && (!userCanReview || !isReviewable);
+  const isReviewLocked = status === BuildStatus.Pending && (!userCanReview || !buildIsReviewable);
 
   return (
     <Sections>
@@ -215,40 +197,28 @@ export const BuildResults = ({
         </Eyebrow>
       )}
 
-      <Section grow hidden={settingsVisible || warningsVisible}>
+      <Section grow last hidden={settingsVisible || warningsVisible}>
         <SnapshotComparison
           hidden={settingsVisible || warningsVisible}
           {...{
-            tests: storyTests,
-            startedAt,
+            isOutdated,
             isStarting: isSelectedBuildStarting,
             startDevBuild,
             isBuildFailed,
             shouldSwitchToLastBuildOnBranch,
             switchToLastBuildOnBranch,
-            userCanReview,
-            isReviewable,
-            isReviewing,
-            onAccept,
-            onUnaccept,
-            baselineImageVisible,
-            toggleBaselineImage,
             selectedBuild,
-            setSettingsVisible,
-            settingsVisible,
-            setWarningsVisible,
-            warningsVisible,
             setAccessToken,
             storyId,
           }}
         />
       </Section>
 
-      <Section grow hidden={!settingsVisible}>
-        <RenderSettings onClose={() => setSettingsVisible(false)} />
+      <Section grow last hidden={!settingsVisible}>
+        <RenderSettings onClose={() => toggleSettings(false)} />
       </Section>
-      <Section grow hidden={!warningsVisible}>
-        <Warnings onClose={() => setWarningsVisible(false)} />
+      <Section grow last hidden={!warningsVisible}>
+        <Warnings onClose={() => toggleWarnings(false)} />
       </Section>
     </Sections>
   );

@@ -13,17 +13,28 @@ import { StatusDot, StatusDotWrapper } from "./StatusDot";
 import { TooltipMenu } from "./TooltipMenu";
 
 const browserIcons = {
-  [Browser.Chrome]: <ChromeIcon alt="Chrome" aria-label="Chrome" />,
-  [Browser.Firefox]: <FirefoxIcon alt="Firefox" aria-label="Firefox" />,
-  [Browser.Safari]: <SafariIcon alt="Safari" aria-label="Safari" />,
-  [Browser.Edge]: <EdgeIcon alt="Edge" aria-label="Edge" />,
+  [Browser.Chrome]: <ChromeIcon alt="Chrome" />,
+  [Browser.Firefox]: <FirefoxIcon alt="Firefox" />,
+  [Browser.Safari]: <SafariIcon alt="Safari" />,
+  [Browser.Edge]: <EdgeIcon alt="Edge" />,
 } as const;
 
-const IconWrapper = styled.div({
+const IconWrapper = styled.div(({ theme }) => ({
+  display: "inline-flex",
+  alignItems: "center",
+  gap: 6,
   height: 16,
   margin: "6px 7px",
+  color: `${theme.color.defaultText}99`,
   svg: {
     verticalAlign: "top",
+  },
+}));
+
+const Label = styled.span({
+  display: "none",
+  "@container (min-width: 300px)": {
+    display: "inline-block",
   },
 });
 
@@ -79,10 +90,14 @@ export const BrowserSelector = ({
       {links ? (
         <TooltipMenu placement="bottom" links={links}>
           {icon}
+          <Label>{selectedBrowser.name}</Label>
           <ArrowIcon icon="arrowdown" />
         </TooltipMenu>
       ) : (
-        <IconWrapper>{icon}</IconWrapper>
+        <IconWrapper>
+          {icon}
+          <Label>{selectedBrowser.name}</Label>
+        </IconWrapper>
       )}
     </WithTooltip>
   );

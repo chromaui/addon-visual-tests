@@ -1,3 +1,52 @@
+# v0.0.117 (Fri Nov 17 2023)
+
+#### 🐛 Bug Fix
+
+- UI/UX adjustments and fixes [#148](https://github.com/chromaui/addon-visual-tests/pull/148) ([@ghengeveld](https://github.com/ghengeveld) info@ghengeveld.nl [@chromatic-support](https://github.com/chromatic-support))
+
+#### Authors: 2
+
+- [@chromatic-support](https://github.com/chromatic-support)
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.116 (Mon Nov 13 2023)
+
+#### 🐛 Bug Fix
+
+- Refactor state management to useContext and useReducer [#138](https://github.com/chromaui/addon-visual-tests/pull/138) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.115 (Thu Nov 09 2023)
+
+#### 🐛 Bug Fix
+
+- Explain the `No Access` error and offer a way out [#146](https://github.com/chromaui/addon-visual-tests/pull/146) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v0.0.114 (Wed Nov 08 2023)
+
+#### 🐛 Bug Fix
+
+- Filter `lastBuildOnBranch` by `repositoryOwnerName` rather than `slug` [#142](https://github.com/chromaui/addon-visual-tests/pull/142) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v0.0.113 (Fri Nov 03 2023)
 
 #### 🐛 Bug Fix

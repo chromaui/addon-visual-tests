@@ -5,8 +5,8 @@ import { action } from "@storybook/addon-actions";
 import { expect } from "@storybook/jest";
 import type { Meta, StoryObj } from "@storybook/react";
 import {
+  findByLabelText,
   findByRole,
-  findByTestId,
   fireEvent,
   screen,
   userEvent,
@@ -28,10 +28,12 @@ import {
   withGraphQLMutationParameters,
   withGraphQLQueryParameters,
 } from "../../utils/gqlStoryHelpers";
-import { storyWrapper } from "../../utils/graphQLClient";
+import { GraphQLClientProvider } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
 import { makeComparison, makeTest, makeTests } from "../../utils/storyData";
+import { storyWrapper } from "../../utils/storyWrapper";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
+import { ControlsProvider } from "./ControlsContext";
 import { QueryBuild } from "./graphql";
 import {
   acceptedBuild,
@@ -109,7 +111,7 @@ type StoryArgs = Parameters<typeof VisualTestsWithoutSelectedBuildId>[0] & {
 const meta = {
   title: "screens/VisualTests/VisualTests",
   component: VisualTestsWithoutSelectedBuildId,
-  decorators: [storyWrapper],
+  decorators: [storyWrapper(ControlsProvider), storyWrapper(GraphQLClientProvider)],
   parameters: { chromatic: { modes: panelModes } },
   argTypes: {
     addNotification: { type: "function", target: "manager-api" },
@@ -118,6 +120,7 @@ const meta = {
     },
   },
   args: {
+    isOutdated: false,
     setSelectedBuildInfo: action("setSelectedBuildInfo"),
     dismissBuildError: action("dismissBuildError"),
     gitInfo: {
@@ -152,11 +155,11 @@ export const Loading = {
   },
 } satisfies Story;
 
-export const GraphQLError = {
+export const NotFound = {
   args: { $graphql: {} },
   parameters: {
     ...withGraphQLQueryParameters("AddonVisualTestsBuild", () =>
-      HttpResponse.json({ errors: [{ message: "Something went wrong on the server" }] })
+      HttpResponse.json({ data: { project: null } } as any)
     ),
   },
 } satisfies Story;
@@ -165,7 +168,25 @@ export const NoAccess = {
   args: { $graphql: {} },
   parameters: {
     ...withGraphQLQueryParameters("AddonVisualTestsBuild", () =>
-      HttpResponse.json({ data: { project: null } } as any)
+      HttpResponse.json({
+        errors: [
+          {
+            extensions: { code: "FORBIDDEN" },
+            locations: [{ line: 13, column: 3 }],
+            message: "No Access",
+            path: ["selectedBuild"],
+          },
+        ],
+      } as any)
+    ),
+  },
+} satisfies Story;
+
+export const ServerError = {
+  args: { $graphql: {} },
+  parameters: {
+    ...withGraphQLQueryParameters("AddonVisualTestsBuild", () =>
+      HttpResponse.json({ errors: [{ message: "Something went wrong on the server" }] })
     ),
   },
 } satisfies Story;
@@ -733,7 +754,7 @@ export const ToggleSnapshot: Story = {
     ),
   },
   play: playAll(async ({ canvasElement }) => {
-    const button = await findByTestId(canvasElement, "button-toggle-snapshot");
+    const button = await findByLabelText(canvasElement, "Show baseline snapshot");
     await fireEvent.click(button);
   }),
 } satisfies Story;
@@ -747,7 +768,7 @@ export const Accepting = {
     ),
   },
   play: playAll(async ({ canvasElement }) => {
-    const button = await findByRole(canvasElement, "button", { name: "Accept" });
+    const button = await findByRole(canvasElement, "button", { name: "Accept this story" });
     await fireEvent.click(button);
   }),
 } satisfies Story;
@@ -760,7 +781,7 @@ export const AcceptingFailed = {
     ),
   },
   play: playAll(async ({ canvasElement, argsByTarget }) => {
-    const button = await findByRole(canvasElement, "button", { name: "Accept" });
+    const button = await findByRole(canvasElement, "button", { name: "Accept this story" });
     await fireEvent.click(button);
     await waitFor(async () =>
       expect(argsByTarget["manager-api"].addNotification).toHaveBeenCalled()
