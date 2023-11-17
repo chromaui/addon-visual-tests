@@ -17,7 +17,6 @@ export const ProgressIcon = styled.div<{ parentComponent?: "Button" | "IconButto
     borderBottomColor: "#25ccfd",
     borderRightColor: theme.base === "dark" ? "#00aaff" : "#58faf9",
     borderRadius: "100%",
-    cursor: "progress",
     transform: "translate3d(0, 0, 0)",
   }),
   ({ parentComponent }) =>

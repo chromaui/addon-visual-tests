@@ -7,6 +7,7 @@ import { BuildProgressInline } from "../../components/BuildProgressBarInline";
 import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
 import { FooterMenu } from "../../components/FooterMenu";
+import { FooterSection } from "../../components/FooterSection";
 import { Heading } from "../../components/Heading";
 import { Bar, Col, Row, Section, Sections, Text } from "../../components/layout";
 import { Text as CenterText } from "../../components/Text";
@@ -17,6 +18,7 @@ const buildFailureUrl = "https://www.chromatic.com/docs/setup/#troubleshooting";
 const ErrorContainer = styled.div(({ theme }) => ({
   display: "block",
   minWidth: "80%",
+  color: theme.color.darker,
   background: "#FFF5CF",
   border: "1px solid #E69D0033",
   borderRadius: "2px",
@@ -153,20 +155,19 @@ export const NoBuild = ({
   return (
     <Sections>
       <Section grow>{getContent()}</Section>
-      {hasData && !queryError && hasProject && (
-        <Section>
-          <Bar>
+      <FooterSection
+        setAccessToken={setAccessToken}
+        render={({ menu }) => (
+          <>
             <Col>
-              <Text style={{ marginLeft: 5 }}>
-                {hasData && !queryError ? `Waiting for build on ${branch}` : "Loading..."}
-              </Text>
+              {hasData && !queryError && hasProject && (
+                <Text style={{ marginLeft: 5 }}>Waiting for build on {branch}</Text>
+              )}
             </Col>
-            <Col push>
-              <FooterMenu setAccessToken={setAccessToken} />
-            </Col>
-          </Bar>
-        </Section>
-      )}
+            <Col push>{menu}</Col>
+          </>
+        )}
+      />
     </Sections>
   );
 };

@@ -2,6 +2,7 @@ import { action } from "@storybook/addon-actions";
 import type { Meta, StoryObj } from "@storybook/react";
 import { findByRole, fireEvent, screen, userEvent, within } from "@storybook/testing-library";
 import type { StoryContext } from "@storybook/types";
+import { delay, http } from "msw";
 import React, { ComponentProps } from "react";
 
 import {
@@ -56,6 +57,7 @@ const meta = {
   ],
   args: {
     storyId: "button--primary",
+    isOutdated: false,
     isStarting: false,
     isBuildFailed: false,
     shouldSwitchToLastBuildOnBranch: false,
@@ -92,7 +94,31 @@ export const InProgress = {
   },
 } satisfies Story;
 
+export const Loading = {
+  parameters: {
+    msw: {
+      handlers: [http.get("/B.png", () => delay("infinite"))],
+    },
+  },
+} satisfies Story;
+
 export const Default = {} satisfies Story;
+
+export const Spotlight = {
+  play: playAll(async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = await canvas.findByRole("button", { name: "Show spotlight" });
+    await userEvent.click(button);
+  }),
+} satisfies Story;
+
+export const SpotlightOnly = {
+  play: playAll(Spotlight, async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = await canvas.findByRole("button", { name: "Hide diff" });
+    await userEvent.click(button);
+  }),
+} satisfies Story;
 
 /**
  * Sort of confusing situation where the only comparison with changes (1200px/Safari) is on the
@@ -142,8 +168,17 @@ export const StoryAdded: Story = {
 
 export const ShowingBaseline: Story = {
   play: playAll(async ({ canvasElement }) => {
-    fireEvent.click(await findByRole(canvasElement, "button", { name: "Switch snapshot" }));
+    fireEvent.click(await findByRole(canvasElement, "button", { name: "Show baseline snapshot" }));
   }),
+} satisfies Story;
+
+export const BaselineLoading: Story = {
+  ...ShowingBaseline,
+  parameters: {
+    msw: {
+      handlers: [http.get("/A.png", () => delay("infinite"))],
+    },
+  },
 } satisfies Story;
 
 export const NoBaseline: Story = {
@@ -160,7 +195,7 @@ export const NoBaseline: Story = {
       }),
     ]),
   },
-};
+} satisfies Story;
 
 export const SwitchingMode = {
   parameters: {

@@ -53,7 +53,7 @@ export const FragmentLastBuildOnBranchBuildFields = graphql(/* GraphQL */ `
     }
     ... on CompletedBuild {
       result
-      testsForStatus: tests(statuses: $testStatuses) {
+      testsForStatus: tests(first: 1000, statuses: $testStatuses) {
         nodes {
           ...StatusTestFields
         }
@@ -132,6 +132,10 @@ export const FragmentStoryTestFields = graphql(/* GraphQL */ `
           imageUrl
           imageWidth
         }
+        focusImage(signed: true) {
+          imageUrl
+          imageWidth
+        }
       }
       headCapture {
         captureImage(signed: true) {
@@ -160,6 +164,7 @@ export const FragmentStoryTestFields = graphql(/* GraphQL */ `
     }
     mode {
       name
+      globals
     }
     story {
       storyId

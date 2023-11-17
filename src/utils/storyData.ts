@@ -33,6 +33,10 @@ export const captureDiff: StoryTestFieldsFragment["comparisons"][number]["captur
     imageUrl: "/B-comparison.png",
     imageWidth: 880,
   },
+  focusImage: {
+    imageUrl: "/B-focus.png",
+    imageWidth: 880,
+  },
 };
 
 export function makeComparison(options: {
@@ -144,7 +148,7 @@ export function makeTest(options: {
     result,
     webUrl: `https://www.chromatic.com/test?appId=123&id=${id}`,
     comparisons,
-    mode: { name: `${viewportWidth}px` },
+    mode: { name: `${viewportWidth}px`, globals: {} },
     story: generateStory(options.storyId || "button--primary"),
   };
 }

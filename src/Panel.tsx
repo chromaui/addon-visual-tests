@@ -37,6 +37,7 @@ export const Panel = ({ active, api }: PanelProps) => {
 
   const [gitInfo] = useSharedState<GitInfoPayload>(GIT_INFO);
   const [gitInfoError] = useSharedState<Error>(GIT_INFO_ERROR);
+  const [isOutdated] = useSharedState<boolean>(IS_OUTDATED);
   const [localBuildProgress, setLocalBuildProgress] =
     useSharedState<LocalBuildProgress>(LOCAL_BUILD_PROGRESS);
   const [, setOutdated] = useSharedState<boolean>(IS_OUTDATED);
@@ -61,10 +62,12 @@ export const Panel = ({ active, api }: PanelProps) => {
   const [createdProjectId, setCreatedProjectId] = useState<Project["id"]>();
 
   if (gitInfoError) {
+    // eslint-disable-next-line no-console
+    console.error(gitInfoError);
     return (
       <Provider key={PANEL_ID} value={client}>
         <Sections hidden={!active}>
-          <GitNotFound gitInfoError={gitInfoError} />
+          <GitNotFound gitInfoError={gitInfoError} setAccessToken={setAccessToken} />
         </Sections>
       </Provider>
     );
@@ -117,6 +120,7 @@ export const Panel = ({ active, api }: PanelProps) => {
           projectId={projectId}
           projectToken={projectToken}
           configFile={configFile}
+          setAccessToken={setAccessToken}
         />
       </Sections>
     );
@@ -147,6 +151,7 @@ export const Panel = ({ active, api }: PanelProps) => {
         <ControlsProvider>
           <VisualTests
             dismissBuildError={() => setLocalBuildProgress(undefined)}
+            isOutdated={!!isOutdated}
             localBuildProgress={localBuildIsRightBranch ? localBuildProgress : undefined}
             startDevBuild={() => emit(START_BUILD)}
             setAccessToken={setAccessToken}
