@@ -1,7 +1,7 @@
 import { Icons } from "@storybook/components";
 import { Icon } from "@storybook/design-system";
 import { styled } from "@storybook/theming";
-import React from "react";
+import React, { useState } from "react";
 import { gql } from "urql";
 
 import { BuildProgressInline } from "../../components/BuildProgressBarInline";
@@ -10,9 +10,15 @@ import { Container } from "../../components/Container";
 import { Heading } from "../../components/Heading";
 import { VisualTestsIcon } from "../../components/icons/VisualTestsIcon";
 import { Row, Section } from "../../components/layout";
+import { SnapshotImageThumb } from "../../components/SnapshotImageThumb";
 import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
 import { GitInfoPayload, LocalBuildProgress, SelectedBuildWithTests } from "../../types";
+import {
+  useBuildState,
+  useSelectedBuildState,
+  useSelectedStoryState,
+} from "../VisualTests/BuildContext";
 
 const ProjectQuery = gql`
   query ProjectQuery($projectId: ID!) {
@@ -36,8 +42,8 @@ const Box = styled.div(({ theme }) => ({
 }));
 
 interface OnboardingProps {
-  onCompleteOnboarding: () => void;
-  skipWalkthrough: () => void;
+  onComplete: () => void;
+  onSkip: () => void;
   startDevBuild: () => void;
   selectedBuild?: SelectedBuildWithTests;
   localBuildProgress?: LocalBuildProgress;
@@ -46,13 +52,15 @@ interface OnboardingProps {
 export const Onboarding = ({
   startDevBuild,
   localBuildProgress,
-  selectedBuild,
   gitInfo,
-  onCompleteOnboarding,
-  skipWalkthrough,
+  onComplete,
+  onSkip,
 }: OnboardingProps) => {
+  const { selectedBuild } = useBuildState();
+  const selectedStory = useSelectedStoryState();
+
   const showInitialBuild = !selectedBuild;
-  const showCatchAChange = !!selectedBuild;
+  const [showCatchAChange, setShowCatchAChange] = useState(false);
   const [initialGitHash, setInitialGitHash] = React.useState(gitInfo.uncommittedHash);
 
   const onCatchAChange = () => {
@@ -60,26 +68,26 @@ export const Onboarding = ({
       "Do we need to do anything to switch screens? I guess there's initial entry, and then there's manual after?"
     );
     setInitialGitHash(gitInfo.uncommittedHash);
-    // setShowCatchAChange(true);
+    setShowCatchAChange(true);
   };
 
   const [runningSecondBuild, setRunningSecondBuild] = React.useState(false);
 
-  React.useEffect(() => {
-    console.log("Inside Onboarding component", {
-      showCatchAChange,
-      showInitialBuild,
-      localBuildProgress,
-      runningSecondBuild,
-      selectedBuild,
-    });
-  }, [
-    localBuildProgress,
-    runningSecondBuild,
-    showCatchAChange,
-    showInitialBuild,
-    selectedBuild?.id,
-  ]);
+  // React.useEffect(() => {
+  //   console.log("Inside Onboarding component", {
+  //     showCatchAChange,
+  //     showInitialBuild,
+  //     localBuildProgress,
+  //     runningSecondBuild,
+  //     selectedBuild,
+  //   });
+  // }, [
+  //   localBuildProgress,
+  //   runningSecondBuild,
+  //   showCatchAChange,
+  //   showInitialBuild,
+  //   selectedBuild?.id,
+  // ]);
 
   // TODO: This design for an error in the Onboarding is incomplete
   if (localBuildProgress && localBuildProgress.currentStep === "error") {
@@ -95,7 +103,7 @@ export const Onboarding = ({
           <Button small secondary onClick={startDevBuild}>
             Try again
           </Button>
-          <Button link onClick={skipWalkthrough}>
+          <Button link onClick={onSkip}>
             Skip walkthrough
           </Button>
         </Stack>
@@ -163,13 +171,18 @@ export const Onboarding = ({
           <div>
             <Heading>Nice. You saved your stories as a test baseline.</Heading>
             <Text>This story was indexed and snapshotted in a standardized cloud browser.</Text>
-            <img src="/Snapshot-Preview.png" alt="Snapshot Preview" />
+            {selectedStory.selectedComparison.headCapture?.captureImage && (
+              <SnapshotImageThumb
+                {...selectedStory.selectedComparison.headCapture.captureImage}
+                status="positive"
+              />
+            )}
             <Text>Let’s see the superpower of catching visual changes.</Text>
             <Button small secondary onClick={onCatchAChange}>
               Catch a UI change
             </Button>
           </div>
-          <Button link onClick={skipWalkthrough}>
+          <Button link onClick={onSkip}>
             Skip walkthrough
           </Button>
         </Stack>
@@ -224,10 +237,7 @@ export const Onboarding = ({
             </Row>
           </Stack>
           <Box>Awaiting changes...</Box>
-          <Button link onClick={skipWalkthrough}>
-            Skip walkthrough
-          </Button>
-          <Button link onClick={skipWalkthrough}>
+          <Button link onClick={onSkip}>
             Skip walkthrough
           </Button>
         </Stack>
@@ -244,7 +254,7 @@ export const Onboarding = ({
             <Heading>Changes detected</Heading>
             <Text>
               Time to run your first visual test! Visual tests will pinpoint the exact changes made
-              to this Story.
+              to this story.
             </Text>
           </div>
           <Button
@@ -278,7 +288,7 @@ export const Onboarding = ({
             <Heading>Changes detected</Heading>
             <Text>
               Time to run your first visual test! Visual tests will pinpoint the exact changes made
-              to this Story
+              to this story.
             </Text>
           </div>
           <BuildProgressInline localBuildProgress={localBuildProgress} />
@@ -296,15 +306,16 @@ export const Onboarding = ({
           <div>
             <Heading>Nice. You saved your stories as a test baseline.</Heading>
             <Text>This story was indexed and snapshotted in a standardized cloud browser.</Text>
-            <img
-              style={{ maxWidth: "100%" }}
-              src="/example-button-noargs.png"
-              alt="Start build button noargs"
-            />
+            {selectedStory.selectedComparison.headCapture?.captureImage && (
+              <SnapshotImageThumb
+                {...selectedStory.selectedComparison.headCapture.captureImage}
+                status="positive"
+              />
+            )}
           </div>
         </Stack>
         <Text>You're ready to start testing!</Text>
-        <Button small secondary onClick={onCompleteOnboarding}>
+        <Button small secondary onClick={onComplete}>
           Done!
         </Button>
       </Container>

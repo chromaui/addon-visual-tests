@@ -17,6 +17,7 @@ import { delay, HttpResponse } from "msw";
 import React from "react";
 
 import { INITIAL_BUILD_PAYLOAD } from "../../buildSteps";
+import { ONBOARDING_COMPLETED_KEY } from "../../constants";
 import type {
   LastBuildOnBranchBuildFieldsFragment,
   MakeOptional,
@@ -107,16 +108,33 @@ function mock<T extends (...args: any[]) => any>(f: T) {
 type StoryArgs = Parameters<typeof VisualTestsWithoutSelectedBuildId>[0] & {
   addNotification: () => void;
   getUrlState: () => { queryParams: { [key: string]: string } };
+  jumpToStory: () => void;
+  togglePanel: () => void;
+  togglePanelPosition: () => void;
+  setSelectedPanel: () => void;
+  once: () => void;
   $graphql?: { AddonVisualTestsBuild?: QueryInput };
 };
 const meta = {
   title: "screens/VisualTests/VisualTests",
   component: VisualTestsWithoutSelectedBuildId,
-  decorators: [storyWrapper(ControlsProvider), storyWrapper(GraphQLClientProvider)],
+  decorators: [
+    storyWrapper(ControlsProvider),
+    storyWrapper(GraphQLClientProvider),
+    (Story) => {
+      localStorage.setItem(ONBOARDING_COMPLETED_KEY, "true");
+      return <Story />;
+    },
+  ],
   parameters: { chromatic: { modes: panelModes } },
   argTypes: {
     addNotification: { type: "function", target: "manager-api" },
     getUrlState: { type: "function", target: "manager-api" },
+    jumpToStory: { type: "function", target: "manager-api" },
+    togglePanel: { type: "function", target: "manager-api" },
+    togglePanelPosition: { type: "function", target: "manager-api" },
+    setSelectedPanel: { type: "function", target: "manager-api" },
+    once: { type: "function", target: "manager-api" },
     $graphql: {
       AddonVisualTestsBuild: { map: mapQuery },
     },
@@ -141,6 +159,11 @@ const meta = {
     updateBuildStatus: action("updateBuildStatus") as any,
     addNotification: action("addNotification"),
     getUrlState: () => ({ queryParams: {} }),
+    jumpToStory: action("jumpToStory"),
+    togglePanel: action("togglePanel"),
+    togglePanelPosition: action("togglePanelPosition"),
+    setSelectedPanel: action("setSelectedPanel"),
+    once: action("once"),
     $graphql: { AddonVisualTestsBuild: {} },
   },
 } satisfies Meta<StoryArgs>;

@@ -9,25 +9,17 @@ import { playAll } from "../../utils/playAll";
 import { storyWrapper } from "../../utils/storyWrapper";
 import { BuildProvider } from "./BuildContext";
 import { ControlsProvider } from "./ControlsContext";
-import { acceptedTests, inProgressTests, pendingBuild, pendingTests, withTests } from "./mocks";
+import {
+  acceptedTests,
+  buildInfo,
+  inProgressTests,
+  pendingBuild,
+  pendingTests,
+  withTests,
+} from "./mocks";
 import { ReviewTestProvider } from "./ReviewTestContext";
 import { Grid } from "./SnapshotComparison";
 import { SnapshotControls } from "./SnapshotControls";
-
-const buildInfo = (selectedBuild?: SelectedBuildFieldsFragment) => ({
-  hasData: true,
-  hasProject: true,
-  hasSelectedBuild: !!selectedBuild,
-  lastBuildOnBranch: undefined,
-  lastBuildOnBranchIsNewer: false,
-  lastBuildOnBranchIsReady: false,
-  lastBuildOnBranchIsSelectable: false,
-  selectedBuild,
-  selectedBuildMatchesGit: true,
-  rerunQuery: () => {},
-  queryError: undefined,
-  userCanReview: true,
-});
 
 const meta = {
   component: SnapshotControls,

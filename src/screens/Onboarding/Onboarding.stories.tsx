@@ -1,4 +1,3 @@
-import { action } from "@storybook/addon-actions";
 import type { Meta, StoryObj } from "@storybook/react";
 import { findByRole, userEvent } from "@storybook/testing-library";
 import { graphql, HttpResponse } from "msw";
@@ -10,11 +9,16 @@ import { GraphQLClientProvider } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
 import { storyWrapper } from "../../utils/storyWrapper";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
+import { BuildProvider } from "../VisualTests/BuildContext";
+import { acceptedBuild, acceptedTests, buildInfo, withTests } from "../VisualTests/mocks";
 import { Onboarding } from "./Onboarding";
 
 const meta = {
   component: Onboarding,
-  decorators: [storyWrapper(GraphQLClientProvider)],
+  decorators: [
+    storyWrapper(BuildProvider, (ctx) => ({ watchState: buildInfo(ctx.parameters.selectedBuild) })),
+    storyWrapper(GraphQLClientProvider),
+  ],
   args: {
     // queryError: undefined,
     // hasData: true,
@@ -80,9 +84,12 @@ export const BaselineSaved: Story = {
       currentStep: "complete",
     },
   },
-  parameters: withFigmaDesign(
-    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318539&t=3EAIRe8423CpOQWY-4"
-  ),
+  parameters: {
+    selectedBuild: withTests(acceptedBuild, acceptedTests),
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318539&t=3EAIRe8423CpOQWY-4"
+    ),
+  },
 };
 
 export const MakeAChange: Story = {
@@ -111,9 +118,12 @@ export const MakeAChange: Story = {
       </>
     );
   },
-  parameters: withFigmaDesign(
-    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318908&t=3EAIRe8423CpOQWY-4"
-  ),
+  parameters: {
+    ...BaselineSaved.parameters,
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318908&t=3EAIRe8423CpOQWY-4"
+    ),
+  },
 };
 
 export const ChangesDetected: Story = {
@@ -154,9 +164,12 @@ export const ChangesDetected: Story = {
       </>
     );
   },
-  parameters: withFigmaDesign(
-    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-319115&t=3EAIRe8423CpOQWY-4"
-  ),
+  parameters: {
+    ...BaselineSaved.parameters,
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-319115&t=3EAIRe8423CpOQWY-4"
+    ),
+  },
 };
 
 export const RunningFirstTest: Story = {
@@ -209,9 +222,12 @@ export const RunningFirstTest: Story = {
       </>
     );
   },
-  parameters: withFigmaDesign(
-    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318481&t=3EAIRe8423CpOQWY-4"
-  ),
+  parameters: {
+    ...BaselineSaved.parameters,
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318481&t=3EAIRe8423CpOQWY-4"
+    ),
+  },
 };
 
 export const ChangesFound: Story = {
@@ -245,15 +261,21 @@ export const ChangesFound: Story = {
       </>
     );
   },
-  parameters: withFigmaDesign(
-    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=352-258984&t=3EAIRe8423CpOQWY-4"
-  ),
+  parameters: {
+    ...BaselineSaved.parameters,
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=352-258984&t=3EAIRe8423CpOQWY-4"
+    ),
+  },
 };
 
 export const Done: Story = {
-  parameters: withFigmaDesign(
-    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318693&t=3EAIRe8423CpOQWY-4"
-  ),
+  parameters: {
+    ...BaselineSaved.parameters,
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318693&t=3EAIRe8423CpOQWY-4"
+    ),
+  },
 };
 
 // TODO: This design for an error in the Onboarding is incomplete
@@ -270,8 +292,11 @@ export const Error: Story = {
       },
     },
   },
-  // TODO: Review the actual design with MA to determine what this should look like.
-  parameters: withFigmaDesign(
-    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318693&t=3EAIRe8423CpOQWY-4"
-  ),
+  parameters: {
+    ...BaselineSaved.parameters,
+    // TODO: Review the actual design with MA to determine what this should look like.
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318693&t=3EAIRe8423CpOQWY-4"
+    ),
+  },
 };

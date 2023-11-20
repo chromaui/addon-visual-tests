@@ -1,9 +1,13 @@
-import { API, useStorybookApi } from "@storybook/manager-api";
+import { type API, useStorybookApi } from "@storybook/manager-api";
 import type { API_StatusState } from "@storybook/types";
 import React, { useCallback, useEffect, useState } from "react";
 import { useMutation } from "urql";
 
-import { HAS_COMPLETED_ONBOARDING_KEY } from "../../constants";
+import {
+  ONBOARDING_COMPLETED_KEY,
+  ONBOARDING_STEP_KEY,
+  WALKTHROUGH_COMPLETED_KEY,
+} from "../../constants";
 import { getFragment } from "../../gql";
 import {
   ReviewTestBatch,
@@ -19,12 +23,7 @@ import { GuidedTour } from "../GuidedTour/GuidedTour";
 import { Onboarding } from "../Onboarding/Onboarding";
 import { BuildProvider, useBuild } from "./BuildContext";
 import { BuildResults } from "./BuildResults";
-import {
-  FragmentLastBuildOnBranchBuildFields,
-  FragmentLastBuildOnBranchTestFields,
-  FragmentStatusTestFields,
-  MutationReviewTest,
-} from "./graphql";
+import { FragmentStatusTestFields, MutationReviewTest } from "./graphql";
 import { NoBuild } from "./NoBuild";
 import { ReviewTestProvider } from "./ReviewTestContext";
 
@@ -100,61 +99,47 @@ const useReview = ({
 };
 
 const useOnboarding = (
-  { lastBuildOnBranch, selectedBuild }: ReturnType<typeof useBuild>,
+  { lastBuildOnBranch }: ReturnType<typeof useBuild>,
   managerApi?: Pick<API, "getUrlState">
 ) => {
-  // Force the onboarding to show by adding ?vtaOnboarding=true to the URL
-  const forceOnboardingParam = managerApi?.getUrlState?.().queryParams.vtaOnboarding === "true";
-  const [hasCompletedWalkthrough, setHasCompletedWalkthrough] = React.useState(
-    () => !forceOnboardingParam && localStorage.getItem(HAS_COMPLETED_ONBOARDING_KEY) === "true"
+  const [hasCompletedOnboarding, setHasCompletedOnboarding] = React.useState(
+    () => localStorage.getItem(ONBOARDING_COMPLETED_KEY) === "true"
   );
+  const completeOnboarding = React.useCallback(() => {
+    setHasCompletedOnboarding(true);
+    localStorage.setItem(ONBOARDING_COMPLETED_KEY, "true");
+  }, []);
+
+  const [hasCompletedWalkthrough, setHasCompletedWalkthrough] = React.useState(() => {
+    // Force the onboarding to show by adding ?vtaOnboarding=true to the URL
+    const force = managerApi?.getUrlState?.().queryParams.vtaOnboarding === "true";
+    return !force && localStorage.getItem(WALKTHROUGH_COMPLETED_KEY) === "true";
+  });
   const completeWalkthrough = React.useCallback(() => {
     setHasCompletedWalkthrough(true);
-    localStorage.setItem(HAS_COMPLETED_ONBOARDING_KEY, "true");
+    localStorage.setItem(WALKTHROUGH_COMPLETED_KEY, "true");
   }, []);
 
   const lastBuildHasChanges = React.useMemo(() => {
-    // For somer reason the fragment doesn't recognize the testsForStatus field
-    // const tests: Test =
-    //   lastBuildOnBranch &&
-    //   getFragment(
-    //     FragmentLastBuildOnBranchBuildFields,
-    //     ("testsForStatus" in lastBuildOnBranch && lastBuildOnBranch?.testsForStatus?.nodes) || []
-    //   );
-
-    const tests: Test[] = ((lastBuildOnBranch &&
-      "testsForStatus" in lastBuildOnBranch &&
-      lastBuildOnBranch?.testsForStatus?.nodes) ||
-      []) as Test[];
-
+    // select only testsForStatus (or empty array) and return true if any of them are pending and changed
+    const tests =
+      (lastBuildOnBranch &&
+        "testsForStatus" in lastBuildOnBranch &&
+        lastBuildOnBranch.testsForStatus?.nodes &&
+        getFragment(FragmentStatusTestFields, lastBuildOnBranch.testsForStatus.nodes)) ||
+      [];
     return tests.some((t) => t.status === TestStatus.Pending && t.result === TestResult.Changed);
   }, [lastBuildOnBranch]);
 
-  const showOnboarding = !hasCompletedWalkthrough && (!lastBuildOnBranch || !lastBuildHasChanges);
-  useEffect(() => {
-    console.log("useOnboarding hook", {
-      showOnboarding,
-      showGuidedTour: !showOnboarding && !hasCompletedWalkthrough,
-      completeWalkthrough,
-      lastBuildOnBranch,
-      selectedBuild,
-      lastBuildHasChanges,
-      hasCompletedWalkthrough,
-      forceOnboardingParam,
-    });
-  }, [
-    showOnboarding,
-    hasCompletedWalkthrough,
-    completeWalkthrough,
-    lastBuildOnBranch?.id,
-    lastBuildHasChanges,
-    selectedBuild?.id,
-    forceOnboardingParam,
-  ]);
+  const showOnboarding =
+    !hasCompletedOnboarding &&
+    !hasCompletedWalkthrough &&
+    (!lastBuildOnBranch || !lastBuildHasChanges);
 
   return {
     showOnboarding,
     showGuidedTour: !showOnboarding && !hasCompletedWalkthrough,
+    completeOnboarding,
     completeWalkthrough,
   };
 };
@@ -174,7 +159,7 @@ export const VisualTestsWithoutSelectedBuildId = ({
   storyId,
 }: VisualTestsProps) => {
   const managerApi = useStorybookApi();
-  const { addNotification, getUrlState } = managerApi;
+  const { addNotification } = managerApi;
   const buildInfo = useBuild({ projectId, storyId, gitInfo, selectedBuildInfo });
 
   const {
@@ -261,28 +246,27 @@ export const VisualTestsWithoutSelectedBuildId = ({
     [setSelectedBuildInfo, lastBuildOnBranchIsSelectable, lastBuildOnBranch?.id, storyId]
   );
 
-  const { showOnboarding, showGuidedTour, completeWalkthrough } = useOnboarding(buildInfo, {
-    getUrlState,
-  });
+  const { showOnboarding, showGuidedTour, completeOnboarding, completeWalkthrough } = useOnboarding(
+    buildInfo,
+    managerApi
+  );
 
   if (showOnboarding) {
     return (
-      <Onboarding
-        {...{
-          gitInfo,
-          projectId,
-          setAccessToken,
-          startDevBuild,
-          updateBuildStatus,
-          localBuildProgress,
-          selectedBuild,
-          hasSelectedBuild: !!lastBuildOnBranch,
-          onCompleteOnboarding: () => {
-            // Actually, completing a build with changes should finish the onboarding, right?
-          },
-          skipWalkthrough: completeWalkthrough,
-        }}
-      />
+      <BuildProvider watchState={buildInfo}>
+        <Onboarding
+          {...{
+            gitInfo,
+            projectId,
+            setAccessToken,
+            startDevBuild,
+            updateBuildStatus,
+            localBuildProgress,
+            onComplete: completeOnboarding,
+            onSkip: completeWalkthrough,
+          }}
+        />
+      </BuildProvider>
     );
   }
 

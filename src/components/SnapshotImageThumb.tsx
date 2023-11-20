@@ -14,6 +14,7 @@ const Wrapper = styled.div<{ status?: "positive" }>(({ status, theme }) => ({
   padding: 2,
   minHeight: 200,
   minWidth: 200,
+  maxWidth: 500,
 
   img: {
     display: "block",
@@ -34,19 +35,20 @@ const Wrapper = styled.div<{ status?: "positive" }>(({ status, theme }) => ({
 }));
 
 interface SnapshotImageThumbProps {
-  thumbnailUrl: string;
-  backgroundColor?: string;
+  backgroundColor?: string | null;
   status?: "positive";
+  thumbnailUrl: string;
 }
 
 export const SnapshotImageThumb = ({
   backgroundColor,
   status,
   thumbnailUrl,
-}: SnapshotImageThumbProps) => {
+  ...imgProps
+}: SnapshotImageThumbProps & React.ImgHTMLAttributes<HTMLImageElement>) => {
   return (
     <Wrapper status={status} style={backgroundColor ? { backgroundColor } : {}}>
-      <img src={thumbnailUrl} alt="Snapshot thumbnail" />
+      <img alt="Snapshot thumbnail" src={thumbnailUrl} {...imgProps} />
       {status === "positive" && <Icons icon="check" />}
     </Wrapper>
   );
