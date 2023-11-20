@@ -19,12 +19,18 @@ const store = {
 };
 
 describe("runChromaticBuild", () => {
-  it("requires project token", async () => {
-    await expect(runChromaticBuild(store, {})).rejects.toThrow("No project token set");
+  it("requires projectId and userToken", async () => {
+    await expect(runChromaticBuild(store, {} as any)).rejects.toThrow("Missing projectId");
+    await expect(runChromaticBuild(store, { projectId: "project-id" } as any)).rejects.toThrow(
+      "Missing userToken"
+    );
   });
 
   it("sets initial build payload", async () => {
-    await runChromaticBuild(store, { projectToken: "token" });
+    await runChromaticBuild(store, {
+      projectId: "project-id",
+      userToken: "user-token",
+    } as any);
 
     expect(store.value).toMatchObject({
       buildProgressPercentage: 0,

@@ -10,7 +10,6 @@ import { Text as CenterText } from "../../components/Text";
 
 type LinkingProjectFailedProps = {
   projectId: string;
-  projectToken: string;
   configFile: string;
   setAccessToken: (accessToken: string | null) => void;
 };
@@ -19,7 +18,6 @@ const configureDocsLink = "https://www.chromatic.com/docs/addon-visual-tests#con
 
 export function LinkingProjectFailed({
   projectId,
-  projectToken,
   configFile,
   setAccessToken,
 }: LinkingProjectFailedProps) {
@@ -37,7 +35,6 @@ export function LinkingProjectFailed({
             {dedent`
             {
               "projectId": "${projectId}",
-              "projectToken": "${projectToken}",
             }
             `}
           </Code>
