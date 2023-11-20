@@ -6,6 +6,6 @@ export const Container = styled.div(({ theme }) => ({
   flexDirection: "column",
   alignItems: "center",
   justifyContent: "center",
-  height: "100%",
+  minHeight: "100%",
   padding: 10,
 }));
