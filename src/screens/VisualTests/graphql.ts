@@ -24,6 +24,7 @@ export const QueryBuild = graphql(/* GraphQL */ `
       lastBuild {
         id
         slug
+        branch
       }
     }
     selectedBuild: build(id: $selectedBuildId) @include(if: $hasSelectedBuildId) {
@@ -46,7 +47,7 @@ export const FragmentLastBuildOnBranchBuildFields = graphql(/* GraphQL */ `
     ... on StartedBuild {
       testsForStatus: tests(first: 1000, statuses: $testStatuses) {
         nodes {
-          ...LastBuildOnBranchTestFields
+          ...StatusTestFields
         }
       }
       testsForStory: tests(storyId: $storyId) {
@@ -59,7 +60,7 @@ export const FragmentLastBuildOnBranchBuildFields = graphql(/* GraphQL */ `
       result
       testsForStatus: tests(first: 1000, statuses: $testStatuses) {
         nodes {
-          ...LastBuildOnBranchTestFields
+          ...StatusTestFields
         }
       }
       testsForStory: tests(storyId: $storyId) {
