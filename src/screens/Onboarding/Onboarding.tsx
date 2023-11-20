@@ -1,5 +1,6 @@
 import { Icons } from "@storybook/components";
 import { Icon } from "@storybook/design-system";
+import { styled } from "@storybook/theming";
 import React from "react";
 import { gql } from "urql";
 
@@ -26,6 +27,13 @@ const ProjectQuery = gql`
     }
   }
 `;
+
+const Box = styled.div(({ theme }) => ({
+  border: `1px solid ${theme.color.border}`,
+  borderRadius: theme.appBorderRadius,
+  padding: "6px 10px",
+  lineHeight: "18px",
+}));
 
 interface OnboardingProps {
   onCompleteOnboarding: () => void;
@@ -102,12 +110,14 @@ export const Onboarding = ({
     return (
       <Container>
         <Stack>
-          <VisualTestsIcon />
-          <Heading>Get started with visual testing</Heading>
-          <Text>
-            Take an image snapshot of each story to save their “last known good state” as test
-            baselines.{" "}
-          </Text>
+          <div>
+            <VisualTestsIcon />
+            <Heading>Get started with visual testing</Heading>
+            <Text>
+              Take an image snapshot of each story to save their “last known good state” as test
+              baselines.{" "}
+            </Text>
+          </div>
           <Button small secondary onClick={startDevBuild}>
             Take snapshots
           </Button>
@@ -126,12 +136,14 @@ export const Onboarding = ({
     return (
       <Container>
         <Stack>
-          <VisualTestsIcon />
-          <Heading>Get started with visual testing</Heading>
-          <Text>
-            Take an image snapshot of each story to save their “last known good state” as test
-            baselines.
-          </Text>
+          <div>
+            <VisualTestsIcon />
+            <Heading>Get started with visual testing</Heading>
+            <Text>
+              Take an image snapshot of each story to save their “last known good state” as test
+              baselines.
+            </Text>
+          </div>
           <BuildProgressInline localBuildProgress={localBuildProgress} />
         </Stack>
       </Container>
@@ -148,18 +160,19 @@ export const Onboarding = ({
     return (
       <Container>
         <Stack>
-          <VisualTestsIcon />
-          <Heading>Nice. You saved your stories as a test baseline.</Heading>
-          <Text>This story was indexed and snapshotted in a standardized cloud browser.</Text>
-          <img src="/Snapshot-Preview.png" alt="Snapshot Preview" />
-          <p>Let’s see the superpower of catching visual changes.</p>
-          <Button small secondary onClick={onCatchAChange}>
-            Catch a UI change
+          <div>
+            <Heading>Nice. You saved your stories as a test baseline.</Heading>
+            <Text>This story was indexed and snapshotted in a standardized cloud browser.</Text>
+            <img src="/Snapshot-Preview.png" alt="Snapshot Preview" />
+            <Text>Let’s see the superpower of catching visual changes.</Text>
+            <Button small secondary onClick={onCatchAChange}>
+              Catch a UI change
+            </Button>
+          </div>
+          <Button link onClick={skipWalkthrough}>
+            Skip walkthrough
           </Button>
         </Stack>
-        <Button link onClick={skipWalkthrough}>
-          Skip walkthrough
-        </Button>
       </Container>
     );
   }
@@ -168,12 +181,13 @@ export const Onboarding = ({
     return (
       <Container>
         <Stack>
-          <VisualTestsIcon />
-          <Heading>Make a change to this story</Heading>
-          <Text>
-            In your code, adjust the markup, styling, or assets to see how visual testing works.
-            Don’t worry, you can undo it later. Here are a few ideas to get you started.
-          </Text>
+          <div>
+            <Heading>Make a change to this story</Heading>
+            <Text>
+              In your code, adjust the markup, styling, or assets to see how visual testing works.
+              Don’t worry, you can undo it later. Here are a few ideas to get you started.
+            </Text>
+          </div>
           {/* TODO: Fix the alignment of these */}
           <Stack style={{ display: "flex", alignItems: "flex-start", gap: "8px" }}>
             <Row style={{ margin: 0, alignItems: "center", gap: "10px" }}>
@@ -209,8 +223,9 @@ export const Onboarding = ({
               <p>Adjust the size or scale</p>
             </Row>
           </Stack>
-          <Button tertiary style={{ cursor: "default" }}>
-            Awaiting changes...
+          <Box>Awaiting changes...</Box>
+          <Button link onClick={skipWalkthrough}>
+            Skip walkthrough
           </Button>
           <Button link onClick={skipWalkthrough}>
             Skip walkthrough
@@ -225,12 +240,13 @@ export const Onboarding = ({
     return (
       <Container>
         <Stack>
-          <VisualTestsIcon />
-          <Heading>Changes detected</Heading>
-          <Text>
-            Time to run your first visual test! Visual tests will pinpoint the exact changes made to
-            this Story.
-          </Text>
+          <div>
+            <Heading>Changes detected</Heading>
+            <Text>
+              Time to run your first visual test! Visual tests will pinpoint the exact changes made
+              to this Story.
+            </Text>
+          </div>
           <Button
             small
             secondary
@@ -258,12 +274,13 @@ export const Onboarding = ({
     return (
       <Container>
         <Stack>
-          <VisualTestsIcon />
-          <Heading>Changes detected</Heading>
-          <Text>
-            Time to run your first visual test! Visual tests will pinpoint the exact changes made to
-            this Story
-          </Text>
+          <div>
+            <Heading>Changes detected</Heading>
+            <Text>
+              Time to run your first visual test! Visual tests will pinpoint the exact changes made
+              to this Story
+            </Text>
+          </div>
           <BuildProgressInline localBuildProgress={localBuildProgress} />
         </Stack>
       </Container>
@@ -276,13 +293,15 @@ export const Onboarding = ({
     return (
       <Container style={{ overflowY: "auto" }}>
         <Stack>
-          <Heading>Nice. You saved your stories as a test baseline.</Heading>
-          <Text>This story was indexed and snapshotted in a standardized cloud browser.</Text>
-          <img
-            style={{ maxWidth: "100%" }}
-            src="/example-button-noargs.png"
-            alt="Start build button noargs"
-          />
+          <div>
+            <Heading>Nice. You saved your stories as a test baseline.</Heading>
+            <Text>This story was indexed and snapshotted in a standardized cloud browser.</Text>
+            <img
+              style={{ maxWidth: "100%" }}
+              src="/example-button-noargs.png"
+              alt="Start build button noargs"
+            />
+          </div>
         </Stack>
         <Text>You're ready to start testing!</Text>
         <Button small secondary onClick={onCompleteOnboarding}>
