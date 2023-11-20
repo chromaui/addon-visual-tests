@@ -3,7 +3,6 @@
   "exitOnceUploaded": true,
   "externals": ["public/**"],
   "onlyChanged": true,
-  "projectId": "Project:652865507e138292e0cf0821",
-  "projectToken": "chpt_ef37adad46fe632",
+  "projectId": "Project:6480e1b0042842f149cfd74c",
   "zip": true
 }

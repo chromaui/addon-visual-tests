@@ -1,3 +1,15 @@
+# v0.0.119 (Fri Nov 17 2023)
+
+#### 🐛 Bug Fix
+
+- Authenticate with Chromatic CLI using OAuth token rather than `projectToken` [#145](https://github.com/chromaui/addon-visual-tests/pull/145) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v0.0.118 (Fri Nov 17 2023)
 
 #### 🐛 Bug Fix

@@ -2,7 +2,6 @@
 
 The Visual Testing addon enables you to run visual tests on your stories and compare changes with the latest baselines across multiple viewports and browsers to catch UI regressions early in development without leaving Storybook.
 
-
 ## Prerequisites
 
 - Chromatic [account configured](https://www.chromatic.com/docs/setup#sign-up) with access to a project
@@ -22,37 +21,34 @@ Start Storybook and navigate to the Visual Tests panel to run your first visual 
 
 By default, the addon offers zero-config support to run visual tests with Storybook and Chromatic. However, you can extend your Storybook configuration file (i.e., `.storybook/main.js|ts`) and provide additional options to control how tests are run. Listed below are the available options and examples of how to use them.
 
-
 | Option            | Description                                                                                                                              |
 | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
 | `buildScriptName` | Optional. Defines the custom Storybook build script <br/> `options: { buildScriptName: 'deploy-storybook' }`                             |
 | `debug`           | Optional. Output verbose debugging information to the console. <br/> `options: { debug: true }`                                          |
 | `projectId`       | Automatically configured. Sets the value for the project identifier <br/> `options: { projectId: Project:64cbcde96f99841e8b007d75 }`     |
-| `projectToken`    | Automatically configured. Sets the value for the project token <br/> `options: { projectToken: 'chpt_b2ae83517a0a706' }`                 |
 | `zip`             | Recommended for large projects. Configures the addon to deploy your Storybook to Chromatic as a zip file. <br/> `options: { zip: true }` |
 
 ```ts
 // .storybook/main.ts
 
 // Replace your-framework with the framework you are using (e.g., react-webpack5, vue3-vite)
-import type { StorybookConfig } from '@storybook/your-framework';
+import type { StorybookConfig } from "@storybook/your-framework";
 
 const config: StorybookConfig = {
-  framework: '@storybook/your-framework',
-  stories: ['../src/**/*.mdx', '../src/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
+  framework: "@storybook/your-framework",
+  stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
   addons: [
     // Other Storybook addons
-    '@chromaui/addon-visual-tests',
-     {
-      name: '@chromaui/addon-visual-tests',
+    "@chromaui/addon-visual-tests",
+    {
+      name: "@chromaui/addon-visual-tests",
       options: {
-        projectId: 'Project:64cbcde96f99841e8b007d75',
-        projectToken: 'chpt_b2ae83517a0a706',
-        buildScriptName: 'deploy-storybook',
+        projectId: "Project:64cbcde96f99841e8b007d75",
+        buildScriptName: "build-storybook",
         zip: true,
         debug: true,
       },
-     }
+    },
   ],
 };
 
@@ -85,7 +81,6 @@ This is a [known issue](https://github.com/storybookjs/storybook/issues/22431#is
 ```
 
 Alternatively, you could use a different package manager ([npm](https://www.npmjs.com/), [pnpm](https://pnpm.io/installation)).
-
 
 ## Contributing
 

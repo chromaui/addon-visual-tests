@@ -66,25 +66,21 @@ async function serverChannel(
   { configDir, configFile }: { configDir: string; configFile?: string }
 ) {
   const configuration = await getConfiguration(configFile);
-  const { projectId: initialProjectId, projectToken: initialProjectToken } = configuration;
+  const { projectId: initialProjectId } = configuration;
 
   const projectInfoState = SharedState.subscribe<ProjectInfoPayload>(PROJECT_INFO, channel);
-  projectInfoState.value = initialProjectId
-    ? { projectId: initialProjectId, projectToken: initialProjectToken }
-    : {};
+  projectInfoState.value = initialProjectId ? { projectId: initialProjectId } : {};
 
-  let lastProjectToken = initialProjectToken;
-  projectInfoState.on("change", async ({ projectId, projectToken } = {}) => {
-    if (!projectId || !projectToken) return;
-    if (projectToken === lastProjectToken) return;
-    lastProjectToken = projectToken;
+  let lastProjectId = initialProjectId;
+  projectInfoState.on("change", async ({ projectId } = {}) => {
+    if (!projectId || projectId === lastProjectId) return;
+    lastProjectId = projectId;
 
     const writtenConfigFile = configFile || "chromatic.config.json";
     try {
       await updateChromaticConfig(writtenConfigFile, {
         ...configuration,
         projectId,
-        projectToken,
       });
 
       projectInfoState.value = {
@@ -108,10 +104,10 @@ async function serverChannel(
     channel
   );
 
-  channel.on(START_BUILD, async () => {
-    const { projectToken } = projectInfoState.value || {};
+  channel.on(START_BUILD, async ({ accessToken: userToken }) => {
+    const { projectId } = projectInfoState.value || {};
     try {
-      await runChromaticBuild(localBuildProgress, { projectToken });
+      await runChromaticBuild(localBuildProgress, { configFile, projectId, userToken });
     } catch (e) {
       console.error(`Failed to run Chromatic build, with error:\n${e}`);
     }
