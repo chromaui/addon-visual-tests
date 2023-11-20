@@ -151,6 +151,7 @@ const useOnboarding = (
     selectedBuild?.id,
     forceOnboardingParam,
   ]);
+
   return {
     showOnboarding,
     showGuidedTour: !showOnboarding && !hasCompletedWalkthrough,
@@ -201,8 +202,9 @@ export const VisualTestsWithoutSelectedBuildId = ({
           // @ts-expect-error we need a better API for not passing a link
           link: undefined,
           content: {
-            headline: `Failed to ${update.status === ReviewTestInputStatus.Accepted ? "accept" : "unaccept"
-              } changes`,
+            headline: `Failed to ${
+              update.status === ReviewTestInputStatus.Accepted ? "accept" : "unaccept"
+            } changes`,
             subHeadline: err.message,
           },
           icon: {
@@ -283,6 +285,7 @@ export const VisualTestsWithoutSelectedBuildId = ({
       />
     );
   }
+
   return (
     <>
       {!selectedBuild || !hasSelectedBuild || !hasData || queryError ? (
@@ -321,6 +324,7 @@ export const VisualTestsWithoutSelectedBuildId = ({
           </BuildProvider>
         </ReviewTestProvider>
       )}
+
       {showGuidedTour && (
         <GuidedTour
           managerApi={managerApi}

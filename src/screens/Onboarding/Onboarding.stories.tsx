@@ -19,7 +19,7 @@ const meta = {
     // queryError: undefined,
     // hasData: true,
     // hasSelectedBuild: false,
-    startDevBuild: () => { },
+    startDevBuild: () => {},
     localBuildProgress: undefined,
     gitInfo: {
       uncommittedHash: "123",
