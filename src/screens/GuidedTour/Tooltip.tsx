@@ -11,6 +11,7 @@ const TooltipBody = styled.div`
   width: 260px;
   padding: 15px;
   border-radius: 5px;
+  box-shadow: 0px 0px 32px 0px #00000029;
 `;
 
 const Wrapper = styled.div`
@@ -45,6 +46,7 @@ export type TooltipProps = TooltipRenderProps & {
   step: TooltipRenderProps["step"] & {
     hideSkipButton?: boolean;
     hideNextButton?: boolean;
+    nextButtonText?: string;
     onSkipWalkthroughButtonClick?: () => void;
     onNextButtonClick?: () => void;
   };
@@ -60,7 +62,11 @@ export const Tooltip = ({ step, primaryProps, tooltipProps }: TooltipProps) => {
       {(step.hideNextButton || step.hideBackButton) && (
         <TooltipFooter id="buttonNext">
           {!step.hideSkipButton && (
-            <Button onClick={step.onSkipWalkthroughButtonClick} link>
+            <Button
+              onClick={step.onSkipWalkthroughButtonClick}
+              link
+              style={{ paddingRight: "12px", paddingLeft: "12px", marginRight: "8px" }}
+            >
               Skip
             </Button>
           )}
@@ -68,10 +74,11 @@ export const Tooltip = ({ step, primaryProps, tooltipProps }: TooltipProps) => {
             <Button
               {...{
                 ...primaryProps,
+                secondary: true,
                 ...(step.onNextButtonClick ? { onClick: step.onNextButtonClick } : {}),
               }}
             >
-              Next
+              {step.nextButtonText || "Next"}
             </Button>
           )}
         </TooltipFooter>

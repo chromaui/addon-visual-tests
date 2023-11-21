@@ -12,6 +12,7 @@ export const ACCESS_TOKEN_KEY = `${ADDON_ID}/access-token/${CHROMATIC_BASE_URL}`
 export const DEV_BUILD_ID_KEY = `${ADDON_ID}/dev-build-id`;
 export const ONBOARDING_COMPLETED_KEY = `${ADDON_ID}/onboarding-completed`;
 export const WALKTHROUGH_COMPLETED_KEY = `${ADDON_ID}/walkthrough-completed`;
+export const WALKTHROUGH_SKIP_RESIZE_PANEL = `${ADDON_ID}/walkthrough-skip-resize-panel`;
 
 export const GIT_INFO = `${ADDON_ID}/gitInfo`;
 export const GIT_INFO_ERROR = `${ADDON_ID}/gitInfoError`;

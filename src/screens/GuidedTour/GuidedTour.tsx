@@ -2,10 +2,14 @@ import { type API } from "@storybook/manager-api";
 import { useTheme } from "@storybook/theming";
 import React from "react";
 import Joyride, { CallBackProps } from "react-joyride";
-import { SelectedBuildFieldsFragment } from "src/gql/graphql";
 import { gql } from "urql";
 
-import { PANEL_ID } from "../../constants";
+import {
+  PANEL_ID,
+  WALKTHROUGH_SKIP_ONBOARDING_KEY,
+  WALKTHROUGH_SKIP_RESIZE_PANEL,
+} from "../../constants";
+import { SelectedBuildFieldsFragment } from "../../gql/graphql";
 import { ENABLE_FILTER } from "../../SidebarBottom";
 import { useSelectedStoryState } from "../VisualTests/BuildContext";
 import { Confetti } from "./Confetti";
@@ -42,6 +46,7 @@ export const GuidedTour = ({
 
   const selectedStory = useSelectedStoryState();
   const selectedTestHasChanges = selectedStory?.selectedTest.result === "CHANGED";
+  const selectedTestHasNotBeenAcceptedYet = selectedStory?.selectedTest.status !== "ACCEPTED";
 
   React.useEffect(() => {
     // Dismiss storybook notifications that get in the way of the tour.
@@ -55,23 +60,26 @@ export const GuidedTour = ({
       managerApi.jumpToStory(1);
     }
 
-    // Force the panel to resize to 500px.
-    const storybookLayout = JSON.parse(localStorage.getItem("storybook-layout") || "");
-    // skip resize if it's already been tried, to avoid a reload loop.
-    const skipResize = localStorage.getItem(`${ADDON_ID}onboarding-skip-resize`) === "true";
-    if (storybookLayout.resizerPanel?.x !== window.innerWidth - 500 && !skipResize) {
-      localStorage.setItem(
-        "storybook-layout",
-        JSON.stringify({ ...storybookLayout, resizerPanel: { x: window.innerWidth - 500 } })
-      );
-      localStorage.setItem(`${ADDON_ID}onboarding-skip-resize`, "true");
-      document.location.reload();
-    }
-
     // Make sure the addon panel is open, and on the visual tests tab.
     managerApi.togglePanel(true);
     managerApi.togglePanelPosition("right");
     managerApi.setSelectedPanel(PANEL_ID);
+
+    // Force the panel to resize to 500px.
+    const storybookLayout = JSON.parse(localStorage.getItem("storybook-layout") || "");
+    // skip resize if it's already been tried, to avoid a reload loop.
+    const skipResize = localStorage.getItem(WALKTHROUGH_SKIP_RESIZE_PANEL) === "true";
+    if (storybookLayout.resizerPanel?.x !== window.innerWidth - 500 && !skipResize) {
+      localStorage.setItem(WALKTHROUGH_SKIP_RESIZE_PANEL, "true");
+      localStorage.setItem(
+        "storybook-layout",
+        JSON.stringify({
+          ...storybookLayout,
+          resizerPanel: { x: window.innerWidth - 500 },
+        })
+      );
+      document.location.reload();
+    }
   }, [managerApi]);
 
   const [showConfetti, setShowConfetti] = React.useState(false);
@@ -79,9 +87,6 @@ export const GuidedTour = ({
   const [stepIndex, setStepIndex] = React.useState<number>(0);
   const nextStep = () => {
     setStepIndex((prev) => prev + 1);
-    if (stepIndex === 5) {
-      setShowConfetti(true);
-    }
   };
 
   React.useEffect(() => {
@@ -93,11 +98,11 @@ export const GuidedTour = ({
 
   React.useEffect(() => {
     // Listen for the test status to change to ACCEPTED and move to the completed step.
-    if (selectedStory.selectedTest.status === "ACCEPTED") {
-      setStepIndex(6);
+    if (selectedStory.selectedTest.status === "ACCEPTED" && stepIndex === 5) {
       setShowConfetti(true);
+      setStepIndex(6);
     }
-  }, [selectedStory.selectedTest.status, showConfetti, setShowConfetti]);
+  }, [selectedStory.selectedTest.status, showConfetti, setShowConfetti, stepIndex]);
 
   const steps: Partial<GuidedTourStep>[] = [
     {
@@ -126,27 +131,34 @@ export const GuidedTour = ({
       spotlightClicks: true,
       onSkipWalkthroughButtonClick,
     },
-    selectedTestHasChanges
+    selectedTestHasChanges && selectedTestHasNotBeenAcceptedYet
       ? {
-        target: "#storybook-explorer-tree > div",
-        title: "Stories with changes",
-        content: <>Here you have a filtered list of only stories with changes.</>,
-        placement: "right",
-        disableBeacon: true,
-        spotlightClicks: true,
-        onNextButtonClick: nextStep,
-        onSkipWalkthroughButtonClick,
-      }
+          target: "#storybook-explorer-tree > div",
+          title: "Stories with changes",
+          content: <>Here you have a filtered list of only stories with changes.</>,
+          placement: "right",
+          disableBeacon: true,
+          spotlightClicks: true,
+          onNextButtonClick: nextStep,
+          onSkipWalkthroughButtonClick,
+        }
       : {
-        target: "#storybook-explorer-tree > div",
-        title: "Select a story with changes",
-        content: <>Here you have a list of all stories in your Storybook.</>,
-        placement: "right",
-        disableBeacon: true,
-        spotlightClicks: true,
-        hideNextButton: true,
-        onSkipWalkthroughButtonClick,
-      },
+          target: "#storybook-explorer-tree > div",
+          title: "Stories with changes",
+          content: (
+            <>
+              Here you have a list of all stories in your Storybook.
+              <br />
+              <br />
+              Select a story with changes to see the exact pixels that changed.
+            </>
+          ),
+          placement: "right",
+          disableBeacon: true,
+          spotlightClicks: true,
+          hideNextButton: true,
+          onSkipWalkthroughButtonClick,
+        },
 
     {
       target: "#panel-tab-content",
@@ -173,6 +185,7 @@ export const GuidedTour = ({
       spotlightClicks: true,
       disableBeacon: true,
       placement: "bottom",
+      disableOverlay: true,
     },
     {
       target: "#button-toggle-snapshot",
@@ -188,6 +201,7 @@ export const GuidedTour = ({
       spotlightClicks: true,
       disableBeacon: true,
       placement: "bottom",
+      disableOverlay: true,
     },
     {
       target: "#button-accept-story",
@@ -203,11 +217,14 @@ export const GuidedTour = ({
       onNextButtonClick: nextStep,
       hideNextButton: true,
       placement: "bottom",
+      disableOverlay: true,
       onSkipWalkthroughButtonClick,
     },
     {
-      target: "#button-accept",
+      target: "#button-unaccept-story",
       title: "Perfection!",
+      placement: "bottom",
+      disableOverlay: true,
       content: (
         <>
           You’ve got the basics down! You can always Unaccept if you’re not happy with the changes.
@@ -219,6 +236,7 @@ export const GuidedTour = ({
     {
       target: "#button-run-tests",
       title: "You are ready to test",
+      placement: "bottom",
       content: (
         <>
           Any time you want to run tests, tap this button in the sidebar to see exactly what changed
@@ -226,8 +244,8 @@ export const GuidedTour = ({
         </>
       ),
       disableBeacon: true,
-      onNextButtonClick: nextStep,
-      // onCompleteWalkthroughButtonClick,
+      nextButtonText: "Done",
+      onNextButtonClick: onCompleteWalkthroughButtonClick,
     },
   ];
   return (
