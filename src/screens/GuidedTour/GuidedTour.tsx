@@ -45,11 +45,12 @@ export const GuidedTour = ({
 
   // Make sure the addon panel is open
   React.useEffect(() => {
-    // TODO: Make sure a story is selected so addon panel can open.
-    // NOTE: This starting rerunning constantly when I moved GuidedTour under the BuildProvider.
-    // managerApi.jumpToStory(1);
+    // Automatically jump to the first story if the current story is not a story (docs). So that the addon panel is visible.
+    if (managerApi.getCurrentStoryData().type !== "story") {
+      managerApi.jumpToStory(1);
+    }
 
-    // Make sure the addon panel is open on the visual tests tab.
+    // Make sure the addon panel is open, and on the visual tests tab.
     managerApi.togglePanel(true);
     managerApi.togglePanelPosition("right");
     managerApi.setSelectedPanel(PANEL_ID);
@@ -101,25 +102,25 @@ export const GuidedTour = ({
     },
     selectedTestHasChanges
       ? {
-        target: "#storybook-explorer-tree > div",
-        title: "Stories with changes",
-        content: <>Here you have a filtered list of only stories with changes.</>,
-        placement: "right",
-        disableBeacon: true,
-        spotlightClicks: true,
-        onNextButtonClick: nextStep,
-        onSkipWalkthroughButtonClick,
-      }
+          target: "#storybook-explorer-tree > div",
+          title: "Stories with changes",
+          content: <>Here you have a filtered list of only stories with changes.</>,
+          placement: "right",
+          disableBeacon: true,
+          spotlightClicks: true,
+          onNextButtonClick: nextStep,
+          onSkipWalkthroughButtonClick,
+        }
       : {
-        target: "#storybook-explorer-tree > div",
-        title: "Select a story with changes",
-        content: <>Here you have a list of all stories in your Storybook.</>,
-        placement: "right",
-        disableBeacon: true,
-        spotlightClicks: true,
-        hideNextButton: true,
-        onSkipWalkthroughButtonClick,
-      },
+          target: "#storybook-explorer-tree > div",
+          title: "Select a story with changes",
+          content: <>Here you have a list of all stories in your Storybook.</>,
+          placement: "right",
+          disableBeacon: true,
+          spotlightClicks: true,
+          hideNextButton: true,
+          onSkipWalkthroughButtonClick,
+        },
 
     {
       target: "#panel-tab-content",
