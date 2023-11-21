@@ -129,32 +129,32 @@ export const GuidedTour = ({
     },
     selectedTestHasChanges && selectedTestHasNotBeenAcceptedYet
       ? {
-        target: "#storybook-explorer-tree > div",
-        title: "Stories with changes",
-        content: <>Here you have a filtered list of only stories with changes.</>,
-        placement: "right",
-        disableBeacon: true,
-        spotlightClicks: true,
-        onNextButtonClick: nextStep,
-        onSkipWalkthroughButtonClick,
-      }
+          target: "#storybook-explorer-tree > div",
+          title: "Stories with changes",
+          content: <>Here you have a filtered list of only stories with changes.</>,
+          placement: "right",
+          disableBeacon: true,
+          spotlightClicks: true,
+          onNextButtonClick: nextStep,
+          onSkipWalkthroughButtonClick,
+        }
       : {
-        target: "#storybook-explorer-tree > div",
-        title: "Stories with changes",
-        content: (
-          <>
-            Here you have a list of all stories in your Storybook.
-            <br />
-            <br />
-            Select a story with changes to see the exact pixels that changed.
-          </>
-        ),
-        placement: "right",
-        disableBeacon: true,
-        spotlightClicks: true,
-        hideNextButton: true,
-        onSkipWalkthroughButtonClick,
-      },
+          target: "#storybook-explorer-tree > div",
+          title: "Stories with changes",
+          content: (
+            <>
+              Here you have a list of all stories in your Storybook.
+              <br />
+              <br />
+              Select a story with changes to see the exact pixels that changed.
+            </>
+          ),
+          placement: "right",
+          disableBeacon: true,
+          spotlightClicks: true,
+          hideNextButton: true,
+          onSkipWalkthroughButtonClick,
+        },
 
     {
       target: "#panel-tab-content",

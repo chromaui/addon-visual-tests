@@ -52,7 +52,7 @@ export function Confetti({
     return () => {
       document.body.removeChild(confettiContainer);
     };
-  }, []);
+  }, [confettiContainer]);
 
   return createPortal(
     <Wrapper top={top} left={left} width={width} height={height}>
@@ -119,6 +119,9 @@ function draw(context: CanvasRenderingContext2D) {
     case ParticleShape.QuarterCircle: {
       context.arc(4, -4, 4, -Math.PI / 2, 0);
       context.lineTo(4, 0);
+      break;
+    }
+    default: {
       break;
     }
   }
