@@ -271,6 +271,7 @@ export const SnapshotComparison = ({
         )}
         {!isInProgress && selectedComparison && (
           <SnapshotImage
+            key={selectedComparison.id}
             componentName={selectedTest.story?.component?.name}
             storyName={selectedTest.story?.name}
             testUrl={selectedTest.webUrl}
