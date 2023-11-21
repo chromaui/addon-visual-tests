@@ -159,7 +159,6 @@ export const Onboarding = ({
     );
   }
 
-  // This doesn't work now that showCatchAChange isn't a state variable
   if (
     localBuildProgress &&
     localBuildProgress.currentStep === "complete" &&
@@ -202,7 +201,6 @@ export const Onboarding = ({
               Don’t worry, you can undo it later. Here are a few ideas to get you started.
             </Text>
           </div>
-          {/* TODO: Fix the alignment of these */}
           <Stack style={{ display: "flex", alignItems: "flex-start", gap: "8px" }}>
             <Row style={{ margin: 0, alignItems: "center", gap: "10px" }}>
               <img

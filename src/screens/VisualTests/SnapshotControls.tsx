@@ -150,6 +150,7 @@ export const SnapshotControls = ({
               hasChrome={false}
             >
               <IconButton
+                id="button-diff-visible"
                 active={diffVisible}
                 aria-label={diffVisible ? "Hide diff" : "Show diff"}
                 onClick={() => toggleDiff(!diffVisible)}
@@ -171,6 +172,7 @@ export const SnapshotControls = ({
                 hasChrome={false}
               >
                 <ActionButton
+                  id="button-accept-story"
                   disabled={isReviewing}
                   aria-label="Accept this story"
                   onClick={() => acceptTest(selectedTest.id, ReviewTestBatch.Spec)}

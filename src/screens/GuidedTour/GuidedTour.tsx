@@ -43,6 +43,11 @@ export const GuidedTour = ({
   const selectedStory = useSelectedStoryState();
   const selectedTestHasChanges = selectedStory?.selectedTest.result === "CHANGED";
 
+  React.useEffect(() => {
+    // Dismiss storybook notifications that get in the way of the tour.
+    managerApi.clearNotification("whats-new");
+  }, [managerApi]);
+
   // Make sure the addon panel is open
   React.useEffect(() => {
     // Automatically jump to the first story if the current story is not a story (docs). So that the addon panel is visible.
@@ -73,6 +78,14 @@ export const GuidedTour = ({
     });
   }, [managerApi]);
 
+  React.useEffect(() => {
+    // Listen for the test status to change to ACCEPTED and move to the completed step.
+    if (selectedStory.selectedTest.status === "ACCEPTED") {
+      setStepIndex(6);
+      setShowConfetti(true);
+    }
+  }, [selectedStory.selectedTest.status, showConfetti, setShowConfetti]);
+
   const steps: Partial<GuidedTourStep>[] = [
     {
       target: "#sidebar-bottom-wrapper",
@@ -102,25 +115,25 @@ export const GuidedTour = ({
     },
     selectedTestHasChanges
       ? {
-          target: "#storybook-explorer-tree > div",
-          title: "Stories with changes",
-          content: <>Here you have a filtered list of only stories with changes.</>,
-          placement: "right",
-          disableBeacon: true,
-          spotlightClicks: true,
-          onNextButtonClick: nextStep,
-          onSkipWalkthroughButtonClick,
-        }
+        target: "#storybook-explorer-tree > div",
+        title: "Stories with changes",
+        content: <>Here you have a filtered list of only stories with changes.</>,
+        placement: "right",
+        disableBeacon: true,
+        spotlightClicks: true,
+        onNextButtonClick: nextStep,
+        onSkipWalkthroughButtonClick,
+      }
       : {
-          target: "#storybook-explorer-tree > div",
-          title: "Select a story with changes",
-          content: <>Here you have a list of all stories in your Storybook.</>,
-          placement: "right",
-          disableBeacon: true,
-          spotlightClicks: true,
-          hideNextButton: true,
-          onSkipWalkthroughButtonClick,
-        },
+        target: "#storybook-explorer-tree > div",
+        title: "Select a story with changes",
+        content: <>Here you have a list of all stories in your Storybook.</>,
+        placement: "right",
+        disableBeacon: true,
+        spotlightClicks: true,
+        hideNextButton: true,
+        onSkipWalkthroughButtonClick,
+      },
 
     {
       target: "#panel-tab-content",
@@ -144,6 +157,7 @@ export const GuidedTour = ({
       ),
       onNextButtonClick: nextStep,
       onSkipWalkthroughButtonClick,
+      spotlightClicks: true,
       disableBeacon: true,
       placement: "bottom",
     },
@@ -152,17 +166,18 @@ export const GuidedTour = ({
       title: "This is the Switch button",
       content: (
         <>
-          Toggle between the baselin snapshot (old) and the latest (new). The info bar below lets
+          Toggle between the baseline snapshot (old) and the latest (new). The info bar below lets
           you know which you are looking at.
         </>
       ),
       onNextButtonClick: nextStep,
       onSkipWalkthroughButtonClick,
+      spotlightClicks: true,
       disableBeacon: true,
       placement: "bottom",
     },
     {
-      target: "#button-accept",
+      target: "#button-accept-story",
       title: "Changes found!",
       content: (
         <>
@@ -171,7 +186,9 @@ export const GuidedTour = ({
         </>
       ),
       disableBeacon: true,
+      spotlightClicks: true,
       onNextButtonClick: nextStep,
+      hideNextButton: true,
       placement: "bottom",
       onSkipWalkthroughButtonClick,
     },
