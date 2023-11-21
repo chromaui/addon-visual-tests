@@ -92,11 +92,12 @@ export const SnapshotImage = ({
   focusVisible,
   ...props
 }: SnapshotImageProps & ComponentProps<typeof Container>) => {
-  const hasDiff = latestImage && diffImage && comparisonResult === ComparisonResult.Changed;
+  const hasDiff = !!latestImage && !!diffImage && comparisonResult === ComparisonResult.Changed;
   const hasError = comparisonResult === ComparisonResult.CaptureError;
+  const hasFocus = hasDiff && !!focusImage;
   const containerProps = hasDiff ? { as: "a" as any, href: testUrl, target: "_blank" } : {};
   const showDiff = hasDiff && diffVisible;
-  const showFocus = hasDiff && focusImage && focusVisible;
+  const showFocus = hasFocus && focusVisible;
 
   return (
     <Container {...props} {...containerProps}>
@@ -120,20 +121,26 @@ export const SnapshotImage = ({
           }}
         />
       )}
-      {showDiff && (
+      {hasDiff && (
         <img
           alt=""
           data-overlay="diff"
           src={diffImage.imageUrl}
-          style={{ maxWidth: `${(diffImage.imageWidth / latestImage.imageWidth) * 100}%` }}
+          style={{
+            maxWidth: `${(diffImage.imageWidth / latestImage.imageWidth) * 100}%`,
+            opacity: showDiff ? 1 : 0,
+          }}
         />
       )}
-      {showFocus && (
+      {hasFocus && (
         <img
           alt=""
           data-overlay="focus"
           src={focusImage.imageUrl}
-          style={{ maxWidth: `${(focusImage.imageWidth / latestImage.imageWidth) * 100}%` }}
+          style={{
+            maxWidth: `${(focusImage.imageWidth / latestImage.imageWidth) * 100}%`,
+            opacity: showFocus ? 1 : 0,
+          }}
         />
       )}
       {hasDiff && <Icons icon="sharealt" />}
