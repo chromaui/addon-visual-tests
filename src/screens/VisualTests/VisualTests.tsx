@@ -114,6 +114,10 @@ const useOnboarding = (
   const completeWalkthrough = React.useCallback(() => {
     setHasCompletedWalkthrough(true);
     localStorage.setItem(WALKTHROUGH_COMPLETED_KEY, "true");
+    // remove onboarding query parameter from current url
+    const url = new URL(window.location.href);
+    url.searchParams.delete("vtaOnboarding");
+    window.history.replaceState({}, "", url.href);
   }, []);
 
   const lastBuildHasChanges = React.useMemo(() => {
