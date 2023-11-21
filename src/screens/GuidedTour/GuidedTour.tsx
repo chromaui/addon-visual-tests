@@ -2,11 +2,14 @@ import { type API } from "@storybook/manager-api";
 import { useTheme } from "@storybook/theming";
 import React from "react";
 import Joyride, { CallBackProps } from "react-joyride";
+import { SelectedBuildFieldsFragment } from "src/gql/graphql";
 import { gql } from "urql";
 
 import { PANEL_ID } from "../../constants";
 import { ENABLE_FILTER } from "../../SidebarBottom";
+import { useSelectedStoryState } from "../VisualTests/BuildContext";
 import { Confetti } from "./Confetti";
+import { PulsatingEffect } from "./PulsatingEffect";
 import { Tooltip, TooltipProps } from "./Tooltip";
 
 const ProjectQuery = gql`
@@ -30,17 +33,21 @@ interface TourProps {
   managerApi: API;
 }
 
-// type OnboardingScreen = "onboarding" | "catchAChange" | "changesDetected";
 export const GuidedTour = ({
   managerApi,
   skipWalkthrough: onSkipWalkthroughButtonClick,
   completeWalkthrough: onCompleteWalkthroughButtonClick,
 }: TourProps) => {
   const theme = useTheme();
+
+  const selectedStory = useSelectedStoryState();
+  const selectedTestHasChanges = selectedStory?.selectedTest.result === "CHANGED";
+
   // Make sure the addon panel is open
   React.useEffect(() => {
-    // Make sure a story is selected so addon panel can open.
-    managerApi.jumpToStory(1);
+    // TODO: Make sure a story is selected so addon panel can open.
+    // NOTE: This starting rerunning constantly when I moved GuidedTour under the BuildProvider.
+    // managerApi.jumpToStory(1);
 
     // Make sure the addon panel is open on the visual tests tab.
     managerApi.togglePanel(true);
@@ -51,7 +58,7 @@ export const GuidedTour = ({
   const [showConfetti, setShowConfetti] = React.useState(false);
   // This will just be shown by default for now. Need to figure out when we should display it.
   const [stepIndex, setStepIndex] = React.useState<number>(0);
-  const nextStep = (...args) => {
+  const nextStep = () => {
     setStepIndex((prev) => prev + 1);
     if (stepIndex === 5) {
       setShowConfetti(true);
@@ -67,7 +74,7 @@ export const GuidedTour = ({
 
   const steps: Partial<GuidedTourStep>[] = [
     {
-      target: "#changes-found-filter",
+      target: "#sidebar-bottom-wrapper",
       title: "Changes found",
       content: (
         <>
@@ -92,15 +99,28 @@ export const GuidedTour = ({
       spotlightClicks: true,
       onSkipWalkthroughButtonClick,
     },
-    {
-      target: "#storybook-explorer-tree > div",
-      title: "Stories with changes",
-      content: <>Here you have a filtered list of only stories with changes.</>,
-      placement: "right",
-      disableBeacon: true,
-      onNextButtonClick: nextStep,
-      onSkipWalkthroughButtonClick,
-    },
+    selectedTestHasChanges
+      ? {
+        target: "#storybook-explorer-tree > div",
+        title: "Stories with changes",
+        content: <>Here you have a filtered list of only stories with changes.</>,
+        placement: "right",
+        disableBeacon: true,
+        spotlightClicks: true,
+        onNextButtonClick: nextStep,
+        onSkipWalkthroughButtonClick,
+      }
+      : {
+        target: "#storybook-explorer-tree > div",
+        title: "Select a story with changes",
+        content: <>Here you have a list of all stories in your Storybook.</>,
+        placement: "right",
+        disableBeacon: true,
+        spotlightClicks: true,
+        hideNextButton: true,
+        onSkipWalkthroughButtonClick,
+      },
+
     {
       target: "#panel-tab-content",
       title: "Inspect changes",

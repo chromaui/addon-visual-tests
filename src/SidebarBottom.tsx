@@ -26,5 +26,12 @@ export const SidebarBottom = ({ api }: SidebarBottomProps) => {
   const warnings = Object.values(status).filter((value) => value[ADDON_ID]?.status === "warn");
   if (!warnings.length) return null;
 
-  return <SidebarToggleButton count={warnings.length} onEnable={onEnable} onDisable={onDisable} />;
+  return (
+    <span
+      id="sidebar-bottom-wrapper"
+      style={{ width: "calc(100% + 10px)", height: "calc(100% + 10px)", margin: "-5px" }}
+    >
+      <SidebarToggleButton count={warnings.length} onEnable={onEnable} onDisable={onDisable} />
+    </span>
+  );
 };

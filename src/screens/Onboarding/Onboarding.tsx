@@ -13,6 +13,7 @@ import { Row, Section } from "../../components/layout";
 import { SnapshotImageThumb } from "../../components/SnapshotImageThumb";
 import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
+import { SelectedBuildFieldsFragment } from "../../gql/graphql";
 import { GitInfoPayload, LocalBuildProgress, SelectedBuildWithTests } from "../../types";
 import {
   useBuildState,
@@ -45,7 +46,7 @@ interface OnboardingProps {
   onComplete: () => void;
   onSkip: () => void;
   startDevBuild: () => void;
-  selectedBuild?: SelectedBuildWithTests;
+  selectedBuild?: SelectedBuildFieldsFragment | null;
   localBuildProgress?: LocalBuildProgress;
   gitInfo: Pick<GitInfoPayload, "uncommittedHash" | "branch">;
 }

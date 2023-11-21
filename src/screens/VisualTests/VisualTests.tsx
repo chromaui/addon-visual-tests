@@ -3,11 +3,7 @@ import type { API_StatusState } from "@storybook/types";
 import React, { useCallback, useEffect, useState } from "react";
 import { useMutation } from "urql";
 
-import {
-  ONBOARDING_COMPLETED_KEY,
-  ONBOARDING_STEP_KEY,
-  WALKTHROUGH_COMPLETED_KEY,
-} from "../../constants";
+import { ONBOARDING_COMPLETED_KEY, WALKTHROUGH_COMPLETED_KEY } from "../../constants";
 import { getFragment } from "../../gql";
 import {
   ReviewTestBatch,
@@ -122,15 +118,17 @@ const useOnboarding = (
 
   const lastBuildHasChanges = React.useMemo(() => {
     // select only testsForStatus (or empty array) and return true if any of them are pending and changed
-    const tests =
+    const testsForStatus =
       (lastBuildOnBranch &&
         "testsForStatus" in lastBuildOnBranch &&
         lastBuildOnBranch.testsForStatus?.nodes &&
         getFragment(FragmentStatusTestFields, lastBuildOnBranch.testsForStatus.nodes)) ||
       [];
-    return tests.some((t) => t.status === TestStatus.Pending && t.result === TestResult.Changed);
-  }, [lastBuildOnBranch]);
 
+    return testsForStatus.some(
+      (t) => t.status === TestStatus.Pending && t.result === TestResult.Changed
+    );
+  }, [lastBuildOnBranch]);
   const showOnboarding =
     !hasCompletedOnboarding &&
     !hasCompletedWalkthrough &&
@@ -187,9 +185,8 @@ export const VisualTestsWithoutSelectedBuildId = ({
           // @ts-expect-error we need a better API for not passing a link
           link: undefined,
           content: {
-            headline: `Failed to ${
-              update.status === ReviewTestInputStatus.Accepted ? "accept" : "unaccept"
-            } changes`,
+            headline: `Failed to ${update.status === ReviewTestInputStatus.Accepted ? "accept" : "unaccept"
+              } changes`,
             subHeadline: err.message,
           },
           icon: {
@@ -308,13 +305,14 @@ export const VisualTestsWithoutSelectedBuildId = ({
           </BuildProvider>
         </ReviewTestProvider>
       )}
-
       {showGuidedTour && (
-        <GuidedTour
-          managerApi={managerApi}
-          skipWalkthrough={completeWalkthrough}
-          completeWalkthrough={completeWalkthrough}
-        />
+        <BuildProvider watchState={{ selectedBuild }}>
+          <GuidedTour
+            managerApi={managerApi}
+            skipWalkthrough={completeWalkthrough}
+            completeWalkthrough={completeWalkthrough}
+          />
+        </BuildProvider>
       )}
     </>
   );
