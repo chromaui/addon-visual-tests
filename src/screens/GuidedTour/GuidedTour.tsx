@@ -55,6 +55,19 @@ export const GuidedTour = ({
       managerApi.jumpToStory(1);
     }
 
+    // Force the panel to resize to 500px.
+    const storybookLayout = JSON.parse(localStorage.getItem("storybook-layout") || "");
+    // skip resize if it's already been tried, to avoid a reload loop.
+    const skipResize = localStorage.getItem(`${ADDON_ID}onboarding-skip-resize`) === "true";
+    if (storybookLayout.resizerPanel?.x !== window.innerWidth - 500 && !skipResize) {
+      localStorage.setItem(
+        "storybook-layout",
+        JSON.stringify({ ...storybookLayout, resizerPanel: { x: window.innerWidth - 500 } })
+      );
+      localStorage.setItem(`${ADDON_ID}onboarding-skip-resize`, "true");
+      document.location.reload();
+    }
+
     // Make sure the addon panel is open, and on the visual tests tab.
     managerApi.togglePanel(true);
     managerApi.togglePanelPosition("right");
