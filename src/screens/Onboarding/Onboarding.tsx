@@ -65,30 +65,11 @@ export const Onboarding = ({
   const [initialGitHash, setInitialGitHash] = React.useState(gitInfo.uncommittedHash);
 
   const onCatchAChange = () => {
-    console.log(
-      "Do we need to do anything to switch screens? I guess there's initial entry, and then there's manual after?"
-    );
     setInitialGitHash(gitInfo.uncommittedHash);
     setShowCatchAChange(true);
   };
 
   const [runningSecondBuild, setRunningSecondBuild] = React.useState(false);
-
-  // React.useEffect(() => {
-  //   console.log("Inside Onboarding component", {
-  //     showCatchAChange,
-  //     showInitialBuild,
-  //     localBuildProgress,
-  //     runningSecondBuild,
-  //     selectedBuild,
-  //   });
-  // }, [
-  //   localBuildProgress,
-  //   runningSecondBuild,
-  //   showCatchAChange,
-  //   showInitialBuild,
-  //   selectedBuild?.id,
-  // ]);
 
   // TODO: This design for an error in the Onboarding is incomplete
   if (localBuildProgress && localBuildProgress.currentStep === "error") {

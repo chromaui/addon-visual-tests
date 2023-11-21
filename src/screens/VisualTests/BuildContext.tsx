@@ -112,10 +112,10 @@ export const useBuild = ({
 type BuildInfo = ReturnType<typeof useBuild> | null;
 type SelectedStory =
   | ({
-    hasTests: boolean;
-    tests: StoryTestFieldsFragment[];
-    summary: ReturnType<typeof summarizeTests>;
-  } & ReturnType<typeof useTests>)
+      hasTests: boolean;
+      tests: StoryTestFieldsFragment[];
+      summary: ReturnType<typeof summarizeTests>;
+    } & ReturnType<typeof useTests>)
   | null;
 
 // Partial allows us to pass only part of the context in some components. This helps prevent unnecessary rerendering of components like GuidedTour.
