@@ -93,7 +93,6 @@ export const SnapshotControls = ({
 
   const isAcceptable = changeCount > 0 && selectedTest.status !== TestStatus.Accepted;
   const isUnacceptable = changeCount > 0 && selectedTest.status === TestStatus.Accepted;
-  const hasBaselineSnapshot = !!selectedComparison?.baseCapture?.captureImage;
 
   return (
     <>
@@ -107,28 +106,27 @@ export const SnapshotControls = ({
       </Label>
 
       <Controls>
-        {hasBaselineSnapshot && (
-          <WithTooltip
-            tooltip={
-              <TooltipNote
-                note={baselineImageVisible ? "Show latest snapshot" : "Show baseline snapshot"}
-              />
-            }
-            trigger="hover"
-            hasChrome={false}
-          >
-            <IconButton
-              aria-label={baselineImageVisible ? "Show latest snapshot" : "Show baseline snapshot"}
-              onClick={() => toggleBaselineImage()}
-            >
-              <Icons icon="transfer" />
-              Switch
-            </IconButton>
-          </WithTooltip>
-        )}
-
         {selectedComparison?.result === ComparisonResult.Changed && (
           <>
+            <WithTooltip
+              tooltip={
+                <TooltipNote
+                  note={baselineImageVisible ? "Show latest snapshot" : "Show baseline snapshot"}
+                />
+              }
+              trigger="hover"
+              hasChrome={false}
+            >
+              <IconButton
+                aria-label={
+                  baselineImageVisible ? "Show latest snapshot" : "Show baseline snapshot"
+                }
+                onClick={() => toggleBaselineImage()}
+              >
+                <Icons icon="transfer" />
+                Switch
+              </IconButton>
+            </WithTooltip>
             <WithTooltip
               tooltip={<TooltipNote note={focusVisible ? "Hide spotlight" : "Show spotlight"} />}
               trigger="hover"
