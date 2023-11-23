@@ -1,6 +1,6 @@
 import { type API } from "@storybook/manager-api";
 import { useTheme } from "@storybook/theming";
-import React from "react";
+import React, { useEffect } from "react";
 import Joyride, { CallBackProps } from "react-joyride";
 import { gql } from "urql";
 
@@ -44,13 +44,13 @@ export const GuidedTour = ({
   const selectedTestHasChanges = selectedStory?.selectedTest.result === "CHANGED";
   const selectedTestHasNotBeenAcceptedYet = selectedStory?.selectedTest.status !== "ACCEPTED";
 
-  React.useEffect(() => {
+  useEffect(() => {
     // Dismiss storybook notifications that get in the way of the tour.
     managerApi.clearNotification("whats-new");
   }, [managerApi]);
 
   // Make sure the addon panel is open
-  React.useEffect(() => {
+  useEffect(() => {
     // Automatically jump to the first story if the current story is not a story (docs). So that the addon panel is visible.
     if (managerApi.getCurrentStoryData().type !== "story") {
       managerApi.jumpToStory(1);
@@ -85,14 +85,18 @@ export const GuidedTour = ({
     setStepIndex((prev) => prev + 1);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     // Listen for internal event to indicate a filter was set before moving to next step.
     managerApi.once(ENABLE_FILTER, () => {
       setStepIndex(1);
+      // Force a resize to make sure the react-joyride centers on the sidebar properly. Timeout is needed to make sure the filter takes place.
+      setTimeout(() => {
+        window.dispatchEvent(new Event("resize"));
+      }, 100);
     });
   }, [managerApi]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     // Listen for the test status to change to ACCEPTED and move to the completed step.
     if (selectedStory.selectedTest.status === "ACCEPTED" && stepIndex === 5) {
       setShowConfetti(true);
@@ -258,7 +262,8 @@ export const GuidedTour = ({
         />
       )}
       <Joyride
-        steps={steps}
+        // For some reason, the working steps above do not pass the type check. So we have to cast it.
+        steps={steps as GuidedTourStep[]}
         continuous
         stepIndex={stepIndex}
         spotlightPadding={0}
