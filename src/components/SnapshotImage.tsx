@@ -1,6 +1,6 @@
 import { Icons } from "@storybook/components";
 import { styled } from "@storybook/theming";
-import React, { ComponentProps } from "react";
+import React, { ComponentProps, RefObject, useRef } from "react";
 
 import { CaptureImage, CaptureOverlayImage, ComparisonResult, Test } from "../gql/graphql";
 import { Text } from "./Text";
@@ -17,9 +17,26 @@ export const Container = styled.div<{ href?: string; target?: string }>(
       maxWidth: "100%",
       transition: "filter 0.1s ease-in-out",
     },
+    "img[data-snapshot='latest']": {
+      zIndex: 1,
+    },
     "img[data-overlay]": {
       position: "absolute",
       opacity: 0.7,
+      pointerEvents: "none",
+      zIndex: 2,
+    },
+    "img[data-overlay='diff']": {
+      mixBlendMode: "multiply",
+    },
+    "span[data-divider]": {
+      position: "absolute",
+      width: 3,
+      height: "100%",
+      background: theme.color.defaultText,
+      border: `1px solid ${theme.background.app}`,
+      opacity: 0.7,
+      zIndex: 2,
       pointerEvents: "none",
     },
     div: {
@@ -29,6 +46,7 @@ export const Container = styled.div<{ href?: string; target?: string }>(
       width: "100%",
       margin: "30px 15px",
       color: theme.color.mediumdark,
+      zIndex: 1,
       p: {
         maxWidth: 380,
         textAlign: "center",
@@ -42,6 +60,7 @@ export const Container = styled.div<{ href?: string; target?: string }>(
       position: "absolute",
       left: "calc(50% - 14px)",
       top: "calc(50% - 14px)",
+      zIndex: 1,
       width: 28,
       height: 28,
       color: theme.color.lightest,
@@ -78,6 +97,23 @@ interface SnapshotImageProps {
   focusVisible: boolean;
 }
 
+const useDividerPosition = (targetRef: RefObject<HTMLElement>) => {
+  const [dividerPosition, setDividerPosition] = React.useState<number | null>(null);
+
+  React.useEffect(() => {
+    const updateMousePosition = ({ clientX: cx, clientY: cy }: MouseEvent) => {
+      if (!targetRef?.current) return;
+      const { x, y, width, height } = targetRef.current.getBoundingClientRect();
+      const hovering = cx >= x && cx <= x + width && cy >= y && cy <= y + height;
+      setDividerPosition(hovering ? cx - x : null);
+    };
+    window.addEventListener("mousemove", updateMousePosition);
+    return () => window.removeEventListener("mousemove", updateMousePosition);
+  }, [targetRef]);
+
+  return dividerPosition;
+};
+
 export const SnapshotImage = ({
   componentName,
   storyName,
@@ -99,25 +135,35 @@ export const SnapshotImage = ({
   const showDiff = hasDiff && diffVisible;
   const showFocus = hasFocus && focusVisible;
 
+  const imageRef = useRef<HTMLImageElement>(null);
+  const dividerPosition = useDividerPosition(imageRef);
+  const showDivider = !showDiff && !showFocus && !!dividerPosition;
+
   return (
     <Container {...props} {...containerProps}>
       {latestImage && (
         <img
+          ref={imageRef}
+          data-snapshot="latest"
           alt={`Latest snapshot for the '${storyName}' story of the '${componentName}' component`}
           src={latestImage.imageUrl}
           style={{
-            opacity: showDiff && !showFocus ? 0.7 : 1,
+            filter: showDiff && !showFocus ? `brightness(105%)` : "none",
             display: baselineImageVisible ? "none" : "block",
+            clipPath: showDivider ? `inset(0 0 0 ${dividerPosition}px)` : "none",
+            cursor: showDivider ? "ew-resize" : "auto",
           }}
         />
       )}
       {baselineImage && (
         <img
+          data-snapshot="baseline"
           alt={`Baseline snapshot for the '${storyName}' story of the '${componentName}' component`}
           src={baselineImage.imageUrl}
           style={{
-            opacity: showDiff && !showFocus ? 0.7 : 1,
-            display: baselineImageVisible ? "block" : "none",
+            filter: showDiff && !showFocus ? `brightness(105%)` : "none",
+            position: baselineImageVisible ? "initial" : "absolute",
+            cursor: showDivider ? "ew-resize" : "auto",
           }}
         />
       )}
@@ -143,6 +189,7 @@ export const SnapshotImage = ({
           }}
         />
       )}
+      {showDivider && <span data-divider style={{ left: dividerPosition - 1 }} />}
       {hasDiff && <Icons icon="sharealt" />}
       {hasError && !latestImage && (
         <div>
