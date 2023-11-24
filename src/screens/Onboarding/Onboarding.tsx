@@ -111,6 +111,9 @@ export const Onboarding = ({
           <Button small secondary onClick={startDevBuild}>
             Take snapshots
           </Button>
+          <Button onClick={onSkip} link>
+            Skip walkthrough
+          </Button>
         </Stack>
       </Container>
     );
