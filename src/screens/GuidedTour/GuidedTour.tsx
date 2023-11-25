@@ -41,8 +41,8 @@ export const GuidedTour = ({
   const theme = useTheme();
 
   const selectedStory = useSelectedStoryState();
-  const selectedTestHasChanges = selectedStory?.selectedTest.result === "CHANGED";
-  const selectedTestHasNotBeenAcceptedYet = selectedStory?.selectedTest.status !== "ACCEPTED";
+  const selectedTestHasChanges = selectedStory?.selectedTest?.result === "CHANGED";
+  const selectedTestHasNotBeenAcceptedYet = selectedStory?.selectedTest?.status !== "ACCEPTED";
 
   useEffect(() => {
     // Dismiss storybook notifications that get in the way of the tour.
@@ -52,7 +52,7 @@ export const GuidedTour = ({
   // Make sure the addon panel is open
   useEffect(() => {
     // Automatically jump to the first story if the current story is not a story (docs). So that the addon panel is visible.
-    if (managerApi.getCurrentStoryData().type !== "story") {
+    if (managerApi.getCurrentStoryData()?.type !== "story") {
       managerApi.jumpToStory(1);
     }
 
@@ -98,11 +98,11 @@ export const GuidedTour = ({
 
   useEffect(() => {
     // Listen for the test status to change to ACCEPTED and move to the completed step.
-    if (selectedStory.selectedTest.status === "ACCEPTED" && stepIndex === 5) {
+    if (selectedStory?.selectedTest?.status === "ACCEPTED" && stepIndex === 5) {
       setShowConfetti(true);
       setStepIndex(6);
     }
-  }, [selectedStory.selectedTest.status, showConfetti, setShowConfetti, stepIndex]);
+  }, [selectedStory?.selectedTest?.status, showConfetti, setShowConfetti, stepIndex]);
 
   const steps: Partial<GuidedTourStep>[] = [
     {
@@ -133,32 +133,32 @@ export const GuidedTour = ({
     },
     selectedTestHasChanges && selectedTestHasNotBeenAcceptedYet
       ? {
-          target: "#storybook-explorer-tree > div",
-          title: "Stories with changes",
-          content: <>Here you have a filtered list of only stories with changes.</>,
-          placement: "right",
-          disableBeacon: true,
-          spotlightClicks: true,
-          onNextButtonClick: nextStep,
-          onSkipWalkthroughButtonClick,
-        }
+        target: "#storybook-explorer-tree > div",
+        title: "Stories with changes",
+        content: <>Here you have a filtered list of only stories with changes.</>,
+        placement: "right",
+        disableBeacon: true,
+        spotlightClicks: true,
+        onNextButtonClick: nextStep,
+        onSkipWalkthroughButtonClick,
+      }
       : {
-          target: "#storybook-explorer-tree > div",
-          title: "Stories with changes",
-          content: (
-            <>
-              Here you have a list of all stories in your Storybook.
-              <br />
-              <br />
-              Select a story with changes to see the exact pixels that changed.
-            </>
-          ),
-          placement: "right",
-          disableBeacon: true,
-          spotlightClicks: true,
-          hideNextButton: true,
-          onSkipWalkthroughButtonClick,
-        },
+        target: "#storybook-explorer-tree > div",
+        title: "Stories with changes",
+        content: (
+          <>
+            Here you have a list of all stories in your Storybook.
+            <br />
+            <br />
+            Select a story with changes to see the exact pixels that changed.
+          </>
+        ),
+        placement: "right",
+        disableBeacon: true,
+        spotlightClicks: true,
+        hideNextButton: true,
+        onSkipWalkthroughButtonClick,
+      },
 
     {
       target: "#panel-tab-content",

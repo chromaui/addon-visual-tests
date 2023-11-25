@@ -130,7 +130,7 @@ const useOnboarding = (
       [];
 
     return testsForStatus.some(
-      (t) => t.status === TestStatus.Pending && t.result === TestResult.Changed
+      (t) => t?.status === TestStatus.Pending && t?.result === TestResult.Changed
     );
   }, [lastBuildOnBranch]);
   const showOnboarding =
@@ -189,9 +189,8 @@ export const VisualTestsWithoutSelectedBuildId = ({
           // @ts-expect-error we need a better API for not passing a link
           link: undefined,
           content: {
-            headline: `Failed to ${
-              update.status === ReviewTestInputStatus.Accepted ? "accept" : "unaccept"
-            } changes`,
+            headline: `Failed to ${update.status === ReviewTestInputStatus.Accepted ? "accept" : "unaccept"
+              } changes`,
             subHeadline: err.message,
           },
           icon: {
