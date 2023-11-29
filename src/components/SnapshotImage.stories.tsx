@@ -10,8 +10,8 @@ const meta = {
   args: {
     componentName: "Shapes",
     storyName: "Primary",
-    baselineImage: { imageUrl: "/A.png", imageWidth: 880 },
-    latestImage: { imageUrl: "/B.png", imageWidth: 880 },
+    baselineImage: { imageUrl: "/A.png", imageWidth: 880, imageHeight: 280 },
+    latestImage: { imageUrl: "/B.png", imageWidth: 880, imageHeight: 280 },
     diffImage: { imageUrl: "/B-comparison.png", imageWidth: 880 },
     focusImage: { imageUrl: "/B-focus.png", imageWidth: 880 },
     comparisonResult: ComparisonResult.Changed,
@@ -50,7 +50,8 @@ export const BothVisible = {
 
 export const Wider = {
   args: {
-    latestImage: { imageUrl: "/shapes-wider.png", imageWidth: 768 },
+    baselineImage: { imageUrl: "/shapes-taller.png", imageWidth: 588, imageHeight: 684 },
+    latestImage: { imageUrl: "/shapes-wider.png", imageWidth: 768, imageHeight: 472 },
     diffImage: { imageUrl: "/shapes-comparison.png", imageWidth: 768 },
     focusImage: { imageUrl: "/shapes-focus.png", imageWidth: 768 },
     diffVisible: true,
@@ -67,7 +68,8 @@ export const WiderConstrained = {
 
 export const Taller = {
   args: {
-    latestImage: { imageUrl: "/shapes-taller.png", imageWidth: 588 },
+    baselineImage: { imageUrl: "/shapes-wider.png", imageWidth: 768, imageHeight: 472 },
+    latestImage: { imageUrl: "/shapes-taller.png", imageWidth: 588, imageHeight: 684 },
     diffImage: { imageUrl: "/shapes-comparison.png", imageWidth: 768 },
     focusImage: { imageUrl: "/shapes-focus.png", imageWidth: 768 },
     diffVisible: true,
@@ -82,8 +84,22 @@ export const TallerConstrained = {
   },
 } satisfies Story;
 
+export const NoBaseline = {
+  args: {
+    baselineImage: undefined,
+  },
+} satisfies Story;
+
+export const NoLatest = {
+  args: {
+    latestImage: undefined,
+    baselineImageVisible: true,
+  },
+} satisfies Story;
+
 export const CaptureError = {
   args: {
+    baselineImage: undefined,
     latestImage: undefined,
     comparisonResult: ComparisonResult.CaptureError,
   },
