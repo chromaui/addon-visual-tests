@@ -184,6 +184,12 @@ export const runChromaticBuild = async (
     options: {
       ...options,
 
+      // Local changes should never be auto-accepted
+      autoAcceptChanges: false,
+      // Test results must be awaited to get progress updates
+      exitOnceUploaded: false,
+      // Don't raise any alarms when changes are found
+      exitZeroOnChanges: true,
       // We might want to drop this later and instead record "uncommitted hashes" on builds
       forceRebuild: true,
       // Builds initiated from the addon are always considered local
