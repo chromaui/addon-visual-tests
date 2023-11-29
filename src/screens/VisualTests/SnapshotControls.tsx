@@ -73,8 +73,8 @@ export const SnapshotControls = ({
   isOutdated: boolean;
   startDevBuild: () => void;
 }) => {
-  const { baselineImageVisible, diffVisible, focusVisible, zoomVisible } = useControlsState();
-  const { toggleBaselineImage, toggleDiff, toggleFocus, toggleZoom } = useControlsDispatch();
+  const { baselineImageVisible, diffVisible, focusVisible } = useControlsState();
+  const { toggleBaselineImage, toggleDiff, toggleFocus } = useControlsDispatch();
 
   const { selectedTest, selectedComparison, summary } = useSelectedStoryState();
   const { changeCount, isInProgress } = summary;
@@ -88,7 +88,6 @@ export const SnapshotControls = ({
         <Placeholder />
         <Placeholder />
         <Placeholder />
-        {/* <Placeholder /> */}
       </Controls>
     );
 
@@ -128,19 +127,6 @@ export const SnapshotControls = ({
                 Switch
               </IconButton>
             </WithTooltip>
-            {/* <WithTooltip
-              tooltip={<TooltipNote note={zoomVisible ? "Zoom out" : "Zoom in"} />}
-              trigger="hover"
-              hasChrome={false}
-            >
-              <IconButton
-                active={zoomVisible}
-                aria-label={zoomVisible ? "Zoom out" : "Zoom in"}
-                onClick={() => toggleZoom(!zoomVisible)}
-              >
-                <Icons icon={zoomVisible ? "zoomout" : "zoom"} />
-              </IconButton>
-            </WithTooltip> */}
             <WithTooltip
               tooltip={<TooltipNote note={focusVisible ? "Hide spotlight" : "Show spotlight"} />}
               trigger="hover"
