@@ -20,7 +20,7 @@ const useGlobalValue = (key: string) => {
  * for the same story.
  */
 export function useTests(tests: StoryTestFieldsFragment[]) {
-  const [theme, themeConfig] = useGlobalValue("theme");
+  const [theme, themeType] = useGlobalValue("theme");
   const [selectedBrowserId, onSelectBrowserId] = useState<BrowserData["id"]>(() => {
     const test = tests.find(({ status }) => status !== TestStatus.Passed) || tests[0];
     return test?.comparisons[0]?.browser.id;
@@ -41,7 +41,7 @@ export function useTests(tests: StoryTestFieldsFragment[]) {
     selectedTest?.comparisons[0];
 
   return {
-    modeOrder: themeConfig?.toolbar?.items?.map((item: { title: string }) => item.title),
+    modeOrder: themeType?.toolbar?.items?.map((item: { title: string }) => item.title),
     selectedTest,
     selectedComparison,
     onSelectBrowser,
