@@ -192,8 +192,12 @@ export const runChromaticBuild = async (
       exitZeroOnChanges: true,
       // We might want to drop this later and instead record "uncommitted hashes" on builds
       forceRebuild: true,
+      // This should never be set for local builds
+      fromCI: false,
       // Builds initiated from the addon are always considered local
       isLocalBuild: true,
+      // Never skip local builds
+      skip: false,
 
       experimental_onTaskStart: onStartOrProgress(localBuildProgress, timeout),
       experimental_onTaskProgress: onStartOrProgress(localBuildProgress, timeout),
