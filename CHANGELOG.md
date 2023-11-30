@@ -1,3 +1,15 @@
+# v0.0.122 (Thu Nov 30 2023)
+
+#### 🐛 Bug Fix
+
+- Sort modes by their theme toolbar order [#153](https://github.com/chromaui/addon-visual-tests/pull/153) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v0.0.121 (Thu Nov 30 2023)
 
 #### 🐛 Bug Fix
