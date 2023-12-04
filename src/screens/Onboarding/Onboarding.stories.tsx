@@ -269,15 +269,6 @@ export const ChangesFound: Story = {
   },
 };
 
-export const Done: Story = {
-  parameters: {
-    ...BaselineSaved.parameters,
-    ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318693&t=3EAIRe8423CpOQWY-4"
-    ),
-  },
-};
-
 // TODO: This design for an error in the Onboarding is incomplete
 export const Error: Story = {
   args: {
