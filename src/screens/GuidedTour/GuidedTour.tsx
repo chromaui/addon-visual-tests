@@ -29,6 +29,7 @@ type GuidedTourStep = TooltipProps["step"];
 
 interface TourProps {
   skipWalkthrough: () => void;
+  startWalkthrough: () => void;
   completeWalkthrough: () => void;
   managerApi: API;
 }
@@ -36,6 +37,7 @@ interface TourProps {
 export const GuidedTour = ({
   managerApi,
   skipWalkthrough: onSkipWalkthroughButtonClick,
+  startWalkthrough,
   completeWalkthrough: onCompleteWalkthroughButtonClick,
 }: TourProps) => {
   const theme = useTheme();
@@ -43,6 +45,11 @@ export const GuidedTour = ({
   const selectedStory = useSelectedStoryState();
   const selectedTestHasChanges = selectedStory?.selectedTest?.result === "CHANGED";
   const selectedTestHasNotBeenAcceptedYet = selectedStory?.selectedTest?.status !== "ACCEPTED";
+
+  useEffect(() => {
+    // Prompt the parent screen that the walkthrough has started, so it doesn't exit on accept if there is only one story changed in the build.
+    startWalkthrough();
+  });
 
   useEffect(() => {
     // Dismiss storybook notifications that get in the way of the tour.

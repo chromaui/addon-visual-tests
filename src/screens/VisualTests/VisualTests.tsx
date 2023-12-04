@@ -111,9 +111,16 @@ const useOnboarding = (
     const force = managerApi?.getUrlState?.().queryParams.vtaOnboarding === "true";
     return !force && localStorage.getItem(WALKTHROUGH_COMPLETED_KEY) === "true";
   });
+
+  const [walkthroughInProgress, setWalkthroughInProgress] = React.useState(false);
+  const startWalkthrough = React.useCallback(() => {
+    setWalkthroughInProgress(true);
+  }, []);
+
   const completeWalkthrough = React.useCallback(() => {
     setHasCompletedWalkthrough(true);
     localStorage.setItem(WALKTHROUGH_COMPLETED_KEY, "true");
+    setWalkthroughInProgress(false);
     // remove onboarding query parameter from current url
     const url = new URL(window.location.href);
     url.searchParams.delete("vtaOnboarding");
@@ -133,16 +140,19 @@ const useOnboarding = (
       (t) => t?.status === TestStatus.Pending && t?.result === TestResult.Changed
     );
   }, [lastBuildOnBranch]);
+
   const showOnboarding =
     !hasCompletedOnboarding &&
     !hasCompletedWalkthrough &&
-    (!lastBuildOnBranch || !lastBuildHasChanges);
+    (!lastBuildOnBranch || !lastBuildHasChanges) &&
+    !walkthroughInProgress;
 
   return {
     showOnboarding,
     showGuidedTour: !showOnboarding && !hasCompletedWalkthrough,
     completeOnboarding,
     completeWalkthrough,
+    startWalkthrough,
   };
 };
 
@@ -247,10 +257,13 @@ export const VisualTestsWithoutSelectedBuildId = ({
     [setSelectedBuildInfo, lastBuildOnBranchIsSelectable, lastBuildOnBranch?.id, storyId]
   );
 
-  const { showOnboarding, showGuidedTour, completeOnboarding, completeWalkthrough } = useOnboarding(
-    buildInfo,
-    managerApi
-  );
+  const {
+    showOnboarding,
+    showGuidedTour,
+    completeOnboarding,
+    completeWalkthrough,
+    startWalkthrough,
+  } = useOnboarding(buildInfo, managerApi);
 
   if (showOnboarding) {
     return (
@@ -314,6 +327,7 @@ export const VisualTestsWithoutSelectedBuildId = ({
           <GuidedTour
             managerApi={managerApi}
             skipWalkthrough={completeWalkthrough}
+            startWalkthrough={startWalkthrough}
             completeWalkthrough={completeWalkthrough}
           />
         </BuildProvider>
