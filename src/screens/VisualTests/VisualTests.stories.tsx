@@ -17,7 +17,7 @@ import { delay, HttpResponse } from "msw";
 import React from "react";
 
 import { INITIAL_BUILD_PAYLOAD } from "../../buildSteps";
-import { ONBOARDING_COMPLETED_KEY } from "../../constants";
+import { WALKTHROUGH_COMPLETED_KEY } from "../../constants";
 import type {
   LastBuildOnBranchBuildFieldsFragment,
   MakeOptional,
@@ -124,7 +124,7 @@ const meta = {
     storyWrapper(ControlsProvider),
     storyWrapper(GraphQLClientProvider),
     (Story) => {
-      localStorage.setItem(ONBOARDING_COMPLETED_KEY, "true");
+      localStorage.setItem(WALKTHROUGH_COMPLETED_KEY, "true");
       return <Story />;
     },
   ],

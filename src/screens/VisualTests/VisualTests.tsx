@@ -3,7 +3,7 @@ import type { API_StatusState } from "@storybook/types";
 import React, { useCallback, useEffect, useState } from "react";
 import { useMutation } from "urql";
 
-import { ONBOARDING_COMPLETED_KEY, WALKTHROUGH_COMPLETED_KEY } from "../../constants";
+import { WALKTHROUGH_COMPLETED_KEY } from "../../constants";
 import { getFragment } from "../../gql";
 import {
   ReviewTestBatch,
@@ -98,12 +98,9 @@ const useOnboarding = (
   { lastBuildOnBranch }: ReturnType<typeof useBuild>,
   managerApi?: Pick<API, "getUrlState">
 ) => {
-  const [hasCompletedOnboarding, setHasCompletedOnboarding] = React.useState(
-    () => localStorage.getItem(ONBOARDING_COMPLETED_KEY) === "true"
-  );
+  const [hasCompletedOnboarding, setHasCompletedOnboarding] = React.useState(false);
   const completeOnboarding = React.useCallback(() => {
     setHasCompletedOnboarding(true);
-    localStorage.setItem(ONBOARDING_COMPLETED_KEY, "true");
   }, []);
 
   const [hasCompletedWalkthrough, setHasCompletedWalkthrough] = React.useState(() => {
