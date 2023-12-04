@@ -279,12 +279,6 @@ export const GuidedTour = ({
         disableOverlayClose
         disableScrolling
         hideCloseButton
-        // Not needed in our tour because we only show individual steps. Storybook tour requires writing a story.
-        // callback={(data: CallBackProps) => {
-        // if (!isFinalStep && data.status === STATUS.FINISHED) {
-        //   onFirstTourDone();
-        // }
-        // }}
         showSkipButton
         floaterProps={{
           options: {

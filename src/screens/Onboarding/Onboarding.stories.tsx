@@ -20,10 +20,7 @@ const meta = {
     storyWrapper(GraphQLClientProvider),
   ],
   args: {
-    // queryError: undefined,
-    // hasData: true,
-    // hasSelectedBuild: false,
-    startDevBuild: () => {},
+    startDevBuild: () => { },
     localBuildProgress: undefined,
     gitInfo: {
       uncommittedHash: "123",
@@ -63,6 +60,9 @@ export const Default: Story = {
   parameters: withFigmaDesign(
     "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318140&t=3EAIRe8423CpOQWY-4"
   ),
+  args: {
+    showInitialBuildScreen: true,
+  },
 };
 
 export const InProgress: Story = {
@@ -70,12 +70,14 @@ export const InProgress: Story = {
     localBuildProgress: {
       ...INITIAL_BUILD_PAYLOAD,
     },
+    showInitialBuildScreen: true,
   },
   parameters: withFigmaDesign(
     "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318374&t=3EAIRe8423CpOQWY-4"
   ),
 };
 
+// This story is broken until a soltion is added to show
 export const BaselineSaved: Story = {
   args: {
     localBuildProgress: {
@@ -83,6 +85,7 @@ export const BaselineSaved: Story = {
       buildProgressPercentage: 100,
       currentStep: "complete",
     },
+    showInitialBuildScreen: true,
   },
   parameters: {
     selectedBuild: withTests(acceptedBuild, acceptedTests),

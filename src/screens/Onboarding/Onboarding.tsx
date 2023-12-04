@@ -48,11 +48,13 @@ interface OnboardingProps {
   startDevBuild: () => void;
   selectedBuild?: SelectedBuildFieldsFragment | null;
   localBuildProgress?: LocalBuildProgress;
+  showInitialBuildScreen?: boolean;
   gitInfo: Pick<GitInfoPayload, "uncommittedHash" | "branch">;
 }
 export const Onboarding = ({
   startDevBuild,
   localBuildProgress,
+  showInitialBuildScreen,
   gitInfo,
   onComplete,
   onSkip,
@@ -60,8 +62,18 @@ export const Onboarding = ({
   const { selectedBuild } = useBuildState();
   const selectedStory = useSelectedStoryState();
 
-  const showInitialBuild = !selectedBuild;
-  const [showCatchAChange, setShowCatchAChange] = useState(false);
+  // The initial build screen is only necessary if this is a brand new project with no builds at all. Instead, !selectedBuild would appear on any new branch, even if there are other builds on the project.
+  // TODO: Removed this entirely to solve for the most common case of an existing user with some builds to use as a baseline.
+  // Removing instead of fixing to avoid additional work as this project is past due. We need to revisit this later.
+  const [showInitialBuild, setShowInitialBuild] = useState(showInitialBuildScreen); // !selectedBuild;
+  useEffect(() => {
+    // Watch the value of showInitialBuildScreen, and if it becomes true, set the state to true. This is necessary because Onboarding may render before there is data to determine if there are any builds.
+    if (showInitialBuildScreen) {
+      setShowInitialBuild(true);
+    }
+  }, [showInitialBuildScreen]);
+
+  const [showCatchAChange, setShowCatchAChange] = useState(() => !showInitialBuild);
   const [initialGitHash, setInitialGitHash] = React.useState(gitInfo.uncommittedHash);
 
   const onCatchAChange = () => {
@@ -255,6 +267,8 @@ export const Onboarding = ({
       </Container>
     );
   }
+
+  // TODO: There is a bug right after pressing "run tests" where it shows the "no screen found ui" appears because the runningSecondBuild is true, but the localBuildProgress hasn't been updated yet.
 
   // If the first build is done, changes were detected, and the second build is in progress.
   if (
