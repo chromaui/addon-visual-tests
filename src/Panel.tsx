@@ -143,6 +143,11 @@ export const Panel = ({ active, api }: PanelProps) => {
   }
 
   const localBuildIsRightBranch = gitInfo.branch === localBuildProgress?.branch;
+  const startDevBuild = () => {
+    const { title } = api.getCurrentStoryData();
+    const onlyStoryNames = [`${title}/*`];
+    emit(START_BUILD, { accessToken, onlyStoryNames });
+  };
   return (
     <Provider key={PANEL_ID} value={client}>
       <Sections hidden={!active}>
@@ -151,7 +156,7 @@ export const Panel = ({ active, api }: PanelProps) => {
             dismissBuildError={() => setLocalBuildProgress(undefined)}
             isOutdated={!!isOutdated}
             localBuildProgress={localBuildIsRightBranch ? localBuildProgress : undefined}
-            startDevBuild={() => emit(START_BUILD, { accessToken })}
+            startDevBuild={startDevBuild}
             setAccessToken={setAccessToken}
             setOutdated={setOutdated}
             updateBuildStatus={updateBuildStatus}
