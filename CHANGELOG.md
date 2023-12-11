@@ -1,3 +1,15 @@
+# v0.0.124 (Mon Dec 11 2023)
+
+#### 🐛 Bug Fix
+
+- Get CI green again. [#154](https://github.com/chromaui/addon-visual-tests/pull/154) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.123 (Mon Dec 11 2023)
 
 #### ⚠️ Pushed to `main`
