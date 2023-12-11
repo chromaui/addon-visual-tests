@@ -45,6 +45,5 @@ export function testsToStatusUpdate<T extends StatusTestFieldsFragment>(
     ])
   );
 
-  // @ts-expect-error SB's API type is incorrect here you are allowed to pass null
   return update;
 }
