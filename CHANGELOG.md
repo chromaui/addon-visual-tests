@@ -1,3 +1,15 @@
+# v0.0.123 (Mon Dec 11 2023)
+
+#### ⚠️ Pushed to `main`
+
+- Upgrade Storybook to 7.6.4 ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.122 (Thu Nov 30 2023)
 
 #### 🐛 Bug Fix
