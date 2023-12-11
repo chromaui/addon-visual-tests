@@ -154,7 +154,6 @@ export const VisualTestsWithoutSelectedBuildId = ({
     getFragment(FragmentStatusTestFields, lastBuildOnBranch.testsForStatus.nodes);
   const statusUpdate = lastBuildOnBranchIsSelectable && testsToStatusUpdate(testsForStatus || []);
   useEffect(() => {
-    // @ts-expect-error The return type of this function is wrong in the API, it should allow `null` values
     updateBuildStatus((state) => ({
       ...createEmptyStoryStatusUpdate(state),
       ...statusUpdate,
