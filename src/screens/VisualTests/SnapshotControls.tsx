@@ -299,14 +299,26 @@ export const SnapshotControls = ({
           )}
 
           <WithTooltip
-            tooltip={<TooltipNote note={isOutdated ? "Run new tests" : "Rerun tests"} />}
+            tooltip={
+              <TooltipNote
+                note={
+                  isOutdated
+                    ? "Run new tests for just this component"
+                    : "Rerun tests for just this component"
+                }
+              />
+            }
             trigger="hover"
             hasChrome={false}
           >
             <ActionButton
               containsIcon
               secondary
-              aria-label={isOutdated ? "Run new tests" : "Rerun tests"}
+              aria-label={
+                isOutdated
+                  ? "Run new tests for just this component"
+                  : "Rerun testsfor just this component for just this component"
+              }
               onClick={() => startDevBuild()}
             >
               <Icons icon={isOutdated ? "play" : "sync"} />
