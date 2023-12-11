@@ -1,4 +1,4 @@
-import { useGlobals } from "@storybook/manager-api";
+import { useGlobals, useGlobalTypes } from "@storybook/manager-api";
 import { useCallback, useState } from "react";
 
 import { BrowserInfo, StoryTestFieldsFragment, TestMode, TestStatus } from "../gql/graphql";
@@ -8,9 +8,10 @@ type ModeData = Pick<TestMode, "name">;
 
 const useGlobalValue = (key: string) => {
   try {
-    return useGlobals()[0][key];
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    return [useGlobals()[0][key], useGlobalTypes()[key]];
   } catch (e) {
-    return null;
+    return [null, null];
   }
 };
 
@@ -19,7 +20,7 @@ const useGlobalValue = (key: string) => {
  * for the same story.
  */
 export function useTests(tests: StoryTestFieldsFragment[]) {
-  const theme = useGlobalValue("theme");
+  const [theme, themeType] = useGlobalValue("theme");
   const [selectedBrowserId, onSelectBrowserId] = useState<BrowserData["id"]>(() => {
     const test = tests.find(({ status }) => status !== TestStatus.Passed) || tests[0];
     return test?.comparisons[0]?.browser.id;
@@ -40,6 +41,7 @@ export function useTests(tests: StoryTestFieldsFragment[]) {
     selectedTest?.comparisons[0];
 
   return {
+    modeOrder: themeType?.toolbar?.items?.map((item: { title: string }) => item.title),
     selectedTest,
     selectedComparison,
     onSelectBrowser,

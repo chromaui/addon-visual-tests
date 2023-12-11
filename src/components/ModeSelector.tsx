@@ -32,16 +32,18 @@ type ModeData = Pick<TestMode, "name">;
 
 interface ModeSelectorProps {
   isAccepted: boolean;
-  selectedMode: ModeData;
-  onSelectMode: (mode: ModeData) => void;
+  modeOrder?: string[];
   modeResults: { mode: ModeData; result?: ComparisonResult }[];
+  onSelectMode: (mode: ModeData) => void;
+  selectedMode: ModeData;
 }
 
 export const ModeSelector = ({
   isAccepted,
-  selectedMode,
+  modeOrder,
   modeResults,
   onSelectMode,
+  selectedMode,
 }: ModeSelectorProps) => {
   const aggregate = aggregateResult(modeResults.map(({ result }) => result));
   if (!aggregate) return null;
@@ -53,13 +55,20 @@ export const ModeSelector = ({
 
   const links =
     modeResults.length > 1 &&
-    modeResults.map(({ mode, result }) => ({
-      id: mode.name,
-      title: mode.name,
-      right: !isAccepted && result !== ComparisonResult.Equal && <StatusDot status={result} />,
-      onClick: () => onSelectMode(mode),
-      active: selectedMode.name === mode.name,
-    }));
+    modeResults
+      .map(({ mode, result }) => ({
+        id: mode.name,
+        title: mode.name,
+        right: !isAccepted && result !== ComparisonResult.Equal && <StatusDot status={result} />,
+        onClick: () => onSelectMode(mode),
+        active: selectedMode.name === mode.name,
+      }))
+      .sort((a, b) => {
+        if (!modeOrder) return 0;
+        const ia = modeOrder.indexOf(a.title);
+        const ib = modeOrder.indexOf(b.title);
+        return ia !== -1 && ib !== -1 ? ia - ib : 0;
+      });
 
   return (
     <WithTooltip

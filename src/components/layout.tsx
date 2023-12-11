@@ -6,6 +6,7 @@ export const Sections = styled.div<{ hidden?: boolean }>(
     display: "flex",
     flexDirection: "column",
     height: "100%",
+    overflowY: "auto",
   },
   ({ hidden }) => hidden && { display: "none" }
 );

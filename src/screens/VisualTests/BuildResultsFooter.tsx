@@ -21,6 +21,7 @@ export const BuildResultsFooter = ({
         {modeResults.length > 0 && (
           <ModeSelector
             isAccepted={storyState.summary.status === TestStatus.Accepted}
+            modeOrder={storyState.modeOrder}
             selectedMode={storyState.selectedTest.mode}
             modeResults={modeResults}
             onSelectMode={storyState.onSelectMode}
