@@ -2,6 +2,10 @@
 import type { Channel } from "@storybook/channels";
 // eslint-disable-next-line import/no-unresolved
 import { getConfiguration, getGitInfo, GitInfo } from "chromatic/node";
+import express from "express";
+import { readFile } from "fs/promises";
+import { extname, join } from "path";
+import dedent from "ts-dedent";
 
 import {
   CHROMATIC_BASE_URL,
@@ -110,6 +114,35 @@ async function serverChannel(
       await runChromaticBuild(localBuildProgress, { configFile, projectId, userToken });
     } catch (e) {
       console.error(`Failed to run Chromatic build, with error:\n${e}`);
+    }
+  });
+
+  let startedServer = false;
+  localBuildProgress.on("change", (progress) => {
+    if (progress?.currentStep === "upload" && progress.storybookBuildDir && !startedServer) {
+      const app = express();
+      app.get("/extract.html", (request, response) => {
+        response.writeHead(200, { contentType: "text/html" });
+        const content = dedent`
+          <iframe src="/iframe.html"></iframe>
+          <script>
+            const iframe = window.frames[0];
+
+            iframe.onload = async () => {
+              const preview = iframe.__STORYBOOK_PREVIEW__;
+              await preview.storyStore.initializationPromise;
+              const extracted = await preview.extract();
+
+              console.log(window.parent);
+            }
+            
+          </script>`;
+        response.end(content, "utf-8");
+      });
+      app.use(express.static(progress.storybookBuildDir));
+      app.listen(45678);
+
+      startedServer = true;
     }
   });
 
