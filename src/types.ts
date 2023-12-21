@@ -63,6 +63,9 @@ export type LocalBuildProgress = {
    * */
   storybookBuildDir?: string;
 
+  /** URL of local built storybook */
+  storybookBuildUrl?: string;
+
   /** Number of visual changes detected */
   changeCount?: number;
 

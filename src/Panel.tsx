@@ -1,7 +1,7 @@
 import { Spinner } from "@storybook/design-system";
 import type { API } from "@storybook/manager-api";
 import { useChannel, useStorybookState } from "@storybook/manager-api";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import { Sections } from "./components/layout";
 import {
@@ -42,6 +42,24 @@ export const Panel = ({ active, api }: PanelProps) => {
     useSharedState<LocalBuildProgress>(LOCAL_BUILD_PROGRESS);
   const [, setOutdated] = useSharedState<boolean>(IS_OUTDATED);
   const emit = useChannel({});
+
+  useEffect(() => {
+    console.log(localBuildProgress?.storybookBuildUrl);
+    if (localBuildProgress?.storybookBuildUrl) {
+      window.addEventListener(
+        "message",
+        ({ data }) => {
+          // console.log(data);
+          if (data.message === "extractResults") {
+            console.log({ data });
+          }
+        },
+        false
+      );
+
+      document.body.innerHTML += `<iframe style="display: none" src="${localBuildProgress.storybookBuildUrl}extract.html" />`;
+    }
+  }, [localBuildProgress?.storybookBuildUrl]);
 
   const updateBuildStatus = useCallback<UpdateStatusFunction>(
     (update) => api.experimental_updateStatus(ADDON_ID, update),

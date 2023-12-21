@@ -117,9 +117,9 @@ async function serverChannel(
     }
   });
 
-  let startedServer = false;
+  let started = false;
   localBuildProgress.on("change", (progress) => {
-    if (progress?.currentStep === "upload" && progress.storybookBuildDir && !startedServer) {
+    if (progress?.currentStep === "upload" && progress.storybookBuildDir && !started) {
       const app = express();
       app.get("/extract.html", (request, response) => {
         response.writeHead(200, { contentType: "text/html" });
@@ -133,7 +133,16 @@ async function serverChannel(
               await preview.storyStore.initializationPromise;
               const extracted = await preview.extract();
 
-              console.log(window.parent);
+              const chromaticParameters = Object.fromEntries(
+                Object.entries(extracted).map(([storyId, { parameters: { chromatic }}]) => 
+                  [storyId, { parameters: { chromatic } }]
+                )
+              );
+              
+              window.parent.postMessage(
+                { message: 'extractResults', chromaticParameters },
+                '*'
+              );
             }
             
           </script>`;
@@ -142,7 +151,11 @@ async function serverChannel(
       app.use(express.static(progress.storybookBuildDir));
       app.listen(45678);
 
-      startedServer = true;
+      started = true;
+      localBuildProgress.value = {
+        ...progress,
+        storybookBuildUrl: `http://localhost:45678/`,
+      };
     }
   });
 
