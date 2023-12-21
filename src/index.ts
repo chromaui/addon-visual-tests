@@ -120,6 +120,7 @@ async function serverChannel(
   let started = false;
   localBuildProgress.on("change", (progress) => {
     if (progress?.currentStep === "upload" && progress.storybookBuildDir && !started) {
+      console.log("Build step completed, starting local extract");
       const app = express();
       app.get("/extract.html", (request, response) => {
         response.writeHead(200, { contentType: "text/html" });

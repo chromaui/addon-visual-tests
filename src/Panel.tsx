@@ -44,13 +44,13 @@ export const Panel = ({ active, api }: PanelProps) => {
   const emit = useChannel({});
 
   useEffect(() => {
-    console.log(localBuildProgress?.storybookBuildUrl);
     if (localBuildProgress?.storybookBuildUrl) {
+      console.log("Build step completed, starting local extract");
       window.addEventListener(
         "message",
         ({ data }) => {
-          // console.log(data);
           if (data.message === "extractResults") {
+            console.log("Got local extract results");
             console.log({ data });
           }
         },
