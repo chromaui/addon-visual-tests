@@ -119,7 +119,7 @@ type SelectedStory =
   | null;
 
 // Partial allows us to pass only part of the context in some components. This helps prevent unnecessary rerendering of components like GuidedTour.
-export const BuildContext = createContext<Partial<BuildInfo>>(null);
+export const BuildContext = createContext<Partial<BuildInfo> | undefined>(null);
 export const StoryContext = createContext<SelectedStory>(null);
 
 export const useBuildState = () => useRequiredContext(BuildContext, "Build");

@@ -76,13 +76,18 @@ function getRandomInt(min: number, max: number) {
 }
 
 function draw(context: CanvasRenderingContext2D) {
-  this.shape = this.shape || getRandomInt(1, 6);
+  // All of these are needed to avoid type checking on this because our eslint and ts rules are more strict than @storybook/addon-onboarding
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore - react-confetti uses this to pass context, but it isn't defined here so it need to be an implicit any. Ignoring to avoid conflicts - otherwise the code is the same as in addon-onboarding
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
+  const self: any = this;
+  self.shape = self.shape || getRandomInt(1, 6);
 
-  switch (this.shape) {
+  switch (self.shape) {
     case ParticleShape.Square: {
       const cornerRadius = 2;
-      const width = this.w / 2;
-      const height = this.h / 2;
+      const width = self.w / 2;
+      const height = self.h / 2;
 
       context.moveTo(-width + cornerRadius, -height);
       context.lineTo(width - cornerRadius, -height);
@@ -107,7 +112,7 @@ function draw(context: CanvasRenderingContext2D) {
       break;
     }
     case ParticleShape.Circle: {
-      context.arc(0, 0, this.radius, 0, 2 * Math.PI);
+      context.arc(0, 0, self.radius, 0, 2 * Math.PI);
       break;
     }
     case ParticleShape.Triangle: {

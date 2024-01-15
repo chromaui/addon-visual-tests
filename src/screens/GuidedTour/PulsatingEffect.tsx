@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 
 export function PulsatingEffect({ targetSelector }: { targetSelector: string }): JSX.Element {
   useEffect(() => {
@@ -41,5 +41,5 @@ export function PulsatingEffect({ targetSelector }: { targetSelector: string }):
     };
   }, [targetSelector]);
 
-  return null;
+  return <></>;
 }

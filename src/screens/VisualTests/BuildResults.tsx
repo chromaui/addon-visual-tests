@@ -64,11 +64,12 @@ export const BuildResults = ({
     !!localBuildProgress && localBuildProgress.currentStep !== "complete";
 
   // Do we want to encourage them to switch to the next build?
-  const shouldSwitchToLastBuildOnBranch =
+  const shouldSwitchToLastBuildOnBranch = !!(
     !buildIsReviewable &&
     lastBuildOnBranchIsReady &&
     lastBuildOnBranchIsSelectable &&
-    !!switchToLastBuildOnBranch;
+    !!switchToLastBuildOnBranch
+  );
 
   const lastBuildOnBranchInProgress = lastBuildOnBranch?.status === BuildStatus.InProgress;
   const showBuildStatus =
