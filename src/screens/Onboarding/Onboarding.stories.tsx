@@ -20,7 +20,7 @@ const meta = {
     storyWrapper(GraphQLClientProvider),
   ],
   args: {
-    startDevBuild: () => { },
+    startDevBuild: () => {},
     localBuildProgress: undefined,
     gitInfo: {
       uncommittedHash: "123",

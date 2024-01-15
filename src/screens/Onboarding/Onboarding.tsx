@@ -1,7 +1,7 @@
 import { Icons } from "@storybook/components";
 import { Icon } from "@storybook/design-system";
 import { styled } from "@storybook/theming";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { gql } from "urql";
 
 import { BuildProgressInline } from "../../components/BuildProgressBarInline";

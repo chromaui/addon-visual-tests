@@ -6,6 +6,7 @@ import { useMutation } from "urql";
 import { WALKTHROUGH_COMPLETED_KEY } from "../../constants";
 import { getFragment } from "../../gql";
 import {
+  BuildStatus,
   ReviewTestBatch,
   ReviewTestInputStatus,
   Test,
@@ -141,7 +142,8 @@ const useOnboarding = (
   const showOnboarding =
     !hasCompletedOnboarding &&
     !hasCompletedWalkthrough &&
-    (!lastBuildOnBranch || !lastBuildHasChanges) &&
+    (!lastBuildOnBranch ||
+      (!lastBuildHasChanges && lastBuildOnBranch.status !== BuildStatus.InProgress)) &&
     !walkthroughInProgress;
 
   return {
@@ -196,8 +198,9 @@ export const VisualTestsWithoutSelectedBuildId = ({
           // @ts-expect-error we need a better API for not passing a link
           link: undefined,
           content: {
-            headline: `Failed to ${update.status === ReviewTestInputStatus.Accepted ? "accept" : "unaccept"
-              } changes`,
+            headline: `Failed to ${
+              update.status === ReviewTestInputStatus.Accepted ? "accept" : "unaccept"
+            } changes`,
             subHeadline: err.message,
           },
           icon: {
