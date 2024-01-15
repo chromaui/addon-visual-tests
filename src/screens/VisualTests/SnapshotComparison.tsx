@@ -1,7 +1,7 @@
 import { Loader } from "@storybook/components";
 import { Link } from "@storybook/design-system";
 import { styled } from "@storybook/theming";
-import React from "react";
+import React, { useEffect } from "react";
 
 import { Text } from "../../components/layout";
 import { SnapshotImage } from "../../components/SnapshotImage";
@@ -151,7 +151,7 @@ export const SnapshotComparison = ({
   const prevSelectedComparisonIdRef = React.useRef(selectedStory.selectedComparison?.id);
   const prevSelectedBuildIdRef = React.useRef(selectedBuild.id);
 
-  React.useEffect(() => {
+  useEffect(() => {
     // It's possible this component doesn't unmount when the selected build, comparison, or story changes, so we need to reset state values.
     // This is most important for the baseline image toggle because baseline can not exist for a different story.
     if (
