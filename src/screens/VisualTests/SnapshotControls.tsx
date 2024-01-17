@@ -133,6 +133,7 @@ export const SnapshotControls = ({
               hasChrome={false}
             >
               <IconButton
+                id="button-toggle-snapshot"
                 active={focusVisible}
                 aria-label={focusVisible ? "Hide spotlight" : "Show spotlight"}
                 onClick={() => toggleFocus(!focusVisible)}
