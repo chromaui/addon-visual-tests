@@ -67,22 +67,6 @@ export const GuidedTour = ({
     managerApi.togglePanel(true);
     managerApi.togglePanelPosition("right");
     managerApi.setSelectedPanel(PANEL_ID);
-
-    // Force the panel to resize to 500px.
-    const storybookLayout = JSON.parse(localStorage.getItem("storybook-layout") || "");
-    // skip resize if it's already been tried, to avoid a reload loop.
-    const skipResize = localStorage.getItem(WALKTHROUGH_SKIP_RESIZE_PANEL) === "true";
-    if (storybookLayout.resizerPanel?.x !== window.innerWidth - 500 && !skipResize) {
-      localStorage.setItem(WALKTHROUGH_SKIP_RESIZE_PANEL, "true");
-      localStorage.setItem(
-        "storybook-layout",
-        JSON.stringify({
-          ...storybookLayout,
-          resizerPanel: { x: window.innerWidth - 500 },
-        })
-      );
-      document.location.reload();
-    }
   }, [managerApi]);
 
   const [showConfetti, setShowConfetti] = React.useState(false);
