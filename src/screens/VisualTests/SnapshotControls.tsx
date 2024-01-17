@@ -169,6 +169,7 @@ export const SnapshotControls = ({
                 hasChrome={false}
               >
                 <ActionButton
+                  id="button-accept-story"
                   disabled={isReviewing}
                   aria-label="Accept this story"
                   onClick={() => acceptTest(selectedTest.id, ReviewTestBatch.Spec)}
@@ -231,6 +232,7 @@ export const SnapshotControls = ({
                 hasChrome={false}
               >
                 <ActionButton
+                  id="button-unaccept-story"
                   disabled={isReviewing}
                   aria-label="Unaccept this story"
                   onClick={() => unacceptTest(selectedTest.id, ReviewTestBatch.Spec)}
