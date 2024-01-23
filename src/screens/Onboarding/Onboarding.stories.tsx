@@ -77,7 +77,6 @@ export const InProgress: Story = {
   ),
 };
 
-// This story is broken until a soltion is added to show
 export const BaselineSaved: Story = {
   args: {
     localBuildProgress: {
