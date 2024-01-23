@@ -51,11 +51,6 @@ export const GuidedTour = ({
     startWalkthrough();
   });
 
-  useEffect(() => {
-    // Dismiss storybook notifications that get in the way of the tour.
-    managerApi.clearNotification("whats-new");
-  }, [managerApi]);
-
   // Make sure the addon panel is open
   useEffect(() => {
     // Automatically jump to the first story if the current story is not a story (docs). So that the addon panel is visible.
