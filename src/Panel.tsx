@@ -16,7 +16,6 @@ import {
 import { Project } from "./gql/graphql";
 import { Authentication } from "./screens/Authentication/Authentication";
 import { GitNotFound } from "./screens/GitNotFound/GitNotFound";
-import { GuidedTour } from "./screens/GuidedTour/GuidedTour";
 import { LinkedProject } from "./screens/LinkProject/LinkedProject";
 import { LinkingProjectFailed } from "./screens/LinkProject/LinkingProjectFailed";
 import { LinkProject } from "./screens/LinkProject/LinkProject";

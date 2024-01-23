@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import Joyride, { CallBackProps } from "react-joyride";
 import { gql } from "urql";
 
-import { PANEL_ID, WALKTHROUGH_SKIP_RESIZE_PANEL } from "../../constants";
+import { PANEL_ID } from "../../constants";
 import { SelectedBuildFieldsFragment } from "../../gql/graphql";
 import { ENABLE_FILTER } from "../../SidebarBottom";
 import { useSelectedStoryState } from "../VisualTests/BuildContext";
@@ -70,7 +70,6 @@ export const GuidedTour = ({
   }, [managerApi]);
 
   const [showConfetti, setShowConfetti] = React.useState(false);
-  // This will just be shown by default for now. Need to figure out when we should display it.
   const [stepIndex, setStepIndex] = React.useState<number>(0);
   const nextStep = () => {
     setStepIndex((prev) => prev + 1);
