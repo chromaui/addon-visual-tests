@@ -3,7 +3,8 @@ import type { API_StatusState } from "@storybook/types";
 import React, { useCallback, useEffect, useState } from "react";
 import { useMutation } from "urql";
 
-import { WALKTHROUGH_COMPLETED_KEY } from "../../constants";
+// TODO: Remove this after completing AP-3586
+// import { WALKTHROUGH_COMPLETED_KEY } from "../../constants";
 import { getFragment } from "../../gql";
 import {
   BuildStatus,
@@ -107,7 +108,8 @@ const useOnboarding = (
   const [hasCompletedWalkthrough, setHasCompletedWalkthrough] = React.useState(() => {
     // Force the onboarding to show by adding ?vtaOnboarding=true to the URL
     const force = managerApi?.getUrlState?.().queryParams.vtaOnboarding === "true";
-    return !force && localStorage.getItem(WALKTHROUGH_COMPLETED_KEY) === "true";
+    // Only using force instead of localStorage. WALKTHROUGH_COMPLETED flag will be moved to user model in AP-3586
+    return !force; // && localStorage.getItem(WALKTHROUGH_COMPLETED_KEY) === "true";
   });
 
   const [walkthroughInProgress, setWalkthroughInProgress] = React.useState(false);
@@ -117,7 +119,8 @@ const useOnboarding = (
 
   const completeWalkthrough = React.useCallback(() => {
     setHasCompletedWalkthrough(true);
-    localStorage.setItem(WALKTHROUGH_COMPLETED_KEY, "true");
+    // TODO: Replace with user model mutation in AP-3586
+    // localStorage.setItem(WALKTHROUGH_COMPLETED_KEY, "true");
     setWalkthroughInProgress(false);
     // remove onboarding query parameter from current url
     const url = new URL(window.location.href);

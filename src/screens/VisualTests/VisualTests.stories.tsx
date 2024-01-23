@@ -17,7 +17,8 @@ import { delay, HttpResponse } from "msw";
 import React from "react";
 
 import { INITIAL_BUILD_PAYLOAD } from "../../buildSteps";
-import { WALKTHROUGH_COMPLETED_KEY } from "../../constants";
+// TODO: Remove after completing AP-3586
+// import { WALKTHROUGH_COMPLETED_KEY } from "../../constants";
 import type {
   LastBuildOnBranchBuildFieldsFragment,
   MakeOptional,
@@ -124,7 +125,8 @@ const meta = {
     storyWrapper(ControlsProvider),
     storyWrapper(GraphQLClientProvider),
     (Story) => {
-      localStorage.setItem(WALKTHROUGH_COMPLETED_KEY, "true");
+      // TODO: Need to replace this mocking when completing AP-3586 - mock the graphql query instead
+      // localStorage.setItem(WALKTHROUGH_COMPLETED_KEY, "true");
       return <Story />;
     },
   ],
