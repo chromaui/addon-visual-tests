@@ -4,6 +4,7 @@ import { VariablesOf } from "@graphql-typed-document-node/core";
 import { action } from "@storybook/addon-actions";
 import { expect } from "@storybook/jest";
 import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "@storybook/test";
 import {
   findByLabelText,
   findByRole,
@@ -136,7 +137,7 @@ const meta = {
     startDevBuild: action("startDevBuild"),
     setAccessToken: action("setAccessToken"),
     setOutdated: action("setOutdated"),
-    updateBuildStatus: action("updateBuildStatus") as any,
+    updateBuildStatus: fn(),
     addNotification: action("addNotification"),
     $graphql: { AddonVisualTestsBuild: {} },
   },
@@ -199,7 +200,9 @@ export const EmptyBranch = {
     return (
       <VisualTests
         {...args}
-        updateBuildStatus={(fn) => args.updateBuildStatus(typeof fn === "function" ? fn({}) : fn)}
+        updateBuildStatus={(fnn) =>
+          args.updateBuildStatus(typeof fnn === "function" ? fnn({}) : fnn)
+        }
       />
     );
   },
@@ -678,7 +681,9 @@ export const Pending = {
     return (
       <VisualTests
         {...args}
-        updateBuildStatus={(fn) => args.updateBuildStatus(typeof fn === "function" ? fn({}) : fn)}
+        updateBuildStatus={(spyFn) =>
+          args.updateBuildStatus(typeof spyFn === "function" ? spyFn({}) : spyFn)
+        }
       />
     );
   },
