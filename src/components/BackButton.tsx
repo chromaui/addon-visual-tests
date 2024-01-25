@@ -13,7 +13,7 @@ const OpaqueLink = styled(Link)({
 });
 
 export const BackButton = ({ onClick, children }: any) => (
-  <OpaqueLink secondary isButton onClick={onClick}>
+  <OpaqueLink variant="solid" isButton onClick={onClick}>
     {children}
   </OpaqueLink>
 );

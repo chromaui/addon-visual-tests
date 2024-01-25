@@ -31,7 +31,7 @@ export const Welcome = ({ onNext, onUninstall }: WelcomeProps) => {
           <Text>Visual tests has been uninstalled. Please restart your Storybook.</Text>
         ) : (
           <>
-            <Button secondary onClick={onNext}>
+            <Button variant="solid" onClick={onNext}>
               Enable
             </Button>
 

@@ -305,7 +305,7 @@ export const SnapshotControls = ({
           >
             <ActionButton
               containsIcon
-              secondary
+              variant="solid"
               aria-label={isOutdated ? "Run new tests" : "Rerun tests"}
               onClick={() => startDevBuild()}
             >

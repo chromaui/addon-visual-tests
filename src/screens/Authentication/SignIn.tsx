@@ -34,7 +34,7 @@ export const SignIn = ({ onBack, onSignIn, onSignInWithSSO }: SignInProps) => (
           parallel.
         </Text>
       </div>
-      <Button secondary onClick={() => onSignIn()}>
+      <Button variant="solid" onClick={() => onSignIn()}>
         Sign in with Chromatic
       </Button>
       <Button link onClick={() => onSignInWithSSO()}>

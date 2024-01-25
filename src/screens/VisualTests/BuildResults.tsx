@@ -117,8 +117,8 @@ export const BuildResults = ({
                 <br />
                 <Button
                   belowText
-                  small
-                  secondary
+                  size="medium"
+                  variant="solid"
                   onClick={() => startDevBuild()}
                   disabled={isLocalBuildInProgress}
                 >
@@ -147,16 +147,15 @@ export const BuildResults = ({
             </CenterText>
             <Button
               belowText
-              small
+              size="medium"
               tertiary
-              containsIcon
               // @ts-expect-error Button component is not quite typed properly
               target="_new"
-              isLink
-              href="https://www.chromatic.com/docs/ignoring-elements#ignore-stories"
             >
-              <Icons icon="document" />
-              View Docs
+              <a href="https://www.chromatic.com/docs/ignoring-elements#ignore-stories">
+                <Icons icon="document" />
+                View Docs
+              </a>
             </Button>
           </Container>
         </Section>
