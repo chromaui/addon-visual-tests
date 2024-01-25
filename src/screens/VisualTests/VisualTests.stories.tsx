@@ -122,7 +122,7 @@ const meta = {
   },
   args: {
     isOutdated: false,
-    setSelectedBuildInfo: action("setSelectedBuildInfo"),
+    setSelectedBuildInfo: fn(),
     dismissBuildError: action("dismissBuildError"),
     gitInfo: {
       userEmailHash: "xyz987",
@@ -138,7 +138,7 @@ const meta = {
     setAccessToken: action("setAccessToken"),
     setOutdated: action("setOutdated"),
     updateBuildStatus: fn(),
-    addNotification: action("addNotification"),
+    addNotification: fn(),
     $graphql: { AddonVisualTestsBuild: {} },
   },
 } satisfies Meta<StoryArgs>;
