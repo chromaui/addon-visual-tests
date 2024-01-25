@@ -65,7 +65,7 @@ export const Onboarding = ({
   // The initial build screen is only necessary if this is a brand new project with no builds at all. Instead, !selectedBuild would appear on any new branch, even if there are other builds on the project.
   // TODO: Removed this entirely to solve for the most common case of an existing user with some builds to use as a baseline.
   // Removing instead of fixing to avoid additional work as this project is past due. We need to revisit this later.
-  const [showInitialBuild, setShowInitialBuild] = useState(showInitialBuildScreen); // !selectedBuild;
+  const [showInitialBuild, setShowInitialBuild] = useState(showInitialBuildScreen);
   useEffect(() => {
     // Watch the value of showInitialBuildScreen, and if it becomes true, set the state to true. This is necessary because Onboarding may render before there is data to determine if there are any builds.
     if (showInitialBuildScreen) {
@@ -167,9 +167,10 @@ export const Onboarding = ({
           <div>
             <Heading>Nice. You saved your stories as a test baseline.</Heading>
             <Text>This story was indexed and snapshotted in a standardized cloud browser.</Text>
-            {selectedStory.selectedComparison.headCapture?.captureImage && (
+            {/* TODO: selectedComparison is undefined if this is the very first build.  */}
+            {selectedStory?.selectedComparison?.headCapture?.captureImage && (
               <SnapshotImageThumb
-                {...selectedStory.selectedComparison.headCapture.captureImage}
+                {...selectedStory?.selectedComparison?.headCapture.captureImage}
                 status="positive"
               />
             )}
@@ -303,9 +304,9 @@ export const Onboarding = ({
           <div>
             <Heading>Nice. You saved your stories as a test baseline.</Heading>
             <Text>This story was indexed and snapshotted in a standardized cloud browser.</Text>
-            {selectedStory.selectedComparison.headCapture?.captureImage && (
+            {selectedStory.selectedComparison?.headCapture?.captureImage && (
               <SnapshotImageThumb
-                {...selectedStory.selectedComparison.headCapture.captureImage}
+                {...selectedStory.selectedComparison?.headCapture?.captureImage}
                 status="positive"
               />
             )}

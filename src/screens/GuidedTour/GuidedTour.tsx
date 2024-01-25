@@ -189,7 +189,7 @@ export const GuidedTour = ({
       disableOverlay: true,
     },
     {
-      target: "#button-accept-story",
+      target: "#button-toggle-accept-story",
       title: "Changes found!",
       content: (
         <>
@@ -206,7 +206,7 @@ export const GuidedTour = ({
       onSkipWalkthroughButtonClick,
     },
     {
-      target: "#button-unaccept-story",
+      target: "#button-toggle-accept-story",
       title: "Perfection!",
       placement: "bottom",
       disableOverlay: true,

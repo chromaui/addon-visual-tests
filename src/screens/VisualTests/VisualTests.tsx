@@ -143,11 +143,7 @@ const useOnboarding = (
   }, [lastBuildOnBranch]);
 
   const showOnboarding =
-    !hasCompletedOnboarding &&
-    !hasCompletedWalkthrough &&
-    (!lastBuildOnBranch ||
-      (!lastBuildHasChanges && lastBuildOnBranch.status !== BuildStatus.InProgress)) &&
-    !walkthroughInProgress;
+    !hasCompletedOnboarding && !hasCompletedWalkthrough && !walkthroughInProgress;
 
   return {
     showOnboarding,
@@ -269,20 +265,29 @@ export const VisualTestsWithoutSelectedBuildId = ({
 
   if (showOnboarding) {
     return (
-      <BuildProvider watchState={buildInfo}>
-        <Onboarding
-          {...{
-            gitInfo,
-            projectId,
-            setAccessToken,
-            startDevBuild,
-            updateBuildStatus,
-            localBuildProgress,
-            onComplete: completeOnboarding,
-            onSkip: completeWalkthrough,
-          }}
-        />
-      </BuildProvider>
+      <>
+        {/* Don't render onboarding until data has loaded to allow initial build logic ot work. */}
+        {!selectedBuild || !hasSelectedBuild || !hasData || queryError ? (
+          <></>
+        ) : (
+          <BuildProvider watchState={buildInfo}>
+            <Onboarding
+              {...{
+                gitInfo,
+                projectId,
+                setAccessToken,
+                startDevBuild,
+                updateBuildStatus,
+                localBuildProgress,
+                showInitialBuildScreen: !selectedBuild,
+                onComplete: completeOnboarding,
+                onSkip: completeWalkthrough,
+                lastBuildHasChanges,
+              }}
+            />
+          </BuildProvider>
+        )}
+      </>
     );
   }
 
