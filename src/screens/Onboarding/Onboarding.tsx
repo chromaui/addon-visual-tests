@@ -269,8 +269,6 @@ export const Onboarding = ({
     );
   }
 
-  // TODO: There is a bug right after pressing "run tests" where it shows the "no screen found ui" appears because the runningSecondBuild is true, but the localBuildProgress hasn't been updated yet.
-
   // If the first build is done, changes were detected, and the second build is in progress.
   if (
     localBuildProgress &&
@@ -296,7 +294,6 @@ export const Onboarding = ({
   }
 
   // If the second build has been run and is complete, show the results
-  // TODO: Hmmm this is the same UI as the first build, but if user has already onboarded. Maybe these first steps are just not a part of onboarding?
   if (localBuildProgress && localBuildProgress.currentStep === "complete" && runningSecondBuild) {
     return (
       <Container style={{ overflowY: "auto" }}>
@@ -319,24 +316,22 @@ export const Onboarding = ({
       </Container>
     );
   }
-  // And then, somehow, we need to enter into the popup guided tour with "Changes found!" pointing to real changes.
-  // What if there are no changes in the latest build? Do we just assume that there are? Do we need to show the onboarding multiple times? At least until there are changes?
 
-  // TODO: We shouldn't need a default case like this
+  // Log useful for debugging, but do not display broken screen to users in odd edge cases
+  // eslint-disable-next-line no-console
+  console.info("No screen selected", {
+    state: {
+      runningSecondBuild,
+      showCatchAChange,
+      localBuildProgress,
+      selectedStory,
+      selectedBuild,
+      gitInfo,
+    },
+  });
   return (
     <Container>
-      No Screen Selected
-      <br />
-      <br />
-      <span>
-        {JSON.stringify({
-          localBuildProgress,
-          showCatchAChange,
-          showInitialBuild,
-          runningSecondBuild,
-          hasSelectedBuild: !!selectedBuild,
-        })}
-      </span>
+      <></>
     </Container>
   );
 };
