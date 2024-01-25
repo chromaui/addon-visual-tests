@@ -15,6 +15,7 @@ interface IconButtonProps extends ComponentProps<typeof BaseIconButton> {
   as?: string;
   secondary?: boolean;
   status?: "positive" | "warning";
+  variant?: "solid" | "outline" | "ghost";
 }
 
 export const IconButton: React.FC<IconButtonProps> = styled(BaseIconButton)<IconButtonProps>(
