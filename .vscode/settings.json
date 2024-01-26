@@ -1,11 +1,6 @@
 {
   "editor.codeActionsOnSave": {
-<<<<<<< HEAD
-    "source.fixAll.eslint": "explicit",
-    "source.fixAll.tslint": "explicit"
-=======
     "source.fixAll.eslint": "explicit"
->>>>>>> 35da858 (update build packaging)
   },
   "editor.formatOnSave": true,
   "eslint.rules.customizations": [{ "rule": "*", "severity": "warn" }],
