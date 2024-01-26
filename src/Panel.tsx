@@ -11,6 +11,7 @@ import {
   IS_OUTDATED,
   LOCAL_BUILD_PROGRESS,
   PANEL_ID,
+  REMOVE_ADDON,
   START_BUILD,
 } from "./constants";
 import { Project } from "./gql/graphql";
@@ -82,6 +83,7 @@ export const Panel = ({ active, api }: PanelProps) => {
             setAccessToken={setAccessToken}
             setCreatedProjectId={setCreatedProjectId}
             hasProjectId={!!projectId}
+            onUninstall={() => emit(REMOVE_ADDON)}
           />
         </Sections>
       </Provider>
