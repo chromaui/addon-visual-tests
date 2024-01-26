@@ -42,6 +42,18 @@ const Box = styled.div(({ theme }) => ({
   lineHeight: "18px",
 }));
 
+const Warning = styled.div(({ theme }) => ({
+  background: theme.background.warning,
+  padding: "10px",
+  lineHeight: "18px",
+  position: "relative",
+  margin: "0 27px",
+}));
+
+const WarningText = styled(Text)(({ theme }) => ({
+  color: theme.color.darkest,
+}));
+
 interface OnboardingProps {
   onComplete: () => void;
   onSkip: () => void;
@@ -49,6 +61,7 @@ interface OnboardingProps {
   selectedBuild?: SelectedBuildFieldsFragment | null;
   localBuildProgress?: LocalBuildProgress;
   showInitialBuildScreen?: boolean;
+  lastBuildHasChanges: boolean;
   gitInfo: Pick<GitInfoPayload, "uncommittedHash" | "branch">;
 }
 export const Onboarding = ({
@@ -56,6 +69,7 @@ export const Onboarding = ({
   localBuildProgress,
   showInitialBuildScreen,
   gitInfo,
+  lastBuildHasChanges,
   onComplete,
   onSkip,
 }: OnboardingProps) => {
@@ -104,10 +118,6 @@ export const Onboarding = ({
       </Container>
     );
   }
-
-  // TODO: After running a first build, this screen should show the showCatchAChange screen. But if the user restarts Storybook, it comes back to this screen.
-  // Oddly, this seems to be because project.lastBuild is undefined in GraphQL, so at least it doesn't skip out of the onboarding flow.
-  // But we'll need some check to see if one build was run to prompt them to make a change and run another
   if (showInitialBuild && !localBuildProgress) {
     return (
       <Container>
@@ -187,10 +197,18 @@ export const Onboarding = ({
     );
   }
 
-  if (showCatchAChange && initialGitHash === gitInfo.uncommittedHash) {
+  if (showCatchAChange && initialGitHash === gitInfo.uncommittedHash && !lastBuildHasChanges) {
     return (
       <Container>
         <Stack>
+          {!lastBuildHasChanges && runningSecondBuild && (
+            <Warning>
+              <WarningText>
+                No changes found in the Storybook you published. Make a UI tweak and publish again
+                to continue.
+              </WarningText>
+            </Warning>
+          )}
           <div>
             <Heading>Make a change to this story</Heading>
             <Text>
@@ -242,7 +260,12 @@ export const Onboarding = ({
   }
 
   // If the first build is done, changes were detected, and the second build hasn't started yet.
-  if (showCatchAChange && initialGitHash !== gitInfo.uncommittedHash && !runningSecondBuild) {
+  if (
+    showCatchAChange &&
+    initialGitHash !== gitInfo.uncommittedHash &&
+    !runningSecondBuild &&
+    !lastBuildHasChanges
+  ) {
     return (
       <Container>
         <Stack>
@@ -275,7 +298,8 @@ export const Onboarding = ({
     showCatchAChange &&
     runningSecondBuild &&
     localBuildProgress.currentStep !== "error" &&
-    localBuildProgress.currentStep !== "complete"
+    localBuildProgress.currentStep !== "complete" &&
+    !lastBuildHasChanges
   ) {
     return (
       <Container>
@@ -293,8 +317,8 @@ export const Onboarding = ({
     );
   }
 
-  // If the second build has been run and is complete, show the results
-  if (localBuildProgress && localBuildProgress.currentStep === "complete" && runningSecondBuild) {
+  // If the last build has changes, show the "Done" screen
+  if (lastBuildHasChanges) {
     return (
       <Container style={{ overflowY: "auto" }}>
         <Stack>

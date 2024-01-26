@@ -151,6 +151,7 @@ const useOnboarding = (
     completeOnboarding,
     completeWalkthrough,
     startWalkthrough,
+    lastBuildHasChanges,
   };
 };
 
@@ -197,9 +198,8 @@ export const VisualTestsWithoutSelectedBuildId = ({
           // @ts-expect-error we need a better API for not passing a link
           link: undefined,
           content: {
-            headline: `Failed to ${
-              update.status === ReviewTestInputStatus.Accepted ? "accept" : "unaccept"
-            } changes`,
+            headline: `Failed to ${update.status === ReviewTestInputStatus.Accepted ? "accept" : "unaccept"
+              } changes`,
             subHeadline: err.message,
           },
           icon: {
@@ -261,13 +261,14 @@ export const VisualTestsWithoutSelectedBuildId = ({
     completeOnboarding,
     completeWalkthrough,
     startWalkthrough,
+    lastBuildHasChanges,
   } = useOnboarding(buildInfo, managerApi);
 
   if (showOnboarding) {
     return (
       <>
         {/* Don't render onboarding until data has loaded to allow initial build logic ot work. */}
-        {!selectedBuild || !hasSelectedBuild || !hasData || queryError ? (
+        {!hasData || queryError ? (
           <></>
         ) : (
           <BuildProvider watchState={buildInfo}>
