@@ -59,7 +59,7 @@
     "@storybook/theming": "^7.2.0 || ^8.0.0",
     "@storybook/types": "^7.2.0 || ^8.0.0",
     "@urql/exchange-auth": "^2.1.6",
-    "chromatic": "^9.0.0",
+    "chromatic": "^10.6.0",
     "date-fns": "^2.30.0",
     "filesize": "^10.0.12",
     "jsonfile": "^6.1.0",
@@ -149,5 +149,9 @@
       "react-native"
     ],
     "icon": "https://user-images.githubusercontent.com/341738/63501763-88dbf600-c4cc-11e9-96cd-94adadc2fd72.png"
+  },
+  "bundler": {
+    "exportEntries": ["src/index.ts"],
+    "managerEntries": ["src/manager.tsx"]
   }
 }
