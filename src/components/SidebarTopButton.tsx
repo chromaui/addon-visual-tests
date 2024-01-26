@@ -149,7 +149,7 @@ export const SidebarTopButton = ({
         </TooltipContent>
       }
     >
-      <SidebarIconButton aria-label="Run tests">
+      <SidebarIconButton id="button-run-tests" aria-label="Run tests">
         <Icons icon="play" />
       </SidebarIconButton>
     </WithTooltip>
