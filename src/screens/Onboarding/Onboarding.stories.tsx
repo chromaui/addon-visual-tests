@@ -62,6 +62,7 @@ export const Default: Story = {
   ),
   args: {
     showInitialBuildScreen: true,
+    lastBuildHasChanges: false,
   },
 };
 
@@ -71,6 +72,7 @@ export const InProgress: Story = {
       ...INITIAL_BUILD_PAYLOAD,
     },
     showInitialBuildScreen: true,
+    lastBuildHasChanges: false,
   },
   parameters: withFigmaDesign(
     "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318374&t=3EAIRe8423CpOQWY-4"
@@ -85,6 +87,7 @@ export const BaselineSaved: Story = {
       currentStep: "complete",
     },
     showInitialBuildScreen: true,
+    lastBuildHasChanges: false,
   },
   parameters: {
     selectedBuild: withTests(acceptedBuild, acceptedTests),
@@ -232,8 +235,22 @@ export const RunningFirstTest: Story = {
   },
 };
 
-export const ChangesFound: Story = {
+export const RanFirstTestNoChanges: Story = {
   ...RunningFirstTest,
+  args: {
+    ...RunningFirstTest.args,
+    localBuildProgress: {
+      ...INITIAL_BUILD_PAYLOAD,
+      buildProgressPercentage: 100,
+      currentStep: "complete",
+    },
+  },
+  parameters: {
+    chromatic: {
+      // Delay to wait for git hash to reset.
+      delay: 1001,
+    },
+  },
   render: (args) => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const [gitInfo, setGitInfo] = React.useState(args.gitInfo);
@@ -251,14 +268,51 @@ export const ChangesFound: Story = {
         <meta.component
           {...args}
           gitInfo={gitInfo}
-          startDevBuild={() =>
+          startDevBuild={() => {
+            setLocalBuildProgress({
+              ...INITIAL_BUILD_PAYLOAD,
+              currentStep: "complete",
+              buildProgressPercentage: 30,
+            });
+          }}
+          localBuildProgress={localBuildProgress}
+        />
+      </>
+    );
+  },
+};
+
+export const ChangesFound: Story = {
+  ...RunningFirstTest,
+  render: (args) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [gitInfo, setGitInfo] = React.useState(args.gitInfo);
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [localBuildProgress, setLocalBuildProgress] = React.useState(args.localBuildProgress);
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [lastBuildHasChanges, setLastBuildHasChanges] = React.useState(false);
+    return (
+      <>
+        <button
+          type="button"
+          style={{ position: "absolute", right: 0, bottom: 0 }}
+          onClick={() => setGitInfo({ branch: "main", uncommittedHash: "changed-hash" })}
+        >
+          Change Git
+        </button>
+        <meta.component
+          {...args}
+          gitInfo={gitInfo}
+          startDevBuild={() => {
             setLocalBuildProgress({
               ...INITIAL_BUILD_PAYLOAD,
               buildProgressPercentage: 100,
               currentStep: "complete",
-            })
-          }
+            });
+            setLastBuildHasChanges(true);
+          }}
           localBuildProgress={localBuildProgress}
+          lastBuildHasChanges={lastBuildHasChanges}
         />
       </>
     );
@@ -284,6 +338,7 @@ export const Error: Story = {
         name: "Error",
       },
     },
+    lastBuildHasChanges: false,
   },
   parameters: {
     ...BaselineSaved.parameters,

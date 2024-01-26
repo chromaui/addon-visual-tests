@@ -97,6 +97,12 @@ export const Onboarding = ({
 
   const [runningSecondBuild, setRunningSecondBuild] = React.useState(false);
 
+  const localBuildIsRunning =
+    localBuildProgress &&
+    localBuildProgress.currentStep !== "complete" &&
+    localBuildProgress.currentStep !== "error" &&
+    localBuildProgress.currentStep !== "aborted";
+
   // TODO: This design for an error in the Onboarding is incomplete
   if (localBuildProgress && localBuildProgress.currentStep === "error") {
     return (
@@ -141,12 +147,7 @@ export const Onboarding = ({
     );
   }
 
-  if (
-    showInitialBuild &&
-    localBuildProgress &&
-    localBuildProgress.currentStep !== "error" &&
-    localBuildProgress.currentStep !== "complete"
-  ) {
+  if (showInitialBuild && localBuildProgress && localBuildIsRunning) {
     // When the build is in progress, show the build progress bar
     return (
       <Container>
@@ -177,7 +178,6 @@ export const Onboarding = ({
           <div>
             <Heading>Nice. You saved your stories as a test baseline.</Heading>
             <Text>This story was indexed and snapshotted in a standardized cloud browser.</Text>
-            {/* TODO: selectedComparison is undefined if this is the very first build.  */}
             {selectedStory?.selectedComparison?.headCapture?.captureImage && (
               <SnapshotImageThumb
                 {...selectedStory?.selectedComparison?.headCapture.captureImage}
@@ -197,6 +197,12 @@ export const Onboarding = ({
     );
   }
 
+  if (
+    showCatchAChange &&
+    initialGitHash === gitInfo.uncommittedHash &&
+    !localBuildIsRunning &&
+    !lastBuildHasChanges
+  ) {
   if (showCatchAChange && initialGitHash === gitInfo.uncommittedHash && !lastBuildHasChanges) {
     return (
       <Container>
@@ -263,7 +269,7 @@ export const Onboarding = ({
   if (
     showCatchAChange &&
     initialGitHash !== gitInfo.uncommittedHash &&
-    !runningSecondBuild &&
+    !localBuildIsRunning &&
     !lastBuildHasChanges
   ) {
     return (
@@ -282,6 +288,10 @@ export const Onboarding = ({
             onClick={() => {
               setRunningSecondBuild(true);
               startDevBuild();
+              // In case the build does not have changes, reset gitHash to the current value to show Make A Change again. Timeout 1s to prevent Make a Change reappearing briefly before build starts.
+              setTimeout(() => {
+                setInitialGitHash(gitInfo.uncommittedHash);
+              }, 1000);
             }}
           >
             <Icons icon="play" />
@@ -293,14 +303,7 @@ export const Onboarding = ({
   }
 
   // If the first build is done, changes were detected, and the second build is in progress.
-  if (
-    localBuildProgress &&
-    showCatchAChange &&
-    runningSecondBuild &&
-    localBuildProgress.currentStep !== "error" &&
-    localBuildProgress.currentStep !== "complete" &&
-    !lastBuildHasChanges
-  ) {
+  if (localBuildProgress && showCatchAChange && localBuildIsRunning) {
     return (
       <Container>
         <Stack>
@@ -318,7 +321,7 @@ export const Onboarding = ({
   }
 
   // If the last build has changes, show the "Done" screen
-  if (lastBuildHasChanges) {
+  if (!localBuildIsRunning && lastBuildHasChanges) {
     return (
       <Container style={{ overflowY: "auto" }}>
         <Stack>

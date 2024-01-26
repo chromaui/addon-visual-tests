@@ -222,6 +222,7 @@ export const GuidedTour = ({
       target: "#button-run-tests",
       title: "You are ready to test",
       placement: "bottom",
+      disableOverlay: true,
       content: (
         <>
           Any time you want to run tests, tap this button in the sidebar to see exactly what changed

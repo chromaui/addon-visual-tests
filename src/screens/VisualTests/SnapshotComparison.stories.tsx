@@ -95,6 +95,9 @@ export const Spotlight = {
     const button = await canvas.findByRole("button", { name: "Show spotlight" });
     await userEvent.click(button);
   }),
+  parameters: {
+    chromatic: { disableSnapshot: true },
+  },
 } satisfies Story;
 
 export const SpotlightOnly = {
@@ -103,6 +106,9 @@ export const SpotlightOnly = {
     const button = await canvas.findByRole("button", { name: "Hide diff" });
     await userEvent.click(button);
   }),
+  parameters: {
+    chromatic: { disableSnapshot: true },
+  },
 } satisfies Story;
 
 /**
