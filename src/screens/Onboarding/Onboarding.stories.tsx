@@ -325,7 +325,6 @@ export const ChangesFound: Story = {
   },
 };
 
-// TODO: This design for an error in the Onboarding is incomplete
 export const Error: Story = {
   args: {
     localBuildProgress: {
@@ -342,7 +341,6 @@ export const Error: Story = {
   },
   parameters: {
     ...BaselineSaved.parameters,
-    // TODO: Review the actual design with MA to determine what this should look like.
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318693&t=3EAIRe8423CpOQWY-4"
     ),
