@@ -20,6 +20,10 @@ import {
   useSelectedBuildState,
   useSelectedStoryState,
 } from "../VisualTests/BuildContext";
+import onboardingAdjustSizeImage from "./onboarding-adjust-size.png";
+import onboardingColorPaletteImage from "./onboarding-color-palette.png";
+import onboardingEmbiggenImage from "./onboarding-embiggen.png";
+import onboardingLayoutImage from "./onboarding-layout.png";
 
 const ProjectQuery = gql`
   query ProjectQuery($projectId: ID!) {
@@ -224,35 +228,23 @@ export const Onboarding = ({
           <Stack style={{ display: "flex", alignItems: "flex-start", gap: "8px" }}>
             <Row style={{ margin: 0, alignItems: "center", gap: "10px" }}>
               <img
-                src="/onboarding-color-palette.png"
+                src={onboardingColorPaletteImage}
                 alt="Color Palette"
                 style={{ width: 32, height: 32 }}
               />
               Shift the color palette
             </Row>
             <Row style={{ margin: 0, alignItems: "center", gap: "10px" }}>
-              <img
-                src="/onboarding-embiggen.png"
-                alt="Embiggen"
-                style={{ width: 32, height: 32 }}
-              />{" "}
+              <img src={onboardingEmbiggenImage} alt="Embiggen" style={{ width: 32, height: 32 }} />{" "}
               Embiggen the type
             </Row>
             <Row style={{ margin: 0, alignItems: "center", gap: "10px" }}>
-              <img
-                src="/onboarding-color-palette.png"
-                alt="Color Palette"
-                style={{ width: 32, height: 32 }}
-              />
+              <img src={onboardingLayoutImage} alt="Layout" style={{ width: 32, height: 32 }} />
               Change the layout
             </Row>
             <Row style={{ margin: 0, alignItems: "center", gap: "10px" }}>
-              <img
-                src="/onboarding-adjust-size.png"
-                style={{ width: 32, height: 32 }}
-                alt="Color Palette"
-              />
-              <p>Adjust the size or scale</p>
+              <img src={onboardingAdjustSizeImage} alt="Adjust" style={{ width: 32, height: 32 }} />
+              Adjust the size or scale
             </Row>
           </Stack>
           <Box>Awaiting changes...</Box>
