@@ -27,6 +27,10 @@ export default defineConfig((options) => [
     treeshake: true,
     esbuildOptions(options) {
       options.conditions = ["module"];
+      options.loader = {
+        ...options.loader,
+        ".png": "dataurl",
+      }
     },
   },
 ]);
