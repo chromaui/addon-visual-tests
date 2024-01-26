@@ -203,7 +203,6 @@ export const Onboarding = ({
     !localBuildIsRunning &&
     !lastBuildHasChanges
   ) {
-  if (showCatchAChange && initialGitHash === gitInfo.uncommittedHash && !lastBuildHasChanges) {
     return (
       <Container>
         <Stack>
