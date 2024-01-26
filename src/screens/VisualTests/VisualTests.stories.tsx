@@ -4,7 +4,6 @@ import { VariablesOf } from "@graphql-typed-document-node/core";
 import { action } from "@storybook/addon-actions";
 import { expect } from "@storybook/jest";
 import type { Meta, StoryObj } from "@storybook/react";
-import { fn } from "@storybook/test";
 import {
   findByLabelText,
   findByRole,
@@ -122,7 +121,7 @@ const meta = {
   },
   args: {
     isOutdated: false,
-    setSelectedBuildInfo: fn(),
+    setSelectedBuildInfo: action("setSelectedBuildInfo"),
     dismissBuildError: action("dismissBuildError"),
     gitInfo: {
       userEmailHash: "xyz987",
@@ -137,8 +136,8 @@ const meta = {
     startDevBuild: action("startDevBuild"),
     setAccessToken: action("setAccessToken"),
     setOutdated: action("setOutdated"),
-    updateBuildStatus: fn(),
-    addNotification: fn(),
+    updateBuildStatus: action("updateBuildStatus") as any,
+    addNotification: action("addNotification"),
     $graphql: { AddonVisualTestsBuild: {} },
   },
 } satisfies Meta<StoryArgs>;
@@ -200,9 +199,7 @@ export const EmptyBranch = {
     return (
       <VisualTests
         {...args}
-        updateBuildStatus={(fnn) =>
-          args.updateBuildStatus(typeof fnn === "function" ? fnn({}) : fnn)
-        }
+        updateBuildStatus={(fn) => args.updateBuildStatus(typeof fn === "function" ? fn({}) : fn)}
       />
     );
   },
@@ -681,9 +678,7 @@ export const Pending = {
     return (
       <VisualTests
         {...args}
-        updateBuildStatus={(spyFn) =>
-          args.updateBuildStatus(typeof spyFn === "function" ? spyFn({}) : spyFn)
-        }
+        updateBuildStatus={(fn) => args.updateBuildStatus(typeof fn === "function" ? fn({}) : fn)}
       />
     );
   },

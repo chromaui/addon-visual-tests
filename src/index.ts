@@ -1,6 +1,5 @@
 /* eslint-disable no-console */
 import type { Channel } from "@storybook/channels";
-import { removeAddon } from "@storybook/core-common";
 // eslint-disable-next-line import/no-unresolved
 import { getConfiguration, getGitInfo, GitInfo } from "chromatic/node";
 
@@ -10,7 +9,6 @@ import {
   GIT_INFO_ERROR,
   LOCAL_BUILD_PROGRESS,
   PROJECT_INFO,
-  REMOVE_ADDON,
   START_BUILD,
   STOP_BUILD,
 } from "./constants";
@@ -116,9 +114,6 @@ async function serverChannel(
   });
 
   channel.on(STOP_BUILD, stopChromaticBuild);
-  channel.on(REMOVE_ADDON, async () => {
-    await removeAddon("@chromaui/addon-visual-tests");
-  });
 
   const gitInfoState = SharedState.subscribe<GitInfoPayload>(GIT_INFO, channel);
 

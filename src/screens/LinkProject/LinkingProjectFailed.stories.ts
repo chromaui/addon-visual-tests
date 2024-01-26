@@ -1,4 +1,3 @@
-// @ts-nocheck TODO: Address SB 8 type errors
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { panelModes } from "../../modes";

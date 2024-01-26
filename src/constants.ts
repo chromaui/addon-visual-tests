@@ -18,5 +18,3 @@ export const IS_OUTDATED = `${ADDON_ID}/isOutdated`;
 export const START_BUILD = `${ADDON_ID}/startBuild`;
 export const STOP_BUILD = `${ADDON_ID}/stopBuild`;
 export const LOCAL_BUILD_PROGRESS = `${ADDON_ID}/localBuildProgress`;
-
-export const REMOVE_ADDON = `${ADDON_ID}/removeAddon`;
