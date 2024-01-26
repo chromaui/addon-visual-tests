@@ -12,41 +12,13 @@ type BundlerConfig = {
   };
 };
 
-// We're not building an API for consumption by other projects. Instead, Storybook will bundle
-// everything in the end, which is why we don't compile dts or sourcemaps.
-// export default defineConfig((options) => [
-//   {
-//     clean: !options.watch,
-//     entry: ["src/index.ts"],
-//     format: ["cjs"],
-//     platform: "node",
-//     splitting: false,
-//     treeshake: true,
-//     esbuildOptions(options) {
-//       options.conditions = ["module"];
-//     },
-//   },
-//   {
-//     clean: !options.watch,
-//     entry: ["src/manager.tsx"],
-//     format: ["esm"],
-//     platform: "browser",
-//     splitting: false,
-//     treeshake: true,
-//     esbuildOptions(options) {
-//       options.conditions = ["module"];
-//     },
-//   },
-// ]);
-
 export default defineConfig(async (options) => {
   // reading the three types of entries from package.json, which has the following structure:
   // {
   //  ...
   //   "bundler": {
   //     "exportEntries": ["./src/index.ts"],
-  //     "managerEntries": ["./src/manager.ts"],
-  //     "previewEntries": ["./src/preview.ts"]
+  //     "managerEntries": ["./src/manager.tsx"],
   //   }
   // }
   const packageJson = await readFile('./package.json', 'utf8').then(JSON.parse) as BundlerConfig;
