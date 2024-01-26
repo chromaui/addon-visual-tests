@@ -151,6 +151,7 @@ const useOnboarding = (
     completeOnboarding,
     completeWalkthrough,
     startWalkthrough,
+    lastBuildHasChanges,
   };
 };
 
@@ -261,13 +262,14 @@ export const VisualTestsWithoutSelectedBuildId = ({
     completeOnboarding,
     completeWalkthrough,
     startWalkthrough,
+    lastBuildHasChanges,
   } = useOnboarding(buildInfo, managerApi);
 
   if (showOnboarding) {
     return (
       <>
         {/* Don't render onboarding until data has loaded to allow initial build logic ot work. */}
-        {!selectedBuild || !hasSelectedBuild || !hasData || queryError ? (
+        {!hasData || queryError ? (
           <></>
         ) : (
           <BuildProvider watchState={buildInfo}>

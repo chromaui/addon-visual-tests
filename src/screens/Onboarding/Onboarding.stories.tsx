@@ -232,6 +232,48 @@ export const RunningFirstTest: Story = {
   },
 };
 
+export const RanFirstTestNoChanges: Story = {
+  ...RunningFirstTest,
+  args: {
+    ...RunningFirstTest.args,
+    localBuildProgress: {
+      ...INITIAL_BUILD_PAYLOAD,
+      buildProgressPercentage: 100,
+      currentStep: "complete",
+    },
+  },
+  render: (args) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [gitInfo, setGitInfo] = React.useState(args.gitInfo);
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [localBuildProgress, setLocalBuildProgress] = React.useState(args.localBuildProgress);
+    return (
+      <>
+        <button
+          type="button"
+          style={{ position: "absolute", right: 0, bottom: 0 }}
+          onClick={() => setGitInfo({ branch: "main", uncommittedHash: "changed-hash" })}
+        >
+          Change Git
+        </button>
+        <meta.component
+          {...args}
+          gitInfo={gitInfo}
+          startDevBuild={() => {
+            setLocalBuildProgress({
+              ...INITIAL_BUILD_PAYLOAD,
+              currentStep: "complete",
+              buildProgressPercentage: 30,
+            });
+            setGitInfo(args.gitInfo);
+          }}
+          localBuildProgress={localBuildProgress}
+        />
+      </>
+    );
+  },
+};
+
 export const ChangesFound: Story = {
   ...RunningFirstTest,
   render: (args) => {
@@ -259,6 +301,7 @@ export const ChangesFound: Story = {
             })
           }
           localBuildProgress={localBuildProgress}
+          lastBuildHasChanges={false}
         />
       </>
     );
@@ -271,7 +314,6 @@ export const ChangesFound: Story = {
   },
 };
 
-// TODO: This design for an error in the Onboarding is incomplete
 export const Error: Story = {
   args: {
     localBuildProgress: {

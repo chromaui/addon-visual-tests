@@ -42,11 +42,24 @@ const Box = styled.div(({ theme }) => ({
   lineHeight: "18px",
 }));
 
+const Warning = styled.div(({ theme }) => ({
+  background: theme.background.warning,
+  padding: "10px",
+  lineHeight: "18px",
+  position: "relative",
+  margin: "0 27px",
+}));
+
+const WarningText = styled(Text)(({ theme }) => ({
+  color: theme.color.darkest,
+}));
+
 interface OnboardingProps {
   onComplete: () => void;
   onSkip: () => void;
   startDevBuild: () => void;
   selectedBuild?: SelectedBuildFieldsFragment | null;
+  lastBuildHasChanges?: boolean;
   localBuildProgress?: LocalBuildProgress;
   showInitialBuildScreen?: boolean;
   gitInfo: Pick<GitInfoPayload, "uncommittedHash" | "branch">;
@@ -58,13 +71,11 @@ export const Onboarding = ({
   gitInfo,
   onComplete,
   onSkip,
+  lastBuildHasChanges,
 }: OnboardingProps) => {
   const { selectedBuild } = useBuildState();
   const selectedStory = useSelectedStoryState();
-
   // The initial build screen is only necessary if this is a brand new project with no builds at all. Instead, !selectedBuild would appear on any new branch, even if there are other builds on the project.
-  // TODO: Removed this entirely to solve for the most common case of an existing user with some builds to use as a baseline.
-  // Removing instead of fixing to avoid additional work as this project is past due. We need to revisit this later.
   const [showInitialBuild, setShowInitialBuild] = useState(showInitialBuildScreen);
   useEffect(() => {
     // Watch the value of showInitialBuildScreen, and if it becomes true, set the state to true. This is necessary because Onboarding may render before there is data to determine if there are any builds.
@@ -83,6 +94,17 @@ export const Onboarding = ({
 
   const [runningSecondBuild, setRunningSecondBuild] = React.useState(false);
 
+  React.useEffect(() => {
+    console.log("State", {
+      runningFirstBuild: !!localBuildProgress,
+      runningSecondBuild,
+      showCatchAChange,
+      showInitialBuild,
+      selectedStory,
+      selectedBuild,
+      gitInfo,
+    });
+  }, [runningSecondBuild, showCatchAChange, showInitialBuild]);
   // TODO: This design for an error in the Onboarding is incomplete
   if (localBuildProgress && localBuildProgress.currentStep === "error") {
     return (
@@ -158,8 +180,8 @@ export const Onboarding = ({
   if (
     localBuildProgress &&
     localBuildProgress.currentStep === "complete" &&
-    !showCatchAChange &&
-    !runningSecondBuild
+    !showCatchAChange
+    // && !runningSecondBuild
   ) {
     return (
       <Container>
@@ -187,10 +209,40 @@ export const Onboarding = ({
     );
   }
 
-  if (showCatchAChange && initialGitHash === gitInfo.uncommittedHash) {
+  if (
+    showCatchAChange &&
+    initialGitHash === gitInfo.uncommittedHash &&
+    !lastBuildHasChanges &&
+    // If there are no changes, let the user rerun the build.
+    (!localBuildProgress ||
+      localBuildProgress.currentStep === "error" ||
+      localBuildProgress.currentStep === "complete")
+  ) {
+    // Log useful for debugging, but do not display broken screen to users in odd edge cases
+    // eslint-disable-next-line no-console
+    console.log("Onboarding: Make a change", {
+      state: {
+        runningSecondBuild,
+        showCatchAChange,
+        lastBuildHasChanges,
+        localBuildProgress,
+        selectedStory,
+        selectedBuild,
+        gitInfo,
+      },
+    });
     return (
-      <Container>
+      // Hack to make the layout cover content that overflows the container, and still fill the entire addon tab.
+      <Container style={{ minHeight: "unset", flex: 1 }}>
         <Stack>
+          {!lastBuildHasChanges && runningSecondBuild && (
+            <Warning>
+              <WarningText>
+                No changes found in the Storybook you published. Make a UI tweak and publish again
+                to continue.
+              </WarningText>
+            </Warning>
+          )}
           <div>
             <Heading>Make a change to this story</Heading>
             <Text>
@@ -242,7 +294,24 @@ export const Onboarding = ({
   }
 
   // If the first build is done, changes were detected, and the second build hasn't started yet.
-  if (showCatchAChange && initialGitHash !== gitInfo.uncommittedHash && !runningSecondBuild) {
+  if (
+    showCatchAChange &&
+    initialGitHash !== gitInfo.uncommittedHash &&
+    (!localBuildProgress ||
+      localBuildProgress.currentStep === "error" ||
+      localBuildProgress.currentStep === "complete")
+  ) {
+    console.log("Onboarding: Changes Detected, Second Build Not Started", {
+      state: {
+        runningSecondBuild,
+        showCatchAChange,
+        lastBuildHasChanges,
+        localBuildProgress,
+        selectedStory,
+        selectedBuild,
+        gitInfo,
+      },
+    });
     return (
       <Container>
         <Stack>
@@ -259,6 +328,8 @@ export const Onboarding = ({
             onClick={() => {
               setRunningSecondBuild(true);
               startDevBuild();
+              // In case the build doe not have changes, reset gitHash to the current value
+              setInitialGitHash(gitInfo.uncommittedHash);
             }}
           >
             <Icons icon="play" />
@@ -273,10 +344,23 @@ export const Onboarding = ({
   if (
     localBuildProgress &&
     showCatchAChange &&
-    runningSecondBuild &&
     localBuildProgress.currentStep !== "error" &&
-    localBuildProgress.currentStep !== "complete"
+    localBuildProgress.currentStep !== "complete" &&
+    !lastBuildHasChanges
   ) {
+    // Log useful for debugging, but do not display broken screen to users in odd edge cases
+    // eslint-disable-next-line no-console
+    console.log("Onboarding: Changes detected, build in progress", {
+      state: {
+        runningSecondBuild,
+        showCatchAChange,
+        lastBuildHasChanges,
+        localBuildProgress,
+        selectedStory,
+        selectedBuild,
+        gitInfo,
+      },
+    });
     return (
       <Container>
         <Stack>
@@ -294,7 +378,21 @@ export const Onboarding = ({
   }
 
   // If the second build has been run and is complete, show the results
-  if (localBuildProgress && localBuildProgress.currentStep === "complete" && runningSecondBuild) {
+  if (
+    (localBuildProgress && localBuildProgress.currentStep === "complete") ||
+    lastBuildHasChanges
+  ) {
+    console.log("Onboarding: Build completed with changes", {
+      state: {
+        runningSecondBuild,
+        showCatchAChange,
+        lastBuildHasChanges,
+        localBuildProgress,
+        selectedStory,
+        selectedBuild,
+        gitInfo,
+      },
+    });
     return (
       <Container style={{ overflowY: "auto" }}>
         <Stack>
@@ -319,10 +417,11 @@ export const Onboarding = ({
 
   // Log useful for debugging, but do not display broken screen to users in odd edge cases
   // eslint-disable-next-line no-console
-  console.info("No screen selected", {
+  console.log("Onboarding: No screen selected", {
     state: {
       runningSecondBuild,
       showCatchAChange,
+      lastBuildHasChanges,
       localBuildProgress,
       selectedStory,
       selectedBuild,
