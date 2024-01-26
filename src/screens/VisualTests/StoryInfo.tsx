@@ -189,7 +189,7 @@ export const StoryInfo = ({
 
       {showButton && (
         <Actions>
-          <Button small secondary onClick={startDevBuild} disabled={buttonInProgress}>
+          <Button size="medium" variant="solid" onClick={startDevBuild} disabled={buttonInProgress}>
             {buttonInProgress ? (
               <ProgressIcon parentComponent="Button" style={{ marginRight: 6 }} />
             ) : (

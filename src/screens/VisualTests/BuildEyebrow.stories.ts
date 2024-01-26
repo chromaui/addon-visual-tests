@@ -1,6 +1,7 @@
 import { action } from "@storybook/addon-actions";
 import { expect } from "@storybook/jest";
 import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "@storybook/test";
 import { fireEvent, within } from "@storybook/testing-library";
 
 import * as buildProgressStories from "../../components/BuildProgressLabel.stories";
@@ -12,7 +13,7 @@ import { BuildEyebrow } from "./BuildEyebrow";
 const meta = {
   args: {
     branch: "feature",
-    dismissBuildError: action("dismissBuildError"),
+    dismissBuildError: fn(),
     switchToLastBuildOnBranch: action("switchToLastBuildOnBranch"),
   },
   component: BuildEyebrow,

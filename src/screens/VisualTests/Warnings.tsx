@@ -30,11 +30,11 @@ export const Warnings = ({ onClose }: WarningsProps) => (
         false positives. Two issues detected in this story may cause false positives.
       </p>
       <p>
-        <Button outline>
+        <Button variant="outline">
           <Icons icon="document" />
           Docs
         </Button>
-        <Button outline>
+        <Button variant="outline">
           <Icons icon="support" />
           Get support
         </Button>

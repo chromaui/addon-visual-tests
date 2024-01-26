@@ -49,7 +49,7 @@ export const NoBuild = ({
 }: NoBuildProps) => {
   const getDetails = () => {
     const button = (
-      <Button small secondary onClick={startDevBuild}>
+      <Button size="medium" variant="solid" onClick={startDevBuild}>
         <Icons icon="play" />
         Take snapshots
       </Button>
