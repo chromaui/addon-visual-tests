@@ -115,7 +115,7 @@
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
     "rimraf": "^3.0.2",
-    "storybook": "^8.0.0-alpha.14",
+    "storybook": "7.6.4",
     "ts-jest": "^29.1.1",
     "tsup": "^6.6.3",
     "typescript": "^4.9.5",
@@ -151,7 +151,11 @@
     "icon": "https://user-images.githubusercontent.com/341738/63501763-88dbf600-c4cc-11e9-96cd-94adadc2fd72.png"
   },
   "bundler": {
-    "exportEntries": ["src/index.ts"],
-    "managerEntries": ["src/manager.tsx"]
+    "exportEntries": [
+      "src/index.ts"
+    ],
+    "managerEntries": [
+      "src/manager.tsx"
+    ]
   }
 }
