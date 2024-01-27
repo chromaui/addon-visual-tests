@@ -112,7 +112,6 @@ const Warning = styled.div(({ theme }) => ({
 
 const WarningText = styled(Text)(({ theme }) => ({
   color: theme.color.darkest,
-  borderBottom: `1px solid ${theme.appBorderColor}`,
 }));
 
 interface SnapshotComparisonProps {
