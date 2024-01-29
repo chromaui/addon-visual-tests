@@ -16,5 +16,5 @@
     "skipLibCheck": true,
     "target": "ES2020"
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "types.d.ts"]
 }
