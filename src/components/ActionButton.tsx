@@ -1,5 +1,4 @@
 import { styled, type Theme } from "@storybook/theming";
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { darken, lighten } from "polished";
 import { ComponentProps } from "react";
 

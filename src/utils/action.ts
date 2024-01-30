@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import { action as act, type ActionOptions, type HandlerFunction } from "@storybook/addon-actions";
 import { jest } from "@storybook/jest";
 
