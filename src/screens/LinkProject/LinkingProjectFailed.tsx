@@ -40,7 +40,7 @@ export function LinkingProjectFailed({
           </Code>
           <CenterText>
             What is this for?{" "}
-            <Link withArrow target="_new" href={configureDocsLink}>
+            <Link withArrow target="_blank" href={configureDocsLink}>
               Learn more
             </Link>
           </CenterText>

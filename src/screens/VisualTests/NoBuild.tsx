@@ -73,7 +73,7 @@ export const NoBuild = ({
         <>
           <ErrorContainer>
             <b>Build failed:</b> <code>{firstError?.message || "Unknown Error"}</code>{" "}
-            <Link target="_new" href={buildFailureUrl} withArrow>
+            <Link target="_blank" href={buildFailureUrl} withArrow>
               Learn more
             </Link>
           </ErrorContainer>
