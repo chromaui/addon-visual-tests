@@ -149,7 +149,7 @@ export const GuidedTour = ({
       target: "#panel-tab-content",
       title: "Inspect changes",
       content: (
-        <>The results of the changes are shown here highlighting changes down to the pixel.</>
+        <>The results of the changes are shown here. The pixels that changed are highlighted in green.</>
       ),
       disableBeacon: true,
       placement: "left",
@@ -161,8 +161,7 @@ export const GuidedTour = ({
       title: "Toggle the diff",
       content: (
         <>
-          This button shows or hides the diff. The diff view highlights the changes in green. Try it
-          out.
+          This button shows or hides the visual diff. Use it to make the visual changes in your stories obvious. Try it out.
         </>
       ),
       onNextButtonClick: nextStep,
@@ -177,8 +176,7 @@ export const GuidedTour = ({
       title: "This is the Switch button",
       content: (
         <>
-          Toggle between the baseline snapshot (old) and the latest (new). The info bar below lets
-          you know which you are looking at.
+          Switch between the baseline snapshot (old) and the latest snapshot. The info bar will let you know which version you're looking at.
         </>
       ),
       onNextButtonClick: nextStep,
@@ -190,11 +188,10 @@ export const GuidedTour = ({
     },
     {
       target: "#button-toggle-accept-story",
-      title: "Changes found!",
+      title: "Accept changes",
       content: (
         <>
-          Accepting changes updates the baseline for the next time you run visual tests. This can be
-          undone.
+          If the visual changes are intentional, accept them to update the test baselines. The next time you run visual tests, future changes will be compared to these new baselines. This can be undone.
         </>
       ),
       disableBeacon: true,
@@ -212,7 +209,7 @@ export const GuidedTour = ({
       disableOverlay: true,
       content: (
         <>
-          You’ve got the basics down! You can always Unaccept if you’re not happy with the changes.
+          You’ve got the basics down! You can always unaccept if you’re not happy with the changes.
         </>
       ),
       onNextButtonClick: nextStep,
