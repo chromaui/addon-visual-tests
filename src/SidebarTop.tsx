@@ -46,7 +46,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
         id: `${ADDON_ID}/build-initialize`,
         content: {
           headline: "Build started",
-          subHeadline: "Check the Storybook process on the command line for more details.",
+          subHeadline: "Check the visual test addon to see the progress of your build.",
         },
         icon: {
           name: "passed",
