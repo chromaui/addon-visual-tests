@@ -1,3 +1,24 @@
+# v1.0.0 (Wed Jan 31 2024)
+
+#### 💥 Breaking Change
+
+- UI to uninstall addon [#158](https://github.com/chromaui/addon-visual-tests/pull/158) ([@ghengeveld](https://github.com/ghengeveld) [@JonathanKolnik](https://github.com/JonathanKolnik))
+- Update vscode settings [#157](https://github.com/chromaui/addon-visual-tests/pull/157) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### 🐛 Bug Fix
+
+- Rationalize SB deps [#159](https://github.com/chromaui/addon-visual-tests/pull/159) ([@tmeasday](https://github.com/tmeasday) [@thafryer](https://github.com/thafryer) [@ghengeveld](https://github.com/ghengeveld) [@JonathanKolnik](https://github.com/JonathanKolnik))
+- Revert "UI to uninstall addon" [#160](https://github.com/chromaui/addon-visual-tests/pull/160) ([@JonathanKolnik](https://github.com/JonathanKolnik))
+
+#### Authors: 4
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Jarel Fryer ([@thafryer](https://github.com/thafryer))
+- Jono Kolnik ([@JonathanKolnik](https://github.com/JonathanKolnik))
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v0.0.124 (Mon Dec 11 2023)
 
 #### 🐛 Bug Fix
