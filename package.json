@@ -54,7 +54,7 @@
   "dependencies": {
     "@storybook/design-system": "^7.15.15",
     "@urql/exchange-auth": "^2.1.6",
-    "chromatic": "^9.0.0",
+    "chromatic": "^10.6.0",
     "date-fns": "^2.30.0",
     "filesize": "^10.0.12",
     "jsonfile": "^6.1.0",
@@ -73,15 +73,21 @@
     "@storybook/addon-essentials": "7.6.4",
     "@storybook/addon-interactions": "7.6.4",
     "@storybook/addon-mdx-gfm": "7.6.4",
+    "@storybook/blocks": "7.6.4",
     "@storybook/channels": "7.6.4",
     "@storybook/client-logger": "7.6.4",
+    "@storybook/components": "7.6.4",
+    "@storybook/core-events": "7.6.4",
     "@storybook/eslint-config-storybook": "^3.1.2",
     "@storybook/jest": "^0.2.3",
+    "@storybook/manager": "7.6.4",
     "@storybook/manager-api": "7.6.4",
+    "@storybook/preview": "7.6.4",
     "@storybook/react": "7.6.4",
     "@storybook/react-vite": "7.6.4",
-    "@storybook/testing-library": "^0.2.2",
     "@storybook/theming": "7.6.4",
+    "@storybook/testing-library": "^0.2.2",
+    "@storybook/types": "7.6.4",
     "@types/jest": "^29.5.3",
     "@types/jsonfile": "^6.1.1",
     "@types/node": "^18.15.0",
@@ -118,26 +124,6 @@
     "vite-plugin-turbosnap": "^1.0.3",
     "zx": "^1.14.1"
   },
-  "peerDependencies": {
-    "@storybook/blocks": "^7.2.0",
-    "@storybook/client-logger": "^7.2.0",
-    "@storybook/components": "^7.2.0",
-    "@storybook/core-events": "^7.2.0",
-    "@storybook/manager-api": "^7.2.0",
-    "@storybook/preview-api": "^7.2.0",
-    "@storybook/theming": "^7.2.0",
-    "@storybook/types": "^7.2.0",
-    "react": "^16.8.0 || ^17.0.0 || ^18.0.0",
-    "react-dom": "^16.8.0 || ^17.0.0 || ^18.0.0"
-  },
-  "peerDependenciesMeta": {
-    "react": {
-      "optional": true
-    },
-    "react-dom": {
-      "optional": true
-    }
-  },
   "publishConfig": {
     "access": "public"
   },
@@ -163,5 +149,13 @@
       "react-native"
     ],
     "icon": "https://user-images.githubusercontent.com/341738/63501763-88dbf600-c4cc-11e9-96cd-94adadc2fd72.png"
+  },
+  "bundler": {
+    "exportEntries": [
+      "src/index.ts"
+    ],
+    "managerEntries": [
+      "src/manager.tsx"
+    ]
   }
 }
