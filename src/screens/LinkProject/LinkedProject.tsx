@@ -72,7 +72,9 @@ export const LinkedProject = ({
                 </Button>
                 <Text>
                   Why do we need a project ID?{" "}
-                  <Link href="https://www.chromatic.com/docs/cli" target="_blank">Learn More »</Link>
+                  <Link href="https://www.chromatic.com/docs/cli" target="_blank">
+                    Learn More »
+                  </Link>
                 </Text>
               </Stack>
             )}

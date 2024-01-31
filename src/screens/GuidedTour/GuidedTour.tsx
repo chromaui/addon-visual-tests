@@ -149,7 +149,10 @@ export const GuidedTour = ({
       target: "#panel-tab-content",
       title: "Inspect changes",
       content: (
-        <>The results of the changes are shown here. The pixels that changed are highlighted in green.</>
+        <>
+          The results of the changes are shown here. The pixels that changed are highlighted in
+          green.
+        </>
       ),
       disableBeacon: true,
       placement: "left",
@@ -161,7 +164,8 @@ export const GuidedTour = ({
       title: "Toggle the diff",
       content: (
         <>
-          This button shows or hides the visual diff. Use it to make the visual changes in your stories obvious. Try it out.
+          This button shows or hides the visual diff. Use it to make the visual changes in your
+          stories obvious. Try it out.
         </>
       ),
       onNextButtonClick: nextStep,
@@ -176,7 +180,8 @@ export const GuidedTour = ({
       title: "This is the Switch button",
       content: (
         <>
-          Switch between the baseline snapshot (old) and the latest snapshot. The info bar will let you know which version you're looking at.
+          Switch between the baseline snapshot (old) and the latest snapshot. The info bar will let
+          you know which version you're looking at.
         </>
       ),
       onNextButtonClick: nextStep,
@@ -191,7 +196,9 @@ export const GuidedTour = ({
       title: "Accept changes",
       content: (
         <>
-          If the visual changes are intentional, accept them to update the test baselines. The next time you run visual tests, future changes will be compared to these new baselines. This can be undone.
+          If the visual changes are intentional, accept them to update the test baselines. The next
+          time you run visual tests, future changes will be compared to these new baselines. This
+          can be undone.
         </>
       ),
       disableBeacon: true,

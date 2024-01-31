@@ -54,7 +54,11 @@ export const GitNotFound = ({ gitInfoError, setAccessToken }: GitNotFoundProps) 
               This addon requires Git to associate test results with commits and branches.
             </InfoSectionText>
           </InfoSection>
-          <Link target="_blank" href="https://www.chromatic.com/docs/visual-testing-addon/" withArrow>
+          <Link
+            target="_blank"
+            href="https://www.chromatic.com/docs/visual-testing-addon/"
+            withArrow
+          >
             Visual tests requirements
           </Link>
         </Stack>
