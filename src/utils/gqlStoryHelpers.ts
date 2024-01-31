@@ -1,5 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
-
 import type { ResultOf, VariablesOf } from "@graphql-typed-document-node/core";
 import { getOperationAST } from "graphql";
 import { graphql, HttpResponse } from "msw";

@@ -7,10 +7,11 @@ module.exports = {
     "simple-import-sort/imports": "error",
     "simple-import-sort/exports": "error",
     "import/order": "off",
+    "import/no-extraneous-dependencies": ["error", { devDependencies: true }],
   },
   parser: "@typescript-eslint/parser",
   parserOptions: {
-    project: ["./tsconfig.json"]
+    project: ["./tsconfig.json"],
   },
-  plugins: ["simple-import-sort"]
+  plugins: ["simple-import-sort"],
 };

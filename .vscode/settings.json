@@ -1,10 +1,8 @@
 {
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
+    "source.fixAll.eslint": "explicit"
   },
   "editor.formatOnSave": true,
-  "eslint.rules.customizations": [
-    { "rule": "*", "severity": "warn" }
-  ],
-  "typescript.tsdk": "node_modules/typescript/lib",
+  "eslint.rules.customizations": [{ "rule": "*", "severity": "warn" }],
+  "typescript.tsdk": "node_modules/typescript/lib"
 }
