@@ -44,11 +44,11 @@ const TooltipFooter = styled.div`
 
 const NextButton = styled(Button)(
   ({ secondary }) =>
-  secondary &&
+    secondary &&
     css({
       "&&:focus": { boxShadow: "none" },
-    }),
-)
+    })
+);
 
 export type TooltipProps = TooltipRenderProps & {
   step: TooltipRenderProps["step"] & {
@@ -58,7 +58,7 @@ export type TooltipProps = TooltipRenderProps & {
     onSkipWalkthroughButtonClick?: () => void;
     onNextButtonClick?: () => void;
   };
-}; 
+};
 
 export const Tooltip = ({ step, primaryProps, tooltipProps }: TooltipProps) => {
   return (
