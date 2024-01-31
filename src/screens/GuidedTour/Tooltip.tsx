@@ -1,4 +1,4 @@
-import { styled } from "@storybook/theming";
+import { css, styled } from "@storybook/theming";
 import React from "react";
 import { TooltipRenderProps } from "react-joyride";
 
@@ -42,6 +42,14 @@ const TooltipFooter = styled.div`
   margin-top: 15px;
 `;
 
+const NextButton = styled(Button)(
+  ({ secondary }) =>
+  secondary &&
+    css({
+      "&&:focus": { boxShadow: "none" },
+    }),
+)
+
 export type TooltipProps = TooltipRenderProps & {
   step: TooltipRenderProps["step"] & {
     hideSkipButton?: boolean;
@@ -50,7 +58,7 @@ export type TooltipProps = TooltipRenderProps & {
     onSkipWalkthroughButtonClick?: () => void;
     onNextButtonClick?: () => void;
   };
-};
+}; 
 
 export const Tooltip = ({ step, primaryProps, tooltipProps }: TooltipProps) => {
   return (
@@ -71,7 +79,7 @@ export const Tooltip = ({ step, primaryProps, tooltipProps }: TooltipProps) => {
             </Button>
           )}
           {!step.hideNextButton && (
-            <Button
+            <NextButton
               {...{
                 ...primaryProps,
                 secondary: true,
@@ -79,7 +87,7 @@ export const Tooltip = ({ step, primaryProps, tooltipProps }: TooltipProps) => {
               }}
             >
               {step.nextButtonText || "Next"}
-            </Button>
+            </NextButton>
           )}
         </TooltipFooter>
       )}
