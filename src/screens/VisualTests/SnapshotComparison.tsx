@@ -104,14 +104,14 @@ const StackTrace = styled.div(({ theme }) => ({
 }));
 
 const Warning = styled.div(({ theme }) => ({
-  background: theme.background.warning,
+  background: theme.background.hoverable,
   padding: "10px",
   lineHeight: "18px",
   position: "relative",
 }));
 
 const WarningText = styled(Text)(({ theme }) => ({
-  color: theme.color.darkest,
+  color: theme.color.defaultText,
 }));
 
 interface SnapshotComparisonProps {
