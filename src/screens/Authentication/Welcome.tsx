@@ -1,4 +1,4 @@
-import { Link } from "@storybook/design-system/src";
+import { Link } from "../../components/design-system";
 import React from "react";
 
 import { Button } from "../../components/Button";

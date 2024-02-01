@@ -1,8 +1,8 @@
-import { Spinner } from "@storybook/design-system/src";
 import type { API } from "@storybook/manager-api";
 import { useChannel, useStorybookState } from "@storybook/manager-api";
 import React, { useCallback, useState } from "react";
 
+import { Spinner } from "./components/design-system";
 import { Sections } from "./components/layout";
 import {
   ADDON_ID,

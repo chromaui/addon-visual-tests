@@ -1,5 +1,4 @@
 import { Icons } from "@storybook/components";
-import { Icon } from "@storybook/design-system/src";
 import { styled } from "@storybook/theming";
 import React, { useEffect, useState } from "react";
 import { gql } from "urql";

@@ -1,4 +1,4 @@
-import { Icon, Link } from "@storybook/design-system/src";
+import { Icon, Link } from "../../components/design-system";
 import { styled } from "@storybook/theming";
 import React from "react";
 
