@@ -1,3 +1,15 @@
+# v1.0.2 (Thu Feb 01 2024)
+
+#### 🐛 Bug Fix
+
+- Remove react as a peer dep [#167](https://github.com/chromaui/addon-visual-tests/pull/167) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v1.0.1 (Thu Feb 01 2024)
 
 #### 🐛 Bug Fix
