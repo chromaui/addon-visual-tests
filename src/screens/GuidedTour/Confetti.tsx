@@ -77,7 +77,6 @@ function getRandomInt(min: number, max: number) {
 
 function draw(context: CanvasRenderingContext2D) {
   // All of these are needed to avoid type checking on this because our eslint and ts rules are more strict than @storybook/addon-onboarding
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore - react-confetti uses this to pass context, but it isn't defined here so it need to be an implicit any. Ignoring to avoid conflicts - otherwise the code is the same as in addon-onboarding
   // eslint-disable-next-line @typescript-eslint/no-this-alias
   const self: any = this;
