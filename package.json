@@ -52,7 +52,6 @@
     "typecheck": "tsc --noemit"
   },
   "dependencies": {
-    "@storybook/design-system": "^7.15.15",
     "@urql/exchange-auth": "^2.1.6",
     "chromatic": "^10.6.0",
     "date-fns": "^2.30.0",
@@ -80,6 +79,7 @@
     "@storybook/client-logger": "^8.0.0-alpha.17",
     "@storybook/components": "^8.0.0-alpha.17",
     "@storybook/core-events": "^8.0.0-alpha.17",
+    "@storybook/design-system": "^7.15.15",
     "@storybook/eslint-config-storybook": "^3.1.2",
     "@storybook/jest": "^0.2.3",
     "@storybook/manager": "^8.0.0-alpha.17",
