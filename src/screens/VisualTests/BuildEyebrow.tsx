@@ -104,6 +104,10 @@ const StepDetail = styled.div<{ isCurrent: boolean; isFailed: boolean; isPending
     "&:last-of-type": {
       marginBottom: 10,
     },
+    "& > div": {
+      display: "flex",
+      alignItems: "center",
+    },
   })
 );
 
