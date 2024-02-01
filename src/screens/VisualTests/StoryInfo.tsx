@@ -1,4 +1,5 @@
-import { Icons, Link } from "@storybook/components";
+import { Link } from "@storybook/components";
+import { PlayIcon } from "@storybook/icons";
 import { styled } from "@storybook/theming";
 import { formatDistance } from "date-fns";
 import pluralize from "pluralize";
@@ -193,7 +194,7 @@ export const StoryInfo = ({
             {buttonInProgress ? (
               <ProgressIcon parentComponent="Button" style={{ marginRight: 6 }} />
             ) : (
-              <Icons icon="play" />
+              <PlayIcon />
             )}
             {isErrored ? "Rerun" : "Run"} tests
           </Button>

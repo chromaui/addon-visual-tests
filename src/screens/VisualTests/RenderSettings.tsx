@@ -5,9 +5,12 @@ import {
   Accordions,
   CloseButton,
   CloseIcon,
+  ContrastIcon,
   Heading,
   InfoIcon,
-  ItemIcon,
+  ParagraphIcon,
+  StopIcon,
+  TimerIcon,
 } from "../../components/Accordions";
 
 interface RenderSettingsProps {
@@ -20,32 +23,32 @@ export const RenderSettings = ({ onClose }: RenderSettingsProps) => {
       <Accordion>
         <Heading>
           Render settings
-          <InfoIcon icon="info" />
+          <InfoIcon />
           <CloseButton onClick={onClose}>
-            <CloseIcon icon="close" aria-label="Close" />
+            <CloseIcon aria-label="Close" />
           </CloseButton>
         </Heading>
         <p>
-          <ItemIcon icon="timer" />
+          <TimerIcon />
           Delay: 300ms
         </p>
         <p>
-          <ItemIcon icon="stop" />
+          <StopIcon />
           Animation pause: Ends
         </p>
         <p>
-          <ItemIcon icon="contrast" />
+          <ContrastIcon />
           Threshold: 0.2
         </p>
         <p>
-          <ItemIcon icon="paragraph" />
+          <ParagraphIcon />
           Anti-alias: Included
         </p>
       </Accordion>
       <Accordion>
         <Heading>
           Bounding box
-          <InfoIcon icon="info" />
+          <InfoIcon />
         </Heading>
         <dl>
           <dt>Width:</dt>

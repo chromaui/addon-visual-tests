@@ -1,4 +1,14 @@
-import { Icons, TooltipNote, WithTooltip } from "@storybook/components";
+import { TooltipNote, WithTooltip } from "@storybook/components";
+import {
+  BatchAcceptIcon,
+  ContrastIcon,
+  LocationIcon,
+  LockIcon,
+  PlayIcon,
+  SyncIcon,
+  TransferIcon,
+  UndoIcon,
+} from "@storybook/icons";
 import { styled } from "@storybook/theming";
 import React from "react";
 
@@ -124,7 +134,7 @@ export const SnapshotControls = ({
                 }
                 onClick={() => toggleBaselineImage()}
               >
-                <Icons icon="transfer" />
+                <TransferIcon />
               </IconButton>
             </WithTooltip>
             <WithTooltip
@@ -138,7 +148,7 @@ export const SnapshotControls = ({
                 aria-label={focusVisible ? "Hide spotlight" : "Show spotlight"}
                 onClick={() => toggleFocus(!focusVisible)}
               >
-                <Icons icon="location" />
+                <LocationIcon />
               </IconButton>
             </WithTooltip>
             <WithTooltip
@@ -152,7 +162,7 @@ export const SnapshotControls = ({
                 aria-label={diffVisible ? "Hide diff" : "Show diff"}
                 onClick={() => toggleDiff(!diffVisible)}
               >
-                <Icons icon="contrast" />
+                <ContrastIcon />
               </IconButton>
             </WithTooltip>
           </>
@@ -215,7 +225,7 @@ export const SnapshotControls = ({
                       {isReviewing ? (
                         <ProgressIcon parentComponent="IconButton" />
                       ) : (
-                        <Icons icon="batchaccept" />
+                        <BatchAcceptIcon />
                       )}
                     </ActionButton>
                   )}
@@ -239,7 +249,7 @@ export const SnapshotControls = ({
                   side="left"
                   status="positive"
                 >
-                  <Icons icon="undo" />
+                  <UndoIcon />
                   Unaccept
                 </ActionButton>
               </WithTooltip>
@@ -281,7 +291,7 @@ export const SnapshotControls = ({
                       {isReviewing ? (
                         <ProgressIcon parentComponent="IconButton" />
                       ) : (
-                        <Icons icon="batchaccept" />
+                        <BatchAcceptIcon />
                       )}
                     </ActionButton>
                   )}
@@ -297,7 +307,7 @@ export const SnapshotControls = ({
               hasChrome={false}
             >
               <IconButton as="span">
-                <Icons icon="lock" />
+                <LockIcon />
               </IconButton>
             </WithTooltip>
           )}
@@ -313,7 +323,7 @@ export const SnapshotControls = ({
               onClick={() => startDevBuild()}
               secondary
             >
-              <Icons icon={isOutdated ? "play" : "sync"} />
+              {isOutdated ? <PlayIcon /> : <SyncIcon />}
             </ActionButton>
           </WithTooltip>
         </Actions>

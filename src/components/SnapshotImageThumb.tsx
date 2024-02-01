@@ -1,4 +1,4 @@
-import { Icons } from "@storybook/components";
+import { CheckIcon } from "@storybook/icons";
 import { styled } from "@storybook/theming";
 import React from "react";
 
@@ -49,7 +49,7 @@ export const SnapshotImageThumb = ({
   return (
     <Wrapper status={status} style={backgroundColor ? { backgroundColor } : {}}>
       <img alt="Snapshot thumbnail" src={thumbnailUrl} {...imgProps} />
-      {status === "positive" && <Icons icon="check" />}
+      {status === "positive" && <CheckIcon />}
     </Wrapper>
   );
 };

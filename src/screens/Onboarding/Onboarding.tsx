@@ -1,5 +1,4 @@
-import { Icons } from "@storybook/components";
-import { Icon } from "@storybook/design-system";
+import { PlayIcon } from "@storybook/icons";
 import { styled } from "@storybook/theming";
 import React, { useEffect, useState } from "react";
 import { gql } from "urql";
@@ -285,7 +284,7 @@ export const Onboarding = ({
               }, 1000);
             }}
           >
-            <Icons icon="play" />
+            <PlayIcon />
             Run visual tests
           </Button>
         </Stack>

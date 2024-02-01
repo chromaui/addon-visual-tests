@@ -1,10 +1,10 @@
 import { TooltipNote, WithTooltip } from "@storybook/components";
+import { ChevronDownIcon } from "@storybook/icons";
 import { styled } from "@storybook/theming";
 import React, { ComponentProps } from "react";
 
 import { Browser, BrowserInfo, ComparisonResult } from "../gql/graphql";
 import { aggregateResult } from "../utils/aggregateResult";
-import { ArrowIcon } from "./icons/ArrowIcon";
 import { ChromeIcon } from "./icons/ChromeIcon";
 import { EdgeIcon } from "./icons/EdgeIcon";
 import { FirefoxIcon } from "./icons/FirefoxIcon";
@@ -91,7 +91,7 @@ export const BrowserSelector = ({
         <TooltipMenu placement="bottom" links={links}>
           {icon}
           <Label>{selectedBrowser.name}</Label>
-          <ArrowIcon icon="arrowdown" />
+          <ChevronDownIcon style={{ width: 10, height: 10 }} />
         </TooltipMenu>
       ) : (
         <IconWrapper>

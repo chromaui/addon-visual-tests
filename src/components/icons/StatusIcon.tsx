@@ -1,17 +1,14 @@
-import { Icons } from "@storybook/components";
-import { styled } from "@storybook/theming";
+import { ChangedIcon, FailedIcon, PassedIcon } from "@storybook/icons";
+import { useTheme } from "@storybook/theming";
+import React from "react";
 
-export const StatusIcon = styled(Icons)<{ icon: "passed" | "changed" | "failed" }>(
-  ({ icon, theme }) => ({
-    width: 12,
-    height: 12,
-    margin: "3px 3px 3px 6px",
-    verticalAlign: "top",
+const styles = { width: 12, height: 12, margin: "3px 3px 3px 6px", verticalAlign: "top" };
 
-    color: {
-      passed: theme.color.positive,
-      changed: theme.color.warning,
-      failed: theme.color.negative,
-    }[icon],
-  })
-);
+export const StatusIcon = ({ icon }: { icon: "passed" | "changed" | "failed" }) => {
+  const { color } = useTheme();
+  return {
+    passed: <PassedIcon style={{ ...styles, color: color.positive }} />,
+    changed: <ChangedIcon style={{ ...styles, color: color.warning }} />,
+    failed: <FailedIcon style={{ ...styles, color: color.negative }} />,
+  }[icon];
+};

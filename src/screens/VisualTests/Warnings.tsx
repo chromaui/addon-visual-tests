@@ -1,4 +1,4 @@
-import { Icons } from "@storybook/components";
+import { DocumentIcon, SupportIcon } from "@storybook/icons";
 import React from "react";
 
 import {
@@ -22,7 +22,7 @@ export const Warnings = ({ onClose }: WarningsProps) => (
         Warnings
         <Badge status="warning">2</Badge>
         <CloseButton onClick={onClose}>
-          <CloseIcon icon="close" aria-label="Close" />
+          <CloseIcon aria-label="Close" />
         </CloseButton>
       </Heading>
       <p>
@@ -31,11 +31,11 @@ export const Warnings = ({ onClose }: WarningsProps) => (
       </p>
       <p>
         <Button variant="outline">
-          <Icons icon="document" />
+          <DocumentIcon />
           Docs
         </Button>
         <Button variant="outline">
-          <Icons icon="support" />
+          <SupportIcon />
           Get support
         </Button>
       </p>
