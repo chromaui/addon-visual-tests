@@ -1,9 +1,9 @@
-import React, { ComponentProps, forwardRef } from 'react';
-import { styled, css } from '@storybook/theming';
-import { darken } from 'polished';
+import { css, styled } from "@storybook/theming";
+import { darken } from "polished";
+import React, { ComponentProps, forwardRef } from "react";
 
-import { Icon } from './Icon';
-import { color } from './shared/styles';
+import { Icon } from "./Icon";
+import { color } from "./shared/styles";
 
 const LinkInner = styled.span<{ withArrow: boolean }>`
   ${(props) =>
@@ -172,7 +172,7 @@ const LinkComponentPicker = forwardRef<HTMLAnchorElement | HTMLButtonElement, Li
     return <UnstyledLink {...rest} ref={ref as React.ForwardedRef<HTMLAnchorElement>} />;
   }
 );
-LinkComponentPicker.displayName = 'LinkComponentPicker';
+LinkComponentPicker.displayName = "LinkComponentPicker";
 
 export const Link = forwardRef<
   HTMLAnchorElement | HTMLButtonElement,
@@ -197,8 +197,9 @@ export const Link = forwardRef<
     </StyledLink>
   );
 });
-Link.displayName = 'Link';
+Link.displayName = "Link";
 
+/* eslint-disable react/default-props-match-prop-types */
 Link.defaultProps = {
   withArrow: false,
   isButton: false,
@@ -208,3 +209,4 @@ Link.defaultProps = {
   nochrome: false,
   inverse: false,
 };
+/* eslint-enable react/default-props-match-prop-types */

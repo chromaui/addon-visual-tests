@@ -2,9 +2,9 @@ import { TooltipNote, WithTooltip } from "@storybook/components";
 import { styled } from "@storybook/theming";
 import React from "react";
 
-import { Icon } from "./design-system";
 import { ComparisonResult, TestMode } from "../gql/graphql";
 import { aggregateResult } from "../utils/aggregateResult";
+import { Icon } from "./design-system";
 import { ArrowIcon } from "./icons/ArrowIcon";
 import { StatusDot, StatusDotWrapper } from "./StatusDot";
 import { TooltipMenu } from "./TooltipMenu";

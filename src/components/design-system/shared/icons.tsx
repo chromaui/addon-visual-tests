@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 // Icon paths
 export const icons = {

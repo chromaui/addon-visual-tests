@@ -1,8 +1,8 @@
 import { Loader } from "@storybook/components";
-import { Link } from "../../components/design-system";
 import { styled } from "@storybook/theming";
 import React, { useEffect } from "react";
 
+import { Link } from "../../components/design-system";
 import { Text } from "../../components/layout";
 import { SnapshotImage } from "../../components/SnapshotImage";
 import { ComparisonResult, TestResult, TestStatus } from "../../gql/graphql";

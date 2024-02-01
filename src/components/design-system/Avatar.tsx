@@ -1,8 +1,9 @@
-import React, { FunctionComponent, ComponentProps } from 'react';
-import { styled, css } from '@storybook/theming';
-import { color, typography } from './shared/styles';
-import { glow } from './shared/animation';
-import { Icon } from './Icon';
+import { css, styled } from "@storybook/theming";
+import React, { ComponentProps, FunctionComponent } from "react";
+
+import { Icon } from "./Icon";
+import { glow } from "./shared/animation";
+import { color, typography } from "./shared/styles";
 
 export const sizes = {
   large: 40,
@@ -12,13 +13,13 @@ export const sizes = {
 };
 
 export enum AvatarType {
-  USER = 'user',
-  ORGANIZATION = 'organization',
+  USER = "user",
+  ORGANIZATION = "organization",
 }
 
 const Image = styled.div<Partial<Props>>`
   background: transparent;
-  border-radius: ${(props) => (props.type === AvatarType.USER ? '50%' : '5px')};
+  border-radius: ${(props) => (props.type === AvatarType.USER ? "50%" : "5px")};
   display: inline-block;
   vertical-align: top;
   overflow: hidden;
@@ -36,7 +37,7 @@ const Image = styled.div<Partial<Props>>`
     `}
 
   ${(props) =>
-    props.size === 'tiny' &&
+    props.size === "tiny" &&
     css`
       height: ${sizes.tiny}px;
       width: ${sizes.tiny}px;
@@ -44,7 +45,7 @@ const Image = styled.div<Partial<Props>>`
     `}
 
   ${(props) =>
-    props.size === 'small' &&
+    props.size === "small" &&
     css`
       height: ${sizes.small}px;
       width: ${sizes.small}px;
@@ -52,7 +53,7 @@ const Image = styled.div<Partial<Props>>`
     `}
 
   ${(props) =>
-    props.size === 'large' &&
+    props.size === "large" &&
     css`
       height: ${sizes.large}px;
       width: ${sizes.large}px;
@@ -62,7 +63,7 @@ const Image = styled.div<Partial<Props>>`
   ${(props) =>
     !props.src &&
     css`
-      background: ${!props.isLoading && '#37D5D3'};
+      background: ${!props.isLoading && "#37D5D3"};
     `}
 
   img {
@@ -77,7 +78,7 @@ interface LoadingIconProps {
   type: AvatarType;
 }
 
-const LoadingIcon = styled(Icon) <LoadingIconProps & ComponentProps<typeof Icon>>`
+const LoadingIcon = styled(Icon)<LoadingIconProps & ComponentProps<typeof Icon>>`
   position: relative;
   margin: 0 auto;
   display: block;
@@ -121,24 +122,24 @@ const Initial = styled.div<Partial<Props>>`
  */
 export const Avatar: FunctionComponent<Props> = ({
   isLoading = false,
-  username = 'loading',
+  username = "loading",
   src = undefined,
-  size = 'medium',
+  size = "medium",
   type = AvatarType.USER,
   ...props
 }: Props) => {
   let avatarFigure = (
-    <LoadingIcon icon={type === AvatarType.USER ? 'useralt' : 'repository'} type={type} />
+    <LoadingIcon icon={type === AvatarType.USER ? "useralt" : "repository"} type={type} />
   );
   const a11yProps: ComponentProps<typeof Image> = {};
 
   if (isLoading) {
-    a11yProps['aria-busy'] = true;
-    a11yProps['aria-label'] = 'Loading avatar ...';
+    a11yProps["aria-busy"] = true;
+    a11yProps["aria-label"] = "Loading avatar ...";
   } else if (src) {
     avatarFigure = <img src={src} alt={username} />;
   } else {
-    a11yProps['aria-label'] = username;
+    a11yProps["aria-label"] = username;
     avatarFigure = (
       <Initial size={size} aria-hidden="true">
         {username.substring(0, 1)}

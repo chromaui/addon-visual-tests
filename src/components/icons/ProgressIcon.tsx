@@ -1,5 +1,6 @@
-import { rotate360 } from "../design-system/shared/animation";
 import { css, styled } from "@storybook/theming";
+
+import { rotate360 } from "../design-system/shared/animation";
 
 export const ProgressIcon = styled.div<{ parentComponent?: "Button" | "IconButton" }>(
   ({ theme }) => ({

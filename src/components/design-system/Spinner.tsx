@@ -1,7 +1,8 @@
-import React, { ComponentProps, FunctionComponent } from 'react';
-import { styled, css } from '@storybook/theming';
-import { color } from './shared/styles';
-import { rotate360 } from './shared/animation';
+import { css, styled } from "@storybook/theming";
+import React, { ComponentProps, FunctionComponent } from "react";
+
+import { rotate360 } from "./shared/animation";
+import { color } from "./shared/styles";
 
 interface Props {
   inline?: boolean;

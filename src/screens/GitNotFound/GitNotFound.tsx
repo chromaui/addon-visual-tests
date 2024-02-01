@@ -1,8 +1,8 @@
-import { Icon, Link } from "../../components/design-system";
 import { styled } from "@storybook/theming";
 import React from "react";
 
 import { Container } from "../../components/Container";
+import { Icon, Link } from "../../components/design-system";
 import { FooterSection } from "../../components/FooterSection";
 import { Heading } from "../../components/Heading";
 import { VisualTestsIcon } from "../../components/icons/VisualTestsIcon";

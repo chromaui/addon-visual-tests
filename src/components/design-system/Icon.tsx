@@ -1,6 +1,7 @@
-import React, { FunctionComponent } from 'react';
-import { styled } from '@storybook/theming';
-import { icons } from './shared/icons';
+import { styled } from "@storybook/theming";
+import React, { FunctionComponent } from "react";
+
+import { icons } from "./shared/icons";
 
 const Svg = styled.svg`
   display: inline-block;

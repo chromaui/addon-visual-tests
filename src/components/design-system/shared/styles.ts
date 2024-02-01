@@ -1,54 +1,54 @@
-import { css } from '@storybook/theming';
-import { rgba } from 'polished';
+import { css } from "@storybook/theming";
+import { rgba } from "polished";
 
 // Global style variables
 export const background = {
-  app: '#F6F9FC',
-  appInverse: '#7A8997',
-  positive: '#E1FFD4',
-  negative: '#FEDED2',
-  warning: '#FFF5CF',
-  calmBlue: '#E3F3FF',
+  app: "#F6F9FC",
+  appInverse: "#7A8997",
+  positive: "#E1FFD4",
+  negative: "#FEDED2",
+  warning: "#FFF5CF",
+  calmBlue: "#E3F3FF",
 };
 
 export const color = {
   // Palette
-  primary: '#FF4785', // Coral
-  secondary: '#029CFD', // Ocean
-  tertiary: '#E3E6E8', // Light grey
+  primary: "#FF4785", // Coral
+  secondary: "#029CFD", // Ocean
+  tertiary: "#E3E6E8", // Light grey
 
-  orange: '#FC521F',
-  gold: '#FFAE00',
-  green: '#66BF3C',
-  seafoam: '#37D5D3',
-  purple: '#6F2CAC',
-  ultraviolet: '#2A0481',
-  red: '#ff4400',
+  orange: "#FC521F",
+  gold: "#FFAE00",
+  green: "#66BF3C",
+  seafoam: "#37D5D3",
+  purple: "#6F2CAC",
+  ultraviolet: "#2A0481",
+  red: "#ff4400",
 
   // Calm
-  bluelight: '#E3F3FF', // rgba($color.blue, 12%)
-  bluelighter: '#F5FBFF',
+  bluelight: "#E3F3FF", // rgba($color.blue, 12%)
+  bluelighter: "#F5FBFF",
 
   // Monochrome
-  lightest: '#FFFFFF',
-  lighter: '#F7FAFC',
-  light: '#EEF3F6',
-  mediumlight: '#ECF4F9',
-  medium: '#D9E8F2',
-  mediumdark: '#73828C',
-  dark: '#5C6870',
-  darker: '#454E54',
-  darkest: '#2E3438',
-  tr10: 'rgba(0, 0, 0, 0.1)',
-  tr5: 'rgba(0, 0, 0, 0.05)',
+  lightest: "#FFFFFF",
+  lighter: "#F7FAFC",
+  light: "#EEF3F6",
+  mediumlight: "#ECF4F9",
+  medium: "#D9E8F2",
+  mediumdark: "#73828C",
+  dark: "#5C6870",
+  darker: "#454E54",
+  darkest: "#2E3438",
+  tr10: "rgba(0, 0, 0, 0.1)",
+  tr5: "rgba(0, 0, 0, 0.05)",
 
-  border: 'hsla(203, 50%, 30%, 0.15)',
+  border: "hsla(203, 50%, 30%, 0.15)",
 
   // Status
-  positive: '#448028', // Evergreen
-  negative: '#D43900', // Crimson
-  warning: '#A15C20', // Burnt sienna
-  selected: '#0271B6', // Navy
+  positive: "#448028", // Evergreen
+  negative: "#D43900", // Crimson
+  warning: "#A15C20", // Burnt sienna
+  selected: "#0271B6", // Navy
 };
 
 export const spacing = {
@@ -70,9 +70,9 @@ export const typography = {
     code: '"SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace',
   },
   weight: {
-    regular: '400',
-    bold: '700',
-    extrabold: '800',
+    regular: "400",
+    bold: "700",
+    extrabold: "800",
   },
   size: {
     s1: 12,
@@ -170,14 +170,14 @@ export const subheading = {
   regular: css({
     fontSize: 13,
     fontWeight: typography.weight.extrabold,
-    lineHeight: '18px',
-    letterSpacing: '0.38em',
+    lineHeight: "18px",
+    letterSpacing: "0.38em",
   }),
   small: css({
     fontSize: 11,
     fontWeight: typography.weight.extrabold,
-    lineHeight: '16px',
-    letterSpacing: '0.38em',
+    lineHeight: "16px",
+    letterSpacing: "0.38em",
   }),
 };
 
@@ -185,42 +185,42 @@ export const text = {
   storybookMediumBold: css({
     fontSize: 13,
     fontWeight: typography.weight.bold,
-    lineHeight: '18px',
+    lineHeight: "18px",
   }),
   storybookMedium: css({
     fontSize: 13,
     fontWeight: typography.weight.regular,
-    lineHeight: '18px',
+    lineHeight: "18px",
   }),
   largeBold: css({
     fontSize: typography.size.s3,
     fontWeight: typography.weight.bold,
-    lineHeight: '24px',
+    lineHeight: "24px",
   }),
   small: css({
     fontSize: typography.size.s1,
     fontWeight: typography.weight.regular,
-    lineHeight: '18px',
+    lineHeight: "18px",
   }),
   regularBold: css({
     fontSize: typography.size.s2,
     fontWeight: typography.weight.bold,
-    lineHeight: '20px',
+    lineHeight: "20px",
   }),
   smallBold: css({
     fontSize: typography.size.s1,
     fontWeight: typography.weight.bold,
-    lineHeight: '18px',
+    lineHeight: "18px",
   }),
   large: css({
     fontSize: typography.size.s3,
     fontWeight: typography.weight.regular,
-    lineHeight: '24px',
+    lineHeight: "24px",
   }),
   regular: css({
     fontSize: typography.size.s2,
     fontWeight: typography.weight.regular,
-    lineHeight: '20px',
+    lineHeight: "20px",
   }),
 };
 
@@ -229,13 +229,13 @@ export const code = {
     fontFamily: typography.type.code,
     fontSize: typography.size.s2,
     fontWeight: typography.weight.regular,
-    lineHeight: '17px',
+    lineHeight: "17px",
   }),
 
   small: css({
     fontFamily: typography.type.code,
     fontSize: typography.size.s1,
     fontWeight: typography.weight.regular,
-    lineHeight: '14px',
+    lineHeight: "14px",
   }),
 };

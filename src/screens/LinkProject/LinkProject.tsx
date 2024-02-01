@@ -1,10 +1,10 @@
 import { Icons, Link } from "@storybook/components";
-import { Avatar, ListItem } from "../../components/design-system";
 import { styled } from "@storybook/theming";
 import React, { useCallback, useEffect, useState } from "react";
 import { useQuery } from "urql";
 
 import { Container } from "../../components/Container";
+import { Avatar, ListItem } from "../../components/design-system";
 import { FooterSection } from "../../components/FooterSection";
 import { Heading } from "../../components/Heading";
 import { Section, Sections, Text } from "../../components/layout";
