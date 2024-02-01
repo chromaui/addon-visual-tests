@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import type { Channel } from "@storybook/channels";
-import { Options } from "@storybook/types";
+import type { Options } from "@storybook/types";
 // eslint-disable-next-line import/no-unresolved
 import { getConfiguration, getGitInfo, GitInfo } from "chromatic/node";
 
