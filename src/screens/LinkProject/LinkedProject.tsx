@@ -67,7 +67,7 @@ export const LinkedProject = ({
                   project's <code>{configFile}</code>. This will be used to sync with Chromatic.
                   Please commit this change to continue using this addon.
                 </Text>
-                <Button secondary onClick={() => goToNext()}>
+                <Button variant="solid" size="medium" onClick={() => goToNext()}>
                   Catch a UI change
                 </Button>
                 <Text>
