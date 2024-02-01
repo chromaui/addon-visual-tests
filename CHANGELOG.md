@@ -1,3 +1,15 @@
+# v1.0.1 (Thu Feb 01 2024)
+
+#### 🐛 Bug Fix
+
+- Fix SB version duplication in dependencies [#166](https://github.com/chromaui/addon-visual-tests/pull/166) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 1
+
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v1.0.0 (Thu Feb 01 2024)
 
 #### 💥 Breaking Change
