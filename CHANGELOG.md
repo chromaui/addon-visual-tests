@@ -1,3 +1,32 @@
+# v1.0.0 (Thu Feb 01 2024)
+
+#### 💥 Breaking Change
+
+- UI to uninstall addon [#165](https://github.com/chromaui/addon-visual-tests/pull/165) ([@tmeasday](https://github.com/tmeasday))
+- UI to uninstall addon [#158](https://github.com/chromaui/addon-visual-tests/pull/158) ([@ghengeveld](https://github.com/ghengeveld) [@JonathanKolnik](https://github.com/JonathanKolnik))
+
+#### 🚀 Enhancement
+
+- Release 0.1.0 [#164](https://github.com/chromaui/addon-visual-tests/pull/164) ([@tmeasday](https://github.com/tmeasday))
+- Visual Test Addon Onboarding behind query param [#144](https://github.com/chromaui/addon-visual-tests/pull/144) ([@weeksling](https://github.com/weeksling) [@ghengeveld](https://github.com/ghengeveld) [@thafryer](https://github.com/thafryer))
+
+#### 🐛 Bug Fix
+
+- Change addon name to `@chromatic-com/storybook` [#163](https://github.com/chromaui/addon-visual-tests/pull/163) ([@tmeasday](https://github.com/tmeasday))
+- Rationalize SB deps [#159](https://github.com/chromaui/addon-visual-tests/pull/159) ([@tmeasday](https://github.com/tmeasday) [@thafryer](https://github.com/thafryer) [@ghengeveld](https://github.com/ghengeveld) [@JonathanKolnik](https://github.com/JonathanKolnik))
+- Revert "UI to uninstall addon" [#160](https://github.com/chromaui/addon-visual-tests/pull/160) ([@JonathanKolnik](https://github.com/JonathanKolnik))
+- Update vscode settings [#157](https://github.com/chromaui/addon-visual-tests/pull/157) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 5
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Jarel Fryer ([@thafryer](https://github.com/thafryer))
+- Jono Kolnik ([@JonathanKolnik](https://github.com/JonathanKolnik))
+- Matthew Weeks ([@weeksling](https://github.com/weeksling))
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 # v1.1.0 (Thu Feb 01 2024)
 
 #### 🚀 Enhancement
