@@ -4,6 +4,8 @@ export const {
   CHROMATIC_API_URL = `${CHROMATIC_BASE_URL}/api`,
 } = process.env;
 
+export const PACKAGE_NAME = "@chromatic-com/storybook";
+
 export const ADDON_ID = "chromaui/addon-visual-tests";
 export const PANEL_ID = `${ADDON_ID}/panel`;
 export const SIDEBAR_TOP_ID = `${ADDON_ID}/sidebarTop`;

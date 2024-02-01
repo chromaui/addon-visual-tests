@@ -9,6 +9,7 @@ import {
   GIT_INFO,
   GIT_INFO_ERROR,
   LOCAL_BUILD_PROGRESS,
+  PACKAGE_NAME,
   PROJECT_INFO,
   REMOVE_ADDON,
   START_BUILD,
@@ -118,7 +119,7 @@ async function serverChannel(
 
   channel.on(STOP_BUILD, stopChromaticBuild);
   channel.on(REMOVE_ADDON, async () => {
-    await api.removeAddon("@chromaui/addon-visual-tests");
+    await api.removeAddon(PACKAGE_NAME);
   });
 
   const gitInfoState = SharedState.subscribe<GitInfoPayload>(GIT_INFO, channel);
