@@ -1,9 +1,9 @@
 import { styled } from "@storybook/theming";
 import React, { useEffect, useState } from "react";
-import ReactConfetti from "react-confetti";
+// import ReactConfetti from "react-confetti";
 import { createPortal } from "react-dom";
 
-interface ConfettiProps extends Omit<React.ComponentProps<typeof ReactConfetti>, "drawShape"> {
+interface ConfettiProps extends Omit<React.ComponentProps<any>, "drawShape"> {
   top?: number;
   left?: number;
   width?: number;
@@ -56,7 +56,8 @@ export function Confetti({
 
   return createPortal(
     <Wrapper top={top} left={left} width={width} height={height}>
-      <ReactConfetti colors={colors} drawShape={draw} {...confettiProps} />
+      hello
+      {/* <ReactConfetti colors={colors} drawShape={draw} {...confettiProps} /> */}
     </Wrapper>,
     confettiContainer
   );

@@ -1,7 +1,7 @@
 import { type API } from "@storybook/manager-api";
 import { useTheme } from "@storybook/theming";
 import React, { useEffect } from "react";
-import Joyride, { CallBackProps } from "react-joyride";
+// import Joyride from "react-joyride";
 import { gql } from "urql";
 
 import { PANEL_ID } from "../../constants";
@@ -11,6 +11,8 @@ import { useSelectedStoryState } from "../VisualTests/BuildContext";
 import { Confetti } from "./Confetti";
 import { PulsatingEffect } from "./PulsatingEffect";
 import { Tooltip, TooltipProps } from "./Tooltip";
+
+const Joyride = (props: any) => <div>Hello world</div>
 
 const ProjectQuery = gql`
   query ProjectQuery($projectId: ID!) {
@@ -118,32 +120,32 @@ export const GuidedTour = ({
     },
     selectedTestHasChanges && selectedTestHasNotBeenAcceptedYet
       ? {
-          target: "#storybook-explorer-tree > div",
-          title: "Stories with changes",
-          content: <>Here you have a filtered list of only stories with changes.</>,
-          placement: "right",
-          disableBeacon: true,
-          spotlightClicks: true,
-          onNextButtonClick: nextStep,
-          onSkipWalkthroughButtonClick,
-        }
+        target: "#storybook-explorer-tree > div",
+        title: "Stories with changes",
+        content: <>Here you have a filtered list of only stories with changes.</>,
+        placement: "right",
+        disableBeacon: true,
+        spotlightClicks: true,
+        onNextButtonClick: nextStep,
+        onSkipWalkthroughButtonClick,
+      }
       : {
-          target: "#storybook-explorer-tree > div",
-          title: "Stories with changes",
-          content: (
-            <>
-              Here you have a list of all stories in your Storybook.
-              <br />
-              <br />
-              Select a story with changes to see the exact pixels that changed.
-            </>
-          ),
-          placement: "right",
-          disableBeacon: true,
-          spotlightClicks: true,
-          hideNextButton: true,
-          onSkipWalkthroughButtonClick,
-        },
+        target: "#storybook-explorer-tree > div",
+        title: "Stories with changes",
+        content: (
+          <>
+            Here you have a list of all stories in your Storybook.
+            <br />
+            <br />
+            Select a story with changes to see the exact pixels that changed.
+          </>
+        ),
+        placement: "right",
+        disableBeacon: true,
+        spotlightClicks: true,
+        hideNextButton: true,
+        onSkipWalkthroughButtonClick,
+      },
 
     {
       target: "#panel-tab-content",

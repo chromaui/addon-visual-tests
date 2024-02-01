@@ -59,8 +59,6 @@
     "filesize": "^10.0.12",
     "jsonfile": "^6.1.0",
     "pluralize": "^8.0.0",
-    "react-confetti": "^6.1.0",
-    "react-joyride": "^2.7.2",
     "ts-dedent": "^2.2.0",
     "urql": "^4.0.3",
     "uuid": "^9.0.0",

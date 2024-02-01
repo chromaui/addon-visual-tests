@@ -1,6 +1,6 @@
 import { css, styled } from "@storybook/theming";
 import React, { MouseEventHandler, SyntheticEvent } from "react";
-import { TooltipRenderProps } from "react-joyride";
+// import { TooltipRenderProps } from "react-joyride";
 
 import { Button } from "../../components/Button";
 
@@ -50,8 +50,8 @@ const NextButton = styled(Button)(
     })
 );
 
-export type TooltipProps = TooltipRenderProps & {
-  step: TooltipRenderProps["step"] & {
+export type TooltipProps = any & {
+  step: any["step"] & {
     hideSkipButton?: boolean;
     hideNextButton?: boolean;
     nextButtonText?: string;
