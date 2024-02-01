@@ -1,19 +1,20 @@
+import { TooltipMessage, WithTooltip } from "@storybook/components";
+import { css, styled } from "@storybook/theming";
 import React, {
-  useEffect,
+  ComponentProps,
+  forwardRef,
+  MutableRefObject,
+  ReactNode,
   useCallback,
+  useEffect,
   useRef,
   useState,
-  forwardRef,
-  ReactNode,
-  ComponentProps,
-  MutableRefObject,
-} from 'react';
-import { styled, css } from '@storybook/theming';
-import { WithTooltip, TooltipMessage } from '@storybook/components';
-import { color, typography, spacing } from './shared/styles';
-import { jiggle } from './shared/animation';
-import { Icon } from './Icon';
-import { Link } from './Link';
+} from "react";
+
+import { Icon } from "./Icon";
+import { Link } from "./Link";
+import { jiggle } from "./shared/animation";
+import { color, spacing, typography } from "./shared/styles";
 
 // prettier-ignore
 const Label = styled.label<Pick<PureInputProps, 'appearance'>>`
@@ -62,7 +63,7 @@ const InputEl = styled.input`
   &:-webkit-autofill { -webkit-box-shadow: 0 0 0 3em ${color.lightest} inset; }
 `;
 
-const getStackLevelStyling = (props: Pick<PureInputProps, 'error' | 'stackLevel'>) => {
+const getStackLevelStyling = (props: Pick<PureInputProps, "error" | "stackLevel">) => {
   const radius = 4;
   const stackLevelDefinedStyling = css`
     position: relative;
@@ -73,7 +74,7 @@ const getStackLevelStyling = (props: Pick<PureInputProps, 'error' | 'stackLevel'
     }
   `;
   switch (props.stackLevel) {
-    case 'top':
+    case "top":
       return css`
         border-top-left-radius: ${radius}px;
         border-top-right-radius: ${radius}px;
@@ -81,13 +82,13 @@ const getStackLevelStyling = (props: Pick<PureInputProps, 'error' | 'stackLevel'
         border-bottom-right-radius: 0;
         ${stackLevelDefinedStyling}
       `;
-    case 'middle':
+    case "middle":
       return css`
         border-radius: 0px;
         margin-top: -1px;
         ${stackLevelDefinedStyling}
       `;
-    case 'bottom':
+    case "bottom":
       return css`
         border-bottom-left-radius: ${radius}px;
         border-bottom-right-radius: ${radius}px;
@@ -112,7 +113,7 @@ const InputWrapper = styled.div<
   vertical-align: top;
   width: 100%;
 
-  ${InputEl} {
+  .sbds-input-el {
     position: relative;
     ${(props) => getStackLevelStyling(props)}
 
@@ -151,7 +152,7 @@ const InputWrapper = styled.div<
   ${(props) =>
     props.startingType === 'password' &&
     css`
-      ${InputEl} {
+      .sbds-input-el {
         padding-right: 52px;
       }
     `}
@@ -193,11 +194,11 @@ const InputWrapper = styled.div<
         }
       }
 
-      ${InputEl}:focus + svg path {
+      .sbds-input-el:focus + svg path {
         fill: ${color.darker};
       }
 
-      ${InputEl} {
+      .sbds-input-el {
         padding-left: 40px;
 
         ${(props.appearance === 'pill' || props.appearance === 'code') &&
@@ -210,7 +211,7 @@ const InputWrapper = styled.div<
   ${(props) =>
     props.error &&
     css`
-      ${InputEl} {
+      .sbds-input-el {
         box-shadow: ${color.red} 0 0 0 1px inset;
         &:focus {
           box-shadow: ${color.red} 0 0 0 1px inset !important;
@@ -230,17 +231,17 @@ const InputContainer = styled.div<Pick<PureInputProps, 'orientation'>>`
   ${props => props.orientation === 'horizontal' && css`
     display: table-row;
 
-    ${LabelWrapper}, ${InputWrapper} {
+    .sbds-input-label-wrapper, .sbds-input-input-wrapper {
       display: table-cell;
     }
 
-    ${LabelWrapper} {
+    .sbds-input-label-wrapper {
       width: 1px;
       padding-right: 20px;
       vertical-align: middle;
     }
 
-    ${InputWrapper} {
+    .sbds-input-input-wrapper {
       width: auto;
     }
 
@@ -270,8 +271,8 @@ const getErrorMessage = ({
   error,
   value,
   lastErrorValue,
-}: Pick<PureInputProps, 'error' | 'value' | 'lastErrorValue'>) => {
-  let errorMessage = typeof error === 'function' ? error(value) : error;
+}: Pick<PureInputProps, "error" | "value" | "lastErrorValue">) => {
+  let errorMessage = typeof error === "function" ? error(value) : error;
   if (lastErrorValue) {
     if (value !== lastErrorValue) {
       errorMessage = null;
@@ -283,14 +284,14 @@ const getErrorMessage = ({
 interface PureInputProps {
   id: string;
   value?: string;
-  appearance?: 'default' | 'pill' | 'code' | 'tertiary';
-  errorTooltipPlacement?: ComponentProps<typeof WithTooltip>['placement'];
-  stackLevel?: 'top' | 'middle' | 'bottom';
+  appearance?: "default" | "pill" | "code" | "tertiary";
+  errorTooltipPlacement?: ComponentProps<typeof WithTooltip>["placement"];
+  stackLevel?: "top" | "middle" | "bottom";
   label: string;
   hideLabel?: boolean;
-  orientation?: 'vertical' | 'horizontal';
-  icon?: ComponentProps<typeof Icon>['icon'];
-  error?: ReactNode | ((value: PureInputProps['value']) => ReactNode);
+  orientation?: "vertical" | "horizontal";
+  icon?: ComponentProps<typeof Icon>["icon"];
+  error?: ReactNode | ((value: PureInputProps["value"]) => ReactNode);
   suppressErrorMessage?: boolean;
   className?: string;
   lastErrorValue?: string;
@@ -307,21 +308,21 @@ export const PureInput = forwardRef<
   (
     {
       id,
-      appearance = 'default',
+      appearance = "default",
       className = undefined,
       error = null,
-      errorTooltipPlacement = 'right',
+      errorTooltipPlacement = "right",
       hideLabel = false,
       icon = undefined,
       label,
       lastErrorValue = undefined,
       onActionClick = undefined,
-      orientation = 'vertical',
+      orientation = "vertical",
       stackLevel = undefined,
-      startingType = 'text',
+      startingType = "text",
       suppressErrorMessage = false,
-      type = 'text',
-      value = '',
+      type = "text",
+      value = "",
       ...props
     },
     ref
@@ -337,6 +338,7 @@ export const PureInput = forwardRef<
 
     const inputEl = (
       <InputEl
+        className="sbds-input-el"
         id={id}
         // Pass the ref to the actual input element so it can be controlled
         // externally.
@@ -351,13 +353,14 @@ export const PureInput = forwardRef<
 
     return (
       <InputContainer orientation={orientation} className={className}>
-        <LabelWrapper hideLabel={hideLabel}>
+        <LabelWrapper className="sbds-input-label-wrapper" hideLabel={hideLabel}>
           <Label htmlFor={id} appearance={appearance}>
             {label}
           </Label>
         </LabelWrapper>
 
         <InputWrapper
+          className="sbds-input-input-wrapper"
           error={errorMessage}
           data-error={errorMessage}
           icon={icon}
@@ -385,11 +388,11 @@ export const PureInput = forwardRef<
             {inputEl}
           </ErrorTooltip>
 
-          {startingType === 'password' && (
+          {startingType === "password" && (
             <Action>
               {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
               <Link isButton tertiary onClick={onActionClick} type="button">
-                {type === 'password' ? 'Show' : 'Hide'}
+                {type === "password" ? "Show" : "Hide"}
               </Link>
             </Action>
           )}
@@ -398,7 +401,7 @@ export const PureInput = forwardRef<
     );
   }
 );
-PureInput.displayName = 'PureInput';
+PureInput.displayName = "PureInput";
 
 export const Input = forwardRef<HTMLInputElement, ComponentProps<typeof PureInput>>(
   ({ type: startingType, startFocused, ...rest }, ref) => {
@@ -408,11 +411,11 @@ export const Input = forwardRef<HTMLInputElement, ComponentProps<typeof PureInpu
         // Make sure this does not submit a form
         event.preventDefault();
         event.stopPropagation();
-        if (type === 'password') {
-          setType('text');
+        if (type === "password") {
+          setType("text");
           return;
         }
-        setType('password');
+        setType("password");
       },
       [type, setType]
     );
@@ -440,4 +443,4 @@ export const Input = forwardRef<HTMLInputElement, ComponentProps<typeof PureInpu
     );
   }
 );
-Input.displayName = 'Input';
+Input.displayName = "Input";

@@ -1,8 +1,9 @@
-import React, { ComponentProps, ReactNode } from 'react';
-import { styled, css } from '@storybook/theming';
-import weakMemoize from '@emotion/weak-memoize';
-import { background, color, typography } from '../shared/styles';
-import { inlineGlow } from '../shared/animation';
+import weakMemoize from "@emotion/weak-memoize";
+import { css, styled } from "@storybook/theming";
+import React, { ComponentProps, ReactNode } from "react";
+
+import { inlineGlow } from "../shared/animation";
+import { background, color, typography } from "../shared/styles";
 
 const Left = styled.span``;
 const Title = styled.span`
@@ -30,30 +31,33 @@ const ItemInner = styled.span`
   align-items: center;
   justify-content: space-between;
 
-  ${Title} {
+  .sbds-list-item-title {
     display: block;
   }
 
-  ${Left}, ${Center}, ${Right} {
+  .sbds-list-item-left,
+  .sbds-list-item-center,
+  .sbds-list-item-right {
     display: inline-flex;
   }
 
-  ${Title} {
+  .sbds-list-item-title {
     flex: 0 1 auto;
     margin-right: auto;
   }
 
-  ${Center} {
+  .sbds-list-item-center {
     flex: 0 1 auto;
     margin-left: auto;
     margin-right: auto;
   }
 
-  ${Left}, ${Right} {
+  .sbds-list-item-left,
+  .sbds-list-item-right {
     flex: 0 1 auto;
   }
 
-  ${Right} {
+  .sbds-list-item-right {
     flex: none;
     text-align: right;
     margin-left: 10px;
@@ -75,11 +79,11 @@ const linkStyles = (props: LinkStyleProps) => css`
   display: block;
 
   /* Styling */
-  ${Title} {
+  .sbds-list-item-title {
     color: ${color.darker};
   }
 
-  ${Right} svg {
+  .sbds-list-item-right svg {
     transition: all 200ms ease-out;
     opacity: 0;
     height: 12px;
@@ -96,21 +100,22 @@ const linkStyles = (props: LinkStyleProps) => css`
     background: ${background.calmBlue};
     cursor: pointer;
 
-    ${Right} svg {
+    .sbds-list-item-right svg {
       opacity: 1;
     }
   }
 
   ${props.active &&
   css`
-    ${Title} {
+    .sbds-list-item-title {
       font-weight: ${typography.weight.bold};
     }
-    ${Title}, ${Center} {
+    .sbds-list-item-title,
+    .sbds-list-item-center {
       color: ${props.activeColor};
     }
 
-    ${Right} svg {
+    .sbds-list-item-right svg {
       opacity: 1;
       path {
         fill: ${props.activeColor};
@@ -120,7 +125,7 @@ const linkStyles = (props: LinkStyleProps) => css`
 
   ${props.isLoading &&
   css`
-    ${Title} {
+    .sbds-list-item-title {
       ${inlineGlow};
       flex: 0 1 auto;
       display: inline-block;
@@ -130,7 +135,8 @@ const linkStyles = (props: LinkStyleProps) => css`
   ${props.disabled &&
   css`
     cursor: not-allowed !important;
-    ${Title}, ${Center} {
+    .sbds-list-item-title,
+    .sbds-list-item-center {
       color: ${color.mediumdark};
     }
   `};
@@ -170,7 +176,7 @@ const buildStyledLinkWrapper = weakMemoize(
 type StyledLinkWrapperProps = ComponentProps<ReturnType<typeof buildStyledLinkWrapper>>;
 
 interface ListItemProps {
-  appearance?: 'primary' | 'secondary';
+  appearance?: "primary" | "secondary";
   isLoading?: boolean;
   left?: ReactNode;
   title?: ReactNode;
@@ -179,11 +185,11 @@ interface ListItemProps {
   active?: boolean;
   disabled?: boolean;
   LinkWrapper?: LinkWrapperType | null;
-  onClick?: ComponentProps<typeof ItemInner>['onClick'];
+  onClick?: ComponentProps<typeof ItemInner>["onClick"];
 }
 
 export const ListItem = ({
-  appearance = 'primary',
+  appearance = "primary",
   left,
   title = <span>Loading</span>,
   center,
@@ -191,14 +197,14 @@ export const ListItem = ({
   onClick,
   LinkWrapper,
   ...rest
-}: ListItemProps & Omit<StyledLinkWrapperProps, 'activeColor'>) => {
+}: ListItemProps & Omit<StyledLinkWrapperProps, "activeColor">) => {
   const listItemActiveColor = color[appearance];
   const linkInner = (
     <ItemInner onClick={onClick} role="presentation">
-      {left && <Left>{left}</Left>}
-      {title && <Title>{title}</Title>}
-      {center && <Center>{center}</Center>}
-      {right && <Right>{right}</Right>}
+      {left && <Left className="sbds-list-item-left">{left}</Left>}
+      {title && <Title className="sbds-list-item-title">{title}</Title>}
+      {center && <Center className="sbds-list-item-center">{center}</Center>}
+      {right && <Right className="sbds-list-item-right">{right}</Right>}
     </ItemInner>
   );
 
