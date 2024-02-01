@@ -139,7 +139,7 @@ export const Onboarding = ({
               baselines.{" "}
             </Text>
           </div>
-          <Button small secondary onClick={startDevBuild}>
+          <Button size="medium" variant="solid" onClick={startDevBuild}>
             Take snapshots
           </Button>
           <Button onClick={onSkip} link>

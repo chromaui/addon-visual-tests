@@ -1,4 +1,3 @@
-import { Link } from "@storybook/design-system";
 import React from "react";
 
 import { Button } from "../../components/Button";
@@ -31,20 +30,18 @@ export const Welcome = ({ onNext, onUninstall }: WelcomeProps) => {
           <Text>Visual tests has been uninstalled. Please restart your Storybook.</Text>
         ) : (
           <>
-            <Button variant="solid" onClick={onNext}>
+            <Button variant="solid" size="medium" onClick={onNext}>
               Enable
             </Button>
-
-            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-            <Link
-              secondary
+            <Button
+              link
               onClick={() => {
                 onUninstall();
                 setShowRestart(true);
               }}
             >
               Uninstall
-            </Link>
+            </Button>
           </>
         )}
       </Stack>
