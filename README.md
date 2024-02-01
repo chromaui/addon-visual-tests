@@ -12,7 +12,7 @@ The Visual Testing addon enables you to run visual tests on your stories and com
 Run the following command to install the addon and automatically configure it for your project via Storybook's CLI:
 
 ```shell
-npx storybook@latest add @chromaui/addon-visual-tests
+npx storybook add @chromatic-com/storybook
 ```
 
 Start Storybook and navigate to the Visual Tests panel to run your first visual test with Chromatic!
@@ -39,9 +39,9 @@ const config: StorybookConfig = {
   stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
   addons: [
     // Other Storybook addons
-    "@chromaui/addon-visual-tests",
+    "@chromatic-com/storybook",
     {
-      name: "@chromaui/addon-visual-tests",
+      name: "@chromatic-com/storybook",
       options: {
         projectId: "Project:64cbcde96f99841e8b007d75",
         buildScriptName: "build-storybook",
