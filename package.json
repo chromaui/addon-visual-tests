@@ -128,18 +128,6 @@
     "vite-plugin-turbosnap": "^1.0.3",
     "zx": "^1.14.1"
   },
-  "peerDependencies": {
-    "react": "^16.8.0 || ^17.0.0 || ^18.0.0",
-    "react-dom": "^16.8.0 || ^17.0.0 || ^18.0.0"
-  },
-  "peerDependenciesMeta": {
-    "react": {
-      "optional": true
-    },
-    "react-dom": {
-      "optional": true
-    }
-  },
   "publishConfig": {
     "access": "public"
   },
@@ -147,8 +135,6 @@
     "workerDirectory": "public"
   },
   "resolutions": {
-    "react": "^16.14.0",
-    "react-dom": "^16.14.0",
     "jackspeak": "2.1.1"
   },
   "storybook": {
