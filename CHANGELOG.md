@@ -1,3 +1,23 @@
+# v1.1.0 (Thu Feb 01 2024)
+
+#### 🚀 Enhancement
+
+- Release 0.1.0 [#164](https://github.com/chromaui/addon-visual-tests/pull/164) ([@tmeasday](https://github.com/tmeasday))
+- Visual Test Addon Onboarding behind query param [#144](https://github.com/chromaui/addon-visual-tests/pull/144) ([@weeksling](https://github.com/weeksling) [@ghengeveld](https://github.com/ghengeveld) [@thafryer](https://github.com/thafryer))
+
+#### 🐛 Bug Fix
+
+- Change addon name to `@chromatic-com/storybook` [#163](https://github.com/chromaui/addon-visual-tests/pull/163) ([@tmeasday](https://github.com/tmeasday))
+
+#### Authors: 4
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Jarel Fryer ([@thafryer](https://github.com/thafryer))
+- Matthew Weeks ([@weeksling](https://github.com/weeksling))
+- Tom Coleman ([@tmeasday](https://github.com/tmeasday))
+
+---
+
 
 # v0.0.124 (Mon Dec 11 2023)
 
