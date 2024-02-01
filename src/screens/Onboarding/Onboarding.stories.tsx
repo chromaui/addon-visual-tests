@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "@storybook/test";
 import { findByRole, userEvent } from "@storybook/testing-library";
 import { graphql, HttpResponse } from "msw";
 import React from "react";
@@ -26,6 +27,8 @@ const meta = {
       uncommittedHash: "123",
       branch: "main",
     },
+    onComplete: fn(),
+    onSkip: fn(),
   },
   parameters: {
     chromatic: {
@@ -56,7 +59,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
+export const Default = {
   parameters: withFigmaDesign(
     "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318140&t=3EAIRe8423CpOQWY-4"
   ),
@@ -64,9 +67,9 @@ export const Default: Story = {
     showInitialBuildScreen: true,
     lastBuildHasChanges: false,
   },
-};
+} satisfies Story;
 
-export const InProgress: Story = {
+export const InProgress = {
   args: {
     localBuildProgress: {
       ...INITIAL_BUILD_PAYLOAD,
@@ -77,9 +80,9 @@ export const InProgress: Story = {
   parameters: withFigmaDesign(
     "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318374&t=3EAIRe8423CpOQWY-4"
   ),
-};
+} satisfies Story;
 
-export const BaselineSaved: Story = {
+export const BaselineSaved = {
   args: {
     localBuildProgress: {
       ...INITIAL_BUILD_PAYLOAD,
@@ -95,9 +98,9 @@ export const BaselineSaved: Story = {
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318539&t=3EAIRe8423CpOQWY-4"
     ),
   },
-};
+} satisfies Story;
 
-export const MakeAChange: Story = {
+export const MakeAChange = {
   args: {
     ...BaselineSaved.args,
   },
@@ -129,9 +132,9 @@ export const MakeAChange: Story = {
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318908&t=3EAIRe8423CpOQWY-4"
     ),
   },
-};
+} satisfies Story;
 
-export const ChangesDetected: Story = {
+export const ChangesDetected = {
   args: {
     ...BaselineSaved.args,
   },
@@ -175,9 +178,9 @@ export const ChangesDetected: Story = {
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-319115&t=3EAIRe8423CpOQWY-4"
     ),
   },
-};
+} satisfies Story;
 
-export const RunningFirstTest: Story = {
+export const RunningFirstTest = {
   ...ChangesDetected,
   args: {
     ...ChangesDetected.args,
@@ -233,9 +236,9 @@ export const RunningFirstTest: Story = {
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318481&t=3EAIRe8423CpOQWY-4"
     ),
   },
-};
+} satisfies Story;
 
-export const RanFirstTestNoChanges: Story = {
+export const RanFirstTestNoChanges = {
   ...RunningFirstTest,
   args: {
     ...RunningFirstTest.args,
@@ -280,9 +283,9 @@ export const RanFirstTestNoChanges: Story = {
       </>
     );
   },
-};
+} satisfies Story;
 
-export const ChangesFound: Story = {
+export const ChangesFound = {
   ...RunningFirstTest,
   render: (args) => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -323,9 +326,9 @@ export const ChangesFound: Story = {
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=352-258984&t=3EAIRe8423CpOQWY-4"
     ),
   },
-};
+} satisfies Story;
 
-export const Error: Story = {
+export const Error = {
   args: {
     localBuildProgress: {
       ...INITIAL_BUILD_PAYLOAD,
@@ -345,4 +348,4 @@ export const Error: Story = {
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318693&t=3EAIRe8423CpOQWY-4"
     ),
   },
-};
+} satisfies Story;

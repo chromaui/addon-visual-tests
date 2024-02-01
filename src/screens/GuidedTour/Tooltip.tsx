@@ -1,5 +1,5 @@
 import { css, styled } from "@storybook/theming";
-import React from "react";
+import React, { MouseEventHandler, SyntheticEvent } from "react";
 import { TooltipRenderProps } from "react-joyride";
 
 import { Button } from "../../components/Button";
@@ -82,6 +82,8 @@ export const Tooltip = ({ step, primaryProps, tooltipProps }: TooltipProps) => {
             <NextButton
               {...{
                 ...primaryProps,
+                // @tmeasday - I'm not sure if we ever use this, but this makes the types work
+                onClick: primaryProps.onClick as (event: SyntheticEvent) => void,
                 secondary: true,
                 ...(step.onNextButtonClick ? { onClick: step.onNextButtonClick } : {}),
               }}
