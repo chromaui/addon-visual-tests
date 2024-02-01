@@ -1,7 +1,7 @@
 import { Link } from "@storybook/components";
 import {
-  ArrowRightIcon,
   CheckIcon,
+  ChevronRightIcon,
   CloseIcon,
   CollapseIcon,
   ExpandAltIcon,
@@ -145,7 +145,7 @@ const BuildProgress = ({ localBuildProgress, expanded = false }: BuildProgressPr
     if (isPending) {
       return {
         ...config,
-        icon: <ArrowRightIcon style={stepIconStyle} />,
+        icon: <ChevronRightIcon style={stepIconStyle} />,
         renderLabel: config.renderName,
       };
     }
