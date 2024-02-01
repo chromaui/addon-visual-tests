@@ -1,4 +1,4 @@
-import { Input } from "@storybook/design-system";
+import { Input } from "@storybook/design-system/src";
 import { styled } from "@storybook/theming";
 import React, { ComponentProps, ReactNode } from "react";
 

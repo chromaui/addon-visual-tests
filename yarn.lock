@@ -3179,10 +3179,9 @@
   dependencies:
     type-fest "^2.19.0"
 
-"@storybook/design-system@^7.15.15":
+"@storybook/design-system@https://github.com/storybookjs/design-system":
   version "7.15.17"
-  resolved "https://registry.npmjs.org/@storybook/design-system/-/design-system-7.15.17.tgz"
-  integrity sha512-esq2cXDJ8bokdEUgLSGMLWmgNAoIidcT+w9M6m6SGH94NhxyoiB+zsM79Xsk3inoLbFB77mS89aV3v79lheXVw==
+  resolved "https://github.com/storybookjs/design-system#b852133e5e75f410a4f43171ceb31438e344b5b3"
   dependencies:
     "@emotion/weak-memoize" "^0.3.0"
     "@storybook/source-loader" "^7.6.6"

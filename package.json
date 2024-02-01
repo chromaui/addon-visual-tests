@@ -28,7 +28,7 @@
     "@storybook/client-logger": "^8.0.0-alpha.17",
     "@storybook/components": "^8.0.0-alpha.17",
     "@storybook/core-events": "^8.0.0-alpha.17",
-    "@storybook/design-system": "^7.15.15",
+    "@storybook/design-system": "https://github.com/storybookjs/design-system",
     "@storybook/eslint-config-storybook": "^3.1.2",
     "@storybook/jest": "^0.2.3",
     "@storybook/manager": "^8.0.0-alpha.17",

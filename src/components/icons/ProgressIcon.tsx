@@ -1,4 +1,4 @@
-import { animation } from "@storybook/design-system";
+import { animation } from "@storybook/design-system/src";
 import { css, styled } from "@storybook/theming";
 
 const { rotate360 } = animation;

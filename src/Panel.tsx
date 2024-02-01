@@ -1,4 +1,4 @@
-import { Spinner } from "@storybook/design-system";
+import { Spinner } from "@storybook/design-system/src";
 import type { API } from "@storybook/manager-api";
 import { useChannel, useStorybookState } from "@storybook/manager-api";
 import React, { useCallback, useState } from "react";

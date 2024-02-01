@@ -1,5 +1,5 @@
 import { TooltipNote, WithTooltip } from "@storybook/components";
-import { Icon } from "@storybook/design-system";
+import { Icon } from "@storybook/design-system/src";
 import { styled } from "@storybook/theming";
 import React from "react";
 
