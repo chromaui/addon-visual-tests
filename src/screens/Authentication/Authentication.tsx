@@ -12,6 +12,7 @@ interface AuthenticationProps {
   setAccessToken: (token: string | null) => void;
   setCreatedProjectId: (projectId: Project["id"]) => void;
   hasProjectId: boolean;
+  onUninstall: () => void;
 }
 
 type AuthenticationScreen = "welcome" | "signin" | "subdomain" | "verify";
@@ -20,6 +21,7 @@ export const Authentication = ({
   setAccessToken,
   setCreatedProjectId,
   hasProjectId,
+  onUninstall,
 }: AuthenticationProps) => {
   const [screen, setScreen] = useState<AuthenticationScreen>(hasProjectId ? "signin" : "welcome");
   const [exchangeParameters, setExchangeParameters] = useState<TokenExchangeParameters>();
@@ -38,7 +40,7 @@ export const Authentication = ({
   );
 
   if (screen === "welcome" && !hasProjectId) {
-    return <Welcome onNext={() => setScreen("signin")} />;
+    return <Welcome onNext={() => setScreen("signin")} onUninstall={onUninstall} />;
   }
 
   if (screen === "signin" || (screen === "welcome" && hasProjectId)) {

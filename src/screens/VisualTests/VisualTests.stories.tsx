@@ -4,6 +4,7 @@ import { VariablesOf } from "@graphql-typed-document-node/core";
 import { action } from "@storybook/addon-actions";
 import { expect } from "@storybook/jest";
 import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "@storybook/test";
 import {
   findByLabelText,
   findByRole,
@@ -147,8 +148,8 @@ const meta = {
   },
   args: {
     isOutdated: false,
-    setSelectedBuildInfo: action("setSelectedBuildInfo"),
-    dismissBuildError: action("dismissBuildError"),
+    setSelectedBuildInfo: fn(),
+    dismissBuildError: fn(),
     gitInfo: {
       userEmailHash: "xyz987",
       branch: "feature-branch",
@@ -159,19 +160,19 @@ const meta = {
     },
     storyId: "button--primary",
     projectId: "Project:id123",
-    startDevBuild: action("startDevBuild"),
-    setAccessToken: action("setAccessToken"),
-    setOutdated: action("setOutdated"),
-    updateBuildStatus: action("updateBuildStatus") as any,
-    addNotification: action("addNotification"),
-    clearNotification: action("clearNotification"),
+    startDevBuild: fn(),
+    setAccessToken: fn(),
+    setOutdated: fn(),
+    updateBuildStatus: fn(),
+    addNotification: fn(),
+    clearNotification: fn(),
     getUrlState: () => ({ queryParams: {} }),
-    jumpToStory: action("jumpToStory"),
-    togglePanel: action("togglePanel"),
-    togglePanelPosition: action("togglePanelPosition"),
-    setSelectedPanel: action("setSelectedPanel"),
+    jumpToStory: fn(),
+    togglePanel: fn(),
+    togglePanelPosition: fn(),
+    setSelectedPanel: fn(),
     getCurrentStoryData: () => ({ type: "story" }),
-    once: action("once"),
+    once: fn(),
     $graphql: { AddonVisualTestsBuild: {} },
   },
 } satisfies Meta<StoryArgs>;
@@ -233,7 +234,9 @@ export const EmptyBranch = {
     return (
       <VisualTests
         {...args}
-        updateBuildStatus={(fn) => args.updateBuildStatus(typeof fn === "function" ? fn({}) : fn)}
+        updateBuildStatus={(fnn) =>
+          args.updateBuildStatus(typeof fnn === "function" ? fnn({}) : fnn)
+        }
       />
     );
   },
@@ -712,7 +715,9 @@ export const Pending = {
     return (
       <VisualTests
         {...args}
-        updateBuildStatus={(fn) => args.updateBuildStatus(typeof fn === "function" ? fn({}) : fn)}
+        updateBuildStatus={(spyFn) =>
+          args.updateBuildStatus(typeof spyFn === "function" ? spyFn({}) : spyFn)
+        }
       />
     );
   },

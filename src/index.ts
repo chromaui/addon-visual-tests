@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import type { Channel } from "@storybook/channels";
+import type { Options } from "@storybook/types";
 // eslint-disable-next-line import/no-unresolved
 import { getConfiguration, getGitInfo, GitInfo } from "chromatic/node";
 
@@ -8,7 +9,9 @@ import {
   GIT_INFO,
   GIT_INFO_ERROR,
   LOCAL_BUILD_PROGRESS,
+  PACKAGE_NAME,
   PROJECT_INFO,
+  REMOVE_ADDON,
   START_BUILD,
   STOP_BUILD,
 } from "./constants";
@@ -63,8 +66,9 @@ async function serverChannel(
   // configDir is the standard storybook flag (-c to the storybook CLI)
   // configFile is the `main.js` option, which should be set by the user to correspond to the
   //   chromatic option (-c to the chromatic CLI)
-  { configDir, configFile }: { configDir: string; configFile?: string }
+  { configDir, configFile, presets }: Options & { configFile: string }
 ) {
+  const api = await presets.apply<any>("experimental_serverAPI");
   const configuration = await getConfiguration(configFile);
   const { projectId: initialProjectId } = configuration;
 
@@ -114,6 +118,9 @@ async function serverChannel(
   });
 
   channel.on(STOP_BUILD, stopChromaticBuild);
+  channel.on(REMOVE_ADDON, async () => {
+    await api.removeAddon(PACKAGE_NAME);
+  });
 
   const gitInfoState = SharedState.subscribe<GitInfoPayload>(GIT_INFO, channel);
 
