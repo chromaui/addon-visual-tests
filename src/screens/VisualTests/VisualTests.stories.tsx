@@ -17,6 +17,8 @@ import { delay, HttpResponse } from "msw";
 import React from "react";
 
 import { INITIAL_BUILD_PAYLOAD } from "../../buildSteps";
+// TODO: Remove after completing AP-3586
+// import { WALKTHROUGH_COMPLETED_KEY } from "../../constants";
 import type {
   LastBuildOnBranchBuildFieldsFragment,
   MakeOptional,
@@ -106,15 +108,39 @@ function mock<T extends (...args: any[]) => any>(f: T) {
 
 type StoryArgs = Parameters<typeof VisualTestsWithoutSelectedBuildId>[0] & {
   addNotification: () => void;
+  clearNotification: () => void;
+  getUrlState: () => { queryParams: { [key: string]: string } };
+  jumpToStory: () => void;
+  togglePanel: () => void;
+  togglePanelPosition: () => void;
+  setSelectedPanel: () => void;
+  getCurrentStoryData: () => any;
+  once: () => void;
   $graphql?: { AddonVisualTestsBuild?: QueryInput };
 };
 const meta = {
   title: "screens/VisualTests/VisualTests",
   component: VisualTestsWithoutSelectedBuildId,
-  decorators: [storyWrapper(ControlsProvider), storyWrapper(GraphQLClientProvider)],
+  decorators: [
+    storyWrapper(ControlsProvider),
+    storyWrapper(GraphQLClientProvider),
+    (Story) => {
+      // TODO: Need to replace this mocking when completing AP-3586 - mock the graphql query instead
+      // localStorage.setItem(WALKTHROUGH_COMPLETED_KEY, "true");
+      return <Story />;
+    },
+  ],
   parameters: { chromatic: { modes: panelModes } },
   argTypes: {
     addNotification: { type: "function", target: "manager-api" },
+    clearNotification: { type: "function", target: "manager-api" },
+    getUrlState: { type: "function", target: "manager-api" },
+    jumpToStory: { type: "function", target: "manager-api" },
+    togglePanel: { type: "function", target: "manager-api" },
+    togglePanelPosition: { type: "function", target: "manager-api" },
+    setSelectedPanel: { type: "function", target: "manager-api" },
+    getCurrentStoryData: { type: "function", target: "manager-api" },
+    once: { type: "function", target: "manager-api" },
     $graphql: {
       AddonVisualTestsBuild: { map: mapQuery },
     },
@@ -138,6 +164,14 @@ const meta = {
     setOutdated: action("setOutdated"),
     updateBuildStatus: action("updateBuildStatus") as any,
     addNotification: action("addNotification"),
+    clearNotification: action("clearNotification"),
+    getUrlState: () => ({ queryParams: {} }),
+    jumpToStory: action("jumpToStory"),
+    togglePanel: action("togglePanel"),
+    togglePanelPosition: action("togglePanelPosition"),
+    setSelectedPanel: action("setSelectedPanel"),
+    getCurrentStoryData: () => ({ type: "story" }),
+    once: action("once"),
     $graphql: { AddonVisualTestsBuild: {} },
   },
 } satisfies Meta<StoryArgs>;

@@ -23,8 +23,10 @@ export const baseCapture: StoryTestFieldsFragment["comparisons"][number]["baseCa
 
 export const headCapture: StoryTestFieldsFragment["comparisons"][number]["headCapture"] = {
   captureImage: {
+    backgroundColor: "rgba(255, 255, 255, 1)",
     imageUrl: "/B.png",
     imageWidth: 880,
+    thumbnailUrl: "/B.png",
   },
 };
 

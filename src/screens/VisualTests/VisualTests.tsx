@@ -1,13 +1,24 @@
-import { useStorybookApi } from "@storybook/manager-api";
+import { type API, useStorybookApi } from "@storybook/manager-api";
 import type { API_StatusState } from "@storybook/types";
 import React, { useCallback, useEffect, useState } from "react";
 import { useMutation } from "urql";
 
+// TODO: Remove this after completing AP-3586
+// import { WALKTHROUGH_COMPLETED_KEY } from "../../constants";
 import { getFragment } from "../../gql";
-import { ReviewTestBatch, ReviewTestInputStatus } from "../../gql/graphql";
+import {
+  BuildStatus,
+  ReviewTestBatch,
+  ReviewTestInputStatus,
+  Test,
+  TestResult,
+  TestStatus,
+} from "../../gql/graphql";
 import { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from "../../types";
 import { testsToStatusUpdate } from "../../utils/testsToStatusUpdate";
 import { SelectedBuildInfo, updateSelectedBuildInfo } from "../../utils/updateSelectedBuildInfo";
+import { GuidedTour } from "../GuidedTour/GuidedTour";
+import { Onboarding } from "../Onboarding/Onboarding";
 import { BuildProvider, useBuild } from "./BuildContext";
 import { BuildResults } from "./BuildResults";
 import { FragmentStatusTestFields, MutationReviewTest } from "./graphql";
@@ -85,6 +96,65 @@ const useReview = ({
   return { isReviewing, acceptTest, unacceptTest, buildIsReviewable, userCanReview };
 };
 
+const useOnboarding = (
+  { lastBuildOnBranch }: ReturnType<typeof useBuild>,
+  managerApi?: Pick<API, "getUrlState">
+) => {
+  const [hasCompletedOnboarding, setHasCompletedOnboarding] = React.useState(false);
+  const completeOnboarding = React.useCallback(() => {
+    setHasCompletedOnboarding(true);
+  }, []);
+
+  const [hasCompletedWalkthrough, setHasCompletedWalkthrough] = React.useState(() => {
+    // Force the onboarding to show by adding ?vtaOnboarding=true to the URL
+    const force = managerApi?.getUrlState?.().queryParams.vtaOnboarding === "true";
+    // Only using force instead of localStorage. WALKTHROUGH_COMPLETED flag will be moved to user model in AP-3586
+    return !force; // && localStorage.getItem(WALKTHROUGH_COMPLETED_KEY) === "true";
+  });
+
+  const [walkthroughInProgress, setWalkthroughInProgress] = React.useState(false);
+  const startWalkthrough = React.useCallback(() => {
+    setWalkthroughInProgress(true);
+  }, []);
+
+  const completeWalkthrough = React.useCallback(() => {
+    setHasCompletedWalkthrough(true);
+    // TODO: Replace with user model mutation in AP-3586
+    // localStorage.setItem(WALKTHROUGH_COMPLETED_KEY, "true");
+    setWalkthroughInProgress(false);
+    // remove onboarding query parameter from current url
+    const url = new URL(window.location.href);
+    url.searchParams.delete("vtaOnboarding");
+    window.history.replaceState({}, "", url.href);
+  }, []);
+
+  const lastBuildHasChanges = React.useMemo(() => {
+    // select only testsForStatus (or empty array) and return true if any of them are pending and changed
+    const testsForStatus =
+      (lastBuildOnBranch &&
+        "testsForStatus" in lastBuildOnBranch &&
+        lastBuildOnBranch.testsForStatus?.nodes &&
+        getFragment(FragmentStatusTestFields, lastBuildOnBranch.testsForStatus.nodes)) ||
+      [];
+
+    return testsForStatus.some(
+      (t) => t?.status === TestStatus.Pending && t?.result === TestResult.Changed
+    );
+  }, [lastBuildOnBranch]);
+
+  const showOnboarding =
+    !hasCompletedOnboarding && !hasCompletedWalkthrough && !walkthroughInProgress;
+
+  return {
+    showOnboarding,
+    showGuidedTour: !showOnboarding && !hasCompletedWalkthrough,
+    completeOnboarding,
+    completeWalkthrough,
+    startWalkthrough,
+    lastBuildHasChanges,
+  };
+};
+
 export const VisualTestsWithoutSelectedBuildId = ({
   isOutdated,
   selectedBuildInfo,
@@ -99,8 +169,8 @@ export const VisualTestsWithoutSelectedBuildId = ({
   gitInfo,
   storyId,
 }: VisualTestsProps) => {
-  const { addNotification } = useStorybookApi();
-
+  const managerApi = useStorybookApi();
+  const { addNotification } = managerApi;
   const buildInfo = useBuild({ projectId, storyId, gitInfo, selectedBuildInfo });
 
   const {
@@ -186,24 +256,52 @@ export const VisualTestsWithoutSelectedBuildId = ({
     [setSelectedBuildInfo, lastBuildOnBranchIsSelectable, lastBuildOnBranch?.id, storyId]
   );
 
-  return !selectedBuild || !hasSelectedBuild || !hasData || queryError ? (
-    <NoBuild
-      {...{
-        queryError,
-        hasData,
-        hasProject,
-        hasSelectedBuild,
-        startDevBuild,
-        localBuildProgress,
-        branch: gitInfo.branch,
-        setAccessToken,
-      }}
-    />
-  ) : (
-    <ReviewTestProvider watchState={reviewState}>
-      <BuildProvider watchState={buildInfo}>
-        <BuildResults
+  const {
+    showOnboarding,
+    showGuidedTour,
+    completeOnboarding,
+    completeWalkthrough,
+    startWalkthrough,
+    lastBuildHasChanges,
+  } = useOnboarding(buildInfo, managerApi);
+
+  if (showOnboarding) {
+    return (
+      <>
+        {/* Don't render onboarding until data has loaded to allow initial build logic ot work. */}
+        {!hasData || queryError ? (
+          <></>
+        ) : (
+          <BuildProvider watchState={buildInfo}>
+            <Onboarding
+              {...{
+                gitInfo,
+                projectId,
+                setAccessToken,
+                startDevBuild,
+                updateBuildStatus,
+                localBuildProgress,
+                showInitialBuildScreen: !selectedBuild,
+                onComplete: completeOnboarding,
+                onSkip: completeWalkthrough,
+                lastBuildHasChanges,
+              }}
+            />
+          </BuildProvider>
+        )}
+      </>
+    );
+  }
+
+  return (
+    <>
+      {!selectedBuild || !hasSelectedBuild || !hasData || queryError ? (
+        <NoBuild
           {...{
+            queryError,
+            hasData,
+            hasProject,
+            hasSelectedBuild,
             branch: gitInfo.branch,
             dismissBuildError,
             isOutdated,
@@ -211,11 +309,39 @@ export const VisualTestsWithoutSelectedBuildId = ({
             ...(lastBuildOnBranchIsSelectable && { switchToLastBuildOnBranch }),
             startDevBuild,
             setAccessToken,
-            storyId,
           }}
         />
-      </BuildProvider>
-    </ReviewTestProvider>
+      ) : (
+        <ReviewTestProvider watchState={reviewState}>
+          <BuildProvider watchState={buildInfo}>
+            <BuildResults
+              {...{
+                branch: gitInfo.branch,
+                dismissBuildError,
+                isOutdated,
+                localBuildProgress,
+                ...(lastBuildOnBranch && { lastBuildOnBranch }),
+                ...(lastBuildOnBranchIsSelectable && { switchToLastBuildOnBranch }),
+                startDevBuild,
+                userCanReview,
+                setAccessToken,
+                storyId,
+              }}
+            />
+          </BuildProvider>
+        </ReviewTestProvider>
+      )}
+      {showGuidedTour && (
+        <BuildProvider watchState={{ selectedBuild }}>
+          <GuidedTour
+            managerApi={managerApi}
+            skipWalkthrough={completeWalkthrough}
+            startWalkthrough={startWalkthrough}
+            completeWalkthrough={completeWalkthrough}
+          />
+        </BuildProvider>
+      )}
+    </>
   );
 };
 

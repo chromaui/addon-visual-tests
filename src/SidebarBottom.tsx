@@ -12,13 +12,26 @@ interface SidebarBottomProps {
   api: API;
 }
 
+export const ENABLE_FILTER = "enableFilter";
+
 export const SidebarBottom = ({ api }: SidebarBottomProps) => {
-  const onEnable = useCallback(() => api.experimental_setFilter(ADDON_ID, filterWarn), [api]);
+  const onEnable = useCallback(() => {
+    api.experimental_setFilter(ADDON_ID, filterWarn);
+    // Used internally to trigger next step in guided tour
+    api.emit(ENABLE_FILTER, ADDON_ID, filterWarn);
+  }, [api]);
   const onDisable = useCallback(() => api.experimental_setFilter(ADDON_ID, filterNone), [api]);
 
   const { status } = useStorybookState();
   const warnings = Object.values(status).filter((value) => value[ADDON_ID]?.status === "warn");
   if (!warnings.length) return null;
 
-  return <SidebarToggleButton count={warnings.length} onEnable={onEnable} onDisable={onDisable} />;
+  return (
+    <span
+      id="sidebar-bottom-wrapper"
+      style={{ width: "calc(100% + 10px)", height: "calc(100% + 10px)", margin: "-5px" }}
+    >
+      <SidebarToggleButton count={warnings.length} onEnable={onEnable} onDisable={onDisable} />
+    </span>
+  );
 };

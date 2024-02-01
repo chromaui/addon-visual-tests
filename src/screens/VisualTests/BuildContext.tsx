@@ -2,7 +2,11 @@ import React, { createContext, useEffect, useMemo } from "react";
 import { useQuery } from "urql";
 
 import { getFragment } from "../../gql";
-import { StoryTestFieldsFragment, TestStatus } from "../../gql/graphql";
+import {
+  SelectedBuildFieldsFragment,
+  StoryTestFieldsFragment,
+  TestStatus,
+} from "../../gql/graphql";
 import { GitInfoPayload } from "../../types";
 import { summarizeTests } from "../../utils/summarizeTests";
 import { statusMap } from "../../utils/testsToStatusUpdate";
@@ -114,7 +118,8 @@ type SelectedStory =
     } & ReturnType<typeof useTests>)
   | null;
 
-export const BuildContext = createContext<BuildInfo>(null);
+// Partial allows us to pass only part of the context in some components. This helps prevent unnecessary rerendering of components like GuidedTour.
+export const BuildContext = createContext<Partial<BuildInfo> | undefined>(null);
 export const StoryContext = createContext<SelectedStory>(null);
 
 export const useBuildState = () => useRequiredContext(BuildContext, "Build");
@@ -127,10 +132,10 @@ export const useSelectedStoryState = () => useRequiredContext(StoryContext, "Sto
 
 export const BuildProvider = ({
   children,
-  watchState = null,
+  watchState,
 }: {
   children: React.ReactNode;
-  watchState?: BuildInfo;
+  watchState?: Partial<BuildInfo>;
 }) => {
   const hasTests = !!watchState?.selectedBuild && "testsForStory" in watchState.selectedBuild;
   const testsForStory =
@@ -144,11 +149,20 @@ export const BuildProvider = ({
   useEffect(() => toggleDiff(summary.changeCount > 0), [toggleDiff, summary.changeCount]);
 
   return (
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    <BuildContext.Provider value={useMemo(() => watchState, [JSON.stringify(watchState)])}>
+    <BuildContext.Provider
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      value={useMemo(() => watchState, [JSON.stringify(watchState?.selectedBuild)])}
+    >
       <StoryContext.Provider value={{ hasTests, tests, summary, ...useTests(tests) }}>
         {children}
       </StoryContext.Provider>
     </BuildContext.Provider>
+  );
+};
+
+export const StoryProvider = ({ children }: { children: React.ReactNode }) => {
+  const { tests, summary, ...rest } = useRequiredContext(StoryContext, "Story");
+  return (
+    <StoryContext.Provider value={{ tests, summary, ...rest }}>{children}</StoryContext.Provider>
   );
 };

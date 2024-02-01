@@ -31,7 +31,7 @@ export const RenderSettings = ({ onClose }: RenderSettingsProps) => {
         </p>
         <p>
           <ItemIcon icon="stop" />
-          Animation pause: End
+          Animation pause: Ends
         </p>
         <p>
           <ItemIcon icon="contrast" />

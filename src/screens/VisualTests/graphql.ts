@@ -21,6 +21,11 @@ export const QueryBuild = graphql(/* GraphQL */ `
         ...LastBuildOnBranchBuildFields
         ...SelectedBuildFields @skip(if: $hasSelectedBuildId)
       }
+      lastBuild {
+        id
+        slug
+        branch
+      }
     }
     selectedBuild: build(id: $selectedBuildId) @include(if: $hasSelectedBuildId) {
       ...SelectedBuildFields
@@ -100,6 +105,7 @@ export const FragmentStatusTestFields = graphql(/* GraphQL */ `
   fragment StatusTestFields on Test {
     id
     status
+    result
     story {
       storyId
     }
@@ -109,6 +115,7 @@ export const FragmentStatusTestFields = graphql(/* GraphQL */ `
 export const FragmentLastBuildOnBranchTestFields = graphql(/* GraphQL */ `
   fragment LastBuildOnBranchTestFields on Test {
     status
+    result
   }
 `);
 
@@ -139,8 +146,10 @@ export const FragmentStoryTestFields = graphql(/* GraphQL */ `
       }
       headCapture {
         captureImage(signed: true) {
+          backgroundColor
           imageUrl
           imageWidth
+          thumbnailUrl
         }
         captureError {
           kind

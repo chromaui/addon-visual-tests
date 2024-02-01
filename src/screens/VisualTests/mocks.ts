@@ -8,6 +8,7 @@ import {
   ComparisonResult,
   CompletedBuild,
   PublishedBuild,
+  SelectedBuildFieldsFragment,
   StartedBuild,
   StoryTestFieldsFragment,
   TestResult,
@@ -15,6 +16,21 @@ import {
 } from "../../gql/graphql";
 import { SelectedBuildWithTests } from "../../types";
 import { makeBrowserInfo, makeComparison, makeTest, makeTests } from "../../utils/storyData";
+
+export const buildInfo = (selectedBuild?: SelectedBuildFieldsFragment) => ({
+  hasData: true,
+  hasProject: true,
+  hasSelectedBuild: !!selectedBuild,
+  lastBuildOnBranch: undefined,
+  lastBuildOnBranchIsNewer: false,
+  lastBuildOnBranchIsReady: false,
+  lastBuildOnBranchIsSelectable: false,
+  selectedBuild,
+  selectedBuildMatchesGit: true,
+  rerunQuery: () => {},
+  queryError: undefined,
+  userCanReview: true,
+});
 
 export const withTests = <T extends SelectedBuildWithTests>(
   build: T,

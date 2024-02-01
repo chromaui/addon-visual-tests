@@ -138,7 +138,7 @@ function SelectProject({
     [setSelectedAccountId]
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!selectedAccountId && data?.viewer?.accounts) {
       onSelectAccount(data.viewer.accounts[0]);
     }

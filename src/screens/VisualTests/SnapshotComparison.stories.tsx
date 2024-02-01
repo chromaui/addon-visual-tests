@@ -18,26 +18,11 @@ import { makeComparison, makeTest, makeTests } from "../../utils/storyData";
 import { storyWrapper } from "../../utils/storyWrapper";
 import { BuildProvider } from "./BuildContext";
 import { ControlsProvider } from "./ControlsContext";
-import { interactionFailureTests, pendingBuild, pendingTests, withTests } from "./mocks";
+import { buildInfo, interactionFailureTests, pendingBuild, pendingTests, withTests } from "./mocks";
 import { ReviewTestProvider } from "./ReviewTestContext";
 import { SnapshotComparison } from "./SnapshotComparison";
 
 const build = { ...pendingBuild, startedAt: new Date() };
-
-const buildInfo = (selectedBuild?: SelectedBuildFieldsFragment) => ({
-  hasData: true,
-  hasProject: true,
-  hasSelectedBuild: !!selectedBuild,
-  lastBuildOnBranch: undefined,
-  lastBuildOnBranchIsNewer: false,
-  lastBuildOnBranchIsReady: false,
-  lastBuildOnBranchIsSelectable: false,
-  selectedBuild,
-  selectedBuildMatchesGit: true,
-  rerunQuery: () => {},
-  queryError: undefined,
-  userCanReview: true,
-});
 
 const meta = {
   component: SnapshotComparison,
@@ -210,19 +195,23 @@ export const SwitchingMode = {
         ],
       }).map((test) => ({
         ...test,
-        comparisons: test.comparisons.map((comparison) => ({
-          ...comparison,
-          headCapture: {
-            ...comparison.headCapture,
-            captureImage: {
-              imageUrl: `/ProjectItem-${comparison.browser.name}-${parseInt(
-                test.mode.name,
-                10
-              )}.png`,
-              imageWidth: parseInt(test.mode.name, 10),
+        comparisons: test.comparisons.map((comparison) => {
+          const imageUrl = `/ProjectItem-${comparison.browser.name}-${parseInt(
+            test.mode.name,
+            10
+          )}.png`;
+          return {
+            ...comparison,
+            headCapture: {
+              ...comparison.headCapture,
+              captureImage: {
+                imageUrl,
+                imageWidth: parseInt(test.mode.name, 10),
+                thumbnailUrl: imageUrl,
+              },
             },
-          },
-        })),
+          };
+        }),
       }))
     ),
   },

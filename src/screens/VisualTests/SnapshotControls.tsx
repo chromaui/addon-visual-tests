@@ -118,13 +118,13 @@ export const SnapshotControls = ({
               hasChrome={false}
             >
               <IconButton
+                id="button-toggle-snapshot"
                 aria-label={
                   baselineImageVisible ? "Show latest snapshot" : "Show baseline snapshot"
                 }
                 onClick={() => toggleBaselineImage()}
               >
                 <Icons icon="transfer" />
-                Switch
               </IconButton>
             </WithTooltip>
             <WithTooltip
@@ -133,6 +133,7 @@ export const SnapshotControls = ({
               hasChrome={false}
             >
               <IconButton
+                id="button-toggle-spotlight"
                 active={focusVisible}
                 aria-label={focusVisible ? "Hide spotlight" : "Show spotlight"}
                 onClick={() => toggleFocus(!focusVisible)}
@@ -146,6 +147,7 @@ export const SnapshotControls = ({
               hasChrome={false}
             >
               <IconButton
+                id="button-diff-visible"
                 active={diffVisible}
                 aria-label={diffVisible ? "Hide diff" : "Show diff"}
                 onClick={() => toggleDiff(!diffVisible)}
@@ -167,6 +169,7 @@ export const SnapshotControls = ({
                 hasChrome={false}
               >
                 <ActionButton
+                  id="button-toggle-accept-story"
                   disabled={isReviewing}
                   aria-label="Accept this story"
                   onClick={() => acceptTest(selectedTest.id, ReviewTestBatch.Spec)}
@@ -229,6 +232,7 @@ export const SnapshotControls = ({
                 hasChrome={false}
               >
                 <ActionButton
+                  id="button-toggle-accept-story"
                   disabled={isReviewing}
                   aria-label="Unaccept this story"
                   onClick={() => unacceptTest(selectedTest.id, ReviewTestBatch.Spec)}

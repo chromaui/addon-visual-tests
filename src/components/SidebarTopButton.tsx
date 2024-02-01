@@ -129,7 +129,7 @@ export const SidebarTopButton = ({
       trigger="hover"
       hasChrome={false}
     >
-      <SidebarIconButton aria-label="Run tests" onClick={() => startBuild()}>
+      <SidebarIconButton id="button-run-tests" aria-label="Run tests" onClick={() => startBuild()}>
         <StatusDotWrapper status="notification">
           <Icons icon="play" />
         </StatusDotWrapper>
@@ -149,7 +149,7 @@ export const SidebarTopButton = ({
         </TooltipContent>
       }
     >
-      <SidebarIconButton aria-label="Run tests">
+      <SidebarIconButton id="button-run-tests" aria-label="Run tests">
         <Icons icon="play" />
       </SidebarIconButton>
     </WithTooltip>

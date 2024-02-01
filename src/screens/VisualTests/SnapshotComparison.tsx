@@ -1,7 +1,7 @@
 import { Loader } from "@storybook/components";
 import { Link } from "@storybook/design-system";
 import { styled } from "@storybook/theming";
-import React from "react";
+import React, { useEffect } from "react";
 
 import { Text } from "../../components/layout";
 import { SnapshotImage } from "../../components/SnapshotImage";
@@ -104,14 +104,14 @@ const StackTrace = styled.div(({ theme }) => ({
 }));
 
 const Warning = styled.div(({ theme }) => ({
-  background: theme.background.warning,
+  background: theme.background.hoverable,
   padding: "10px",
   lineHeight: "18px",
   position: "relative",
 }));
 
 const WarningText = styled(Text)(({ theme }) => ({
-  color: theme.color.darkest,
+  color: theme.color.defaultText,
 }));
 
 interface SnapshotComparisonProps {
@@ -150,7 +150,7 @@ export const SnapshotComparison = ({
   const prevSelectedComparisonIdRef = React.useRef(selectedStory.selectedComparison?.id);
   const prevSelectedBuildIdRef = React.useRef(selectedBuild.id);
 
-  React.useEffect(() => {
+  useEffect(() => {
     // It's possible this component doesn't unmount when the selected build, comparison, or story changes, so we need to reset state values.
     // This is most important for the baseline image toggle because baseline can not exist for a different story.
     if (
@@ -243,7 +243,7 @@ export const SnapshotComparison = ({
           <Warning>
             <WarningText>
               New story found. Accept this snapshot as a test baseline.{" "}
-              <Link href="https://www.chromatic.com/docs/branching-and-baselines">
+              <Link href="https://www.chromatic.com/docs/branching-and-baselines" target="_blank">
                 Learn More »
               </Link>
             </WarningText>
@@ -253,7 +253,7 @@ export const SnapshotComparison = ({
           <Warning>
             <WarningText>
               New mode found. Accept this snapshot as a test baseline.{" "}
-              <Link href="https://www.chromatic.com/docs/branching-and-baselines">
+              <Link href="https://www.chromatic.com/docs/branching-and-baselines" target="_blank">
                 Learn More »
               </Link>
             </WarningText>
@@ -263,7 +263,7 @@ export const SnapshotComparison = ({
           <Warning>
             <WarningText>
               New browser found. Accept this snapshot as a test baseline.{" "}
-              <Link href="https://www.chromatic.com/docs/branching-and-baselines">
+              <Link href="https://www.chromatic.com/docs/branching-and-baselines" target="_blank">
                 Learn More »
               </Link>
             </WarningText>
