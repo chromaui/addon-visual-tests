@@ -61,6 +61,13 @@ export default defineConfig(async (options) => {
       entry: managerEntries,
       format: ["esm"],
       platform: "browser",
+      esbuildOptions(options) {
+        options.conditions = ["module"];
+        options.loader = {
+          ...options.loader,
+          ".png": "dataurl",
+        };
+      },
       external: globalManagerPackages,
     });
   }
