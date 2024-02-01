@@ -64,6 +64,7 @@ export const SuffixInput = ({ id, value, placeholder, suffix, ...props }: Suffix
         label=""
         value={value}
         placeholder={placeholder}
+        // @ts-expect-error — TODO: Fix this
         crossOrigin={undefined}
         enterKeyHint={undefined}
         {...props}
