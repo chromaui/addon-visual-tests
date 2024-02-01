@@ -1,5 +1,4 @@
 import { Icons, Link } from "@storybook/components";
-import { Avatar, ListItem } from "@storybook/design-system";
 import { styled } from "@storybook/theming";
 import React, { useCallback, useEffect, useState } from "react";
 import { useQuery } from "urql";
@@ -12,6 +11,9 @@ import { Stack } from "../../components/Stack";
 import { graphql } from "../../gql";
 import type { Account, Project, SelectProjectsQueryQuery } from "../../gql/graphql";
 import { DialogHandler, useChromaticDialog } from "../../utils/useChromaticDialog";
+
+const Avatar = (props: any) => <div>Avatar</div>
+const ListItem = (props: any) => <div>ListItem</div>
 
 const SelectProjectsQuery = graphql(/* GraphQL */ `
   query SelectProjectsQuery {

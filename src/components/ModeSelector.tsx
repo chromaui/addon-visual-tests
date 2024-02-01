@@ -1,5 +1,4 @@
 import { TooltipNote, WithTooltip } from "@storybook/components";
-import { Icon } from "@storybook/design-system";
 import { styled } from "@storybook/theming";
 import React from "react";
 
@@ -20,6 +19,8 @@ const IconWrapper = styled.div(({ theme }) => ({
     verticalAlign: "top",
   },
 }));
+
+const Icon = () => <div>Icon</div>
 
 const Label = styled.span({
   display: "none",
@@ -48,7 +49,7 @@ export const ModeSelector = ({
   const aggregate = aggregateResult(modeResults.map(({ result }) => result));
   if (!aggregate) return null;
 
-  let icon = <Icon icon="diamond" />;
+  let icon = <Icon />;
   if (!isAccepted && aggregate !== ComparisonResult.Equal) {
     icon = <StatusDotWrapper status={aggregate}>{icon}</StatusDotWrapper>;
   }

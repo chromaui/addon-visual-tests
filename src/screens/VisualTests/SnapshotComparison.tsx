@@ -1,5 +1,4 @@
 import { Loader } from "@storybook/components";
-import { Link } from "@storybook/design-system";
 import { styled } from "@storybook/theming";
 import React, { useEffect } from "react";
 
@@ -12,6 +11,7 @@ import { BuildResultsFooter } from "./BuildResultsFooter";
 import { useControlsDispatch, useControlsState } from "./ControlsContext";
 import { SnapshotControls } from "./SnapshotControls";
 import { StoryInfo } from "./StoryInfo";
+const Link = () => <div>Link</div>
 
 export const Grid = styled.div(({ theme }) => ({
   display: "grid",

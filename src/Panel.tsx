@@ -1,4 +1,3 @@
-import { Spinner } from "@storybook/design-system";
 import type { API } from "@storybook/manager-api";
 import { useChannel, useStorybookState } from "@storybook/manager-api";
 import React, { useCallback, useState } from "react";
@@ -31,6 +30,8 @@ interface PanelProps {
   active: boolean;
   api: API;
 }
+
+const Spinner = () => <div>Hello</div>
 
 export const Panel = ({ active, api }: PanelProps) => {
   const [accessToken, setAccessToken] = useAccessToken();

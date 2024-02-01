@@ -1,4 +1,3 @@
-import { Input } from "@storybook/design-system";
 import { styled } from "@storybook/theming";
 import React, { ComponentProps, ReactNode } from "react";
 
@@ -14,6 +13,8 @@ const InputWrapper = styled.div(({ theme }) => ({
     lineHeight: "20px",
   },
 }));
+
+const Input = (props: any) => <div>Input</div>
 
 const SuffixWrapper = styled.div(({ theme }) => ({
   pointerEvents: "none",

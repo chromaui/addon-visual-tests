@@ -1,5 +1,4 @@
 import { Icons } from "@storybook/components";
-import { Icon } from "@storybook/design-system";
 import { styled } from "@storybook/theming";
 import React, { useEffect, useState } from "react";
 import { gql } from "urql";
@@ -24,6 +23,8 @@ import onboardingAdjustSizeImage from "./onboarding-adjust-size.png";
 import onboardingColorPaletteImage from "./onboarding-color-palette.png";
 import onboardingEmbiggenImage from "./onboarding-embiggen.png";
 import onboardingLayoutImage from "./onboarding-layout.png";
+
+const Icon = () => <div>Icon</div>
 
 const ProjectQuery = gql`
   query ProjectQuery($projectId: ID!) {

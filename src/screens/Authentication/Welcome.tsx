@@ -1,4 +1,3 @@
-import { Link } from "@storybook/design-system";
 import React from "react";
 
 import { Button } from "../../components/Button";
@@ -12,6 +11,8 @@ interface WelcomeProps {
   onNext: () => void;
   onUninstall: () => void;
 }
+
+const Link = (props: any) => <div>Link</div>
 
 export const Welcome = ({ onNext, onUninstall }: WelcomeProps) => {
   const [showRestart, setShowRestart] = React.useState(false);
@@ -36,13 +37,7 @@ export const Welcome = ({ onNext, onUninstall }: WelcomeProps) => {
             </Button>
 
             {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-            <Link
-              secondary
-              onClick={() => {
-                onUninstall();
-                setShowRestart(true);
-              }}
-            >
+            <Link>
               Uninstall
             </Link>
           </>

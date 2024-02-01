@@ -1,4 +1,3 @@
-import { Icon, Link } from "@storybook/design-system";
 import { styled } from "@storybook/theming";
 import React from "react";
 
@@ -14,6 +13,9 @@ interface GitNotFoundProps {
   gitInfoError: Error;
   setAccessToken: (accessToken: string | null) => void;
 }
+
+const Link = (props: any) => <div>Link</div>
+const Icon = (props: any) => <div>Icon</div>
 
 const InfoSection = styled(Section)(({ theme }) => ({
   display: "flex",
