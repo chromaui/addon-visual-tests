@@ -17,105 +17,85 @@ export enum AvatarType {
   ORGANIZATION = "organization",
 }
 
-const Image = styled.div<Partial<Props>>`
-  background: transparent;
-  border-radius: ${(props) => (props.type === AvatarType.USER ? "50%" : "5px")};
-  display: inline-block;
-  vertical-align: top;
-  overflow: hidden;
-  text-transform: uppercase;
+const Image = styled.div<Partial<Props>>({
+  background: "transparent",
+  display: "inline-block",
+  verticalAlign: "top",
+  overflow: "hidden",
+  textTransform: "uppercase",
 
-  height: ${sizes.medium}px;
-  width: ${sizes.medium}px;
-  line-height: ${sizes.medium}px;
+  ...(props) => ({
+    borderRadius: props.type === AvatarType.USER ? "50%" : 5,
 
-  ${(props) =>
-    props.isLoading &&
-    css`
-      background: ${color.light};
-      filter: grayscale(1);
-    `}
+    height: `${sizes[props.size || "medium"]}px`,
+    width: `${sizes[props.size || "medium"]}px`,
+    lineHeight: `${sizes[props.size || "medium"]}px`,
 
-  ${(props) =>
-    props.size === "tiny" &&
-    css`
-      height: ${sizes.tiny}px;
-      width: ${sizes.tiny}px;
-      line-height: ${sizes.tiny}px;
-    `}
+    ...(props.isLoading && {
+      background: color.light,
+      filter: "grayscale(1)",
+    }),
 
-  ${(props) =>
-    props.size === "small" &&
-    css`
-      height: ${sizes.small}px;
-      width: ${sizes.small}px;
-      line-height: ${sizes.small}px;
-    `}
+    ...(!props.src &&
+      !props.isLoading && {
+        background: "#37D5D3",
+      }),
+  }),
 
-  ${(props) =>
-    props.size === "large" &&
-    css`
-      height: ${sizes.large}px;
-      width: ${sizes.large}px;
-      line-height: ${sizes.large}px;
-    `}
-
-  ${(props) =>
-    !props.src &&
-    css`
-      background: ${!props.isLoading && "#37D5D3"};
-    `}
-
-  img {
-    width: 100%;
-    height: auto;
-    display: block;
-  }
-`;
+  img: {
+    width: "100%",
+    height: "auto",
+    display: "block",
+  },
+});
 
 interface LoadingIconProps {
   icon: string;
   type: AvatarType;
 }
 
-const LoadingIcon = styled(Icon)<LoadingIconProps & ComponentProps<typeof Icon>>`
-  position: relative;
-  margin: 0 auto;
-  display: block;
-  bottom: ${(props) => (props.type === AvatarType.USER ? -2 : -4)}px;
-  height: ${(props) => (props.type === AvatarType.USER ? 100 : 70)}%;
-  width: ${(props) => (props.type === AvatarType.USER ? 100 : 70)}%;
-  vertical-align: top;
+const LoadingIcon = styled(Icon)<LoadingIconProps & ComponentProps<typeof Icon>>({
+  position: "relative",
+  margin: "0 auto",
+  display: "block",
+  verticalAlign: "top",
 
-  path {
-    fill: ${color.medium};
-    animation: ${glow} 1.5s ease-in-out infinite;
-  }
-`;
+  ...(props) => ({
+    bottom: `${props.type === AvatarType.USER ? -2 : -4}px`,
+    height: `${props.type === AvatarType.USER ? 100 : 70}%`,
+    width: `${props.type === AvatarType.USER ? 100 : 70}%`,
+  }),
+
+  path: {
+    fill: color.medium,
+    animation: `${glow} 1.5s ease-in-out infinite`,
+  },
+});
 
 // prettier-ignore
-const Initial = styled.div<Partial<Props>>`
-  color: ${color.lightest};
-  text-align: center;
+const Initial = styled.div<Partial<Props>>({
+  color: color.lightest,
+  textAlign: "center",
 
-  font-size: ${typography.size.s2}px;
-  line-height: ${sizes.medium}px;
-
-  ${props => props.size === "tiny" && css`
-    font-size: ${typography.size.s1 - 2}px;
-    line-height: ${sizes.tiny}px;
-  `}
-
-  ${props => props.size === "small" && css`
-    font-size: ${typography.size.s1}px;
-    line-height: ${sizes.small}px;
-  `}
-
-  ${props => props.size === "large" && css`
-    font-size: ${typography.size.s3}px;
-    line-height: ${sizes.large}px;
-  `}
-`;
+  ...(props) => ({
+    tiny: {
+      fontSize: `${typography.size.s1 - 2}px`,
+      lineHeight: `${sizes.tiny}px`,
+    },
+    small: {
+      fontSize: `${typography.size.s1}px`,
+      lineHeight: `${sizes.small}px`,
+    },
+    medium: {
+      fontSize: `${typography.size.s2}px`,
+      lineHeight: `${sizes.medium}px`,
+    },
+    large: {
+      fontSize: `${typography.size.s3}px`,
+      lineHeight: `${sizes.large}px`,
+    },
+  }[props.size || "medium"]),
+});
 
 /**
  * The `Avatar` component is where all your avatars come to play.

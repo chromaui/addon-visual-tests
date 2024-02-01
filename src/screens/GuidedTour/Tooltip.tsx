@@ -4,50 +4,44 @@ import { TooltipRenderProps } from "react-joyride";
 
 import { Button } from "../../components/Button";
 
-const TooltipBody = styled.div`
-  background: ${({ theme }) => {
-    return theme.base === "dark" ? "#292A2C" : theme.color.lightest;
-  }};
-  width: 260px;
-  padding: 15px;
-  border-radius: 5px;
-  box-shadow: 0px 0px 32px 0px #00000029;
-`;
+const TooltipBody = styled.div(({ theme }) => ({
+  background: theme.base === "dark" ? "#292A2C" : theme.color.lightest,
+  width: 260,
+  padding: 15,
+  borderRadius: 5,
+  boxShadow: "0px 0px 32px 0px #00000029",
+}));
 
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-`;
+const Wrapper = styled.div({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "flex-start",
+});
 
-const TooltipTitle = styled.div`
-  font-size: 13px;
-  line-height: 18px;
-  font-weight: 700;
-  color: ${({ theme }) => theme.color.defaultText};
-`;
+const TooltipTitle = styled.div(({ theme }) => ({
+  fontSize: 13,
+  lineHeight: "18px",
+  fontWeight: 700,
+  color: theme.color.defaultText,
+}));
 
-const TooltipContent = styled.p`
-  font-size: 13px;
-  line-height: 18px;
-  text-align: start;
-  color: ${({ theme }) => theme.color.defaultText};
-  margin: 0;
-  margin-top: 5px;
-`;
+const TooltipContent = styled.div(({ theme }) => ({
+  fontSize: 13,
+  lineHeight: "18px",
+  textAlign: "start",
+  color: theme.color.defaultText,
+  margin: 0,
+  marginTop: 5,
+}));
 
-const TooltipFooter = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 15px;
-`;
+const TooltipFooter = styled.div({
+  display: "flex",
+  justifyContent: "flex-end",
+  marginTop: 15,
+});
 
 const NextButton = styled(Button)(
-  ({ secondary }) =>
-    secondary &&
-    css({
-      "&&:focus": { boxShadow: "none" },
-    })
+  ({ secondary }) => secondary && { "&&:focus": { boxShadow: "none" } }
 );
 
 export type TooltipProps = TooltipRenderProps & {
@@ -73,7 +67,7 @@ export const Tooltip = ({ step, primaryProps, tooltipProps }: TooltipProps) => {
             <Button
               onClick={step.onSkipWalkthroughButtonClick}
               link
-              style={{ paddingRight: "12px", paddingLeft: "12px", marginRight: "8px" }}
+              style={{ paddingRight: 12, paddingLeft: 12, marginRight: 8 }}
             >
               Skip
             </Button>

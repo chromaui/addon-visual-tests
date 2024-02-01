@@ -5,64 +5,55 @@ import React, { ComponentProps, ReactNode } from "react";
 import { inlineGlow } from "../shared/animation";
 import { background, color, typography } from "../shared/styles";
 
-const Left = styled.span``;
-const Title = styled.span`
-  font-weight: ${typography.weight.bold};
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`;
-const Center = styled.span``;
-const Right = styled.span``;
+const Left = styled.span({});
+const Title = styled.span({
+  fontWeight: typography.weight.bold,
+  whiteSpace: "nowrap",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+});
+const Center = styled.span({});
+const Right = styled.span({});
 
-const ItemWrapper = styled.li`
-  list-style: none;
+const ItemWrapper = styled.li({
+  listStyle: "none",
 
-  &:not(:first-child) {
-    border-top: 1px solid ${color.border};
-  }
-`;
+  "&:not(:first-child)": {
+    borderTop: `1px solid ${color.border}`,
+  },
+});
 
-const ItemInner = styled.span`
-  /* Layout */
-  line-height: 18px;
-  padding: 7px 15px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+const ItemInner = styled.span({
+  lineHeight: "18px",
+  padding: "7px 15px",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
 
-  .sbds-list-item-title {
-    display: block;
-  }
+  ".sbds-list-item-title": {
+    display: "block",
+    flex: "0 1 auto",
+    marginRight: "auto",
+  },
 
-  .sbds-list-item-left,
-  .sbds-list-item-center,
-  .sbds-list-item-right {
-    display: inline-flex;
-  }
+  ".sbds-list-item-left, .sbds-list-item-center, .sbds-list-item-right": {
+    display: "inline-flex",
+  },
 
-  .sbds-list-item-title {
-    flex: 0 1 auto;
-    margin-right: auto;
-  }
+  ".sbds-list-item-center": {
+    flex: "0 1 auto",
+    marginLeft: "auto",
+    marginRight: "auto",
+  },
 
-  .sbds-list-item-center {
-    flex: 0 1 auto;
-    margin-left: auto;
-    margin-right: auto;
-  }
+  ".sbds-list-item-left, .sbds-list-item-right": { flex: "0 1 auto" },
 
-  .sbds-list-item-left,
-  .sbds-list-item-right {
-    flex: 0 1 auto;
-  }
-
-  .sbds-list-item-right {
-    flex: none;
-    text-align: right;
-    margin-left: 10px;
-  }
-`;
+  ".sbds-list-item-right": {
+    flex: "none",
+    textAlign: "right",
+    marginLeft: 10,
+  },
+});
 
 interface LinkStyleProps {
   activeColor: string;

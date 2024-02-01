@@ -91,40 +91,38 @@ export const typography = {
 export const breakpoint = 600;
 export const pageMargin = 5.55555;
 
-export const pageMargins = css`
-  padding: 0 ${spacing.padding.medium}px;
-  @media (min-width: ${breakpoint * 1}px) {
-    margin: 0 ${pageMargin * 1}%;
-  }
-  @media (min-width: ${breakpoint * 2}px) {
-    margin: 0 ${pageMargin * 2}%;
-  }
-  @media (min-width: ${breakpoint * 3}px) {
-    margin: 0 ${pageMargin * 3}%;
-  }
-  @media (min-width: ${breakpoint * 4}px) {
-    margin: 0 ${pageMargin * 4}%;
-  }
-`;
+export const pageMargins = css({
+  padding: `0 ${spacing.padding.medium}px`,
+  [`@media (min-width: ${breakpoint * 1}px)`]: {
+    margin: `0 ${pageMargin * 1}%`,
+  },
+  [`@media (min-width: ${breakpoint * 2}px)`]: {
+    margin: `0 ${pageMargin * 2}%`,
+  },
+  [`@media (min-width: ${breakpoint * 3}px)`]: {
+    margin: `0 ${pageMargin * 3}%`,
+  },
+  [`@media (min-width: ${breakpoint * 4}px)`]: {
+    margin: `0 ${pageMargin * 4}%`,
+  },
+});
 
-export const hoverEffect = css`
-  border: 1px solid ${color.border};
-  border-radius: ${spacing.borderRadius.small}px;
-  transition: background 150ms ease-out, border 150ms ease-out, transform 150ms ease-out;
+export const hoverEffect = css({
+  border: `1px solid ${color.border}`,
+  borderRadius: `${spacing.borderRadius.small}px`,
+  transition: "background 150ms ease-out, border 150ms ease-out, transform 150ms ease-out",
 
-  &:hover,
-  &.__hover {
-    border-color: ${rgba(color.secondary, 0.5)};
-    transform: translate3d(0, -3px, 0);
-    box-shadow: rgba(0, 0, 0, 0.08) 0 3px 10px 0;
-  }
+  "&:hover, &.__hover": {
+    borderColor: `${rgba(color.secondary, 0.5)}`,
+    transform: "translate3d(0, -3px, 0)",
+    "box-shadow": "rgba(0, 0, 0, 0.08) 0 3px 10px 0",
+  },
 
-  &:active,
-  &.__active {
-    border-color: ${rgba(color.secondary, 1)};
-    transform: translate3d(0, 0, 0);
-  }
-`;
+  "&:active, &.__active": {
+    borderColor: `${rgba(color.secondary, 1)}`,
+    transform: "translate3d(0, 0, 0)",
+  },
+});
 
 export const zIndex = {
   tooltip: 2147483647,

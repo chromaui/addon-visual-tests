@@ -3,16 +3,16 @@ import React, { FunctionComponent } from "react";
 
 import { icons } from "./shared/icons";
 
-const Svg = styled.svg`
-  display: inline-block;
-  shape-rendering: inherit;
-  transform: translate3d(0, 0, 0);
-  vertical-align: middle;
+const Svg = styled.svg({
+  display: "inline-block",
+  shapeRendering: "inherit",
+  transform: "translate3d(0, 0, 0)",
+  verticalAlign: "middle",
 
-  path {
-    fill: currentColor;
-  }
-`;
+  path: {
+    fill: "currentColor",
+  },
+});
 
 /**
  * An Icon is a piece of visual element, but we must ensure its accessibility while using it.

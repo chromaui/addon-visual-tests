@@ -13,92 +13,84 @@ interface Props {
   neutral?: boolean;
 }
 
-const SpinnerWrapper = styled.div<Props>`
-  border-radius: 3em;
-  cursor: progress;
-  display: inline-block;
-  overflow: hidden;
-  position: relative;
-  transition: all 200ms ease-out;
-  vertical-align: top;
+const SpinnerWrapper = styled.div<Props>({
+  borderRadius: "3em",
+  cursor: "progress",
+  display: "inline-block",
+  overflow: "hidden",
+  position: ["relative", "absolute"],
+  transition: "all 200ms ease-out",
+  verticalAlign: "top",
+  top: "50%",
+  left: "50%",
+  marginTop: -16,
+  marginLeft: -16,
+  height: 32,
+  width: 32,
 
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  margin-top: -16px;
-  margin-left: -16px;
-  height: 32px;
-  width: 32px;
+  animation: `${rotate360} 0.7s linear infinite`,
 
-  animation: ${rotate360} 0.7s linear infinite;
+  borderWidth: 2,
+  borderStyle: "solid",
+  borderColor: "rgba(0, 0, 0, 0.03)",
+  borderTopColor: "rgba(0, 0, 0, 0.15)",
 
-  border-width: 2px;
-  border-style: solid;
-  border-color: rgba(0, 0, 0, 0.03);
-  border-top-color: rgba(0, 0, 0, 0.15);
+  ...(props) => ({
+    ...(props.inverse && {
+      borderColor: "rgba(255, 255, 255, 0.2)",
+      borderTopColor: "rgba(255, 255, 255, 0.4)",
+    }),
 
-  ${(props) =>
-    props.inverse &&
-    css`
-      border-color: rgba(255, 255, 255, 0.2);
-      border-top-color: rgba(255, 255, 255, 0.4);
-    `};
-  ${(props) =>
-    props.inForm &&
-    css`
-      margin-top: -6px;
-      margin-left: -6px;
-      height: 12px;
-      width: 12px;
-      border: 1px solid ${color.secondary};
-      border-bottom-color: transparent;
-    `};
-  ${(props) =>
-    props.inline &&
-    css`
-      position: relative;
-      top: initial;
-      left: initial;
-      margin-top: initial;
-      margin-left: initial;
-      vertical-align: middle;
-      height: 8px;
-      width: 8px;
-      border: 1px solid;
-      border-top-color: ${color.secondary};
-      border-left-color: ${color.secondary};
-      border-right-color: ${color.secondary};
-      border-bottom-color: transparent;
+    ...(props.inForm && {
+      marginTop: -6,
+      marginLeft: -6,
+      height: 12,
+      width: 12,
+      border: `1px solid ${color.secondary}`,
+      borderBottomColor: "transparent",
+    }),
 
-      ${props.positive &&
-      css`
-        border-top-color: ${color.positive};
-        border-left-color: ${color.positive};
-        border-right-color: ${color.positive};
-      `};
+    ...(props.inline && {
+      position: "relative",
+      top: "initial",
+      left: "initial",
+      marginTop: "initial",
+      marginLeft: "initial",
+      verticalAlign: "middle",
+      height: 8,
+      width: 8,
+      border: "1px solid",
+      borderTopColor: color.secondary,
+      borderLeftColor: color.secondary,
+      borderRightColor: color.secondary,
+      borderBottomColor: "transparent",
 
-      ${props.negative &&
-      css`
-        border-top-color: ${color.red};
-        border-left-color: ${color.red};
-        border-right-color: ${color.red};
-      `};
+      ...(props.positive && {
+        borderTopColor: color.positive,
+        borderLeftColor: color.positive,
+        borderRightColor: color.positive,
+      }),
 
-      ${props.neutral &&
-      css`
-        border-top-color: ${color.dark};
-        border-left-color: ${color.dark};
-        border-right-color: ${color.dark};
-      `};
+      ...(props.negative && {
+        borderTopColor: color.red,
+        borderLeftColor: color.red,
+        borderRightColor: color.red,
+      }),
 
-      ${props.inverse &&
-      css`
-        border-top-color: ${color.lightest};
-        border-left-color: ${color.lightest};
-        border-right-color: ${color.lightest};
-      `};
-    `};
-`;
+      ...(props.neutral && {
+        borderTopColor: color.dark,
+        borderLeftColor: color.dark,
+        borderRightColor: color.dark,
+      }),
+
+      ...(props.inverse && {
+        borderTopColor: color.lightest,
+        borderLeftColor: color.lightest,
+        borderRightColor: color.lightest,
+      }),
+    }),
+  }),
+});
 
 export const Spinner: FunctionComponent<Props & ComponentProps<typeof SpinnerWrapper>> = (
   props

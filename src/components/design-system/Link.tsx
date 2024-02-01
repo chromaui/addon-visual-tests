@@ -5,20 +5,19 @@ import React, { ComponentProps, forwardRef } from "react";
 import { Icon } from "./Icon";
 import { color } from "./shared/styles";
 
-const LinkInner = styled.span<{ withArrow: boolean }>`
-  ${(props) =>
-    props.withArrow &&
-    css`
-      > svg:last-of-type {
-        height: 0.65em;
-        width: 0.65em;
-        margin-right: 0;
-        margin-left: 0.25em;
-        bottom: auto;
-        vertical-align: inherit;
-      }
-    `};
-`;
+const LinkInner = styled.span<{ withArrow: boolean }>(
+  (props) =>
+    props.withArrow && {
+      "> svg:last-of-type": {
+        height: "0.65em",
+        width: "0.65em",
+        marginRight: 0,
+        marginLeft: "0.25em",
+        bottom: "auto",
+        verticalAlign: "inherit",
+      },
+    }
+);
 
 export interface StyledLinkProps {
   containsIcon?: boolean;
@@ -28,110 +27,101 @@ export interface StyledLinkProps {
   inverse?: boolean;
 }
 
-const StyledLink = styled.a<StyledLinkProps>`
-  display: inline-block;
-  transition: transform 150ms ease-out, color 150ms ease-out;
-  text-decoration: none;
-  color: ${color.secondary};
+const StyledLink = styled.a<StyledLinkProps>({
+  display: "inline-block",
+  transition: "transform 150ms ease-out, color 150ms ease-out",
+  textDecoration: "none",
+  color: color.secondary,
 
-  &:hover,
-  &:focus-visible {
-    cursor: pointer;
-    transform: translateY(-1px);
-    color: ${darken(0.07, color.secondary)};
-  }
-  &:active {
-    transform: translateY(0);
-    color: ${darken(0.1, color.secondary)};
-  }
+  "&:hover, &:focus-visible": {
+    cursor: "pointer",
+    transform: "translateY(-1px)",
+    color: darken(0.07, color.secondary),
+  },
 
-  svg {
-    display: inline-block;
-    height: 1em;
-    width: 1em;
-    vertical-align: text-top;
-    position: relative;
-    bottom: -0.125em;
-    margin-right: 0.4em;
-  }
+  "&:active": {
+    transform: "translateY(0)",
+    color: darken(0.1, color.secondary),
+  },
 
-  ${(props) =>
-    props.containsIcon &&
-    css`
-      svg {
-        height: 1em;
-        width: 1em;
-        vertical-align: middle;
-        position: relative;
-        bottom: 0;
-        margin-right: 0;
-      }
-    `};
+  svg: {
+    display: "inline-block",
+    height: "1em",
+    width: "1em",
+    verticalAlign: "text-top",
+    position: "relative",
+    bottom: "-0.125em",
+    marginRight: "0.4em",
+  },
 
-  ${(props) =>
-    props.secondary &&
-    css`
-      color: ${color.mediumdark};
+  ...(props) => ({
+    ...(props.containsIcon && {
+      svg: {
+        height: "1em",
+        width: "1em",
+        verticalAlign: "middle",
+        position: "relative",
+        bottom: 0,
+        marginRight: 0,
+      },
+    }),
 
-      &:hover {
-        color: ${color.dark};
-      }
+    ...(props.secondary && {
+      color: color.mediumdark,
 
-      &:active {
-        color: ${color.darker};
-      }
-    `};
+      "&:hover": {
+        color: color.dark,
+      },
 
-  ${(props) =>
-    props.tertiary &&
-    css`
-      color: ${color.dark};
+      "&:active": {
+        color: color.darker,
+      },
+    }),
 
-      &:hover {
-        color: ${color.darkest};
-      }
+    ...(props.tertiary && {
+      color: color.dark,
 
-      &:active {
-        color: ${color.mediumdark};
-      }
-    `};
+      "&:hover": {
+        color: color.darkest,
+      },
 
-  ${(props) =>
-    props.nochrome &&
-    css`
-      color: inherit;
+      "&:active": {
+        color: color.mediumdark,
+      },
+    }),
 
-      &:hover,
-      &:active {
-        color: inherit;
-        text-decoration: underline;
-      }
-    `};
+    ...(props.nochrome && {
+      color: "inherit",
 
-  ${(props) =>
-    props.inverse &&
-    css`
-      color: ${color.lightest};
+      "&:hover, &:active": {
+        color: "inherit",
+        textDecoration: "underline",
+      },
+    }),
 
-      &:hover {
-        color: ${color.lighter};
-      }
+    ...(props.inverse && {
+      color: color.lightest,
 
-      &:active {
-        color: ${color.light};
-      }
-    `};
-`;
+      "&:hover": {
+        color: color.lighter,
+      },
 
-const UnstyledLink = styled.a``;
+      "&:active": {
+        color: color.light,
+      },
+    }),
+  }),
+});
 
-const LinkButton = styled.button`
-  background: none;
-  border: none;
-  padding: 0;
-  font: inherit;
-  cursor: pointer;
-`;
+const UnstyledLink = styled.a({});
+
+const LinkButton = styled.button({
+  background: "none",
+  border: "none",
+  padding: "0",
+  font: "inherit",
+  cursor: "pointer",
+});
 
 /**
  * Links can contains text and/or icons. Be careful using only icons, you must provide a text alternative via aria-label for accessibility.

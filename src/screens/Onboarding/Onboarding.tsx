@@ -47,7 +47,7 @@ const Box = styled.div(({ theme }) => ({
 
 const Warning = styled.div(({ theme }) => ({
   background: theme.background.warning,
-  padding: "10px",
+  padding: 10,
   lineHeight: "18px",
   position: "relative",
   margin: "0 27px",

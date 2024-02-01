@@ -36,7 +36,7 @@ export const Grid = styled.div(({ theme }) => ({
   "@container (min-width: 800px)": {
     gridTemplateAreas: `"info label controls actions"`,
     gridTemplateColumns: "auto 1fr auto auto",
-    gridTemplateRows: "40px",
+    gridTemplateRows: 40,
   },
 }));
 
@@ -105,7 +105,7 @@ const StackTrace = styled.div(({ theme }) => ({
 
 const Warning = styled.div(({ theme }) => ({
   background: theme.background.hoverable,
-  padding: "10px",
+  padding: 10,
   lineHeight: "18px",
   position: "relative",
 }));

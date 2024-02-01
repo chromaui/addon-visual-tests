@@ -16,256 +16,257 @@ import { Link } from "./Link";
 import { jiggle } from "./shared/animation";
 import { color, spacing, typography } from "./shared/styles";
 
-// prettier-ignore
-const Label = styled.label<Pick<PureInputProps, 'appearance'>>`
-  font-weight: ${props => props.appearance !== 'code' && typography.weight.bold};
-  font-family: ${props => props.appearance === 'code' && typography.type.code};
-  font-size: ${props => props.appearance === 'code' ? typography.size.s1 - 1 : typography.size.s2}px;
-  line-height: ${props => props.appearance === 'code' ? 16 : 20}px;
-`;
+const Label = styled.label<Pick<PureInputProps, "appearance">>((props) => ({
+  ...(props.appearance !== "code" && {
+    fontWeight: typography.weight.bold,
+  }),
+  ...(props.appearance === "code"
+    ? {
+        fontFamily: typography.type.code,
+        fontSize: `${typography.size.s1 - 1}px`,
+        lineHeight: "16px",
+      }
+    : {
+        fontSize: `${typography.size.s2}px`,
+        lineHeight: "20px",
+      }),
+}));
 
-// prettier-ignore
-const LabelWrapper = styled.div<Pick<PureInputProps, 'hideLabel'>>`
-  margin-bottom: 8px;
+const LabelWrapper = styled.div<Pick<PureInputProps, "hideLabel">>({
+  marginBottom: 8,
 
-  ${props => props.hideLabel && css`
-    border: 0px !important;
-    clip: rect(0 0 0 0) !important;
-    -webkit-clip-path: inset(100%) !important;
-    clip-path: inset(100%) !important;
-    height: 1px !important;
-    overflow: hidden !important;
-    padding: 0px !important;
-    position: absolute !important;
-    white-space: nowrap !important;
-    width: 1px !important;
-  `}
-`;
+  ...(props) =>
+    props.hideLabel && {
+      border: "0px !important",
+      clip: "rect(0 0 0 0) !important",
+      WebkitClipPath: "inset(100%) !important",
+      clipPath: "inset(100%) !important",
+      height: "1px !important",
+      overflow: "hidden !important",
+      padding: "0px !important",
+      position: "absolute !important",
+      whiteSpace: "nowrap !important",
+      width: "1px !important",
+    },
+});
 
-// prettier-ignore
-const InputEl = styled.input`
-  &::placeholder {
-    color: ${color.mediumdark};
-  }
-  appearance: none;
-  border:none;
-  box-sizing: border-box;
-  display: block;
-  outline: none;
-  width: 100%;
-  margin: 0;
+const InputEl = styled.input({
+  "&::placeholder": {
+    color: color.mediumdark,
+  },
 
-  &[disabled] {
-    cursor: not-allowed;
-    opacity: .5;
-  }
+  appearance: "none",
+  border: "none",
+  boxSizing: "border-box",
+  display: "block",
+  outline: "none",
+  width: "100%",
+  margin: "0",
 
-  &:-webkit-autofill { -webkit-box-shadow: 0 0 0 3em ${color.lightest} inset; }
-`;
+  "&[disabled]": {
+    cursor: "not-allowed",
+    opacity: 0.5,
+  },
+
+  "&:-webkit-autofill": {
+    WebkitBoxShadow: `0 0 0 3em ${color.lightest} inset`,
+  },
+});
 
 const getStackLevelStyling = (props: Pick<PureInputProps, "error" | "stackLevel">) => {
   const radius = 4;
-  const stackLevelDefinedStyling = css`
-    position: relative;
-    ${props.error && `z-index: 1;`}
+  const stackLevelDefinedStyling = {
+    position: "relative",
+    ...(props.error && { zIndex: 1 }),
 
-    &:focus {
-      z-index: 2;
-    }
-  `;
+    "&:focus": {
+      zIndex: 2,
+    },
+  };
   switch (props.stackLevel) {
     case "top":
-      return css`
-        border-top-left-radius: ${radius}px;
-        border-top-right-radius: ${radius}px;
-        border-bottom-left-radius: 0;
-        border-bottom-right-radius: 0;
-        ${stackLevelDefinedStyling}
-      `;
+      return {
+        borderTopLeftRadius: `${radius}px`,
+        borderTopRightRadius: `${radius}px`,
+        borderBottomLeftRadius: 0,
+        borderBottomRightRadius: 0,
+        ...stackLevelDefinedStyling,
+      };
     case "middle":
-      return css`
-        border-radius: 0px;
-        margin-top: -1px;
-        ${stackLevelDefinedStyling}
-      `;
+      return {
+        borderRadius: 0,
+        marginTop: -1,
+        ...stackLevelDefinedStyling,
+      };
     case "bottom":
-      return css`
-        border-bottom-left-radius: ${radius}px;
-        border-bottom-right-radius: ${radius}px;
-        border-top-left-radius: 0;
-        border-top-right-radius: 0;
-        margin-top: -1px;
-        ${stackLevelDefinedStyling}
-      `;
+      return {
+        borderBottomLeftRadius: `${radius}px`,
+        borderBottomRightRadius: `${radius}px`,
+        borderTopLeftRadius: 0,
+        borderTopRightRadius: 0,
+        marginTop: -1,
+        ...stackLevelDefinedStyling,
+      };
     default:
-      return css`
-        border-radius: ${radius}px;
-      `;
+      return {
+        borderRadius: `${radius}px`,
+      };
   }
 };
 
-// prettier-ignore
-const InputWrapper = styled.div<
-  Pick<PureInputProps, 'error' | 'stackLevel' | 'appearance' | 'startingType' | 'icon'>
->`
-  display: inline-block;
-  position: relative;
-  vertical-align: top;
-  width: 100%;
+type InputWrapperProps = Pick<
+  PureInputProps,
+  "error" | "stackLevel" | "appearance" | "startingType" | "icon"
+>;
 
-  .sbds-input-el {
-    position: relative;
-    ${(props) => getStackLevelStyling(props)}
+const InputWrapper = styled.div<InputWrapperProps>({
+  display: "inline-block",
+  position: "relative",
+  verticalAlign: "top",
+  width: "100%",
 
-    background: ${color.lightest};
-    color: ${color.darkest};
-    font-size: ${typography.size.s2}px;
-    line-height: 20px;
-    padding: 10px 15px; //40px tall
-    box-shadow: ${color.border} 0 0 0 1px inset;
-    &:focus {
-      box-shadow: ${color.secondary} 0 0 0 1px inset;
+  ".sbds-input-el": {
+    position: "relative",
+    background: color.lightest,
+    color: color.darkest,
+    fontSize: `${typography.size.s2}px`,
+    lineHeight: "20px",
+    padding: "10px 15px", // 40px tall
+    boxShadow: `${color.border} 0 0 0 1px inset`,
+
+    "&:focus": {
+      boxShadow: `${color.secondary} 0 0 0 1px inset`,
+    },
+
+    ...(props: InputWrapperProps) => ({
+      ...getStackLevelStyling(props),
+
+      ...(props.appearance === "pill" && {
+        fontSize: `${typography.size.s1}px`,
+        lineHeight: "16px",
+        padding: "6px 12px", // 28px tall
+        borderRadius: "3em",
+        background: "transparent",
+      }),
+
+      ...(props.appearance === "code" && {
+        fontSize: `${typography.size.s1 - 1}px`,
+        lineHeight: "16px",
+        fontFamily: typography.type.code,
+        borderRadius: `${spacing.borderRadius.small}px`,
+        background: color.lightest,
+        padding: "8px 10px",
+      }),
+
+      ...(props.startingType === "password" && {
+        paddingRight: 52,
+      }),
+    }),
+  },
+
+  ...(props) => ({
+    ...(props.icon && {
+      "> svg": {
+        transition: "all 150ms ease-out",
+        position: "absolute",
+        top: "50%",
+        zIndex: 3,
+        background: "transparent",
+
+        ...(props.appearance === "pill" || props.appearance === "code"
+          ? {
+              fontSize: `${typography.size.s1}px`,
+              height: 12,
+              marginTop: -6,
+              width: 12,
+              left: 10,
+            }
+          : {
+              fontSize: `${typography.size.s2}px`,
+              height: 14,
+              marginTop: -7,
+              width: 14,
+              left: props.appearance === "tertiary" ? 0 : 15,
+            }),
+
+        path: {
+          transition: "all 150ms ease-out",
+          fill: color.mediumdark,
+        },
+      },
+
+      ".sbds-input-el:focus + svg path": {
+        fill: color.darker,
+      },
+
+      ".sbds-input-el": {
+        paddingLeft: 40,
+
+        ...((props.appearance === "pill" || props.appearance === "code") && {
+          paddingLeft: 30,
+        }),
+      },
+    }),
+
+    ...(props.error && {
+      ".sbds-input-el": {
+        boxShadow: `${color.red} 0 0 0 1px inset`,
+
+        "&:focus": {
+          boxShadow: `${color.red} 0 0 0 1px inset !important`,
+        },
+
+        "> svg": {
+          animation: `${jiggle} 700ms ease-out`,
+
+          path: {
+            fill: color.red,
+          },
+        },
+      },
+    }),
+  }),
+});
+
+const InputContainer = styled.div<Pick<PureInputProps, "orientation">>(
+  (props) =>
+    props.orientation === "horizontal" && {
+      display: "table-row",
+
+      ".sbds-input-label-wrapper, .sbds-input-input-wrapper": {
+        display: "table-cell",
+      },
+
+      ".sbds-input-label-wrapper": {
+        width: 1,
+        paddingRight: 20,
+        verticalAlign: "middle",
+      },
+
+      ".sbds-input-input-wrapper": {
+        width: "auto",
+      },
     }
+);
 
-    ${(props) =>
-    props.appearance === 'pill' &&
-    css`
-        font-size: ${typography.size.s1}px;
-        line-height: 16px;
-        padding: 6px 12px; //28px tall
-        border-radius: 3em;
-        background: transparent;
-      `}
+const ErrorTooltip = styled(WithTooltip)({
+  width: "100%",
+});
 
-    ${(props) =>
-    props.appearance === 'code' &&
-    css`
-        font-size: ${typography.size.s1 - 1}px;
-        line-height: 16px;
-        font-family: ${typography.type.code};
-        border-radius: ${spacing.borderRadius.small}px;
-        background: ${color.lightest};
-        padding: 8px 10px;
-      `}
-  }
+const ErrorTooltipMessage = styled(TooltipMessage)({
+  width: 170,
+});
 
-  ${(props) =>
-    props.startingType === 'password' &&
-    css`
-      .sbds-input-el {
-        padding-right: 52px;
-      }
-    `}
-
-  ${(props) =>
-    props.icon &&
-    css`
-      > svg {
-        transition: all 150ms ease-out;
-        position: absolute;
-        top: 50%;
-        ${props.appearance === 'pill' || props.appearance === 'code'
-        ? css`
-              font-size: ${typography.size.s1}px;
-              height: 12px;
-              margin-top: -6px;
-              width: 12px;
-            `
-        : css`
-              font-size: ${typography.size.s2}px;
-              height: 14px;
-              margin-top: -7px;
-              width: 14px;
-            `}
-        z-index: 3;
-        ${props.appearance === 'pill' || props.appearance === 'code'
-        ? css`
-              left: 10px;
-            `
-        : css`
-              left: ${props.appearance === 'tertiary' ? 0 : `15px`};
-            `}
-
-        background: transparent;
-
-        path {
-          transition: all 150ms ease-out;
-          fill: ${color.mediumdark};
-        }
-      }
-
-      .sbds-input-el:focus + svg path {
-        fill: ${color.darker};
-      }
-
-      .sbds-input-el {
-        padding-left: 40px;
-
-        ${(props.appearance === 'pill' || props.appearance === 'code') &&
-      css`
-          padding-left: 30px;
-        `};
-      }
-    `}
-
-  ${(props) =>
-    props.error &&
-    css`
-      .sbds-input-el {
-        box-shadow: ${color.red} 0 0 0 1px inset;
-        &:focus {
-          box-shadow: ${color.red} 0 0 0 1px inset !important;
-        }
-      }
-
-      svg {
-        animation: ${jiggle} 700ms ease-out;
-        path {
-          fill: ${color.red};
-        }
-      }
-    `}
-`;
-// prettier-ignore
-const InputContainer = styled.div<Pick<PureInputProps, 'orientation'>>`
-  ${props => props.orientation === 'horizontal' && css`
-    display: table-row;
-
-    .sbds-input-label-wrapper, .sbds-input-input-wrapper {
-      display: table-cell;
-    }
-
-    .sbds-input-label-wrapper {
-      width: 1px;
-      padding-right: 20px;
-      vertical-align: middle;
-    }
-
-    .sbds-input-input-wrapper {
-      width: auto;
-    }
-
-  `}
-`;
-
-const ErrorTooltip = styled(WithTooltip)`
-  width: 100%;
-`;
-
-const ErrorTooltipMessage = styled(TooltipMessage)`
-  width: 170px;
-`;
-
-const Action = styled.div`
-  position: absolute;
-  right: 0;
-  min-width: 45px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-weight: bold;
-  font-size: 11px;
-  z-index: 2;
-`;
+const Action = styled.div({
+  position: "absolute",
+  right: "0",
+  minWidth: 45,
+  top: "50%",
+  transform: "translateY(-50%)",
+  fontWeight: "bold",
+  fontSize: 11,
+  zIndex: 2,
+});
 
 const getErrorMessage = ({
   error,
