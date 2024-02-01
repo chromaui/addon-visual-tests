@@ -1,6 +1,6 @@
 {
   "name": "@chromatic-com/storybook",
-  "version": "0.0.124",
+  "version": "0.1.0",
   "description": "Visual Testing addon with Chromatic",
   "engines": {
     "node": ">=16.0.0",
