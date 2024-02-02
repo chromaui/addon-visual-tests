@@ -26,12 +26,15 @@ export const Button = styled(BaseButton)<{
     link &&
     css({
       "&&": {
+        background: "none",
+        boxShadow: "none",
         padding: 2,
         fontWeight: "normal",
         color: theme.color.defaultText,
         opacity: 0.5,
+        transition: "opacity 150ms ease-out",
         "&:hover, &:focus": {
-          opacity: 1,
+          opacity: 0.9,
         },
         "&:focus:not(:active)": {
           outline: `1px solid ${theme.color.secondary}`,

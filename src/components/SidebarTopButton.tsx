@@ -1,4 +1,5 @@
-import { Icons, TooltipNote, WithTooltip } from "@storybook/components";
+import { TooltipNote, WithTooltip } from "@storybook/components";
+import { PlayIcon, StopAltIcon, SyncIcon } from "@storybook/icons";
 import { keyframes, styled } from "@storybook/theming";
 import React, { ComponentProps } from "react";
 
@@ -106,7 +107,7 @@ export const SidebarTopButton = ({
         }
       >
         <SidebarIconButton aria-label="Stop tests" onClick={() => stopBuild()}>
-          <Icons icon="stopalt" style={{ width: 10 }} />
+          <StopAltIcon style={{ width: 10 }} />
           <ProgressCircle xmlns="http://www.w3.org/2000/svg">
             <circle />
           </ProgressCircle>
@@ -131,7 +132,7 @@ export const SidebarTopButton = ({
     >
       <SidebarIconButton id="button-run-tests" aria-label="Run tests" onClick={() => startBuild()}>
         <StatusDotWrapper status="notification">
-          <Icons icon="play" />
+          <PlayIcon />
         </StatusDotWrapper>
       </SidebarIconButton>
     </WithTooltip>
@@ -143,14 +144,14 @@ export const SidebarTopButton = ({
         <TooltipContent>
           <div>No code changes detected. Rerun tests to take new snapshots.</div>
           <IconButton secondary onClick={() => startBuild()} aria-label="Rerun tests">
-            <Icons icon="sync" />
+            <SyncIcon />
             Rerun tests
           </IconButton>
         </TooltipContent>
       }
     >
       <SidebarIconButton id="button-run-tests" aria-label="Run tests">
-        <Icons icon="play" />
+        <PlayIcon />
       </SidebarIconButton>
     </WithTooltip>
   );

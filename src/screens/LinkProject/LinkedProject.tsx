@@ -1,4 +1,5 @@
-import { Icons, Link } from "@storybook/components";
+import { Link } from "@storybook/components";
+import { CheckIcon } from "@storybook/icons";
 import { styled } from "@storybook/theming";
 import React from "react";
 import { useQuery } from "urql";
@@ -12,7 +13,7 @@ import { Stack } from "../../components/Stack";
 import { graphql } from "../../gql";
 import { ProjectQueryQuery } from "../../gql/graphql";
 
-const CheckIcon = styled(Icons)(({ theme }) => ({
+const Check = styled(CheckIcon)(({ theme }) => ({
   width: 40,
   height: 40,
   padding: 10,
@@ -60,7 +61,7 @@ export const LinkedProject = ({
             {error && <p>{error.message}</p>}
             {data?.project && (
               <Stack>
-                <CheckIcon icon="check" />
+                <Check />
                 <Heading>Project linked!</Heading>
                 <Text style={{ maxWidth: 380 }}>
                   The <code>projectId</code> for {data.project.name} has been added to this

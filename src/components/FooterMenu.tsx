@@ -1,4 +1,4 @@
-import { Icons } from "@storybook/components";
+import { EllipsisIcon, QuestionIcon, UserIcon } from "@storybook/icons";
 import React from "react";
 
 import { TooltipMenu } from "./TooltipMenu";
@@ -15,18 +15,18 @@ export const FooterMenu = ({ setAccessToken }: FooterMenuProps) => {
         {
           id: "logout",
           title: "Log out",
-          icon: "user",
+          icon: <UserIcon />,
           onClick: () => setAccessToken(null),
         },
         {
           id: "learn",
           title: "Learn about this addon",
-          icon: "question",
+          icon: <QuestionIcon />,
           href: "https://www.chromatic.com/docs/visual-testing-addon",
         },
       ]}
     >
-      <Icons icon="ellipsis" />
+      <EllipsisIcon />
     </TooltipMenu>
   );
 };

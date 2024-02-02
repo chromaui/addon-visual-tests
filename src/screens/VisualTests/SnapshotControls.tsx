@@ -1,4 +1,14 @@
-import { Icons, TooltipNote, WithTooltip } from "@storybook/components";
+import { TooltipNote, WithTooltip } from "@storybook/components";
+import {
+  BatchAcceptIcon,
+  ContrastIcon,
+  LocationIcon,
+  LockIcon,
+  PlayIcon,
+  SyncIcon,
+  TransferIcon,
+  UndoIcon,
+} from "@storybook/icons";
 import { styled } from "@storybook/theming";
 import React from "react";
 
@@ -48,21 +58,23 @@ const Controls = styled.div({
   },
 });
 
-const Actions = styled.div(({ theme }) => ({
+const Actions = styled.div<{ showDivider?: boolean }>(({ theme, showDivider }) => ({
   gridArea: "actions",
-  marginRight: 15,
   display: "flex",
   alignItems: "center",
   justifyContent: "flex-end",
+  margin: "0px 15px",
   gap: 6,
 
   "@container (min-width: 300px)": {
-    margin: "8px 15px",
+    alignItems: "flex-start",
+    margin: "15px 15px 15px 0px",
   },
   "@container (min-width: 800px)": {
-    borderLeft: `1px solid ${theme.appBorderColor}`,
+    alignItems: "center",
+    borderLeft: showDivider ? `1px solid ${theme.appBorderColor}` : "none",
+    margin: "8px 15px 8px 0px",
     paddingLeft: 8,
-    marginLeft: 0,
   },
 }));
 
@@ -93,6 +105,7 @@ export const SnapshotControls = ({
 
   const isAcceptable = changeCount > 0 && selectedTest.status !== TestStatus.Accepted;
   const isUnacceptable = changeCount > 0 && selectedTest.status === TestStatus.Accepted;
+  const hasControls = selectedComparison?.result === ComparisonResult.Changed;
 
   return (
     <>
@@ -106,7 +119,7 @@ export const SnapshotControls = ({
       </Label>
 
       <Controls>
-        {selectedComparison?.result === ComparisonResult.Changed && (
+        {hasControls && (
           <>
             <WithTooltip
               tooltip={
@@ -124,7 +137,7 @@ export const SnapshotControls = ({
                 }
                 onClick={() => toggleBaselineImage()}
               >
-                <Icons icon="transfer" />
+                <TransferIcon />
               </IconButton>
             </WithTooltip>
             <WithTooltip
@@ -138,7 +151,7 @@ export const SnapshotControls = ({
                 aria-label={focusVisible ? "Hide spotlight" : "Show spotlight"}
                 onClick={() => toggleFocus(!focusVisible)}
               >
-                <Icons icon="location" />
+                <LocationIcon />
               </IconButton>
             </WithTooltip>
             <WithTooltip
@@ -152,7 +165,7 @@ export const SnapshotControls = ({
                 aria-label={diffVisible ? "Hide diff" : "Show diff"}
                 onClick={() => toggleDiff(!diffVisible)}
               >
-                <Icons icon="contrast" />
+                <ContrastIcon />
               </IconButton>
             </WithTooltip>
           </>
@@ -160,7 +173,7 @@ export const SnapshotControls = ({
       </Controls>
 
       {(isAcceptable || isUnacceptable) && (
-        <Actions>
+        <Actions showDivider={hasControls}>
           {userCanReview && buildIsReviewable && isAcceptable && (
             <ButtonGroup>
               <WithTooltip
@@ -215,7 +228,7 @@ export const SnapshotControls = ({
                       {isReviewing ? (
                         <ProgressIcon parentComponent="IconButton" />
                       ) : (
-                        <Icons icon="batchaccept" />
+                        <BatchAcceptIcon />
                       )}
                     </ActionButton>
                   )}
@@ -239,7 +252,7 @@ export const SnapshotControls = ({
                   side="left"
                   status="positive"
                 >
-                  <Icons icon="undo" />
+                  <UndoIcon />
                   Unaccept
                 </ActionButton>
               </WithTooltip>
@@ -281,7 +294,7 @@ export const SnapshotControls = ({
                       {isReviewing ? (
                         <ProgressIcon parentComponent="IconButton" />
                       ) : (
-                        <Icons icon="batchaccept" />
+                        <BatchAcceptIcon />
                       )}
                     </ActionButton>
                   )}
@@ -297,7 +310,7 @@ export const SnapshotControls = ({
               hasChrome={false}
             >
               <IconButton as="span">
-                <Icons icon="lock" />
+                <LockIcon />
               </IconButton>
             </WithTooltip>
           )}
@@ -313,7 +326,7 @@ export const SnapshotControls = ({
               onClick={() => startDevBuild()}
               secondary
             >
-              <Icons icon={isOutdated ? "play" : "sync"} />
+              {isOutdated ? <PlayIcon /> : <SyncIcon />}
             </ActionButton>
           </WithTooltip>
         </Actions>

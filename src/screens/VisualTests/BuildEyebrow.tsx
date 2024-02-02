@@ -1,5 +1,14 @@
-import { Icons, Link } from "@storybook/components";
-import { css, keyframes, styled } from "@storybook/theming";
+import { Link } from "@storybook/components";
+import {
+  CheckIcon,
+  ChevronRightIcon,
+  CloseIcon,
+  CollapseIcon,
+  ExpandAltIcon,
+  FailedIcon,
+  SyncIcon,
+} from "@storybook/icons";
+import { keyframes, styled } from "@storybook/theming";
 import React, { useEffect, useRef } from "react";
 
 import { BUILD_STEP_CONFIG, BUILD_STEP_ORDER } from "../../buildSteps";
@@ -11,6 +20,8 @@ const spin = keyframes({
   from: { transform: "rotate(0deg)" },
   to: { transform: "rotate(359deg)" },
 });
+
+const stepIconStyle = { width: 10, marginRight: 8 };
 
 const Header = styled.button<{ isWarning?: boolean }>(({ isWarning, onClick, theme }) => {
   const warningColor = theme.base === "dark" ? "#2e271a" : theme.background.warning;
@@ -93,12 +104,11 @@ const StepDetail = styled.div<{ isCurrent: boolean; isFailed: boolean; isPending
     "&:last-of-type": {
       marginBottom: 10,
     },
+    "& > div": {
+      display: "flex",
+      alignItems: "center",
+    },
   })
-);
-
-const StepIcon = styled(Icons)(
-  { width: 10, marginRight: 8 },
-  ({ icon }) => icon === "sync" && css({ animation: `${spin} 1s linear infinite` })
 );
 
 type BuildProgressProps = {
@@ -123,15 +133,31 @@ const BuildProgress = ({ localBuildProgress, expanded = false }: BuildProgressPr
     const isPending = !startedAt;
     const config = { ...BUILD_STEP_CONFIG[step], isCurrent, isFailed, isPending };
     if (isFailed) {
-      return { ...config, icon: "failed", renderLabel: config.renderProgress };
+      return {
+        ...config,
+        icon: <FailedIcon style={stepIconStyle} />,
+        renderLabel: config.renderProgress,
+      };
     }
     if (isCurrent) {
-      return { ...config, icon: "sync", renderLabel: config.renderProgress };
+      return {
+        ...config,
+        icon: <SyncIcon style={{ ...stepIconStyle, animation: `${spin} 1s linear infinite` }} />,
+        renderLabel: config.renderProgress,
+      };
     }
     if (isPending) {
-      return { ...config, icon: "arrowright", renderLabel: config.renderName };
+      return {
+        ...config,
+        icon: <ChevronRightIcon style={stepIconStyle} />,
+        renderLabel: config.renderName,
+      };
     }
-    return { ...config, icon: "check", renderLabel: config.renderComplete };
+    return {
+      ...config,
+      icon: <CheckIcon style={stepIconStyle} />,
+      renderLabel: config.renderComplete,
+    };
   });
 
   return (
@@ -140,7 +166,7 @@ const BuildProgress = ({ localBuildProgress, expanded = false }: BuildProgressPr
         {steps.map(({ icon, isCurrent, isFailed, isPending, key, renderLabel }) => (
           <StepDetail {...{ isCurrent, isFailed, isPending }} key={key}>
             <div>
-              <StepIcon icon={icon as any} />
+              {icon}
               {renderLabel(stepHistory.current[key] || localBuildProgress)}
             </div>
           </StepDetail>
@@ -185,12 +211,10 @@ export const BuildEyebrow = ({
           </Label>
           {isWarning ? (
             <IconButton onClick={dismissBuildError}>
-              <Icons icon="close" />
+              <CloseIcon aria-label="Dismiss" />
             </IconButton>
           ) : (
-            <IconButton as="div">
-              <Icons icon={expanded ? "collapse" : "expandalt"} />
-            </IconButton>
+            <IconButton as="div">{expanded ? <CollapseIcon /> : <ExpandAltIcon />}</IconButton>
           )}
         </Header>
         <BuildProgress localBuildProgress={localBuildProgress} expanded={expanded || isWarning} />

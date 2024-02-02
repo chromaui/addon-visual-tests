@@ -1,4 +1,5 @@
-import { Icons, Link, Loader } from "@storybook/components";
+import { Link, Loader } from "@storybook/components";
+import { PlayIcon } from "@storybook/icons";
 import { styled } from "@storybook/theming";
 import React from "react";
 import { CombinedError } from "urql";
@@ -6,7 +7,6 @@ import { CombinedError } from "urql";
 import { BuildProgressInline } from "../../components/BuildProgressBarInline";
 import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
-import { FooterMenu } from "../../components/FooterMenu";
 import { FooterSection } from "../../components/FooterSection";
 import { Heading } from "../../components/Heading";
 import { Bar, Col, Row, Section, Sections, Text } from "../../components/layout";
@@ -50,7 +50,7 @@ export const NoBuild = ({
   const getDetails = () => {
     const button = (
       <Button size="medium" variant="solid" onClick={startDevBuild}>
-        <Icons icon="play" />
+        <PlayIcon />
         Take snapshots
       </Button>
     );

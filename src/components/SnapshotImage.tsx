@@ -1,4 +1,4 @@
-import { Icons } from "@storybook/components";
+import { PhotoIcon, ShareAltIcon } from "@storybook/icons";
 import { styled } from "@storybook/theming";
 import React, { ComponentProps } from "react";
 
@@ -143,10 +143,10 @@ export const SnapshotImage = ({
           }}
         />
       )}
-      {hasDiff && <Icons icon="sharealt" />}
+      {hasDiff && <ShareAltIcon />}
       {hasError && !latestImage && (
         <div>
-          <Icons icon="photo" />
+          <PhotoIcon />
           <Text>
             A snapshot couldn’t be captured. This often occurs when a story has a code error.
             Confirm that this story successfully renders in your local Storybook and run the build

@@ -49,7 +49,7 @@ export const BuildResultsFooter = ({
               setWarningsVisible(false);
             }}
           >
-            <Icons icon="controls" />
+            <ControlsIcon />
           </IconButton>
         </WithTooltip>
       </Col> */}
@@ -68,7 +68,7 @@ export const BuildResultsFooter = ({
             }}
             status="warning"
           >
-            <Icons icon="alert" />2
+            <AlertIcon />2
           </IconButton>
         </WithTooltip>
       </Col> */}

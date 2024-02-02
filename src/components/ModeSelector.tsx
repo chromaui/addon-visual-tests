@@ -1,11 +1,10 @@
 import { TooltipNote, WithTooltip } from "@storybook/components";
+import { ChevronDownIcon, DiamondIcon } from "@storybook/icons";
 import { styled } from "@storybook/theming";
 import React from "react";
 
 import { ComparisonResult, TestMode } from "../gql/graphql";
 import { aggregateResult } from "../utils/aggregateResult";
-import { Icon } from "./design-system";
-import { ArrowIcon } from "./icons/ArrowIcon";
 import { StatusDot, StatusDotWrapper } from "./StatusDot";
 import { TooltipMenu } from "./TooltipMenu";
 
@@ -48,7 +47,7 @@ export const ModeSelector = ({
   const aggregate = aggregateResult(modeResults.map(({ result }) => result));
   if (!aggregate) return null;
 
-  let icon = <Icon icon="diamond" />;
+  let icon = <DiamondIcon />;
   if (!isAccepted && aggregate !== ComparisonResult.Equal) {
     icon = <StatusDotWrapper status={aggregate}>{icon}</StatusDotWrapper>;
   }
@@ -84,7 +83,7 @@ export const ModeSelector = ({
         <TooltipMenu placement="bottom" links={links}>
           {icon}
           <Label>{selectedMode.name}</Label>
-          <ArrowIcon icon="arrowdown" />
+          <ChevronDownIcon style={{ width: 10, height: 10 }} />
         </TooltipMenu>
       ) : (
         <IconWrapper>

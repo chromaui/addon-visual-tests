@@ -1,4 +1,11 @@
-import { Icons } from "@storybook/components";
+import {
+  CloseIcon as Close,
+  ContrastIcon as Contrast,
+  InfoIcon as Info,
+  ParagraphIcon as Paragraph,
+  StopIcon as Stop,
+  TimerIcon as Timer,
+} from "@storybook/icons";
 import { styled } from "@storybook/theming";
 
 import { IconButton } from "./IconButton";
@@ -47,7 +54,7 @@ export const Heading = styled.div({
   marginBottom: 15,
 });
 
-export const InfoIcon = styled(Icons)(({ theme }) => ({
+export const InfoIcon = styled(Info)(({ theme }) => ({
   width: 12,
   height: 12,
   margin: "3px 6px",
@@ -55,14 +62,18 @@ export const InfoIcon = styled(Icons)(({ theme }) => ({
   color: theme.color.mediumdark,
 }));
 
-export const ItemIcon = styled(Icons)({
+const itemIconStyle = {
   width: 14,
   height: 14,
   margin: "2px 6px 2px 0",
   verticalAlign: "top",
-});
+};
+export const TimerIcon = styled(Timer)(itemIconStyle);
+export const StopIcon = styled(Stop)(itemIconStyle);
+export const ContrastIcon = styled(Contrast)(itemIconStyle);
+export const ParagraphIcon = styled(Paragraph)(itemIconStyle);
 
-export const CloseIcon = styled(Icons)({
+export const CloseIcon = styled(Close)({
   marginLeft: "auto",
 });
 

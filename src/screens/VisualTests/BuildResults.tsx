@@ -1,4 +1,5 @@
-import { Icons, Link } from "@storybook/components";
+import { Link } from "@storybook/components";
+import { DocumentIcon } from "@storybook/icons";
 import { styled } from "@storybook/theming";
 import React from "react";
 
@@ -154,7 +155,7 @@ export const BuildResults = ({
               target="_new"
             >
               <a href="https://www.chromatic.com/docs/ignoring-elements#ignore-stories">
-                <Icons icon="document" />
+                <DocumentIcon />
                 View Docs
               </a>
             </Button>
