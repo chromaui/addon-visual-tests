@@ -1,3 +1,15 @@
+# v1.0.4 (Fri Feb 02 2024)
+
+#### 🐛 Bug Fix
+
+- Various CSS and icon fixes [#168](https://github.com/chromaui/addon-visual-tests/pull/168) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v1.0.3 (Fri Feb 02 2024)
 
 #### 🐛 Bug Fix
