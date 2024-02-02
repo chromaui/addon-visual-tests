@@ -9,8 +9,10 @@ import { useSelectedStoryState } from "./BuildContext";
 
 export const BuildResultsFooter = ({
   setAccessToken,
+  projectId,
 }: {
   setAccessToken: (token: string | null) => void;
+  projectId: string;
 }) => {
   const storyState = useSelectedStoryState();
   const { browserResults, modeResults } = storyState.summary;
@@ -73,7 +75,7 @@ export const BuildResultsFooter = ({
         </WithTooltip>
       </Col> */}
         <Col push>
-          <FooterMenu setAccessToken={setAccessToken} />
+          <FooterMenu setAccessToken={setAccessToken} projectId={projectId} />
         </Col>
       </Bar>
     </Section>

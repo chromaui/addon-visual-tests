@@ -124,6 +124,7 @@ interface SnapshotComparisonProps {
   setAccessToken: (accessToken: string | null) => void;
   hidden?: boolean;
   storyId: string;
+  projectId: string;
 }
 
 export const SnapshotComparison = ({
@@ -136,6 +137,7 @@ export const SnapshotComparison = ({
   setAccessToken,
   hidden,
   storyId,
+  projectId,
 }: SnapshotComparisonProps) => {
   const { baselineImageVisible, diffVisible, focusVisible } = useControlsState();
   const { toggleBaselineImage, toggleSettings, toggleWarnings } = useControlsDispatch();
@@ -195,7 +197,7 @@ export const SnapshotComparison = ({
           <Grid>{storyInfo}</Grid>
         </HeaderSection>
         <FooterSection>
-          <BuildResultsFooter setAccessToken={setAccessToken} />
+          <BuildResultsFooter setAccessToken={setAccessToken} projectId={projectId} />
         </FooterSection>
       </ParentGrid>
     );
@@ -296,7 +298,11 @@ export const SnapshotComparison = ({
         )}
       </MainSection>
       <FooterSection>
-        <BuildResultsFooter setAccessToken={setAccessToken} {...testSummary} />
+        <BuildResultsFooter
+          setAccessToken={setAccessToken}
+          projectId={projectId}
+          {...testSummary}
+        />
       </FooterSection>
     </ParentGrid>
   );

@@ -30,6 +30,7 @@ interface BuildResultsProps {
   storyId: string;
   startDevBuild: () => void;
   setAccessToken: (accessToken: string | null) => void;
+  projectId: string;
 }
 
 export const Warning = styled.div(({ theme }) => ({
@@ -49,6 +50,7 @@ export const BuildResults = ({
   startDevBuild,
   storyId,
   setAccessToken,
+  projectId,
 }: BuildResultsProps) => {
   const { settingsVisible, warningsVisible } = useControlsState();
   const { toggleSettings, toggleWarnings } = useControlsDispatch();
@@ -211,6 +213,7 @@ export const BuildResults = ({
             selectedBuild,
             setAccessToken,
             storyId,
+            projectId,
           }}
         />
       </Section>

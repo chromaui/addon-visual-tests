@@ -326,6 +326,7 @@ export const VisualTestsWithoutSelectedBuildId = ({
                 userCanReview,
                 setAccessToken,
                 storyId,
+                projectId,
               }}
             />
           </BuildProvider>
