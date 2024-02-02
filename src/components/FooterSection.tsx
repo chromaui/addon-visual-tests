@@ -5,14 +5,12 @@ import { Bar, Col, Section } from "./layout";
 
 export const FooterSection = ({
   setAccessToken,
-  projectId = "",
   render,
 }: {
   setAccessToken: (accessToken: string | null) => void;
-  projectId?: string;
   render?: ({ menu }: { menu: ReactNode }) => ReactNode;
 }) => {
-  const menu = <FooterMenu setAccessToken={setAccessToken} projectId={projectId} />;
+  const menu = <FooterMenu setAccessToken={setAccessToken} />;
   return (
     <Section last>
       <Bar>

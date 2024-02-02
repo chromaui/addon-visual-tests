@@ -1,23 +1,26 @@
 import { ChangedIcon, EllipsisIcon, QuestionIcon, ShareAltIcon, UserIcon } from "@storybook/icons";
-import { useChannel } from "@storybook/manager-api";
 import React from "react";
 
-import { REMOVE_ADDON } from "../constants";
+import { PROJECT_INFO } from "../constants";
+import { useUninstallAddon } from "../screens/Uninstalled/UninstallContext";
+import { ProjectInfoPayload } from "../types";
+import { useSharedState } from "../utils/useSharedState";
 import { TooltipMenu } from "./TooltipMenu";
 
 interface FooterMenuProps {
   setAccessToken: (value: string | null) => void;
-  projectId: string;
 }
 
-export const FooterMenu = ({ setAccessToken, projectId }: FooterMenuProps) => {
-  const emit = useChannel({});
+export const FooterMenu = ({ setAccessToken }: FooterMenuProps) => {
+  const { uninstallAddon } = useUninstallAddon();
+  const [projectInfo] = useSharedState<ProjectInfoPayload>(PROJECT_INFO);
+  const { projectId } = projectInfo || {}
   const links = [
     {
       id: "remove",
       title: "Remove addon",
       icon: <ChangedIcon aria-hidden />,
-      onClick: () => emit(REMOVE_ADDON),
+      onClick: () => uninstallAddon(),
     },
     {
       id: "logout",

@@ -11,7 +11,6 @@ import {
   IS_OUTDATED,
   LOCAL_BUILD_PROGRESS,
   PANEL_ID,
-  REMOVE_ADDON,
   START_BUILD,
 } from "./constants";
 import { Project } from "./gql/graphql";
@@ -20,6 +19,8 @@ import { GitNotFound } from "./screens/GitNotFound/GitNotFound";
 import { LinkedProject } from "./screens/LinkProject/LinkedProject";
 import { LinkingProjectFailed } from "./screens/LinkProject/LinkingProjectFailed";
 import { LinkProject } from "./screens/LinkProject/LinkProject";
+import { UninstallProvider } from "./screens/Uninstalled/UninstallContext";
+import { Uninstalled } from "./screens/Uninstalled/Uninstalled";
 import { ControlsProvider } from "./screens/VisualTests/ControlsContext";
 import { VisualTests } from "./screens/VisualTests/VisualTests";
 import { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from "./types";
@@ -60,15 +61,30 @@ export const Panel = ({ active, api }: PanelProps) => {
 
   // If the user creates a project in a dialog (either during login or later, it get set here)
   const [createdProjectId, setCreatedProjectId] = useState<Project["id"]>();
+  const [addonUninstalled, setAddonUninstalled] = useState<boolean>(false);
+
+  if (addonUninstalled) {
+    return (
+      <Provider key={PANEL_ID} value={client}>
+        <UninstallProvider>
+          <Sections hidden={!active}>
+            <Uninstalled />
+          </Sections>
+        </UninstallProvider>
+      </Provider>
+    );
+  }
 
   if (gitInfoError) {
     // eslint-disable-next-line no-console
     console.error(gitInfoError);
     return (
       <Provider key={PANEL_ID} value={client}>
-        <Sections hidden={!active}>
-          <GitNotFound gitInfoError={gitInfoError} setAccessToken={setAccessToken} />
-        </Sections>
+        <UninstallProvider>
+          <Sections hidden={!active}>
+            <GitNotFound gitInfoError={gitInfoError} setAccessToken={setAccessToken} />
+          </Sections>
+        </UninstallProvider>
       </Provider>
     );
   }
@@ -77,15 +93,16 @@ export const Panel = ({ active, api }: PanelProps) => {
   if (!accessToken) {
     return (
       <Provider key={PANEL_ID} value={client}>
-        <Sections hidden={!active}>
-          <Authentication
-            key={PANEL_ID}
-            setAccessToken={setAccessToken}
-            setCreatedProjectId={setCreatedProjectId}
-            hasProjectId={!!projectId}
-            onUninstall={() => emit(REMOVE_ADDON)}
-          />
-        </Sections>
+        <UninstallProvider>
+          <Sections hidden={!active}>
+            <Authentication
+              key={PANEL_ID}
+              setAccessToken={setAccessToken}
+              setCreatedProjectId={setCreatedProjectId}
+              hasProjectId={!!projectId}
+            />
+          </Sections>
+        </UninstallProvider>
       </Provider>
     );
   }
@@ -98,14 +115,16 @@ export const Panel = ({ active, api }: PanelProps) => {
   if (!projectId)
     return (
       <Provider key={PANEL_ID} value={client}>
-        <Sections hidden={!active}>
-          <LinkProject
-            createdProjectId={createdProjectId}
-            setCreatedProjectId={setCreatedProjectId}
-            onUpdateProject={updateProject}
-            setAccessToken={setAccessToken}
-          />
-        </Sections>
+        <UninstallProvider>
+          <Sections hidden={!active}>
+            <LinkProject
+              createdProjectId={createdProjectId}
+              setCreatedProjectId={setCreatedProjectId}
+              onUpdateProject={updateProject}
+              setAccessToken={setAccessToken}
+            />
+          </Sections>
+        </UninstallProvider>
       </Provider>
     );
 
@@ -116,13 +135,15 @@ export const Panel = ({ active, api }: PanelProps) => {
     }
 
     return (
-      <Sections hidden={!active}>
-        <LinkingProjectFailed
-          projectId={projectId}
-          configFile={configFile}
-          setAccessToken={setAccessToken}
-        />
-      </Sections>
+      <UninstallProvider>
+        <Sections hidden={!active}>
+          <LinkingProjectFailed
+            projectId={projectId}
+            configFile={configFile}
+            setAccessToken={setAccessToken}
+          />
+        </Sections>
+      </UninstallProvider>
     );
   }
 
@@ -132,14 +153,16 @@ export const Panel = ({ active, api }: PanelProps) => {
 
     return (
       <Provider key={PANEL_ID} value={client}>
-        <Sections hidden={!active}>
-          <LinkedProject
-            projectId={projectId}
-            configFile={configFile}
-            goToNext={clearProjectIdUpdated}
-            setAccessToken={setAccessToken}
-          />
-        </Sections>
+        <UninstallProvider>
+          <Sections hidden={!active}>
+            <LinkedProject
+              projectId={projectId}
+              configFile={configFile}
+              goToNext={clearProjectIdUpdated}
+              setAccessToken={setAccessToken}
+            />
+          </Sections>
+        </UninstallProvider>
       </Provider>
     );
   }
@@ -147,22 +170,24 @@ export const Panel = ({ active, api }: PanelProps) => {
   const localBuildIsRightBranch = gitInfo.branch === localBuildProgress?.branch;
   return (
     <Provider key={PANEL_ID} value={client}>
-      <Sections hidden={!active}>
-        <ControlsProvider>
-          <VisualTests
-            dismissBuildError={() => setLocalBuildProgress(undefined)}
-            isOutdated={!!isOutdated}
-            localBuildProgress={localBuildIsRightBranch ? localBuildProgress : undefined}
-            startDevBuild={() => emit(START_BUILD, { accessToken })}
-            setAccessToken={setAccessToken}
-            setOutdated={setOutdated}
-            updateBuildStatus={updateBuildStatus}
-            projectId={projectId}
-            gitInfo={gitInfo}
-            storyId={storyId}
-          />
-        </ControlsProvider>
-      </Sections>
+      <UninstallProvider>
+        <Sections hidden={!active}>
+          <ControlsProvider>
+            <VisualTests
+              dismissBuildError={() => setLocalBuildProgress(undefined)}
+              isOutdated={!!isOutdated}
+              localBuildProgress={localBuildIsRightBranch ? localBuildProgress : undefined}
+              startDevBuild={() => emit(START_BUILD, { accessToken })}
+              setAccessToken={setAccessToken}
+              setOutdated={setOutdated}
+              updateBuildStatus={updateBuildStatus}
+              projectId={projectId}
+              gitInfo={gitInfo}
+              storyId={storyId}
+            />
+          </ControlsProvider>
+        </Sections>
+      </UninstallProvider>
     </Provider>
   );
 };

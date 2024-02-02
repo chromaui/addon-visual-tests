@@ -1,5 +1,4 @@
 import { Code } from "@storybook/components";
-import { useChannel } from "@storybook/manager-api";
 import { styled } from "@storybook/theming";
 import React from "react";
 
@@ -11,7 +10,7 @@ import { VisualTestsIcon } from "../../components/icons/VisualTestsIcon";
 import { Section, Sections } from "../../components/layout";
 import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
-import { REMOVE_ADDON } from "../../constants";
+import { useUninstallAddon } from "../Uninstalled/UninstallContext";
 
 interface GitNotFoundProps {
   gitInfoError: Error;
@@ -43,7 +42,7 @@ const StyledCode = styled(Code)(({ theme }) => ({
 }));
 
 export const GitNotFound = ({ gitInfoError, setAccessToken }: GitNotFoundProps) => {
-  const emit = useChannel({});
+  const { uninstallAddon } = useUninstallAddon();
   return (
     <Sections>
       <Section grow>
@@ -75,12 +74,7 @@ export const GitNotFound = ({ gitInfoError, setAccessToken }: GitNotFoundProps) 
               Visual tests requirements
             </Link>
             {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-            <Link
-              withArrow
-              onClick={() => {
-                emit(REMOVE_ADDON);
-              }}
-            >
+            <Link withArrow onClick={() => uninstallAddon()}>
               Uninstall
             </Link>
           </Stack>
