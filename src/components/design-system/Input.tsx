@@ -32,10 +32,12 @@ const Label = styled.label<Pick<PureInputProps, "appearance">>((props) => ({
       }),
 }));
 
-const LabelWrapper = styled.div<Pick<PureInputProps, "hideLabel">>({
-  marginBottom: 8,
-
-  ...(props) =>
+const LabelWrapper = styled.div<Pick<PureInputProps, "hideLabel">>([
+  {
+    marginBottom: 8,
+  },
+  // @ts-expect-error — Emotion doesn't like !important
+  (props) =>
     props.hideLabel && {
       border: "0px !important",
       clip: "rect(0 0 0 0) !important",
@@ -48,7 +50,7 @@ const LabelWrapper = styled.div<Pick<PureInputProps, "hideLabel">>({
       whiteSpace: "nowrap !important",
       width: "1px !important",
     },
-});
+]);
 
 const InputEl = styled.input({
   "&::placeholder": {
@@ -119,7 +121,8 @@ type InputWrapperProps = Pick<
   "error" | "stackLevel" | "appearance" | "startingType" | "icon"
 >;
 
-const InputWrapper = styled.div<InputWrapperProps>({
+// @ts-expect-error — Emotion is doing something weird with `position` (at least)
+const InputWrapper = styled.div<InputWrapperProps>((props) => ({
   display: "inline-block",
   position: "relative",
   verticalAlign: "top",
@@ -127,6 +130,8 @@ const InputWrapper = styled.div<InputWrapperProps>({
 
   ".sbds-input-el": {
     position: "relative",
+    ...getStackLevelStyling(props),
+
     background: color.lightest,
     color: color.darkest,
     fontSize: `${typography.size.s2}px`,
@@ -138,95 +143,87 @@ const InputWrapper = styled.div<InputWrapperProps>({
       boxShadow: `${color.secondary} 0 0 0 1px inset`,
     },
 
-    ...(props: InputWrapperProps) => ({
-      ...getStackLevelStyling(props),
-
-      ...(props.appearance === "pill" && {
-        fontSize: `${typography.size.s1}px`,
-        lineHeight: "16px",
-        padding: "6px 12px", // 28px tall
-        borderRadius: "3em",
-        background: "transparent",
-      }),
-
-      ...(props.appearance === "code" && {
-        fontSize: `${typography.size.s1 - 1}px`,
-        lineHeight: "16px",
-        fontFamily: typography.type.code,
-        borderRadius: `${spacing.borderRadius.small}px`,
-        background: color.lightest,
-        padding: "8px 10px",
-      }),
-
-      ...(props.startingType === "password" && {
-        paddingRight: 52,
-      }),
+    ...(props.appearance === "pill" && {
+      fontSize: `${typography.size.s1}px`,
+      lineHeight: "16px",
+      padding: "6px 12px", // 28px tall
+      borderRadius: "3em",
+      background: "transparent",
     }),
-  },
 
-  ...(props) => ({
+    ...(props.appearance === "code" && {
+      fontSize: `${typography.size.s1 - 1}px`,
+      lineHeight: "16px",
+      fontFamily: typography.type.code,
+      borderRadius: `${spacing.borderRadius.small}px`,
+      background: color.lightest,
+      padding: "8px 10px",
+    }),
+
+    ...(props.startingType === "password" && {
+      paddingRight: 52,
+    }),
+
     ...(props.icon && {
-      "> svg": {
-        transition: "all 150ms ease-out",
-        position: "absolute",
-        top: "50%",
-        zIndex: 3,
-        background: "transparent",
+      paddingLeft: 40,
 
-        ...(props.appearance === "pill" || props.appearance === "code"
-          ? {
-              fontSize: `${typography.size.s1}px`,
-              height: 12,
-              marginTop: -6,
-              width: 12,
-              left: 10,
-            }
-          : {
-              fontSize: `${typography.size.s2}px`,
-              height: 14,
-              marginTop: -7,
-              width: 14,
-              left: props.appearance === "tertiary" ? 0 : 15,
-            }),
+      ...((props.appearance === "pill" || props.appearance === "code") && {
+        paddingLeft: 30,
+      }),
 
-        path: {
-          transition: "all 150ms ease-out",
-          fill: color.mediumdark,
-        },
-      },
-
-      ".sbds-input-el:focus + svg path": {
+      "&:focus + svg path": {
         fill: color.darker,
-      },
-
-      ".sbds-input-el": {
-        paddingLeft: 40,
-
-        ...((props.appearance === "pill" || props.appearance === "code") && {
-          paddingLeft: 30,
-        }),
       },
     }),
 
     ...(props.error && {
-      ".sbds-input-el": {
-        boxShadow: `${color.red} 0 0 0 1px inset`,
+      boxShadow: `${color.red} 0 0 0 1px inset`,
 
-        "&:focus": {
-          boxShadow: `${color.red} 0 0 0 1px inset !important`,
-        },
-
-        "> svg": {
-          animation: `${jiggle} 700ms ease-out`,
-
-          path: {
-            fill: color.red,
-          },
-        },
+      "&:focus": {
+        boxShadow: `${color.red} 0 0 0 1px inset !important`,
       },
     }),
-  }),
-});
+  },
+
+  "> svg": {
+    ...(props.icon && {
+      transition: "all 150ms ease-out",
+      position: "absolute",
+      top: "50%",
+      zIndex: 3,
+      background: "transparent",
+
+      ...(props.appearance === "pill" || props.appearance === "code"
+        ? {
+            fontSize: `${typography.size.s1}px`,
+            height: 12,
+            marginTop: -6,
+            width: 12,
+            left: 10,
+          }
+        : {
+            fontSize: `${typography.size.s2}px`,
+            height: 14,
+            marginTop: -7,
+            width: 14,
+            left: props.appearance === "tertiary" ? 0 : 15,
+          }),
+
+      path: {
+        transition: "all 150ms ease-out",
+        fill: color.mediumdark,
+      },
+    }),
+
+    ...(props.error && {
+      animation: `${jiggle} 700ms ease-out`,
+
+      path: {
+        fill: color.red,
+      },
+    }),
+  },
+}));
 
 const InputContainer = styled.div<Pick<PureInputProps, "orientation">>(
   (props) =>

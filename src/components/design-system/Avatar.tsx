@@ -17,14 +17,21 @@ export enum AvatarType {
   ORGANIZATION = "organization",
 }
 
-const Image = styled.div<Partial<Props>>({
-  background: "transparent",
-  display: "inline-block",
-  verticalAlign: "top",
-  overflow: "hidden",
-  textTransform: "uppercase",
+const Image = styled.div<Partial<Props>>(
+  {
+    background: "transparent",
+    display: "inline-block",
+    verticalAlign: "top",
+    overflow: "hidden",
+    textTransform: "uppercase",
 
-  ...(props) => ({
+    img: {
+      width: "100%",
+      height: "auto",
+      display: "block",
+    },
+  },
+  (props) => ({
     borderRadius: props.type === AvatarType.USER ? "50%" : 5,
 
     height: `${sizes[props.size || "medium"]}px`,
@@ -40,62 +47,58 @@ const Image = styled.div<Partial<Props>>({
       !props.isLoading && {
         background: "#37D5D3",
       }),
-  }),
-
-  img: {
-    width: "100%",
-    height: "auto",
-    display: "block",
-  },
-});
+  })
+);
 
 interface LoadingIconProps {
   icon: string;
   type: AvatarType;
 }
 
-const LoadingIcon = styled(Icon)<LoadingIconProps & ComponentProps<typeof Icon>>({
-  position: "relative",
-  margin: "0 auto",
-  display: "block",
-  verticalAlign: "top",
+const LoadingIcon = styled(Icon)<LoadingIconProps & ComponentProps<typeof Icon>>(
+  {
+    position: "relative",
+    margin: "0 auto",
+    display: "block",
+    verticalAlign: "top",
 
-  ...(props) => ({
+    path: {
+      fill: color.medium,
+      animation: `${glow} 1.5s ease-in-out infinite`,
+    },
+  },
+  (props) => ({
     bottom: `${props.type === AvatarType.USER ? -2 : -4}px`,
     height: `${props.type === AvatarType.USER ? 100 : 70}%`,
     width: `${props.type === AvatarType.USER ? 100 : 70}%`,
-  }),
+  })
+);
 
-  path: {
-    fill: color.medium,
-    animation: `${glow} 1.5s ease-in-out infinite`,
+const Initial = styled.div<Partial<Props>>(
+  {
+    color: color.lightest,
+    textAlign: "center",
   },
-});
-
-// prettier-ignore
-const Initial = styled.div<Partial<Props>>({
-  color: color.lightest,
-  textAlign: "center",
-
-  ...(props) => ({
-    tiny: {
-      fontSize: `${typography.size.s1 - 2}px`,
-      lineHeight: `${sizes.tiny}px`,
-    },
-    small: {
-      fontSize: `${typography.size.s1}px`,
-      lineHeight: `${sizes.small}px`,
-    },
-    medium: {
-      fontSize: `${typography.size.s2}px`,
-      lineHeight: `${sizes.medium}px`,
-    },
-    large: {
-      fontSize: `${typography.size.s3}px`,
-      lineHeight: `${sizes.large}px`,
-    },
-  }[props.size || "medium"]),
-});
+  (props) =>
+    ({
+      tiny: {
+        fontSize: `${typography.size.s1 - 2}px`,
+        lineHeight: `${sizes.tiny}px`,
+      },
+      small: {
+        fontSize: `${typography.size.s1}px`,
+        lineHeight: `${sizes.small}px`,
+      },
+      medium: {
+        fontSize: `${typography.size.s2}px`,
+        lineHeight: `${sizes.medium}px`,
+      },
+      large: {
+        fontSize: `${typography.size.s3}px`,
+        lineHeight: `${sizes.large}px`,
+      },
+    }[props.size || "medium"])
+);
 
 /**
  * The `Avatar` component is where all your avatars come to play.

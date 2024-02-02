@@ -27,34 +27,35 @@ export interface StyledLinkProps {
   inverse?: boolean;
 }
 
-const StyledLink = styled.a<StyledLinkProps>({
-  display: "inline-block",
-  transition: "transform 150ms ease-out, color 150ms ease-out",
-  textDecoration: "none",
-  color: color.secondary,
-
-  "&:hover, &:focus-visible": {
-    cursor: "pointer",
-    transform: "translateY(-1px)",
-    color: darken(0.07, color.secondary),
-  },
-
-  "&:active": {
-    transform: "translateY(0)",
-    color: darken(0.1, color.secondary),
-  },
-
-  svg: {
+const StyledLink = styled.a<StyledLinkProps>(
+  {
     display: "inline-block",
-    height: "1em",
-    width: "1em",
-    verticalAlign: "text-top",
-    position: "relative",
-    bottom: "-0.125em",
-    marginRight: "0.4em",
-  },
+    transition: "transform 150ms ease-out, color 150ms ease-out",
+    textDecoration: "none",
+    color: color.secondary,
 
-  ...(props) => ({
+    "&:hover, &:focus-visible": {
+      cursor: "pointer",
+      transform: "translateY(-1px)",
+      color: darken(0.07, color.secondary),
+    },
+
+    "&:active": {
+      transform: "translateY(0)",
+      color: darken(0.1, color.secondary),
+    },
+
+    svg: {
+      display: "inline-block",
+      height: "1em",
+      width: "1em",
+      verticalAlign: "text-top",
+      position: "relative",
+      bottom: "-0.125em",
+      marginRight: "0.4em",
+    },
+  },
+  (props) => ({
     ...(props.containsIcon && {
       svg: {
         height: "1em",
@@ -110,8 +111,8 @@ const StyledLink = styled.a<StyledLinkProps>({
         color: color.light,
       },
     }),
-  }),
-});
+  })
+);
 
 const UnstyledLink = styled.a({});
 

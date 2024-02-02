@@ -13,29 +13,30 @@ interface Props {
   neutral?: boolean;
 }
 
-const SpinnerWrapper = styled.div<Props>({
-  borderRadius: "3em",
-  cursor: "progress",
-  display: "inline-block",
-  overflow: "hidden",
-  position: ["relative", "absolute"],
-  transition: "all 200ms ease-out",
-  verticalAlign: "top",
-  top: "50%",
-  left: "50%",
-  marginTop: -16,
-  marginLeft: -16,
-  height: 32,
-  width: 32,
+const SpinnerWrapper = styled.div<Props>(
+  {
+    borderRadius: "3em",
+    cursor: "progress",
+    display: "inline-block",
+    overflow: "hidden",
+    position: ["relative", "absolute"],
+    transition: "all 200ms ease-out",
+    verticalAlign: "top",
+    top: "50%",
+    left: "50%",
+    marginTop: -16,
+    marginLeft: -16,
+    height: 32,
+    width: 32,
 
-  animation: `${rotate360} 0.7s linear infinite`,
+    animation: `${rotate360} 0.7s linear infinite`,
 
-  borderWidth: 2,
-  borderStyle: "solid",
-  borderColor: "rgba(0, 0, 0, 0.03)",
-  borderTopColor: "rgba(0, 0, 0, 0.15)",
-
-  ...(props) => ({
+    borderWidth: 2,
+    borderStyle: "solid",
+    borderColor: "rgba(0, 0, 0, 0.03)",
+    borderTopColor: "rgba(0, 0, 0, 0.15)",
+  },
+  (props) => ({
     ...(props.inverse && {
       borderColor: "rgba(255, 255, 255, 0.2)",
       borderTopColor: "rgba(255, 255, 255, 0.4)",
@@ -89,8 +90,8 @@ const SpinnerWrapper = styled.div<Props>({
         borderRightColor: color.lightest,
       }),
     }),
-  }),
-});
+  })
+);
 
 export const Spinner: FunctionComponent<Props & ComponentProps<typeof SpinnerWrapper>> = (
   props
