@@ -60,19 +60,21 @@ const Controls = styled.div({
 
 const Actions = styled.div(({ theme }) => ({
   gridArea: "actions",
-  marginRight: 15,
   display: "flex",
   alignItems: "center",
   justifyContent: "flex-end",
+  margin: "0px 15px",
   gap: 6,
 
   "@container (min-width: 300px)": {
-    margin: "8px 15px",
+    alignItems: "flex-start",
+    margin: "15px 15px 15px 0px",
   },
   "@container (min-width: 800px)": {
+    alignItems: "center",
     borderLeft: `1px solid ${theme.appBorderColor}`,
+    margin: "8px 15px 8px 0px",
     paddingLeft: 8,
-    marginLeft: 0,
   },
 }));
 

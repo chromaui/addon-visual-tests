@@ -63,6 +63,7 @@ export const ActionButton: React.FC<ActionButtonProps> = styled(IconButton)<Acti
     border: `1px solid transparent`,
     boxShadow: "none",
     fontWeight: 700,
+    height: 28,
     padding: containsIcon ? "8px 6px" : 8,
     transition: "background-color 150ms ease-out",
     "@container (min-width: 300px)": {
