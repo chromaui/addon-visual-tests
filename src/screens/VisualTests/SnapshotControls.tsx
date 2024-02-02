@@ -58,7 +58,7 @@ const Controls = styled.div({
   },
 });
 
-const Actions = styled.div(({ theme }) => ({
+const Actions = styled.div<{ showDivider?: boolean }>(({ theme, showDivider }) => ({
   gridArea: "actions",
   display: "flex",
   alignItems: "center",
@@ -72,7 +72,7 @@ const Actions = styled.div(({ theme }) => ({
   },
   "@container (min-width: 800px)": {
     alignItems: "center",
-    borderLeft: `1px solid ${theme.appBorderColor}`,
+    borderLeft: showDivider ? `1px solid ${theme.appBorderColor}` : "none",
     margin: "8px 15px 8px 0px",
     paddingLeft: 8,
   },
@@ -105,6 +105,7 @@ export const SnapshotControls = ({
 
   const isAcceptable = changeCount > 0 && selectedTest.status !== TestStatus.Accepted;
   const isUnacceptable = changeCount > 0 && selectedTest.status === TestStatus.Accepted;
+  const hasControls = selectedComparison?.result === ComparisonResult.Changed;
 
   return (
     <>
@@ -118,7 +119,7 @@ export const SnapshotControls = ({
       </Label>
 
       <Controls>
-        {selectedComparison?.result === ComparisonResult.Changed && (
+        {hasControls && (
           <>
             <WithTooltip
               tooltip={
@@ -172,7 +173,7 @@ export const SnapshotControls = ({
       </Controls>
 
       {(isAcceptable || isUnacceptable) && (
-        <Actions>
+        <Actions showDivider={hasControls}>
           {userCanReview && buildIsReviewable && isAcceptable && (
             <ButtonGroup>
               <WithTooltip
