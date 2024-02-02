@@ -105,7 +105,7 @@ const StackTrace = styled.div(({ theme }) => ({
 
 const Warning = styled.div(({ theme }) => ({
   background: theme.background.hoverable,
-  padding: 10,
+  padding: "10px 15px",
   lineHeight: "18px",
   position: "relative",
 }));
