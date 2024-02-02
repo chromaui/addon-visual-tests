@@ -1,10 +1,10 @@
 import { Icons, Link } from "@storybook/components";
-import { Avatar, ListItem } from "@storybook/design-system";
 import { styled } from "@storybook/theming";
 import React, { useCallback, useEffect, useState } from "react";
 import { useQuery } from "urql";
 
 import { Container } from "../../components/Container";
+import { Avatar, ListItem } from "../../components/design-system";
 import { FooterSection } from "../../components/FooterSection";
 import { Heading } from "../../components/Heading";
 import { Section, Sections, Text } from "../../components/layout";
@@ -63,49 +63,50 @@ export const LinkProject = ({
   );
 };
 
-const ListHeading = styled.div`
-  font-size: ${({ theme }) => theme.typography.size.s1}px;
-  font-weight: ${({ theme }) => theme.typography.weight.bold};
-  color: ${({ theme }) => theme.color.dark};
-  background-color: inherit;
-  padding: 9px 15px;
-  border-bottom: 1px solid ${({ theme }) => theme.color.mediumlight};
-`;
+const ListHeading = styled.div(({ theme }) => ({
+  fontSize: `${theme.typography.size.s1}px`,
+  fontWeight: theme.typography.weight.bold,
+  color: theme.color.dark,
+  backgroundColor: "inherit",
+  padding: "9px 15px",
+  borderBottom: `1px solid ${theme.color.mediumlight}`,
+}));
 
-const Left = styled.div`
-  flex: 1;
-  background-color: white;
-  display: flex;
-  flex-direction: column;
-`;
-const Right = styled.div`
-  flex: 1;
-  background-color: ${({ theme }) => theme.color.lighter};
-  display: flex;
-  flex-direction: column;
-`;
+const Left = styled.div({
+  flex: 1,
+  backgroundColor: "white",
+  display: "flex",
+  flexDirection: "column",
+});
 
-const ProjectPicker = styled.div`
-  background: ${({ theme }) => theme.color.lightest};
-  border-radius: 5px;
-  border: 1px solid ${({ theme }) => theme.color.mediumlight};
-  height: 260px;
-  width: 420px;
-  overflow: hidden;
-  text-align: left;
-  position: relative;
-  display: flex;
-  margin: 10px;
-`;
+const Right = styled.div(({ theme }) => ({
+  flex: 1,
+  backgroundColor: theme.color.lighter,
+  display: "flex",
+  flexDirection: "column",
+}));
+
+const ProjectPicker = styled.div(({ theme }) => ({
+  background: theme.color.lightest,
+  borderRadius: 5,
+  border: `1px solid ${theme.color.mediumlight}`,
+  height: 260,
+  width: 420,
+  overflow: "hidden",
+  textAlign: "left",
+  position: "relative",
+  display: "flex",
+  margin: 10,
+}));
 
 const List = styled.div({
   height: "100%",
   overflowY: "auto",
 });
 
-const RepositoryOwnerAvatar = styled(Avatar)`
-  margin-right: 10px;
-`;
+const RepositoryOwnerAvatar = styled(Avatar)({
+  marginRight: 10,
+});
 
 function SelectProject({
   createdProjectId,

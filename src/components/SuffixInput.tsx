@@ -1,6 +1,7 @@
-import { Input } from "@storybook/design-system";
 import { styled } from "@storybook/theming";
 import React, { ComponentProps, ReactNode } from "react";
+
+import { Input } from "./design-system";
 
 const InputWrapper = styled.div(({ theme }) => ({
   position: "relative",
@@ -63,6 +64,7 @@ export const SuffixInput = ({ id, value, placeholder, suffix, ...props }: Suffix
         label=""
         value={value}
         placeholder={placeholder}
+        // @ts-expect-error — TODO: Fix this
         crossOrigin={undefined}
         enterKeyHint={undefined}
         {...props}

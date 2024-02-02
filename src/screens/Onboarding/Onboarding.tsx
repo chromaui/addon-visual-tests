@@ -1,5 +1,4 @@
 import { Icons } from "@storybook/components";
-import { Icon } from "@storybook/design-system";
 import { styled } from "@storybook/theming";
 import React, { useEffect, useState } from "react";
 import { gql } from "urql";
@@ -48,7 +47,7 @@ const Box = styled.div(({ theme }) => ({
 
 const Warning = styled.div(({ theme }) => ({
   background: theme.background.warning,
-  padding: "10px",
+  padding: 10,
   lineHeight: "18px",
   position: "relative",
   margin: "0 27px",

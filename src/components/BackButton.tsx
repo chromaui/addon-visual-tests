@@ -4,7 +4,7 @@ import React from "react";
 
 const OpaqueLink = styled(Link)({
   "&&": {
-    fontSize: "13px",
+    fontSize: 13,
     lineHeight: "18px",
     position: "absolute",
     top: 10,
