@@ -1,3 +1,16 @@
+# v1.0.3 (Fri Feb 02 2024)
+
+#### 🐛 Bug Fix
+
+- Replace the design system with local source files [#171](https://github.com/chromaui/addon-visual-tests/pull/171) ([@yannbf](https://github.com/yannbf) [@kylegach](https://github.com/kylegach))
+
+#### Authors: 2
+
+- Kyle Gach ([@kylegach](https://github.com/kylegach))
+- Yann Braga ([@yannbf](https://github.com/yannbf))
+
+---
+
 # v1.0.2 (Thu Feb 01 2024)
 
 #### 🐛 Bug Fix
