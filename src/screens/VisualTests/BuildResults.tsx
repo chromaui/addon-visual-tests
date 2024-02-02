@@ -35,7 +35,7 @@ interface BuildResultsProps {
 export const Warning = styled.div(({ theme }) => ({
   color: theme.color.warning,
   background: theme.background.warning,
-  padding: "10px",
+  padding: 10,
   lineHeight: "18px",
   position: "relative",
 }));

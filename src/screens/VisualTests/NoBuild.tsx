@@ -21,7 +21,7 @@ const ErrorContainer = styled.div(({ theme }) => ({
   color: theme.color.darker,
   background: "#FFF5CF",
   border: "1px solid #E69D0033",
-  borderRadius: "2px",
+  borderRadius: 2,
   padding: "15px 20px",
   margin: "10px 10px 18px 10px",
 }));

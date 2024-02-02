@@ -2,6 +2,7 @@ import React from "react";
 
 import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
+import { Link } from "../../components/design-system";
 import { Heading } from "../../components/Heading";
 import { VisualTestsIcon } from "../../components/icons/VisualTestsIcon";
 import { Stack } from "../../components/Stack";

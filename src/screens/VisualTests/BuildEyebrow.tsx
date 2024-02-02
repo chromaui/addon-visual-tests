@@ -95,7 +95,7 @@ const StepDetail = styled.div<{ isCurrent: boolean; isFailed: boolean; isPending
     color: isFailed ? theme.color.negativeText : "inherit",
     fontWeight: isCurrent || isFailed ? "bold" : "normal",
     fontFamily: "Menlo, monospace",
-    fontSize: "12px",
+    fontSize: 12,
     lineHeight: "24px",
     margin: "0 15px",
     "&:first-of-type": {
