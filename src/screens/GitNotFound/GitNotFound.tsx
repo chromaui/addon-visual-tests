@@ -22,23 +22,25 @@ const InfoSection = styled(Section)(({ theme }) => ({
   flexDirection: "row",
   alignItems: "center",
   borderRadius: theme.appBorderRadius,
-  background: theme.color.lightest,
+  background: theme.base === "dark" ? theme.color.darker : theme.color.lightest,
   padding: 15,
   flex: 1,
   boxShadow: `0px 1px 3px 0px rgba(0, 0, 0, 0.10), 0px 2px 5px 0px rgba(0, 0, 0, 0.05)`,
+  maxWidth: "500px",
 }));
 
 const InfoSectionText = styled(Text)(({ theme }) => ({
   marginLeft: 14,
   flex: 1,
   textAlign: "left",
-  color: theme.color.darker,
+  color: theme.base === "dark" ? theme.color.lighter : theme.color.darker,
 }));
 
 const StyledCode = styled(Code)(({ theme }) => ({
-  color: theme.color.darker,
-  border: "1px solid #ECF4F9",
-  backgroundColor: "#F7FAFC",
+  color: theme.base === "dark" ? theme.color.lighter : theme.color.darker,
+  border: `1px solid ${theme.base === "dark" ? theme.color.mediumdark : "#ECF4F9"}`,
+  backgroundColor: theme.base === "dark" ? theme.color.dark : "#F7FAFC",
+  fontSize: "12px",
 }));
 
 export const GitNotFound = ({ gitInfoError, setAccessToken }: GitNotFoundProps) => {
