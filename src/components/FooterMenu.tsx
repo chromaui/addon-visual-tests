@@ -14,7 +14,7 @@ interface FooterMenuProps {
 export const FooterMenu = ({ setAccessToken }: FooterMenuProps) => {
   const { uninstallAddon } = useUninstallAddon();
   const [projectInfo] = useSharedState<ProjectInfoPayload>(PROJECT_INFO);
-  const { projectId } = projectInfo || {}
+  const { projectId } = projectInfo || {};
   const links = [
     {
       id: "remove",
