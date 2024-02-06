@@ -93,6 +93,7 @@
   },
   "exports": {
     ".": {
+      "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     },
     "./manager": {

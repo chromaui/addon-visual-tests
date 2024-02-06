@@ -26,7 +26,6 @@ export default defineConfig(async (options) => {
     packageJson;
 
   const commonConfig: Options = {
-
     splitting: false,
     minify: !options.watch,
     treeshake: true,
@@ -47,7 +46,7 @@ export default defineConfig(async (options) => {
         resolve: true,
       },
       format: ["esm", "cjs"],
-      platform: "neutral",
+      platform: "node",
       external: [...globalManagerPackages, ...globalPreviewPackages],
     });
   }
