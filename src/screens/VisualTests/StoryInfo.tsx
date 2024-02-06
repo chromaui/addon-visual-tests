@@ -20,10 +20,10 @@ const Info = styled.div(({ theme }) => ({
   flexDirection: "column",
   margin: 15,
   lineHeight: "18px",
-  color: `${theme.color.defaultText}99`,
+  color: theme.base === "light" ? `${theme.color.defaultText}99` : `${theme.color.light}99`,
 
   b: {
-    color: `${theme.color.defaultText}`,
+    color: theme.base === "light" ? `${theme.color.defaultText}` : `${theme.color.light}`,
   },
   small: {
     fontSize: theme.typography.size.s1,

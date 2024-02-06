@@ -1,4 +1,4 @@
-import { Link, Loader } from "@storybook/components";
+import { Loader } from "@storybook/components";
 import { PlayIcon } from "@storybook/icons";
 import { styled } from "@storybook/theming";
 import React from "react";
@@ -7,9 +7,10 @@ import { CombinedError } from "urql";
 import { BuildProgressInline } from "../../components/BuildProgressBarInline";
 import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
+import { Link } from "../../components/design-system";
 import { FooterSection } from "../../components/FooterSection";
 import { Heading } from "../../components/Heading";
-import { Bar, Col, Row, Section, Sections, Text } from "../../components/layout";
+import { Col, Section, Sections, Text } from "../../components/layout";
 import { Text as CenterText } from "../../components/Text";
 import { LocalBuildProgress } from "../../types";
 

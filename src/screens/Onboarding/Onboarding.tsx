@@ -39,7 +39,7 @@ const ProjectQuery = gql`
 `;
 
 const Box = styled.div(({ theme }) => ({
-  border: `1px solid ${theme.color.border}`,
+  border: `1px solid ${theme.base === "light" ? theme.color.border : theme.color.darker}`,
   borderRadius: theme.appBorderRadius,
   padding: "6px 10px",
   lineHeight: "18px",
@@ -117,7 +117,7 @@ export const Onboarding = ({
               ? localBuildProgress.originalError[0]?.message
               : localBuildProgress.originalError?.message}
           </p>
-          <Button small secondary onClick={startDevBuild}>
+          <Button variant="solid" size="medium" onClick={startDevBuild}>
             Try again
           </Button>
           <Button link onClick={onSkip}>
@@ -188,7 +188,7 @@ export const Onboarding = ({
               />
             )}
             <Text>Let’s see the superpower of catching visual changes.</Text>
-            <Button small secondary onClick={onCatchAChange}>
+            <Button variant="solid" size="medium" onClick={onCatchAChange}>
               Catch a UI change
             </Button>
           </div>
@@ -273,8 +273,8 @@ export const Onboarding = ({
             </Text>
           </div>
           <Button
-            small
-            secondary
+            variant="solid"
+            size="medium"
             onClick={() => {
               setRunningSecondBuild(true);
               startDevBuild();
@@ -327,7 +327,7 @@ export const Onboarding = ({
           </div>
         </Stack>
         <Text>You're ready to start testing!</Text>
-        <Button small secondary onClick={onComplete}>
+        <Button variant="solid" size="medium" onClick={onComplete}>
           Done!
         </Button>
       </Container>

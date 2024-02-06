@@ -1,4 +1,5 @@
-import { styled } from "@storybook/theming";
+import { ChevronLeftIcon } from "@storybook/icons";
+import { styled, useTheme } from "@storybook/theming";
 import React, { useCallback, useRef } from "react";
 import { useClient } from "urql";
 
@@ -6,7 +7,6 @@ import { BackButton } from "../../components/BackButton";
 import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
 import { Heading } from "../../components/Heading";
-import { BackIcon } from "../../components/icons/BackIcon";
 import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
 import { graphql } from "../../gql";
@@ -62,6 +62,7 @@ export const Verify = ({
 }: VerifyProps) => {
   const client = useClient();
   const onError = useErrorNotification();
+  const theme = useTheme();
 
   const { user_code: userCode, verificationUrl } = exchangeParameters;
 
@@ -137,7 +138,7 @@ export const Verify = ({
   return (
     <Container>
       <BackButton onClick={onBack}>
-        <BackIcon />
+        <ChevronLeftIcon color={theme.base === "light" ? "currentColor" : theme.color.medium} />
         Back
       </BackButton>
       <Stack>

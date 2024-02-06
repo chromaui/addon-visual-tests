@@ -1,6 +1,6 @@
 import { Link } from "@storybook/components";
 import { DocumentIcon } from "@storybook/icons";
-import { styled } from "@storybook/theming";
+import { styled, useTheme } from "@storybook/theming";
 import React from "react";
 
 import { BuildProgressInline } from "../../components/BuildProgressBarInline";
@@ -50,6 +50,7 @@ export const BuildResults = ({
   storyId,
   setAccessToken,
 }: BuildResultsProps) => {
+  const theme = useTheme();
   const { settingsVisible, warningsVisible } = useControlsState();
   const { toggleSettings, toggleWarnings } = useControlsDispatch();
 
@@ -147,18 +148,15 @@ export const BuildResults = ({
               If you would like to resume testing it, comment out or remove
               `parameters.chromatic.disableSnapshot = true` from the CSF file.
             </CenterText>
-            <Button
-              belowText
-              size="medium"
-              tertiary
-              // @ts-expect-error Button component is not quite typed properly
-              target="_new"
+            <Link
+              withArrow
+              secondary
+              href="https://www.chromatic.com/docs/ignoring-elements#ignore-stories"
+              target="_blank"
             >
-              <a href="https://www.chromatic.com/docs/ignoring-elements#ignore-stories">
-                <DocumentIcon />
-                View Docs
-              </a>
-            </Button>
+              <DocumentIcon color={theme.base === "light" ? "currentColor" : theme.color.medium} />
+              View Docs
+            </Link>
           </Container>
         </Section>
         <FooterSection setAccessToken={setAccessToken} />

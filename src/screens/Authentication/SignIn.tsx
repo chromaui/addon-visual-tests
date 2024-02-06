@@ -1,10 +1,11 @@
+import { ChevronLeftIcon } from "@storybook/icons";
+import { styled, useTheme } from "@storybook/theming";
 import React from "react";
 
 import { BackButton } from "../../components/BackButton";
 import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
 import { Heading } from "../../components/Heading";
-import { BackIcon } from "../../components/icons/BackIcon";
 import { LinkIcon } from "../../components/icons/LinkIcon";
 import { VisualTestsIcon } from "../../components/icons/VisualTestsIcon";
 import { Stack } from "../../components/Stack";
@@ -16,30 +17,37 @@ interface SignInProps {
   onSignInWithSSO: () => void;
 }
 
-export const SignIn = ({ onBack, onSignIn, onSignInWithSSO }: SignInProps) => (
-  <Container>
-    {onBack && (
-      <BackButton onClick={onBack}>
-        <BackIcon />
-        Back
-      </BackButton>
-    )}
-    <Stack alignItems="center" textAlign="center">
-      <div>
-        <LinkIcon />
-        <VisualTestsIcon />
-        <Heading>Sign in to begin visual testing</Heading>
-        <Text>
-          Pinpoint bugs instantly by connecting with cloud browsers that run visual tests in
-          parallel.
-        </Text>
-      </div>
-      <Button variant="solid" size="medium" onClick={() => onSignIn()}>
-        Sign in with Chromatic
-      </Button>
-      <Button link onClick={() => onSignInWithSSO()}>
-        Sign into Chromatic with SSO
-      </Button>
-    </Stack>
-  </Container>
-);
+const Label = styled.span(({ theme }) => ({
+  color: theme.base === "light" ? theme.color.defaultText : theme.color.light,
+}));
+
+export const SignIn = ({ onBack, onSignIn, onSignInWithSSO }: SignInProps) => {
+  const theme = useTheme();
+  return (
+    <Container>
+      {onBack && (
+        <BackButton onClick={onBack}>
+          <ChevronLeftIcon color={theme.base === "light" ? "currentColor" : theme.color.medium} />
+          <Label>Back</Label>
+        </BackButton>
+      )}
+      <Stack alignItems="center" textAlign="center">
+        <div>
+          <LinkIcon />
+          <VisualTestsIcon />
+          <Heading>Sign in to begin visual testing</Heading>
+          <Text>
+            Pinpoint bugs instantly by connecting with cloud browsers that run visual tests in
+            parallel.
+          </Text>
+        </div>
+        <Button variant="solid" size="medium" onClick={() => onSignIn()}>
+          Sign in with Chromatic
+        </Button>
+        <Button link onClick={() => onSignInWithSSO()}>
+          Sign into Chromatic with SSO
+        </Button>
+      </Stack>
+    </Container>
+  );
+};
