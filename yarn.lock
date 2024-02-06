@@ -5140,9 +5140,9 @@ chownr@^2.0.0:
   integrity sha512-bIomtDF5KGpdogkLd9VspvFzk9KfpyyGlS8YFVZl7TGPBHL5snIOnxeshwVgPteQ9b4Eydl+pVbIyE1DcvCWgQ==
 
 chromatic@^10.8.0:
-  version "10.8.0--canary.913.7801286819.0"
-  resolved "https://registry.yarnpkg.com/chromatic/-/chromatic-10.8.0--canary.913.7801286819.0.tgz#9c2fbab53960e483788ea40a70e7c49bf3d92a91"
-  integrity sha512-hNGei0IRQixUugT6Yzuf2iolQ/YCW8l1T/m1KpOKNvhI6mF0hYF9697C+tCU4UmJ0fCE0HIVpSTMSeAd3n3CMw==
+  version "10.8.0"
+  resolved "https://registry.yarnpkg.com/chromatic/-/chromatic-10.8.0.tgz#741b0af9ba0e9605408f8a452fca2066a4b28ad4"
+  integrity sha512-DdgUSJJ5u+Czf+KZI+1NRz4RP/PbpcytWSUtpgqEBolGDw65VYwjI489yis+jfwKMev1VWEhj1xMYGITbD6XIA==
 
 ci-info@^3.2.0:
   version "3.9.0"
