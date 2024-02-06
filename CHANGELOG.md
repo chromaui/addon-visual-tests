@@ -1,3 +1,15 @@
+# v1.1.1 (Tue Feb 06 2024)
+
+#### 🐛 Bug Fix
+
+- Remove @storybook/icons from externals [#174](https://github.com/chromaui/addon-visual-tests/pull/174) ([@thafryer](https://github.com/thafryer))
+
+#### Authors: 1
+
+- Jarel Fryer ([@thafryer](https://github.com/thafryer))
+
+---
+
 # v1.1.0 (Tue Feb 06 2024)
 
 #### 🚀 Enhancement
