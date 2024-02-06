@@ -1,3 +1,15 @@
+# v1.1.0 (Tue Feb 06 2024)
+
+#### 🚀 Enhancement
+
+- QA Fast Follows [#172](https://github.com/chromaui/addon-visual-tests/pull/172) ([@thafryer](https://github.com/thafryer))
+
+#### Authors: 1
+
+- Jarel Fryer ([@thafryer](https://github.com/thafryer))
+
+---
+
 # v1.0.4 (Fri Feb 02 2024)
 
 #### 🐛 Bug Fix

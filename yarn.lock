@@ -5139,10 +5139,10 @@ chownr@^2.0.0:
   resolved "https://registry.npmjs.org/chownr/-/chownr-2.0.0.tgz"
   integrity sha512-bIomtDF5KGpdogkLd9VspvFzk9KfpyyGlS8YFVZl7TGPBHL5snIOnxeshwVgPteQ9b4Eydl+pVbIyE1DcvCWgQ==
 
-chromatic@^10.6.0:
-  version "10.6.1"
-  resolved "https://registry.npmjs.org/chromatic/-/chromatic-10.6.1.tgz"
-  integrity sha512-bd4C5sEEtN83uUmbc4Fu+x7+lJIPdMUdu4D6HRDQEIDl/Tatc8+By4bZluH1pzg/MbP9vllkL6Ua9vF4EEA7VA==
+chromatic@^10.8.0:
+  version "10.8.0--canary.913.7801286819.0"
+  resolved "https://registry.yarnpkg.com/chromatic/-/chromatic-10.8.0--canary.913.7801286819.0.tgz#9c2fbab53960e483788ea40a70e7c49bf3d92a91"
+  integrity sha512-hNGei0IRQixUugT6Yzuf2iolQ/YCW8l1T/m1KpOKNvhI6mF0hYF9697C+tCU4UmJ0fCE0HIVpSTMSeAd3n3CMw==
 
 ci-info@^3.2.0:
   version "3.9.0"

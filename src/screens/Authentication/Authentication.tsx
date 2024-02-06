@@ -3,6 +3,7 @@ import React, { useCallback, useState } from "react";
 import { Project } from "../../gql/graphql";
 import { initiateSignin, TokenExchangeParameters } from "../../utils/requestAccessToken";
 import { useErrorNotification } from "../../utils/useErrorNotification";
+import { useUninstallAddon } from "../Uninstalled/UninstallContext";
 import { SetSubdomain } from "./SetSubdomain";
 import { SignIn } from "./SignIn";
 import { Verify } from "./Verify";
@@ -12,7 +13,6 @@ interface AuthenticationProps {
   setAccessToken: (token: string | null) => void;
   setCreatedProjectId: (projectId: Project["id"]) => void;
   hasProjectId: boolean;
-  onUninstall: () => void;
 }
 
 type AuthenticationScreen = "welcome" | "signin" | "subdomain" | "verify";
@@ -21,11 +21,11 @@ export const Authentication = ({
   setAccessToken,
   setCreatedProjectId,
   hasProjectId,
-  onUninstall,
 }: AuthenticationProps) => {
   const [screen, setScreen] = useState<AuthenticationScreen>(hasProjectId ? "signin" : "welcome");
   const [exchangeParameters, setExchangeParameters] = useState<TokenExchangeParameters>();
   const onError = useErrorNotification();
+  const { uninstallAddon } = useUninstallAddon();
 
   const initiateSignInAndMoveToVerify = useCallback(
     async (subdomain?: string) => {
@@ -40,7 +40,7 @@ export const Authentication = ({
   );
 
   if (screen === "welcome" && !hasProjectId) {
-    return <Welcome onNext={() => setScreen("signin")} onUninstall={onUninstall} />;
+    return <Welcome onNext={() => setScreen("signin")} onUninstall={uninstallAddon} />;
   }
 
   if (screen === "signin" || (screen === "welcome" && hasProjectId)) {
