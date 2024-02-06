@@ -11,6 +11,7 @@ import {
   IS_OUTDATED,
   LOCAL_BUILD_PROGRESS,
   PANEL_ID,
+  REMOVE_ADDON,
   START_BUILD,
 } from "./constants";
 import { Project } from "./gql/graphql";
@@ -61,12 +62,15 @@ export const Panel = ({ active, api }: PanelProps) => {
 
   // If the user creates a project in a dialog (either during login or later, it get set here)
   const [createdProjectId, setCreatedProjectId] = useState<Project["id"]>();
-  const [addonUninstalled, setAddonUninstalled] = useState<boolean>(false);
+  const [addonUninstalled, setAddonUninstalled] = useSharedState<boolean>(REMOVE_ADDON);
 
   if (addonUninstalled) {
     return (
       <Provider key={PANEL_ID} value={client}>
-        <UninstallProvider>
+        <UninstallProvider
+          addonUninstalled={addonUninstalled}
+          setAddonUninstalled={setAddonUninstalled}
+        >
           <Sections hidden={!active}>
             <Uninstalled />
           </Sections>
@@ -80,7 +84,10 @@ export const Panel = ({ active, api }: PanelProps) => {
     console.error(gitInfoError);
     return (
       <Provider key={PANEL_ID} value={client}>
-        <UninstallProvider>
+        <UninstallProvider
+          addonUninstalled={addonUninstalled}
+          setAddonUninstalled={setAddonUninstalled}
+        >
           <Sections hidden={!active}>
             <GitNotFound gitInfoError={gitInfoError} setAccessToken={setAccessToken} />
           </Sections>
@@ -93,7 +100,10 @@ export const Panel = ({ active, api }: PanelProps) => {
   if (!accessToken) {
     return (
       <Provider key={PANEL_ID} value={client}>
-        <UninstallProvider>
+        <UninstallProvider
+          addonUninstalled={addonUninstalled}
+          setAddonUninstalled={setAddonUninstalled}
+        >
           <Sections hidden={!active}>
             <Authentication
               key={PANEL_ID}
@@ -115,7 +125,10 @@ export const Panel = ({ active, api }: PanelProps) => {
   if (!projectId)
     return (
       <Provider key={PANEL_ID} value={client}>
-        <UninstallProvider>
+        <UninstallProvider
+          addonUninstalled={addonUninstalled}
+          setAddonUninstalled={setAddonUninstalled}
+        >
           <Sections hidden={!active}>
             <LinkProject
               createdProjectId={createdProjectId}
@@ -135,7 +148,10 @@ export const Panel = ({ active, api }: PanelProps) => {
     }
 
     return (
-      <UninstallProvider>
+      <UninstallProvider
+        addonUninstalled={addonUninstalled}
+        setAddonUninstalled={setAddonUninstalled}
+      >
         <Sections hidden={!active}>
           <LinkingProjectFailed
             projectId={projectId}
@@ -153,7 +169,10 @@ export const Panel = ({ active, api }: PanelProps) => {
 
     return (
       <Provider key={PANEL_ID} value={client}>
-        <UninstallProvider>
+        <UninstallProvider
+          addonUninstalled={addonUninstalled}
+          setAddonUninstalled={setAddonUninstalled}
+        >
           <Sections hidden={!active}>
             <LinkedProject
               projectId={projectId}
@@ -170,7 +189,10 @@ export const Panel = ({ active, api }: PanelProps) => {
   const localBuildIsRightBranch = gitInfo.branch === localBuildProgress?.branch;
   return (
     <Provider key={PANEL_ID} value={client}>
-      <UninstallProvider>
+      <UninstallProvider
+        addonUninstalled={addonUninstalled}
+        setAddonUninstalled={setAddonUninstalled}
+      >
         <Sections hidden={!active}>
           <ControlsProvider>
             <VisualTests

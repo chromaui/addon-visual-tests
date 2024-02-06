@@ -3,16 +3,22 @@ import React, { createContext, ReactNode } from "react";
 
 import { REMOVE_ADDON } from "../../constants";
 import { useRequiredContext } from "../../utils/useRequiredContext";
-import { useSharedState } from "../../utils/useSharedState";
 
 const UninstallContext = createContext<
   { addonUninstalled: boolean | undefined; uninstallAddon: () => void } | undefined
 >(undefined);
 
-export const UninstallProvider = ({ children }: { children: ReactNode }) => {
+export const UninstallProvider = ({
+  children,
+  addonUninstalled,
+  setAddonUninstalled,
+}: {
+  children: ReactNode;
+  addonUninstalled: boolean | undefined;
+  setAddonUninstalled: (value: boolean) => void;
+}) => {
   const channel = useStorybookApi().getChannel();
   if (!channel) throw new Error("Channel not available");
-  const [addonUninstalled, setAddonUninstalled] = useSharedState<boolean>(REMOVE_ADDON);
   const uninstallAddon = () => {
     channel.emit(REMOVE_ADDON);
     setAddonUninstalled(true);
