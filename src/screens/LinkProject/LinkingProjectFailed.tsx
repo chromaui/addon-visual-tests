@@ -1,8 +1,9 @@
-import { Code, Link } from "@storybook/components";
 import React from "react";
 import { dedent } from "ts-dedent";
 
+import { Code } from "../../components/Code";
 import { Container } from "../../components/Container";
+import { Link } from "../../components/design-system";
 import { FooterSection } from "../../components/FooterSection";
 import { Heading } from "../../components/Heading";
 import { Section, Sections } from "../../components/layout";
@@ -40,7 +41,7 @@ export function LinkingProjectFailed({
           </Code>
           <CenterText>
             What is this for?{" "}
-            <Link withArrow target="_blank" href={configureDocsLink}>
+            <Link secondary withArrow target="_blank" href={configureDocsLink}>
               Learn more
             </Link>
           </CenterText>

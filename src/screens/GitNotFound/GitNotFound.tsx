@@ -1,7 +1,7 @@
-import { Code } from "@storybook/components";
 import { styled } from "@storybook/theming";
 import React from "react";
 
+import { Code } from "../../components/Code";
 import { Container } from "../../components/Container";
 import { Icon, Link } from "../../components/design-system";
 import { FooterSection } from "../../components/FooterSection";
@@ -10,7 +10,6 @@ import { VisualTestsIcon } from "../../components/icons/VisualTestsIcon";
 import { Section, Sections } from "../../components/layout";
 import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
-import { useUninstallAddon } from "../Uninstalled/UninstallContext";
 
 interface GitNotFoundProps {
   gitInfoError: Error;
@@ -36,15 +35,7 @@ const InfoSectionText = styled(Text)(({ theme }) => ({
   color: theme.base === "dark" ? theme.color.lighter : theme.color.darker,
 }));
 
-const StyledCode = styled(Code)(({ theme }) => ({
-  color: theme.base === "dark" ? theme.color.lighter : theme.color.darker,
-  border: `1px solid ${theme.base === "dark" ? theme.color.mediumdark : "#ECF4F9"}`,
-  backgroundColor: theme.base === "dark" ? theme.color.dark : "#F7FAFC",
-  fontSize: "12px",
-}));
-
 export const GitNotFound = ({ gitInfoError, setAccessToken }: GitNotFoundProps) => {
-  const { uninstallAddon } = useUninstallAddon();
   return (
     <Sections>
       <Section grow>
@@ -64,20 +55,17 @@ export const GitNotFound = ({ gitInfoError, setAccessToken }: GitNotFoundProps) 
                 <b>Git not detected</b>
                 <br />
                 This addon requires Git to associate test results with commits and branches.
-                Initialize git (<StyledCode>git init</StyledCode>) and make your first commit (
-                <StyledCode>git commit -m</StyledCode>) to get started!
+                Initialize git (<Code>git init</Code>) and make your first commit (
+                <Code>git commit -m</Code>) to get started!
               </InfoSectionText>
             </InfoSection>
             <Link
               target="_blank"
-              href="https://www.chromatic.com/docs/visual-testing-addon/"
+              href="https://www.chromatic.com/docs/visual-tests-addon#git-addon"
               withArrow
+              secondary
             >
               Visual tests requirements
-            </Link>
-            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-            <Link withArrow onClick={() => uninstallAddon()}>
-              Uninstall
             </Link>
           </Stack>
         </Container>

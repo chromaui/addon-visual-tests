@@ -60,7 +60,7 @@ const Panel = styled.div<{ orientation: "right" | "bottom" }>(
     // Add a backdrop to the outline because appBorderColor is semi-transparent
     boxShadow: `0 0 0 1px ${theme.background.content}`,
     background: theme.background.content,
-    color: theme.color.defaultText,
+    color: theme.base === 'light' ? theme.color.mediumdark : theme.color.light,
     fontSize: theme.typography.size.s2 - 1,
   })
 );

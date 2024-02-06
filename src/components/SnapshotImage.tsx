@@ -1,5 +1,5 @@
 import { PhotoIcon, ShareAltIcon } from "@storybook/icons";
-import { styled } from "@storybook/theming";
+import { styled, useTheme } from "@storybook/theming";
 import React, { ComponentProps } from "react";
 
 import { CaptureImage, CaptureOverlayImage, ComparisonResult, Test } from "../gql/graphql";
@@ -28,7 +28,6 @@ export const Container = styled.div<{ href?: string; target?: string }>(
       alignItems: "center",
       width: "100%",
       margin: "30px 15px",
-      color: theme.color.mediumdark,
       p: {
         maxWidth: 380,
         textAlign: "center",
@@ -92,6 +91,7 @@ export const SnapshotImage = ({
   focusVisible,
   ...props
 }: SnapshotImageProps & ComponentProps<typeof Container>) => {
+  const theme = useTheme();
   const hasDiff = !!latestImage && !!diffImage && comparisonResult === ComparisonResult.Changed;
   const hasError = comparisonResult === ComparisonResult.CaptureError;
   const hasFocus = hasDiff && !!focusImage;
@@ -140,13 +140,14 @@ export const SnapshotImage = ({
           style={{
             maxWidth: `${(focusImage.imageWidth / latestImage.imageWidth) * 100}%`,
             opacity: showFocus ? 1 : 0,
+            filter: showFocus ? "blur(2px)" : "none",
           }}
         />
       )}
       {hasDiff && <ShareAltIcon />}
       {hasError && !latestImage && (
         <div>
-          <PhotoIcon />
+          <PhotoIcon color={theme.base === "light" ? "currentColor" : theme.color.medium} />
           <Text>
             A snapshot couldn’t be captured. This often occurs when a story has a code error.
             Confirm that this story successfully renders in your local Storybook and run the build

@@ -11,7 +11,7 @@ import { StatusDotWrapper } from "./StatusDot";
 export const TooltipContent = styled.div(({ theme }) => ({
   width: 220,
   padding: 3,
-  color: theme.color.defaultText,
+  color: theme.base === "light" ? theme.color.defaultText : theme.color.light,
 
   "& > div": {
     margin: 7,

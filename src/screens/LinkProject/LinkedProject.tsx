@@ -1,15 +1,17 @@
-import { Link } from "@storybook/components";
 import { CheckIcon } from "@storybook/icons";
 import { styled } from "@storybook/theming";
 import React from "react";
 import { useQuery } from "urql";
 
 import { Button } from "../../components/Button";
+import { Code } from "../../components/Code";
 import { Container } from "../../components/Container";
+import { Link } from "../../components/design-system";
 import { FooterSection } from "../../components/FooterSection";
 import { Heading } from "../../components/Heading";
-import { Col, Section, Sections, Text } from "../../components/layout";
+import { Col, Section, Sections } from "../../components/layout";
 import { Stack } from "../../components/Stack";
+import { Text } from "../../components/Text";
 import { graphql } from "../../gql";
 import { ProjectQueryQuery } from "../../gql/graphql";
 
@@ -63,9 +65,9 @@ export const LinkedProject = ({
               <Stack>
                 <Check />
                 <Heading>Project linked!</Heading>
-                <Text style={{ maxWidth: 380 }}>
-                  The <code>projectId</code> for {data.project.name} has been added to this
-                  project's <code>{configFile}</code>. This will be used to sync with Chromatic.
+                <Text style={{ maxWidth: 500 }}>
+                  The <Code>projectId</Code> for {data.project.name} has been added to this
+                  project's <Code>{configFile}</Code>. This will be used to sync with Chromatic.
                   Please commit this change to continue using this addon.
                 </Text>
                 <Button variant="solid" size="medium" onClick={() => goToNext()}>
@@ -73,8 +75,13 @@ export const LinkedProject = ({
                 </Button>
                 <Text>
                   Why do we need a project ID?{" "}
-                  <Link href="https://www.chromatic.com/docs/cli" target="_blank">
-                    Learn More »
+                  <Link
+                    href="https://www.chromatic.com/docs/cli"
+                    target="_blank"
+                    withArrow
+                    secondary
+                  >
+                    Learn More
                   </Link>
                 </Text>
               </Stack>
