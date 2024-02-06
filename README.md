@@ -19,41 +19,7 @@ Start Storybook and navigate to the Visual Tests panel to run your first visual 
 
 ## Configuration
 
-By default, the addon offers zero-config support to run visual tests with Storybook and Chromatic. However, you can extend your Storybook configuration file (i.e., `.storybook/main.js|ts`) and provide additional options to control how tests are run. Listed below are the available options and examples of how to use them.
-
-| Option            | Description                                                                                                                              |
-| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `buildScriptName` | Optional. Defines the custom Storybook build script <br/> `options: { buildScriptName: 'deploy-storybook' }`                             |
-| `debug`           | Optional. Output verbose debugging information to the console. <br/> `options: { debug: true }`                                          |
-| `projectId`       | Automatically configured. Sets the value for the project identifier <br/> `options: { projectId: Project:64cbcde96f99841e8b007d75 }`     |
-| `zip`             | Recommended for large projects. Configures the addon to deploy your Storybook to Chromatic as a zip file. <br/> `options: { zip: true }` |
-
-```ts
-// .storybook/main.ts
-
-// Replace your-framework with the framework you are using (e.g., react-webpack5, vue3-vite)
-import type { StorybookConfig } from "@storybook/your-framework";
-
-const config: StorybookConfig = {
-  framework: "@storybook/your-framework",
-  stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
-  addons: [
-    // Other Storybook addons
-    "@chromatic-com/storybook",
-    {
-      name: "@chromatic-com/storybook",
-      options: {
-        projectId: "Project:64cbcde96f99841e8b007d75",
-        buildScriptName: "build-storybook",
-        zip: true,
-        debug: true,
-      },
-    },
-  ],
-};
-
-export default config;
-```
+By default, the addon offers zero-config support to run visual tests with Storybook and Chromatic. However, you can extend your configuration via a `chromatic.config.json` file and provide additional options to control how tests are run. Check out the [docs](https://www.chromatic.com/docs/visual-tests-addon/) to learn about the various options that can be configured.
 
 ### Updating the GraphQL schema
 
