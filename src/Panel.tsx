@@ -6,6 +6,7 @@ import { Spinner } from "./components/design-system";
 import { Sections } from "./components/layout";
 import {
   ADDON_ID,
+  CONFIG_INFO,
   GIT_INFO,
   GIT_INFO_ERROR,
   IS_OUTDATED,
@@ -24,7 +25,12 @@ import { UninstallProvider } from "./screens/Uninstalled/UninstallContext";
 import { Uninstalled } from "./screens/Uninstalled/Uninstalled";
 import { ControlsProvider } from "./screens/VisualTests/ControlsContext";
 import { VisualTests } from "./screens/VisualTests/VisualTests";
-import { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from "./types";
+import {
+  ConfigInfoPayload,
+  GitInfoPayload,
+  LocalBuildProgress,
+  UpdateStatusFunction,
+} from "./types";
 import { client, Provider, useAccessToken } from "./utils/graphQLClient";
 import { useProjectId } from "./utils/useProjectId";
 import { useSharedState } from "./utils/useSharedState";
@@ -38,6 +44,7 @@ export const Panel = ({ active, api }: PanelProps) => {
   const [accessToken, setAccessToken] = useAccessToken();
   const { storyId } = useStorybookState();
 
+  const [configInfo] = useSharedState<ConfigInfoPayload>(CONFIG_INFO);
   const [gitInfo] = useSharedState<GitInfoPayload>(GIT_INFO);
   const [gitInfoError] = useSharedState<Error>(GIT_INFO_ERROR);
   const [isOutdated] = useSharedState<boolean>(IS_OUTDATED);
@@ -78,6 +85,8 @@ export const Panel = ({ active, api }: PanelProps) => {
       </Provider>
     );
   }
+
+  console.log(configInfo);
 
   if (gitInfoError) {
     // eslint-disable-next-line no-console
