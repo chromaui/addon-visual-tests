@@ -1,5 +1,7 @@
+import { action } from "@storybook/addon-actions"
 import { API, ManagerContext, State } from "@storybook/manager-api";
 import type { Decorator, Loader, Preview } from "@storybook/react";
+import { fn } from "@storybook/test"
 import {
   Global,
   ThemeProvider,
@@ -10,10 +12,12 @@ import {
   useTheme,
 } from "@storybook/theming";
 import { HttpResponse, graphql } from "msw";
+import { initialize, mswLoader } from "msw-storybook-addon";
 import React from "react";
 
 import { baseModes } from "../src/modes";
-import { initialize, mswLoader } from "msw-storybook-addon";
+import { UninstallProvider } from "../src/screens/Uninstalled/UninstallContext"
+
 
 // Initialize MSW
 initialize({
@@ -124,6 +128,14 @@ const withManagerApi: Decorator = (Story, { argsByTarget }) => (
   </ManagerContext.Provider>
 );
 
+const withUninstall: Decorator = (Story) => {
+  return (
+  <UninstallProvider>
+    <Story />
+  </UninstallProvider>
+  )
+}
+
 /**
  * An experiment with targeted args for GraphQL. This loader will serve a graphql
  * response for any arg nested under $graphql.
@@ -168,7 +180,7 @@ export const graphQLArgLoader: Loader = async ({ argTypes, argsByTarget, paramet
 };
 
 const preview: Preview = {
-  decorators: [withTheme, withManagerApi],
+  decorators: [withTheme, withUninstall, withManagerApi ],
   loaders: [graphQLArgLoader],
   parameters: {
     actions: {
@@ -195,6 +207,10 @@ const preview: Preview = {
   },
   argTypes: {
     $graphql: { target: "graphql" },
+    getChannel: { type: "function", target: "manager-api" },
+  },
+  args: {
+    getChannel: () => ({on: fn(), off: fn(), emit: action("channel.emit")}),
   },
   globalTypes: {
     theme: {

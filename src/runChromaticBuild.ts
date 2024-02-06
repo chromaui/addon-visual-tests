@@ -181,6 +181,9 @@ export const runChromaticBuild = async (
   process.env.SB_TESTBUILD = "true";
 
   await run({
+    flags: {
+      interactive: false,
+    },
     options: {
       ...options,
 
@@ -198,6 +201,8 @@ export const runChromaticBuild = async (
       isLocalBuild: true,
       // Never skip local builds
       skip: false,
+      // No prompts from the Build proces
+      interactive: false,
 
       experimental_onTaskStart: onStartOrProgress(localBuildProgress, timeout),
       experimental_onTaskProgress: onStartOrProgress(localBuildProgress, timeout),
