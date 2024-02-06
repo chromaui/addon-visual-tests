@@ -68,9 +68,11 @@ async function serverChannel(
   //   chromatic option (-c to the chromatic CLI)
   { configDir, configFile, presets }: Options & { configFile: string }
 ) {
-  const api = await presets.apply<any>("experimental_serverAPI");
-  const configuration = await getConfiguration(configFile);
-  const { projectId: initialProjectId } = configuration;
+  // Lazy load the API since we don't need it right away
+  const apiPromise = presets.apply<any>("experimental_serverAPI");
+
+  // This yields an empty object if the file doesn't exist and no explicit configFile is specified
+  const { projectId: initialProjectId } = await getConfiguration(configFile);
 
   const projectInfoState = SharedState.subscribe<ProjectInfoPayload>(PROJECT_INFO, channel);
   projectInfoState.value = initialProjectId ? { projectId: initialProjectId } : {};
@@ -118,9 +120,9 @@ async function serverChannel(
   });
 
   channel.on(STOP_BUILD, stopChromaticBuild);
-  channel.on(REMOVE_ADDON, async () => {
-    await api.removeAddon(PACKAGE_NAME);
-  });
+  channel.on(REMOVE_ADDON, () =>
+    apiPromise.then((api) => api.removeAddon(PACKAGE_NAME)).catch((e) => console.error(e))
+  );
 
   const gitInfoState = SharedState.subscribe<GitInfoPayload>(GIT_INFO, channel);
 
