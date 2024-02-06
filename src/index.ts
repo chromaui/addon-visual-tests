@@ -1,11 +1,14 @@
 /* eslint-disable no-console */
+import { watch } from "node:fs";
+import { relative } from "node:path";
+
 import type { Channel } from "@storybook/channels";
 import type { Options } from "@storybook/types";
-// eslint-disable-next-line import/no-unresolved
-import { getConfiguration, getGitInfo, GitInfo } from "chromatic/node";
+import { type Configuration, getConfiguration, getGitInfo, type GitInfo } from "chromatic/node";
 
 import {
   CHROMATIC_BASE_URL,
+  CONFIG_INFO,
   GIT_INFO,
   GIT_INFO_ERROR,
   LOCAL_BUILD_PROGRESS,
@@ -16,7 +19,7 @@ import {
   STOP_BUILD,
 } from "./constants";
 import { runChromaticBuild, stopChromaticBuild } from "./runChromaticBuild";
-import { GitInfoPayload, LocalBuildProgress, ProjectInfoPayload } from "./types";
+import { ConfigInfoPayload, GitInfoPayload, LocalBuildProgress, ProjectInfoPayload } from "./types";
 import { SharedState } from "./utils/SharedState";
 import { updateChromaticConfig } from "./utils/updateChromaticConfig";
 
@@ -26,6 +29,18 @@ import { updateChromaticConfig } from "./utils/updateChromaticConfig";
 function managerEntries(entry: string[] = []) {
   return [...entry, require.resolve("./manager.mjs")];
 }
+
+const getConfigSuggestions = async (config: Configuration) => {
+  const suggestions: Partial<Configuration> = {};
+
+  const { repositoryRoot } = await getGitInfo();
+  const storybookBaseDir = repositoryRoot && relative(repositoryRoot, process.cwd());
+  if (storybookBaseDir && storybookBaseDir !== config.storybookBaseDir) {
+    suggestions.storybookBaseDir = storybookBaseDir;
+  }
+
+  return suggestions;
+};
 
 // Polls for changes to the Git state and invokes the callback when it changes.
 // Uses a recursive setTimeout instead of setInterval to avoid overlapping async calls.
@@ -61,12 +76,26 @@ const observeGitInfo = async (
   return () => clearTimeout(timer);
 };
 
+const watchConfigFile = async (
+  configFile: string | undefined,
+  onChange: (configuration: Configuration) => Promise<void>
+) => {
+  const configuration = await getConfiguration(configFile);
+  await onChange(configuration);
+
+  if (configuration.configFile) {
+    watch(configuration.configFile, async (eventType: string, filename: string | null) => {
+      if (filename) await onChange(await getConfiguration(filename));
+    });
+  }
+};
+
 async function serverChannel(
   channel: Channel,
   // configDir is the standard storybook flag (-c to the storybook CLI)
   // configFile is the `main.js` option, which should be set by the user to correspond to the
   //   chromatic option (-c to the chromatic CLI)
-  { configDir, configFile, presets }: Options & { configFile: string }
+  { configDir, configFile, presets }: Options & { configFile?: string }
 ) {
   // Lazy load the API since we don't need it right away
   const apiPromise = presets.apply<any>("experimental_serverAPI");
@@ -84,15 +113,13 @@ async function serverChannel(
 
     const writtenConfigFile = configFile || "chromatic.config.json";
     try {
-      await updateChromaticConfig(writtenConfigFile, {
-        ...configuration,
-        projectId,
-      });
+      const { configFile: actualConfigFile, ...config } = await getConfiguration(writtenConfigFile);
+      await updateChromaticConfig(writtenConfigFile, { ...config, projectId });
 
       projectInfoState.value = {
         ...projectInfoState.value,
         written: true,
-        configFile: writtenConfigFile,
+        configFile: actualConfigFile,
       };
     } catch (err) {
       console.warn(`Failed to update your main configuration:\n\n ${err}`);
@@ -124,8 +151,8 @@ async function serverChannel(
     apiPromise.then((api) => api.removeAddon(PACKAGE_NAME)).catch((e) => console.error(e))
   );
 
+  const configInfoState = SharedState.subscribe<ConfigInfoPayload>(CONFIG_INFO, channel);
   const gitInfoState = SharedState.subscribe<GitInfoPayload>(GIT_INFO, channel);
-
   const gitInfoError = SharedState.subscribe<Error>(GIT_INFO_ERROR, channel);
 
   observeGitInfo(
@@ -138,6 +165,13 @@ async function serverChannel(
       gitInfoError.value = error;
     }
   );
+
+  watchConfigFile(configFile, async (configuration) => {
+    configInfoState.value = {
+      configuration,
+      suggestions: await getConfigSuggestions(configuration),
+    };
+  });
 
   return channel;
 }
