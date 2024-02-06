@@ -33,8 +33,8 @@ function managerEntries(entry: string[] = []) {
 const getConfigSuggestions = async (config: Configuration) => {
   const suggestions: Partial<Configuration> = {};
 
-  const { repositoryRoot } = await getGitInfo();
-  const storybookBaseDir = repositoryRoot && relative(repositoryRoot, process.cwd());
+  const { repositoryRootDir } = await getGitInfo();
+  const storybookBaseDir = repositoryRootDir && relative(repositoryRootDir, process.cwd());
   if (storybookBaseDir && storybookBaseDir !== config.storybookBaseDir) {
     suggestions.storybookBaseDir = storybookBaseDir;
   }
