@@ -48,7 +48,7 @@ export const ModeSelector = ({
   if (!aggregate) return null;
 
   let icon = <DiamondIcon />;
-  if (!isAccepted && aggregate !== ComparisonResult.Equal) {
+  if (!isAccepted && aggregate !== ComparisonResult.Equal && modeResults.length >= 2) {
     icon = <StatusDotWrapper status={aggregate}>{icon}</StatusDotWrapper>;
   }
 
