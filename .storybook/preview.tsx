@@ -13,7 +13,7 @@ import {
 } from "@storybook/theming";
 import { HttpResponse, graphql } from "msw";
 import { initialize, mswLoader } from "msw-storybook-addon";
-import React from "react";
+import React, { useState } from "react";
 
 import { baseModes } from "../src/modes";
 import { UninstallProvider } from "../src/screens/Uninstalled/UninstallContext"
@@ -129,8 +129,9 @@ const withManagerApi: Decorator = (Story, { argsByTarget }) => (
 );
 
 const withUninstall: Decorator = (Story) => {
+  const [addonInstalled, setAddonInstalled] = useState(false)
   return (
-  <UninstallProvider>
+  <UninstallProvider addonUninstalled={addonInstalled} setAddonUninstalled={setAddonInstalled}>
     <Story />
   </UninstallProvider>
   )
