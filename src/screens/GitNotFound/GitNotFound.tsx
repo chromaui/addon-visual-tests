@@ -5,6 +5,7 @@ import React from "react";
 import { Container } from "../../components/Container";
 import { Icon, Link } from "../../components/design-system";
 import { FooterSection } from "../../components/FooterSection";
+import { HeaderSection } from "../../components/HeaderSection";
 import { Heading } from "../../components/Heading";
 import { VisualTestsIcon } from "../../components/icons/VisualTestsIcon";
 import { Section, Sections } from "../../components/layout";

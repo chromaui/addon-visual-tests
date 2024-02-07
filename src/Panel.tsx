@@ -44,7 +44,6 @@ export const Panel = ({ active, api }: PanelProps) => {
   const [accessToken, setAccessToken] = useAccessToken();
   const { storyId } = useStorybookState();
 
-  const [configInfo] = useSharedState<ConfigInfoPayload>(CONFIG_INFO);
   const [gitInfo] = useSharedState<GitInfoPayload>(GIT_INFO);
   const [gitInfoError] = useSharedState<Error>(GIT_INFO_ERROR);
   const [isOutdated] = useSharedState<boolean>(IS_OUTDATED);
@@ -85,8 +84,6 @@ export const Panel = ({ active, api }: PanelProps) => {
       </Provider>
     );
   }
-
-  console.log(configInfo);
 
   if (gitInfoError) {
     // eslint-disable-next-line no-console
