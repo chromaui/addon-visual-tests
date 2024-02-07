@@ -30,13 +30,17 @@ function managerEntries(entry: string[] = []) {
   return [...entry, require.resolve("./manager.mjs")];
 }
 
-const getConfigSuggestions = async (config: Configuration) => {
+const getConfigSuggestions = async (config: Configuration, { configDir }: Options) => {
   const suggestions: Partial<Configuration> = {};
 
   const { repositoryRootDir } = await getGitInfo();
   const storybookBaseDir = repositoryRootDir && relative(repositoryRootDir, process.cwd());
   if (storybookBaseDir && storybookBaseDir !== config.storybookBaseDir) {
     suggestions.storybookBaseDir = storybookBaseDir;
+  }
+
+  if (configDir && configDir !== config.storybookConfigDir && configDir !== ".storybook") {
+    suggestions.storybookConfigDir = relative(process.cwd(), configDir);
   }
 
   return suggestions;
@@ -90,13 +94,9 @@ const watchConfigFile = async (
   }
 };
 
-async function serverChannel(
-  channel: Channel,
-  // configDir is the standard storybook flag (-c to the storybook CLI)
-  // configFile is the `main.js` option, which should be set by the user to correspond to the
-  //   chromatic option (-c to the chromatic CLI)
-  { configDir, configFile, presets }: Options & { configFile?: string }
-) {
+async function serverChannel(channel: Channel, options: Options & { configFile?: string }) {
+  const { configFile, presets } = options;
+
   // Lazy load the API since we don't need it right away
   const apiPromise = presets.apply<any>("experimental_serverAPI");
 
@@ -169,7 +169,7 @@ async function serverChannel(
   watchConfigFile(configFile, async (configuration) => {
     configInfoState.value = {
       configuration,
-      suggestions: await getConfigSuggestions(configuration),
+      suggestions: await getConfigSuggestions(configuration, options),
     };
   });
 
