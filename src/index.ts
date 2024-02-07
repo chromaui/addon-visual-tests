@@ -19,14 +19,15 @@ import {
   STOP_BUILD,
 } from "./constants";
 import { runChromaticBuild, stopChromaticBuild } from "./runChromaticBuild";
-import { ConfigInfoPayload, GitInfoPayload, LocalBuildProgress, ProjectInfoPayload } from "./types";
+import {
+  ConfigInfoPayload,
+  ConfigurationUpdate,
+  GitInfoPayload,
+  LocalBuildProgress,
+  ProjectInfoPayload,
+} from "./types";
 import { SharedState } from "./utils/SharedState";
 import { updateChromaticConfig } from "./utils/updateChromaticConfig";
-
-export type Suggestions = {
-  // Suggestions adhere to the Configuration schema, but may be null to suggest removal
-  [Property in keyof Configuration]: Configuration[Property] | null;
-};
 
 /**
  * to load the built addon in this test Storybook
@@ -35,30 +36,48 @@ function managerEntries(entry: string[] = []) {
   return [...entry, require.resolve("./manager.mjs")];
 }
 
-const getConfigSuggestions = async (config: Configuration, { configDir }: Options) => {
-  const suggestions: Suggestions = {};
+// Nullify any suggestions that are the same as the defaults, to suggest removal.
+// Drop suggestions for removal that don't actually appear in the current config.
+const suggestRemovals = (
+  config: Configuration,
+  defaults: Configuration,
+  update: ConfigurationUpdate
+) =>
+  Object.fromEntries(
+    (Object.entries(update) as [keyof Configuration, Configuration[keyof Configuration]][])
+      .map(([key, value]) => [key, value === defaults[key] ? null : value])
+      .filter(([key, value]) => value !== null || config[key as keyof Configuration] !== undefined)
+  );
+
+// Detect problems in the current configuration and suggest updates.
+const getConfigInfo = async (configuration: Configuration, { configDir }: Options) => {
   const defaults: Configuration = {
     storybookBaseDir: ".",
     storybookConfigDir: ".storybook",
   } as const;
 
+  const problems: ConfigurationUpdate = {};
+  const suggestions: ConfigurationUpdate = {};
+
   const { repositoryRootDir } = await getGitInfo();
   const baseDir = repositoryRootDir && normalize(relative(repositoryRootDir, process.cwd()));
-  if (baseDir !== normalize(config.storybookBaseDir ?? "")) {
-    suggestions.storybookBaseDir = baseDir;
+  if (baseDir !== normalize(configuration.storybookBaseDir ?? "")) {
+    problems.storybookBaseDir = baseDir;
   }
 
-  if (configDir !== normalize(config.storybookConfigDir ?? "")) {
-    suggestions.storybookConfigDir = normalize(relative(process.cwd(), configDir));
+  if (configDir !== normalize(configuration.storybookConfigDir ?? "")) {
+    problems.storybookConfigDir = normalize(relative(process.cwd(), configDir));
   }
 
-  // Nullify any suggestions that are the same as the defaults to suggest removal.
-  // Drop suggestions for removal that don't actually appear in the current config.
-  return Object.fromEntries(
-    Object.entries(suggestions)
-      .map(([key, value]) => [key, value === defaults[key as keyof Configuration] ? null : value])
-      .filter(([key, value]) => value !== null || config[key as keyof Configuration] !== undefined)
-  );
+  if (!configuration.zip) {
+    suggestions.zip = true;
+  }
+
+  return {
+    configuration,
+    problems: suggestRemovals(configuration, defaults, problems),
+    suggestions: suggestRemovals(configuration, defaults, suggestions),
+  };
 };
 
 // Polls for changes to the Git state and invokes the callback when it changes.
@@ -182,10 +201,7 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
   );
 
   watchConfigFile(configFile, async (configuration) => {
-    configInfoState.value = {
-      configuration,
-      suggestions: await getConfigSuggestions(configuration, options),
-    };
+    configInfoState.value = await getConfigInfo(configuration, options);
   });
 
   return channel;

@@ -16,9 +16,15 @@ export type UpdateStatusFunction = (
   update: StoryStatusUpdater
 ) => ReturnType<API["experimental_updateStatus"]>;
 
+export type ConfigurationUpdate = {
+  // Suggestions adhere to the Configuration schema, but may be null to suggest removal
+  [Property in keyof Configuration]: Configuration[Property] | null;
+};
+
 export type ConfigInfoPayload = {
   configuration: Configuration;
-  suggestions?: Partial<Configuration>;
+  problems?: ConfigurationUpdate;
+  suggestions?: ConfigurationUpdate;
 };
 export type GitInfoPayload = Omit<GitInfo, "committerEmail" | "committerName">;
 
