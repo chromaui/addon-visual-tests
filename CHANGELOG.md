@@ -1,3 +1,20 @@
+# v1.1.2 (Wed Feb 07 2024)
+
+#### 🐛 Bug Fix
+
+- Adjust Status Visibility on Mode & Browser Selectors [#173](https://github.com/chromaui/addon-visual-tests/pull/173) ([@thafryer](https://github.com/thafryer))
+
+#### 📝 Documentation
+
+- Update README.md [#177](https://github.com/chromaui/addon-visual-tests/pull/177) ([@domyen](https://github.com/domyen))
+
+#### Authors: 2
+
+- Dominic Nguyen ([@domyen](https://github.com/domyen))
+- Jarel Fryer ([@thafryer](https://github.com/thafryer))
+
+---
+
 # v1.1.1 (Tue Feb 06 2024)
 
 #### 🐛 Bug Fix
