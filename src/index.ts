@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { watch } from "node:fs";
-import { relative } from "node:path";
+import { normalize, relative } from "node:path";
 
 import type { Channel } from "@storybook/channels";
 import type { Options } from "@storybook/types";
@@ -23,6 +23,11 @@ import { ConfigInfoPayload, GitInfoPayload, LocalBuildProgress, ProjectInfoPaylo
 import { SharedState } from "./utils/SharedState";
 import { updateChromaticConfig } from "./utils/updateChromaticConfig";
 
+export type Suggestions = {
+  // Suggestions adhere to the Configuration schema, but may be null to suggest removal
+  [Property in keyof Configuration]: Configuration[Property] | null;
+};
+
 /**
  * to load the built addon in this test Storybook
  */
@@ -31,19 +36,29 @@ function managerEntries(entry: string[] = []) {
 }
 
 const getConfigSuggestions = async (config: Configuration, { configDir }: Options) => {
-  const suggestions: Partial<Configuration> = {};
+  const suggestions: Suggestions = {};
+  const defaults: Configuration = {
+    storybookBaseDir: ".",
+    storybookConfigDir: ".storybook",
+  } as const;
 
   const { repositoryRootDir } = await getGitInfo();
-  const storybookBaseDir = repositoryRootDir && relative(repositoryRootDir, process.cwd());
-  if (storybookBaseDir && storybookBaseDir !== config.storybookBaseDir) {
-    suggestions.storybookBaseDir = storybookBaseDir;
+  const baseDir = repositoryRootDir && normalize(relative(repositoryRootDir, process.cwd()));
+  if (baseDir !== normalize(config.storybookBaseDir ?? "")) {
+    suggestions.storybookBaseDir = baseDir;
   }
 
-  if (configDir && configDir !== config.storybookConfigDir && configDir !== ".storybook") {
-    suggestions.storybookConfigDir = relative(process.cwd(), configDir);
+  if (configDir !== normalize(config.storybookConfigDir ?? "")) {
+    suggestions.storybookConfigDir = normalize(relative(process.cwd(), configDir));
   }
 
-  return suggestions;
+  // Nullify any suggestions that are the same as the defaults to suggest removal.
+  // Drop suggestions for removal that don't actually appear in the current config.
+  return Object.fromEntries(
+    Object.entries(suggestions)
+      .map(([key, value]) => [key, value === defaults[key as keyof Configuration] ? null : value])
+      .filter(([key, value]) => value !== null || config[key as keyof Configuration] !== undefined)
+  );
 };
 
 // Polls for changes to the Git state and invokes the callback when it changes.
