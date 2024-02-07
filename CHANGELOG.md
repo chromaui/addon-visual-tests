@@ -1,3 +1,15 @@
+# v1.1.3 (Wed Feb 07 2024)
+
+#### 🐛 Bug Fix
+
+- Update Time Ago Shorthand Notation [#178](https://github.com/chromaui/addon-visual-tests/pull/178) ([@thafryer](https://github.com/thafryer))
+
+#### Authors: 1
+
+- Jarel Fryer ([@thafryer](https://github.com/thafryer))
+
+---
+
 # v1.1.2 (Wed Feb 07 2024)
 
 #### 🐛 Bug Fix
