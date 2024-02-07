@@ -21,10 +21,11 @@ const InfoSection = styled(Section)(({ theme }) => ({
   flexDirection: "row",
   alignItems: "center",
   borderRadius: theme.appBorderRadius,
-  background: theme.base === "dark" ? theme.color.darker : theme.color.lightest,
+  background: theme.base === "dark" ? theme.color.darkest : theme.color.lightest,
+  border: `1px solid ${theme.color.border}`,
   padding: 15,
   flex: 1,
-  boxShadow: `0px 1px 3px 0px rgba(0, 0, 0, 0.10), 0px 2px 5px 0px rgba(0, 0, 0, 0.05)`,
+
   maxWidth: "500px",
 }));
 
@@ -33,6 +34,11 @@ const InfoSectionText = styled(Text)(({ theme }) => ({
   flex: 1,
   textAlign: "left",
   color: theme.base === "dark" ? theme.color.lighter : theme.color.darker,
+}));
+
+const InfoSectionTextTitle = styled.b(() => ({
+  display: "block",
+  marginBottom: 2,
 }));
 
 export const GitNotFound = ({ gitInfoError, setAccessToken }: GitNotFoundProps) => {
@@ -52,11 +58,10 @@ export const GitNotFound = ({ gitInfoError, setAccessToken }: GitNotFoundProps) 
             <InfoSection>
               <Icon icon="lock" />
               <InfoSectionText>
-                <b>Git not detected</b>
-                <br />
+                <InfoSectionTextTitle>Git not detected</InfoSectionTextTitle>
                 This addon requires Git to associate test results with commits and branches.
-                Initialize git (<Code>git init</Code>) and make your first commit (
-                <Code>git commit -m</Code>) to get started!
+                <Code>git init</Code> and make your first commit
+                <Code>git commit -m</Code> to get started!
               </InfoSectionText>
             </InfoSection>
             <Link

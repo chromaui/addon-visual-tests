@@ -11,6 +11,7 @@ import { Link } from "../../components/design-system";
 import { FooterSection } from "../../components/FooterSection";
 import { Heading } from "../../components/Heading";
 import { Col, Section, Sections, Text } from "../../components/layout";
+import { Stack } from "../../components/Stack";
 import { Text as CenterText } from "../../components/Text";
 import { LocalBuildProgress } from "../../types";
 
@@ -57,12 +58,7 @@ export const NoBuild = ({
     );
 
     if (!localBuildProgress) {
-      return (
-        <>
-          <br />
-          {button}
-        </>
-      );
+      return <>{button}</>;
     }
 
     if (localBuildProgress.currentStep === "error") {
@@ -90,13 +86,17 @@ export const NoBuild = ({
     if (queryError?.networkError) {
       return (
         <Container>
-          <Heading>Network error</Heading>
-          <CenterText>{queryError.networkError.message}</CenterText>
-          <br />
-          {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-          <Link isButton onClick={() => setAccessToken(null)} withArrow>
-            Log out
-          </Link>
+          <Stack>
+            <div>
+              <Heading>Network error</Heading>
+              <CenterText>{queryError.networkError.message}</CenterText>
+            </div>
+
+            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+            <Link isButton onClick={() => setAccessToken(null)} withArrow>
+              Log out
+            </Link>
+          </Stack>
         </Container>
       );
     }
@@ -104,17 +104,21 @@ export const NoBuild = ({
     if (queryError?.graphQLErrors?.length) {
       return (
         <Container>
-          <Heading>{queryError.graphQLErrors[0].message}</Heading>
-          <CenterText>
-            {queryError.graphQLErrors[0].extensions.code === "FORBIDDEN"
-              ? "You may have insufficient permissions. Try logging out and back in again."
-              : "Try logging out or clear your browser's local storage."}
-          </CenterText>
-          <br />
-          {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-          <Link isButton onClick={() => setAccessToken(null)} withArrow>
-            Log out
-          </Link>
+          <Stack>
+            <div>
+              <Heading>{queryError.graphQLErrors[0].message}</Heading>
+              <CenterText>
+                {queryError.graphQLErrors[0].extensions.code === "FORBIDDEN"
+                  ? "You may have insufficient permissions. Try logging out and back in again."
+                  : "Try logging out or clear your browser's local storage."}
+              </CenterText>
+            </div>
+
+            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+            <Link isButton onClick={() => setAccessToken(null)} withArrow>
+              Log out
+            </Link>
+          </Stack>
         </Container>
       );
     }
@@ -126,13 +130,17 @@ export const NoBuild = ({
     if (!hasProject) {
       return (
         <Container>
-          <Heading>Project not found</Heading>
-          <CenterText>You may not have access to this project or it may not exist.</CenterText>
-          <br />
-          {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-          <Link isButton onClick={() => setAccessToken(null)} withArrow>
-            Switch account
-          </Link>
+          <Stack>
+            <div>
+              <Heading>Project not found</Heading>
+              <CenterText>You may not have access to this project or it may not exist.</CenterText>
+            </div>
+
+            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+            <Link isButton onClick={() => setAccessToken(null)} withArrow>
+              Switch account
+            </Link>
+          </Stack>
         </Container>
       );
     }
@@ -140,12 +148,16 @@ export const NoBuild = ({
     if (!hasSelectedBuild) {
       return (
         <Container>
-          <Heading>Create a test baseline</Heading>
-          <CenterText>
-            Take an image snapshot of each story to save their &quot;last known good state&quot; as
-            test baselines.
-          </CenterText>
-          {getDetails()}
+          <Stack>
+            <div>
+              <Heading>Create a test baseline</Heading>
+              <CenterText>
+                Take an image snapshot of each story to save their &quot;last known good state&quot;
+                as test baselines.
+              </CenterText>
+            </div>
+            {getDetails()}
+          </Stack>
         </Container>
       );
     }

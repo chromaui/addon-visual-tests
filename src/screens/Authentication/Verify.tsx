@@ -19,7 +19,8 @@ import { useErrorNotification } from "../../utils/useErrorNotification";
 const Digits = styled.ol(({ theme }) => ({
   display: "inline-flex",
   listStyle: "none",
-  margin: 8,
+  marginTop: 15,
+  marginBottom: 5,
   padding: 0,
   gap: 5,
 

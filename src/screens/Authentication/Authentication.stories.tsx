@@ -82,7 +82,7 @@ export const SSO = {
   ),
   play: playAll(SignIn, async (context) => {
     const button = await findByRole(context.canvasElement, "button", {
-      name: "Sign into Chromatic with SSO",
+      name: "Sign in with SSO",
     });
     await userEvent.click(button);
   }),

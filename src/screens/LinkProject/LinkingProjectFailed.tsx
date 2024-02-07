@@ -40,9 +40,8 @@ export function LinkingProjectFailed({
             `}
           </Code>
           <CenterText>
-            What is this for?{" "}
             <Link secondary withArrow target="_blank" href={configureDocsLink}>
-              Learn more
+              What&rsquo;s this for?
             </Link>
           </CenterText>
         </Container>

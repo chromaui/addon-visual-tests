@@ -10,6 +10,7 @@ import { Eyebrow } from "../../components/Eyebrow";
 import { FooterSection } from "../../components/FooterSection";
 import { Heading } from "../../components/Heading";
 import { Section, Sections } from "../../components/layout";
+import { Stack } from "../../components/Stack";
 import { Text as CenterText } from "../../components/Text";
 import { BuildStatus, TestResult } from "../../gql/graphql";
 import { LocalBuildProgress } from "../../types";
@@ -107,28 +108,32 @@ export const BuildResults = ({
       <Sections>
         <Section grow>
           <Container>
-            <Heading>New story found</Heading>
-            <CenterText>
-              Take an image snapshot of this story to save its “last known good state” as a test
-              baseline. This unlocks visual regression testing so you can see exactly what has
-              changed down to the pixel.
-            </CenterText>
-            {localBuildProgress && isLocalBuildProgressOnSelectedBuild ? (
-              <BuildProgressInline localBuildProgress={localBuildProgress} />
-            ) : (
-              <>
-                <br />
-                <Button
-                  belowText
-                  size="medium"
-                  variant="solid"
-                  onClick={() => startDevBuild()}
-                  disabled={isLocalBuildInProgress}
-                >
-                  Create visual test
-                </Button>
-              </>
-            )}
+            <Stack>
+              <div>
+                <Heading>New story found</Heading>
+                <CenterText>
+                  Take an image snapshot of this story to save its “last known good state” as a test
+                  baseline. This unlocks visual regression testing so you can see exactly what has
+                  changed down to the pixel.
+                </CenterText>
+              </div>
+
+              {localBuildProgress && isLocalBuildProgressOnSelectedBuild ? (
+                <BuildProgressInline localBuildProgress={localBuildProgress} />
+              ) : (
+                <>
+                  <Button
+                    belowText
+                    size="medium"
+                    variant="solid"
+                    onClick={() => startDevBuild()}
+                    disabled={isLocalBuildInProgress}
+                  >
+                    Create visual test
+                  </Button>
+                </>
+              )}
+            </Stack>
           </Container>
         </Section>
         <FooterSection setAccessToken={setAccessToken} />
@@ -143,20 +148,22 @@ export const BuildResults = ({
         {buildStatus}
         <Section grow>
           <Container>
-            <Heading>This story was skipped</Heading>
-            <CenterText>
-              If you would like to resume testing it, comment out or remove
-              `parameters.chromatic.disableSnapshot = true` from the CSF file.
-            </CenterText>
-            <Link
-              withArrow
-              secondary
-              href="https://www.chromatic.com/docs/ignoring-elements#ignore-stories"
-              target="_blank"
-            >
-              <DocumentIcon color={theme.base === "light" ? "currentColor" : theme.color.medium} />
-              View Docs
-            </Link>
+            <Stack>
+              <div>
+                <Heading>This story was skipped</Heading>
+                <CenterText>
+                  If you would like to resume testing it, comment out or remove
+                  `parameters.chromatic.disableSnapshot = true` from the CSF file.
+                </CenterText>
+              </div>
+              <Link
+                withArrow
+                href="https://www.chromatic.com/docs/ignoring-elements#ignore-stories"
+                target="_blank"
+              >
+                View docs
+              </Link>
+            </Stack>
           </Container>
         </Section>
         <FooterSection setAccessToken={setAccessToken} />

@@ -4,6 +4,7 @@ import React from "react";
 
 import { BackButton } from "../../components/BackButton";
 import { Button } from "../../components/Button";
+import { ButtonStack } from "../../components/ButtonStack";
 import { Container } from "../../components/Container";
 import { Heading } from "../../components/Heading";
 import { LinkIcon } from "../../components/icons/LinkIcon";
@@ -41,12 +42,14 @@ export const SignIn = ({ onBack, onSignIn, onSignInWithSSO }: SignInProps) => {
             parallel.
           </Text>
         </div>
-        <Button variant="solid" size="medium" onClick={() => onSignIn()}>
-          Sign in with Chromatic
-        </Button>
-        <Button link onClick={() => onSignInWithSSO()}>
-          Sign into Chromatic with SSO
-        </Button>
+        <ButtonStack>
+          <Button variant="solid" size="medium" onClick={() => onSignIn()}>
+            Sign in with Chromatic
+          </Button>
+          <Button link onClick={() => onSignInWithSSO()}>
+            Sign in with SSO
+          </Button>
+        </ButtonStack>
       </Stack>
     </Container>
   );

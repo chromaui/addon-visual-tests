@@ -13,6 +13,7 @@ import React, { useEffect, useRef } from "react";
 
 import { BUILD_STEP_CONFIG, BUILD_STEP_ORDER } from "../../buildSteps";
 import { BuildProgressLabel } from "../../components/BuildProgressLabel";
+import { Code } from "../../components/Code";
 import { IconButton } from "../../components/IconButton";
 import { LocalBuildProgress } from "../../types";
 
@@ -81,10 +82,11 @@ const ExpandableDiv = styled.div<{ expanded: boolean }>(({ expanded, theme }) =>
   transition: "grid-template-rows 150ms ease-out",
 }));
 
-const StepDetails = styled.div({
+const StepDetails = styled.div(({ theme }) => ({
   whiteSpace: "nowrap",
   overflow: "hidden",
-});
+  color: theme.base === "dark" ? theme.color.lightest : theme.color.dark,
+}));
 
 const StepDetail = styled.div<{ isCurrent: boolean; isFailed: boolean; isPending: boolean }>(
   ({ isCurrent, isFailed, isPending, theme }) => ({
@@ -226,7 +228,7 @@ export const BuildEyebrow = ({
     if (!switchToLastBuildOnBranch) {
       return (
         <Label>
-          Reviewing is disabled because there's a newer build on <code>{branch}</code>.
+          Reviewing is disabled because there's a newer build on <Code>{branch}</Code>.
         </Label>
       );
     }

@@ -4,6 +4,7 @@ import React from "react";
 import { useQuery } from "urql";
 
 import { Button } from "../../components/Button";
+import { ButtonStack } from "../../components/ButtonStack";
 import { Code } from "../../components/Code";
 import { Container } from "../../components/Container";
 import { Link } from "../../components/design-system";
@@ -22,6 +23,10 @@ const Check = styled(CheckIcon)(({ theme }) => ({
   background: theme.color.positive,
   borderRadius: "100%",
   color: "white",
+}));
+
+const ButtonStackLink = styled(Link)(() => ({
+  marginTop: 5,
 }));
 
 const ProjectQuery = graphql(/* GraphQL */ `
@@ -64,26 +69,27 @@ export const LinkedProject = ({
             {data?.project && (
               <Stack>
                 <Check />
-                <Heading>Project linked!</Heading>
-                <Text style={{ maxWidth: 500 }}>
-                  The <Code>projectId</Code> for {data.project.name} has been added to this
-                  project's <Code>{configFile}</Code>. This will be used to sync with Chromatic.
-                  Please commit this change to continue using this addon.
-                </Text>
-                <Button variant="solid" size="medium" onClick={() => goToNext()}>
-                  Catch a UI change
-                </Button>
-                <Text>
-                  Why do we need a project ID?{" "}
-                  <Link
+                <div>
+                  <Heading>Project linked!</Heading>
+                  <Text style={{ maxWidth: 500 }}>
+                    <Code>projectId</Code> for {data.project.name} was added in{" "}
+                    <Code>{configFile}</Code> to sync tests with Chromatic. Please commit this
+                    change to continue using this addon.
+                  </Text>
+                </div>
+                <ButtonStack>
+                  <Button variant="solid" size="medium" onClick={() => goToNext()}>
+                    Catch a UI change
+                  </Button>
+                  <ButtonStackLink
                     href="https://www.chromatic.com/docs/cli"
                     target="_blank"
                     withArrow
                     secondary
                   >
-                    Learn More
-                  </Link>
-                </Text>
+                    What&rsquo;s a project ID?
+                  </ButtonStackLink>
+                </ButtonStack>
               </Stack>
             )}
           </Stack>

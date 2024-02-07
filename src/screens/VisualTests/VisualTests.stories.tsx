@@ -207,7 +207,7 @@ export const NoAccess = {
           {
             extensions: { code: "FORBIDDEN" },
             locations: [{ line: 13, column: 3 }],
-            message: "No Access",
+            message: "No access",
             path: ["selectedBuild"],
           },
         ],

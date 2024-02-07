@@ -11,6 +11,11 @@ const ProgressTextWrapper = styled(Text)({
   flexDirection: "column",
   gap: 10,
   width: 200,
+  marginTop: 15,
+});
+
+const StyledBuildProgressLabel = styled(BuildProgressLabel)({
+  fontSize: 12,
 });
 
 export function BuildProgressInline({
@@ -19,16 +24,13 @@ export function BuildProgressInline({
   localBuildProgress: LocalBuildProgress;
 }) {
   return (
-    <ProgressTextWrapper
-      as="div"
-      style={{ display: "flex", flexDirection: "column", gap: 10, width: 200 }}
-    >
+    <ProgressTextWrapper as="div">
       <ProgressTrack>
         {typeof localBuildProgress.buildProgressPercentage === "number" && (
           <ProgressBar style={{ width: `${localBuildProgress.buildProgressPercentage}%` }} />
         )}
       </ProgressTrack>
-      <BuildProgressLabel localBuildProgress={localBuildProgress} />
+      <StyledBuildProgressLabel localBuildProgress={localBuildProgress} isInline />
     </ProgressTextWrapper>
   );
 }

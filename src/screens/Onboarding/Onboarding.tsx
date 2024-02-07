@@ -5,6 +5,7 @@ import { gql } from "urql";
 
 import { BuildProgressInline } from "../../components/BuildProgressBarInline";
 import { Button } from "../../components/Button";
+import { ButtonStack } from "../../components/ButtonStack";
 import { Container } from "../../components/Container";
 import { Heading } from "../../components/Heading";
 import { VisualTestsIcon } from "../../components/icons/VisualTestsIcon";
@@ -55,6 +56,10 @@ const Warning = styled.div(({ theme }) => ({
 
 const WarningText = styled(Text)(({ theme }) => ({
   color: theme.color.darkest,
+}));
+
+const ButtonStackText = styled(Text)(() => ({
+  marginBottom: 5,
 }));
 
 interface OnboardingProps {
@@ -139,12 +144,14 @@ export const Onboarding = ({
               baselines.{" "}
             </Text>
           </div>
-          <Button size="medium" variant="solid" onClick={startDevBuild}>
-            Take snapshots
-          </Button>
-          <Button onClick={onSkip} link>
-            Skip walkthrough
-          </Button>
+          <ButtonStack>
+            <Button size="medium" variant="solid" onClick={startDevBuild}>
+              Take snapshots
+            </Button>
+            <Button onClick={onSkip} link>
+              Skip walkthrough
+            </Button>
+          </ButtonStack>
         </Stack>
       </Container>
     );
@@ -179,7 +186,7 @@ export const Onboarding = ({
       <Container>
         <Stack>
           <div>
-            <Heading>Nice. You saved your stories as a test baseline.</Heading>
+            <Heading>Nice. Your stories were saved as test baselines.</Heading>
             <Text>This story was indexed and snapshotted in a standardized cloud browser.</Text>
             {selectedStory?.selectedComparison?.headCapture?.captureImage && (
               <SnapshotImageThumb
@@ -187,14 +194,16 @@ export const Onboarding = ({
                 status="positive"
               />
             )}
-            <Text>Let’s see the superpower of catching visual changes.</Text>
+          </div>
+          <ButtonStack>
+            <ButtonStackText>Let’s see the superpower of catching visual changes.</ButtonStackText>
             <Button variant="solid" size="medium" onClick={onCatchAChange}>
               Catch a UI change
             </Button>
-          </div>
-          <Button link onClick={onSkip}>
-            Skip walkthrough
-          </Button>
+            <Button link onClick={onSkip}>
+              Skip walkthrough
+            </Button>
+          </ButtonStack>
         </Stack>
       </Container>
     );
@@ -224,7 +233,9 @@ export const Onboarding = ({
               Don’t worry, you can undo it later. Here are a few ideas to get you started.
             </Text>
           </div>
-          <Stack style={{ display: "flex", alignItems: "flex-start", gap: "8px" }}>
+          <Stack
+            style={{ display: "flex", alignItems: "flex-start", gap: "8px", margin: "10px 0" }}
+          >
             <Row style={{ margin: 0, alignItems: "center", gap: "10px" }}>
               <img
                 src={onboardingColorPaletteImage}
@@ -246,10 +257,12 @@ export const Onboarding = ({
               Adjust the size or scale
             </Row>
           </Stack>
-          <Box>Awaiting changes...</Box>
-          <Button link onClick={onSkip}>
-            Skip walkthrough
-          </Button>
+          <ButtonStack>
+            <Box>Awaiting changes...</Box>
+            <Button link onClick={onSkip}>
+              Skip walkthrough
+            </Button>
+          </ButtonStack>
         </Stack>
       </Container>
     );
@@ -268,8 +281,7 @@ export const Onboarding = ({
           <div>
             <Heading>Changes detected</Heading>
             <Text>
-              Time to run your first visual test! Visual tests will pinpoint the exact changes made
-              to this story.
+              Time to run your first visual tests to pinpoint the exact changes made to this story.
             </Text>
           </div>
           <Button
@@ -300,8 +312,7 @@ export const Onboarding = ({
           <div>
             <Heading>Changes detected</Heading>
             <Text>
-              Time to run your first visual test! Visual tests will pinpoint the exact changes made
-              to this story.
+              Time to run your first visual tests to pinpoint the exact changes made to this story.
             </Text>
           </div>
           <BuildProgressInline localBuildProgress={localBuildProgress} />
@@ -316,7 +327,7 @@ export const Onboarding = ({
       <Container style={{ overflowY: "auto" }}>
         <Stack>
           <div>
-            <Heading>Nice. You saved your stories as a test baseline.</Heading>
+            <Heading>Nice. Your stories were saved as test baselines.</Heading>
             <Text>This story was indexed and snapshotted in a standardized cloud browser.</Text>
             {selectedStory.selectedComparison?.headCapture?.captureImage && (
               <SnapshotImageThumb
@@ -325,11 +336,13 @@ export const Onboarding = ({
               />
             )}
           </div>
+          <ButtonStack>
+            <ButtonStackText>You&rsquo;re ready to start testing!</ButtonStackText>
+            <Button variant="solid" size="medium" onClick={onComplete}>
+              Done
+            </Button>
+          </ButtonStack>
         </Stack>
-        <Text>You're ready to start testing!</Text>
-        <Button variant="solid" size="medium" onClick={onComplete}>
-          Done!
-        </Button>
       </Container>
     );
   }

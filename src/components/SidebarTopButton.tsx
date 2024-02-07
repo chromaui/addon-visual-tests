@@ -21,7 +21,8 @@ export const TooltipContent = styled.div(({ theme }) => ({
 export const ProgressTrack = styled.div(({ theme }) => ({
   height: 5,
   background: theme.background.hoverable,
-  borderRadius: 1,
+  borderRadius: 5,
+  overflow: "hidden",
 }));
 
 export const ProgressBar = styled(ProgressTrack)(({ theme }) => ({
