@@ -19,7 +19,15 @@ Start Storybook and navigate to the Visual Tests panel to run your first visual 
 
 ## Configuration
 
-By default, the addon offers zero-config support to run visual tests with Storybook and Chromatic. However, you can extend your configuration via a `chromatic.config.json` file and provide additional options to control how tests are run. Check out the [docs](https://www.chromatic.com/docs/visual-tests-addon/) to learn about the various options that can be configured.
+By default, the addon offers zero-config support to run visual tests with Storybook and Chromatic. However, if you need, you can customize it by providing a few options. See the [Chromatic documentation](https://www.chromatic.com/docs/visual-tests-addon/) for more information on configuring and using it with your Storybook.
+
+## Getting Help
+
+If you have any questions or need help with the addon, please get in touch with the Chromatic team. [Sign in](https://www.chromatic.com/start) to your Chromatic account and click the chat icon in the bottom right corner of the screen to start a conversation with us.
+
+## Contributing
+
+We welcome contributions! If you're a maintainer, refer to the following [instructions](./Development.md) to set up your development environment with Chromatic.
 
 ### Updating the GraphQL schema
 
@@ -47,10 +55,6 @@ This is a [known issue](https://github.com/storybookjs/storybook/issues/22431#is
 ```
 
 Alternatively, you could use a different package manager ([npm](https://www.npmjs.com/), [pnpm](https://pnpm.io/installation)).
-
-## Contributing
-
-We welcome contributions! If you're a maintainer, refer to the following [instructions](./Development.md) to set up your development environment with Chromatic.
 
 ### License
 
