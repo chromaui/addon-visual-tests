@@ -30,7 +30,7 @@ export function BuildProgressInline({
           <ProgressBar style={{ width: `${localBuildProgress.buildProgressPercentage}%` }} />
         )}
       </ProgressTrack>
-      <StyledBuildProgressLabel localBuildProgress={localBuildProgress} isInline />
+      <StyledBuildProgressLabel localBuildProgress={localBuildProgress} />
     </ProgressTextWrapper>
   );
 }
