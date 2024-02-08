@@ -3,6 +3,7 @@ import { styled, useTheme } from "@storybook/theming";
 import React, { ComponentProps } from "react";
 
 import { CaptureImage, CaptureOverlayImage, ComparisonResult, Test } from "../gql/graphql";
+import { Stack } from "./Stack";
 import { Text } from "./Text";
 
 export const Container = styled.div<{ href?: string; target?: string }>(
@@ -27,22 +28,21 @@ export const Container = styled.div<{ href?: string; target?: string }>(
       flexDirection: "column",
       alignItems: "center",
       width: "100%",
-      margin: "30px 15px",
       p: {
         maxWidth: 380,
         textAlign: "center",
       },
       svg: {
-        width: 28,
-        height: 28,
+        width: 24,
+        height: 24,
       },
     },
     "& > svg": {
       position: "absolute",
       left: "calc(50% - 14px)",
       top: "calc(50% - 14px)",
-      width: 28,
-      height: 28,
+      width: 24,
+      height: 24,
       color: theme.color.lightest,
       opacity: 0,
       transition: "opacity 0.1s ease-in-out",
@@ -62,6 +62,10 @@ export const Container = styled.div<{ href?: string; target?: string }>(
       },
     }
 );
+
+const StyledStack = styled(Stack)(({ theme }) => ({
+  margin: "30px 15px",
+}));
 
 interface SnapshotImageProps {
   componentName?: NonNullable<NonNullable<Test["story"]>["component"]>["name"];
@@ -146,14 +150,14 @@ export const SnapshotImage = ({
       )}
       {hasDiff && <ShareAltIcon />}
       {hasError && !latestImage && (
-        <div>
+        <StyledStack>
           <PhotoIcon color={theme.base === "light" ? "currentColor" : theme.color.medium} />
           <Text>
             A snapshot couldn’t be captured. This often occurs when a story has a code error.
             Confirm that this story successfully renders in your local Storybook and run the build
             again.
           </Text>
-        </div>
+        </StyledStack>
       )}
     </Container>
   );

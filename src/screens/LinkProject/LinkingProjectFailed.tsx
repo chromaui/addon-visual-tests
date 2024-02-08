@@ -27,7 +27,7 @@ const CodeWrapper = styled.div(({ theme }) => ({
     fontSize: "12px",
     lineHeight: "16px",
     textAlign: "left",
-    padding: 15,
+    padding: "15px !important",
   },
 }));
 

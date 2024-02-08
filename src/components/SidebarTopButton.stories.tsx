@@ -64,6 +64,6 @@ export const IsRunning: Story = {
     // Wait one second just to ensure the screen has proper focus
     await new Promise((r) => setTimeout(r, 1000));
     await userEvent.hover(button);
-    await screen.findAllByText("🏗 Building your Storybook");
+    await screen.findAllByText("🏗 Building your Storybook...");
   }),
 };

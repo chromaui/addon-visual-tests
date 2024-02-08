@@ -5,6 +5,7 @@ import React from "react";
 
 import { BuildProgressInline } from "../../components/BuildProgressBarInline";
 import { Button } from "../../components/Button";
+import { Code } from "../../components/Code";
 import { Container } from "../../components/Container";
 import { Eyebrow } from "../../components/Eyebrow";
 import { FooterSection } from "../../components/FooterSection";
@@ -153,7 +154,7 @@ export const BuildResults = ({
                 <Heading>This story was skipped</Heading>
                 <CenterText>
                   If you would like to resume testing it, comment out or remove
-                  `parameters.chromatic.disableSnapshot = true` from the CSF file.
+                  <Code>disableSnapshot = true</Code> from the CSF file.
                 </CenterText>
               </div>
               <Link
