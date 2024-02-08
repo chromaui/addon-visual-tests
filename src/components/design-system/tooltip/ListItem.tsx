@@ -96,9 +96,8 @@ const linkStyles = (props: LinkStyleProps) => css`
     }
   }
 
-  ${
-    props.active &&
-    css`
+  ${props.active &&
+  css`
     .sbds-list-item-title {
       font-weight: ${typography.weight.bold};
     }
@@ -113,30 +112,25 @@ const linkStyles = (props: LinkStyleProps) => css`
         fill: ${props.activeColor};
       }
     }
-  `
-  };
+  `};
 
-  ${
-    props.isLoading &&
-    css`
+  ${props.isLoading &&
+  css`
     .sbds-list-item-title {
       ${inlineGlow};
       flex: 0 1 auto;
       display: inline-block;
     }
-  `
-  };
+  `};
 
-  ${
-    props.disabled &&
-    css`
+  ${props.disabled &&
+  css`
     cursor: not-allowed !important;
     .sbds-list-item-title,
     .sbds-list-item-center {
       color: ${color.mediumdark};
     }
-  `
-  };
+  `};
 `;
 
 const Item = styled(
