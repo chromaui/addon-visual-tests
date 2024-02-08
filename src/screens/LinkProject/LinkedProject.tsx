@@ -72,9 +72,8 @@ export const LinkedProject = ({
                 <div>
                   <Heading>Project linked!</Heading>
                   <Text style={{ maxWidth: 500 }}>
-                    <Code>projectId</Code> for {data.project.name} was added in{" "}
-                    <Code>{configFile}</Code> to sync tests with Chromatic. Please commit this
-                    change to continue using this addon.
+                    <Code>projectId</Code> for {data.project.name} was added in {configFile} to sync
+                    tests with Chromatic. Please commit this change to continue using this addon.
                   </Text>
                 </div>
                 <ButtonStack>
