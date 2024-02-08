@@ -1,3 +1,15 @@
+# v1.1.4 (Thu Feb 08 2024)
+
+#### 🐛 Bug Fix
+
+- Fix kebab-case `box-shadow` to proper `boxShadow` [#181](https://github.com/chromaui/addon-visual-tests/pull/181) ([@JReinhold](https://github.com/JReinhold))
+
+#### Authors: 1
+
+- Jeppe Reinhold ([@JReinhold](https://github.com/JReinhold))
+
+---
+
 # v1.1.3 (Wed Feb 07 2024)
 
 #### 🐛 Bug Fix
