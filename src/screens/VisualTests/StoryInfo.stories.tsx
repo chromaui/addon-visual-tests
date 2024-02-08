@@ -12,7 +12,7 @@ const meta = {
   component: StoryInfo,
   args: {
     isStarting: false,
-    startedAt: new Date(Date.now() - 1000 * 60 * 2), // 2 minutes ago
+    startedAt: new Date(Date.now() - 1000 * 60 * 2), // 2m ago
     startDevBuild: action("startDevBuild"),
     shouldSwitchToLastBuildOnBranch: false,
     isBuildFailed: false,

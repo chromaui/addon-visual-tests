@@ -57,7 +57,7 @@ export const BrowserSelector = ({
   if (!aggregate) return null;
 
   let icon = browserIcons[selectedBrowser.key];
-  if (!isAccepted && aggregate !== ComparisonResult.Equal) {
+  if (!isAccepted && aggregate !== ComparisonResult.Equal && browserResults.length >= 2) {
     icon = <StatusDotWrapper status={aggregate}>{icon}</StatusDotWrapper>;
   }
 

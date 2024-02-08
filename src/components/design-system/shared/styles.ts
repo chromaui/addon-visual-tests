@@ -115,7 +115,7 @@ export const hoverEffect = css({
   "&:hover, &.__hover": {
     borderColor: `${rgba(color.secondary, 0.5)}`,
     transform: "translate3d(0, -3px, 0)",
-    "box-shadow": "rgba(0, 0, 0, 0.08) 0 3px 10px 0",
+    boxShadow: "rgba(0, 0, 0, 0.08) 0 3px 10px 0",
   },
 
   "&:active, &.__active": {
