@@ -6,9 +6,9 @@ import { useQuery } from "urql";
 
 import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
-import { FooterSection } from "../../components/FooterSection";
 import { Heading } from "../../components/Heading";
-import { Col, Section, Sections, Text } from "../../components/layout";
+import { Col, Section, Text } from "../../components/layout";
+import { Screen } from "../../components/Screen";
 import { Stack } from "../../components/Stack";
 import { graphql } from "../../gql";
 import { ProjectQueryQuery } from "../../gql/graphql";
@@ -40,12 +40,10 @@ export const LinkedProject = ({
   projectId,
   configFile,
   goToNext,
-  setAccessToken,
 }: {
   projectId: string;
   configFile: string;
   goToNext: () => void;
-  setAccessToken: (accessToken: string | null) => void;
 }) => {
   const [{ data, fetching, error }] = useQuery<ProjectQueryQuery>({
     query: ProjectQuery,
@@ -53,7 +51,21 @@ export const LinkedProject = ({
   });
 
   return (
-    <Sections>
+    <Screen
+      footer={({ menu }) => (
+        <>
+          <Col>
+            {data?.project?.lastBuild && (
+              <Text style={{ marginLeft: 5 }}>
+                Last build: {data.project.lastBuild.number} on branch{" "}
+                {data.project.lastBuild.branch}
+              </Text>
+            )}
+          </Col>
+          <Col push>{menu}</Col>
+        </>
+      )}
+    >
       <Section grow>
         <Container>
           <Stack>
@@ -82,22 +94,6 @@ export const LinkedProject = ({
           </Stack>
         </Container>
       </Section>
-      <FooterSection
-        setAccessToken={setAccessToken}
-        render={({ menu }) => (
-          <>
-            <Col>
-              {data?.project?.lastBuild && (
-                <Text style={{ marginLeft: 5 }}>
-                  Last build: {data.project.lastBuild.number} on branch{" "}
-                  {data.project.lastBuild.branch}
-                </Text>
-              )}
-            </Col>
-            <Col push>{menu}</Col>
-          </>
-        )}
-      />
-    </Sections>
+    </Screen>
   );
 };

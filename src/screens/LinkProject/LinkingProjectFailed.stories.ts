@@ -1,7 +1,10 @@
 // @ts-nocheck TODO: Address SB 8 type errors
 import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "@storybook/test";
 
+import { AuthProvider } from "../../AuthContext";
 import { panelModes } from "../../modes";
+import { storyWrapper } from "../../utils/storyWrapper";
 import { LinkingProjectFailed } from "./LinkingProjectFailed";
 
 const meta = {
@@ -10,6 +13,9 @@ const meta = {
     projectId: "Project:abc123",
     configFile: "chromatic.config.json",
   },
+  decorators: [
+    storyWrapper(AuthProvider, () => ({ value: { accessToken: "token", setAccessToken: fn() } })),
+  ],
   parameters: {
     chromatic: {
       modes: panelModes,
