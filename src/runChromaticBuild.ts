@@ -107,6 +107,7 @@ export const onStartOrProgress =
       buildProgressPercentage: Math.min(newPercentage, endPercentage),
       currentStep: ctx.task,
       stepProgress,
+      storybookBuildDir: ctx.sourceDir,
     };
   };
 

@@ -57,6 +57,15 @@ export type LocalBuildProgress = {
   /** The step of the build process we have reached */
   currentStep: KnownStep | "aborted" | "complete" | "error";
 
+  /**
+   * The location of the storybook build, set immediately but not available until
+   * we reach the upload step
+   * */
+  storybookBuildDir?: string;
+
+  /** URL of local built storybook */
+  storybookBuildUrl?: string;
+
   /** Number of visual changes detected */
   changeCount?: number;
 
