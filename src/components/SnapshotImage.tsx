@@ -41,8 +41,8 @@ export const Container = styled.div<{ href?: string; target?: string }>(
       position: "absolute",
       left: "calc(50% - 14px)",
       top: "calc(50% - 14px)",
-      width: 24,
-      height: 24,
+      width: 20,
+      height: 20,
       color: theme.color.lightest,
       opacity: 0,
       transition: "opacity 0.1s ease-in-out",
@@ -52,6 +52,7 @@ export const Container = styled.div<{ href?: string; target?: string }>(
   ({ href }) =>
     href && {
       display: "inline-flex",
+      cursor: "pointer",
       "&:hover": {
         "& > svg": {
           opacity: 1,
@@ -99,7 +100,9 @@ export const SnapshotImage = ({
   const hasDiff = !!latestImage && !!diffImage && comparisonResult === ComparisonResult.Changed;
   const hasError = comparisonResult === ComparisonResult.CaptureError;
   const hasFocus = hasDiff && !!focusImage;
-  const containerProps = hasDiff ? { as: "a" as any, href: testUrl, target: "_blank" } : {};
+  const containerProps = hasDiff
+    ? { as: "a" as any, href: testUrl, target: "_blank", title: "View on Chromatic.com" }
+    : {};
   const showDiff = hasDiff && diffVisible;
   const showFocus = hasFocus && focusVisible;
 
