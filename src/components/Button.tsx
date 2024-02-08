@@ -17,9 +17,6 @@ export const Button = styled(BaseButton)<{
       "@container (min-width: 800px)": {
         padding: "8px 10px",
       },
-      svg: {
-        marginRight: 6,
-      },
     },
   },
   ({ link, theme }) =>
