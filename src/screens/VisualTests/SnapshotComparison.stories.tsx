@@ -1,13 +1,11 @@
 // @ts-nocheck TODO: Address SB 8 type errors
 import { action } from "@storybook/addon-actions";
 import type { Meta, StoryObj } from "@storybook/react";
-import { fn } from "@storybook/test";
 import { findByRole, fireEvent, screen, userEvent, within } from "@storybook/testing-library";
 import type { StoryContext } from "@storybook/types";
 import { delay, http } from "msw";
 import React, { ComponentProps } from "react";
 
-import { AuthProvider } from "../../AuthContext";
 import { Browser, ComparisonResult, TestResult, TestStatus } from "../../gql/graphql";
 import { panelModes } from "../../modes";
 import { playAll } from "../../utils/playAll";
@@ -24,7 +22,6 @@ const build = { ...pendingBuild, startedAt: new Date() };
 const meta = {
   component: SnapshotComparison,
   decorators: [
-    storyWrapper(AuthProvider, () => ({ value: { accessToken: "token", setAccessToken: fn() } })),
     storyWrapper(ReviewTestProvider, (ctx) => ({
       watchState: {
         isReviewing: false,

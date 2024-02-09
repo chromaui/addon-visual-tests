@@ -1,13 +1,9 @@
 import { action } from "@storybook/addon-actions";
 import type { Meta, StoryObj } from "@storybook/react";
-import { fn } from "@storybook/test";
 import { graphql, HttpResponse } from "msw";
 
-import { AuthProvider } from "../../AuthContext";
 import { ProjectQueryQuery } from "../../gql/graphql";
 import { panelModes } from "../../modes";
-import { GraphQLClientProvider } from "../../utils/graphQLClient";
-import { storyWrapper } from "../../utils/storyWrapper";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
 import { LinkedProject } from "./LinkedProject";
 
@@ -24,10 +20,6 @@ const meta = {
     configFile: "chromatic.config.json",
     goToNext: action("goToNext"),
   },
-  decorators: [
-    storyWrapper(GraphQLClientProvider),
-    storyWrapper(AuthProvider, () => ({ value: { accessToken: "token", setAccessToken: fn() } })),
-  ],
   parameters: {
     chromatic: {
       modes: panelModes,

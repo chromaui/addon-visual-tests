@@ -1,25 +1,17 @@
 // @ts-nocheck TODO: Address SB 8 type errors
 import { action } from "@storybook/addon-actions";
 import type { Meta, StoryObj } from "@storybook/react";
-import { fn } from "@storybook/test";
 import { findByTestId } from "@storybook/testing-library";
 import { delay, graphql, HttpResponse } from "msw";
 
-import { AuthProvider } from "../../AuthContext";
 import { SelectProjectsQueryQuery } from "../../gql/graphql";
 import { panelModes } from "../../modes";
-import { GraphQLClientProvider } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
-import { storyWrapper } from "../../utils/storyWrapper";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
 import { LinkProject } from "./LinkProject";
 
 const meta = {
   component: LinkProject,
-  decorators: [
-    storyWrapper(GraphQLClientProvider),
-    storyWrapper(AuthProvider, () => ({ value: { accessToken: "token", setAccessToken: fn() } })),
-  ],
   args: {
     createdProjectId: undefined,
     onUpdateProject: action("updateProject"),

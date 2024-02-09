@@ -124,8 +124,6 @@ const meta = {
   component: VisualTestsWithoutSelectedBuildId,
   decorators: [
     storyWrapper(ControlsProvider),
-    storyWrapper(GraphQLClientProvider),
-    storyWrapper(AuthProvider, () => ({ value: { accessToken: "token", setAccessToken: fn() } })),
     (Story) => {
       // TODO: Need to replace this mocking when completing AP-3586 - mock the graphql query instead
       // localStorage.setItem(WALKTHROUGH_COMPLETED_KEY, "true");

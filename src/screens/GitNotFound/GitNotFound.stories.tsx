@@ -1,18 +1,10 @@
 // @ts-nocheck TODO: Address SB 8 type errors
 import type { Meta, StoryObj } from "@storybook/react";
-import { fn } from "@storybook/test";
 
-import { AuthProvider } from "../../AuthContext";
-import { GraphQLClientProvider } from "../../utils/graphQLClient";
-import { storyWrapper } from "../../utils/storyWrapper";
 import { GitNotFound } from "./GitNotFound";
 
 const meta = {
   component: GitNotFound,
-  decorators: [
-    storyWrapper(GraphQLClientProvider),
-    storyWrapper(AuthProvider, () => ({ value: { accessToken: "token", setAccessToken: fn() } })),
-  ],
   args: {
     gitInfoError: new Error("Git info not found"),
   },
