@@ -1,6 +1,6 @@
 import { action } from "@storybook/addon-actions";
 import { ManagerContext } from "@storybook/manager-api";
-import type { Loader, Preview } from "@storybook/react";
+import type { Decorator, Loader, Preview } from "@storybook/react";
 import { fn } from "@storybook/test";
 import {
   Global,
@@ -13,7 +13,7 @@ import {
 } from "@storybook/theming";
 import { HttpResponse, graphql } from "msw";
 import { initialize, mswLoader } from "msw-storybook-addon";
-import React from "react";
+import React, { useState } from "react";
 
 import { AuthProvider } from "../src/AuthContext";
 import { baseModes } from "../src/modes";
@@ -135,7 +135,14 @@ const withManagerApi = storyWrapper(ManagerContext.Provider, ({ argsByTarget }) 
   },
 }));
 
-const withUninstall = storyWrapper(UninstallProvider);
+const withUninstall: Decorator = (Story) => {
+  const [addonInstalled, setAddonInstalled] = useState(false);
+  return (
+    <UninstallProvider addonUninstalled={addonInstalled} setAddonUninstalled={setAddonInstalled}>
+      <Story />
+    </UninstallProvider>
+  );
+};
 
 /**
  * An experiment with targeted args for GraphQL. This loader will serve a graphql

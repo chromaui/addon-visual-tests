@@ -19,41 +19,15 @@ Start Storybook and navigate to the Visual Tests panel to run your first visual 
 
 ## Configuration
 
-By default, the addon offers zero-config support to run visual tests with Storybook and Chromatic. However, you can extend your Storybook configuration file (i.e., `.storybook/main.js|ts`) and provide additional options to control how tests are run. Listed below are the available options and examples of how to use them.
+By default, the addon offers zero-config support to run visual tests with Storybook and Chromatic. However, if you need, you can customize it by providing a few options. See the [Chromatic documentation](https://www.chromatic.com/docs/visual-tests-addon/) for more information on configuring and using it with your Storybook.
 
-| Option            | Description                                                                                                                              |
-| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `buildScriptName` | Optional. Defines the custom Storybook build script <br/> `options: { buildScriptName: 'deploy-storybook' }`                             |
-| `debug`           | Optional. Output verbose debugging information to the console. <br/> `options: { debug: true }`                                          |
-| `projectId`       | Automatically configured. Sets the value for the project identifier <br/> `options: { projectId: Project:64cbcde96f99841e8b007d75 }`     |
-| `zip`             | Recommended for large projects. Configures the addon to deploy your Storybook to Chromatic as a zip file. <br/> `options: { zip: true }` |
+## Getting Help
 
-```ts
-// .storybook/main.ts
+If you have any questions or need help with the addon, please get in touch with the Chromatic team. [Sign in](https://www.chromatic.com/start) to your Chromatic account and click the chat icon in the bottom right corner of the screen to start a conversation with us.
 
-// Replace your-framework with the framework you are using (e.g., react-webpack5, vue3-vite)
-import type { StorybookConfig } from "@storybook/your-framework";
+## Contributing
 
-const config: StorybookConfig = {
-  framework: "@storybook/your-framework",
-  stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
-  addons: [
-    // Other Storybook addons
-    "@chromatic-com/storybook",
-    {
-      name: "@chromatic-com/storybook",
-      options: {
-        projectId: "Project:64cbcde96f99841e8b007d75",
-        buildScriptName: "build-storybook",
-        zip: true,
-        debug: true,
-      },
-    },
-  ],
-};
-
-export default config;
-```
+We welcome contributions! If you're a maintainer, refer to the following [instructions](./Development.md) to set up your development environment with Chromatic.
 
 ### Updating the GraphQL schema
 
@@ -81,10 +55,6 @@ This is a [known issue](https://github.com/storybookjs/storybook/issues/22431#is
 ```
 
 Alternatively, you could use a different package manager ([npm](https://www.npmjs.com/), [pnpm](https://pnpm.io/installation)).
-
-## Contributing
-
-We welcome contributions! If you're a maintainer, refer to the following [instructions](./Development.md) to set up your development environment with Chromatic.
 
 ### License
 
