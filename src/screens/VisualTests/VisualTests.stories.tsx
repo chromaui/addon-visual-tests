@@ -16,6 +16,7 @@ import {
 import { delay, HttpResponse } from "msw";
 import React from "react";
 
+import { AuthProvider } from "../../AuthContext";
 import { INITIAL_BUILD_PAYLOAD } from "../../buildSteps";
 // TODO: Remove after completing AP-3586
 // import { WALKTHROUGH_COMPLETED_KEY } from "../../constants";
@@ -123,7 +124,6 @@ const meta = {
   component: VisualTestsWithoutSelectedBuildId,
   decorators: [
     storyWrapper(ControlsProvider),
-    storyWrapper(GraphQLClientProvider),
     (Story) => {
       // TODO: Need to replace this mocking when completing AP-3586 - mock the graphql query instead
       // localStorage.setItem(WALKTHROUGH_COMPLETED_KEY, "true");
@@ -160,7 +160,6 @@ const meta = {
     storyId: "button--primary",
     projectId: "Project:id123",
     startDevBuild: fn(),
-    setAccessToken: fn(),
     setOutdated: fn(),
     updateBuildStatus: fn(),
     addNotification: fn(),

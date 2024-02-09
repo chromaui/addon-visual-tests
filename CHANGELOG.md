@@ -1,3 +1,44 @@
+# v1.1.4 (Thu Feb 08 2024)
+
+#### 🐛 Bug Fix
+
+- Fix kebab-case `box-shadow` to proper `boxShadow` [#181](https://github.com/chromaui/addon-visual-tests/pull/181) ([@JReinhold](https://github.com/JReinhold))
+
+#### Authors: 1
+
+- Jeppe Reinhold ([@JReinhold](https://github.com/JReinhold))
+
+---
+
+# v1.1.3 (Wed Feb 07 2024)
+
+#### 🐛 Bug Fix
+
+- Update Time Ago Shorthand Notation [#178](https://github.com/chromaui/addon-visual-tests/pull/178) ([@thafryer](https://github.com/thafryer))
+
+#### Authors: 1
+
+- Jarel Fryer ([@thafryer](https://github.com/thafryer))
+
+---
+
+# v1.1.2 (Wed Feb 07 2024)
+
+#### 🐛 Bug Fix
+
+- Adjust Status Visibility on Mode & Browser Selectors [#173](https://github.com/chromaui/addon-visual-tests/pull/173) ([@thafryer](https://github.com/thafryer))
+
+#### 📝 Documentation
+
+- Update README.md [#177](https://github.com/chromaui/addon-visual-tests/pull/177) ([@domyen](https://github.com/domyen))
+
+#### Authors: 2
+
+- Dominic Nguyen ([@domyen](https://github.com/domyen))
+- Jarel Fryer ([@thafryer](https://github.com/thafryer))
+
+---
+
 # v1.1.1 (Tue Feb 06 2024)
 
 #### 🐛 Bug Fix

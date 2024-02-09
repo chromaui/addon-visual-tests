@@ -5,14 +5,11 @@ import React, { useEffect } from "react";
 
 import { CONFIG_INFO, CONFIG_INFO_DISMISSED } from "../../constants";
 import { ConfigInfoPayload } from "../../types";
-import { GraphQLClientProvider } from "../../utils/graphQLClient";
 import { SharedState } from "../../utils/SharedState";
-import { storyWrapper } from "../../utils/storyWrapper";
 import { GitNotFound } from "./GitNotFound";
 
 const meta = {
   component: GitNotFound,
-  decorators: [storyWrapper(GraphQLClientProvider)],
   args: {
     gitInfoError: new Error("Git info not found"),
   },

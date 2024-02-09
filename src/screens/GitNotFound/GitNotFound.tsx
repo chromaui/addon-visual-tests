@@ -4,18 +4,16 @@ import React from "react";
 
 import { Container } from "../../components/Container";
 import { Icon, Link } from "../../components/design-system";
-import { FooterSection } from "../../components/FooterSection";
-import { HeaderSection } from "../../components/HeaderSection";
 import { Heading } from "../../components/Heading";
 import { VisualTestsIcon } from "../../components/icons/VisualTestsIcon";
-import { Section, Sections } from "../../components/layout";
+import { Section } from "../../components/layout";
+import { Screen } from "../../components/Screen";
 import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
 import { useUninstallAddon } from "../Uninstalled/UninstallContext";
 
 interface GitNotFoundProps {
   gitInfoError: Error;
-  setAccessToken: (accessToken: string | null) => void;
 }
 
 const InfoSection = styled(Section)(({ theme }) => ({
@@ -44,10 +42,10 @@ const StyledCode = styled(Code)(({ theme }) => ({
   fontSize: "12px",
 }));
 
-export const GitNotFound = ({ gitInfoError, setAccessToken }: GitNotFoundProps) => {
+export const GitNotFound = ({ gitInfoError }: GitNotFoundProps) => {
   const { uninstallAddon } = useUninstallAddon();
   return (
-    <Sections>
+    <Screen>
       <Section grow>
         <Container>
           <Stack>
@@ -83,7 +81,6 @@ export const GitNotFound = ({ gitInfoError, setAccessToken }: GitNotFoundProps) 
           </Stack>
         </Container>
       </Section>
-      <FooterSection setAccessToken={setAccessToken} />
-    </Sections>
+    </Screen>
   );
 };

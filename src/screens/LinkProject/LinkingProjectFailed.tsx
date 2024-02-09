@@ -3,26 +3,21 @@ import React from "react";
 import { dedent } from "ts-dedent";
 
 import { Container } from "../../components/Container";
-import { FooterSection } from "../../components/FooterSection";
 import { Heading } from "../../components/Heading";
-import { Section, Sections } from "../../components/layout";
+import { Section } from "../../components/layout";
+import { Screen } from "../../components/Screen";
 import { Text as CenterText } from "../../components/Text";
 
 type LinkingProjectFailedProps = {
   projectId: string;
   configFile: string;
-  setAccessToken: (accessToken: string | null) => void;
 };
 
 const configureDocsLink = "https://www.chromatic.com/docs/addon-visual-tests#configure";
 
-export function LinkingProjectFailed({
-  projectId,
-  configFile,
-  setAccessToken,
-}: LinkingProjectFailedProps) {
+export function LinkingProjectFailed({ projectId, configFile }: LinkingProjectFailedProps) {
   return (
-    <Sections>
+    <Screen>
       <Section grow>
         <Container>
           <CenterText>
@@ -46,7 +41,6 @@ export function LinkingProjectFailed({
           </CenterText>
         </Container>
       </Section>
-      <FooterSection setAccessToken={setAccessToken} />
-    </Sections>
+    </Screen>
   );
 }
