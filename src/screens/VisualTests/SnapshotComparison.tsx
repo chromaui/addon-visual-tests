@@ -2,6 +2,7 @@ import { Loader } from "@storybook/components";
 import { styled } from "@storybook/theming";
 import React, { useEffect } from "react";
 
+import { useAuthState } from "../../AuthContext";
 import { Link } from "../../components/design-system";
 import { Text } from "../../components/layout";
 import { SnapshotImage } from "../../components/SnapshotImage";
@@ -121,7 +122,6 @@ interface SnapshotComparisonProps {
   isBuildFailed: boolean;
   shouldSwitchToLastBuildOnBranch: boolean;
   switchToLastBuildOnBranch?: () => void;
-  setAccessToken: (accessToken: string | null) => void;
   hidden?: boolean;
   storyId: string;
 }
@@ -133,10 +133,10 @@ export const SnapshotComparison = ({
   isBuildFailed,
   shouldSwitchToLastBuildOnBranch,
   switchToLastBuildOnBranch,
-  setAccessToken,
   hidden,
   storyId,
 }: SnapshotComparisonProps) => {
+  const { setAccessToken } = useAuthState();
   const { baselineImageVisible, diffVisible, focusVisible } = useControlsState();
   const { toggleBaselineImage, toggleSettings, toggleWarnings } = useControlsDispatch();
 

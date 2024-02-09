@@ -4,12 +4,13 @@ import { styled } from "@storybook/theming";
 import React from "react";
 import { CombinedError } from "urql";
 
+import { useAuthState } from "../../AuthContext";
 import { BuildProgressInline } from "../../components/BuildProgressBarInline";
 import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
-import { FooterSection } from "../../components/FooterSection";
 import { Heading } from "../../components/Heading";
-import { Bar, Col, Row, Section, Sections, Text } from "../../components/layout";
+import { Col, Section, Text } from "../../components/layout";
+import { Screen } from "../../components/Screen";
 import { Text as CenterText } from "../../components/Text";
 import { LocalBuildProgress } from "../../types";
 
@@ -34,7 +35,6 @@ interface NoBuildProps {
   startDevBuild: () => void;
   localBuildProgress?: LocalBuildProgress;
   branch: string;
-  setAccessToken: (accessToken: string | null) => void;
 }
 
 export const NoBuild = ({
@@ -45,8 +45,8 @@ export const NoBuild = ({
   startDevBuild,
   localBuildProgress,
   branch,
-  setAccessToken,
 }: NoBuildProps) => {
+  const { setAccessToken } = useAuthState();
   const getDetails = () => {
     const button = (
       <Button size="medium" variant="solid" onClick={startDevBuild}>
@@ -153,21 +153,19 @@ export const NoBuild = ({
   };
 
   return (
-    <Sections>
+    <Screen
+      footer={({ menu }) => (
+        <>
+          <Col>
+            {hasData && !queryError && hasProject && (
+              <Text style={{ marginLeft: 5 }}>Waiting for build on {branch}</Text>
+            )}
+          </Col>
+          <Col push>{menu}</Col>
+        </>
+      )}
+    >
       <Section grow>{getContent()}</Section>
-      <FooterSection
-        setAccessToken={setAccessToken}
-        render={({ menu }) => (
-          <>
-            <Col>
-              {hasData && !queryError && hasProject && (
-                <Text style={{ marginLeft: 5 }}>Waiting for build on {branch}</Text>
-              )}
-            </Col>
-            <Col push>{menu}</Col>
-          </>
-        )}
-      />
-    </Sections>
+    </Screen>
   );
 };

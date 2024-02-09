@@ -27,10 +27,7 @@ export const SidebarBottom = ({ api }: SidebarBottomProps) => {
   if (!warnings.length) return null;
 
   return (
-    <span
-      id="sidebar-bottom-wrapper"
-      style={{ width: "calc(100% + 10px)", height: "calc(100% + 10px)", margin: "-5px" }}
-    >
+    <span id="sidebar-bottom-wrapper">
       <SidebarToggleButton count={warnings.length} onEnable={onEnable} onDisable={onDisable} />
     </span>
   );

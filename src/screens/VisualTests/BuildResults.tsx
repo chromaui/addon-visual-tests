@@ -7,9 +7,9 @@ import { BuildProgressInline } from "../../components/BuildProgressBarInline";
 import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
 import { Eyebrow } from "../../components/Eyebrow";
-import { FooterSection } from "../../components/FooterSection";
 import { Heading } from "../../components/Heading";
 import { Section, Sections } from "../../components/layout";
+import { Screen } from "../../components/Screen";
 import { Text as CenterText } from "../../components/Text";
 import { BuildStatus, TestResult } from "../../gql/graphql";
 import { LocalBuildProgress } from "../../types";
@@ -29,7 +29,6 @@ interface BuildResultsProps {
   switchToLastBuildOnBranch?: () => void;
   storyId: string;
   startDevBuild: () => void;
-  setAccessToken: (accessToken: string | null) => void;
 }
 
 export const Warning = styled.div(({ theme }) => ({
@@ -48,7 +47,6 @@ export const BuildResults = ({
   switchToLastBuildOnBranch,
   startDevBuild,
   storyId,
-  setAccessToken,
 }: BuildResultsProps) => {
   const { settingsVisible, warningsVisible } = useControlsState();
   const { toggleSettings, toggleWarnings } = useControlsDispatch();
@@ -103,7 +101,7 @@ export const BuildResults = ({
 
   if (isNewStory) {
     return (
-      <Sections>
+      <Screen>
         <Section grow>
           <Container>
             <Heading>New story found</Heading>
@@ -130,15 +128,14 @@ export const BuildResults = ({
             )}
           </Container>
         </Section>
-        <FooterSection setAccessToken={setAccessToken} />
-      </Sections>
+      </Screen>
     );
   }
   // It shouldn't be possible for one test to be skipped but not all of them
   const isSkipped = !!selectedStory?.tests?.find((t) => t.result === TestResult.Skipped);
   if (isSkipped) {
     return (
-      <Sections>
+      <Screen>
         {buildStatus}
         <Section grow>
           <Container>
@@ -161,8 +158,7 @@ export const BuildResults = ({
             </Button>
           </Container>
         </Section>
-        <FooterSection setAccessToken={setAccessToken} />
-      </Sections>
+      </Screen>
     );
   }
 
@@ -209,7 +205,6 @@ export const BuildResults = ({
             shouldSwitchToLastBuildOnBranch,
             switchToLastBuildOnBranch,
             selectedBuild,
-            setAccessToken,
             storyId,
           }}
         />

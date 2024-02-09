@@ -6,9 +6,9 @@ import { useQuery } from "urql";
 
 import { Container } from "../../components/Container";
 import { Avatar, ListItem } from "../../components/design-system";
-import { FooterSection } from "../../components/FooterSection";
 import { Heading } from "../../components/Heading";
-import { Section, Sections, Text } from "../../components/layout";
+import { Section, Text } from "../../components/layout";
+import { Screen } from "../../components/Screen";
 import { Stack } from "../../components/Stack";
 import { graphql } from "../../gql";
 import type { Account, Project, SelectProjectsQueryQuery } from "../../gql/graphql";
@@ -40,12 +40,10 @@ export const LinkProject = ({
   createdProjectId,
   setCreatedProjectId,
   onUpdateProject,
-  setAccessToken,
 }: {
   createdProjectId: Project["id"] | undefined;
   setCreatedProjectId: (projectId: Project["id"]) => void;
   onUpdateProject: (projectId: string) => void;
-  setAccessToken: (accessToken: string | null) => void;
 }) => {
   const onSelectProjectId = React.useCallback(
     async (selectedProjectId: string) => {
@@ -59,7 +57,6 @@ export const LinkProject = ({
       createdProjectId={createdProjectId}
       setCreatedProjectId={setCreatedProjectId}
       onSelectProjectId={onSelectProjectId}
-      setAccessToken={setAccessToken}
     />
   );
 };
@@ -113,12 +110,10 @@ function SelectProject({
   createdProjectId,
   setCreatedProjectId,
   onSelectProjectId,
-  setAccessToken,
 }: {
   createdProjectId: Project["id"] | undefined;
   setCreatedProjectId: (projectId: Project["id"]) => void;
   onSelectProjectId: (projectId: string) => Promise<void>;
-  setAccessToken: (accessToken: string | null) => void;
 }) {
   const [{ data, fetching, error }, rerunProjectsQuery] = useQuery<SelectProjectsQueryQuery>({
     query: SelectProjectsQuery,
@@ -192,7 +187,7 @@ function SelectProject({
   }, [createdProject, handleSelectProject, closeDialog]);
 
   return (
-    <Sections>
+    <Screen>
       <Section grow>
         <Container>
           <Stack>
@@ -265,7 +260,6 @@ function SelectProject({
           </Stack>
         </Container>
       </Section>
-      <FooterSection setAccessToken={setAccessToken} />
-    </Sections>
+    </Screen>
   );
 }

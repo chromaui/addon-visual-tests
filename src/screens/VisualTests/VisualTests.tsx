@@ -36,7 +36,6 @@ interface VisualTestsProps {
   dismissBuildError: () => void;
   localBuildProgress?: LocalBuildProgress;
   startDevBuild: () => void;
-  setAccessToken: (accessToken: string | null) => void;
   setOutdated: (isOutdated: boolean) => void;
   updateBuildStatus: UpdateStatusFunction;
   projectId: string;
@@ -162,7 +161,6 @@ export const VisualTestsWithoutSelectedBuildId = ({
   dismissBuildError,
   localBuildProgress,
   startDevBuild,
-  setAccessToken,
   setOutdated,
   updateBuildStatus,
   projectId,
@@ -277,7 +275,6 @@ export const VisualTestsWithoutSelectedBuildId = ({
               {...{
                 gitInfo,
                 projectId,
-                setAccessToken,
                 startDevBuild,
                 updateBuildStatus,
                 localBuildProgress,
@@ -308,7 +305,6 @@ export const VisualTestsWithoutSelectedBuildId = ({
             localBuildProgress,
             ...(lastBuildOnBranchIsSelectable && { switchToLastBuildOnBranch }),
             startDevBuild,
-            setAccessToken,
           }}
         />
       ) : (
@@ -324,7 +320,6 @@ export const VisualTestsWithoutSelectedBuildId = ({
                 ...(lastBuildOnBranchIsSelectable && { switchToLastBuildOnBranch }),
                 startDevBuild,
                 userCanReview,
-                setAccessToken,
                 storyId,
               }}
             />
