@@ -45,7 +45,7 @@ const StyledCode = styled(Code)(({ theme }) => ({
 export const GitNotFound = ({ gitInfoError }: GitNotFoundProps) => {
   const { uninstallAddon } = useUninstallAddon();
   return (
-    <Screen>
+    <Screen footer={null}>
       <Container>
         <Stack>
           <div>

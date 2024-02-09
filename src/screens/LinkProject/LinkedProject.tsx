@@ -6,9 +6,10 @@ import { useQuery } from "urql";
 
 import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
+import { FooterMenu } from "../../components/FooterMenu";
 import { Heading } from "../../components/Heading";
 import { Col, Text } from "../../components/layout";
-import { Screen } from "../../components/Screen";
+import { Footer, Screen } from "../../components/Screen";
 import { Stack } from "../../components/Stack";
 import { graphql } from "../../gql";
 import { ProjectQueryQuery } from "../../gql/graphql";
@@ -52,8 +53,8 @@ export const LinkedProject = ({
 
   return (
     <Screen
-      footer={({ menu }) => (
-        <>
+      footer={
+        <Footer>
           <Col>
             {data?.project?.lastBuild && (
               <Text style={{ marginLeft: 5 }}>
@@ -62,9 +63,11 @@ export const LinkedProject = ({
               </Text>
             )}
           </Col>
-          <Col push>{menu}</Col>
-        </>
-      )}
+          <Col push>
+            <FooterMenu />
+          </Col>
+        </Footer>
+      }
     >
       <Container>
         <Stack>

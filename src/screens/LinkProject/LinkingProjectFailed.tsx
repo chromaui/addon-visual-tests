@@ -12,7 +12,7 @@ type LinkingProjectFailedProps = {
   configFile: string;
 };
 
-const configureDocsLink = "https://www.chromatic.com/docs/addon-visual-tests#configure";
+const configureDocsLink = "https://www.chromatic.com/docs/visual-tests-addon/#configure";
 
 export function LinkingProjectFailed({ projectId, configFile }: LinkingProjectFailedProps) {
   return (
@@ -24,13 +24,15 @@ export function LinkingProjectFailed({ projectId, configFile }: LinkingProjectFa
           change to continue using this addon. The file should be saved at <code>{configFile}</code>
           .
         </CenterText>
-        <Code>
-          {dedent`
+        <div style={{ margin: -10 }}>
+          <Code>
+            {dedent`
             {
               "projectId": "${projectId}",
             }
             `}
-        </Code>
+          </Code>
+        </div>
         <CenterText>
           What is this for?{" "}
           <Link withArrow target="_blank" href={configureDocsLink}>

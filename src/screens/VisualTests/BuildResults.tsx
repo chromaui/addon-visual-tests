@@ -162,50 +162,52 @@ export const BuildResults = ({
   const isReviewLocked = status === BuildStatus.Pending && (!userCanReview || !buildIsReviewable);
 
   return (
-    <Sections>
-      {buildStatus}
+    <Screen footer={null}>
+      <Sections>
+        {buildStatus}
 
-      {!buildStatus && isReviewLocked && (
-        <Eyebrow>
-          {userCanReview ? (
-            <>Reviewing is disabled because there's a newer build on {branch}.</>
-          ) : (
-            <>
-              You do not have permission to accept changes.{" "}
-              <Link
-                href="https://www.chromatic.com/docs/collaborators#roles"
-                target="_blank"
-                withArrow
-              >
-                Learn about roles
-              </Link>
-            </>
-          )}
-        </Eyebrow>
-      )}
+        {!buildStatus && isReviewLocked && (
+          <Eyebrow>
+            {userCanReview ? (
+              <>Reviewing is disabled because there's a newer build on {branch}.</>
+            ) : (
+              <>
+                You do not have permission to accept changes.{" "}
+                <Link
+                  href="https://www.chromatic.com/docs/collaborators#roles"
+                  target="_blank"
+                  withArrow
+                >
+                  Learn about roles
+                </Link>
+              </>
+            )}
+          </Eyebrow>
+        )}
 
-      <Section grow last hidden={settingsVisible || warningsVisible}>
-        <SnapshotComparison
-          hidden={settingsVisible || warningsVisible}
-          {...{
-            isOutdated,
-            isStarting: isSelectedBuildStarting,
-            startDevBuild,
-            isBuildFailed,
-            shouldSwitchToLastBuildOnBranch,
-            switchToLastBuildOnBranch,
-            selectedBuild,
-            storyId,
-          }}
-        />
-      </Section>
+        <Section grow last hidden={settingsVisible || warningsVisible} data-x="snapshot-comparison">
+          <SnapshotComparison
+            hidden={settingsVisible || warningsVisible}
+            {...{
+              isOutdated,
+              isStarting: isSelectedBuildStarting,
+              startDevBuild,
+              isBuildFailed,
+              shouldSwitchToLastBuildOnBranch,
+              switchToLastBuildOnBranch,
+              selectedBuild,
+              storyId,
+            }}
+          />
+        </Section>
 
-      <Section grow last hidden={!settingsVisible}>
-        <RenderSettings onClose={() => toggleSettings(false)} />
-      </Section>
-      <Section grow last hidden={!warningsVisible}>
-        <Warnings onClose={() => toggleWarnings(false)} />
-      </Section>
-    </Sections>
+        <Section grow last hidden={!settingsVisible}>
+          <RenderSettings onClose={() => toggleSettings(false)} />
+        </Section>
+        <Section grow last hidden={!warningsVisible}>
+          <Warnings onClose={() => toggleWarnings(false)} />
+        </Section>
+      </Sections>
+    </Screen>
   );
 };

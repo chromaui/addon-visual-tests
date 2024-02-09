@@ -8,6 +8,7 @@ import { Heading } from "../../components/Heading";
 import { BackIcon } from "../../components/icons/BackIcon";
 import { LinkIcon } from "../../components/icons/LinkIcon";
 import { VisualTestsIcon } from "../../components/icons/VisualTestsIcon";
+import { Screen } from "../../components/Screen";
 import { SuffixInput } from "../../components/SuffixInput";
 import { Text } from "../../components/Text";
 
@@ -54,34 +55,36 @@ export const SetSubdomain = ({ onBack, onSignIn }: SetSubdomainProps) => {
   );
 
   return (
-    <Container>
-      <BackButton onClick={onBack}>
-        <BackIcon />
-        Back
-      </BackButton>
-      <div>
-        <LinkIcon />
-        <VisualTestsIcon />
-      </div>
-      <Heading>Sign in with SSO</Heading>
-      <Text>Enter your team&apos;s Chromatic URL.</Text>
-      <Form onSubmit={handleSubmit}>
-        <SuffixInput
-          autoFocus
-          icon="users"
-          value={subdomain}
-          placeholder="yourteam"
-          suffix=".chromatic.com"
-          onChange={handleChange}
-          id="subdomain-input"
-          stackLevel="top"
-          error={inputError}
-          errorTooltipPlacement="top"
-        />
-        <SubmitButton type="submit" variant="solid" size="medium">
-          Continue
-        </SubmitButton>
-      </Form>
-    </Container>
+    <Screen footer={null}>
+      <Container>
+        <BackButton onClick={onBack}>
+          <BackIcon />
+          Back
+        </BackButton>
+        <div>
+          <LinkIcon />
+          <VisualTestsIcon />
+        </div>
+        <Heading>Sign in with SSO</Heading>
+        <Text>Enter your team&apos;s Chromatic URL.</Text>
+        <Form onSubmit={handleSubmit}>
+          <SuffixInput
+            autoFocus
+            icon="users"
+            value={subdomain}
+            placeholder="yourteam"
+            suffix=".chromatic.com"
+            onChange={handleChange}
+            id="subdomain-input"
+            stackLevel="top"
+            error={inputError}
+            errorTooltipPlacement="top"
+          />
+          <SubmitButton type="submit" variant="solid" size="medium">
+            Continue
+          </SubmitButton>
+        </Form>
+      </Container>
+    </Screen>
   );
 };
