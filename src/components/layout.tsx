@@ -13,7 +13,6 @@ export const Sections = styled.div<{ hidden?: boolean }>(
 
 export const Section = styled.div<{ grow?: boolean; last?: boolean }>(({ grow, last, theme }) => ({
   flexGrow: grow ? 1 : "auto",
-  borderBottom: last ? "none" : `1px solid ${theme.appBorderColor}`,
 }));
 
 export const Row = styled.div<{ header?: boolean }>(

@@ -22,8 +22,8 @@ const CodeWrapper = styled.div(({ theme }) => ({
     margin: 0, // override inherited component styles from SB
   },
   "&& pre": {
-    color: theme.base === "dark" ? theme.color.lighter : theme.color.darker,
-    background: theme.base === "dark" ? theme.color.darkest : theme.color.lightest,
+    color: theme.base === "light" ? theme.color.darker : theme.color.lighter,
+    background: theme.base === "light" ? theme.color.lightest : theme.color.darkest,
     fontSize: "12px",
     lineHeight: "16px",
     textAlign: "left",

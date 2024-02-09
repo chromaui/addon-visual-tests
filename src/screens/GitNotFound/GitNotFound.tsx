@@ -21,8 +21,8 @@ const InfoSection = styled(Section)(({ theme }) => ({
   flexDirection: "row",
   alignItems: "center",
   borderRadius: theme.appBorderRadius,
-  background: theme.base === "dark" ? theme.color.darkest : theme.color.lightest,
-  border: `1px solid ${theme.color.border}`,
+  background: theme.base === "light" ? theme.color.lightest : theme.color.darkest,
+  border: `1px solid ${theme.base === "light" ? theme.color.border : theme.color.darker}`,
   padding: 15,
   flex: 1,
 
@@ -33,7 +33,7 @@ const InfoSectionText = styled(Text)(({ theme }) => ({
   marginLeft: 14,
   flex: 1,
   textAlign: "left",
-  color: theme.base === "dark" ? theme.color.lighter : theme.color.darker,
+  color: theme.base === "light" ? theme.color.darker : theme.color.lighter,
 }));
 
 const InfoSectionTextTitle = styled.b(() => ({

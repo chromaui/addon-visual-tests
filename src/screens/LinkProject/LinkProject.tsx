@@ -65,44 +65,50 @@ export const LinkProject = ({
 };
 
 const ListHeading = styled.div(({ theme }) => ({
-  fontSize: `${theme.typography.size.s1}px`,
+  fontSize: `${theme.typography.size.s1 - 1}px`,
   fontWeight: theme.typography.weight.bold,
-  color: theme.color.dark,
+  color: theme.base === "light" ? theme.color.dark : theme.color.light,
   backgroundColor: "inherit",
-  padding: "9px 15px",
-  borderBottom: `1px solid ${theme.color.mediumlight}`,
+  padding: "7px 15px",
+  borderBottom: `1px solid ${theme.base === "light" ? theme.color.border : theme.color.darker}`,
+  lineHeight: "18px",
+  letterSpacing: "0.38em",
+  textTransform: "uppercase",
 }));
 
-const Left = styled.div({
-  flex: 1,
-  backgroundColor: "white",
-  display: "flex",
-  flexDirection: "column",
-});
+const Left = styled.div(({ theme }) => ({}));
 
 const Right = styled.div(({ theme }) => ({
-  flex: 1,
-  backgroundColor: theme.color.lighter,
-  display: "flex",
-  flexDirection: "column",
+  background: theme.base === "light" ? theme.color.lighter : theme.color.darker,
 }));
 
 const ProjectPicker = styled.div(({ theme }) => ({
-  background: theme.color.lightest,
+  background: theme.base === "light" ? theme.color.lightest : theme.color.darkest,
   borderRadius: 5,
-  border: `1px solid ${theme.color.mediumlight}`,
+  border: `1px solid ${theme.color.border}`,
   height: 260,
-  width: 420,
+  maxWidth: 420,
+  minWidth: 260,
+  width: "100%",
   overflow: "hidden",
   textAlign: "left",
   position: "relative",
   display: "flex",
-  margin: 10,
+  "> *": {
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    width: "50%",
+  },
 }));
 
 const List = styled.div({
   height: "100%",
   overflowY: "auto",
+});
+
+const StyledStack = styled(Stack)({
+  width: "100%",
 });
 
 const RepositoryOwnerAvatar = styled(Avatar)({
@@ -195,13 +201,15 @@ function SelectProject({
     <Sections>
       <Section grow>
         <Container>
-          <Stack>
+          <StyledStack>
             {!data && fetching && <p>Loading...</p>}
             {error && <p>{error.message}</p>}
             {data?.viewer?.accounts && (
               <>
-                <Heading>Select a Project</Heading>
-                <Text>Baselines will be used with this project.</Text>
+                <div>
+                  <Heading>Select a project</Heading>
+                  <Text>Your tests will sync with this project.</Text>
+                </div>
                 <ProjectPicker>
                   <Left>
                     <ListHeading>Accounts</ListHeading>
@@ -210,6 +218,7 @@ function SelectProject({
                         <ListItem
                           key={account.id}
                           title={account.name}
+                          appearance="secondary"
                           left={
                             <RepositoryOwnerAvatar
                               src={account.avatarUrl ?? undefined}
@@ -225,19 +234,6 @@ function SelectProject({
                   <Right>
                     <ListHeading>Projects</ListHeading>
                     <List data-testid="right-list">
-                      {selectedAccount?.projects?.map(
-                        (project) =>
-                          project && (
-                            <ListItem
-                              appearance="secondary"
-                              key={project.id}
-                              title={project.name}
-                              right={<AddIcon aria-label={project.name} />}
-                              onClick={() => handleSelectProject(project)}
-                              disabled={isSelectingProject}
-                            />
-                          )
-                      )}
                       {selectedAccount && (
                         <ListItem
                           title={
@@ -257,12 +253,25 @@ function SelectProject({
                           }
                         />
                       )}
+                      {selectedAccount?.projects?.map(
+                        (project) =>
+                          project && (
+                            <ListItem
+                              appearance="secondary"
+                              key={project.id}
+                              title={project.name}
+                              right={<AddIcon aria-label={project.name} />}
+                              onClick={() => handleSelectProject(project)}
+                              disabled={isSelectingProject}
+                            />
+                          )
+                      )}
                     </List>
                   </Right>
                 </ProjectPicker>
               </>
             )}
-          </Stack>
+          </StyledStack>
         </Container>
       </Section>
       <FooterSection setAccessToken={setAccessToken} />

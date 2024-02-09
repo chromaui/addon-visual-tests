@@ -25,7 +25,7 @@ const spin = keyframes({
 const stepIconStyle = { width: 10, marginRight: 8 };
 
 const Header = styled.button<{ isWarning?: boolean }>(({ isWarning, onClick, theme }) => {
-  const warningColor = theme.base === "dark" ? "#2e271a" : theme.background.warning;
+  const warningColor = theme.base === "light" ? theme.background.warning : "#2e271a";
   return {
     position: "relative",
     display: "flex",
@@ -54,7 +54,7 @@ const Header = styled.button<{ isWarning?: boolean }>(({ isWarning, onClick, the
 
 const Bar = styled.div<{ isWarning?: boolean; percentage: number }>(
   ({ isWarning, percentage, theme }) => {
-    const warningColor = theme.base === "dark" ? "#43361f" : "#FFE6B1";
+    const warningColor = theme.base === "light" ? "#FFE6B1" : "#43361f";
     return {
       display: "block",
       position: "absolute",
@@ -85,7 +85,7 @@ const ExpandableDiv = styled.div<{ expanded: boolean }>(({ expanded, theme }) =>
 const StepDetails = styled.div(({ theme }) => ({
   whiteSpace: "nowrap",
   overflow: "hidden",
-  color: theme.base === "dark" ? theme.color.lightest : theme.color.dark,
+  color: theme.base === "light" ? theme.color.dark : theme.color.lightest,
 }));
 
 const StepDetail = styled.div<{ isCurrent: boolean; isFailed: boolean; isPending: boolean }>(

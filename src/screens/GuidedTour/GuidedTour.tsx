@@ -295,7 +295,7 @@ export const GuidedTour = ({
           options: {
             zIndex: 10000,
             primaryColor: theme.color.secondary,
-            arrowColor: theme.base === "dark" ? "#292A2C" : theme.color.lightest,
+            arrowColor: theme.base === "light" ? theme.color.lightest : "#292A2C",
           },
         }}
       />
