@@ -1,3 +1,20 @@
+# v1.1.5 (Fri Feb 09 2024)
+
+#### 🐛 Bug Fix
+
+- Refactor UI architecture to avoid repetition [#184](https://github.com/chromaui/addon-visual-tests/pull/184) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### 📝 Documentation
+
+- Docs: Minor Readme cleanup [#180](https://github.com/chromaui/addon-visual-tests/pull/180) ([@jonniebigodes](https://github.com/jonniebigodes))
+
+#### Authors: 2
+
+- [@jonniebigodes](https://github.com/jonniebigodes)
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v1.1.4 (Thu Feb 08 2024)
 
 #### 🐛 Bug Fix
