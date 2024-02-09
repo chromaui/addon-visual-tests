@@ -1,11 +1,14 @@
 import { Loader } from "@storybook/components";
 import { PlayIcon } from "@storybook/icons";
 import { styled } from "@storybook/theming";
+import { lighten } from "polished";
 import React from "react";
 import { CombinedError } from "urql";
 
 import { BuildProgressInline } from "../../components/BuildProgressBarInline";
 import { Button } from "../../components/Button";
+import { ButtonStack } from "../../components/ButtonStack";
+import { Code } from "../../components/Code";
 import { Container } from "../../components/Container";
 import { Link } from "../../components/design-system";
 import { FooterSection } from "../../components/FooterSection";
@@ -17,15 +20,17 @@ import { LocalBuildProgress } from "../../types";
 
 const buildFailureUrl = "https://www.chromatic.com/docs/setup/#troubleshooting";
 
-const ErrorContainer = styled.div(({ theme }) => ({
+const ErrorContainer = styled.pre(({ theme }) => ({
   display: "block",
   minWidth: "80%",
-  color: theme.color.darker,
-  background: "#FFF5CF",
-  border: "1px solid #E69D0033",
+  color: theme.color.warningText,
+  background: theme.background.warning,
+  border: `1px solid ${lighten(0.5, theme.color.warningText)}`,
   borderRadius: 2,
-  padding: "15px 20px",
-  margin: "10px 10px 18px 10px",
+  padding: 15,
+  margin: 0,
+  fontSize: theme.typography.size.s1,
+  textAlign: "left",
 }));
 
 interface NoBuildProps {
@@ -69,11 +74,12 @@ export const NoBuild = ({
       return (
         <>
           <ErrorContainer>
-            <b>Build failed:</b> <code>{firstError?.message || "Unknown Error"}</code>{" "}
+            Build failed: {firstError?.message || "Unknown Error"}{" "}
             <Link target="_blank" href={buildFailureUrl} withArrow>
-              Learn more
+              View full error
             </Link>
           </ErrorContainer>
+
           {button}
         </>
       );
@@ -113,11 +119,19 @@ export const NoBuild = ({
                   : "Try logging out or clear your browser's local storage."}
               </CenterText>
             </div>
-
-            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-            <Link isButton onClick={() => setAccessToken(null)} withArrow>
-              Log out
-            </Link>
+            <ButtonStack>
+              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+              <Link isButton onClick={() => setAccessToken(null)} withArrow>
+                Log out
+              </Link>
+              <Link
+                withArrow
+                href="https://www.chromatic.com/docs/visual-tests-addon#troubleshooting"
+                target="_blank"
+              >
+                Troubleshoot
+              </Link>
+            </ButtonStack>
           </Stack>
         </Container>
       );

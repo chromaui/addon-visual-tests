@@ -108,7 +108,7 @@ export const SidebarTopButton = ({
         }
       >
         <SidebarIconButton aria-label="Stop tests" onClick={() => stopBuild()}>
-          <StopAltIcon style={{ width: 10 }} />
+          <StopAltIcon style={{ width: 10, margin: 2 }} />
           <ProgressCircle xmlns="http://www.w3.org/2000/svg">
             <circle />
           </ProgressCircle>

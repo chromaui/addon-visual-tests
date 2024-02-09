@@ -15,13 +15,13 @@ const Title = styled.span({
 const Center = styled.span({});
 const Right = styled.span({});
 
-const ItemWrapper = styled.li({
+const ItemWrapper = styled.li(({ theme }) => ({
   listStyle: "none",
 
   "&:not(:first-child)": {
-    borderTop: `1px solid ${color.border}`,
+    borderTop: `1px solid ${theme.base === "light" ? theme.color.border : theme.color.darker}`,
   },
-});
+}));
 
 const ItemInner = styled.span({
   lineHeight: "18px",
@@ -72,6 +72,9 @@ const linkStyles = (props: LinkStyleProps) => css`
   /* Styling */
   .sbds-list-item-title {
     color: ${color.darker};
+
+    // TODO use theme instead
+    //color: theme.base === "light" ? theme.color.darker : theme.//color.lighter,
   }
 
   .sbds-list-item-right svg {

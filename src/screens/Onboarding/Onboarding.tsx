@@ -1,5 +1,6 @@
 import { PlayIcon } from "@storybook/icons";
 import { styled } from "@storybook/theming";
+import { lighten } from "polished";
 import React, { useEffect, useState } from "react";
 import { gql } from "urql";
 
@@ -62,6 +63,19 @@ const ButtonStackText = styled(Text)(() => ({
   marginBottom: 5,
 }));
 
+const ErrorContainer = styled.pre(({ theme }) => ({
+  display: "block",
+  minWidth: "80%",
+  color: theme.color.warningText,
+  background: theme.background.warning,
+  border: `1px solid ${lighten(0.5, theme.color.warningText)}`,
+  borderRadius: 2,
+  padding: 15,
+  margin: 0,
+  fontSize: theme.typography.size.s1,
+  textAlign: "left",
+}));
+
 interface OnboardingProps {
   onComplete: () => void;
   onSkip: () => void;
@@ -116,18 +130,23 @@ export const Onboarding = ({
     return (
       <Container>
         <Stack>
-          <h1>Something went wrong</h1>
-          <p>
+          <div>
+            <Heading>Something went wrong</Heading>
+            <Text>Your tests will sync with this project.</Text>
+          </div>
+          <ErrorContainer>
             {Array.isArray(localBuildProgress.originalError)
               ? localBuildProgress.originalError[0]?.message
               : localBuildProgress.originalError?.message}
-          </p>
-          <Button variant="solid" size="medium" onClick={startDevBuild}>
-            Try again
-          </Button>
-          <Button link onClick={onSkip}>
-            Skip walkthrough
-          </Button>
+          </ErrorContainer>
+          <ButtonStack>
+            <Button variant="solid" size="medium" onClick={startDevBuild}>
+              Try again
+            </Button>
+            <Button link onClick={onSkip}>
+              Skip walkthrough
+            </Button>
+          </ButtonStack>
         </Stack>
       </Container>
     );

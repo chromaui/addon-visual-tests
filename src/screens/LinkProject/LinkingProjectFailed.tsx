@@ -46,8 +46,8 @@ export function LinkingProjectFailed({
             <div>
               <Heading>Add the project ID to your Chromatic config</Heading>
               <CenterText>
-                The <Code>projectId</Code> will be used to reference prior tests. Please commit this
-                change to continue using this addon. The file should be saved at {configFile}.
+                The <Code>projectId</Code> will be used to sync tests with Chromatic. Please commit
+                this change to continue using the addon. The file should be saved at {configFile}.
               </CenterText>
             </div>
             <CodeWrapper>

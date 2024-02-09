@@ -202,74 +202,90 @@ function SelectProject({
       <Section grow>
         <Container>
           <StyledStack>
-            {!data && fetching && <p>Loading...</p>}
+            <div>
+              <Heading>Select a project</Heading>
+              <Text>Your tests will sync with this project.</Text>
+            </div>
             {error && <p>{error.message}</p>}
+            {!data && fetching && (
+              <ProjectPicker>
+                <Left>
+                  <ListHeading>Accounts</ListHeading>
+                  <List>
+                    <ListItem appearance="secondary" isLoading />
+                    <ListItem appearance="secondary" isLoading />
+                    <ListItem appearance="secondary" isLoading />
+                    <ListItem appearance="secondary" isLoading />
+                    <ListItem appearance="secondary" isLoading />
+                  </List>
+                </Left>
+                <Right>
+                  <ListHeading>Projects</ListHeading>
+                  <List data-testid="right-list">
+                    <ListItem appearance="secondary" isLoading />
+                    <ListItem appearance="secondary" isLoading />
+                    <ListItem appearance="secondary" isLoading />
+                  </List>
+                </Right>
+              </ProjectPicker>
+            )}
             {data?.viewer?.accounts && (
-              <>
-                <div>
-                  <Heading>Select a project</Heading>
-                  <Text>Your tests will sync with this project.</Text>
-                </div>
-                <ProjectPicker>
-                  <Left>
-                    <ListHeading>Accounts</ListHeading>
-                    <List data-testid="left-list">
-                      {data.viewer.accounts?.map((account) => (
-                        <ListItem
-                          key={account.id}
-                          title={account.name}
-                          appearance="secondary"
-                          left={
-                            <RepositoryOwnerAvatar
-                              src={account.avatarUrl ?? undefined}
-                              size="tiny"
-                            />
-                          }
-                          onClick={() => onSelectAccount(account)}
-                          active={selectedAccountId === account.id}
-                        />
-                      ))}
-                    </List>
-                  </Left>
-                  <Right>
-                    <ListHeading>Projects</ListHeading>
-                    <List data-testid="right-list">
-                      {selectedAccount && (
-                        <ListItem
-                          title={
-                            // eslint-disable-next-line jsx-a11y/anchor-is-valid
-                            <Link
-                              isButton
-                              withArrow
-                              onClick={() => {
-                                if (!selectedAccount?.newProjectUrl) {
-                                  throw new Error("Unexpected missing `newProjectUrl` on account");
-                                }
-                                openDialog(selectedAccount.newProjectUrl);
-                              }}
-                            >
-                              Create project
-                            </Link>
-                          }
-                        />
-                      )}
-                      {selectedAccount?.projects?.map(
-                        (project) =>
-                          project && (
-                            <ListItem
-                              appearance="secondary"
-                              key={project.id}
-                              title={project.name}
-                              right={<AddIcon aria-label={project.name} />}
-                              onClick={() => handleSelectProject(project)}
-                              disabled={isSelectingProject}
-                            />
-                          )
-                      )}
-                    </List>
-                  </Right>
-                </ProjectPicker>
-              </>
+              <ProjectPicker>
+                <Left>
+                  <ListHeading>Accounts</ListHeading>
+                  <List data-testid="left-list">
+                    {data.viewer.accounts?.map((account) => (
+                      <ListItem
+                        key={account.id}
+                        title={account.name}
+                        appearance="secondary"
+                        left={
+                          <RepositoryOwnerAvatar src={account.avatarUrl ?? undefined} size="tiny" />
+                        }
+                        onClick={() => onSelectAccount(account)}
+                        active={selectedAccountId === account.id}
+                      />
+                    ))}
+                  </List>
+                </Left>
+                <Right>
+                  <ListHeading>Projects</ListHeading>
+                  <List data-testid="right-list">
+                    {selectedAccount && (
+                      <ListItem
+                        title={
+                          // eslint-disable-next-line jsx-a11y/anchor-is-valid
+                          <Link
+                            isButton
+                            withArrow
+                            onClick={() => {
+                              if (!selectedAccount?.newProjectUrl) {
+                                throw new Error("Unexpected missing `newProjectUrl` on account");
+                              }
+                              openDialog(selectedAccount.newProjectUrl);
+                            }}
+                          >
+                            Create project
+                          </Link>
+                        }
+                      />
+                    )}
+                    {selectedAccount?.projects?.map(
+                      (project) =>
+                        project && (
+                          <ListItem
+                            appearance="secondary"
+                            key={project.id}
+                            title={project.name}
+                            right={<AddIcon aria-label={project.name} />}
+                            onClick={() => handleSelectProject(project)}
+                            disabled={isSelectingProject}
+                          />
+                        )
+                    )}
+                  </List>
+                </Right>
+              </ProjectPicker>
             )}
           </StyledStack>
         </Container>

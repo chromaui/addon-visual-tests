@@ -191,7 +191,7 @@ export const BuildResults = ({
             <>Reviewing is disabled because there's a newer build on {branch}.</>
           ) : (
             <>
-              You do not have permission to accept changes.{" "}
+              You don&rsquo;t have permission to accept changes.{" "}
               <Link
                 href="https://www.chromatic.com/docs/collaborators#roles"
                 target="_blank"
