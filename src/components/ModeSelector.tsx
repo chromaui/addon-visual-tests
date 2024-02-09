@@ -20,12 +20,13 @@ const IconWrapper = styled.div(({ theme }) => ({
   },
 }));
 
-const Label = styled.span({
+const Label = styled.span(({ theme }) => ({
   display: "none",
+  fontSize: theme.typography.size.s2 - 1,
   "@container (min-width: 300px)": {
     display: "inline-block",
   },
-});
+}));
 
 type ModeData = Pick<TestMode, "name">;
 
