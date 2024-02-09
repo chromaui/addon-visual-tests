@@ -46,41 +46,39 @@ export const GitNotFound = ({ gitInfoError }: GitNotFoundProps) => {
   const { uninstallAddon } = useUninstallAddon();
   return (
     <Screen>
-      <Section grow>
-        <Container>
-          <Stack>
-            <div>
-              <VisualTestsIcon />
-              <Heading>Visual tests</Heading>
-              <Text>
-                Catch bugs in UI appearance automatically. Compare image snapshots to detect visual
-                changes.
-              </Text>
-            </div>
-            <InfoSection>
-              <Icon icon="lock" />
-              <InfoSectionText>
-                <b>Git not detected</b>
-                <br />
-                This addon requires Git to associate test results with commits and branches.
-                Initialize git (<StyledCode>git init</StyledCode>) and make your first commit (
-                <StyledCode>git commit -m</StyledCode>) to get started!
-              </InfoSectionText>
-            </InfoSection>
-            <Link
-              target="_blank"
-              href="https://www.chromatic.com/docs/visual-testing-addon/"
-              withArrow
-            >
-              Visual tests requirements
-            </Link>
-            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-            <Link withArrow onClick={() => uninstallAddon()}>
-              Uninstall
-            </Link>
-          </Stack>
-        </Container>
-      </Section>
+      <Container>
+        <Stack>
+          <div>
+            <VisualTestsIcon />
+            <Heading>Visual tests</Heading>
+            <Text>
+              Catch bugs in UI appearance automatically. Compare image snapshots to detect visual
+              changes.
+            </Text>
+          </div>
+          <InfoSection>
+            <Icon icon="lock" />
+            <InfoSectionText>
+              <b>Git not detected</b>
+              <br />
+              This addon requires Git to associate test results with commits and branches.
+              Initialize git (<StyledCode>git init</StyledCode>) and make your first commit (
+              <StyledCode>git commit -m</StyledCode>) to get started!
+            </InfoSectionText>
+          </InfoSection>
+          <Link
+            target="_blank"
+            href="https://www.chromatic.com/docs/visual-testing-addon/"
+            withArrow
+          >
+            Visual tests requirements
+          </Link>
+          {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+          <Link withArrow onClick={() => uninstallAddon()}>
+            Uninstall
+          </Link>
+        </Stack>
+      </Container>
     </Screen>
   );
 };

@@ -165,7 +165,7 @@ export const NoBuild = ({
         </>
       )}
     >
-      <Section grow>{getContent()}</Section>
+      {getContent()}
     </Screen>
   );
 };

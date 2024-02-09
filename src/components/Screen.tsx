@@ -2,7 +2,7 @@ import React, { ReactNode } from "react";
 
 import { useAuthState } from "../AuthContext";
 import { FooterSection } from "./FooterSection";
-import { Sections } from "./layout";
+import { Section, Sections } from "./layout";
 
 interface ScreenProps {
   children: ReactNode;
@@ -15,7 +15,9 @@ export const Screen = ({ children, footer, header }: ScreenProps) => {
   return (
     <Sections>
       {header?.()}
-      {children}
+      <Section grow>
+        <Sections>{children}</Sections>
+      </Section>
       <FooterSection render={footer} setAccessToken={setAccessToken} />
     </Sections>
   );
