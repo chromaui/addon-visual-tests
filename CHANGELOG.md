@@ -1,3 +1,15 @@
+# v1.1.6 (Sun Feb 11 2024)
+
+#### 🐛 Bug Fix
+
+- Pull screen container `Section` into `Screen` component [#185](https://github.com/chromaui/addon-visual-tests/pull/185) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v1.1.5 (Fri Feb 09 2024)
 
 #### 🐛 Bug Fix
