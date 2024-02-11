@@ -1,13 +1,15 @@
 import { styled } from "@storybook/theming";
 
+export const Base = styled.div<{ hidden?: boolean }>(({ hidden, theme }) => ({
+  background: theme.background.app,
+  containerType: "size",
+  display: hidden ? "none" : "flex",
+  flexDirection: "column",
+  height: "100%",
+}));
+
 export const Sections = styled.div<{ hidden?: boolean }>(
-  {
-    containerType: "size",
-    display: "flex",
-    flexDirection: "column",
-    height: "100%",
-    overflowY: "auto",
-  },
+  { display: "flex", flexDirection: "column", flexGrow: 1 },
   ({ hidden }) => hidden && { display: "none" }
 );
 

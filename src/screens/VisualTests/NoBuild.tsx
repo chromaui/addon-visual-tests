@@ -8,9 +8,10 @@ import { useAuthState } from "../../AuthContext";
 import { BuildProgressInline } from "../../components/BuildProgressBarInline";
 import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
+import { FooterMenu } from "../../components/FooterMenu";
 import { Heading } from "../../components/Heading";
-import { Col, Section, Text } from "../../components/layout";
-import { Screen } from "../../components/Screen";
+import { Col, Text } from "../../components/layout";
+import { Footer, Screen } from "../../components/Screen";
 import { Text as CenterText } from "../../components/Text";
 import { LocalBuildProgress } from "../../types";
 
@@ -154,18 +155,20 @@ export const NoBuild = ({
 
   return (
     <Screen
-      footer={({ menu }) => (
-        <>
+      footer={
+        <Footer>
           <Col>
             {hasData && !queryError && hasProject && (
               <Text style={{ marginLeft: 5 }}>Waiting for build on {branch}</Text>
             )}
           </Col>
-          <Col push>{menu}</Col>
-        </>
-      )}
+          <Col push>
+            <FooterMenu />
+          </Col>
+        </Footer>
+      }
     >
-      <Section grow>{getContent()}</Section>
+      {getContent()}
     </Screen>
   );
 };

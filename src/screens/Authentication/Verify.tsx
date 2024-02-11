@@ -7,6 +7,7 @@ import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
 import { Heading } from "../../components/Heading";
 import { BackIcon } from "../../components/icons/BackIcon";
+import { Screen } from "../../components/Screen";
 import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
 import { graphql } from "../../gql";
@@ -135,28 +136,31 @@ export const Verify = ({
   closeDialogRef.current = closeDialog;
 
   return (
-    <Container>
-      <BackButton onClick={onBack}>
-        <BackIcon />
-        Back
-      </BackButton>
-      <Stack>
-        <div>
-          <Heading>Verify your account</Heading>
-          <Text>
-            Enter this verification code on Chromatic to grant access to your published Storybooks.
-          </Text>
-          <Digits>
-            {userCode?.split("").map((char: string, index: number) => (
-              // eslint-disable-next-line react/no-array-index-key
-              <li key={`${index}-${char}`}>{char.replace(/[^A-Z0-9]/, "")}</li>
-            ))}
-          </Digits>
-        </div>
-        <Button variant="solid" size="medium" onClick={() => openDialog(verificationUrl)}>
-          Go to Chromatic
-        </Button>
-      </Stack>
-    </Container>
+    <Screen footer={null}>
+      <Container>
+        <BackButton onClick={onBack}>
+          <BackIcon />
+          Back
+        </BackButton>
+        <Stack>
+          <div>
+            <Heading>Verify your account</Heading>
+            <Text>
+              Enter this verification code on Chromatic to grant access to your published
+              Storybooks.
+            </Text>
+            <Digits>
+              {userCode?.split("").map((char: string, index: number) => (
+                // eslint-disable-next-line react/no-array-index-key
+                <li key={`${index}-${char}`}>{char.replace(/[^A-Z0-9]/, "")}</li>
+              ))}
+            </Digits>
+          </div>
+          <Button variant="solid" size="medium" onClick={() => openDialog(verificationUrl)}>
+            Go to Chromatic
+          </Button>
+        </Stack>
+      </Container>
+    </Screen>
   );
 };

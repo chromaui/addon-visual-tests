@@ -16,7 +16,6 @@ import {
 import { delay, HttpResponse } from "msw";
 import React from "react";
 
-import { AuthProvider } from "../../AuthContext";
 import { INITIAL_BUILD_PAYLOAD } from "../../buildSteps";
 // TODO: Remove after completing AP-3586
 // import { WALKTHROUGH_COMPLETED_KEY } from "../../constants";
@@ -31,7 +30,6 @@ import {
   withGraphQLMutationParameters,
   withGraphQLQueryParameters,
 } from "../../utils/gqlStoryHelpers";
-import { GraphQLClientProvider } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
 import { makeComparison, makeTest, makeTests } from "../../utils/storyData";
 import { storyWrapper } from "../../utils/storyWrapper";
