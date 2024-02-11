@@ -2,40 +2,36 @@ import React from "react";
 
 import { BrowserSelector } from "../../components/BrowserSelector";
 import { FooterMenu } from "../../components/FooterMenu";
-import { Bar, Col, Section } from "../../components/layout";
+import { Col } from "../../components/layout";
 import { ModeSelector } from "../../components/ModeSelector";
+import { Footer } from "../../components/Screen";
 import { TestStatus } from "../../gql/graphql";
 import { useSelectedStoryState } from "./BuildContext";
 
-export const BuildResultsFooter = ({
-  setAccessToken,
-}: {
-  setAccessToken: (token: string | null) => void;
-}) => {
+export const BuildResultsFooter = () => {
   const storyState = useSelectedStoryState();
   const { browserResults, modeResults } = storyState.summary;
 
   return (
-    <Section last>
-      <Bar>
-        {modeResults.length > 0 && (
-          <ModeSelector
-            isAccepted={storyState.summary.status === TestStatus.Accepted}
-            modeOrder={storyState.modeOrder}
-            selectedMode={storyState.selectedTest.mode}
-            modeResults={modeResults}
-            onSelectMode={storyState.onSelectMode}
-          />
-        )}
-        {browserResults.length > 0 && (
-          <BrowserSelector
-            isAccepted={storyState.summary.status === TestStatus.Accepted}
-            selectedBrowser={storyState.selectedComparison.browser}
-            browserResults={browserResults}
-            onSelectBrowser={storyState.onSelectBrowser}
-          />
-        )}
-        {/* <Col push>
+    <Footer>
+      {modeResults.length > 0 && (
+        <ModeSelector
+          isAccepted={storyState.summary.status === TestStatus.Accepted}
+          modeOrder={storyState.modeOrder}
+          selectedMode={storyState.selectedTest.mode}
+          modeResults={modeResults}
+          onSelectMode={storyState.onSelectMode}
+        />
+      )}
+      {browserResults.length > 0 && (
+        <BrowserSelector
+          isAccepted={storyState.summary.status === TestStatus.Accepted}
+          selectedBrowser={storyState.selectedComparison.browser}
+          browserResults={browserResults}
+          onSelectBrowser={storyState.onSelectBrowser}
+        />
+      )}
+      {/* <Col push>
         <WithTooltip
           tooltip={<TooltipNote note="Render settings" />}
           trigger="hover"
@@ -53,7 +49,7 @@ export const BuildResultsFooter = ({
           </IconButton>
         </WithTooltip>
       </Col> */}
-        {/* <Col>
+      {/* <Col>
         <WithTooltip
           tooltip={<TooltipNote note="View warnings" />}
           trigger="hover"
@@ -72,10 +68,9 @@ export const BuildResultsFooter = ({
           </IconButton>
         </WithTooltip>
       </Col> */}
-        <Col push>
-          <FooterMenu setAccessToken={setAccessToken} />
-        </Col>
-      </Bar>
-    </Section>
+      <Col push>
+        <FooterMenu />
+      </Col>
+    </Footer>
   );
 };

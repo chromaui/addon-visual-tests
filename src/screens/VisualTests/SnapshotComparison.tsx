@@ -73,6 +73,7 @@ const MainSection = styled.div(({ theme }) => ({
   gridArea: "main",
   overflowY: "auto",
   maxHeight: "100%",
+  background: theme.background.content,
 }));
 
 const FooterSection = styled.div(({ theme }) => ({
@@ -80,8 +81,6 @@ const FooterSection = styled.div(({ theme }) => ({
   position: "sticky",
   zIndex: 1,
   bottom: 0,
-  borderTop: `1px solid ${theme.appBorderColor}`,
-  background: theme.background.content,
 }));
 
 const Divider = styled.div(({ children, theme }) => ({
@@ -136,7 +135,6 @@ export const SnapshotComparison = ({
   hidden,
   storyId,
 }: SnapshotComparisonProps) => {
-  const { setAccessToken } = useAuthState();
   const { baselineImageVisible, diffVisible, focusVisible } = useControlsState();
   const { toggleBaselineImage, toggleSettings, toggleWarnings } = useControlsDispatch();
 
@@ -195,7 +193,7 @@ export const SnapshotComparison = ({
           <Grid>{storyInfo}</Grid>
         </HeaderSection>
         <FooterSection>
-          <BuildResultsFooter setAccessToken={setAccessToken} />
+          <BuildResultsFooter />
         </FooterSection>
       </ParentGrid>
     );
@@ -296,7 +294,7 @@ export const SnapshotComparison = ({
         )}
       </MainSection>
       <FooterSection>
-        <BuildResultsFooter setAccessToken={setAccessToken} {...testSummary} />
+        <BuildResultsFooter />
       </FooterSection>
     </ParentGrid>
   );

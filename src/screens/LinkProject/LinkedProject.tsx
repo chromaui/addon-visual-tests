@@ -6,9 +6,10 @@ import { useQuery } from "urql";
 
 import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
+import { FooterMenu } from "../../components/FooterMenu";
 import { Heading } from "../../components/Heading";
-import { Col, Section, Text } from "../../components/layout";
-import { Screen } from "../../components/Screen";
+import { Col, Text } from "../../components/layout";
+import { Footer, Screen } from "../../components/Screen";
 import { Stack } from "../../components/Stack";
 import { graphql } from "../../gql";
 import { ProjectQueryQuery } from "../../gql/graphql";
@@ -52,8 +53,8 @@ export const LinkedProject = ({
 
   return (
     <Screen
-      footer={({ menu }) => (
-        <>
+      footer={
+        <Footer>
           <Col>
             {data?.project?.lastBuild && (
               <Text style={{ marginLeft: 5 }}>
@@ -62,38 +63,38 @@ export const LinkedProject = ({
               </Text>
             )}
           </Col>
-          <Col push>{menu}</Col>
-        </>
-      )}
+          <Col push>
+            <FooterMenu />
+          </Col>
+        </Footer>
+      }
     >
-      <Section grow>
-        <Container>
-          <Stack>
-            {fetching && <p>Loading...</p>}
-            {error && <p>{error.message}</p>}
-            {data?.project && (
-              <Stack>
-                <Check />
-                <Heading>Project linked!</Heading>
-                <Text style={{ maxWidth: 380 }}>
-                  The <code>projectId</code> for {data.project.name} has been added to this
-                  project's <code>{configFile}</code>. This will be used to sync with Chromatic.
-                  Please commit this change to continue using this addon.
-                </Text>
-                <Button variant="solid" size="medium" onClick={() => goToNext()}>
-                  Catch a UI change
-                </Button>
-                <Text>
-                  Why do we need a project ID?{" "}
-                  <Link href="https://www.chromatic.com/docs/cli" target="_blank">
-                    Learn More »
-                  </Link>
-                </Text>
-              </Stack>
-            )}
-          </Stack>
-        </Container>
-      </Section>
+      <Container>
+        <Stack>
+          {fetching && <p>Loading...</p>}
+          {error && <p>{error.message}</p>}
+          {data?.project && (
+            <Stack>
+              <Check />
+              <Heading>Project linked!</Heading>
+              <Text style={{ maxWidth: 380 }}>
+                The <code>projectId</code> for {data.project.name} has been added to this project's{" "}
+                <code>{configFile}</code>. This will be used to sync with Chromatic. Please commit
+                this change to continue using this addon.
+              </Text>
+              <Button variant="solid" size="medium" onClick={() => goToNext()}>
+                Catch a UI change
+              </Button>
+              <Text>
+                Why do we need a project ID?{" "}
+                <Link href="https://www.chromatic.com/docs/cli" target="_blank">
+                  Learn More »
+                </Link>
+              </Text>
+            </Stack>
+          )}
+        </Stack>
+      </Container>
     </Screen>
   );
 };

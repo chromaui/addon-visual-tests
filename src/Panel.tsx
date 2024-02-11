@@ -4,7 +4,6 @@ import React, { useCallback, useState } from "react";
 
 import { AuthProvider } from "./AuthContext";
 import { Spinner } from "./components/design-system";
-import { Sections } from "./components/layout";
 import {
   ADDON_ID,
   GIT_INFO,
@@ -72,7 +71,9 @@ export const Panel = ({ active, api }: PanelProps) => {
           addonUninstalled={addonUninstalled}
           setAddonUninstalled={setAddonUninstalled}
         >
-          <Sections hidden={!active}>{children}</Sections>
+          <div hidden={!active} style={{ containerType: "size", height: "100%" }}>
+            {children}
+          </div>
         </UninstallProvider>
       </AuthProvider>
     </Provider>
