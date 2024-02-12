@@ -6,9 +6,9 @@ import { useQuery } from "urql";
 
 import { Container } from "../../components/Container";
 import { Avatar, ListItem } from "../../components/design-system";
-import { FooterSection } from "../../components/FooterSection";
 import { Heading } from "../../components/Heading";
-import { Section, Sections, Text } from "../../components/layout";
+import { Text } from "../../components/layout";
+import { Screen } from "../../components/Screen";
 import { Stack } from "../../components/Stack";
 import { graphql } from "../../gql";
 import type { Account, Project, SelectProjectsQueryQuery } from "../../gql/graphql";
@@ -40,12 +40,10 @@ export const LinkProject = ({
   createdProjectId,
   setCreatedProjectId,
   onUpdateProject,
-  setAccessToken,
 }: {
   createdProjectId: Project["id"] | undefined;
   setCreatedProjectId: (projectId: Project["id"]) => void;
   onUpdateProject: (projectId: string) => void;
-  setAccessToken: (accessToken: string | null) => void;
 }) => {
   const onSelectProjectId = React.useCallback(
     async (selectedProjectId: string) => {
@@ -59,7 +57,6 @@ export const LinkProject = ({
       createdProjectId={createdProjectId}
       setCreatedProjectId={setCreatedProjectId}
       onSelectProjectId={onSelectProjectId}
-      setAccessToken={setAccessToken}
     />
   );
 };
@@ -119,12 +116,10 @@ function SelectProject({
   createdProjectId,
   setCreatedProjectId,
   onSelectProjectId,
-  setAccessToken,
 }: {
   createdProjectId: Project["id"] | undefined;
   setCreatedProjectId: (projectId: Project["id"]) => void;
   onSelectProjectId: (projectId: string) => Promise<void>;
-  setAccessToken: (accessToken: string | null) => void;
 }) {
   const [{ data, fetching, error }, rerunProjectsQuery] = useQuery<SelectProjectsQueryQuery>({
     query: SelectProjectsQuery,
@@ -198,99 +193,96 @@ function SelectProject({
   }, [createdProject, handleSelectProject, closeDialog]);
 
   return (
-    <Sections>
-      <Section grow>
-        <Container>
-          <StyledStack>
-            <div>
-              <Heading>Select a project</Heading>
-              <Text>Your tests will sync with this project.</Text>
-            </div>
-            {error && <p>{error.message}</p>}
-            {!data && fetching && (
-              <ProjectPicker>
-                <Left>
-                  <ListHeading>Accounts</ListHeading>
-                  <List>
-                    <ListItem appearance="secondary" isLoading />
-                    <ListItem appearance="secondary" isLoading />
-                    <ListItem appearance="secondary" isLoading />
-                    <ListItem appearance="secondary" isLoading />
-                    <ListItem appearance="secondary" isLoading />
-                  </List>
-                </Left>
-                <Right>
-                  <ListHeading>Projects</ListHeading>
-                  <List data-testid="right-list">
-                    <ListItem appearance="secondary" isLoading />
-                    <ListItem appearance="secondary" isLoading />
-                    <ListItem appearance="secondary" isLoading />
-                  </List>
-                </Right>
-              </ProjectPicker>
-            )}
-            {data?.viewer?.accounts && (
-              <ProjectPicker>
-                <Left>
-                  <ListHeading>Accounts</ListHeading>
-                  <List data-testid="left-list">
-                    {data.viewer.accounts?.map((account) => (
-                      <ListItem
-                        key={account.id}
-                        title={account.name}
-                        appearance="secondary"
-                        left={
-                          <RepositoryOwnerAvatar src={account.avatarUrl ?? undefined} size="tiny" />
-                        }
-                        onClick={() => onSelectAccount(account)}
-                        active={selectedAccountId === account.id}
-                      />
-                    ))}
-                  </List>
-                </Left>
-                <Right>
-                  <ListHeading>Projects</ListHeading>
-                  <List data-testid="right-list">
-                    {selectedAccount && (
-                      <ListItem
-                        title={
-                          // eslint-disable-next-line jsx-a11y/anchor-is-valid
-                          <Link
-                            isButton
-                            withArrow
-                            onClick={() => {
-                              if (!selectedAccount?.newProjectUrl) {
-                                throw new Error("Unexpected missing `newProjectUrl` on account");
-                              }
-                              openDialog(selectedAccount.newProjectUrl);
-                            }}
-                          >
-                            Create project
-                          </Link>
-                        }
-                      />
-                    )}
-                    {selectedAccount?.projects?.map(
-                      (project) =>
-                        project && (
-                          <ListItem
-                            appearance="secondary"
-                            key={project.id}
-                            title={project.name}
-                            right={<AddIcon aria-label={project.name} />}
-                            onClick={() => handleSelectProject(project)}
-                            disabled={isSelectingProject}
-                          />
-                        )
-                    )}
-                  </List>
-                </Right>
-              </ProjectPicker>
-            )}
-          </StyledStack>
-        </Container>
-      </Section>
-      <FooterSection setAccessToken={setAccessToken} />
-    </Sections>
+    <Screen>
+      <Container>
+        <StyledStack>
+          <div>
+            <Heading>Select a project</Heading>
+            <Text>Your tests will sync with this project.</Text>
+          </div>
+          {error && <p>{error.message}</p>}
+          {!data && fetching && (
+            <ProjectPicker>
+              <Left>
+                <ListHeading>Accounts</ListHeading>
+                <List>
+                  <ListItem appearance="secondary" isLoading />
+                  <ListItem appearance="secondary" isLoading />
+                  <ListItem appearance="secondary" isLoading />
+                  <ListItem appearance="secondary" isLoading />
+                  <ListItem appearance="secondary" isLoading />
+                </List>
+              </Left>
+              <Right>
+                <ListHeading>Projects</ListHeading>
+                <List data-testid="right-list">
+                  <ListItem appearance="secondary" isLoading />
+                  <ListItem appearance="secondary" isLoading />
+                  <ListItem appearance="secondary" isLoading />
+                </List>
+              </Right>
+            </ProjectPicker>
+          )}
+          {data?.viewer?.accounts && (
+            <ProjectPicker>
+              <Left>
+                <ListHeading>Accounts</ListHeading>
+                <List data-testid="left-list">
+                  {data.viewer.accounts?.map((account) => (
+                    <ListItem
+                      key={account.id}
+                      title={account.name}
+                      appearance="secondary"
+                      left={
+                        <RepositoryOwnerAvatar src={account.avatarUrl ?? undefined} size="tiny" />
+                      }
+                      onClick={() => onSelectAccount(account)}
+                      active={selectedAccountId === account.id}
+                    />
+                  ))}
+                </List>
+              </Left>
+              <Right>
+                <ListHeading>Projects</ListHeading>
+                <List data-testid="right-list">
+                  {selectedAccount && (
+                    <ListItem
+                      title={
+                        // eslint-disable-next-line jsx-a11y/anchor-is-valid
+                        <Link
+                          isButton
+                          withArrow
+                          onClick={() => {
+                            if (!selectedAccount?.newProjectUrl) {
+                              throw new Error("Unexpected missing `newProjectUrl` on account");
+                            }
+                            openDialog(selectedAccount.newProjectUrl);
+                          }}
+                        >
+                          Create project
+                        </Link>
+                      }
+                    />
+                  )}
+                  {selectedAccount?.projects?.map(
+                    (project) =>
+                      project && (
+                        <ListItem
+                          appearance="secondary"
+                          key={project.id}
+                          title={project.name}
+                          right={<AddIcon aria-label={project.name} />}
+                          onClick={() => handleSelectProject(project)}
+                          disabled={isSelectingProject}
+                        />
+                      )
+                  )}
+                </List>
+              </Right>
+            </ProjectPicker>
+          )}
+        </StyledStack>
+      </Container>
+    </Screen>
   );
 }

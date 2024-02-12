@@ -1,7 +1,6 @@
 import { Link } from "@storybook/components";
 import { PlayIcon } from "@storybook/icons";
 import { styled } from "@storybook/theming";
-import { formatDistance } from "date-fns";
 import pluralize from "pluralize";
 import React from "react";
 
@@ -10,6 +9,7 @@ import { AlertIcon } from "../../components/icons/AlertIcon";
 import { ProgressIcon } from "../../components/icons/ProgressIcon";
 import { StatusIcon } from "../../components/icons/StatusIcon";
 import { StoryTestFieldsFragment, TestStatus } from "../../gql/graphql";
+import { formatDate } from "../../utils/formatDate";
 import { summarizeTests } from "../../utils/summarizeTests";
 
 const Info = styled.div(({ theme }) => ({
@@ -94,10 +94,7 @@ export const StoryInfo = ({
   const { status, isInProgress, changeCount, brokenCount, modeResults, browserResults } =
     summarizeTests(tests ?? []);
 
-  const startedAgo =
-    !isStarting &&
-    startedAt &&
-    formatDistance(new Date(startedAt), new Date(), { addSuffix: true });
+  const startedAgo = !isStarting && startedAt && formatDate(new Date(startedAt).getTime());
   // isRunning means either we have no tests or they are unfinished
   const isRunning = isStarting || isInProgress;
   // isFailed means either the whole build failed or the story did

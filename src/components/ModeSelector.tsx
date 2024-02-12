@@ -25,6 +25,7 @@ const IconWrapper = styled.div(({ theme }) => ({
 
 const Label = styled.span(({ theme }) => ({
   display: "none",
+  fontSize: theme.typography.size.s2 - 1,
   "@container (min-width: 300px)": {
     display: "inline-block",
   },
@@ -57,7 +58,7 @@ export const ModeSelector = ({
       fill={theme.base === "light" ? `${theme.color.defaultText}99` : theme.color.light}
     />
   );
-  if (!isAccepted && aggregate !== ComparisonResult.Equal) {
+  if (!isAccepted && aggregate !== ComparisonResult.Equal && modeResults.length >= 2) {
     icon = <StatusDotWrapper status={aggregate}>{icon}</StatusDotWrapper>;
   }
 

@@ -2,8 +2,8 @@ import type { API } from "@storybook/manager-api";
 import { useChannel, useStorybookState } from "@storybook/manager-api";
 import React, { useCallback, useState } from "react";
 
+import { AuthProvider } from "./AuthContext";
 import { Spinner } from "./components/design-system";
-import { Sections } from "./components/layout";
 import {
   ADDON_ID,
   GIT_INFO,
@@ -64,56 +64,40 @@ export const Panel = ({ active, api }: PanelProps) => {
   const [createdProjectId, setCreatedProjectId] = useState<Project["id"]>();
   const [addonUninstalled, setAddonUninstalled] = useSharedState<boolean>(REMOVE_ADDON);
 
-  if (addonUninstalled) {
-    return (
-      <Provider key={PANEL_ID} value={client}>
+  const withProviders = (children: React.ReactNode) => (
+    <Provider key={PANEL_ID} value={client}>
+      <AuthProvider value={{ accessToken, setAccessToken }}>
         <UninstallProvider
           addonUninstalled={addonUninstalled}
           setAddonUninstalled={setAddonUninstalled}
         >
-          <Sections hidden={!active}>
-            <Uninstalled />
-          </Sections>
+          <div hidden={!active} style={{ containerType: "size", height: "100%" }}>
+            {children}
+          </div>
         </UninstallProvider>
-      </Provider>
-    );
+      </AuthProvider>
+    </Provider>
+  );
+
+  if (addonUninstalled) {
+    return withProviders(<Uninstalled />);
   }
 
   if (gitInfoError) {
     // eslint-disable-next-line no-console
     console.error(gitInfoError);
-    return (
-      <Provider key={PANEL_ID} value={client}>
-        <UninstallProvider
-          addonUninstalled={addonUninstalled}
-          setAddonUninstalled={setAddonUninstalled}
-        >
-          <Sections hidden={!active}>
-            <GitNotFound gitInfoError={gitInfoError} setAccessToken={setAccessToken} />
-          </Sections>
-        </UninstallProvider>
-      </Provider>
-    );
+    return withProviders(<GitNotFound gitInfoError={gitInfoError} />);
   }
 
   // Render the Authentication flow if the user is not signed in.
   if (!accessToken) {
-    return (
-      <Provider key={PANEL_ID} value={client}>
-        <UninstallProvider
-          addonUninstalled={addonUninstalled}
-          setAddonUninstalled={setAddonUninstalled}
-        >
-          <Sections hidden={!active}>
-            <Authentication
-              key={PANEL_ID}
-              setAccessToken={setAccessToken}
-              setCreatedProjectId={setCreatedProjectId}
-              hasProjectId={!!projectId}
-            />
-          </Sections>
-        </UninstallProvider>
-      </Provider>
+    return withProviders(
+      <Authentication
+        key={PANEL_ID}
+        setAccessToken={setAccessToken}
+        setCreatedProjectId={setCreatedProjectId}
+        hasProjectId={!!projectId}
+      />
     );
   }
 
@@ -123,93 +107,47 @@ export const Panel = ({ active, api }: PanelProps) => {
   }
 
   if (!projectId)
-    return (
-      <Provider key={PANEL_ID} value={client}>
-        <UninstallProvider
-          addonUninstalled={addonUninstalled}
-          setAddonUninstalled={setAddonUninstalled}
-        >
-          <Sections hidden={!active}>
-            <LinkProject
-              createdProjectId={createdProjectId}
-              setCreatedProjectId={setCreatedProjectId}
-              onUpdateProject={updateProject}
-              setAccessToken={setAccessToken}
-            />
-          </Sections>
-        </UninstallProvider>
-      </Provider>
+    return withProviders(
+      <LinkProject
+        createdProjectId={createdProjectId}
+        setCreatedProjectId={setCreatedProjectId}
+        onUpdateProject={updateProject}
+      />
     );
 
   if (projectUpdatingFailed) {
     // These should always be set when we get this error
-    if (!configFile) {
-      throw new Error(`Missing config file after configuration failure`);
-    }
-
-    return (
-      <UninstallProvider
-        addonUninstalled={addonUninstalled}
-        setAddonUninstalled={setAddonUninstalled}
-      >
-        <Sections hidden={!active}>
-          <LinkingProjectFailed
-            projectId={projectId}
-            configFile={configFile}
-            setAccessToken={setAccessToken}
-          />
-        </Sections>
-      </UninstallProvider>
-    );
+    if (!configFile) throw new Error(`Missing config file after configuration failure`);
+    return withProviders(<LinkingProjectFailed projectId={projectId} configFile={configFile} />);
   }
 
   if (projectIdUpdated) {
     // This should always be set when we succeed
     if (!configFile) throw new Error(`Missing config file after configuration success`);
 
-    return (
-      <Provider key={PANEL_ID} value={client}>
-        <UninstallProvider
-          addonUninstalled={addonUninstalled}
-          setAddonUninstalled={setAddonUninstalled}
-        >
-          <Sections hidden={!active}>
-            <LinkedProject
-              projectId={projectId}
-              configFile={configFile}
-              goToNext={clearProjectIdUpdated}
-              setAccessToken={setAccessToken}
-            />
-          </Sections>
-        </UninstallProvider>
-      </Provider>
+    return withProviders(
+      <LinkedProject
+        projectId={projectId}
+        configFile={configFile}
+        goToNext={clearProjectIdUpdated}
+      />
     );
   }
 
   const localBuildIsRightBranch = gitInfo.branch === localBuildProgress?.branch;
-  return (
-    <Provider key={PANEL_ID} value={client}>
-      <UninstallProvider
-        addonUninstalled={addonUninstalled}
-        setAddonUninstalled={setAddonUninstalled}
-      >
-        <Sections hidden={!active}>
-          <ControlsProvider>
-            <VisualTests
-              dismissBuildError={() => setLocalBuildProgress(undefined)}
-              isOutdated={!!isOutdated}
-              localBuildProgress={localBuildIsRightBranch ? localBuildProgress : undefined}
-              startDevBuild={() => emit(START_BUILD, { accessToken })}
-              setAccessToken={setAccessToken}
-              setOutdated={setOutdated}
-              updateBuildStatus={updateBuildStatus}
-              projectId={projectId}
-              gitInfo={gitInfo}
-              storyId={storyId}
-            />
-          </ControlsProvider>
-        </Sections>
-      </UninstallProvider>
-    </Provider>
+  return withProviders(
+    <ControlsProvider>
+      <VisualTests
+        dismissBuildError={() => setLocalBuildProgress(undefined)}
+        isOutdated={!!isOutdated}
+        localBuildProgress={localBuildIsRightBranch ? localBuildProgress : undefined}
+        startDevBuild={() => emit(START_BUILD, { accessToken })}
+        setOutdated={setOutdated}
+        updateBuildStatus={updateBuildStatus}
+        projectId={projectId}
+        gitInfo={gitInfo}
+        storyId={storyId}
+      />
+    </ControlsProvider>
   );
 };

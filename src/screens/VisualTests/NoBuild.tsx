@@ -5,15 +5,16 @@ import { lighten } from "polished";
 import React from "react";
 import { CombinedError } from "urql";
 
+import { useAuthState } from "../../AuthContext";
 import { BuildProgressInline } from "../../components/BuildProgressBarInline";
 import { Button } from "../../components/Button";
 import { ButtonStack } from "../../components/ButtonStack";
-import { Code } from "../../components/Code";
 import { Container } from "../../components/Container";
 import { Link } from "../../components/design-system";
-import { FooterSection } from "../../components/FooterSection";
+import { FooterMenu } from "../../components/FooterMenu";
 import { Heading } from "../../components/Heading";
-import { Col, Section, Sections, Text } from "../../components/layout";
+import { Col, Text } from "../../components/layout";
+import { Footer, Screen } from "../../components/Screen";
 import { Stack } from "../../components/Stack";
 import { Text as CenterText } from "../../components/Text";
 import { LocalBuildProgress } from "../../types";
@@ -41,7 +42,6 @@ interface NoBuildProps {
   startDevBuild: () => void;
   localBuildProgress?: LocalBuildProgress;
   branch: string;
-  setAccessToken: (accessToken: string | null) => void;
 }
 
 export const NoBuild = ({
@@ -52,8 +52,8 @@ export const NoBuild = ({
   startDevBuild,
   localBuildProgress,
   branch,
-  setAccessToken,
 }: NoBuildProps) => {
+  const { setAccessToken } = useAuthState();
   const getDetails = () => {
     const button = (
       <Button size="medium" variant="solid" onClick={startDevBuild}>
@@ -180,21 +180,21 @@ export const NoBuild = ({
   };
 
   return (
-    <Sections>
-      <Section grow>{getContent()}</Section>
-      <FooterSection
-        setAccessToken={setAccessToken}
-        render={({ menu }) => (
-          <>
-            <Col>
-              {hasData && !queryError && hasProject && (
-                <Text style={{ marginLeft: 5 }}>Waiting for build on {branch}</Text>
-              )}
-            </Col>
-            <Col push>{menu}</Col>
-          </>
-        )}
-      />
-    </Sections>
+    <Screen
+      footer={
+        <Footer>
+          <Col>
+            {hasData && !queryError && hasProject && (
+              <Text style={{ marginLeft: 5 }}>Waiting for build on {branch}</Text>
+            )}
+          </Col>
+          <Col push>
+            <FooterMenu />
+          </Col>
+        </Footer>
+      }
+    >
+      {getContent()}
+    </Screen>
   );
 };

@@ -1,5 +1,5 @@
 import { action } from "@storybook/addon-actions";
-import { API, ManagerContext, State } from "@storybook/manager-api";
+import { ManagerContext } from "@storybook/manager-api";
 import type { Decorator, Loader, Preview } from "@storybook/react";
 import { fn } from "@storybook/test";
 import {
@@ -13,10 +13,13 @@ import {
 } from "@storybook/theming";
 import { HttpResponse, graphql } from "msw";
 import { initialize, mswLoader } from "msw-storybook-addon";
-import React from "react";
+import React, { useState } from "react";
 
+import { AuthProvider } from "../src/AuthContext";
 import { baseModes } from "../src/modes";
 import { UninstallProvider } from "../src/screens/Uninstalled/UninstallContext";
+import { GraphQLClientProvider } from "../src/utils/graphQLClient";
+import { storyWrapper } from "../src/utils/storyWrapper";
 
 // Initialize MSW
 initialize({
@@ -116,20 +119,26 @@ const withTheme = (StoryFn, { globals, parameters }) => {
   );
 };
 
-const withManagerApi: Decorator = (Story, { argsByTarget }) => (
-  <ManagerContext.Provider
-    value={{
-      api: { ...argsByTarget["manager-api"] } as API,
-      state: {} as State,
-    }}
-  >
-    <Story />
-  </ManagerContext.Provider>
-);
+const withGraphQLClient = storyWrapper(GraphQLClientProvider);
+
+const withAuth = storyWrapper(AuthProvider, () => ({
+  value: {
+    accessToken: "token",
+    setAccessToken: fn(),
+  },
+}));
+
+const withManagerApi = storyWrapper(ManagerContext.Provider, ({ argsByTarget }) => ({
+  value: {
+    api: { ...argsByTarget["manager-api"] },
+    state: {},
+  },
+}));
 
 const withUninstall: Decorator = (Story) => {
+  const [addonInstalled, setAddonInstalled] = useState(false);
   return (
-    <UninstallProvider>
+    <UninstallProvider addonUninstalled={addonInstalled} setAddonUninstalled={setAddonInstalled}>
       <Story />
     </UninstallProvider>
   );
@@ -179,7 +188,7 @@ export const graphQLArgLoader: Loader = async ({ argTypes, argsByTarget, paramet
 };
 
 const preview: Preview = {
-  decorators: [withTheme, withUninstall, withManagerApi],
+  decorators: [withTheme, withGraphQLClient, withAuth, withUninstall, withManagerApi],
   loaders: [graphQLArgLoader],
   parameters: {
     actions: {

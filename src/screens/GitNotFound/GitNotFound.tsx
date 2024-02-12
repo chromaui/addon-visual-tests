@@ -4,16 +4,15 @@ import React from "react";
 import { Code } from "../../components/Code";
 import { Container } from "../../components/Container";
 import { Icon, Link } from "../../components/design-system";
-import { FooterSection } from "../../components/FooterSection";
 import { Heading } from "../../components/Heading";
 import { VisualTestsIcon } from "../../components/icons/VisualTestsIcon";
-import { Section, Sections } from "../../components/layout";
+import { Section } from "../../components/layout";
+import { Screen } from "../../components/Screen";
 import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
 
 interface GitNotFoundProps {
   gitInfoError: Error;
-  setAccessToken: (accessToken: string | null) => void;
 }
 
 const InfoSection = styled(Section)(({ theme }) => ({
@@ -41,41 +40,38 @@ const InfoSectionTextTitle = styled.b(() => ({
   marginBottom: 2,
 }));
 
-export const GitNotFound = ({ gitInfoError, setAccessToken }: GitNotFoundProps) => {
+export const GitNotFound = ({ gitInfoError }: GitNotFoundProps) => {
   return (
-    <Sections>
-      <Section grow>
-        <Container>
-          <Stack>
-            <div>
-              <VisualTestsIcon />
-              <Heading>Visual tests</Heading>
-              <Text>
-                Catch bugs in UI appearance automatically. Compare image snapshots to detect visual
-                changes.
-              </Text>
-            </div>
-            <InfoSection>
-              <Icon icon="lock" />
-              <InfoSectionText>
-                <InfoSectionTextTitle>Git not detected</InfoSectionTextTitle>
-                This addon requires Git to associate test results with commits and branches.
-                <Code>git init</Code> and make your first commit
-                <Code>git commit -m</Code> to get started!
-              </InfoSectionText>
-            </InfoSection>
-            <Link
-              target="_blank"
-              href="https://www.chromatic.com/docs/visual-tests-addon#git-addon"
-              withArrow
-              secondary
-            >
-              Visual tests requirements
-            </Link>
-          </Stack>
-        </Container>
-      </Section>
-      <FooterSection setAccessToken={setAccessToken} />
-    </Sections>
+    <Screen footer={null}>
+      <Container>
+        <Stack>
+          <div>
+            <VisualTestsIcon />
+            <Heading>Visual tests</Heading>
+            <Text>
+              Catch bugs in UI appearance automatically. Compare image snapshots to detect visual
+              changes.
+            </Text>
+          </div>
+          <InfoSection>
+            <Icon icon="lock" />
+            <InfoSectionText>
+              <InfoSectionTextTitle>Git not detected</InfoSectionTextTitle>
+              This addon requires Git to associate test results with commits and branches.
+              <Code>git init</Code> and make your first commit
+              <Code>git commit -m</Code> to get started!
+            </InfoSectionText>
+          </InfoSection>
+          <Link
+            target="_blank"
+            href="https://www.chromatic.com/docs/visual-tests-addon#git-addon"
+            withArrow
+            secondary
+          >
+            Visual tests requirements
+          </Link>
+        </Stack>
+      </Container>
+    </Screen>
   );
 };

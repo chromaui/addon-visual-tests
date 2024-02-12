@@ -2,6 +2,7 @@ import { Loader } from "@storybook/components";
 import { styled } from "@storybook/theming";
 import React, { useEffect } from "react";
 
+import { useAuthState } from "../../AuthContext";
 import { Link } from "../../components/design-system";
 import { Text } from "../../components/layout";
 import { SnapshotImage } from "../../components/SnapshotImage";
@@ -72,6 +73,7 @@ const MainSection = styled.div(({ theme }) => ({
   gridArea: "main",
   overflowY: "auto",
   maxHeight: "100%",
+  background: theme.background.content,
 }));
 
 const FooterSection = styled.div(({ theme }) => ({
@@ -79,7 +81,6 @@ const FooterSection = styled.div(({ theme }) => ({
   position: "sticky",
   zIndex: 1,
   bottom: 0,
-  background: theme.background.content,
 }));
 
 const Divider = styled.div(({ children, theme }) => ({
@@ -120,7 +121,6 @@ interface SnapshotComparisonProps {
   isBuildFailed: boolean;
   shouldSwitchToLastBuildOnBranch: boolean;
   switchToLastBuildOnBranch?: () => void;
-  setAccessToken: (accessToken: string | null) => void;
   hidden?: boolean;
   storyId: string;
 }
@@ -132,7 +132,6 @@ export const SnapshotComparison = ({
   isBuildFailed,
   shouldSwitchToLastBuildOnBranch,
   switchToLastBuildOnBranch,
-  setAccessToken,
   hidden,
   storyId,
 }: SnapshotComparisonProps) => {
@@ -194,7 +193,7 @@ export const SnapshotComparison = ({
           <Grid>{storyInfo}</Grid>
         </HeaderSection>
         <FooterSection>
-          <BuildResultsFooter setAccessToken={setAccessToken} />
+          <BuildResultsFooter />
         </FooterSection>
       </ParentGrid>
     );
@@ -295,7 +294,7 @@ export const SnapshotComparison = ({
         )}
       </MainSection>
       <FooterSection>
-        <BuildResultsFooter setAccessToken={setAccessToken} {...testSummary} />
+        <BuildResultsFooter />
       </FooterSection>
     </ParentGrid>
   );

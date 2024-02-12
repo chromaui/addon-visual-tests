@@ -5,16 +5,14 @@ import { dedent } from "ts-dedent";
 import { Code } from "../../components/Code";
 import { Container } from "../../components/Container";
 import { Link } from "../../components/design-system";
-import { FooterSection } from "../../components/FooterSection";
 import { Heading } from "../../components/Heading";
-import { Section, Sections } from "../../components/layout";
+import { Screen } from "../../components/Screen";
 import { Stack } from "../../components/Stack";
 import { Text as CenterText } from "../../components/Text";
 
 type LinkingProjectFailedProps = {
   projectId: string;
   configFile: string;
-  setAccessToken: (accessToken: string | null) => void;
 };
 
 const CodeWrapper = styled.div(({ theme }) => ({
@@ -31,41 +29,34 @@ const CodeWrapper = styled.div(({ theme }) => ({
   },
 }));
 
-const configureDocsLink = "https://www.chromatic.com/docs/addon-visual-tests#configure";
+const configureDocsLink = "https://www.chromatic.com/docs/visual-tests-addon/#configure";
 
-export function LinkingProjectFailed({
-  projectId,
-  configFile,
-  setAccessToken,
-}: LinkingProjectFailedProps) {
+export function LinkingProjectFailed({ projectId, configFile }: LinkingProjectFailedProps) {
   return (
-    <Sections>
-      <Section grow>
-        <Container>
-          <Stack>
-            <div>
-              <Heading>Add the project ID to your Chromatic config</Heading>
-              <CenterText>
-                The <Code>projectId</Code> will be used to sync tests with Chromatic. Please commit
-                this change to continue using the addon. The file should be saved at {configFile}.
-              </CenterText>
-            </div>
-            <CodeWrapper>
-              <Code>
-                {dedent`
+    <Screen>
+      <Container>
+        <Stack>
+          <div>
+            <Heading>Add the project ID to your Chromatic config</Heading>
+            <CenterText>
+              The <Code>projectId</Code> will be used to sync tests with Chromatic. Please commit
+              this change to continue using the addon. The file should be saved at {configFile}.
+            </CenterText>
+          </div>
+          <CodeWrapper>
+            <Code>
+              {dedent`
                 {
                   "projectId": "${projectId}",
                 }
               `}
-              </Code>
-            </CodeWrapper>
-            <Link secondary withArrow target="_blank" href={configureDocsLink}>
-              What&rsquo;s this for?
-            </Link>
-          </Stack>
-        </Container>
-      </Section>
-      <FooterSection setAccessToken={setAccessToken} />
-    </Sections>
+            </Code>
+          </CodeWrapper>
+          <Link secondary withArrow target="_blank" href={configureDocsLink}>
+            What&rsquo;s this for?
+          </Link>
+        </Stack>
+      </Container>
+    </Screen>
   );
 }

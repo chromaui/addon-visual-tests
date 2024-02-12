@@ -8,11 +8,11 @@ import { ButtonStack } from "../../components/ButtonStack";
 import { Code } from "../../components/Code";
 import { Container } from "../../components/Container";
 import { Link } from "../../components/design-system";
-import { FooterSection } from "../../components/FooterSection";
+import { FooterMenu } from "../../components/FooterMenu";
 import { Heading } from "../../components/Heading";
-import { Col, Section, Sections } from "../../components/layout";
+import { Col, Text } from "../../components/layout";
+import { Footer, Screen } from "../../components/Screen";
 import { Stack } from "../../components/Stack";
-import { Text } from "../../components/Text";
 import { graphql } from "../../gql";
 import { ProjectQueryQuery } from "../../gql/graphql";
 
@@ -47,12 +47,10 @@ export const LinkedProject = ({
   projectId,
   configFile,
   goToNext,
-  setAccessToken,
 }: {
   projectId: string;
   configFile: string;
   goToNext: () => void;
-  setAccessToken: (accessToken: string | null) => void;
 }) => {
   const [{ data, fetching, error }] = useQuery<ProjectQueryQuery>({
     query: ProjectQuery,
@@ -60,56 +58,54 @@ export const LinkedProject = ({
   });
 
   return (
-    <Sections>
-      <Section grow>
-        <Container>
-          <Stack>
-            {fetching && <p>Loading...</p>}
-            {error && <p>{error.message}</p>}
-            {data?.project && (
-              <Stack>
-                <Check />
-                <div>
-                  <Heading>Project linked!</Heading>
-                  <Text style={{ maxWidth: 500 }}>
-                    <Code>projectId</Code> for {data.project.name} was added in {configFile} to sync
-                    tests with Chromatic. Please commit this change to continue using this addon.
-                  </Text>
-                </div>
-                <ButtonStack>
-                  <Button variant="solid" size="medium" onClick={() => goToNext()}>
-                    Catch a UI change
-                  </Button>
-                  <ButtonStackLink
-                    href="https://www.chromatic.com/docs/cli"
-                    target="_blank"
-                    withArrow
-                    secondary
-                  >
-                    What&rsquo;s a project ID?
-                  </ButtonStackLink>
-                </ButtonStack>
-              </Stack>
+    <Screen
+      footer={
+        <Footer>
+          <Col>
+            {data?.project?.lastBuild && (
+              <Text style={{ marginLeft: 5 }}>
+                Last build: {data.project.lastBuild.number} on branch{" "}
+                {data.project.lastBuild.branch}
+              </Text>
             )}
-          </Stack>
-        </Container>
-      </Section>
-      <FooterSection
-        setAccessToken={setAccessToken}
-        render={({ menu }) => (
-          <>
-            <Col>
-              {data?.project?.lastBuild && (
-                <Text style={{ marginLeft: 5 }}>
-                  Last build: {data.project.lastBuild.number} on branch{" "}
-                  {data.project.lastBuild.branch}
+          </Col>
+          <Col push>
+            <FooterMenu />
+          </Col>
+        </Footer>
+      }
+    >
+      <Container>
+        <Stack>
+          {fetching && <p>Loading...</p>}
+          {error && <p>{error.message}</p>}
+          {data?.project && (
+            <>
+              <Check />
+              <div>
+                <Heading>Project linked!</Heading>
+                <Text style={{ maxWidth: 500 }}>
+                  <Code>projectId</Code> for {data.project.name} was added in {configFile} to sync
+                  tests with Chromatic. Please commit this change to continue using this addon.
                 </Text>
-              )}
-            </Col>
-            <Col push>{menu}</Col>
-          </>
-        )}
-      />
-    </Sections>
+              </div>
+              <ButtonStack>
+                <Button variant="solid" size="medium" onClick={() => goToNext()}>
+                  Catch a UI change
+                </Button>
+                <ButtonStackLink
+                  href="https://www.chromatic.com/docs/cli"
+                  target="_blank"
+                  withArrow
+                  secondary
+                >
+                  What&rsquo;s a project ID?
+                </ButtonStackLink>
+              </ButtonStack>
+            </>
+          )}
+        </Stack>
+      </Container>
+    </Screen>
   );
 };

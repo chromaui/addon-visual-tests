@@ -144,7 +144,7 @@ export const SidebarTopButton = ({
       tooltip={
         <TooltipContent>
           <div>No code changes detected. Rerun tests to take new snapshots.</div>
-          <IconButton secondary onClick={() => startBuild()} aria-label="Rerun tests">
+          <IconButton onClick={() => startBuild()} aria-label="Rerun tests">
             <SyncIcon />
             Rerun tests
           </IconButton>
