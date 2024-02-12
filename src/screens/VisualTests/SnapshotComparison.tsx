@@ -79,7 +79,6 @@ const FooterSection = styled.div(({ theme }) => ({
   position: "sticky",
   zIndex: 1,
   bottom: 0,
-  borderTop: `1px solid ${theme.appBorderColor}`,
   background: theme.background.content,
 }));
 
