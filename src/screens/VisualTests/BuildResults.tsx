@@ -204,7 +204,7 @@ export const BuildResults = ({
         </Eyebrow>
       )}
 
-      <Section grow last hidden={settingsVisible || warningsVisible}>
+      <Section grow hidden={settingsVisible || warningsVisible}>
         <SnapshotComparison
           hidden={settingsVisible || warningsVisible}
           {...{
@@ -221,10 +221,10 @@ export const BuildResults = ({
         />
       </Section>
 
-      <Section grow last hidden={!settingsVisible}>
+      <Section grow hidden={!settingsVisible}>
         <RenderSettings onClose={() => toggleSettings(false)} />
       </Section>
-      <Section grow last hidden={!warningsVisible}>
+      <Section grow hidden={!warningsVisible}>
         <Warnings onClose={() => toggleWarnings(false)} />
       </Section>
     </Sections>
