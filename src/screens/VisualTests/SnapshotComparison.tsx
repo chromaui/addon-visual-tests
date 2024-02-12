@@ -242,8 +242,12 @@ export const SnapshotComparison = ({
           <Warning>
             <WarningText>
               New story found. Accept this snapshot as a test baseline.{" "}
-              <Link href="https://www.chromatic.com/docs/branching-and-baselines" target="_blank">
-                Learn More »
+              <Link
+                withArrow
+                href="https://www.chromatic.com/docs/branching-and-baselines"
+                target="_blank"
+              >
+                Learn more
               </Link>
             </WarningText>
           </Warning>
@@ -252,8 +256,12 @@ export const SnapshotComparison = ({
           <Warning>
             <WarningText>
               New mode found. Accept this snapshot as a test baseline.{" "}
-              <Link href="https://www.chromatic.com/docs/branching-and-baselines" target="_blank">
-                Learn More »
+              <Link
+                withArrow
+                href="https://www.chromatic.com/docs/branching-and-baselines"
+                target="_blank"
+              >
+                Learn more
               </Link>
             </WarningText>
           </Warning>
@@ -262,8 +270,12 @@ export const SnapshotComparison = ({
           <Warning>
             <WarningText>
               New browser found. Accept this snapshot as a test baseline.{" "}
-              <Link href="https://www.chromatic.com/docs/branching-and-baselines" target="_blank">
-                Learn More »
+              <Link
+                withArrow
+                href="https://www.chromatic.com/docs/branching-and-baselines"
+                target="_blank"
+              >
+                Learn more
               </Link>
             </WarningText>
           </Warning>

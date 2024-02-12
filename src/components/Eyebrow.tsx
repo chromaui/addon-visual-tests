@@ -5,4 +5,5 @@ export const Eyebrow = styled.div(({ theme }) => ({
   padding: "10px 15px",
   lineHeight: "20px",
   color: theme.color.defaultText,
+  borderBottom: `1px solid ${theme.appBorderColor}`,
 }));

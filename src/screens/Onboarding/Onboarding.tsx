@@ -125,27 +125,29 @@ export const Onboarding = ({
   // TODO: This design for an error in the Onboarding is incomplete
   if (localBuildProgress && localBuildProgress.currentStep === "error") {
     return (
-      <Container>
-        <Stack>
-          <div>
-            <Heading>Something went wrong</Heading>
-            <Text>Your tests will sync with this project.</Text>
-          </div>
-          <ErrorContainer>
-            {Array.isArray(localBuildProgress.originalError)
-              ? localBuildProgress.originalError[0]?.message
-              : localBuildProgress.originalError?.message}
-          </ErrorContainer>
-          <ButtonStack>
-            <Button variant="solid" size="medium" onClick={startDevBuild}>
-              Try again
-            </Button>
-            <Button link onClick={onSkip}>
-              Skip walkthrough
-            </Button>
-          </ButtonStack>
-        </Stack>
-      </Container>
+      <Screen footer={null}>
+        <Container>
+          <Stack>
+            <div>
+              <Heading>Something went wrong</Heading>
+              <Text>Your tests will sync with this project.</Text>
+            </div>
+            <ErrorContainer>
+              {Array.isArray(localBuildProgress.originalError)
+                ? localBuildProgress.originalError[0]?.message
+                : localBuildProgress.originalError?.message}
+            </ErrorContainer>
+            <ButtonStack>
+              <Button variant="solid" size="medium" onClick={startDevBuild}>
+                Try again
+              </Button>
+              <Button link onClick={onSkip}>
+                Skip walkthrough
+              </Button>
+            </ButtonStack>
+          </Stack>
+        </Container>
+      </Screen>
     );
   }
   if (showInitialBuild && !localBuildProgress) {
