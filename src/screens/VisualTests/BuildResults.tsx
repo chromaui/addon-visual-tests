@@ -151,14 +151,7 @@ export const BuildResults = ({
                 <Code>disableSnapshot = true</Code> from the CSF file.
               </CenterText>
             </div>
-            {/* <Link
-                withArrow
-                href="https://www.chromatic.com/docs/ignoring-elements#ignore-stories"
-                target="_blank"
-              >
-                View docs
-              </Link> */}
-            <Button asChild belowText size="medium" tertiary>
+            <Button asChild size="medium" tertiary>
               <a
                 href="https://www.chromatic.com/docs/ignoring-elements#ignore-stories"
                 target="_new"
@@ -206,7 +199,7 @@ export const BuildResults = ({
           </Eyebrow>
         )}
 
-        <Section grow last hidden={settingsVisible || warningsVisible}>
+        <Section grow hidden={settingsVisible || warningsVisible}>
           <SnapshotComparison
             hidden={settingsVisible || warningsVisible}
             {...{

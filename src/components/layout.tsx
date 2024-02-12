@@ -13,12 +13,8 @@ export const Sections = styled.div<{ hidden?: boolean }>(
   ({ hidden }) => hidden && { display: "none" }
 );
 
-export const Section = styled.div<{ grow?: boolean; last?: boolean }>(
-  ({ grow }) => grow && { flexGrow: grow ? 1 : "auto" },
-  ({ last, theme }) =>
-    last && {
-      borderTop: `1px solid ${theme.appBorderColor}`,
-    }
+export const Section = styled.div<{ grow?: boolean }>(
+  ({ grow }) => grow && { flexGrow: grow ? 1 : "auto" }
 );
 
 export const Row = styled.div<{ header?: boolean }>(

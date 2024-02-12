@@ -108,6 +108,7 @@ const Warning = styled.div(({ theme }) => ({
   padding: "10px 15px",
   lineHeight: "18px",
   position: "relative",
+  borderBottom: `1px solid ${theme.appBorderColor}`,
 }));
 
 const WarningText = styled(Text)(({ theme }) => ({
