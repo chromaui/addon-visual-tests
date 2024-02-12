@@ -22,7 +22,7 @@ const InfoSection = styled(Section)(({ theme }) => ({
   alignItems: "center",
   borderRadius: theme.appBorderRadius,
   background: theme.base === "light" ? theme.color.lightest : theme.color.darkest,
-  border: `1px solid ${theme.base === "light" ? theme.color.border : theme.color.darker}`,
+  border: `1px solid ${theme.appBorderColor}`,
   padding: 15,
   flex: 1,
 

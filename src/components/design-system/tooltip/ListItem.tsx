@@ -19,7 +19,7 @@ const ItemWrapper = styled.li(({ theme }) => ({
   listStyle: "none",
 
   "&:not(:first-child)": {
-    borderTop: `1px solid ${theme.base === "light" ? theme.color.border : theme.color.darker}`,
+    borderTop: `1px solid ${theme.appBorderColor}`,
   },
 }));
 

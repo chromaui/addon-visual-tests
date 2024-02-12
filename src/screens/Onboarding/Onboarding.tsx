@@ -41,7 +41,7 @@ const ProjectQuery = gql`
 `;
 
 const Box = styled.div(({ theme }) => ({
-  border: `1px solid ${theme.base === "light" ? theme.color.border : theme.color.darker}`,
+  border: `1px solid ${theme.appBorderColor}`,
   borderRadius: theme.appBorderRadius,
   padding: "6px 10px",
   lineHeight: "18px",

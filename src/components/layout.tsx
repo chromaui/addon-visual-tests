@@ -15,7 +15,7 @@ export const Section = styled.div<{ grow?: boolean; last?: boolean }>(
   ({ grow }) => grow && { flexGrow: grow ? 1 : "auto" },
   ({ last, theme }) =>
     last && {
-      borderTop: `1px solid ${theme.base === "light" ? theme.color.border : theme.color.darker}`,
+      borderTop: `1px solid ${theme.appBorderColor}`,
     }
 );
 

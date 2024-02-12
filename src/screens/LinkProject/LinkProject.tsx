@@ -70,7 +70,7 @@ const ListHeading = styled.div(({ theme }) => ({
   color: theme.base === "light" ? theme.color.dark : theme.color.light,
   backgroundColor: "inherit",
   padding: "7px 15px",
-  borderBottom: `1px solid ${theme.base === "light" ? theme.color.border : theme.color.darker}`,
+  borderBottom: `1px solid ${theme.appBorderColor}`,
   lineHeight: "18px",
   letterSpacing: "0.38em",
   textTransform: "uppercase",
