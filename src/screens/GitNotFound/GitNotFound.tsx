@@ -12,10 +12,6 @@ import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
 import { useUninstallAddon } from "../Uninstalled/UninstallContext";
 
-interface GitNotFoundProps {
-  gitInfoError: Error;
-}
-
 const InfoSection = styled(Section)(({ theme }) => ({
   display: "flex",
   flexDirection: "row",
@@ -42,7 +38,7 @@ const StyledCode = styled(Code)(({ theme }) => ({
   fontSize: "12px",
 }));
 
-export const GitNotFound = ({ gitInfoError }: GitNotFoundProps) => {
+export const GitNotFound = () => {
   const { uninstallAddon } = useUninstallAddon();
   return (
     <Screen footer={null}>
