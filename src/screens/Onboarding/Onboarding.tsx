@@ -45,11 +45,16 @@ const Box = styled.div(({ theme }) => ({
 }));
 
 const Warning = styled.div(({ theme }) => ({
-  background: theme.background.warning,
-  padding: 10,
   lineHeight: "18px",
   position: "relative",
-  margin: "0 27px",
+  borderRadius: 5,
+  display: "block",
+  minWidth: "80%",
+  color: theme.color.warningText,
+  background: theme.background.warning,
+  border: `1px solid ${lighten(0.5, theme.color.warningText)}`,
+  padding: 15,
+  margin: 0,
 }));
 
 const WarningText = styled(Text)(({ theme }) => ({
@@ -245,14 +250,6 @@ export const Onboarding = ({
       <Screen footer={null}>
         <Container>
           <Stack>
-            {!lastBuildHasChanges && runningSecondBuild && (
-              <Warning>
-                <WarningText>
-                  No changes found in the Storybook you published. Make a UI tweak and publish again
-                  to continue.
-                </WarningText>
-              </Warning>
-            )}
             <div>
               <Heading>Make a change to this story</Heading>
               <Text>
@@ -293,7 +290,17 @@ export const Onboarding = ({
               </Row>
             </Stack>
             <ButtonStack>
-              <Box>Awaiting changes...</Box>
+              {runningSecondBuild ? (
+                <Warning>
+                  <WarningText>
+                    No changes found in the Storybook you published. Make a UI tweak and try again
+                    to continue.
+                  </WarningText>
+                </Warning>
+              ) : (
+                <Box>Awaiting changes...</Box>
+              )}
+
               <Button link onClick={onSkip}>
                 Skip walkthrough
               </Button>
