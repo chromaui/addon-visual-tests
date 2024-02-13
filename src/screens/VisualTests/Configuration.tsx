@@ -1,5 +1,10 @@
 import { TooltipNote, WithTooltip } from "@storybook/components";
-import { AlertIcon as Alert, LockIcon as Lock, SupportIcon as Support } from "@storybook/icons";
+import {
+  AlertIcon as Alert,
+  LockIcon as Lock,
+  SupportIcon as Support,
+  TrashIcon as Trash,
+} from "@storybook/icons";
 import { styled } from "@storybook/theming";
 import React from "react";
 
@@ -7,6 +12,8 @@ import { CloseButton, CloseIcon, Heading } from "../../components/Accordions";
 import { CONFIG_INFO, CONFIG_OVERRIDES } from "../../constants";
 import { ConfigInfoPayload } from "../../types";
 import { useSharedState } from "../../utils/useSharedState";
+import { useUninstallAddon } from "../Uninstalled/UninstallContext";
+import { Button } from "../../components/Button";
 
 const configSchema = {
   projectId: {
@@ -170,6 +177,34 @@ const Table = styled.dl(({ theme }) => ({
   },
 }));
 
+const DangerZone = styled.div(({ theme }) => ({
+  display: "flex",
+  marginTop: 20,
+  border: `1px solid ${theme.color.negativeText}`,
+  borderRadius: 3,
+  backgroundColor: `${theme.color.negativeText}11`,
+  alignItems: "center",
+  gap: 8,
+  padding: 10,
+  svg: { margin: 3 },
+  p: { flexGrow: 1, margin: 0 },
+  small: { display: "block", textWrap: "balance" },
+  button: {
+    backgroundColor: theme.background.content,
+    border: `1px solid ${theme.color.negativeText}`,
+    borderRadius: 3,
+    color: theme.color.negativeText,
+    fontWeight: "bold",
+    padding: "4px 6px",
+    cursor: "pointer",
+    transition: "all 0.2s",
+    "&:hover": {
+      borderColor: theme.color.negative,
+      color: theme.color.negative,
+    },
+  },
+}));
+
 const Suggestion = styled.div<{ warning?: boolean }>(({ warning, theme }) => ({
   display: "flex",
   alignItems: "center",
@@ -200,6 +235,7 @@ const iconStyles = {
 };
 
 const AlertIcon = styled(Alert)(iconStyles);
+const TrashIcon = styled(Trash)({ ...iconStyles, width: 20, height: 20 });
 const SupportIcon = styled(Support)(iconStyles);
 const LockIcon = styled(Lock)(iconStyles);
 
@@ -208,6 +244,7 @@ interface ConfigurationProps {
 }
 
 export const Configuration = ({ onClose }: ConfigurationProps) => {
+  const { uninstallAddon } = useUninstallAddon();
   const [configInfo] = useSharedState<ConfigInfoPayload>(CONFIG_INFO);
   const { configuration = {}, problems = {}, suggestions = {} } = configInfo || {};
   const { configFile, ...options } = configuration;
@@ -289,6 +326,17 @@ export const Configuration = ({ onClose }: ConfigurationProps) => {
           ))}
         </Table>
       )}
+      <DangerZone>
+        <TrashIcon />
+        <p>
+          <strong>Remove addon</strong>
+          <br />
+          <small>Updates your Storybook configuration and uninstalls the dependency.</small>
+        </p>
+        <button type="button" onClick={uninstallAddon}>
+          Remove
+        </button>
+      </DangerZone>
     </Page>
   );
 };
