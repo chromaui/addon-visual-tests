@@ -55,7 +55,7 @@ export const ModeSelector = ({
 
   let icon = (
     <DiamondIcon
-      fill={theme.base === "light" ? `${theme.color.defaultText}99` : theme.color.light}
+      color={theme.base === "light" ? `${theme.color.defaultText}99` : theme.color.light}
     />
   );
   if (!isAccepted && aggregate !== ComparisonResult.Equal && modeResults.length >= 2) {
