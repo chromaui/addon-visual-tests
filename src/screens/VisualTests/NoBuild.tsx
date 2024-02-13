@@ -166,8 +166,8 @@ export const NoBuild = ({
             <div>
               <Heading>Create a test baseline</Heading>
               <CenterText>
-                Take an image snapshot of each story to save their &quot;last known good state&quot;
-                as test baselines.
+                Take an image snapshot of your stories to save their "last known good state" as test
+                baselines.
               </CenterText>
             </div>
             {getDetails()}

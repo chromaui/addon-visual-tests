@@ -159,8 +159,8 @@ export const Onboarding = ({
               <VisualTestsIcon />
               <Heading>Get started with visual testing</Heading>
               <Text>
-                Take an image snapshot of each story to save their “last known good state” as test
-                baselines.{" "}
+                Take an image snapshot of your stories to save their "last known good state" as test
+                baselines.
               </Text>
             </div>
             <ButtonStack>
@@ -187,7 +187,7 @@ export const Onboarding = ({
               <VisualTestsIcon />
               <Heading>Get started with visual testing</Heading>
               <Text>
-                Take an image snapshot of each story to save their “last known good state” as test
+                Take an image snapshot of your stories to save their "last known good state" as test
                 baselines.
               </Text>
             </div>
