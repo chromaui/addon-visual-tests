@@ -228,15 +228,15 @@ export const BuildEyebrow = ({
     if (!switchToLastBuildOnBranch) {
       return (
         <Label>
-          Reviewing is disabled because there's a newer build on <Code>{branch}</Code>.
+          Reviewing is disabled because there&rsquo;s a newer build on <Code>{branch}</Code>.
         </Label>
       );
     }
     if (lastBuildOnBranchInProgress) {
       return (
         <Label>
-          Reviewing is disabled because there's a newer build in progress on main. This can happen
-          when a build runs in CI.
+          Reviewing is disabled because there&rsquo;s a newer build in progress on{" "}
+          <Code>{branch}</Code>. This can happen when a build runs in CI.
         </Label>
       );
     }

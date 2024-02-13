@@ -183,7 +183,9 @@ export const BuildResults = ({
         {!buildStatus && isReviewLocked && (
           <Eyebrow>
             {userCanReview ? (
-              <>Reviewing is disabled because there&rsquo;s a newer build on {branch}.</>
+              <>
+                Reviewing is disabled because there&rsquo;s a newer build on <Code>{branch}</Code>.
+              </>
             ) : (
               <>
                 You don&rsquo;t have permission to accept changes.{" "}
