@@ -26,3 +26,22 @@ export const STOP_BUILD = `${ADDON_ID}/stopBuild`;
 export const LOCAL_BUILD_PROGRESS = `${ADDON_ID}/localBuildProgress`;
 
 export const REMOVE_ADDON = `${ADDON_ID}/removeAddon`;
+
+export const CONFIG_OVERRIDES = {
+  // Local changes should never be auto-accepted
+  autoAcceptChanges: false,
+  // Test results must be awaited to get progress updates
+  exitOnceUploaded: false,
+  // Don't raise any alarms when changes are found
+  exitZeroOnChanges: true,
+  // We might want to drop this later and instead record "uncommitted hashes" on builds
+  forceRebuild: true,
+  // This should never be set for local builds
+  fromCI: false,
+  // Builds initiated from the addon are always considered local
+  isLocalBuild: true,
+  // Never skip local builds
+  skip: false,
+  // No prompts from the Build proces
+  interactive: false,
+};

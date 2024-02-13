@@ -9,6 +9,7 @@ import {
   INITIAL_BUILD_PAYLOAD,
   isKnownStep,
 } from "./buildSteps";
+import { CONFIG_OVERRIDES } from "./constants";
 import { LocalBuildProgress } from "./types";
 import { SharedState } from "./utils/SharedState";
 
@@ -186,24 +187,7 @@ export const runChromaticBuild = async (
     },
     options: {
       ...options,
-
-      // Local changes should never be auto-accepted
-      autoAcceptChanges: false,
-      // Test results must be awaited to get progress updates
-      exitOnceUploaded: false,
-      // Don't raise any alarms when changes are found
-      exitZeroOnChanges: true,
-      // We might want to drop this later and instead record "uncommitted hashes" on builds
-      forceRebuild: true,
-      // This should never be set for local builds
-      fromCI: false,
-      // Builds initiated from the addon are always considered local
-      isLocalBuild: true,
-      // Never skip local builds
-      skip: false,
-      // No prompts from the Build proces
-      interactive: false,
-
+      ...CONFIG_OVERRIDES,
       experimental_onTaskStart: onStartOrProgress(localBuildProgress, timeout),
       experimental_onTaskProgress: onStartOrProgress(localBuildProgress, timeout),
       experimental_onTaskComplete: onCompleteOrError(localBuildProgress, timeout),

@@ -1,5 +1,5 @@
 import type { API } from "@storybook/manager-api";
-import type { Configuration, GitInfo, TaskName } from "chromatic/node";
+import type { Configuration, getConfiguration, GitInfo, TaskName } from "chromatic/node";
 
 import { SelectedBuildFieldsFragment } from "./gql/graphql";
 
@@ -22,7 +22,7 @@ export type ConfigurationUpdate = {
 };
 
 export type ConfigInfoPayload = {
-  configuration: Configuration;
+  configuration: Awaited<ReturnType<typeof getConfiguration>>;
   problems?: ConfigurationUpdate;
   suggestions?: ConfigurationUpdate;
 };

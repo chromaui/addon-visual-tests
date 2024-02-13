@@ -6,7 +6,6 @@ import { AuthProvider } from "./AuthContext";
 import { Spinner } from "./components/design-system";
 import {
   ADDON_ID,
-  CONFIG_INFO,
   GIT_INFO,
   GIT_INFO_ERROR,
   IS_OUTDATED,
@@ -25,12 +24,7 @@ import { UninstallProvider } from "./screens/Uninstalled/UninstallContext";
 import { Uninstalled } from "./screens/Uninstalled/Uninstalled";
 import { ControlsProvider } from "./screens/VisualTests/ControlsContext";
 import { VisualTests } from "./screens/VisualTests/VisualTests";
-import {
-  ConfigInfoPayload,
-  GitInfoPayload,
-  LocalBuildProgress,
-  UpdateStatusFunction,
-} from "./types";
+import { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from "./types";
 import { client, Provider, useAccessToken } from "./utils/graphQLClient";
 import { useProjectId } from "./utils/useProjectId";
 import { useSharedState } from "./utils/useSharedState";
