@@ -13,17 +13,56 @@ import { CONFIG_INFO, CONFIG_OVERRIDES } from "../../constants";
 import { ConfigInfoPayload } from "../../types";
 import { useSharedState } from "../../utils/useSharedState";
 import { useUninstallAddon } from "../Uninstalled/UninstallContext";
-import { Button } from "../../components/Button";
 
 const configSchema = {
-  projectId: {
-    description: "Unique identifier for your project. ",
+  autoAcceptChanges: {
+    description: "Automatically accept visual changes, usually for a specific branch name.",
+    type: "string | boolean",
+  },
+  buildScriptName: {
+    description: "The package.json script that builds your Storybook.",
     type: "string",
   },
-  projectToken: {
+  cypress: {
+    description: "Run build against `@chromatic-com/cypress` test archives.",
+    type: "boolean",
+  },
+  debug: {
+    description: "Output verbose logs and debug information.",
+    type: "boolean",
+  },
+  diagnosticsFile: {
+    description: "Write process context information to a JSON file.",
+    type: "string | boolean",
+  },
+  exitOnceUploaded: {
+    description: "Exit the process as soon as your Storybook is published.",
+    type: "string | boolean",
+  },
+  exitZeroOnChanges: {
+    description: "Exit the process succesfully even when visual changes are found.",
+    type: "string | boolean",
+  },
+  externals: {
+    description: "Disable TurboSnap when any of these files have changed since the baseline build.",
+    type: "string[]",
+  },
+  fileHashing: {
+    description: "Apply file hashing to skip uploading unchanged files (default: true).",
+    type: "boolean",
+  },
+  ignoreLastBuildOnBranch: {
     description:
-      "Secret token for your project. Preferably configured through CHROMATIC_PROJECT_TOKEN.",
+      "Do not use the last build on this branch as a baseline if it is no longer in history (i.e. branch was rebased).",
     type: "string",
+  },
+  junitReport: {
+    description: "Write build results to a JUnit XML file.",
+    type: "string | boolean",
+  },
+  logFile: {
+    description: "Write Chromatic CLI logs to a file.",
+    type: "string | boolean",
   },
   onlyChanged: {
     description:
@@ -39,68 +78,22 @@ const configSchema = {
     description: "Only run a single story or a subset of stories by their name(s).",
     type: "string[]",
   },
-  untraced: {
+  outputDir: {
     description:
-      "Disregard these files and their dependencies when tracing dependent stories for TurboSnap.",
-    type: "string[]",
-  },
-  externals: {
-    description: "Disable TurboSnap when any of these files have changed since the baseline build.",
-    type: "string[]",
-  },
-  debug: {
-    description: "Output verbose logs and debug information.",
-    type: "boolean",
-  },
-  diagnosticsFile: {
-    description: "Write process context information to a JSON file.",
-    type: "string | boolean",
-  },
-  fileHashing: {
-    description: "Apply file hashing to skip uploading unchanged files (default: true).",
-    type: "boolean",
-  },
-  junitReport: {
-    description: "Write build results to a JUnit XML file.",
-    type: "string | boolean",
-  },
-  zip: {
-    description:
-      "Publish your Storybook to Chromatic as a single zip file instead of individual content files.",
-    type: "boolean",
-  },
-  autoAcceptChanges: {
-    description: "Automatically accept visual changes, usually for a specific branch name.",
-    type: "string | boolean",
-  },
-  exitZeroOnChanges: {
-    description: "Exit the process succesfully even when visual changes are found.",
-    type: "string | boolean",
-  },
-  exitOnceUploaded: {
-    description: "Exit the process as soon as your Storybook is published.",
-    type: "string | boolean",
-  },
-  ignoreLastBuildOnBranch: {
-    description:
-      "Do not use the last build on this branch as a baseline if it is no longer in history (i.e. branch was rebased).",
-    type: "string",
-  },
-  buildScriptName: {
-    description: "The package.json script that builds your Storybook.",
+      "Relative path to target directory for building your Storybook, in case you want to preserve it.",
     type: "string",
   },
   playwright: {
     description: "Run build against `@chromatic-com/playwright` test archives.",
     type: "boolean",
   },
-  cypress: {
-    description: "Run build against `@chromatic-com/cypress` test archives.",
-    type: "boolean",
+  projectId: {
+    description: "Unique identifier for your project. ",
+    type: "string",
   },
-  outputDir: {
+  projectToken: {
     description:
-      "Relative path to target directory for building your Storybook, in case you want to preserve it.",
+      "Secret token for your project. Preferably configured through CHROMATIC_PROJECT_TOKEN.",
     type: "string",
   },
   skip: {
@@ -108,12 +101,12 @@ const configSchema = {
       "Skip Chromatic tests, but mark the commit as passing. Avoids blocking PRs due to required merge checks.",
     type: "string | boolean",
   },
-  storybookBuildDir: {
-    description: "Path to the directory of an already built Storybook.",
-    type: "string",
-  },
   storybookBaseDir: {
     description: "Relative path from repository root to Storybook project root.",
+    type: "string",
+  },
+  storybookBuildDir: {
+    description: "Path to the directory of an already built Storybook.",
     type: "string",
   },
   storybookConfigDir: {
@@ -124,12 +117,18 @@ const configSchema = {
     description: "Write Storybook build logs to a file.",
     type: "string | boolean",
   },
-  logFile: {
-    description: "Write Chromatic CLI logs to a file.",
-    type: "string | boolean",
+  untraced: {
+    description:
+      "Disregard these files and their dependencies when tracing dependent stories for TurboSnap.",
+    type: "string[]",
   },
   uploadMetadata: {
     description: "Upload Chromatic metadata files as part of the published Storybook.",
+    type: "boolean",
+  },
+  zip: {
+    description:
+      "Publish your Storybook to Chromatic as a single zip file instead of individual content files.",
     type: "boolean",
   },
 };
@@ -149,19 +148,37 @@ const Page = styled.div(({ theme }) => ({
 const Table = styled.dl(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
-  gap: 15,
+  gap: 20,
+  marginBottom: 20,
+  border: `1px solid ${theme.color.border}`,
+  borderRadius: theme.appBorderRadius,
+  padding: 15,
+
+  "& > div": {
+    display: "flex",
+    flexDirection: "column",
+    gap: 5,
+  },
 
   dt: {
     display: "flex",
-    alignItems: "baseline",
-    gap: 10,
+    flexDirection: "column",
+    alignItems: "flex-start",
+    justifyContent: "baseline",
+    gap: 5,
+
+    "& > div": {
+      display: "flex",
+      alignItems: "baseline",
+      gap: 5,
+    },
   },
 
   dd: {
-    margin: "4px 0",
     display: "flex",
     flexDirection: "column",
-    gap: 4,
+    margin: 0,
+    gap: 5,
 
     "& > code": {
       display: "block",
@@ -174,18 +191,31 @@ const Table = styled.dl(({ theme }) => ({
 
   small: {
     color: theme.color.mediumdark,
+    textWrap: "balance",
+  },
+
+  "@container (min-width: 800px)": {
+    "& > div": {
+      flexDirection: "row",
+      gap: 15,
+    },
+    dt: {
+      flexBasis: "35%",
+    },
+    dd: {
+      flexBasis: "65%",
+    },
   },
 }));
 
 const DangerZone = styled.div(({ theme }) => ({
   display: "flex",
-  marginTop: 20,
   border: `1px solid ${theme.color.negativeText}`,
-  borderRadius: 3,
+  borderRadius: theme.appBorderRadius,
   backgroundColor: `${theme.color.negativeText}11`,
   alignItems: "center",
   gap: 8,
-  padding: 10,
+  padding: 15,
   svg: { margin: 3 },
   p: { flexGrow: 1, margin: 0 },
   small: { display: "block", textWrap: "balance" },
@@ -267,49 +297,51 @@ export const Configuration = ({ onClose }: ConfigurationProps) => {
         </CloseButton>
       </Heading>
       {configFile ? (
-        <p>
+        <div>
           Found Chromatic configuration options in <code>{configFile}</code>:
-        </p>
+        </div>
       ) : (
-        <p>
+        <div>
           Create a <code>chromatic.config.json</code> file to configure build options.
-        </p>
+        </div>
       )}
       {config && (
         <Table>
           {config.map(({ key, value, problem, suggestion }) => (
             <div key={key} id={`${key}-option`}>
               <dt>
-                <strong>
-                  {key}{" "}
-                  {key in CONFIG_OVERRIDES && (
-                    <WithTooltip
-                      hasChrome={false}
-                      trigger="hover"
-                      tooltip={
-                        <TooltipNote
-                          note={`Always ${JSON.stringify(
-                            (CONFIG_OVERRIDES as any)[key]
-                          )} for local builds.`}
-                        />
-                      }
-                    >
-                      <LockIcon />
-                    </WithTooltip>
-                  )}
-                </strong>
-                <small>{configSchema[key as keyof typeof configSchema]?.type}</small>
-              </dt>
-              <dd>
+                <div>
+                  <strong>
+                    {key}{" "}
+                    {key in CONFIG_OVERRIDES && (
+                      <WithTooltip
+                        hasChrome={false}
+                        trigger="hover"
+                        tooltip={
+                          <TooltipNote
+                            note={`Always ${JSON.stringify(
+                              (CONFIG_OVERRIDES as any)[key]
+                            )} for local builds.`}
+                          />
+                        }
+                      >
+                        <LockIcon />
+                      </WithTooltip>
+                    )}
+                  </strong>
+                  <small>{configSchema[key as keyof typeof configSchema]?.type}</small>
+                </div>
                 <small>
                   <i>{configSchema[key as keyof typeof configSchema]?.description}</i>
                 </small>
+              </dt>
+              <dd>
                 <code>{value === undefined ? "―" : JSON.stringify(value)}</code>
                 {problem !== undefined && (
                   <Suggestion warning>
                     <AlertIcon />
                     <span>
-                      You should set this option to <code>{JSON.stringify(problem)}</code>.
+                      This should be: <code>{JSON.stringify(problem)}</code>
                     </span>
                   </Suggestion>
                 )}
@@ -317,7 +349,7 @@ export const Configuration = ({ onClose }: ConfigurationProps) => {
                   <Suggestion>
                     <SupportIcon />
                     <span>
-                      You may want to set this option to <code>{JSON.stringify(suggestion)}</code>.
+                      Might be better set to: <code>{JSON.stringify(suggestion)}</code>
                     </span>
                   </Suggestion>
                 )}
@@ -326,6 +358,8 @@ export const Configuration = ({ onClose }: ConfigurationProps) => {
           ))}
         </Table>
       )}
+
+      <Heading>Danger zone</Heading>
       <DangerZone>
         <TrashIcon />
         <p>
