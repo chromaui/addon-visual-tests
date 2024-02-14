@@ -1,3 +1,16 @@
+# v1.1.8 (Wed Feb 14 2024)
+
+#### 🐛 Bug Fix
+
+- Adjust UI to Support Dark Mode [#179](https://github.com/chromaui/addon-visual-tests/pull/179) ([@thafryer](https://github.com/thafryer) [@domyen](https://github.com/domyen))
+
+#### Authors: 2
+
+- Dominic Nguyen ([@domyen](https://github.com/domyen))
+- Jarel Fryer ([@thafryer](https://github.com/thafryer))
+
+---
+
 # v1.1.7 (Tue Feb 13 2024)
 
 #### 🐛 Bug Fix
