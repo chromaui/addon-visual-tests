@@ -82,7 +82,7 @@ const Right = styled.div(({ theme }) => ({
 const ProjectPicker = styled.div(({ theme }) => ({
   background: theme.base === "light" ? theme.color.lightest : theme.color.darkest,
   borderRadius: 5,
-  border: `1px solid ${theme.color.border}`,
+  border: `1px solid ${theme.appBorderColor}`,
   height: 260,
   maxWidth: 420,
   minWidth: 260,

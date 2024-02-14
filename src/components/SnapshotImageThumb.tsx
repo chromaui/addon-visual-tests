@@ -8,7 +8,7 @@ const Wrapper = styled.div<{ status?: "positive" }>(({ status, theme }) => ({
   alignItems: "center",
   justifyContent: "center",
   backgroundColor: theme.background.content,
-  border: `1px solid ${status === "positive" ? theme.color.green : theme.color.border}`,
+  border: `1px solid ${status === "positive" ? theme.color.green : theme.appBorderColor}`,
   borderRadius: 5,
   margin: "15px 15px 0",
   padding: 5,
