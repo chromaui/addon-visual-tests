@@ -94,7 +94,7 @@ export const BrowserSelector = ({
           {icon}
           <Label>{selectedBrowser.name}</Label>
           <ChevronDownIcon
-            style={{ width: 10, height: 10 }}
+            size={10}
             color={theme.base === "light" ? `${theme.color.defaultText}99` : theme.color.light}
           />
         </TooltipMenu>
