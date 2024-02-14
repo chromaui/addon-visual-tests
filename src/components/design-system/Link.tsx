@@ -68,14 +68,14 @@ const StyledLink = styled.a<StyledLinkProps>(
     }),
 
     ...(props.secondary && {
-      color: color.mediumdark,
+      color: props.theme.base === "light" ? color.mediumdark : color.medium,
 
       "&:hover": {
-        color: color.dark,
+        color: props.theme.base === "light" ? color.dark : color.light,
       },
 
       "&:active": {
-        color: color.darker,
+        color: props.theme.base === "light" ? color.darker : color.lighter,
       },
     }),
 

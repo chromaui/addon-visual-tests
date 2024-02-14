@@ -41,7 +41,7 @@ export const FooterMenu = () => {
       ? [
           {
             id: "visit",
-            title: "Visit Project on Chromatic",
+            title: "Visit project on Chromatic",
             icon: <ShareAltIcon aria-hidden />,
             href: projectId
               ? `https://www.chromatic.com/builds?appId=${projectId?.split(":")[1]}`

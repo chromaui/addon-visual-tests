@@ -17,9 +17,6 @@ export const Button = styled(BaseButton)<{
       "@container (min-width: 800px)": {
         padding: "8px 10px",
       },
-      svg: {
-        marginRight: 6,
-      },
     },
   },
   ({ link, theme }) =>
@@ -30,8 +27,8 @@ export const Button = styled(BaseButton)<{
         boxShadow: "none",
         padding: 2,
         fontWeight: "normal",
-        color: theme.color.defaultText,
-        opacity: 0.5,
+        color: theme.base === "light" ? theme.color.darkest : theme.color.lightest,
+        opacity: 0.6,
         transition: "opacity 150ms ease-out",
         "&:hover, &:focus": {
           opacity: 0.9,

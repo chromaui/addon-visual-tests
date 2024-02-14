@@ -1,7 +1,7 @@
-import { Code } from "@storybook/components";
 import { styled } from "@storybook/theming";
 import React from "react";
 
+import { Code } from "../../components/Code";
 import { Container } from "../../components/Container";
 import { Icon, Link } from "../../components/design-system";
 import { Heading } from "../../components/Heading";
@@ -17,10 +17,11 @@ const InfoSection = styled(Section)(({ theme }) => ({
   flexDirection: "row",
   alignItems: "center",
   borderRadius: theme.appBorderRadius,
-  background: theme.base === "dark" ? theme.color.darker : theme.color.lightest,
+  background: theme.base === "light" ? theme.color.lightest : theme.color.darkest,
+  border: `1px solid ${theme.appBorderColor}`,
   padding: 15,
   flex: 1,
-  boxShadow: `0px 1px 3px 0px rgba(0, 0, 0, 0.10), 0px 2px 5px 0px rgba(0, 0, 0, 0.05)`,
+
   maxWidth: "500px",
 }));
 
@@ -28,14 +29,12 @@ const InfoSectionText = styled(Text)(({ theme }) => ({
   marginLeft: 14,
   flex: 1,
   textAlign: "left",
-  color: theme.base === "dark" ? theme.color.lighter : theme.color.darker,
+  color: theme.base === "light" ? theme.color.darker : theme.color.lighter,
 }));
 
-const StyledCode = styled(Code)(({ theme }) => ({
-  color: theme.base === "dark" ? theme.color.lighter : theme.color.darker,
-  border: `1px solid ${theme.base === "dark" ? theme.color.mediumdark : "#ECF4F9"}`,
-  backgroundColor: theme.base === "dark" ? theme.color.dark : "#F7FAFC",
-  fontSize: "12px",
+const InfoSectionTextTitle = styled.b(() => ({
+  display: "block",
+  marginBottom: 2,
 }));
 
 export const GitNotFound = () => {
@@ -55,17 +54,17 @@ export const GitNotFound = () => {
           <InfoSection>
             <Icon icon="lock" />
             <InfoSectionText>
-              <b>Git not detected</b>
-              <br />
+              <InfoSectionTextTitle>Git not detected</InfoSectionTextTitle>
               This addon requires Git to associate test results with commits and branches.
-              Initialize git (<StyledCode>git init</StyledCode>) and make your first commit (
-              <StyledCode>git commit -m</StyledCode>) to get started!
+              <Code>git init</Code> and make your first commit
+              <Code>git commit -m</Code> to get started!
             </InfoSectionText>
           </InfoSection>
           <Link
             target="_blank"
-            href="https://www.chromatic.com/docs/visual-testing-addon/"
+            href="https://www.chromatic.com/docs/visual-tests-addon#git-addon"
             withArrow
+            secondary
           >
             Visual tests requirements
           </Link>

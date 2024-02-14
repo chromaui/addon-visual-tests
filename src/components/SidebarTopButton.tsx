@@ -11,7 +11,7 @@ import { StatusDotWrapper } from "./StatusDot";
 export const TooltipContent = styled.div(({ theme }) => ({
   width: 220,
   padding: 3,
-  color: theme.color.defaultText,
+  color: theme.base === "light" ? theme.color.defaultText : theme.color.light,
 
   "& > div": {
     margin: 7,
@@ -21,7 +21,8 @@ export const TooltipContent = styled.div(({ theme }) => ({
 export const ProgressTrack = styled.div(({ theme }) => ({
   height: 5,
   background: theme.background.hoverable,
-  borderRadius: 1,
+  borderRadius: 5,
+  overflow: "hidden",
 }));
 
 export const ProgressBar = styled(ProgressTrack)(({ theme }) => ({
@@ -72,6 +73,7 @@ export const SidebarIconButton = styled(IconButton)<ComponentProps<typeof IconBu
     color: theme.textMutedColor,
     marginTop: 0,
     zIndex: 1,
+    marginRight: 4,
   })
 );
 
@@ -107,7 +109,7 @@ export const SidebarTopButton = ({
         }
       >
         <SidebarIconButton aria-label="Stop tests" onClick={() => stopBuild()}>
-          <StopAltIcon style={{ width: 10 }} />
+          <StopAltIcon style={{ width: 10, margin: 2 }} />
           <ProgressCircle xmlns="http://www.w3.org/2000/svg">
             <circle />
           </ProgressCircle>

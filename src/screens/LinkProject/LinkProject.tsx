@@ -62,44 +62,50 @@ export const LinkProject = ({
 };
 
 const ListHeading = styled.div(({ theme }) => ({
-  fontSize: `${theme.typography.size.s1}px`,
+  fontSize: `${theme.typography.size.s1 - 1}px`,
   fontWeight: theme.typography.weight.bold,
-  color: theme.color.dark,
+  color: theme.base === "light" ? theme.color.dark : theme.color.light,
   backgroundColor: "inherit",
-  padding: "9px 15px",
-  borderBottom: `1px solid ${theme.color.mediumlight}`,
+  padding: "7px 15px",
+  borderBottom: `1px solid ${theme.appBorderColor}`,
+  lineHeight: "18px",
+  letterSpacing: "0.38em",
+  textTransform: "uppercase",
 }));
 
-const Left = styled.div({
-  flex: 1,
-  backgroundColor: "white",
-  display: "flex",
-  flexDirection: "column",
-});
+const Left = styled.div(({ theme }) => ({}));
 
 const Right = styled.div(({ theme }) => ({
-  flex: 1,
-  backgroundColor: theme.color.lighter,
-  display: "flex",
-  flexDirection: "column",
+  background: theme.base === "light" ? theme.color.lighter : theme.color.darker,
 }));
 
 const ProjectPicker = styled.div(({ theme }) => ({
-  background: theme.color.lightest,
+  background: theme.base === "light" ? theme.color.lightest : theme.color.darkest,
   borderRadius: 5,
-  border: `1px solid ${theme.color.mediumlight}`,
+  border: `1px solid ${theme.appBorderColor}`,
   height: 260,
-  width: 420,
+  maxWidth: 420,
+  minWidth: 260,
+  width: "100%",
   overflow: "hidden",
   textAlign: "left",
   position: "relative",
   display: "flex",
-  margin: 10,
+  "> *": {
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    width: "50%",
+  },
 }));
 
 const List = styled.div({
   height: "100%",
   overflowY: "auto",
+});
+
+const StyledStack = styled(Stack)({
+  width: "100%",
 });
 
 const RepositoryOwnerAvatar = styled(Avatar)({
@@ -189,71 +195,93 @@ function SelectProject({
   return (
     <Screen>
       <Container>
-        <Stack>
-          {!data && fetching && <p>Loading...</p>}
+        <StyledStack>
+          <div>
+            <Heading>Select a project</Heading>
+            <Text>Your tests will sync with this project.</Text>
+          </div>
           {error && <p>{error.message}</p>}
-          {data?.viewer?.accounts && (
-            <>
-              <Heading>Select a Project</Heading>
-              <Text>Baselines will be used with this project.</Text>
-              <ProjectPicker>
-                <Left>
-                  <ListHeading>Accounts</ListHeading>
-                  <List data-testid="left-list">
-                    {data.viewer.accounts?.map((account) => (
-                      <ListItem
-                        key={account.id}
-                        title={account.name}
-                        left={
-                          <RepositoryOwnerAvatar src={account.avatarUrl ?? undefined} size="tiny" />
-                        }
-                        onClick={() => onSelectAccount(account)}
-                        active={selectedAccountId === account.id}
-                      />
-                    ))}
-                  </List>
-                </Left>
-                <Right>
-                  <ListHeading>Projects</ListHeading>
-                  <List data-testid="right-list">
-                    {selectedAccount?.projects?.map(
-                      (project) =>
-                        project && (
-                          <ListItem
-                            appearance="secondary"
-                            key={project.id}
-                            title={project.name}
-                            right={<AddIcon aria-label={project.name} />}
-                            onClick={() => handleSelectProject(project)}
-                            disabled={isSelectingProject}
-                          />
-                        )
-                    )}
-                    {selectedAccount && (
-                      <ListItem
-                        title={
-                          // eslint-disable-next-line jsx-a11y/anchor-is-valid
-                          <Link
-                            isButton
-                            withArrow
-                            onClick={() => {
-                              if (!selectedAccount?.newProjectUrl) {
-                                throw new Error("Unexpected missing `newProjectUrl` on account");
-                              }
-                              openDialog(selectedAccount.newProjectUrl);
-                            }}
-                          >
-                            Create project
-                          </Link>
-                        }
-                      />
-                    )}
-                  </List>
-                </Right>
-              </ProjectPicker>
-            </>
+          {!data && fetching && (
+            <ProjectPicker>
+              <Left>
+                <ListHeading>Accounts</ListHeading>
+                <List>
+                  <ListItem appearance="secondary" isLoading />
+                  <ListItem appearance="secondary" isLoading />
+                  <ListItem appearance="secondary" isLoading />
+                  <ListItem appearance="secondary" isLoading />
+                  <ListItem appearance="secondary" isLoading />
+                </List>
+              </Left>
+              <Right>
+                <ListHeading>Projects</ListHeading>
+                <List data-testid="right-list">
+                  <ListItem appearance="secondary" isLoading />
+                  <ListItem appearance="secondary" isLoading />
+                  <ListItem appearance="secondary" isLoading />
+                </List>
+              </Right>
+            </ProjectPicker>
           )}
-        </Stack>
+          {data?.viewer?.accounts && (
+            <ProjectPicker>
+              <Left>
+                <ListHeading>Accounts</ListHeading>
+                <List data-testid="left-list">
+                  {data.viewer.accounts?.map((account) => (
+                    <ListItem
+                      key={account.id}
+                      title={account.name}
+                      appearance="secondary"
+                      left={
+                        <RepositoryOwnerAvatar src={account.avatarUrl ?? undefined} size="tiny" />
+                      }
+                      onClick={() => onSelectAccount(account)}
+                      active={selectedAccountId === account.id}
+                    />
+                  ))}
+                </List>
+              </Left>
+              <Right>
+                <ListHeading>Projects</ListHeading>
+                <List data-testid="right-list">
+                  {selectedAccount && (
+                    <ListItem
+                      title={
+                        // eslint-disable-next-line jsx-a11y/anchor-is-valid
+                        <Link
+                          isButton
+                          withArrow
+                          onClick={() => {
+                            if (!selectedAccount?.newProjectUrl) {
+                              throw new Error("Unexpected missing `newProjectUrl` on account");
+                            }
+                            openDialog(selectedAccount.newProjectUrl);
+                          }}
+                        >
+                          Create project
+                        </Link>
+                      }
+                    />
+                  )}
+                  {selectedAccount?.projects?.map(
+                    (project) =>
+                      project && (
+                        <ListItem
+                          appearance="secondary"
+                          key={project.id}
+                          title={project.name}
+                          right={<AddIcon aria-label={project.name} />}
+                          onClick={() => handleSelectProject(project)}
+                          disabled={isSelectingProject}
+                        />
+                      )
+                  )}
+                </List>
+              </Right>
+            </ProjectPicker>
+          )}
+        </StyledStack>
       </Container>
     </Screen>
   );

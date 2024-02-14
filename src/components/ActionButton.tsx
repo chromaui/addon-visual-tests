@@ -9,7 +9,7 @@ const themeColors = ({ theme, secondary, status }: { theme: Theme } & ActionButt
     return {
       color: theme.color.defaultText,
       backgroundColor: theme.background.app,
-      borderColor: theme.base === "dark" ? theme.color.darker : theme.color.medium,
+      borderColor: theme.base === "light" ? theme.color.medium : theme.color.darker,
       "&:hover": {
         color: theme.color.defaultText,
         backgroundColor: darken(0.03, theme.background.app),
@@ -43,9 +43,9 @@ const themeColors = ({ theme, secondary, status }: { theme: Theme } & ActionButt
     backgroundColor: theme.color.secondary,
     borderWidth: 0,
     borderColor:
-      theme.base === "dark"
-        ? darken(0.1, theme.color.secondary)
-        : lighten(0.2, theme.color.secondary),
+      theme.base === "light"
+        ? lighten(0.2, theme.color.secondary)
+        : darken(0.1, theme.color.secondary),
     "&:hover": {
       color: theme.color.lightest,
       backgroundColor: darken(0.05, theme.color.secondary),

@@ -11,11 +11,13 @@ interface BuildProgressLabelProps {
 export const BuildProgressLabel = ({
   localBuildProgress,
   withEmoji = false,
+
+  ...props
 }: BuildProgressLabelProps) => {
   const { emoji, renderProgress } = BUILD_STEP_CONFIG[localBuildProgress.currentStep];
   const label = renderProgress(localBuildProgress);
   return (
-    <span>
+    <span {...props}>
       {withEmoji && emoji} {label}
     </span>
   );

@@ -1,6 +1,7 @@
 import React from "react";
 
 import { Button } from "../../components/Button";
+import { ButtonStack } from "../../components/ButtonStack";
 import { Container } from "../../components/Container";
 import { Heading } from "../../components/Heading";
 import { VisualTestsIcon } from "../../components/icons/VisualTestsIcon";
@@ -26,12 +27,14 @@ export const Welcome = ({ onNext, onUninstall }: WelcomeProps) => {
               changes.
             </Text>
           </div>
-          <Button variant="solid" size="medium" onClick={onNext}>
-            Enable
-          </Button>
-          <Button link onClick={() => onUninstall()}>
-            Uninstall
-          </Button>
+          <ButtonStack>
+            <Button variant="solid" size="medium" onClick={onNext}>
+              Enable
+            </Button>
+            <Button link onClick={() => onUninstall()}>
+              Uninstall
+            </Button>
+          </ButtonStack>
         </Stack>
       </Container>
     </Screen>
