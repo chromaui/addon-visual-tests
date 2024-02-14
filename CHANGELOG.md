@@ -1,3 +1,15 @@
+# v1.1.7 (Tue Feb 13 2024)
+
+#### 🐛 Bug Fix
+
+- Only throw errors for Git messages after a Project ID has been set [#186](https://github.com/chromaui/addon-visual-tests/pull/186) ([@thafryer](https://github.com/thafryer))
+
+#### Authors: 1
+
+- Jarel Fryer ([@thafryer](https://github.com/thafryer))
+
+---
+
 # v1.1.6 (Sun Feb 11 2024)
 
 #### 🐛 Bug Fix

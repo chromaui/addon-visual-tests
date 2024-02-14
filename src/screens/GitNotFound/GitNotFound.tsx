@@ -10,10 +10,7 @@ import { Section } from "../../components/layout";
 import { Screen } from "../../components/Screen";
 import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
-
-interface GitNotFoundProps {
-  gitInfoError: Error;
-}
+import { useUninstallAddon } from "../Uninstalled/UninstallContext";
 
 const InfoSection = styled(Section)(({ theme }) => ({
   display: "flex",
@@ -40,7 +37,8 @@ const InfoSectionTextTitle = styled.b(() => ({
   marginBottom: 2,
 }));
 
-export const GitNotFound = ({ gitInfoError }: GitNotFoundProps) => {
+export const GitNotFound = () => {
+  const { uninstallAddon } = useUninstallAddon();
   return (
     <Screen footer={null}>
       <Container>
@@ -69,6 +67,10 @@ export const GitNotFound = ({ gitInfoError }: GitNotFoundProps) => {
             secondary
           >
             Visual tests requirements
+          </Link>
+          {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+          <Link withArrow onClick={() => uninstallAddon()}>
+            Uninstall
           </Link>
         </Stack>
       </Container>

@@ -83,12 +83,6 @@ export const Panel = ({ active, api }: PanelProps) => {
     return withProviders(<Uninstalled />);
   }
 
-  if (gitInfoError) {
-    // eslint-disable-next-line no-console
-    console.error(gitInfoError);
-    return withProviders(<GitNotFound gitInfoError={gitInfoError} />);
-  }
-
   // Render the Authentication flow if the user is not signed in.
   if (!accessToken) {
     return withProviders(
@@ -102,7 +96,7 @@ export const Panel = ({ active, api }: PanelProps) => {
   }
 
   // Momentarily wait on addonState (should be very fast)
-  if (projectInfoLoading || !gitInfo) {
+  if (projectInfoLoading) {
     return active ? <Spinner /> : null;
   }
 
@@ -114,6 +108,12 @@ export const Panel = ({ active, api }: PanelProps) => {
         onUpdateProject={updateProject}
       />
     );
+
+  if (gitInfoError || !gitInfo) {
+    // eslint-disable-next-line no-console
+    console.error(gitInfoError);
+    return withProviders(<GitNotFound />);
+  }
 
   if (projectUpdatingFailed) {
     // These should always be set when we get this error
