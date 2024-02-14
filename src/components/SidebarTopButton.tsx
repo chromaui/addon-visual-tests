@@ -73,6 +73,7 @@ export const SidebarIconButton = styled(IconButton)<ComponentProps<typeof IconBu
     color: theme.textMutedColor,
     marginTop: 0,
     zIndex: 1,
+    marginRight: 4,
   })
 );
 
