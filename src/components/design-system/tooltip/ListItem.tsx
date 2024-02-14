@@ -91,7 +91,7 @@ const linkStyles = ({
   },
 
   "&:hover": {
-    background: theme.background.app, // TODO calmBlue?
+    background: theme.background.hoverable,
     cursor: "pointer",
 
     ".sbds-list-item-right svg": {
