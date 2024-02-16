@@ -34,7 +34,7 @@ export const BUILD_STEP_CONFIG: Record<
     key: "initialize",
     emoji: "🚀",
     renderName: () => `Initialize build`,
-    renderProgress: () => `Initializing build`,
+    renderProgress: () => `Initializing build...`,
     renderComplete: () => `Initialized`,
     estimateDuration: 2000,
   },
@@ -52,7 +52,7 @@ export const BUILD_STEP_CONFIG: Record<
     renderName: () => `Publish your Storybook`,
     renderProgress: ({ stepProgress }) => {
       const { numerator, denominator } = stepProgress.upload;
-      if (!denominator || !numerator) return `Uploading files`;
+      if (!denominator || !numerator) return `Uploading files...`;
       const { value: total, exponent } = filesize(denominator, {
         output: "object",
         round: 1,
@@ -62,7 +62,7 @@ export const BUILD_STEP_CONFIG: Record<
         output: "object",
         round: 1,
       });
-      return `Uploading files (${progress}/${total} ${symbol})`;
+      return `Uploading files (${progress}/${total} ${symbol})...`;
     },
     renderComplete: () => `Publish complete`,
     estimateDuration: 30_000,
@@ -82,8 +82,8 @@ export const BUILD_STEP_CONFIG: Record<
     renderProgress: ({ stepProgress }) => {
       const { numerator, denominator } = stepProgress.snapshot;
       return denominator
-        ? `Running visual tests (${numerator}/${denominator})`
-        : `Running visual tests`;
+        ? `Running visual tests (${numerator}/${denominator})...`
+        : `Running visual tests...`;
     },
     renderComplete: () => `Tested your stories`,
     estimateDuration: 60_000,

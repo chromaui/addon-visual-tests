@@ -23,10 +23,14 @@ const Button = styled(IconButton)(
     !active &&
     css({
       "&:hover": {
-        color: theme.color.defaultText,
+        color: theme.base === "light" ? theme.color.defaultText : theme.color.light,
       },
     })
 );
+
+const Label = styled.span(({ theme }) => ({
+  color: theme.base === "light" ? theme.color.defaultText : theme.color.light,
+}));
 
 interface SidebarToggleButtonProps {
   count: number;
@@ -55,7 +59,7 @@ export const SidebarToggleButton = React.memo(function SidebarToggleButton({
       <Badge status="warning" data-badge={filter}>
         {count}
       </Badge>
-      <span>{pluralize("Change", count)}</span>
+      <Label>{pluralize("Change", count)}</Label>
     </Button>
   );
 });

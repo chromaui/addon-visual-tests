@@ -1,4 +1,5 @@
-import { styled } from "@storybook/theming";
+import { ChevronLeftIcon } from "@storybook/icons";
+import { styled, useTheme } from "@storybook/theming";
 import React, { useCallback, useRef } from "react";
 import { useClient } from "urql";
 
@@ -20,7 +21,8 @@ import { useErrorNotification } from "../../utils/useErrorNotification";
 const Digits = styled.ol(({ theme }) => ({
   display: "inline-flex",
   listStyle: "none",
-  margin: 8,
+  marginTop: 15,
+  marginBottom: 5,
   padding: 0,
   gap: 5,
 
@@ -63,6 +65,7 @@ export const Verify = ({
 }: VerifyProps) => {
   const client = useClient();
   const onError = useErrorNotification();
+  const theme = useTheme();
 
   const { user_code: userCode, verificationUrl } = exchangeParameters;
 
@@ -139,7 +142,7 @@ export const Verify = ({
     <Screen footer={null}>
       <Container>
         <BackButton onClick={onBack}>
-          <BackIcon />
+          <ChevronLeftIcon color={theme.base === "light" ? "currentColor" : theme.color.medium} />
           Back
         </BackButton>
         <Stack>

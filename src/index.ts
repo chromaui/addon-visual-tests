@@ -4,6 +4,7 @@ import { normalize, relative } from "node:path";
 
 import type { Channel } from "@storybook/channels";
 import type { Options } from "@storybook/types";
+// eslint-disable-next-line import/no-unresolved
 import { type Configuration, getConfiguration, getGitInfo, type GitInfo } from "chromatic/node";
 
 import {
@@ -88,7 +89,8 @@ const getConfigInfo = async (
 const observeGitInfo = async (
   interval: number,
   callback: (info: GitInfo, prevInfo?: GitInfo) => void,
-  errorCallback: (e: Error) => void
+  errorCallback: (e: Error) => void,
+  projectId?: string
 ) => {
   let prev: GitInfo | undefined;
   let prevError: Error | undefined;
@@ -103,12 +105,12 @@ const observeGitInfo = async (
       prevError = undefined;
       timer = setTimeout(act, interval);
     } catch (e: any) {
-      if (prevError?.message !== e.message) {
+      errorCallback(e);
+      if (projectId && prevError?.message !== e.message) {
         console.error(`Failed to fetch git info, with error:\n${e}`);
-        errorCallback(e);
+        prev = undefined;
+        prevError = e;
       }
-      prev = undefined;
-      prevError = e;
       timer = setTimeout(act, interval);
     }
   };

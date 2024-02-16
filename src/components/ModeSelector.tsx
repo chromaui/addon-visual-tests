@@ -1,6 +1,6 @@
 import { TooltipNote, WithTooltip } from "@storybook/components";
 import { ChevronDownIcon, DiamondIcon } from "@storybook/icons";
-import { styled } from "@storybook/theming";
+import { styled, useTheme } from "@storybook/theming";
 import React from "react";
 
 import { ComparisonResult, TestMode } from "../gql/graphql";
@@ -17,6 +17,9 @@ const IconWrapper = styled.div(({ theme }) => ({
   color: `${theme.color.defaultText}99`,
   svg: {
     verticalAlign: "top",
+    path: {
+      fill: theme.base === "light" ? `${theme.color.defaultText}99` : theme.color.light,
+    },
   },
 }));
 
@@ -26,6 +29,7 @@ const Label = styled.span(({ theme }) => ({
   "@container (min-width: 300px)": {
     display: "inline-block",
   },
+  color: theme.base === "light" ? `${theme.color.defaultText}99` : theme.color.light,
 }));
 
 type ModeData = Pick<TestMode, "name">;
@@ -45,10 +49,15 @@ export const ModeSelector = ({
   onSelectMode,
   selectedMode,
 }: ModeSelectorProps) => {
+  const theme = useTheme();
   const aggregate = aggregateResult(modeResults.map(({ result }) => result));
   if (!aggregate) return null;
 
-  let icon = <DiamondIcon />;
+  let icon = (
+    <DiamondIcon
+      color={theme.base === "light" ? `${theme.color.defaultText}99` : theme.color.light}
+    />
+  );
   if (!isAccepted && aggregate !== ComparisonResult.Equal && modeResults.length >= 2) {
     icon = <StatusDotWrapper status={aggregate}>{icon}</StatusDotWrapper>;
   }

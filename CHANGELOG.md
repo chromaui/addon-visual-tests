@@ -1,3 +1,40 @@
+# v1.1.8 (Wed Feb 14 2024)
+
+#### 🐛 Bug Fix
+
+- Adjust UI to Support Dark Mode [#179](https://github.com/chromaui/addon-visual-tests/pull/179) ([@thafryer](https://github.com/thafryer) [@domyen](https://github.com/domyen))
+
+#### Authors: 2
+
+- Dominic Nguyen ([@domyen](https://github.com/domyen))
+- Jarel Fryer ([@thafryer](https://github.com/thafryer))
+
+---
+
+# v1.1.7 (Tue Feb 13 2024)
+
+#### 🐛 Bug Fix
+
+- Only throw errors for Git messages after a Project ID has been set [#186](https://github.com/chromaui/addon-visual-tests/pull/186) ([@thafryer](https://github.com/thafryer))
+
+#### Authors: 1
+
+- Jarel Fryer ([@thafryer](https://github.com/thafryer))
+
+---
+
+# v1.1.6 (Sun Feb 11 2024)
+
+#### 🐛 Bug Fix
+
+- Pull screen container `Section` into `Screen` component [#185](https://github.com/chromaui/addon-visual-tests/pull/185) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v1.1.5 (Fri Feb 09 2024)
 
 #### 🐛 Bug Fix

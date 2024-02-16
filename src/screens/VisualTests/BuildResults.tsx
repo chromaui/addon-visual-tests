@@ -1,15 +1,17 @@
 import { Link } from "@storybook/components";
 import { DocumentIcon } from "@storybook/icons";
-import { styled } from "@storybook/theming";
+import { styled, useTheme } from "@storybook/theming";
 import React from "react";
 
 import { BuildProgressInline } from "../../components/BuildProgressBarInline";
 import { Button } from "../../components/Button";
+import { Code } from "../../components/Code";
 import { Container } from "../../components/Container";
 import { Eyebrow } from "../../components/Eyebrow";
 import { Heading } from "../../components/Heading";
 import { Section, Sections } from "../../components/layout";
 import { Screen } from "../../components/Screen";
+import { Stack } from "../../components/Stack";
 import { Text as CenterText } from "../../components/Text";
 import { BuildStatus, TestResult } from "../../gql/graphql";
 import { LocalBuildProgress } from "../../types";
@@ -48,6 +50,7 @@ export const BuildResults = ({
   startDevBuild,
   storyId,
 }: BuildResultsProps) => {
+  const theme = useTheme();
   const { settingsVisible, warningsVisible } = useControlsState();
   const { toggleSettings, toggleWarnings } = useControlsDispatch();
 
@@ -103,28 +106,32 @@ export const BuildResults = ({
     return (
       <Screen>
         <Container>
-          <Heading>New story found</Heading>
-          <CenterText>
-            Take an image snapshot of this story to save its “last known good state” as a test
-            baseline. This unlocks visual regression testing so you can see exactly what has changed
-            down to the pixel.
-          </CenterText>
-          {localBuildProgress && isLocalBuildProgressOnSelectedBuild ? (
-            <BuildProgressInline localBuildProgress={localBuildProgress} />
-          ) : (
-            <>
-              <br />
-              <Button
-                belowText
-                size="medium"
-                variant="solid"
-                onClick={() => startDevBuild()}
-                disabled={isLocalBuildInProgress}
-              >
-                Create visual test
-              </Button>
-            </>
-          )}
+          <Stack>
+            <div>
+              <Heading>New story found</Heading>
+              <CenterText>
+                Take an image snapshot of this story to save its “last known good state” as a test
+                baseline. This unlocks visual regression testing so you can see exactly what has
+                changed down to the pixel.
+              </CenterText>
+            </div>
+
+            {localBuildProgress && isLocalBuildProgressOnSelectedBuild ? (
+              <BuildProgressInline localBuildProgress={localBuildProgress} />
+            ) : (
+              <>
+                <Button
+                  belowText
+                  size="medium"
+                  variant="solid"
+                  onClick={() => startDevBuild()}
+                  disabled={isLocalBuildInProgress}
+                >
+                  Create visual test
+                </Button>
+              </>
+            )}
+          </Stack>
         </Container>
       </Screen>
     );
@@ -136,17 +143,24 @@ export const BuildResults = ({
       <Screen>
         {buildStatus}
         <Container>
-          <Heading>This story was skipped</Heading>
-          <CenterText>
-            If you would like to resume testing it, comment out or remove
-            `parameters.chromatic.disableSnapshot = true` from the CSF file.
-          </CenterText>
-          <Button asChild belowText size="medium" tertiary>
-            <a href="https://www.chromatic.com/docs/ignoring-elements#ignore-stories" target="_new">
-              <DocumentIcon />
-              View Docs
-            </a>
-          </Button>
+          <Stack>
+            <div>
+              <Heading>This story was skipped</Heading>
+              <CenterText>
+                If you would like to resume testing it, comment out or remove
+                <Code>disableSnapshot = true</Code> from the CSF file.
+              </CenterText>
+            </div>
+            <Button asChild size="medium" tertiary>
+              <a
+                href="https://www.chromatic.com/docs/ignoring-elements#ignore-stories"
+                target="_new"
+              >
+                <DocumentIcon />
+                View docs
+              </a>
+            </Button>
+          </Stack>
         </Container>
       </Screen>
     );
@@ -169,10 +183,12 @@ export const BuildResults = ({
         {!buildStatus && isReviewLocked && (
           <Eyebrow>
             {userCanReview ? (
-              <>Reviewing is disabled because there's a newer build on {branch}.</>
+              <>
+                Reviewing is disabled because there&rsquo;s a newer build on <Code>{branch}</Code>.
+              </>
             ) : (
               <>
-                You do not have permission to accept changes.{" "}
+                You don&rsquo;t have permission to accept changes.{" "}
                 <Link
                   href="https://www.chromatic.com/docs/collaborators#roles"
                   target="_blank"
@@ -185,7 +201,7 @@ export const BuildResults = ({
           </Eyebrow>
         )}
 
-        <Section grow last hidden={settingsVisible || warningsVisible} data-x="snapshot-comparison">
+        <Section grow hidden={settingsVisible || warningsVisible}>
           <SnapshotComparison
             hidden={settingsVisible || warningsVisible}
             {...{
@@ -201,10 +217,10 @@ export const BuildResults = ({
           />
         </Section>
 
-        <Section grow last hidden={!settingsVisible}>
+        <Section grow hidden={!settingsVisible}>
           <RenderSettings onClose={() => toggleSettings(false)} />
         </Section>
-        <Section grow last hidden={!warningsVisible}>
+        <Section grow hidden={!warningsVisible}>
           <Warnings onClose={() => toggleWarnings(false)} />
         </Section>
       </Sections>
