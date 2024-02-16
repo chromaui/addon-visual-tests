@@ -54,7 +54,7 @@ export const ConfigSection = ({ hidden, onOpen }: ConfigSectionProps) => {
         <Bar>
           <Col>
             <span>
-              Builds locked due to configuration {pluralize("problem", problems.length)}.{" "}
+              Visual tests locked due to configuration {pluralize("problem", problems.length)}.{" "}
               {configLink}
             </span>
           </Col>
