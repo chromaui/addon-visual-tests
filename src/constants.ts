@@ -15,6 +15,7 @@ export const DEV_BUILD_ID_KEY = `${ADDON_ID}/dev-build-id`;
 // TODO: Remove after completing AP-3586
 // export const WALKTHROUGH_COMPLETED_KEY = `${ADDON_ID}/walkthrough-completed`;
 
+export const CONFIG_INFO = `${ADDON_ID}/configInfo`;
 export const GIT_INFO = `${ADDON_ID}/gitInfo`;
 export const GIT_INFO_ERROR = `${ADDON_ID}/gitInfoError`;
 export const PROJECT_INFO = `${ADDON_ID}/projectInfo`;

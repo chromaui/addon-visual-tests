@@ -1,5 +1,5 @@
 import type { API } from "@storybook/manager-api";
-import type { GitInfo, TaskName } from "chromatic/node";
+import type { Configuration, GitInfo, TaskName } from "chromatic/node";
 
 import { SelectedBuildFieldsFragment } from "./gql/graphql";
 
@@ -16,6 +16,16 @@ export type UpdateStatusFunction = (
   update: StoryStatusUpdater
 ) => ReturnType<API["experimental_updateStatus"]>;
 
+export type ConfigurationUpdate = {
+  // Suggestions adhere to the Configuration schema, but may be null to suggest removal
+  [Property in keyof Configuration]: Configuration[Property] | null;
+};
+
+export type ConfigInfoPayload = {
+  configuration: Configuration;
+  problems?: ConfigurationUpdate;
+  suggestions?: ConfigurationUpdate;
+};
 export type GitInfoPayload = Omit<GitInfo, "committerEmail" | "committerName">;
 
 export type ProjectInfoPayload = {
