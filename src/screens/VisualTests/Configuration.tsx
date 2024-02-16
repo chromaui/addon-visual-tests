@@ -340,9 +340,13 @@ export const Configuration = ({ onClose }: ConfigurationProps) => {
                 {problem !== undefined && (
                   <Suggestion warning>
                     <AlertIcon />
-                    <span>
-                      This should be: <code>{JSON.stringify(problem)}</code>
-                    </span>
+                    {problem === null ? (
+                      <span>This should be removed.</span>
+                    ) : (
+                      <span>
+                        This should be: <code>{JSON.stringify(problem)}</code>
+                      </span>
+                    )}
                   </Suggestion>
                 )}
                 {suggestion !== undefined && (
