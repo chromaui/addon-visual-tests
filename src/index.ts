@@ -4,6 +4,7 @@ import { normalize, relative } from "node:path";
 
 import type { Channel } from "@storybook/channels";
 import type { Options } from "@storybook/types";
+// eslint-disable-next-line import/no-unresolved
 import { type Configuration, getConfiguration, getGitInfo, type GitInfo } from "chromatic/node";
 
 import {
