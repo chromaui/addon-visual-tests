@@ -1,6 +1,6 @@
 import { TooltipNote, WithTooltip } from "@storybook/components";
 import { ChevronDownIcon } from "@storybook/icons";
-import { styled } from "@storybook/theming";
+import { styled, useTheme } from "@storybook/theming";
 import React, { ComponentProps } from "react";
 
 import { Browser, BrowserInfo, ComparisonResult } from "../gql/graphql";
@@ -25,18 +25,19 @@ const IconWrapper = styled.div(({ theme }) => ({
   gap: 6,
   height: 16,
   margin: "6px 7px",
-  color: `${theme.color.defaultText}99`,
   svg: {
     verticalAlign: "top",
   },
 }));
 
-const Label = styled.span({
+const Label = styled.span(({ theme }) => ({
   display: "none",
+  fontSize: theme.typography.size.s2 - 1,
   "@container (min-width: 300px)": {
     display: "inline-block",
   },
-});
+  color: theme.base === "light" ? `${theme.color.defaultText}99` : theme.color.light,
+}));
 
 type BrowserData = Pick<BrowserInfo, "id" | "key" | "name">;
 
@@ -53,11 +54,12 @@ export const BrowserSelector = ({
   browserResults,
   onSelectBrowser,
 }: BrowserSelectorProps) => {
+  const theme = useTheme();
   const aggregate = aggregateResult(browserResults.map(({ result }) => result));
   if (!aggregate) return null;
 
   let icon = browserIcons[selectedBrowser.key];
-  if (!isAccepted && aggregate !== ComparisonResult.Equal) {
+  if (!isAccepted && aggregate !== ComparisonResult.Equal && browserResults.length >= 2) {
     icon = <StatusDotWrapper status={aggregate}>{icon}</StatusDotWrapper>;
   }
 
@@ -91,7 +93,10 @@ export const BrowserSelector = ({
         <TooltipMenu placement="bottom" links={links}>
           {icon}
           <Label>{selectedBrowser.name}</Label>
-          <ChevronDownIcon style={{ width: 10, height: 10 }} />
+          <ChevronDownIcon
+            size={10}
+            color={theme.base === "light" ? `${theme.color.defaultText}99` : theme.color.light}
+          />
         </TooltipMenu>
       ) : (
         <IconWrapper>

@@ -4,8 +4,6 @@ import { graphql, HttpResponse } from "msw";
 
 import { ProjectQueryQuery } from "../../gql/graphql";
 import { panelModes } from "../../modes";
-import { GraphQLClientProvider } from "../../utils/graphQLClient";
-import { storyWrapper } from "../../utils/storyWrapper";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
 import { LinkedProject } from "./LinkedProject";
 
@@ -21,9 +19,7 @@ const meta = {
     projectId: "Project:abc123",
     configFile: "chromatic.config.json",
     goToNext: action("goToNext"),
-    setAccessToken: action("setAccessToken"),
   },
-  decorators: [storyWrapper(GraphQLClientProvider)],
   parameters: {
     chromatic: {
       modes: panelModes,

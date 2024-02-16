@@ -2,6 +2,7 @@ import { Loader } from "@storybook/components";
 import { styled } from "@storybook/theming";
 import React, { useEffect } from "react";
 
+import { useAuthState } from "../../AuthContext";
 import { Link } from "../../components/design-system";
 import { Text } from "../../components/layout";
 import { SnapshotImage } from "../../components/SnapshotImage";
@@ -72,6 +73,7 @@ const MainSection = styled.div(({ theme }) => ({
   gridArea: "main",
   overflowY: "auto",
   maxHeight: "100%",
+  background: theme.background.content,
 }));
 
 const FooterSection = styled.div(({ theme }) => ({
@@ -79,8 +81,6 @@ const FooterSection = styled.div(({ theme }) => ({
   position: "sticky",
   zIndex: 1,
   bottom: 0,
-  borderTop: `1px solid ${theme.appBorderColor}`,
-  background: theme.background.content,
 }));
 
 const Divider = styled.div(({ children, theme }) => ({
@@ -108,6 +108,7 @@ const Warning = styled.div(({ theme }) => ({
   padding: "10px 15px",
   lineHeight: "18px",
   position: "relative",
+  borderBottom: `1px solid ${theme.appBorderColor}`,
 }));
 
 const WarningText = styled(Text)(({ theme }) => ({
@@ -121,7 +122,6 @@ interface SnapshotComparisonProps {
   isBuildFailed: boolean;
   shouldSwitchToLastBuildOnBranch: boolean;
   switchToLastBuildOnBranch?: () => void;
-  setAccessToken: (accessToken: string | null) => void;
   hidden?: boolean;
   storyId: string;
 }
@@ -133,7 +133,6 @@ export const SnapshotComparison = ({
   isBuildFailed,
   shouldSwitchToLastBuildOnBranch,
   switchToLastBuildOnBranch,
-  setAccessToken,
   hidden,
   storyId,
 }: SnapshotComparisonProps) => {
@@ -195,7 +194,7 @@ export const SnapshotComparison = ({
           <Grid>{storyInfo}</Grid>
         </HeaderSection>
         <FooterSection>
-          <BuildResultsFooter setAccessToken={setAccessToken} />
+          <BuildResultsFooter />
         </FooterSection>
       </ParentGrid>
     );
@@ -243,8 +242,12 @@ export const SnapshotComparison = ({
           <Warning>
             <WarningText>
               New story found. Accept this snapshot as a test baseline.{" "}
-              <Link href="https://www.chromatic.com/docs/branching-and-baselines" target="_blank">
-                Learn More »
+              <Link
+                withArrow
+                href="https://www.chromatic.com/docs/branching-and-baselines"
+                target="_blank"
+              >
+                Learn more
               </Link>
             </WarningText>
           </Warning>
@@ -253,8 +256,12 @@ export const SnapshotComparison = ({
           <Warning>
             <WarningText>
               New mode found. Accept this snapshot as a test baseline.{" "}
-              <Link href="https://www.chromatic.com/docs/branching-and-baselines" target="_blank">
-                Learn More »
+              <Link
+                withArrow
+                href="https://www.chromatic.com/docs/branching-and-baselines"
+                target="_blank"
+              >
+                Learn more
               </Link>
             </WarningText>
           </Warning>
@@ -263,8 +270,12 @@ export const SnapshotComparison = ({
           <Warning>
             <WarningText>
               New browser found. Accept this snapshot as a test baseline.{" "}
-              <Link href="https://www.chromatic.com/docs/branching-and-baselines" target="_blank">
-                Learn More »
+              <Link
+                withArrow
+                href="https://www.chromatic.com/docs/branching-and-baselines"
+                target="_blank"
+              >
+                Learn more
               </Link>
             </WarningText>
           </Warning>
@@ -296,7 +307,7 @@ export const SnapshotComparison = ({
         )}
       </MainSection>
       <FooterSection>
-        <BuildResultsFooter setAccessToken={setAccessToken} {...testSummary} />
+        <BuildResultsFooter />
       </FooterSection>
     </ParentGrid>
   );

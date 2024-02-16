@@ -1,52 +1,62 @@
-import { Code, Link } from "@storybook/components";
+import { styled } from "@storybook/theming";
 import React from "react";
 import { dedent } from "ts-dedent";
 
+import { Code } from "../../components/Code";
 import { Container } from "../../components/Container";
-import { FooterSection } from "../../components/FooterSection";
+import { Link } from "../../components/design-system";
 import { Heading } from "../../components/Heading";
-import { Section, Sections } from "../../components/layout";
+import { Screen } from "../../components/Screen";
+import { Stack } from "../../components/Stack";
 import { Text as CenterText } from "../../components/Text";
 
 type LinkingProjectFailedProps = {
   projectId: string;
   configFile: string;
-  setAccessToken: (accessToken: string | null) => void;
 };
 
-const configureDocsLink = "https://www.chromatic.com/docs/addon-visual-tests#configure";
+const CodeWrapper = styled.div(({ theme }) => ({
+  "&& > *": {
+    margin: 0, // override inherited component styles from SB
+  },
+  "&& pre": {
+    color: theme.base === "light" ? theme.color.darker : theme.color.lighter,
+    background: theme.base === "light" ? theme.color.lightest : theme.color.darkest,
+    fontSize: "12px",
+    lineHeight: "16px",
+    textAlign: "left",
+    padding: "15px !important",
+  },
+}));
 
-export function LinkingProjectFailed({
-  projectId,
-  configFile,
-  setAccessToken,
-}: LinkingProjectFailedProps) {
+const configureDocsLink = "https://www.chromatic.com/docs/visual-tests-addon/#configure";
+
+export function LinkingProjectFailed({ projectId, configFile }: LinkingProjectFailedProps) {
   return (
-    <Sections>
-      <Section grow>
-        <Container>
-          <CenterText>
-            <Heading>Add the Project ID to your Chromatic config</Heading>
-            The <code>projectId</code> will be used to reference prior tests. Please commit this
-            change to continue using this addon. The file should be saved at{" "}
-            <code>{configFile}</code>.
-          </CenterText>
-          <Code>
-            {dedent`
-            {
-              "projectId": "${projectId}",
-            }
-            `}
-          </Code>
-          <CenterText>
-            What is this for?{" "}
-            <Link withArrow target="_blank" href={configureDocsLink}>
-              Learn more
-            </Link>
-          </CenterText>
-        </Container>
-      </Section>
-      <FooterSection setAccessToken={setAccessToken} />
-    </Sections>
+    <Screen>
+      <Container>
+        <Stack>
+          <div>
+            <Heading>Add the project ID to your Chromatic config</Heading>
+            <CenterText>
+              The <Code>projectId</Code> will be used to sync tests with Chromatic. Please commit
+              this change to continue using the addon. The file should be saved at {configFile}.
+            </CenterText>
+          </div>
+          <CodeWrapper>
+            <Code>
+              {dedent`
+                {
+                  "projectId": "${projectId}",
+                }
+              `}
+            </Code>
+          </CodeWrapper>
+          <Link secondary withArrow target="_blank" href={configureDocsLink}>
+            What&rsquo;s this for?
+          </Link>
+        </Stack>
+      </Container>
+    </Screen>
   );
 }

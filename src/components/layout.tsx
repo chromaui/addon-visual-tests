@@ -1,20 +1,21 @@
 import { styled } from "@storybook/theming";
 
+export const Base = styled.div<{ hidden?: boolean }>(({ hidden, theme }) => ({
+  background: theme.background.app,
+  containerType: "size",
+  display: hidden ? "none" : "flex",
+  flexDirection: "column",
+  height: "100%",
+}));
+
 export const Sections = styled.div<{ hidden?: boolean }>(
-  {
-    containerType: "size",
-    display: "flex",
-    flexDirection: "column",
-    height: "100%",
-    overflowY: "auto",
-  },
+  { display: "flex", flexDirection: "column", flexGrow: 1 },
   ({ hidden }) => hidden && { display: "none" }
 );
 
-export const Section = styled.div<{ grow?: boolean; last?: boolean }>(({ grow, last, theme }) => ({
-  flexGrow: grow ? 1 : "auto",
-  borderBottom: last ? "none" : `1px solid ${theme.appBorderColor}`,
-}));
+export const Section = styled.div<{ grow?: boolean }>(
+  ({ grow }) => grow && { flexGrow: grow ? 1 : "auto" }
+);
 
 export const Row = styled.div<{ header?: boolean }>(
   {

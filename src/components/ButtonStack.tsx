@@ -1,10 +1,9 @@
 import { styled } from "@storybook/theming";
 
-export const Container = styled.div({
+export const ButtonStack = styled.div(() => ({
   display: "flex",
   flexDirection: "column",
-  flexGrow: 1,
+  gap: 5,
   alignItems: "center",
-  justifyContent: "center",
-  padding: 10,
-});
+  textAlign: "center",
+}));

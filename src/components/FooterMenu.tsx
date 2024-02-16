@@ -1,17 +1,15 @@
 import { ChangedIcon, EllipsisIcon, QuestionIcon, ShareAltIcon, UserIcon } from "@storybook/icons";
 import React from "react";
 
+import { useAuthState } from "../AuthContext";
 import { PROJECT_INFO } from "../constants";
 import { useUninstallAddon } from "../screens/Uninstalled/UninstallContext";
 import { ProjectInfoPayload } from "../types";
 import { useSharedState } from "../utils/useSharedState";
 import { TooltipMenu } from "./TooltipMenu";
 
-interface FooterMenuProps {
-  setAccessToken: (value: string | null) => void;
-}
-
-export const FooterMenu = ({ setAccessToken }: FooterMenuProps) => {
+export const FooterMenu = () => {
+  const { accessToken, setAccessToken } = useAuthState();
   const { uninstallAddon } = useUninstallAddon();
   const [projectInfo] = useSharedState<ProjectInfoPayload>(PROJECT_INFO);
   const { projectId } = projectInfo || {};
@@ -22,12 +20,16 @@ export const FooterMenu = ({ setAccessToken }: FooterMenuProps) => {
       icon: <ChangedIcon aria-hidden />,
       onClick: () => uninstallAddon(),
     },
-    {
-      id: "logout",
-      title: "Log out",
-      icon: <UserIcon aria-hidden />,
-      onClick: () => setAccessToken(null),
-    },
+    ...(accessToken
+      ? [
+          {
+            id: "logout",
+            title: "Log out",
+            icon: <UserIcon aria-hidden />,
+            onClick: () => setAccessToken(null),
+          },
+        ]
+      : []),
     {
       id: "learn",
       title: "Learn about this addon",
@@ -39,7 +41,7 @@ export const FooterMenu = ({ setAccessToken }: FooterMenuProps) => {
       ? [
           {
             id: "visit",
-            title: "Visit Project on Chromatic",
+            title: "Visit project on Chromatic",
             icon: <ShareAltIcon aria-hidden />,
             href: projectId
               ? `https://www.chromatic.com/builds?appId=${projectId?.split(":")[1]}`

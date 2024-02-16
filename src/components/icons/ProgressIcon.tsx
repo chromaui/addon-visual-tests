@@ -12,9 +12,9 @@ export const ProgressIcon = styled.div<{ parentComponent?: "Button" | "IconButto
 
     animation: `${rotate360} 0.7s linear infinite`,
     border: "2px solid transparent",
-    borderLeftColor: theme.base === "dark" ? "#58faf9" : "#00aaff",
+    borderLeftColor: theme.base === "light" ? "#00aaff" : "#58faf9",
     borderBottomColor: "#25ccfd",
-    borderRightColor: theme.base === "dark" ? "#00aaff" : "#58faf9",
+    borderRightColor: theme.base === "light" ? "#58faf9" : "#00aaff",
     borderRadius: "100%",
     transform: "translate3d(0, 0, 0)",
   }),

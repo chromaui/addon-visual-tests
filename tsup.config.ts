@@ -35,6 +35,10 @@ export default defineConfig(async (options) => {
 
   const configs: Options[] = [];
 
+  const globalManagerPackagesNoIcons = globalManagerPackages.filter(
+    (packageJson) => packageJson !== "@storybook/icons"
+  );
+
   // export entries are entries meant to be manually imported by the user
   // they are not meant to be loaded by the manager or preview
   // they'll be usable in both node and browser environments, depending on which features and modules they depend on
@@ -47,7 +51,7 @@ export default defineConfig(async (options) => {
       },
       format: ["esm", "cjs"],
       platform: "node",
-      external: [...globalManagerPackages, ...globalPreviewPackages],
+      external: [...globalManagerPackagesNoIcons, ...globalPreviewPackages],
     });
   }
 
@@ -67,7 +71,7 @@ export default defineConfig(async (options) => {
           ".png": "dataurl",
         };
       },
-      external: globalManagerPackages,
+      external: globalManagerPackagesNoIcons,
     });
   }
 

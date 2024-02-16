@@ -11,21 +11,26 @@ const Badge = styled(BaseBadge)(({ theme }) => ({
 }));
 
 const Button = styled(IconButton)(
-  {
+  ({ theme }) => ({
+    fontSize: theme.typography.size.s2 - 1,
     "&:hover [data-badge], [data-badge=true]": {
       background: "#E3F3FF",
       borderColor: "rgba(2, 113, 182, 0.1)",
       color: "#0271B6",
     },
-  },
+  }),
   ({ active, theme }) =>
     !active &&
     css({
       "&:hover": {
-        color: theme.color.defaultText,
+        color: theme.base === "light" ? theme.color.defaultText : theme.color.light,
       },
     })
 );
+
+const Label = styled.span(({ theme }) => ({
+  color: theme.base === "light" ? theme.color.defaultText : theme.color.light,
+}));
 
 interface SidebarToggleButtonProps {
   count: number;
@@ -54,7 +59,7 @@ export const SidebarToggleButton = React.memo(function SidebarToggleButton({
       <Badge status="warning" data-badge={filter}>
         {count}
       </Badge>
-      <span>{pluralize("Change", count)}</span>
+      <Label>{pluralize("Change", count)}</Label>
     </Button>
   );
 });

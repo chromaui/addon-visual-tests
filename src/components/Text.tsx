@@ -1,8 +1,6 @@
-import { color, styled } from "@storybook/theming";
+import { styled } from "@storybook/theming";
 
-export const Text = styled.p({
-  color: color.mediumdark,
-  margin: "8px 0",
+export const Text = styled.div({
   lineHeight: "18px",
   textAlign: "center",
   textWrap: "balance",

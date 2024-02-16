@@ -1,3 +1,110 @@
+# v1.1.8 (Wed Feb 14 2024)
+
+#### 🐛 Bug Fix
+
+- Adjust UI to Support Dark Mode [#179](https://github.com/chromaui/addon-visual-tests/pull/179) ([@thafryer](https://github.com/thafryer) [@domyen](https://github.com/domyen))
+
+#### Authors: 2
+
+- Dominic Nguyen ([@domyen](https://github.com/domyen))
+- Jarel Fryer ([@thafryer](https://github.com/thafryer))
+
+---
+
+# v1.1.7 (Tue Feb 13 2024)
+
+#### 🐛 Bug Fix
+
+- Only throw errors for Git messages after a Project ID has been set [#186](https://github.com/chromaui/addon-visual-tests/pull/186) ([@thafryer](https://github.com/thafryer))
+
+#### Authors: 1
+
+- Jarel Fryer ([@thafryer](https://github.com/thafryer))
+
+---
+
+# v1.1.6 (Sun Feb 11 2024)
+
+#### 🐛 Bug Fix
+
+- Pull screen container `Section` into `Screen` component [#185](https://github.com/chromaui/addon-visual-tests/pull/185) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v1.1.5 (Fri Feb 09 2024)
+
+#### 🐛 Bug Fix
+
+- Refactor UI architecture to avoid repetition [#184](https://github.com/chromaui/addon-visual-tests/pull/184) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### 📝 Documentation
+
+- Docs: Minor Readme cleanup [#180](https://github.com/chromaui/addon-visual-tests/pull/180) ([@jonniebigodes](https://github.com/jonniebigodes))
+
+#### Authors: 2
+
+- [@jonniebigodes](https://github.com/jonniebigodes)
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v1.1.4 (Thu Feb 08 2024)
+
+#### 🐛 Bug Fix
+
+- Fix kebab-case `box-shadow` to proper `boxShadow` [#181](https://github.com/chromaui/addon-visual-tests/pull/181) ([@JReinhold](https://github.com/JReinhold))
+
+#### Authors: 1
+
+- Jeppe Reinhold ([@JReinhold](https://github.com/JReinhold))
+
+---
+
+# v1.1.3 (Wed Feb 07 2024)
+
+#### 🐛 Bug Fix
+
+- Update Time Ago Shorthand Notation [#178](https://github.com/chromaui/addon-visual-tests/pull/178) ([@thafryer](https://github.com/thafryer))
+
+#### Authors: 1
+
+- Jarel Fryer ([@thafryer](https://github.com/thafryer))
+
+---
+
+# v1.1.2 (Wed Feb 07 2024)
+
+#### 🐛 Bug Fix
+
+- Adjust Status Visibility on Mode & Browser Selectors [#173](https://github.com/chromaui/addon-visual-tests/pull/173) ([@thafryer](https://github.com/thafryer))
+
+#### 📝 Documentation
+
+- Update README.md [#177](https://github.com/chromaui/addon-visual-tests/pull/177) ([@domyen](https://github.com/domyen))
+
+#### Authors: 2
+
+- Dominic Nguyen ([@domyen](https://github.com/domyen))
+- Jarel Fryer ([@thafryer](https://github.com/thafryer))
+
+---
+
+# v1.1.1 (Tue Feb 06 2024)
+
+#### 🐛 Bug Fix
+
+- Remove @storybook/icons from externals [#174](https://github.com/chromaui/addon-visual-tests/pull/174) ([@thafryer](https://github.com/thafryer))
+
+#### Authors: 1
+
+- Jarel Fryer ([@thafryer](https://github.com/thafryer))
+
+---
+
 # v1.1.0 (Tue Feb 06 2024)
 
 #### 🚀 Enhancement

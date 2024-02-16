@@ -1,4 +1,5 @@
-import { styled } from "@storybook/theming";
+import { ChevronLeftIcon } from "@storybook/icons";
+import { styled, useTheme } from "@storybook/theming";
 import React, { useCallback, useRef } from "react";
 import { useClient } from "urql";
 
@@ -7,6 +8,7 @@ import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
 import { Heading } from "../../components/Heading";
 import { BackIcon } from "../../components/icons/BackIcon";
+import { Screen } from "../../components/Screen";
 import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
 import { graphql } from "../../gql";
@@ -19,7 +21,8 @@ import { useErrorNotification } from "../../utils/useErrorNotification";
 const Digits = styled.ol(({ theme }) => ({
   display: "inline-flex",
   listStyle: "none",
-  margin: 8,
+  marginTop: 15,
+  marginBottom: 5,
   padding: 0,
   gap: 5,
 
@@ -62,6 +65,7 @@ export const Verify = ({
 }: VerifyProps) => {
   const client = useClient();
   const onError = useErrorNotification();
+  const theme = useTheme();
 
   const { user_code: userCode, verificationUrl } = exchangeParameters;
 
@@ -135,28 +139,31 @@ export const Verify = ({
   closeDialogRef.current = closeDialog;
 
   return (
-    <Container>
-      <BackButton onClick={onBack}>
-        <BackIcon />
-        Back
-      </BackButton>
-      <Stack>
-        <div>
-          <Heading>Verify your account</Heading>
-          <Text>
-            Enter this verification code on Chromatic to grant access to your published Storybooks.
-          </Text>
-          <Digits>
-            {userCode?.split("").map((char: string, index: number) => (
-              // eslint-disable-next-line react/no-array-index-key
-              <li key={`${index}-${char}`}>{char.replace(/[^A-Z0-9]/, "")}</li>
-            ))}
-          </Digits>
-        </div>
-        <Button variant="solid" size="medium" onClick={() => openDialog(verificationUrl)}>
-          Go to Chromatic
-        </Button>
-      </Stack>
-    </Container>
+    <Screen footer={null}>
+      <Container>
+        <BackButton onClick={onBack}>
+          <ChevronLeftIcon color={theme.base === "light" ? "currentColor" : theme.color.medium} />
+          Back
+        </BackButton>
+        <Stack>
+          <div>
+            <Heading>Verify your account</Heading>
+            <Text>
+              Enter this verification code on Chromatic to grant access to your published
+              Storybooks.
+            </Text>
+            <Digits>
+              {userCode?.split("").map((char: string, index: number) => (
+                // eslint-disable-next-line react/no-array-index-key
+                <li key={`${index}-${char}`}>{char.replace(/[^A-Z0-9]/, "")}</li>
+              ))}
+            </Digits>
+          </div>
+          <Button variant="solid" size="medium" onClick={() => openDialog(verificationUrl)}>
+            Go to Chromatic
+          </Button>
+        </Stack>
+      </Container>
+    </Screen>
   );
 };

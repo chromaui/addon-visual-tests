@@ -30,7 +30,6 @@ import {
   withGraphQLMutationParameters,
   withGraphQLQueryParameters,
 } from "../../utils/gqlStoryHelpers";
-import { GraphQLClientProvider } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
 import { makeComparison, makeTest, makeTests } from "../../utils/storyData";
 import { storyWrapper } from "../../utils/storyWrapper";
@@ -123,7 +122,6 @@ const meta = {
   component: VisualTestsWithoutSelectedBuildId,
   decorators: [
     storyWrapper(ControlsProvider),
-    storyWrapper(GraphQLClientProvider),
     (Story) => {
       // TODO: Need to replace this mocking when completing AP-3586 - mock the graphql query instead
       // localStorage.setItem(WALKTHROUGH_COMPLETED_KEY, "true");
@@ -160,7 +158,6 @@ const meta = {
     storyId: "button--primary",
     projectId: "Project:id123",
     startDevBuild: fn(),
-    setAccessToken: fn(),
     setOutdated: fn(),
     updateBuildStatus: fn(),
     addNotification: fn(),
@@ -207,7 +204,7 @@ export const NoAccess = {
           {
             extensions: { code: "FORBIDDEN" },
             locations: [{ line: 13, column: 3 }],
-            message: "No Access",
+            message: "No access",
             path: ["selectedBuild"],
           },
         ],

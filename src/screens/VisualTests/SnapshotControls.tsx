@@ -58,6 +58,13 @@ const Controls = styled.div({
   },
 });
 
+const DisabledIconWrapper = styled.div({
+  padding: 9,
+  "> svg": {
+    display: "block",
+  },
+});
+
 const Actions = styled.div<{ showDivider?: boolean }>(({ theme, showDivider }) => ({
   gridArea: "actions",
   display: "flex",
@@ -309,9 +316,9 @@ export const SnapshotControls = ({
               trigger="hover"
               hasChrome={false}
             >
-              <IconButton as="span">
+              <DisabledIconWrapper>
                 <LockIcon />
-              </IconButton>
+              </DisabledIconWrapper>
             </WithTooltip>
           )}
 
