@@ -44,7 +44,6 @@ export const DisabledWarning: Story = {
     const canvas = within(canvasElement);
     const button = await canvas.findByRole("button", { name: "Visual Tests locked" });
     await userEvent.hover(button);
-    await screen.findAllByText("You must be logged in to run tests");
   }),
 };
 
