@@ -169,9 +169,6 @@ export const SnapshotComparison = ({
     selectedTest.result !== TestResult.Added &&
     selectedTest.status !== TestStatus.Accepted;
 
-  const isNewBaseline =
-    selectedComparison.result === ComparisonResult.Added || selectedTest.result === TestResult.Added
-
   useEffect(() => {
     // It's possible this component doesn't unmount when the selected build, comparison, or story changes, so we need to reset state values.
     // This is most important for the baseline image toggle because baseline can not exist for a different story.
@@ -179,13 +176,15 @@ export const SnapshotComparison = ({
       prevStoryIdRef.current !== storyId ||
       prevSelectedComparisonIdRef.current !== selectedStory.selectedComparison?.id ||
       prevSelectedBuildIdRef.current !== selectedBuild.id ||
-      isNewBaseline
+      isNewStory ||
+      isNewMode ||
+      isNewBrowser
     ) {
       toggleBaselineImage(false);
       toggleSettings(false);
       toggleWarnings(false);
     }
-    
+
     prevSelectedComparisonIdRef.current = selectedStory.selectedComparison?.id;
     prevStoryIdRef.current = storyId;
     prevSelectedBuildIdRef.current = selectedBuild.id;
@@ -196,7 +195,9 @@ export const SnapshotComparison = ({
     toggleBaselineImage,
     toggleSettings,
     toggleWarnings,
-    isNewBaseline
+    isNewStory,
+    isNewMode,
+    isNewBrowser,
   ]);
 
   const storyInfo = (

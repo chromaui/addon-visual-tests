@@ -266,11 +266,11 @@ export const NewBaseline = {
             viewport: 1200,
             comparisons: [
               makeComparison({ result: ComparisonResult.Added, baseCapture: null }),
-              makeComparison({ result: ComparisonResult.Equal}),
+              makeComparison({ result: ComparisonResult.Equal }),
             ],
           },
         ],
       })
     ),
-  }
+  },
 } satisfies Story;
