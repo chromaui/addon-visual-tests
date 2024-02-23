@@ -142,15 +142,7 @@ export const SidebarTopButton = ({
     <WithTooltip
       trigger="click"
       closeOnOutsideClick
-      tooltip={
-        <TooltipContent>
-          <div>No code changes detected. Rerun tests to take new snapshots.</div>
-          <IconButton onClick={() => startBuild()} aria-label="Rerun tests">
-            <SyncIcon />
-            Rerun tests
-          </IconButton>
-        </TooltipContent>
-      }
+      tooltip={<TooltipNote note="No code changes detected. Rerun tests to take new snapshots." />}
     >
       <SidebarIconButton id="button-run-tests" aria-label="Run tests">
         <PlayIcon />

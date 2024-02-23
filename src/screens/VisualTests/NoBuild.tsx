@@ -99,9 +99,9 @@ export const NoBuild = ({
             </div>
 
             {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-            <Link isButton onClick={() => setAccessToken(null)} withArrow>
+            <Button size="medium" variant="solid" onClick={() => setAccessToken(null)}>
               Log out
-            </Link>
+            </Button>
           </Stack>
         </Container>
       );
@@ -121,9 +121,9 @@ export const NoBuild = ({
             </div>
             <ButtonStack>
               {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-              <Link isButton onClick={() => setAccessToken(null)} withArrow>
+              <Button size="medium" variant="solid" onClick={() => setAccessToken(null)}>
                 Log out
-              </Link>
+              </Button>
               <Link
                 withArrow
                 href="https://www.chromatic.com/docs/visual-tests-addon#troubleshooting"
