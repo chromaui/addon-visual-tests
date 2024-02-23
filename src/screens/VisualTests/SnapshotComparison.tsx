@@ -186,9 +186,6 @@ export const SnapshotComparison = ({
       toggleWarnings(false);
     }
     
-    if(!isNewBaseline) {
-      toggleSettings(true)
-    }
     prevSelectedComparisonIdRef.current = selectedStory.selectedComparison?.id;
     prevStoryIdRef.current = storyId;
     prevSelectedBuildIdRef.current = selectedBuild.id;
