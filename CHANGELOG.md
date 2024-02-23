@@ -1,3 +1,15 @@
+# v1.1.9 (Fri Feb 16 2024)
+
+#### 🐛 Bug Fix
+
+- Track configuration file and suggest `storybookBaseDir` value [#175](https://github.com/chromaui/addon-visual-tests/pull/175) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v1.1.8 (Wed Feb 14 2024)
 
 #### 🐛 Bug Fix
