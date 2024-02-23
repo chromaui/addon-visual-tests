@@ -140,11 +140,11 @@ export const SidebarTopButton = ({
     </WithTooltip>
   ) : (
     <WithTooltip
-      trigger="click"
-      closeOnOutsideClick
+      trigger="hover"
+      hasChrome={false}
       tooltip={<TooltipNote note="No code changes detected. Rerun tests to take new snapshots." />}
     >
-      <SidebarIconButton id="button-run-tests" aria-label="Run tests">
+      <SidebarIconButton id="button-run-tests" aria-label="Run tests" onClick={() => startBuild()}>
         <PlayIcon />
       </SidebarIconButton>
     </WithTooltip>

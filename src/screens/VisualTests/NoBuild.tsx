@@ -98,7 +98,6 @@ export const NoBuild = ({
               <CenterText>{queryError.networkError.message}</CenterText>
             </div>
 
-            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
             <Button size="medium" variant="solid" onClick={() => setAccessToken(null)}>
               Log out
             </Button>
@@ -120,7 +119,6 @@ export const NoBuild = ({
               </CenterText>
             </div>
             <ButtonStack>
-              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
               <Button size="medium" variant="solid" onClick={() => setAccessToken(null)}>
                 Log out
               </Button>
