@@ -251,3 +251,26 @@ export const InteractionFailure = {
     selectedBuild: withTests(build, interactionFailureTests),
   },
 };
+
+export const NewBaseline = {
+  parameters: {
+    selectedBuild: withTests(
+      build,
+      makeTests({
+        browsers: [Browser.Chrome, Browser.Safari],
+        viewports: [
+          { status: TestStatus.Passed, viewport: 800 },
+          {
+            status: TestStatus.Pending,
+            result: TestResult.Changed,
+            viewport: 1200,
+            comparisons: [
+              makeComparison({ result: ComparisonResult.Added, baseCapture: null }),
+              makeComparison({ result: ComparisonResult.Equal}),
+            ],
+          },
+        ],
+      })
+    ),
+  }
+} satisfies Story;
