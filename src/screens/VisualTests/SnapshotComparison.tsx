@@ -149,18 +149,42 @@ export const SnapshotComparison = ({
   const prevSelectedComparisonIdRef = React.useRef(selectedStory.selectedComparison?.id);
   const prevSelectedBuildIdRef = React.useRef(selectedBuild.id);
 
+  const { selectedTest, selectedComparison } = selectedStory;
+
+  // isNewStory is when the story itself is added and all tests should also be added
+  const isNewStory = tests.every(
+    ({ result, status }) => result === TestResult.Added && status !== TestStatus.Accepted
+  );
+
+  // This checks if the specific comparison is new, but the story itself is not. This indicates it was probably a new mode being added.
+  const isNewMode =
+    !isNewStory &&
+    selectedTest.result === TestResult.Added &&
+    selectedTest.status !== TestStatus.Accepted;
+
+  // If any of the tests has a new comparison, and the test isn't new it is a new browser.
+  const isNewBrowser =
+    !isNewStory &&
+    selectedComparison.result === ComparisonResult.Added &&
+    selectedTest.result !== TestResult.Added &&
+    selectedTest.status !== TestStatus.Accepted;
+
   useEffect(() => {
     // It's possible this component doesn't unmount when the selected build, comparison, or story changes, so we need to reset state values.
     // This is most important for the baseline image toggle because baseline can not exist for a different story.
     if (
       prevStoryIdRef.current !== storyId ||
       prevSelectedComparisonIdRef.current !== selectedStory.selectedComparison?.id ||
-      prevSelectedBuildIdRef.current !== selectedBuild.id
+      prevSelectedBuildIdRef.current !== selectedBuild.id ||
+      isNewStory ||
+      isNewMode ||
+      isNewBrowser
     ) {
       toggleBaselineImage(false);
       toggleSettings(false);
       toggleWarnings(false);
     }
+
     prevSelectedComparisonIdRef.current = selectedStory.selectedComparison?.id;
     prevStoryIdRef.current = storyId;
     prevSelectedBuildIdRef.current = selectedBuild.id;
@@ -171,6 +195,9 @@ export const SnapshotComparison = ({
     toggleBaselineImage,
     toggleSettings,
     toggleWarnings,
+    isNewStory,
+    isNewMode,
+    isNewBrowser,
   ]);
 
   const storyInfo = (
@@ -202,25 +229,6 @@ export const SnapshotComparison = ({
 
   const testSummary = summarizeTests(tests);
   const { isInProgress } = testSummary;
-  const { selectedTest, selectedComparison } = selectedStory;
-
-  // isNewStory is when the story itself is added and all tests should also be added
-  const isNewStory = tests.every(
-    ({ result, status }) => result === TestResult.Added && status !== TestStatus.Accepted
-  );
-
-  // This checks if the specific comparison is new, but the story itself is not. This indicates it was probably a new mode being added.
-  const isNewMode =
-    !isNewStory &&
-    selectedTest.result === TestResult.Added &&
-    selectedTest.status !== TestStatus.Accepted;
-
-  // If any of the tests has a new comparison, and the test isn't new it is a new browser.
-  const isNewBrowser =
-    !isNewStory &&
-    selectedComparison.result === ComparisonResult.Added &&
-    selectedTest.result !== TestResult.Added &&
-    selectedTest.status !== TestStatus.Accepted;
 
   const captureErrorData =
     selectedComparison?.headCapture?.captureError &&
