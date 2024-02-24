@@ -1,3 +1,15 @@
+# v1.1.10 (Sat Feb 24 2024)
+
+#### 🐛 Bug Fix
+
+- Reset Diff Toggles for New Stories [#187](https://github.com/chromaui/addon-visual-tests/pull/187) ([@thafryer](https://github.com/thafryer))
+
+#### Authors: 1
+
+- Jarel Fryer ([@thafryer](https://github.com/thafryer))
+
+---
+
 # v1.1.9 (Fri Feb 16 2024)
 
 #### 🐛 Bug Fix
