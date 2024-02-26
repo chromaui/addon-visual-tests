@@ -3,5 +3,6 @@
   "exitOnceUploaded": true,
   "externals": ["public/**"],
   "onlyChanged": true,
-  "projectId": "Project:6480e1b0042842f149cfd74c"
+  "projectId": "Project:6480e1b0042842f149cfd74c",
+  "zip": true
 }
