@@ -1,3 +1,15 @@
+# v1.1.11 (Mon Feb 26 2024)
+
+#### 🐛 Bug Fix
+
+- Minor copy changes and visual tweaks [#188](https://github.com/chromaui/addon-visual-tests/pull/188) ([@MichaelArestad](https://github.com/MichaelArestad))
+
+#### Authors: 1
+
+- Michael Arestad ([@MichaelArestad](https://github.com/MichaelArestad))
+
+---
+
 # v1.1.10 (Sat Feb 24 2024)
 
 #### 🐛 Bug Fix
