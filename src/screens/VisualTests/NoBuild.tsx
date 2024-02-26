@@ -152,7 +152,6 @@ export const NoBuild = ({
               <CenterText>You may not have access to this project or it may not exist.</CenterText>
             </div>
 
-            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
             <ButtonStackLink isButton onClick={() => setAccessToken(null)} withArrow>
               Switch account
             </ButtonStackLink>
