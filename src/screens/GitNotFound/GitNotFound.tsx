@@ -55,7 +55,7 @@ export const GitNotFound = () => {
             <Icon icon="lock" />
             <InfoSectionText>
               <InfoSectionTextTitle>Git not detected</InfoSectionTextTitle>
-              This addon requires Git to associate test results with commits and branches.
+              This addon requires Git to associate test results with commits and branches. Run{" "}
               <Code>git init</Code> and make your first commit
               <Code>git commit -m</Code> to get started!
             </InfoSectionText>

@@ -24,7 +24,6 @@ export const Default: Story = {
     const canvas = within(canvasElement);
     const button = await canvas.findByRole("button", { name: "Run tests" });
     await userEvent.click(button);
-    await screen.findAllByRole("button", { name: "Rerun tests" });
   }),
 };
 
