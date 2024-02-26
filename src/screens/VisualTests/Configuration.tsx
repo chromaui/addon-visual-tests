@@ -1,6 +1,7 @@
-import { TooltipNote, WithTooltip } from "@storybook/components";
+import { Link, TooltipNote, WithTooltip } from "@storybook/components";
 import {
   AlertIcon as Alert,
+  GlobeIcon,
   LockIcon as Lock,
   SupportIcon as Support,
   TrashIcon as Trash,
@@ -149,7 +150,7 @@ const Table = styled.dl(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   gap: 20,
-  marginBottom: 20,
+  marginBottom: 10,
   border: `1px solid ${theme.color.border}`,
   borderRadius: theme.appBorderRadius,
   padding: 15,
@@ -362,6 +363,15 @@ export const Configuration = ({ onClose }: ConfigurationProps) => {
           ))}
         </Table>
       )}
+
+      <Link
+        href="https://www.chromatic.com/docs/cli/#configuration-options"
+        target="_blank"
+        withArrow
+      >
+        Chromatic configuration options
+      </Link>
+      <br />
 
       <Heading>Danger zone</Heading>
       <DangerZone>
