@@ -1,5 +1,5 @@
-import { expect } from "@storybook/jest";
 import type { Meta, StoryObj } from "@storybook/react";
+import { expect } from "@storybook/test";
 import { fireEvent, screen, userEvent, within } from "@storybook/testing-library";
 
 import { panelModes } from "../../modes";
