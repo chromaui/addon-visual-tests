@@ -1,3 +1,15 @@
+# v1.2.1 (Tue Feb 27 2024)
+
+#### 🐛 Bug Fix
+
+- Resolve Git Info Check Regression [#190](https://github.com/chromaui/addon-visual-tests/pull/190) ([@thafryer](https://github.com/thafryer))
+
+#### Authors: 1
+
+- Jarel Fryer ([@thafryer](https://github.com/thafryer))
+
+---
+
 # v1.2.0 (Tue Feb 27 2024)
 
 #### 🚀 Enhancement
