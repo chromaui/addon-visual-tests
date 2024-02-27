@@ -147,10 +147,13 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
     if (!projectId || projectId === lastProjectId) return;
     lastProjectId = projectId;
 
-    const writtenConfigFile = configFile || "chromatic.config.json";
+    const writtenConfigFile = configFile;
     try {
       const { configFile: actualConfigFile, ...config } = await getConfiguration(writtenConfigFile);
-      await updateChromaticConfig(writtenConfigFile, { ...config, projectId });
+      await updateChromaticConfig(writtenConfigFile || "chromatic.config.json", {
+        ...config,
+        projectId,
+      });
 
       projectInfoState.value = {
         ...projectInfoState.value,
@@ -203,7 +206,7 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
   );
 
   watchConfigFile(configFile, async (configuration) => {
-    if (!lastProjectId) return
+    if (!lastProjectId) return;
     configInfoState.value = await getConfigInfo(configuration, options);
   });
 

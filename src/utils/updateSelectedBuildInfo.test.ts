@@ -1,3 +1,5 @@
+import { expect, it } from "vitest";
+
 import { updateSelectedBuildInfo } from "./updateSelectedBuildInfo";
 
 it("does nothing if there is no next build", () => {

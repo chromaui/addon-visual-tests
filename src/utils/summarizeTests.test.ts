@@ -1,10 +1,12 @@
+import { expect, it, vi } from "vitest";
+
 import { Browser, ComparisonResult, TestResult, TestStatus } from "../gql/graphql";
 import { makeComparison, makeTest } from "./storyData";
 import { summarizeTests } from "./summarizeTests";
 
-jest.mock("react", () => ({
-  useState: jest.fn((x: any) => [x, jest.fn()]),
-  useCallback: jest.fn((f: any) => f),
+vi.mock("react", () => ({
+  useState: vi.fn((x: any) => [x, vi.fn()]),
+  useCallback: vi.fn((f: any) => f),
 }));
 
 const tests = [

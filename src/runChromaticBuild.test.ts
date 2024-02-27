@@ -1,8 +1,10 @@
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { INITIAL_BUILD_PAYLOAD } from "./buildSteps";
 import { onCompleteOrError, onStartOrProgress, runChromaticBuild } from "./runChromaticBuild";
 import { LocalBuildProgress } from "./types";
 
-jest.mock("chromatic/node", () => ({ run: jest.fn() }));
+vi.mock("chromatic/node", () => ({ run: vi.fn() }));
 
 const store = {
   state: undefined as LocalBuildProgress | undefined,
