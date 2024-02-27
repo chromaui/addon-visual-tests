@@ -1,3 +1,15 @@
+# v1.1.12 (Tue Feb 27 2024)
+
+#### 🐛 Bug Fix
+
+- Align changed story count in notification and sidebar [#189](https://github.com/chromaui/addon-visual-tests/pull/189) ([@thafryer](https://github.com/thafryer))
+
+#### Authors: 1
+
+- Jarel Fryer ([@thafryer](https://github.com/thafryer))
+
+---
+
 # v1.1.11 (Mon Feb 26 2024)
 
 #### 🐛 Bug Fix
