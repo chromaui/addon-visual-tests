@@ -1,3 +1,18 @@
+# v1.2.0 (Tue Feb 27 2024)
+
+#### 🚀 Enhancement
+
+- Display chromatic config and suggestion in UI panel [#176](https://github.com/chromaui/addon-visual-tests/pull/176) ([@ghengeveld](https://github.com/ghengeveld) [@thafryer](https://github.com/thafryer) [@chromatic-support](https://github.com/chromatic-support) [@andrewortwein](https://github.com/andrewortwein))
+
+#### Authors: 4
+
+- [@chromatic-support](https://github.com/chromatic-support)
+- Andrew Ortwein ([@andrewortwein](https://github.com/andrewortwein))
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Jarel Fryer ([@thafryer](https://github.com/thafryer))
+
+---
+
 # v1.1.12 (Tue Feb 27 2024)
 
 #### 🐛 Bug Fix
