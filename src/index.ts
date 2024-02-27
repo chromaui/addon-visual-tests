@@ -203,6 +203,7 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
   );
 
   watchConfigFile(configFile, async (configuration) => {
+    if (!lastProjectId) return
     configInfoState.value = await getConfigInfo(configuration, options);
   });
 
