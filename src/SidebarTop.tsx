@@ -1,4 +1,4 @@
-import { type API, useChannel } from "@storybook/manager-api";
+import { type API, useChannel, useStorybookState } from "@storybook/manager-api";
 import { color } from "@storybook/theming";
 import pluralize from "pluralize";
 import React, { useEffect, useRef } from "react";
@@ -42,6 +42,11 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
   const [gitInfoError] = useSharedState<Error>(GIT_INFO_ERROR);
 
   const lastStep = useRef(localBuildProgress?.currentStep);
+  const { status } = useStorybookState();
+  const changedStoryCount = Object.values(status).filter(
+    (value) => value[ADDON_ID]?.status === "warn"
+  );
+
   useEffect(() => {
     if (localBuildProgress?.currentStep === lastStep.current) return;
     lastStep.current = localBuildProgress?.currentStep;
@@ -88,8 +93,11 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
           // eslint-disable-next-line no-nested-ternary
           subHeadline: localBuildProgress.errorCount
             ? `Encountered ${pluralize("component error", localBuildProgress.errorCount, true)}`
-            : localBuildProgress.changeCount
-            ? `Found ${pluralize("change", localBuildProgress.changeCount, true)}`
+            : changedStoryCount.length
+            ? `Found ${pluralize("story", changedStoryCount.length, true)} with ${pluralize(
+                "change",
+                changedStoryCount.length
+              )}`
             : "No visual changes detected",
         },
         icon: {
@@ -123,6 +131,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
     localBuildProgress?.currentStep,
     localBuildProgress?.errorCount,
     localBuildProgress?.changeCount,
+    changedStoryCount.length,
   ]);
 
   const emit = useChannel({});

@@ -259,7 +259,7 @@ function SelectProject({
                             openDialog(selectedAccount.newProjectUrl);
                           }}
                         >
-                          Create project
+                          Create new project
                         </Link>
                       }
                     />

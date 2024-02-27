@@ -34,6 +34,10 @@ const ErrorContainer = styled.pre(({ theme }) => ({
   textAlign: "left",
 }));
 
+const ButtonStackLink = styled(Link)(() => ({
+  marginTop: 5,
+}));
+
 interface NoBuildProps {
   queryError?: CombinedError;
   hasData: boolean;
@@ -98,10 +102,9 @@ export const NoBuild = ({
               <CenterText>{queryError.networkError.message}</CenterText>
             </div>
 
-            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-            <Link isButton onClick={() => setAccessToken(null)} withArrow>
+            <Button size="medium" variant="solid" onClick={() => setAccessToken(null)}>
               Log out
-            </Link>
+            </Button>
           </Stack>
         </Container>
       );
@@ -120,17 +123,16 @@ export const NoBuild = ({
               </CenterText>
             </div>
             <ButtonStack>
-              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-              <Link isButton onClick={() => setAccessToken(null)} withArrow>
+              <Button size="medium" variant="solid" onClick={() => setAccessToken(null)}>
                 Log out
-              </Link>
-              <Link
+              </Button>
+              <ButtonStackLink
                 withArrow
                 href="https://www.chromatic.com/docs/visual-tests-addon#troubleshooting"
                 target="_blank"
               >
                 Troubleshoot
-              </Link>
+              </ButtonStackLink>
             </ButtonStack>
           </Stack>
         </Container>
@@ -150,10 +152,9 @@ export const NoBuild = ({
               <CenterText>You may not have access to this project or it may not exist.</CenterText>
             </div>
 
-            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-            <Link isButton onClick={() => setAccessToken(null)} withArrow>
+            <ButtonStackLink isButton onClick={() => setAccessToken(null)} withArrow>
               Switch account
-            </Link>
+            </ButtonStackLink>
           </Stack>
         </Container>
       );
