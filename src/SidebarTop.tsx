@@ -6,13 +6,15 @@ import React, { useEffect, useRef } from "react";
 import { SidebarTopButton } from "./components/SidebarTopButton";
 import {
   ADDON_ID,
+  CONFIG_INFO,
   GIT_INFO_ERROR,
   IS_OUTDATED,
   LOCAL_BUILD_PROGRESS,
+  PANEL_ID,
   START_BUILD,
   STOP_BUILD,
 } from "./constants";
-import { LocalBuildProgress } from "./types";
+import { ConfigInfoPayload, LocalBuildProgress } from "./types";
 import { useAccessToken } from "./utils/graphQLClient";
 import { useProjectId } from "./utils/useProjectId";
 import { useSharedState } from "./utils/useSharedState";
@@ -22,7 +24,7 @@ interface SidebarTopProps {
 }
 
 export const SidebarTop = ({ api }: SidebarTopProps) => {
-  const { addNotification, clearNotification } = api;
+  const { addNotification, clearNotification, setOptions, togglePanel } = api;
 
   const { projectId } = useProjectId();
   const [accessToken] = useAccessToken();
@@ -33,6 +35,9 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
   const isRunning =
     !!localBuildProgress &&
     !["aborted", "complete", "error"].includes(localBuildProgress.currentStep);
+
+  const [configInfo] = useSharedState<ConfigInfoPayload>(CONFIG_INFO);
+  const hasConfigProblem = Object.keys(configInfo?.problems || {}).length > 0;
 
   const [gitInfoError] = useSharedState<Error>(GIT_INFO_ERROR);
 
@@ -133,15 +138,23 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
   const startBuild = () => emit(START_BUILD, { accessToken });
   const stopBuild = () => emit(STOP_BUILD);
 
-  if (!projectId || isLoggedIn === false || gitInfoError) {
-    return null;
-  }
+  let warning;
+  if (!projectId) warning = "Visual tests locked until a project is selected.";
+  if (!isLoggedIn) warning = "Visual tests locked until you are logged in.";
+  if (gitInfoError) warning = "Visual tests locked due to Git synchronization problem.";
+  if (hasConfigProblem) warning = "Visual tests locked due to configuration problem.";
 
   return (
     <SidebarTopButton
+      isDisabled={!!warning}
       isOutdated={isOutdated}
       isRunning={isRunning}
       localBuildProgress={localBuildProgress}
+      warning={warning}
+      clickWarning={() => {
+        setOptions({ selectedPanel: PANEL_ID });
+        togglePanel(true);
+      }}
       startBuild={startBuild}
       stopBuild={stopBuild}
     />

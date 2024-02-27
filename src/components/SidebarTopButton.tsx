@@ -78,18 +78,45 @@ export const SidebarIconButton = styled(IconButton)<ComponentProps<typeof IconBu
 );
 
 export const SidebarTopButton = ({
+  isDisabled = false,
   isOutdated = false,
   isRunning = false,
   localBuildProgress,
+  warning,
+  clickWarning,
   startBuild,
   stopBuild,
 }: {
+  isDisabled?: boolean;
   isOutdated?: boolean;
   isRunning?: boolean;
   localBuildProgress?: LocalBuildProgress;
+  warning?: string;
+  clickWarning?: () => void;
   startBuild: () => void;
   stopBuild: () => void;
 }) => {
+  if (isDisabled) {
+    return warning ? (
+      <WithTooltip tooltip={<TooltipNote note={warning} />} trigger="hover" hasChrome={false}>
+        <SidebarIconButton
+          id="button-run-tests"
+          aria-label="Visual Tests locked"
+          disabled={!clickWarning}
+          onClick={clickWarning}
+        >
+          <StatusDotWrapper status="warning">
+            <PlayIcon />
+          </StatusDotWrapper>
+        </SidebarIconButton>
+      </WithTooltip>
+    ) : (
+      <SidebarIconButton id="button-run-tests" aria-label="Visual Tests locked" disabled>
+        <PlayIcon />
+      </SidebarIconButton>
+    );
+  }
+
   if (isRunning && localBuildProgress) {
     const { buildProgressPercentage } = localBuildProgress;
     return (
@@ -126,19 +153,27 @@ export const SidebarTopButton = ({
     );
   }
 
-  return isOutdated ? (
-    <WithTooltip
-      tooltip={<TooltipNote note="Code changes detected; click to run tests" />}
-      trigger="hover"
-      hasChrome={false}
-    >
-      <SidebarIconButton id="button-run-tests" aria-label="Run tests" onClick={() => startBuild()}>
-        <StatusDotWrapper status="notification">
-          <PlayIcon />
-        </StatusDotWrapper>
-      </SidebarIconButton>
-    </WithTooltip>
-  ) : (
+  if (isOutdated) {
+    return (
+      <WithTooltip
+        tooltip={<TooltipNote note="Code changes detected; click to run tests" />}
+        trigger="hover"
+        hasChrome={false}
+      >
+        <SidebarIconButton
+          id="button-run-tests"
+          aria-label="Run tests"
+          onClick={() => startBuild()}
+        >
+          <StatusDotWrapper status="notification">
+            <PlayIcon />
+          </StatusDotWrapper>
+        </SidebarIconButton>
+      </WithTooltip>
+    );
+  }
+
+  return (
     <WithTooltip
       trigger="hover"
       hasChrome={false}

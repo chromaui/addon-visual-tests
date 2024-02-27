@@ -51,7 +51,10 @@ const suggestRemovals = (
   );
 
 // Detect problems in the current configuration and suggest updates.
-const getConfigInfo = async (configuration: Configuration, { configDir }: Options) => {
+const getConfigInfo = async (
+  configuration: Awaited<ReturnType<typeof getConfiguration>>,
+  { configDir }: Options
+) => {
   const defaults: Configuration = {
     storybookBaseDir: ".",
     storybookConfigDir: ".storybook",
@@ -118,7 +121,7 @@ const observeGitInfo = async (
 
 const watchConfigFile = async (
   configFile: string | undefined,
-  onChange: (configuration: Configuration) => Promise<void>
+  onChange: (configuration: Awaited<ReturnType<typeof getConfiguration>>) => Promise<void>
 ) => {
   const configuration = await getConfiguration(configFile);
   await onChange(configuration);

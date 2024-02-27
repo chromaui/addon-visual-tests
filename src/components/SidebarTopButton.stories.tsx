@@ -27,6 +27,25 @@ export const Default: Story = {
   }),
 };
 
+export const Disabled: Story = {
+  args: {
+    isDisabled: true,
+  },
+};
+
+export const DisabledWarning: Story = {
+  args: {
+    isDisabled: true,
+    warning: "You must be logged in to run tests",
+    clickWarning: action("clickWarning"),
+  },
+  play: playAll(async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = await canvas.findByRole("button", { name: "Visual Tests locked" });
+    await userEvent.hover(button);
+  }),
+};
+
 export const Outdated: Story = {
   args: {
     isOutdated: true,
