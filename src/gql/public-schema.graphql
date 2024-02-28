@@ -1556,6 +1556,7 @@ type User implements Node {
   username: String!
   avatarUrl: URL
   accounts: [Account!]!
+  preferences: UserPreferences!
 
   """The number of projects this user is a member of."""
   projectCount: Int!
@@ -1566,6 +1567,16 @@ type User implements Node {
 
   """When the entity was last updated or created in Chromatic."""
   updatedAt: DateTime!
+}
+
+type UserPreferences {
+  vtaOnboarding: VTAOnboardingPreference!
+}
+
+enum VTAOnboardingPreference {
+  COMPLETED
+  DISMISSED
+  UNSET
 }
 
 type ProjectMembership {
@@ -1653,21 +1664,17 @@ enum ComponentsOrderField {
 }
 
 type Mutation {
+  createCLIToken(projectId: String!): String!
+  reviewTest(input: ReviewTestInput!): ReviewTestPayload
   createFigmaMetadata(key: String!, url: String!, metadata: JSONObject!): FigmaMetadata
   bulkCreateFigmaMetadata(input: [CreateFigmaMetadataInput!]!): [FigmaMetadata!]!
   removeFigmaMetadata(id: ID!): FigmaMetadata
   bulkRemoveFigmaMetadata(ids: [ID!]!): [FigmaMetadata!]!
-  reviewTest(input: ReviewTestInput!): ReviewTestPayload
-}
-
-input CreateFigmaMetadataInput {
-  key: String!
-  url: String!
-  metadata: JSONObject!
+  updateUserPreferences(input: UserPreferencesInput!): UpdateUserPreferencesPayload
 }
 
 type ReviewTestPayload {
-  """The test(s) that were updated, if succesful."""
+  """The test(s) that were updated, if successful."""
   updatedTests: [Test!]
 
   """
@@ -1725,4 +1732,19 @@ enum ReviewTestBatch {
   BUILD
   COMPONENT
   SPEC
+}
+
+input CreateFigmaMetadataInput {
+  key: String!
+  url: String!
+  metadata: JSONObject!
+}
+
+type UpdateUserPreferencesPayload {
+  """The updated preferences, if successful."""
+  updatedPreferences: UserPreferences
+}
+
+input UserPreferencesInput {
+  vtaOnboarding: VTAOnboardingPreference
 }
