@@ -29,6 +29,7 @@ export type ConfigInfoPayload = {
 export type GitInfoPayload = Omit<GitInfo, "committerEmail" | "committerName">;
 
 export type ProjectInfoPayload = {
+  isProjectInfoLoading?: boolean;
   projectId?: string;
   written?: boolean;
   configFile?: string;

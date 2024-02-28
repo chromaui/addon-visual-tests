@@ -143,14 +143,17 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
   // This yields an empty object if the file doesn't exist and no explicit configFile is specified
   let lastProjectId: string | undefined;
   const projectInfoState = SharedState.subscribe<ProjectInfoPayload>(PROJECT_INFO, channel);
+  projectInfoState.value = { isProjectInfoLoading: true }
   try {
     const { projectId: initialProjectId } = await getConfiguration(configFile);
     projectInfoState.value = initialProjectId ? { projectId: initialProjectId } : {};
 
     lastProjectId = initialProjectId;
-  } catch (e) {
+  } catch {
     console.debug('Unable to get configuration file')
     lastProjectId = undefined
+  } finally {
+    projectInfoState.value = {...projectInfoState.value, isProjectInfoLoading: false }
   }
   projectInfoState.on("change", async ({ projectId } = {}) => {
     if (!projectId || projectId === lastProjectId) return;
