@@ -141,12 +141,17 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
   const apiPromise = presets.apply<any>("experimental_serverAPI");
 
   // This yields an empty object if the file doesn't exist and no explicit configFile is specified
-  const { projectId: initialProjectId } = await getConfiguration(configFile);
-
+  let lastProjectId: string | undefined;
   const projectInfoState = SharedState.subscribe<ProjectInfoPayload>(PROJECT_INFO, channel);
-  projectInfoState.value = initialProjectId ? { projectId: initialProjectId } : {};
+  try {
+    const { projectId: initialProjectId } = await getConfiguration(configFile);
+    projectInfoState.value = initialProjectId ? { projectId: initialProjectId } : {};
 
-  let lastProjectId = initialProjectId;
+    lastProjectId = initialProjectId;
+  } catch (e) {
+    console.debug('Unable to get configuration file')
+    lastProjectId = undefined
+  }
   projectInfoState.on("change", async ({ projectId } = {}) => {
     if (!projectId || projectId === lastProjectId) return;
     lastProjectId = projectId;
