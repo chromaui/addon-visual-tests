@@ -5,14 +5,13 @@ import { useMutation } from "urql";
 
 // TODO: Remove this after completing AP-3586
 // import { WALKTHROUGH_COMPLETED_KEY } from "../../constants";
-import { getFragment } from "../../gql";
+import { getFragment, graphql } from "../../gql";
 import {
-  BuildStatus,
   ReviewTestBatch,
   ReviewTestInputStatus,
-  Test,
   TestResult,
   TestStatus,
+  VtaOnboardingPreference,
 } from "../../gql/graphql";
 import { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from "../../types";
 import { testsToStatusUpdate } from "../../utils/testsToStatusUpdate";
@@ -95,37 +94,56 @@ const useReview = ({
   return { isReviewing, acceptTest, unacceptTest, buildIsReviewable, userCanReview };
 };
 
+const MutationUpdateUserPreferences = graphql(/* GraphQL */ `
+  mutation UpdateUserPreferences($input: UserPreferencesInput!) {
+    updateUserPreferences(input: $input) {
+      updatedPreferences {
+        vtaOnboarding
+      }
+    }
+  }
+`);
+
 const useOnboarding = (
-  { lastBuildOnBranch }: ReturnType<typeof useBuild>,
+  { lastBuildOnBranch, vtaOnboarding }: ReturnType<typeof useBuild>,
   managerApi?: Pick<API, "getUrlState">
 ) => {
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = React.useState(false);
-  const completeOnboarding = React.useCallback(() => {
-    setHasCompletedOnboarding(true);
-  }, []);
-
-  const [hasCompletedWalkthrough, setHasCompletedWalkthrough] = React.useState(() => {
-    // Force the onboarding to show by adding ?vtaOnboarding=true to the URL
-    const force = managerApi?.getUrlState?.().queryParams.vtaOnboarding === "true";
-    // Only using force instead of localStorage. WALKTHROUGH_COMPLETED flag will be moved to user model in AP-3586
-    return !force; // && localStorage.getItem(WALKTHROUGH_COMPLETED_KEY) === "true";
-  });
+  const completeOnboarding = React.useCallback(() => setHasCompletedOnboarding(true), []);
 
   const [walkthroughInProgress, setWalkthroughInProgress] = React.useState(false);
-  const startWalkthrough = React.useCallback(() => {
-    setWalkthroughInProgress(true);
-  }, []);
+  const startWalkthrough = React.useCallback(() => setWalkthroughInProgress(true), []);
 
-  const completeWalkthrough = React.useCallback(() => {
-    setHasCompletedWalkthrough(true);
-    // TODO: Replace with user model mutation in AP-3586
-    // localStorage.setItem(WALKTHROUGH_COMPLETED_KEY, "true");
-    setWalkthroughInProgress(false);
-    // remove onboarding query parameter from current url
-    const url = new URL(window.location.href);
-    url.searchParams.delete("vtaOnboarding");
-    window.history.replaceState({}, "", url.href);
-  }, []);
+  const [hasCompletedWalkthrough, setHasCompletedWalkthrough] = React.useState(true);
+  React.useEffect(() => {
+    setHasCompletedWalkthrough(
+      // Force the onboarding to show by adding ?vtaOnboarding=true to the URL
+      managerApi?.getUrlState?.().queryParams.vtaOnboarding === "true" ||
+        vtaOnboarding === VtaOnboardingPreference.Completed ||
+        vtaOnboarding === VtaOnboardingPreference.Dismissed
+    );
+  }, [managerApi, vtaOnboarding]);
+
+  const [{ fetching: isUpdating }, runMutation] = useMutation(MutationUpdateUserPreferences);
+
+  const exitWalkthrough = React.useCallback(
+    async (completed: boolean) => {
+      const preference = completed
+        ? VtaOnboardingPreference.Completed
+        : VtaOnboardingPreference.Dismissed;
+      await runMutation({ input: { vtaOnboarding: preference } });
+
+      setHasCompletedWalkthrough(true);
+      setWalkthroughInProgress(false);
+
+      const url = new URL(window.location.href);
+      if (url.searchParams.has("vtaOnboarding")) {
+        url.searchParams.delete("vtaOnboarding");
+        window.history.replaceState({}, "", url.href);
+      }
+    },
+    [runMutation]
+  );
 
   const lastBuildHasChanges = React.useMemo(() => {
     // select only testsForStatus (or empty array) and return true if any of them are pending and changed
@@ -148,9 +166,12 @@ const useOnboarding = (
     showOnboarding,
     showGuidedTour: !showOnboarding && !hasCompletedWalkthrough,
     completeOnboarding,
-    completeWalkthrough,
+    skipOnboarding: React.useCallback(() => exitWalkthrough(false), [exitWalkthrough]),
+    completeWalkthrough: React.useCallback(() => exitWalkthrough(true), [exitWalkthrough]),
+    skipWalkthrough: React.useCallback(() => exitWalkthrough(false), [exitWalkthrough]),
     startWalkthrough,
     lastBuildHasChanges,
+    isUpdating,
   };
 };
 
@@ -259,11 +280,13 @@ export const VisualTestsWithoutSelectedBuildId = ({
     showGuidedTour,
     completeOnboarding,
     completeWalkthrough,
+    skipOnboarding,
+    skipWalkthrough,
     startWalkthrough,
     lastBuildHasChanges,
   } = useOnboarding(buildInfo, managerApi);
 
-  if (showOnboarding) {
+  if (showOnboarding && hasProject) {
     return (
       <>
         {/* Don't render onboarding until data has loaded to allow initial build logic ot work. */}
@@ -280,7 +303,7 @@ export const VisualTestsWithoutSelectedBuildId = ({
                 localBuildProgress,
                 showInitialBuildScreen: !selectedBuild,
                 onComplete: completeOnboarding,
-                onSkip: completeWalkthrough,
+                onSkip: skipOnboarding,
                 lastBuildHasChanges,
               }}
             />
@@ -330,7 +353,7 @@ export const VisualTestsWithoutSelectedBuildId = ({
         <BuildProvider watchState={{ selectedBuild }}>
           <GuidedTour
             managerApi={managerApi}
-            skipWalkthrough={completeWalkthrough}
+            skipWalkthrough={skipWalkthrough}
             startWalkthrough={startWalkthrough}
             completeWalkthrough={completeWalkthrough}
           />
