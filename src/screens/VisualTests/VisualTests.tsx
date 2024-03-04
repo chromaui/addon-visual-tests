@@ -3,8 +3,6 @@ import type { API_StatusState } from "@storybook/types";
 import React, { useCallback, useEffect, useState } from "react";
 import { useMutation } from "urql";
 
-// TODO: Remove this after completing AP-3586
-// import { WALKTHROUGH_COMPLETED_KEY } from "../../constants";
 import { getFragment, graphql } from "../../gql";
 import {
   ReviewTestBatch,

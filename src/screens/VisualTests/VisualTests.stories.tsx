@@ -16,8 +16,6 @@ import { delay, HttpResponse } from "msw";
 import React from "react";
 
 import { INITIAL_BUILD_PAYLOAD } from "../../buildSteps";
-// TODO: Remove after completing AP-3586
-// import { WALKTHROUGH_COMPLETED_KEY } from "../../constants";
 import type {
   LastBuildOnBranchBuildFieldsFragment,
   MakeOptional,
@@ -90,6 +88,9 @@ function mapQuery(
     },
     selectedBuild,
     viewer: {
+      preferences: {
+        vtaOnboarding: "COMPLETED",
+      },
       projectMembership: {
         userCanReview,
       },
@@ -119,14 +120,7 @@ type StoryArgs = Parameters<typeof VisualTestsWithoutSelectedBuildId>[0] & {
 const meta = {
   title: "screens/VisualTests/VisualTests",
   component: VisualTestsWithoutSelectedBuildId,
-  decorators: [
-    storyWrapper(ControlsProvider),
-    (Story) => {
-      // TODO: Need to replace this mocking when completing AP-3586 - mock the graphql query instead
-      // localStorage.setItem(WALKTHROUGH_COMPLETED_KEY, "true");
-      return <Story />;
-    },
-  ],
+  decorators: [storyWrapper(ControlsProvider)],
   parameters: { chromatic: { modes: panelModes } },
   argTypes: {
     addNotification: { type: "function", target: "manager-api" },
