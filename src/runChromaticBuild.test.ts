@@ -74,21 +74,21 @@ describe("onStartOrProgress", () => {
 
     onStartOrProgress(store)({ task: "upload" } as any);
     expect(store.value).toMatchObject({
-      buildProgressPercentage: expect.closeTo(24, 0),
+      buildProgressPercentage: expect.closeTo(14, 0),
       currentStep: "upload",
       stepProgress: { upload: { startedAt: expect.any(Number) } },
     });
 
     onStartOrProgress(store)({ task: "verify" } as any);
     expect(store.value).toMatchObject({
-      buildProgressPercentage: expect.closeTo(48, 0),
+      buildProgressPercentage: expect.closeTo(29, 0),
       currentStep: "verify",
       stepProgress: { verify: { startedAt: expect.any(Number) } },
     });
 
     onStartOrProgress(store)({ task: "snapshot" } as any);
     expect(store.value).toMatchObject({
-      buildProgressPercentage: expect.closeTo(55, 0),
+      buildProgressPercentage: expect.closeTo(41, 0),
       currentStep: "snapshot",
       stepProgress: { snapshot: { startedAt: expect.any(Number) } },
     });
@@ -96,33 +96,33 @@ describe("onStartOrProgress", () => {
 
   it("updates progress with each invocation", () => {
     onStartOrProgress(store)({ task: "verify" } as any);
-    expect(store.value.buildProgressPercentage).toBeCloseTo(48, 0);
+    expect(store.value.buildProgressPercentage).toBeCloseTo(29, 0);
 
     onStartOrProgress(store)({ task: "verify" } as any);
-    expect(store.value.buildProgressPercentage).toBeCloseTo(50, 0);
+    expect(store.value.buildProgressPercentage).toBeCloseTo(30, 0);
 
     onStartOrProgress(store)({ task: "verify" } as any);
-    expect(store.value.buildProgressPercentage).toBeCloseTo(52, 0);
+    expect(store.value.buildProgressPercentage).toBeCloseTo(32, 0);
   });
 
   it("can never exceed progress for a step beyond the next step", () => {
     for (let n = 10; n; n -= 1) onStartOrProgress(store)({ task: "verify" } as any);
-    expect(store.value.buildProgressPercentage).toBeCloseTo(55, 0);
+    expect(store.value.buildProgressPercentage).toBeCloseTo(41, 0);
 
     for (let n = 10; n; n -= 1) onStartOrProgress(store)({ task: "verify" } as any);
-    expect(store.value.buildProgressPercentage).toBeCloseTo(55, 0);
+    expect(store.value.buildProgressPercentage).toBeCloseTo(41, 0);
 
     onStartOrProgress(store)({ task: "snapshot" } as any);
-    expect(store.value.buildProgressPercentage).toBeCloseTo(55, 0);
+    expect(store.value.buildProgressPercentage).toBeCloseTo(41, 0);
   });
 
   it('updates build progress based on "progress" and "total" values', () => {
     onStartOrProgress(store)({ task: "snapshot" } as any);
-    expect(store.value.buildProgressPercentage).toBeCloseTo(55, 0);
+    expect(store.value.buildProgressPercentage).toBeCloseTo(41, 0);
 
     onStartOrProgress(store)({ task: "snapshot" } as any, { progress: 1, total: 2 });
     expect(store.value.stepProgress.snapshot).toMatchObject({ numerator: 1, denominator: 2 });
-    expect(store.value.buildProgressPercentage).toBeCloseTo(77, 0);
+    expect(store.value.buildProgressPercentage).toBeCloseTo(70, 0);
 
     onStartOrProgress(store)({ task: "snapshot" } as any, { progress: 2, total: 2 });
     expect(store.value.stepProgress.snapshot).toMatchObject({ numerator: 2, denominator: 2 });
@@ -149,12 +149,12 @@ describe("onCompleteOrError", () => {
 
   it("does not set build progress to 100% on error", () => {
     onStartOrProgress(store)({ task: "snapshot" } as any);
-    expect(store.value.buildProgressPercentage).toBeCloseTo(55, 0);
+    expect(store.value.buildProgressPercentage).toBeCloseTo(41, 0);
 
     const error = { formattedError: "Oops!", originalError: new Error("Oops!") };
     onCompleteOrError(store)({ task: "snapshot" } as any, error);
     expect(store.value).toMatchObject({
-      buildProgressPercentage: expect.closeTo(55, 0),
+      buildProgressPercentage: expect.closeTo(41, 0),
       currentStep: "error",
       stepProgress: { snapshot: { completedAt: expect.any(Number) } },
       ...error,
