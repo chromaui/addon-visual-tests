@@ -44,7 +44,7 @@ export const BUILD_STEP_CONFIG: Record<
     renderName: () => `Build Storybook`,
     renderProgress: () => `Building your Storybook...`,
     renderComplete: () => `Storybook built`,
-    estimateDuration: 30_000,
+    estimateDuration: 20_000,
   },
   upload: {
     key: "upload",
@@ -65,7 +65,7 @@ export const BUILD_STEP_CONFIG: Record<
       return `Uploading files (${progress}/${total} ${symbol})...`;
     },
     renderComplete: () => `Publish complete`,
-    estimateDuration: 30_000,
+    estimateDuration: 20_000,
   },
   verify: {
     key: "verify",
@@ -73,7 +73,7 @@ export const BUILD_STEP_CONFIG: Record<
     renderName: () => `Verify your Storybook`,
     renderProgress: () => `Verifying contents...`,
     renderComplete: () => `Storybook verified`,
-    estimateDuration: 10_000,
+    estimateDuration: 20_000,
   },
   snapshot: {
     key: "snapshot",
@@ -86,7 +86,7 @@ export const BUILD_STEP_CONFIG: Record<
         : `Running visual tests...`;
     },
     renderComplete: () => `Tested your stories`,
-    estimateDuration: 60_000,
+    estimateDuration: 90_000,
   },
 
   // These are special steps that are not part of the build process
