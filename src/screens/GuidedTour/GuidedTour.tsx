@@ -1,15 +1,13 @@
 import { type API } from "@storybook/manager-api";
 import { useTheme } from "@storybook/theming";
 import React, { useEffect } from "react";
-import Joyride, { CallBackProps } from "react-joyride";
+import Joyride from "react-joyride";
 import { gql } from "urql";
 
 import { PANEL_ID } from "../../constants";
-import { SelectedBuildFieldsFragment } from "../../gql/graphql";
 import { ENABLE_FILTER } from "../../SidebarBottom";
 import { useSelectedStoryState } from "../VisualTests/BuildContext";
 import { Confetti } from "./Confetti";
-import { PulsatingEffect } from "./PulsatingEffect";
 import { Tooltip, TooltipProps } from "./Tooltip";
 
 const ProjectQuery = gql`

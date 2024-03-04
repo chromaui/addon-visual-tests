@@ -106,6 +106,7 @@ export const useBuild = ({
     rerunQuery,
     queryError,
     userCanReview: !!data?.viewer?.projectMembership?.userCanReview,
+    vtaOnboarding: data?.viewer?.preferences?.vtaOnboarding,
   };
 };
 

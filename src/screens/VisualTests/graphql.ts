@@ -31,6 +31,9 @@ export const QueryBuild = graphql(/* GraphQL */ `
       ...SelectedBuildFields
     }
     viewer {
+      preferences {
+        vtaOnboarding
+      }
       projectMembership(projectId: $projectId) {
         userCanReview: meetsAccessLevel(minimumAccessLevel: REVIEWER)
       }

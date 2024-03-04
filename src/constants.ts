@@ -12,9 +12,6 @@ export const SIDEBAR_TOP_ID = `${ADDON_ID}/sidebarTop`;
 export const SIDEBAR_BOTTOM_ID = `${ADDON_ID}/sidebarBottom`;
 export const ACCESS_TOKEN_KEY = `${ADDON_ID}/access-token/${CHROMATIC_BASE_URL}`;
 export const DEV_BUILD_ID_KEY = `${ADDON_ID}/dev-build-id`;
-// TODO: Remove after completing AP-3586
-// export const WALKTHROUGH_COMPLETED_KEY = `${ADDON_ID}/walkthrough-completed`;
-
 export const CONFIG_INFO = `${ADDON_ID}/configInfo`;
 export const CONFIG_INFO_DISMISSED = `${ADDON_ID}/configInfoDismissed`;
 export const GIT_INFO = `${ADDON_ID}/gitInfo`;
