@@ -1,3 +1,15 @@
+# v1.2.4 (Tue Mar 05 2024)
+
+#### 🐛 Bug Fix
+
+- Show notification when connection to server is lost [#196](https://github.com/chromaui/addon-visual-tests/pull/196) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v1.2.3 (Tue Mar 05 2024)
 
 #### 🐛 Bug Fix
