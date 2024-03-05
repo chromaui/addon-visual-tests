@@ -43,7 +43,7 @@ describe("runChromaticBuild", () => {
 
 describe("onStartOrProgress", () => {
   beforeEach(() => {
-    store.value = INITIAL_BUILD_PAYLOAD;
+    store.value = JSON.parse(JSON.stringify(INITIAL_BUILD_PAYLOAD));
   });
 
   it("sets build id and branch", () => {
@@ -132,7 +132,7 @@ describe("onStartOrProgress", () => {
 
 describe("onCompleteOrError", () => {
   beforeEach(() => {
-    store.value = INITIAL_BUILD_PAYLOAD;
+    store.value = JSON.parse(JSON.stringify(INITIAL_BUILD_PAYLOAD));
   });
 
   it("sets build progress to 100% on completion of final step", () => {
@@ -156,7 +156,7 @@ describe("onCompleteOrError", () => {
     expect(store.value).toMatchObject({
       buildProgressPercentage: expect.closeTo(41, 0),
       currentStep: "error",
-      stepProgress: { snapshot: { completedAt: expect.any(Number) } },
+      stepProgress: { snapshot: { startedAt: expect.any(Number) } },
       ...error,
     });
   });
