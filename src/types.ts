@@ -79,6 +79,9 @@ export type LocalBuildProgress = {
   /** The original error without formatting */
   originalError?: Error | Error[];
 
+  /** URL relevant to the error */
+  errorDetailsUrl?: string;
+
   /** Progress tracking data for each step */
   stepProgress: Record<KnownStep, StepProgressPayload>;
 

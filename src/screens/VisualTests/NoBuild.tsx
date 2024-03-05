@@ -19,7 +19,7 @@ import { Stack } from "../../components/Stack";
 import { Text as CenterText } from "../../components/Text";
 import { LocalBuildProgress } from "../../types";
 
-const buildFailureUrl = "https://www.chromatic.com/docs/setup/#troubleshooting";
+const troubleshootingUrl = "https://www.chromatic.com/docs/setup/#troubleshooting";
 
 const ErrorContainer = styled.pre(({ theme }) => ({
   display: "block",
@@ -79,8 +79,12 @@ export const NoBuild = ({
         <>
           <ErrorContainer>
             Build failed: {firstError?.message || "Unknown Error"}{" "}
-            <Link target="_blank" href={buildFailureUrl} withArrow>
-              View full error
+            <Link
+              target="_blank"
+              href={localBuildProgress.errorDetailsUrl || troubleshootingUrl}
+              withArrow
+            >
+              {localBuildProgress.errorDetailsUrl ? "Details" : "Troubleshooting"}
             </Link>
           </ErrorContainer>
 

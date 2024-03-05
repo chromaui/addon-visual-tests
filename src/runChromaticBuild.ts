@@ -131,17 +131,20 @@ export const onCompleteOrError =
     }
 
     const { buildProgressPercentage, stepProgress } = localBuildProgress.value;
+    const update = {
+      buildId: ctx.announcedBuild?.id,
+      branch: ctx.git?.branch,
+      buildProgressPercentage,
+      stepProgress,
+      previousBuildProgress: stepProgress,
+    };
 
     if (error) {
       localBuildProgress.value = {
-        buildId: ctx.announcedBuild?.id,
-        branch: ctx.git?.branch,
-        buildProgressPercentage,
+        ...update,
         currentStep: abortController?.signal.aborted ? "aborted" : "error",
-        stepProgress,
         formattedError: error.formattedError,
         originalError: error.originalError,
-        previousBuildProgress: stepProgress,
       };
       return;
     }
@@ -153,16 +156,26 @@ export const onCompleteOrError =
       };
     }
 
+    if (ctx.task === "verify" && ctx.build?.wasLimited) {
+      const formattedError = `Check your billing information.`;
+      localBuildProgress.value = {
+        ...update,
+        currentStep: "error",
+        stepProgress,
+        formattedError,
+        originalError: new Error(formattedError),
+        errorDetailsUrl: ctx.build?.app.account?.billingUrl,
+      };
+    }
+
     if (ctx.build && ctx.task === "snapshot") {
       localBuildProgress.value = {
-        buildId: ctx.announcedBuild?.id,
-        branch: ctx.git?.branch,
+        ...update,
         buildProgressPercentage: 100,
         currentStep: "complete",
         stepProgress,
         changeCount: ctx.build.changeCount,
         errorCount: ctx.build.errorCount,
-        previousBuildProgress: stepProgress,
       };
     }
   };
