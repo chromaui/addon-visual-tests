@@ -1,3 +1,15 @@
+# v1.2.3 (Tue Mar 05 2024)
+
+#### 🐛 Bug Fix
+
+- Various fixes [#193](https://github.com/chromaui/addon-visual-tests/pull/193) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v1.2.2 (Mon Mar 04 2024)
 
 #### 🐛 Bug Fix
