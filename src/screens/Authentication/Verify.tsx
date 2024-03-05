@@ -149,7 +149,7 @@ export const Verify = ({
           <div>
             <Heading>Verify your account</Heading>
             <Text>
-              Enter this verification code on Chromatic to grant access to your published
+              Check this verification code on Chromatic to grant access to your published
               Storybooks.
             </Text>
             <Digits>

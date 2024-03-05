@@ -152,16 +152,15 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
 
     const writtenConfigFile = configFile;
     try {
-      const { configFile: actualConfigFile, ...config } = await getConfiguration(writtenConfigFile);
-      await updateChromaticConfig(writtenConfigFile || "chromatic.config.json", {
-        ...config,
-        projectId,
-      });
+      // No config file may be found (file is about to be created)
+      const { configFile: foundConfigFile, ...config } = await getConfiguration(writtenConfigFile);
+      const targetConfigFile = foundConfigFile || writtenConfigFile || "chromatic.config.json";
+      await updateChromaticConfig(targetConfigFile, { ...config, projectId });
 
       projectInfoState.value = {
         ...projectInfoState.value,
         written: true,
-        configFile: actualConfigFile,
+        configFile: targetConfigFile,
       };
     } catch (err) {
       console.warn(`Failed to update your main configuration:\n\n ${err}`);
