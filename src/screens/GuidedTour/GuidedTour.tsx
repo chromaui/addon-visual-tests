@@ -1,8 +1,7 @@
-import { type API } from "@storybook/manager-api";
+import { type API, useStorybookState } from "@storybook/manager-api";
 import { useTheme } from "@storybook/theming";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import Joyride from "react-joyride";
-import { gql } from "urql";
 
 import { PANEL_ID } from "../../constants";
 import { ENABLE_FILTER } from "../../SidebarBottom";
@@ -10,19 +9,6 @@ import { useSelectedStoryState } from "../VisualTests/BuildContext";
 import { Confetti } from "./Confetti";
 import { Tooltip, TooltipProps } from "./Tooltip";
 
-const ProjectQuery = gql`
-  query ProjectQuery($projectId: ID!) {
-    project(id: $projectId) {
-      id
-      name
-      webUrl
-      lastBuild {
-        branch
-        number
-      }
-    }
-  }
-`;
 type GuidedTourStep = TooltipProps["step"];
 
 interface TourProps {
@@ -43,6 +29,14 @@ export const GuidedTour = ({
   const selectedStory = useSelectedStoryState();
   const selectedTestHasChanges = selectedStory?.selectedTest?.result === "CHANGED";
   const selectedTestHasNotBeenAcceptedYet = selectedStory?.selectedTest?.status !== "ACCEPTED";
+
+  const layoutState = JSON.stringify(useStorybookState().layout);
+  const stateRef = useRef(layoutState);
+  if (stateRef.current !== layoutState) {
+    // Trigger Joyride to rerender
+    window.dispatchEvent(new Event("resize"));
+    stateRef.current = layoutState;
+  }
 
   useEffect(() => {
     // Prompt the parent screen that the walkthrough has started, so it doesn't exit on accept if there is only one story changed in the build.
