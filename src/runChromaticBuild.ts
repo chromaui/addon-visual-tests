@@ -50,7 +50,7 @@ export const onStartOrProgress =
     localBuildProgress: ReturnType<typeof SharedState.subscribe<LocalBuildProgress>>,
     timeout?: ReturnType<typeof setTimeout>
   ) =>
-  ({ ...ctx }: Context, { progress, total }: { progress?: number; total?: number } = {}) => {
+  (ctx: Context, { progress, total }: { progress?: number; total?: number } = {}) => {
     clearTimeout(timeout);
 
     if (!isKnownStep(ctx.task)) return;
@@ -62,6 +62,9 @@ export const onStartOrProgress =
 
     const { buildProgressPercentage, stepProgress, previousBuildProgress } =
       localBuildProgress.value;
+
+    // Ignore progress events for steps that have already completed
+    if (stepProgress[ctx.task]?.completedAt) return;
 
     const { startPercentage, endPercentage, stepPercentage } = getBuildStepData(
       ctx.task,
