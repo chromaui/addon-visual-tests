@@ -2,7 +2,6 @@ import { type API, useStorybookState } from "@storybook/manager-api";
 import { useTheme } from "@storybook/theming";
 import React, { useEffect, useRef } from "react";
 import Joyride from "react-joyride";
-import { gql } from "urql";
 
 import { PANEL_ID } from "../../constants";
 import { ENABLE_FILTER } from "../../SidebarBottom";
@@ -10,19 +9,6 @@ import { useSelectedStoryState } from "../VisualTests/BuildContext";
 import { Confetti } from "./Confetti";
 import { Tooltip, TooltipProps } from "./Tooltip";
 
-const ProjectQuery = gql`
-  query ProjectQuery($projectId: ID!) {
-    project(id: $projectId) {
-      id
-      name
-      webUrl
-      lastBuild {
-        branch
-        number
-      }
-    }
-  }
-`;
 type GuidedTourStep = TooltipProps["step"];
 
 interface TourProps {
