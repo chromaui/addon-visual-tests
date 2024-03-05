@@ -36,10 +36,14 @@ interface VisualTestsProps {
   setOutdated: (isOutdated: boolean) => void;
   updateBuildStatus: UpdateStatusFunction;
   projectId: string;
-  gitInfo: Pick<
-    GitInfoPayload,
-    "branch" | "slug" | "userEmailHash" | "commit" | "committedAt" | "uncommittedHash"
-  >;
+  gitInfo:
+    | Partial<
+        Pick<
+          GitInfoPayload,
+          "branch" | "slug" | "userEmailHash" | "commit" | "committedAt" | "uncommittedHash"
+        >
+      >
+    | undefined;
   storyId: string;
 }
 
@@ -313,14 +317,14 @@ export const VisualTestsWithoutSelectedBuildId = ({
 
   return (
     <>
-      {!selectedBuild || !hasSelectedBuild || !hasData || queryError ? (
+      {(!selectedBuild || !hasSelectedBuild || !hasData || queryError) ? (
         <NoBuild
           {...{
             queryError,
             hasData,
             hasProject,
             hasSelectedBuild,
-            branch: gitInfo.branch,
+            branch: gitInfo?.branch,
             dismissBuildError,
             isOutdated,
             localBuildProgress,
@@ -333,7 +337,7 @@ export const VisualTestsWithoutSelectedBuildId = ({
           <BuildProvider watchState={buildInfo}>
             <BuildResults
               {...{
-                branch: gitInfo.branch,
+                branch: gitInfo?.branch || lastBuildOnBranch?.branch,
                 dismissBuildError,
                 isOutdated,
                 localBuildProgress,

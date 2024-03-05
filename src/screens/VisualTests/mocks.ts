@@ -104,7 +104,7 @@ export const pendingTestsNewBrowser = makeTests({
   viewports: [
     {
       viewport: 480,
-      result: TestResult.Equal,
+      result: TestResult.Changed,
       comparisons: [
         makeComparison({ result: ComparisonResult.Equal, browser: Browser.Chrome }),
         makeComparison({ result: ComparisonResult.Added, browser: Browser.Safari }),

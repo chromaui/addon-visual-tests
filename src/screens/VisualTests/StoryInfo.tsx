@@ -79,6 +79,8 @@ interface StoryInfoSectionProps {
   shouldSwitchToLastBuildOnBranch: boolean;
   /** Select the last build on the branch if it isn't this build */
   switchToLastBuildOnBranch?: () => void;
+  /** Has the user made code changes recently? */
+  isOutdated?: boolean
 }
 
 export const StoryInfo = ({
@@ -89,6 +91,7 @@ export const StoryInfo = ({
   isBuildFailed,
   shouldSwitchToLastBuildOnBranch,
   switchToLastBuildOnBranch,
+  isOutdated = false,
 }: StoryInfoSectionProps) => {
   // isInProgress means we have tests but they are still unfinished
   const { status, isInProgress, changeCount, brokenCount, modeResults, browserResults } =
@@ -102,7 +105,7 @@ export const StoryInfo = ({
   // isErrored means there's a problem with the story
   const isErrored = isFailed || status === TestStatus.Broken;
 
-  const showButton = isErrored && !isRunning;
+  const showButton = (isErrored || isOutdated || changeCount === 0) && !isRunning;
   const buttonInProgress = isRunning && !isFailed;
 
   let details;
@@ -144,16 +147,14 @@ export const StoryInfo = ({
         <span>Newer test results are available for this story</span>
       </Info>
     );
-  } else {
+  } else if (changeCount > 0) {
     details = (
       <Info>
         <span>
           <b>
-            {changeCount
-              ? `${pluralize("change", changeCount, true)}${
+            { `${pluralize("change", changeCount, true)}${
                   status === TestStatus.Accepted ? " accepted" : ""
-                }`
-              : "No changes"}
+                }`}
             {brokenCount ? `, ${pluralize("error", brokenCount, true)}` : null}
           </b>
           <StatusIcon
@@ -179,6 +180,44 @@ export const StoryInfo = ({
         </small>
       </Info>
     );
+  } else if (isOutdated) {
+    details = (
+      <Info>
+        <span>
+          <b>Code changes detected</b>
+          <AlertIcon />
+        </span>
+        <small>
+          <span>Run tests to see what changed</span>
+        </small>
+      </Info>
+    )
+  } else {
+    details=(<Info>
+        <span>
+          <b>
+             No changes
+          </b>
+          <StatusIcon
+            icon="passed"
+          />
+        </span>
+        <small>
+          {modeResults.length > 0 && (
+            <span data-hidden-large>
+              {pluralize("mode", modeResults.length, true)}
+              {", "}
+              {pluralize("browser", browserResults.length, true)}
+            </span>
+          )}
+          {modeResults.length > 0 && <span data-hidden-large> • </span>}
+          {isInProgress && <span>Test in progress...</span>}
+          {!isInProgress && startedAt && (
+            <span title={new Date(startedAt).toUTCString()}>Ran {startedAgo}</span>
+          )}
+        </small>
+        </Info>
+    )
   }
 
   return (

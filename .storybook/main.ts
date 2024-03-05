@@ -29,7 +29,7 @@ const config: StorybookConfig = {
         configFile: configFileMap[CHROMATIC_BASE_URL || '"https://www.chromatic.com"'],
       },
     },
-    "@storybook/addon-mdx-gfm"
+    "@storybook/addon-mdx-gfm",
   ],
   docs: {
     autodocs: "tag",

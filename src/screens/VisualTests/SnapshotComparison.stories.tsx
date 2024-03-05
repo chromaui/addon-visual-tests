@@ -274,3 +274,10 @@ export const NewBaseline = {
     ),
   },
 } satisfies Story;
+
+export const Outdated = {
+  args: {
+    isOutdated: true,
+  },
+  parameters: SwitchingMode.parameters,
+} satisfies Story

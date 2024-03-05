@@ -45,7 +45,7 @@ interface NoBuildProps {
   hasSelectedBuild: boolean;
   startDevBuild: () => void;
   localBuildProgress?: LocalBuildProgress;
-  branch: string;
+  branch?: string;
 }
 
 export const NoBuild = ({
@@ -55,7 +55,7 @@ export const NoBuild = ({
   hasSelectedBuild,
   startDevBuild,
   localBuildProgress,
-  branch,
+  branch = "",
 }: NoBuildProps) => {
   const { setAccessToken } = useAuthState();
   const getDetails = () => {

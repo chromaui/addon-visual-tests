@@ -86,13 +86,13 @@ interface OnboardingProps {
   localBuildProgress?: LocalBuildProgress;
   showInitialBuildScreen?: boolean;
   lastBuildHasChanges: boolean;
-  gitInfo: Pick<GitInfoPayload, "uncommittedHash" | "branch">;
+  gitInfo?: Partial<Pick<GitInfoPayload, "uncommittedHash" | "branch">>;
 }
 export const Onboarding = ({
   startDevBuild,
   localBuildProgress,
   showInitialBuildScreen,
-  gitInfo,
+  gitInfo = { branch: "", uncommittedHash: "" },
   lastBuildHasChanges,
   onComplete,
   onSkip,

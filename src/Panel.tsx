@@ -109,7 +109,8 @@ export const Panel = ({ active, api }: PanelProps) => {
       />
     );
 
-  if (gitInfoError || !gitInfo) {
+  // @ts-expect-error no global types yet
+  if (global.CONFIG_TYPE === "DEVELOPMENT" && (gitInfoError || !gitInfo)) {
     // eslint-disable-next-line no-console
     console.error(gitInfoError);
     return withProviders(<GitNotFound />);
@@ -134,7 +135,7 @@ export const Panel = ({ active, api }: PanelProps) => {
     );
   }
 
-  const localBuildIsRightBranch = gitInfo.branch === localBuildProgress?.branch;
+  const localBuildIsRightBranch = gitInfo?.branch === localBuildProgress?.branch;
   return withProviders(
     <ControlsProvider>
       <VisualTests
