@@ -109,7 +109,6 @@ export const Panel = ({ active, api }: PanelProps) => {
       />
     );
 
-  // @ts-expect-error no global types yet
   if (global.CONFIG_TYPE === "DEVELOPMENT" && (gitInfoError || !gitInfo)) {
     // eslint-disable-next-line no-console
     console.error(gitInfoError);

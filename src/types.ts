@@ -86,3 +86,7 @@ export type LocalBuildProgress = {
   /** Progress tracking data from the previous build (if any) */
   previousBuildProgress?: Record<KnownStep, StepProgressPayload>;
 };
+
+declare global {
+  var CONFIG_TYPE: string;
+}
