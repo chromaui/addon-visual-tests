@@ -132,7 +132,7 @@
     "build-storybook": "storybook build",
     "build:staging": "CHROMATIC_BASE_URL=https://www.staging-chromatic.com tsup",
     "build:watch": "run-p 'build --watch' 'codegen --watch'",
-    "chromatic": "chromatic -t 9b39ff142a7f",
+    "chromatic": "chromatic --config-file production.config.json",
     "codegen": "graphql-codegen",
     "lint": "eslint src --max-warnings 0 --report-unused-disable-directives",
     "prerelease": "zx scripts/prepublish-checks.mjs",
