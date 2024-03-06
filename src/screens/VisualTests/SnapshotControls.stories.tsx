@@ -30,7 +30,6 @@ const meta = {
   ],
   args: {
     isOutdated: false,
-    startDevBuild: action("startDevBuild"),
   },
   parameters: {
     chromatic: {

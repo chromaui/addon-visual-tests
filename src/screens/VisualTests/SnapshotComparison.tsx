@@ -2,7 +2,6 @@ import { Loader } from "@storybook/components";
 import { styled } from "@storybook/theming";
 import React, { useEffect } from "react";
 
-import { useAuthState } from "../../AuthContext";
 import { Link } from "../../components/design-system";
 import { Text } from "../../components/layout";
 import { SnapshotImage } from "../../components/SnapshotImage";
@@ -22,7 +21,7 @@ export const Grid = styled.div(({ theme }) => ({
     "label controls"
   `,
   gridTemplateColumns: "1fr fit-content(50%)",
-  gridTemplateRows: "auto auto 40px",
+  gridTemplateRows: "auto auto auto",
   borderBottom: `1px solid ${theme.appBorderColor}`,
 
   "@container (min-width: 300px)": {
@@ -31,7 +30,7 @@ export const Grid = styled.div(({ theme }) => ({
       "label controls"
     `,
     gridTemplateColumns: "1fr auto",
-    gridTemplateRows: "auto 40px",
+    gridTemplateRows: "auto auto",
   },
 
   "@container (min-width: 800px)": {
@@ -118,7 +117,6 @@ const WarningText = styled(Text)(({ theme }) => ({
 interface SnapshotComparisonProps {
   isOutdated: boolean;
   isStarting: boolean;
-  startDevBuild: () => void;
   isBuildFailed: boolean;
   shouldSwitchToLastBuildOnBranch: boolean;
   switchToLastBuildOnBranch?: () => void;
@@ -129,7 +127,6 @@ interface SnapshotComparisonProps {
 export const SnapshotComparison = ({
   isOutdated,
   isStarting,
-  startDevBuild,
   isBuildFailed,
   shouldSwitchToLastBuildOnBranch,
   switchToLastBuildOnBranch,
@@ -206,8 +203,8 @@ export const SnapshotComparison = ({
         tests,
         startedAt,
         isStarting,
-        startDevBuild,
         isBuildFailed,
+        isOutdated,
         shouldSwitchToLastBuildOnBranch,
         switchToLastBuildOnBranch,
       }}
@@ -240,7 +237,7 @@ export const SnapshotComparison = ({
       <HeaderSection>
         <Grid>
           {storyInfo}
-          <SnapshotControls isOutdated={isOutdated} startDevBuild={startDevBuild} />
+          <SnapshotControls isOutdated={isOutdated} />
         </Grid>
       </HeaderSection>
 

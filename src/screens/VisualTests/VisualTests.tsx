@@ -32,7 +32,6 @@ interface VisualTestsProps {
   setSelectedBuildInfo: ReturnType<typeof useState<SelectedBuildInfo>>[1];
   dismissBuildError: () => void;
   localBuildProgress?: LocalBuildProgress;
-  startDevBuild: () => void;
   setOutdated: (isOutdated: boolean) => void;
   updateBuildStatus: UpdateStatusFunction;
   projectId: string;
@@ -179,7 +178,6 @@ export const VisualTestsWithoutSelectedBuildId = ({
   setSelectedBuildInfo,
   dismissBuildError,
   localBuildProgress,
-  startDevBuild,
   setOutdated,
   updateBuildStatus,
   projectId,
@@ -296,7 +294,6 @@ export const VisualTestsWithoutSelectedBuildId = ({
               {...{
                 gitInfo,
                 projectId,
-                startDevBuild,
                 updateBuildStatus,
                 localBuildProgress,
                 showInitialBuildScreen: !selectedBuild,
@@ -325,7 +322,6 @@ export const VisualTestsWithoutSelectedBuildId = ({
             isOutdated,
             localBuildProgress,
             ...(lastBuildOnBranchIsSelectable && { switchToLastBuildOnBranch }),
-            startDevBuild,
           }}
         />
       ) : (
@@ -339,7 +335,6 @@ export const VisualTestsWithoutSelectedBuildId = ({
                 localBuildProgress,
                 ...(lastBuildOnBranch && { lastBuildOnBranch }),
                 ...(lastBuildOnBranchIsSelectable && { switchToLastBuildOnBranch }),
-                startDevBuild,
                 userCanReview,
                 storyId,
               }}

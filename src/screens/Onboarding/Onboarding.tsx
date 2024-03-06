@@ -18,6 +18,7 @@ import { Text } from "../../components/Text";
 import { SelectedBuildFieldsFragment } from "../../gql/graphql";
 import { GitInfoPayload, LocalBuildProgress } from "../../types";
 import { useBuildState, useSelectedStoryState } from "../VisualTests/BuildContext";
+import { useRunBuildState } from "../VisualTests/RunBuildContext";
 import onboardingAdjustSizeImage from "./onboarding-adjust-size.png";
 import onboardingColorPaletteImage from "./onboarding-color-palette.png";
 import onboardingEmbiggenImage from "./onboarding-embiggen.png";
@@ -81,7 +82,6 @@ const ErrorContainer = styled.pre(({ theme }) => ({
 interface OnboardingProps {
   onComplete: () => void;
   onSkip: () => void;
-  startDevBuild: () => void;
   selectedBuild?: SelectedBuildFieldsFragment | null;
   localBuildProgress?: LocalBuildProgress;
   showInitialBuildScreen?: boolean;
@@ -89,7 +89,6 @@ interface OnboardingProps {
   gitInfo: Pick<GitInfoPayload, "uncommittedHash" | "branch">;
 }
 export const Onboarding = ({
-  startDevBuild,
   localBuildProgress,
   showInitialBuildScreen,
   gitInfo,
@@ -98,6 +97,7 @@ export const Onboarding = ({
   onSkip,
 }: OnboardingProps) => {
   const { selectedBuild } = useBuildState();
+  const { isRunning, startBuild } = useRunBuildState();
   const selectedStory = useSelectedStoryState();
 
   // The initial build screen is only necessary if this is a brand new project with no builds at all. Instead, !selectedBuild would appear on any new branch, even if there are other builds on the project.
@@ -121,12 +121,6 @@ export const Onboarding = ({
 
   const [runningSecondBuild, setRunningSecondBuild] = React.useState(false);
 
-  const localBuildIsRunning =
-    localBuildProgress &&
-    localBuildProgress.currentStep !== "complete" &&
-    localBuildProgress.currentStep !== "error" &&
-    localBuildProgress.currentStep !== "aborted";
-
   // TODO: This design for an error in the Onboarding is incomplete
   if (localBuildProgress && localBuildProgress.currentStep === "error") {
     return (
@@ -143,7 +137,7 @@ export const Onboarding = ({
                 : localBuildProgress.originalError?.message}
             </ErrorContainer>
             <ButtonStack>
-              <Button variant="solid" size="medium" onClick={startDevBuild}>
+              <Button variant="solid" size="medium" onClick={startBuild}>
                 Try again
               </Button>
               <Button link onClick={onSkip}>
@@ -169,7 +163,7 @@ export const Onboarding = ({
               </Text>
             </div>
             <ButtonStack>
-              <Button size="medium" variant="solid" onClick={startDevBuild}>
+              <Button size="medium" variant="solid" onClick={startBuild}>
                 Take snapshots
               </Button>
               <Button onClick={onSkip} link>
@@ -182,7 +176,7 @@ export const Onboarding = ({
     );
   }
 
-  if (showInitialBuild && localBuildProgress && localBuildIsRunning) {
+  if (showInitialBuild && localBuildProgress && isRunning) {
     // When the build is in progress, show the build progress bar
     return (
       <Screen footer={null}>
@@ -243,7 +237,7 @@ export const Onboarding = ({
   if (
     showCatchAChange &&
     initialGitHash === gitInfo.uncommittedHash &&
-    !localBuildIsRunning &&
+    !isRunning &&
     !lastBuildHasChanges
   ) {
     return (
@@ -315,7 +309,7 @@ export const Onboarding = ({
   if (
     showCatchAChange &&
     initialGitHash !== gitInfo.uncommittedHash &&
-    !localBuildIsRunning &&
+    !isRunning &&
     !lastBuildHasChanges
   ) {
     return (
@@ -334,7 +328,7 @@ export const Onboarding = ({
               size="medium"
               onClick={() => {
                 setRunningSecondBuild(true);
-                startDevBuild();
+                startBuild();
                 // In case the build does not have changes, reset gitHash to the current value to show Make A Change again.
                 // A timeout is used to prevent "Make a Change" from reappearing briefly before the build starts.
                 setTimeout(() => {
@@ -352,7 +346,7 @@ export const Onboarding = ({
   }
 
   // If the first build is done, changes were detected, and the second build is in progress.
-  if (localBuildProgress && showCatchAChange && localBuildIsRunning) {
+  if (localBuildProgress && showCatchAChange && isRunning) {
     return (
       <Screen footer={null}>
         <Container>
@@ -372,7 +366,7 @@ export const Onboarding = ({
   }
 
   // If the last build has changes, show the "Done" screen
-  if (!localBuildIsRunning && lastBuildHasChanges) {
+  if (!isRunning && lastBuildHasChanges) {
     return (
       <Screen footer={null}>
         <Container style={{ overflowY: "auto" }}>

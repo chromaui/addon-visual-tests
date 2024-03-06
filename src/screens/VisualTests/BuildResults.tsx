@@ -20,6 +20,7 @@ import { BuildEyebrow } from "./BuildEyebrow";
 import { useControlsDispatch, useControlsState } from "./ControlsContext";
 import { RenderSettings } from "./RenderSettings";
 import { useReviewTestState } from "./ReviewTestContext";
+import { useRunBuildState } from "./RunBuildContext";
 import { SnapshotComparison } from "./SnapshotComparison";
 import { Warnings } from "./Warnings";
 
@@ -30,7 +31,6 @@ interface BuildResultsProps {
   localBuildProgress?: LocalBuildProgress;
   switchToLastBuildOnBranch?: () => void;
   storyId: string;
-  startDevBuild: () => void;
 }
 
 export const Warning = styled.div(({ theme }) => ({
@@ -47,12 +47,11 @@ export const BuildResults = ({
   isOutdated,
   localBuildProgress,
   switchToLastBuildOnBranch,
-  startDevBuild,
   storyId,
 }: BuildResultsProps) => {
-  const theme = useTheme();
   const { settingsVisible, warningsVisible } = useControlsState();
   const { toggleSettings, toggleWarnings } = useControlsDispatch();
+  const { isRunning, startBuild, stopBuild } = useRunBuildState();
 
   const { lastBuildOnBranch, lastBuildOnBranchIsReady, lastBuildOnBranchIsSelectable } =
     useBuildState();
@@ -61,9 +60,6 @@ export const BuildResults = ({
   const selectedStory = useSelectedStoryState();
 
   const { buildIsReviewable, userCanReview } = useReviewTestState();
-
-  const isLocalBuildInProgress =
-    !!localBuildProgress && localBuildProgress.currentStep !== "complete";
 
   // Do we want to encourage them to switch to the next build?
   const shouldSwitchToLastBuildOnBranch = !!(
@@ -76,7 +72,7 @@ export const BuildResults = ({
   const lastBuildOnBranchInProgress = lastBuildOnBranch?.status === BuildStatus.InProgress;
   const showBuildStatus =
     // We always want to show the status of the running build (until it is done)
-    isLocalBuildInProgress ||
+    isRunning ||
     // Even if there's no build running, we need to tell them why they can't review, unless
     // the story is superseded and the UI is already telling them
     (!buildIsReviewable && !shouldSwitchToLastBuildOnBranch);
@@ -88,9 +84,7 @@ export const BuildResults = ({
       branch={branch}
       dismissBuildError={dismissBuildError}
       localBuildProgress={
-        localBuildProgressIsLastBuildOnBranch || isLocalBuildInProgress
-          ? localBuildProgress
-          : undefined
+        localBuildProgressIsLastBuildOnBranch || isRunning ? localBuildProgress : undefined
       }
       lastBuildOnBranchInProgress={lastBuildOnBranchInProgress}
       switchToLastBuildOnBranch={switchToLastBuildOnBranch}
@@ -124,10 +118,9 @@ export const BuildResults = ({
                   belowText
                   size="medium"
                   variant="solid"
-                  onClick={() => startDevBuild()}
-                  disabled={isLocalBuildInProgress}
+                  onClick={isRunning ? stopBuild : startBuild}
                 >
-                  Create visual test
+                  {isRunning ? "Cancel build" : "Create visual test"}
                 </Button>
               </>
             )}
@@ -207,7 +200,6 @@ export const BuildResults = ({
             {...{
               isOutdated,
               isStarting: isSelectedBuildStarting,
-              startDevBuild,
               isBuildFailed,
               shouldSwitchToLastBuildOnBranch,
               switchToLastBuildOnBranch,

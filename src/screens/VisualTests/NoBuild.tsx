@@ -1,5 +1,5 @@
 import { Loader } from "@storybook/components";
-import { PlayIcon } from "@storybook/icons";
+import { PlayIcon, StopAltIcon } from "@storybook/icons";
 import { styled } from "@storybook/theming";
 import { lighten } from "polished";
 import React from "react";
@@ -18,6 +18,7 @@ import { Footer, Screen } from "../../components/Screen";
 import { Stack } from "../../components/Stack";
 import { Text as CenterText } from "../../components/Text";
 import { LocalBuildProgress } from "../../types";
+import { useRunBuildState } from "./RunBuildContext";
 
 const buildFailureUrl = "https://www.chromatic.com/docs/setup/#troubleshooting";
 
@@ -43,7 +44,6 @@ interface NoBuildProps {
   hasData: boolean;
   hasProject: boolean;
   hasSelectedBuild: boolean;
-  startDevBuild: () => void;
   localBuildProgress?: LocalBuildProgress;
   branch: string;
 }
@@ -53,15 +53,16 @@ export const NoBuild = ({
   hasData,
   hasProject,
   hasSelectedBuild,
-  startDevBuild,
   localBuildProgress,
   branch,
 }: NoBuildProps) => {
   const { setAccessToken } = useAuthState();
+  const { isRunning, startBuild, stopBuild } = useRunBuildState();
+
   const getDetails = () => {
     const button = (
-      <Button size="medium" variant="solid" onClick={startDevBuild}>
-        <PlayIcon />
+      <Button size="medium" variant="solid" onClick={isRunning ? stopBuild : startBuild}>
+        {isRunning ? <StopAltIcon /> : <PlayIcon />}
         Take snapshots
       </Button>
     );

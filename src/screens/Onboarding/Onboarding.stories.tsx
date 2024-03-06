@@ -6,13 +6,39 @@ import React from "react";
 
 import { INITIAL_BUILD_PAYLOAD } from "../../buildSteps";
 import { panelModes } from "../../modes";
+import { LocalBuildProgress } from "../../types";
 import { GraphQLClientProvider } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
 import { storyWrapper } from "../../utils/storyWrapper";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
 import { BuildProvider } from "../VisualTests/BuildContext";
 import { acceptedBuild, acceptedTests, buildInfo, withTests } from "../VisualTests/mocks";
+import { RunBuildProvider } from "../VisualTests/RunBuildContext";
 import { Onboarding } from "./Onboarding";
+
+const RunBuildWrapper = ({
+  children,
+  localBuildProgress,
+  startBuild = () => {},
+  stopBuild = () => {},
+}: {
+  children: React.ReactNode;
+  localBuildProgress: LocalBuildProgress | undefined;
+  startBuild?: () => void;
+  stopBuild?: () => void;
+}) => (
+  <RunBuildProvider
+    watchState={{
+      isRunning:
+        !!localBuildProgress &&
+        !["aborted", "complete", "error"].includes(localBuildProgress.currentStep),
+      startBuild,
+      stopBuild,
+    }}
+  >
+    {children}
+  </RunBuildProvider>
+);
 
 const meta = {
   component: Onboarding,
@@ -21,7 +47,6 @@ const meta = {
     storyWrapper(GraphQLClientProvider),
   ],
   args: {
-    startDevBuild: () => {},
     localBuildProgress: undefined,
     gitInfo: {
       uncommittedHash: "123",
@@ -163,12 +188,12 @@ export const ChangesDetected = {
         >
           Change Git
         </button>
-        <meta.component
-          {...args}
-          gitInfo={gitInfo}
-          startDevBuild={() => setLocalBuildProgress(INITIAL_BUILD_PAYLOAD)}
+        <RunBuildWrapper
           localBuildProgress={localBuildProgress}
-        />
+          startBuild={() => setLocalBuildProgress(INITIAL_BUILD_PAYLOAD)}
+        >
+          <meta.component {...args} gitInfo={gitInfo} localBuildProgress={localBuildProgress} />
+        </RunBuildWrapper>
       </>
     );
   },
@@ -215,18 +240,18 @@ export const RunningFirstTest = {
         >
           Change Git
         </button>
-        <meta.component
-          {...args}
-          gitInfo={gitInfo}
-          startDevBuild={() =>
+        <RunBuildWrapper
+          localBuildProgress={localBuildProgress}
+          startBuild={() =>
             setLocalBuildProgress({
               ...INITIAL_BUILD_PAYLOAD,
               currentStep: "upload",
               buildProgressPercentage: 30,
             })
           }
-          localBuildProgress={localBuildProgress}
-        />
+        >
+          <meta.component {...args} gitInfo={gitInfo} localBuildProgress={localBuildProgress} />
+        </RunBuildWrapper>
       </>
     );
   },
@@ -268,18 +293,18 @@ export const RanFirstTestNoChanges = {
         >
           Change Git
         </button>
-        <meta.component
-          {...args}
-          gitInfo={gitInfo}
-          startDevBuild={() => {
+        <RunBuildWrapper
+          localBuildProgress={localBuildProgress}
+          startBuild={() =>
             setLocalBuildProgress({
               ...INITIAL_BUILD_PAYLOAD,
               currentStep: "complete",
               buildProgressPercentage: 30,
-            });
-          }}
-          localBuildProgress={localBuildProgress}
-        />
+            })
+          }
+        >
+          <meta.component {...args} gitInfo={gitInfo} localBuildProgress={localBuildProgress} />
+        </RunBuildWrapper>
       </>
     );
   },
@@ -303,10 +328,9 @@ export const ChangesFound = {
         >
           Change Git
         </button>
-        <meta.component
-          {...args}
-          gitInfo={gitInfo}
-          startDevBuild={() => {
+        <RunBuildWrapper
+          localBuildProgress={localBuildProgress}
+          startBuild={() => {
             setLocalBuildProgress({
               ...INITIAL_BUILD_PAYLOAD,
               buildProgressPercentage: 100,
@@ -314,9 +338,14 @@ export const ChangesFound = {
             });
             setLastBuildHasChanges(true);
           }}
-          localBuildProgress={localBuildProgress}
-          lastBuildHasChanges={lastBuildHasChanges}
-        />
+        >
+          <meta.component
+            {...args}
+            gitInfo={gitInfo}
+            localBuildProgress={localBuildProgress}
+            lastBuildHasChanges={lastBuildHasChanges}
+          />
+        </RunBuildWrapper>
       </>
     );
   },
