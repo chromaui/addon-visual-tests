@@ -101,7 +101,8 @@ export const useBuild = ({
     hasData: !!data && !storyDataIsStale,
     hasProject: !!data?.project,
     // @ts-expect-error no global types yet
-    hasSelectedBuild: selectedBuild?.branch === gitInfo?.branch || global.configType !== 'DEVELOPMENT',
+    hasSelectedBuild:
+      selectedBuild?.branch === gitInfo?.branch || global.configType !== "DEVELOPMENT",
     lastBuildOnBranch,
     lastBuildOnBranchIsNewer,
     lastBuildOnBranchIsReady,

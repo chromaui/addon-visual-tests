@@ -210,7 +210,7 @@ export const SnapshotComparison = ({
         isBuildFailed,
         shouldSwitchToLastBuildOnBranch,
         switchToLastBuildOnBranch,
-        isOutdated
+        isOutdated,
       }}
     />
   );

@@ -80,7 +80,7 @@ interface StoryInfoSectionProps {
   /** Select the last build on the branch if it isn't this build */
   switchToLastBuildOnBranch?: () => void;
   /** Has the user made code changes recently? */
-  isOutdated?: boolean
+  isOutdated?: boolean;
 }
 
 export const StoryInfo = ({
@@ -152,9 +152,9 @@ export const StoryInfo = ({
       <Info>
         <span>
           <b>
-            { `${pluralize("change", changeCount, true)}${
-                  status === TestStatus.Accepted ? " accepted" : ""
-                }`}
+            {`${pluralize("change", changeCount, true)}${
+              status === TestStatus.Accepted ? " accepted" : ""
+            }`}
             {brokenCount ? `, ${pluralize("error", brokenCount, true)}` : null}
           </b>
           <StatusIcon
@@ -191,16 +191,13 @@ export const StoryInfo = ({
           <span>Run tests to see what changed</span>
         </small>
       </Info>
-    )
+    );
   } else {
-    details=(<Info>
+    details = (
+      <Info>
         <span>
-          <b>
-             No changes
-          </b>
-          <StatusIcon
-            icon="passed"
-          />
+          <b>No changes</b>
+          <StatusIcon icon="passed" />
         </span>
         <small>
           {modeResults.length > 0 && (
@@ -216,8 +213,8 @@ export const StoryInfo = ({
             <span title={new Date(startedAt).toUTCString()}>Ran {startedAgo}</span>
           )}
         </small>
-        </Info>
-    )
+      </Info>
+    );
   }
 
   return (

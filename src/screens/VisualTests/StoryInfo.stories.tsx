@@ -137,6 +137,6 @@ export const PendingManyViewportsAndBrowsers: Story = {
 export const Outdated: Story = {
   args: {
     tests: [makeTest({ status: TestStatus.Passed })],
-    isOutdated: true
+    isOutdated: true,
   },
 };

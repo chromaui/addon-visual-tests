@@ -280,4 +280,4 @@ export const Outdated = {
     isOutdated: true,
   },
   parameters: SwitchingMode.parameters,
-} satisfies Story
+} satisfies Story;
