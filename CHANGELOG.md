@@ -1,3 +1,27 @@
+# v1.2.7 (Wed Mar 06 2024)
+
+#### 🐛 Bug Fix
+
+- Ensure onboarding is triggered when query param is set [#198](https://github.com/chromaui/addon-visual-tests/pull/198) ([@thafryer](https://github.com/thafryer))
+
+#### Authors: 1
+
+- Jarel Fryer ([@thafryer](https://github.com/thafryer))
+
+---
+
+# v1.2.6 (Tue Mar 05 2024)
+
+#### 🐛 Bug Fix
+
+- Rerender Joyride when changing Storybook layout [#197](https://github.com/chromaui/addon-visual-tests/pull/197) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v1.2.5 (Tue Mar 05 2024)
 
 #### 🐛 Bug Fix

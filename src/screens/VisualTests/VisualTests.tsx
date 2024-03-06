@@ -113,10 +113,13 @@ const useOnboarding = (
 
   const [hasCompletedWalkthrough, setHasCompletedWalkthrough] = React.useState(true);
   React.useEffect(() => {
+    // Force the onboarding to show by adding ?vtaOnboarding=true to the URL
+    if (managerApi?.getUrlState?.().queryParams.vtaOnboarding === "true") {
+      setHasCompletedWalkthrough(false);
+      return;
+    }
     setHasCompletedWalkthrough(
-      // Force the onboarding to show by adding ?vtaOnboarding=true to the URL
-      managerApi?.getUrlState?.().queryParams.vtaOnboarding === "true" ||
-        vtaOnboarding === VtaOnboardingPreference.Completed ||
+      vtaOnboarding === VtaOnboardingPreference.Completed ||
         vtaOnboarding === VtaOnboardingPreference.Dismissed
     );
   }, [managerApi, vtaOnboarding]);
