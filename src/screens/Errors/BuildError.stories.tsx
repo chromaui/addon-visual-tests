@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
+import { INITIAL_BUILD_PAYLOAD } from "../../buildSteps";
 import { BuildError } from "./BuildError";
 
 const meta = {
@@ -8,7 +9,7 @@ const meta = {
     localBuildProgress: {
       buildProgressPercentage: 50,
       currentStep: "error",
-      stepProgress: {},
+      stepProgress: INITIAL_BUILD_PAYLOAD.stepProgress,
       originalError: new Error("Caught exception in play function"),
     },
   },

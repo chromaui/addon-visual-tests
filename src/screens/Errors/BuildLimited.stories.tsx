@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
+import { INITIAL_BUILD_PAYLOAD } from "../../buildSteps";
 import { BuildLimited } from "./BuildLimited";
 
 const meta = {
@@ -8,7 +9,7 @@ const meta = {
     localBuildProgress: {
       buildProgressPercentage: 50,
       currentStep: "error",
-      stepProgress: {},
+      stepProgress: INITIAL_BUILD_PAYLOAD.stepProgress,
       errorDetailsUrl: "https://www.chromatic.com/billing?accountId=5af25af03c9f2c4bdccc0fcb",
     },
   },
