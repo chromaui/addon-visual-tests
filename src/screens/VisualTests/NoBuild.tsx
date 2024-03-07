@@ -19,6 +19,7 @@ import { Text as CenterText } from "../../components/Text";
 import { DOCS_URL } from "../../constants";
 import { LocalBuildProgress } from "../../types";
 import { ErrorBox } from "../Errors/BuildError";
+import { useRunBuildState } from "./RunBuildContext";
 
 const ButtonStackLink = styled(Link)(() => ({
   marginTop: 5,
@@ -29,7 +30,6 @@ interface NoBuildProps {
   hasData: boolean;
   hasProject: boolean;
   hasSelectedBuild: boolean;
-  startDevBuild: () => void;
   localBuildProgress?: LocalBuildProgress;
   branch: string;
 }
@@ -39,14 +39,15 @@ export const NoBuild = ({
   hasData,
   hasProject,
   hasSelectedBuild,
-  startDevBuild,
   localBuildProgress,
   branch,
 }: NoBuildProps) => {
   const { setAccessToken } = useAuthState();
+  const { startBuild } = useRunBuildState();
+
   const getDetails = () => {
     const button = (
-      <Button size="medium" variant="solid" onClick={startDevBuild}>
+      <Button size="medium" variant="solid" onClick={startBuild}>
         <PlayIcon />
         Take snapshots
       </Button>
