@@ -29,7 +29,7 @@ const configSchema = {
     type: "boolean",
   },
   diagnosticsFile: {
-    description: "Write process context information to a JSON file.",
+    description: "Write process information to a JSON file.",
     type: "string or boolean",
   },
   exitOnceUploaded: {
@@ -45,7 +45,7 @@ const configSchema = {
     type: "string: ['public/**']",
   },
   fileHashing: {
-    description: "Apply file hashing to skip uploading unchanged files (default: true).",
+    description: "Apply file hashing to skip uploading unchanged files - default: true",
     type: "boolean",
   },
   ignoreLastBuildOnBranch: {
