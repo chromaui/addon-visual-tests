@@ -51,12 +51,6 @@ type Story = StoryObj<typeof meta>;
 
 export const Default = {} satisfies Story;
 
-export const Outdated = {
-  args: {
-    isOutdated: true,
-  },
-} satisfies Story;
-
 export const InProgress = {
   parameters: {
     selectedBuild: withTests(pendingBuild, inProgressTests),
