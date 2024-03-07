@@ -149,7 +149,7 @@ export const Panel = ({ active, api }: PanelProps) => {
     <ControlsProvider>
       <VisualTests
         dismissBuildError={() => setLocalBuildProgress(undefined)}
-        isOutdated={!!isOutdated}
+        isOutdated={!!isOutdated && global.CONFIG_TYPE === 'DEVELOPMENT'}
         localBuildProgress={localBuildIsRightBranch ? localBuildProgress : undefined}
         setOutdated={setOutdated}
         updateBuildStatus={updateBuildStatus}

@@ -82,7 +82,7 @@ export const useBuild = ({
 
   // If the last build is *newer* than the current head commit, we don't want to select it
   // as our local code wouldn't yet have the changes made in that build.
-  const lastBuildOnBranchIsNewer = lastBuildOnBranch?.committedAt > gitInfo?.committedAt;
+  const lastBuildOnBranchIsNewer = gitInfo?.committedAt && lastBuildOnBranch?.committedAt > gitInfo?.committedAt;
   const lastBuildOnBranchIsSelectable = !!lastBuildOnBranch && !lastBuildOnBranchIsNewer;
 
   // If any tests for the current story are still in progress, we aren't ready to select the build
@@ -99,7 +99,7 @@ export const useBuild = ({
   return {
     hasData: !!data && !storyDataIsStale,
     hasProject: !!data?.project,
-    hasSelectedBuild: selectedBuild?.branch === gitInfo?.branch,
+    hasSelectedBuild: selectedBuild?.branch === gitInfo?.branch || global.CONFIG_TYPE !== "DEVELOPMENT",
     lastBuildOnBranch,
     lastBuildOnBranchIsNewer,
     lastBuildOnBranchIsReady,

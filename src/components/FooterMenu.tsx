@@ -24,12 +24,16 @@ export const FooterMenu = () => {
           },
         ]
       : []),
-    {
-      id: "configuration",
-      title: "Configuration",
-      icon: <CogIcon aria-hidden />,
-      onClick: () => toggleConfig(),
-    },
+    ...(global.CONFIG_TYPE === 'DEVELOPMENT' 
+      ? [
+          {
+            id: "configuration",
+            title: "Configuration",
+            icon: <CogIcon aria-hidden />,
+            onClick: () => toggleConfig(),
+          }
+        ]
+      : []),
     {
       id: "learn",
       title: "About this addon",

@@ -4,7 +4,7 @@ export const QueryBuild = graphql(/* GraphQL */ `
   query AddonVisualTestsBuild(
     $projectId: ID!
     $branches: [String!]
-    $gitUserEmailHash: String!
+    $gitUserEmailHash: String
     $repositoryOwnerName: String
     $storyId: String!
     $testStatuses: [TestStatus!]!
