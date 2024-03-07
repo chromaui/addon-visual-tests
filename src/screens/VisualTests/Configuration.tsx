@@ -1,15 +1,11 @@
 import { Link, TooltipNote, WithTooltip } from "@storybook/components";
-import {
-  AlertIcon as Alert,
-  GlobeIcon,
-  LockIcon as Lock,
-  SupportIcon as Support,
-  TrashIcon as Trash,
-} from "@storybook/icons";
+import { AlertIcon as Alert, MarkupIcon as Markup, WandIcon as Wand } from "@storybook/icons";
 import { styled } from "@storybook/theming";
 import React from "react";
 
-import { CloseButton, CloseIcon, Heading } from "../../components/Accordions";
+import { CloseButton, CloseIcon, Heading as StyledHeading } from "../../components/Accordions";
+import { Button } from "../../components/Button";
+import { Code } from "../../components/Code";
 import { CONFIG_INFO, CONFIG_OVERRIDES } from "../../constants";
 import { ConfigInfoPayload } from "../../types";
 import { useSharedState } from "../../utils/useSharedState";
@@ -17,8 +13,8 @@ import { useUninstallAddon } from "../Uninstalled/UninstallContext";
 
 const configSchema = {
   autoAcceptChanges: {
-    description: "Automatically accept visual changes, usually for a specific branch name.",
-    type: "string | boolean",
+    description: "Automatically accept visual changes - usually for a specific branch name.",
+    type: "true or branch name",
   },
   buildScriptName: {
     description: "The package.json script that builds your Storybook.",
@@ -34,19 +30,19 @@ const configSchema = {
   },
   diagnosticsFile: {
     description: "Write process context information to a JSON file.",
-    type: "string | boolean",
+    type: "string or boolean",
   },
   exitOnceUploaded: {
     description: "Exit the process as soon as your Storybook is published.",
-    type: "string | boolean",
+    type: "string or boolean",
   },
   exitZeroOnChanges: {
     description: "Exit the process succesfully even when visual changes are found.",
-    type: "string | boolean",
+    type: "string or boolean",
   },
   externals: {
     description: "Disable TurboSnap when any of these files have changed since the baseline build.",
-    type: "string[]",
+    type: "string: ['public/**']",
   },
   fileHashing: {
     description: "Apply file hashing to skip uploading unchanged files (default: true).",
@@ -59,16 +55,16 @@ const configSchema = {
   },
   junitReport: {
     description: "Write build results to a JUnit XML file.",
-    type: "string | boolean",
+    type: "string or boolean",
   },
   logFile: {
     description: "Write Chromatic CLI logs to a file.",
-    type: "string | boolean",
+    type: "string or boolean",
   },
   onlyChanged: {
     description:
       "Enables TurboSnap to only run stories affected by files changed since the baseline build.",
-    type: "true | string (branch name)",
+    type: "true or string (branch name)",
     glob: true,
   },
   onlyStoryFiles: {
@@ -100,7 +96,7 @@ const configSchema = {
   skip: {
     description:
       "Skip Chromatic tests, but mark the commit as passing. Avoids blocking PRs due to required merge checks.",
-    type: "string | boolean",
+    type: "string or boolean",
   },
   storybookBaseDir: {
     description: "Relative path from repository root to Storybook project root.",
@@ -116,7 +112,7 @@ const configSchema = {
   },
   storybookLogFile: {
     description: "Write Storybook build logs to a file.",
-    type: "string | boolean",
+    type: "string or boolean",
   },
   untraced: {
     description:
@@ -134,106 +130,105 @@ const configSchema = {
   },
 };
 
+const StyledCloseButton = styled(CloseButton)({
+  position: "absolute",
+  top: 10,
+  right: 16,
+});
+
 const Page = styled.div(({ theme }) => ({
+  position: "relative",
   backgroundColor: theme.background.content,
   boxShadow: `0px 1px 1px ${theme.color.border}`,
   display: "flex",
   flexDirection: "column",
   padding: 15,
+}));
 
+const PageWrapper = styled.div(({ theme }) => ({
+  margin: "0 auto",
+  maxWidth: 400,
+  width: "100%",
+}));
+
+const PageDescription = styled.div(({ theme }) => ({
   code: {
     fontSize: "90%",
   },
 }));
 
-const Table = styled.dl(({ theme }) => ({
+const Heading = styled(StyledHeading)({
+  marginBottom: 10,
+});
+
+const Table = styled.div(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
-  gap: 20,
-  marginBottom: 10,
-  border: `1px solid ${theme.color.border}`,
+  gap: 15,
+  marginTop: 15,
+}));
+
+const Setting = styled.div(({ theme }) => ({
+  display: "flex",
+  flexWrap: "wrap",
+  gap: 10,
+  alignItems: "center",
+  padding: "10px 15px",
+  border: `1px solid ${theme.appBorderColor}`,
   borderRadius: theme.appBorderRadius,
-  padding: 15,
 
-  "& > div": {
-    display: "flex",
-    flexDirection: "column",
-    gap: 5,
-  },
-
-  dt: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "flex-start",
-    justifyContent: "baseline",
-    gap: 5,
-
-    "& > div": {
-      display: "flex",
-      alignItems: "baseline",
-      gap: 5,
-    },
-  },
-
-  dd: {
-    display: "flex",
-    flexDirection: "column",
-    margin: 0,
-    gap: 5,
-
-    "& > code": {
-      display: "block",
-      backgroundColor: theme.background.app,
-      borderRadius: 3,
-      margin: "4px 0",
-      padding: 10,
-    },
-  },
-
-  small: {
-    color: theme.color.mediumdark,
-    textWrap: "balance",
-  },
-
-  "@container (min-width: 800px)": {
-    "& > div": {
-      flexDirection: "row",
-      gap: 15,
-    },
-    dt: {
-      flexBasis: "35%",
-    },
-    dd: {
-      flexBasis: "65%",
-    },
+  "> div": {
+    width: "100%",
   },
 }));
 
-const DangerZone = styled.div(({ theme }) => ({
+const SettingHeading = styled.div(({ theme }) => ({
   display: "flex",
-  border: `1px solid ${theme.color.negativeText}`,
-  borderRadius: theme.appBorderRadius,
-  backgroundColor: `${theme.color.negativeText}11`,
-  alignItems: "center",
-  gap: 8,
-  padding: 15,
-  svg: { margin: 3 },
-  p: { flexGrow: 1, margin: 0 },
-  small: { display: "block", textWrap: "balance" },
-  button: {
-    backgroundColor: theme.background.content,
-    border: `1px solid ${theme.color.negativeText}`,
-    borderRadius: 3,
-    color: theme.color.negativeText,
-    fontWeight: "bold",
-    padding: "4px 6px",
-    cursor: "pointer",
-    transition: "all 0.2s",
-    "&:hover": {
-      borderColor: theme.color.negative,
-      color: theme.color.negative,
-    },
+  flexGrow: 1,
+  flexWrap: "wrap",
+  justifyContent: "space-between",
+  gap: "5px 10px",
+}));
+
+const SettingLabel = styled.div(({ theme }) => ({
+  color: theme.base === "dark" ? theme.color.medium : theme.color.dark,
+  fontSize: theme.typography.size.s1,
+
+  div: {
+    position: "relative",
+    top: 2,
+    marginLeft: 5,
   },
+}));
+
+const SettingContent = styled.div(({ theme }) => ({
+  color: theme.color.defaultText,
+  margin: "8px 0 3px",
+
+  p: {
+    margin: 0,
+  },
+}));
+
+const SettingValue = styled.div(({ theme }) => ({
+  // fontFamily: theme.typography.fonts.mono,
+  wordWrap: "break-word",
+}));
+
+const DisabledNote = styled.div(({ theme }) => ({
+  color: theme.color.warningText,
+  fontSize: theme.typography.size.s1,
+}));
+
+const ValueSuggestion = styled.div(({ theme }) => ({
+  fontFamily: theme.typography.fonts.base,
+  color: theme.base === "dark" ? theme.color.medium : theme.color.dark,
+}));
+
+const Description = styled.div(({ theme }) => ({
+  color: theme.base === "dark" ? theme.color.medium : theme.color.dark,
+  fontSize: theme.typography.size.s1,
+  margin: "5px 15px 0",
 }));
 
 const Suggestion = styled.div<{ warning?: boolean }>(({ warning, theme }) => ({
@@ -242,19 +237,25 @@ const Suggestion = styled.div<{ warning?: boolean }>(({ warning, theme }) => ({
   // eslint-disable-next-line no-nested-ternary
   backgroundColor: warning
     ? theme.base === "dark"
-      ? "#342e1a"
+      ? "#342E1A"
       : theme.background.warning
     : theme.background.hoverable,
   borderRadius: 3,
+  border: `1px solid ${theme.appBorderColor}`,
   gap: 5,
+  margin: "5px 0",
   padding: 10,
   svg: {
+    flexShrink: 0,
     // eslint-disable-next-line no-nested-ternary
     color: warning
       ? theme.base === "dark"
         ? theme.color.warning
         : theme.color.warningText
       : theme.color.secondary,
+  },
+  code: {
+    fontSize: "90%",
   },
 }));
 
@@ -266,9 +267,7 @@ const iconStyles = {
 };
 
 const AlertIcon = styled(Alert)(iconStyles);
-const TrashIcon = styled(Trash)({ ...iconStyles, width: 20, height: 20 });
-const SupportIcon = styled(Support)(iconStyles);
-const LockIcon = styled(Lock)(iconStyles);
+const WandIcon = styled(Wand)(iconStyles);
 
 interface ConfigurationProps {
   onClose: () => void;
@@ -291,100 +290,123 @@ export const Configuration = ({ onClose }: ConfigurationProps) => {
 
   return (
     <Page>
-      <Heading>
-        Configuration
-        <CloseButton onClick={onClose}>
-          <CloseIcon aria-label="Close" />
-        </CloseButton>
-      </Heading>
-      {configFile ? (
-        <div>
-          Found Chromatic configuration options in <code>{configFile}</code>:
-        </div>
-      ) : (
-        <div>
-          Create a <code>chromatic.config.json</code> file to configure build options.
-        </div>
-      )}
-      {config && (
-        <Table>
-          {config.map(({ key, value, problem, suggestion }) => (
-            <div key={key} id={`${key}-option`}>
-              <dt>
-                <div>
-                  <strong>
-                    {key}{" "}
-                    {key in CONFIG_OVERRIDES && (
-                      <WithTooltip
-                        hasChrome={false}
-                        trigger="hover"
-                        tooltip={
-                          <TooltipNote
-                            note={`Always ${JSON.stringify(
-                              (CONFIG_OVERRIDES as any)[key]
-                            )} for local builds.`}
-                          />
-                        }
-                      >
-                        <LockIcon />
-                      </WithTooltip>
-                    )}
-                  </strong>
-                  <small>{configSchema[key as keyof typeof configSchema]?.type}</small>
-                </div>
-                <small>
-                  <i>{configSchema[key as keyof typeof configSchema]?.description}</i>
-                </small>
-              </dt>
-              <dd>
-                <code>{value === undefined ? "―" : JSON.stringify(value)}</code>
+      <StyledCloseButton onClick={onClose} style={{ marginRight: -8 }}>
+        <CloseIcon aria-label="Close" />
+      </StyledCloseButton>
+      <PageWrapper>
+        <Heading>Configuration </Heading>
+        {configFile ? (
+          <PageDescription>
+            This is a read-only representation of the Chromatic configuration options found in{" "}
+            <Code>{configFile}</Code>. Changes to the config file will be reflected here.{" "}
+            <Link
+              href="https://www.chromatic.com/docs/cli/#configuration-options"
+              target="_blank"
+              withArrow
+            >
+              Learn more
+            </Link>
+          </PageDescription>
+        ) : (
+          <PageDescription>
+            To configure this addon, create <Code>chromatic.config.json</Code> in your project's
+            root directory.{" "}
+            <Link
+              href="https://www.chromatic.com/docs/cli/#configuration-options"
+              target="_blank"
+              withArrow
+            >
+              Learn more
+            </Link>
+          </PageDescription>
+        )}
+        {config && (
+          <Table>
+            {config.map(({ key, value, problem, suggestion }) => (
+              <div key={key} id={`${key}-option`}>
+                <Setting>
+                  <div>
+                    <SettingHeading>
+                      <SettingLabel>
+                        {key}{" "}
+                        <WithTooltip
+                          hasChrome={false}
+                          trigger="hover"
+                          tooltip={
+                            <TooltipNote
+                              note={`Set to ${
+                                configSchema[key as keyof typeof configSchema]?.type
+                              } `}
+                            />
+                          }
+                        >
+                          <Markup size={12} />
+                        </WithTooltip>
+                      </SettingLabel>
+                      {key in CONFIG_OVERRIDES && (
+                        <DisabledNote>*Disabled for local builds</DisabledNote>
+                      )}
+                    </SettingHeading>
+                    <SettingContent>
+                      <SettingValue>
+                        {value === undefined ? (
+                          <ValueSuggestion>-</ValueSuggestion>
+                        ) : (
+                          JSON.stringify(value)
+                        )}
+                      </SettingValue>
+                    </SettingContent>
+                  </div>
+                </Setting>
                 {problem !== undefined && (
                   <Suggestion warning>
                     <AlertIcon />
                     {problem === null ? (
-                      <span>This should be removed.</span>
+                      <span>
+                        <strong>Warning: </strong>This should be removed.
+                      </span>
                     ) : (
                       <span>
-                        This should be: <code>{JSON.stringify(problem)}</code>
+                        <strong>Warning: </strong>
+                        This should be: <Code>{JSON.stringify(problem)}</Code>
                       </span>
                     )}
                   </Suggestion>
                 )}
                 {suggestion !== undefined && (
                   <Suggestion>
-                    <SupportIcon />
+                    <WandIcon />
                     <span>
-                      Might be better set to: <code>{JSON.stringify(suggestion)}</code>
+                      <strong>Hint: </strong>
+                      Try setting as <Code>{JSON.stringify(suggestion)}</Code>
                     </span>
                   </Suggestion>
                 )}
-              </dd>
+                <Description>
+                  {configSchema[key as keyof typeof configSchema]?.description}
+                </Description>
+              </div>
+            ))}
+            <div>
+              <Heading style={{ marginTop: 15 }}>Danger zone</Heading>
+              <Setting>
+                <div style={{ maxWidth: 270 }}>
+                  <SettingHeading>
+                    <SettingLabel>Uninstall addon</SettingLabel>
+                  </SettingHeading>
+                  <SettingContent>
+                    <p>
+                      Removing the addon updates your Storybook configuration and uninstalls the
+                      dependency.
+                    </p>
+                  </SettingContent>
+                </div>
+                <Button onClick={uninstallAddon}>Remove</Button>
+              </Setting>
             </div>
-          ))}
-        </Table>
-      )}
-
-      <Link
-        href="https://www.chromatic.com/docs/cli/#configuration-options"
-        target="_blank"
-        withArrow
-      >
-        Chromatic configuration options
-      </Link>
-      <br />
-
-      <Heading>Danger zone</Heading>
-      <DangerZone>
-        <TrashIcon />
-        <p>
-          <strong>Remove addon</strong>
-          <br />
-          <small>Updates your Storybook configuration and uninstalls the dependency.</small>
-        </p>
-        <button type="button" onClick={uninstallAddon}>
-          Remove
-        </button>
-      </DangerZone>
+          </Table>
+        )}
+      </PageWrapper>
     </Page>
   );
 };
