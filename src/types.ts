@@ -3,6 +3,11 @@ import type { Configuration, getConfiguration, GitInfo, TaskName } from "chromat
 
 import { SelectedBuildFieldsFragment } from "./gql/graphql";
 
+declare global {
+  // eslint-disable-next-line no-var, vars-on-top
+  var CONFIG_TYPE: string;
+}
+
 export type AnnouncedBuild = Extract<SelectedBuildFieldsFragment, { __typename: "AnnouncedBuild" }>;
 export type PublishedBuild = Extract<SelectedBuildFieldsFragment, { __typename: "PublishedBuild" }>;
 export type StartedBuild = Extract<SelectedBuildFieldsFragment, { __typename: "StartedBuild" }>;
@@ -29,6 +34,7 @@ export type ConfigInfoPayload = {
 export type GitInfoPayload = Omit<GitInfo, "committerEmail" | "committerName">;
 
 export type ProjectInfoPayload = {
+  isProjectInfoLoading?: boolean;
   projectId?: string;
   written?: boolean;
   configFile?: string;

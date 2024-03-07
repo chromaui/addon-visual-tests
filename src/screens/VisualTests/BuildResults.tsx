@@ -25,7 +25,7 @@ import { SnapshotComparison } from "./SnapshotComparison";
 import { Warnings } from "./Warnings";
 
 interface BuildResultsProps {
-  branch: string;
+  branch?: string;
   dismissBuildError: () => void;
   isOutdated: boolean;
   localBuildProgress?: LocalBuildProgress;
@@ -42,7 +42,7 @@ export const Warning = styled.div(({ theme }) => ({
 }));
 
 export const BuildResults = ({
-  branch,
+  branch = "",
   dismissBuildError,
   isOutdated,
   localBuildProgress,

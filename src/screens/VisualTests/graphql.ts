@@ -3,20 +3,22 @@ import { graphql } from "../../gql";
 export const QueryBuild = graphql(/* GraphQL */ `
   query AddonVisualTestsBuild(
     $projectId: ID!
-    $branch: String!
+    $branches: [String!]
     $gitUserEmailHash: String!
     $repositoryOwnerName: String
     $storyId: String!
     $testStatuses: [TestStatus!]!
     $selectedBuildId: ID!
     $hasSelectedBuildId: Boolean!
+    $isLocalBuild: Boolean
   ) {
     project(id: $projectId) {
       name
       lastBuildOnBranch: lastBuild(
-        branches: [$branch]
+        branches: $branches
         repositoryOwnerName: $repositoryOwnerName
-        localBuilds: { localBuildEmailHash: $gitUserEmailHash }
+        localBuilds: { localBuildEmailHash: $gitUserEmailHash, isLocalBuild: $isLocalBuild }
+        defaultBranch: $isLocalBuild
       ) {
         ...LastBuildOnBranchBuildFields
         ...SelectedBuildFields @skip(if: $hasSelectedBuildId)
@@ -45,6 +47,7 @@ export const FragmentLastBuildOnBranchBuildFields = graphql(/* GraphQL */ `
   fragment LastBuildOnBranchBuildFields on Build {
     __typename
     id
+    branch
     status
     committedAt
     ... on StartedBuild {
