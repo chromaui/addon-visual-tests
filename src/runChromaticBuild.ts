@@ -157,13 +157,10 @@ export const onCompleteOrError =
     }
 
     if (ctx.task === "verify" && ctx.build?.wasLimited) {
-      const formattedError = `Check your billing information.`;
       localBuildProgress.value = {
         ...update,
-        currentStep: "error",
+        currentStep: "limited",
         stepProgress,
-        formattedError,
-        originalError: new Error(formattedError),
         errorDetailsUrl: ctx.build?.app.account?.billingUrl,
       };
     }

@@ -42,3 +42,5 @@ export const CONFIG_OVERRIDES = {
   // No prompts from the Build proces
   interactive: false,
 };
+
+export const DOCS_URL = "https://www.chromatic.com/docs/visual-tests-addon";
