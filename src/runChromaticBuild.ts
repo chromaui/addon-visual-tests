@@ -50,7 +50,7 @@ export const onStartOrProgress =
     localBuildProgress: ReturnType<typeof SharedState.subscribe<LocalBuildProgress>>,
     timeout?: ReturnType<typeof setTimeout>
   ) =>
-  ({ ...ctx }: Context, { progress, total }: { progress?: number; total?: number } = {}) => {
+  (ctx: Context, { progress, total }: { progress?: number; total?: number } = {}) => {
     clearTimeout(timeout);
 
     if (!isKnownStep(ctx.task)) return;
@@ -62,6 +62,9 @@ export const onStartOrProgress =
 
     const { buildProgressPercentage, stepProgress, previousBuildProgress } =
       localBuildProgress.value;
+
+    // Ignore progress events for steps that have already completed
+    if (stepProgress[ctx.task]?.completedAt) return;
 
     const { startPercentage, endPercentage, stepPercentage } = getBuildStepData(
       ctx.task,
@@ -128,17 +131,20 @@ export const onCompleteOrError =
     }
 
     const { buildProgressPercentage, stepProgress } = localBuildProgress.value;
+    const update = {
+      buildId: ctx.announcedBuild?.id,
+      branch: ctx.git?.branch,
+      buildProgressPercentage,
+      stepProgress,
+      previousBuildProgress: stepProgress,
+    };
 
     if (error) {
       localBuildProgress.value = {
-        buildId: ctx.announcedBuild?.id,
-        branch: ctx.git?.branch,
-        buildProgressPercentage,
+        ...update,
         currentStep: abortController?.signal.aborted ? "aborted" : "error",
-        stepProgress,
         formattedError: error.formattedError,
         originalError: error.originalError,
-        previousBuildProgress: stepProgress,
       };
       return;
     }
@@ -150,16 +156,23 @@ export const onCompleteOrError =
       };
     }
 
+    if (ctx.task === "verify" && ctx.build?.wasLimited) {
+      localBuildProgress.value = {
+        ...update,
+        currentStep: "limited",
+        stepProgress,
+        errorDetailsUrl: ctx.build?.app.account?.billingUrl,
+      };
+    }
+
     if (ctx.build && ctx.task === "snapshot") {
       localBuildProgress.value = {
-        buildId: ctx.announcedBuild?.id,
-        branch: ctx.git?.branch,
+        ...update,
         buildProgressPercentage: 100,
         currentStep: "complete",
         stepProgress,
         changeCount: ctx.build.changeCount,
         errorCount: ctx.build.errorCount,
-        previousBuildProgress: stepProgress,
       };
     }
   };

@@ -114,6 +114,14 @@ export const BUILD_STEP_CONFIG: Record<
     renderComplete: () => `Build failed`,
     estimateDuration: 0,
   },
+  limited: {
+    key: "error",
+    emoji: "🚨",
+    renderName: () => `Build limited`,
+    renderProgress: () => `Build limited`,
+    renderComplete: () => `Build limited`,
+    estimateDuration: 0,
+  },
 };
 
 export const INITIAL_BUILD_PAYLOAD = {

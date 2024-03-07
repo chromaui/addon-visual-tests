@@ -1,7 +1,6 @@
 import { Loader } from "@storybook/components";
 import { PlayIcon } from "@storybook/icons";
 import { styled } from "@storybook/theming";
-import { lighten } from "polished";
 import React from "react";
 import { CombinedError } from "urql";
 
@@ -17,23 +16,10 @@ import { Col, Text } from "../../components/layout";
 import { Footer, Screen } from "../../components/Screen";
 import { Stack } from "../../components/Stack";
 import { Text as CenterText } from "../../components/Text";
+import { DOCS_URL } from "../../constants";
 import { LocalBuildProgress } from "../../types";
+import { ErrorBox } from "../Errors/BuildError";
 import { useRunBuildState } from "./RunBuildContext";
-
-const buildFailureUrl = "https://www.chromatic.com/docs/setup/#troubleshooting";
-
-const ErrorContainer = styled.pre(({ theme }) => ({
-  display: "block",
-  minWidth: "80%",
-  color: theme.color.warningText,
-  background: theme.background.warning,
-  border: `1px solid ${lighten(0.5, theme.color.warningText)}`,
-  borderRadius: 2,
-  padding: 15,
-  margin: 0,
-  fontSize: theme.typography.size.s1,
-  textAlign: "left",
-}));
 
 const ButtonStackLink = styled(Link)(() => ({
   marginTop: 5,
@@ -68,28 +54,16 @@ export const NoBuild = ({
     );
 
     if (!localBuildProgress) {
-      return <>{button}</>;
+      return button;
     }
-
     if (localBuildProgress.currentStep === "error") {
-      const firstError = Array.isArray(localBuildProgress.originalError)
-        ? localBuildProgress.originalError[0]
-        : localBuildProgress.originalError;
-
       return (
         <>
-          <ErrorContainer>
-            Build failed: {firstError?.message || "Unknown Error"}{" "}
-            <Link target="_blank" href={buildFailureUrl} withArrow>
-              View full error
-            </Link>
-          </ErrorContainer>
-
+          <ErrorBox localBuildProgress={localBuildProgress} title="Build failed" />
           {button}
         </>
       );
     }
-
     return <BuildProgressInline localBuildProgress={localBuildProgress} />;
   };
 
@@ -127,11 +101,7 @@ export const NoBuild = ({
               <Button size="medium" variant="solid" onClick={() => setAccessToken(null)}>
                 Log out
               </Button>
-              <ButtonStackLink
-                withArrow
-                href="https://www.chromatic.com/docs/visual-tests-addon#troubleshooting"
-                target="_blank"
-              >
+              <ButtonStackLink withArrow href={`${DOCS_URL}#troubleshooting`} target="_blank">
                 Troubleshoot
               </ButtonStackLink>
             </ButtonStack>

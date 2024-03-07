@@ -2,12 +2,12 @@ import { PlayIcon } from "@storybook/icons";
 import { styled } from "@storybook/theming";
 import { lighten } from "polished";
 import React, { useEffect, useState } from "react";
-import { gql } from "urql";
 
 import { BuildProgressInline } from "../../components/BuildProgressBarInline";
 import { Button } from "../../components/Button";
 import { ButtonStack } from "../../components/ButtonStack";
 import { Container } from "../../components/Container";
+import { Link } from "../../components/design-system";
 import { Heading } from "../../components/Heading";
 import { VisualTestsIcon } from "../../components/icons/VisualTestsIcon";
 import { Row } from "../../components/layout";
@@ -17,26 +17,14 @@ import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
 import { SelectedBuildFieldsFragment } from "../../gql/graphql";
 import { GitInfoPayload, LocalBuildProgress } from "../../types";
+import { BuildError } from "../Errors/BuildError";
+import { BuildLimited } from "../Errors/BuildLimited";
 import { useBuildState, useSelectedStoryState } from "../VisualTests/BuildContext";
 import { useRunBuildState } from "../VisualTests/RunBuildContext";
 import onboardingAdjustSizeImage from "./onboarding-adjust-size.png";
 import onboardingColorPaletteImage from "./onboarding-color-palette.png";
 import onboardingEmbiggenImage from "./onboarding-embiggen.png";
 import onboardingLayoutImage from "./onboarding-layout.png";
-
-const ProjectQuery = gql`
-  query ProjectQuery($projectId: ID!) {
-    project(id: $projectId) {
-      id
-      name
-      webUrl
-      lastBuild {
-        branch
-        number
-      }
-    }
-  }
-`;
 
 const Box = styled.div(({ theme }) => ({
   border: `1px solid ${theme.appBorderColor}`,
@@ -66,22 +54,10 @@ const ButtonStackText = styled(Text)(() => ({
   marginBottom: 5,
 }));
 
-const ErrorContainer = styled.pre(({ theme }) => ({
-  display: "block",
-  minWidth: "80%",
-  color: theme.color.warningText,
-  background: theme.background.warning,
-  border: `1px solid ${lighten(0.5, theme.color.warningText)}`,
-  borderRadius: 2,
-  padding: 15,
-  margin: 0,
-  fontSize: theme.typography.size.s1,
-  textAlign: "left",
-}));
-
 interface OnboardingProps {
   onComplete: () => void;
   onSkip: () => void;
+  dismissBuildError: () => void;
   selectedBuild?: SelectedBuildFieldsFragment | null;
   localBuildProgress?: LocalBuildProgress;
   showInitialBuildScreen?: boolean;
@@ -89,6 +65,7 @@ interface OnboardingProps {
   gitInfo: Pick<GitInfoPayload, "uncommittedHash" | "branch">;
 }
 export const Onboarding = ({
+  dismissBuildError,
   localBuildProgress,
   showInitialBuildScreen,
   gitInfo,
@@ -124,31 +101,30 @@ export const Onboarding = ({
   // TODO: This design for an error in the Onboarding is incomplete
   if (localBuildProgress && localBuildProgress.currentStep === "error") {
     return (
-      <Screen footer={null}>
-        <Container>
-          <Stack>
-            <div>
-              <Heading>Something went wrong</Heading>
-              <Text>Your tests will sync with this project.</Text>
-            </div>
-            <ErrorContainer>
-              {Array.isArray(localBuildProgress.originalError)
-                ? localBuildProgress.originalError[0]?.message
-                : localBuildProgress.originalError?.message}
-            </ErrorContainer>
-            <ButtonStack>
-              <Button variant="solid" size="medium" onClick={startBuild}>
-                Try again
-              </Button>
-              <Button link onClick={onSkip}>
-                Skip walkthrough
-              </Button>
-            </ButtonStack>
-          </Stack>
-        </Container>
-      </Screen>
+      <BuildError localBuildProgress={localBuildProgress}>
+        <ButtonStack>
+          <Button variant="solid" size="medium" onClick={startBuild}>
+            Try again
+          </Button>
+          <Button link onClick={onSkip}>
+            Skip walkthrough
+          </Button>
+        </ButtonStack>
+      </BuildError>
     );
   }
+
+  if (localBuildProgress?.currentStep === "limited") {
+    return (
+      <BuildLimited localBuildProgress={localBuildProgress}>
+        {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+        <Link isButton tertiary onClick={dismissBuildError}>
+          Continue
+        </Link>
+      </BuildLimited>
+    );
+  }
+
   if (showInitialBuild && !localBuildProgress) {
     return (
       <Screen footer={null}>

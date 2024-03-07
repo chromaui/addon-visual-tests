@@ -298,6 +298,7 @@ export const VisualTestsWithoutSelectedBuildId = ({
                 gitInfo,
                 projectId,
                 updateBuildStatus,
+                dismissBuildError,
                 localBuildProgress,
                 showInitialBuildScreen: !selectedBuild,
                 onComplete: completeOnboarding,
