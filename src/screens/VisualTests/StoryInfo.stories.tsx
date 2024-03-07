@@ -11,6 +11,7 @@ import { StoryInfo } from "./StoryInfo";
 const meta = {
   component: StoryInfo,
   args: {
+    isOutdated: false,
     isStarting: false,
     startedAt: new Date(Date.now() - 1000 * 60 * 2), // 2m ago
     shouldSwitchToLastBuildOnBranch: false,
