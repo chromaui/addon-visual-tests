@@ -1,3 +1,16 @@
+# v1.2.9 (Thu Mar 07 2024)
+
+#### 🐛 Bug Fix
+
+- Clear all notifications when starting guided tour [#200](https://github.com/chromaui/addon-visual-tests/pull/200) ([@ghengeveld](https://github.com/ghengeveld))
+- Fix "run tests" button and other UI issues [#199](https://github.com/chromaui/addon-visual-tests/pull/199) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v1.2.8 (Thu Mar 07 2024)
 
 #### 🐛 Bug Fix
