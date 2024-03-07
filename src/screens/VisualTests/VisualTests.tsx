@@ -1,4 +1,4 @@
-import { type API, useStorybookApi } from "@storybook/manager-api";
+import { useStorybookApi, useStorybookState } from "@storybook/manager-api";
 import type { API_StatusState } from "@storybook/types";
 import React, { useCallback, useEffect, useState } from "react";
 import { useMutation } from "urql";
@@ -102,12 +102,15 @@ const MutationUpdateUserPreferences = graphql(/* GraphQL */ `
   }
 `);
 
-const useOnboarding = (
-  { lastBuildOnBranch, vtaOnboarding }: ReturnType<typeof useBuild>,
-  managerApi?: Pick<API, "getUrlState">
-) => {
+const useOnboarding = ({ lastBuildOnBranch, vtaOnboarding }: ReturnType<typeof useBuild>) => {
+  const managerApi = useStorybookApi();
+  const { notifications } = useStorybookState();
+
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = React.useState(false);
-  const completeOnboarding = React.useCallback(() => setHasCompletedOnboarding(true), []);
+  const completeOnboarding = React.useCallback(() => {
+    setHasCompletedOnboarding(true);
+    notifications.forEach(({ id }) => managerApi.clearNotification(id));
+  }, [managerApi, notifications]);
 
   const [walkthroughInProgress, setWalkthroughInProgress] = React.useState(false);
   const startWalkthrough = React.useCallback(() => setWalkthroughInProgress(true), []);
@@ -285,7 +288,7 @@ export const VisualTestsWithoutSelectedBuildId = ({
     skipWalkthrough,
     startWalkthrough,
     lastBuildHasChanges,
-  } = useOnboarding(buildInfo, managerApi);
+  } = useOnboarding(buildInfo);
 
   if (showOnboarding && hasProject) {
     return (
