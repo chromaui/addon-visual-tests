@@ -1,3 +1,15 @@
+# v1.2.8 (Thu Mar 07 2024)
+
+#### 🐛 Bug Fix
+
+- Show error when build is limited (account is out of snapshots) [#194](https://github.com/chromaui/addon-visual-tests/pull/194) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v1.2.7 (Wed Mar 06 2024)
 
 #### 🐛 Bug Fix
