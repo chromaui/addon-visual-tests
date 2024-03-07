@@ -251,7 +251,7 @@ export const RanFirstTestNoChanges = {
   parameters: {
     chromatic: {
       // Delay to wait for git hash to reset.
-      delay: 1001,
+      delay: 10001,
     },
   },
   render: (args) => {

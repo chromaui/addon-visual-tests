@@ -335,10 +335,11 @@ export const Onboarding = ({
               onClick={() => {
                 setRunningSecondBuild(true);
                 startDevBuild();
-                // In case the build does not have changes, reset gitHash to the current value to show Make A Change again. Timeout 1s to prevent Make a Change reappearing briefly before build starts.
+                // In case the build does not have changes, reset gitHash to the current value to show Make A Change again.
+                // A timeout is used to prevent "Make a Change" from reappearing briefly before the build starts.
                 setTimeout(() => {
                   setInitialGitHash(gitInfo.uncommittedHash);
-                }, 1000);
+                }, 10000);
               }}
             >
               <PlayIcon />

@@ -8,6 +8,7 @@ import type { Options } from "@storybook/types";
 import { type Configuration, getConfiguration, getGitInfo, type GitInfo } from "chromatic/node";
 
 import {
+  ADDON_ID,
   CHROMATIC_BASE_URL,
   CONFIG_INFO,
   GIT_INFO,
@@ -211,6 +212,8 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
     if (!lastProjectId) return;
     configInfoState.value = await getConfigInfo(configuration, options);
   });
+
+  setInterval(() => channel.emit(`${ADDON_ID}/heartbeat`), 1000);
 
   return channel;
 }
