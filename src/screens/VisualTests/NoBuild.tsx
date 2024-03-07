@@ -1,5 +1,5 @@
 import { Loader } from "@storybook/components";
-import { PlayIcon, StopAltIcon } from "@storybook/icons";
+import { PlayIcon } from "@storybook/icons";
 import { styled } from "@storybook/theming";
 import { lighten } from "polished";
 import React from "react";
@@ -57,12 +57,12 @@ export const NoBuild = ({
   branch,
 }: NoBuildProps) => {
   const { setAccessToken } = useAuthState();
-  const { isRunning, startBuild, stopBuild } = useRunBuildState();
+  const { startBuild } = useRunBuildState();
 
   const getDetails = () => {
     const button = (
-      <Button size="medium" variant="solid" onClick={isRunning ? stopBuild : startBuild}>
-        {isRunning ? <StopAltIcon /> : <PlayIcon />}
+      <Button size="medium" variant="solid" onClick={startBuild}>
+        <PlayIcon />
         Take snapshots
       </Button>
     );
