@@ -34,7 +34,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
   const [localBuildProgress] = useSharedState<LocalBuildProgress>(LOCAL_BUILD_PROGRESS);
   const isRunning =
     !!localBuildProgress &&
-    !["aborted", "complete", "error"].includes(localBuildProgress.currentStep);
+    !["aborted", "complete", "error", "limited"].includes(localBuildProgress.currentStep);
 
   const [configInfo] = useSharedState<ConfigInfoPayload>(CONFIG_INFO);
   const hasConfigProblem = Object.keys(configInfo?.problems || {}).length > 0;
@@ -116,6 +116,23 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
         content: {
           headline: "Build error",
           subHeadline: "Check the Storybook process on the command line for more details.",
+        },
+        icon: {
+          name: "failed",
+          color: color.negative,
+        },
+        // @ts-expect-error SB needs a proper API for no link
+        link: undefined,
+      });
+    }
+
+    if (localBuildProgress?.currentStep === "limited") {
+      addNotification({
+        id: `${ADDON_ID}/build-limited`,
+        content: {
+          headline: "Build limited",
+          subHeadline:
+            "Your account has insufficient snapshots remaining to run this build. Visit your billing page to find out more.",
         },
         icon: {
           name: "failed",

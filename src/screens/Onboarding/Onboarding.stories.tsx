@@ -21,7 +21,8 @@ const meta = {
     storyWrapper(GraphQLClientProvider),
   ],
   args: {
-    startDevBuild: () => {},
+    startDevBuild: fn(),
+    dismissBuildError: fn(),
     localBuildProgress: undefined,
     gitInfo: {
       uncommittedHash: "123",
@@ -339,6 +340,24 @@ export const Error = {
           "\u001b[31m✖\u001b[39m \u001b[1mFailed to verify your Storybook\u001b[22m\nBuild verification timed out",
         name: "Error",
       },
+    },
+    lastBuildHasChanges: false,
+  },
+  parameters: {
+    ...BaselineSaved.parameters,
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318693&t=3EAIRe8423CpOQWY-4"
+    ),
+  },
+} satisfies Story;
+
+export const Limited = {
+  args: {
+    localBuildProgress: {
+      ...INITIAL_BUILD_PAYLOAD,
+      buildProgressPercentage: 50,
+      currentStep: "limited",
+      errorDetailsUrl: "https://www.chromatic.com/billing?accountId=5af25af03c9f2c4bdccc0fcb",
     },
     lastBuildHasChanges: false,
   },
