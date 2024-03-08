@@ -1,5 +1,6 @@
 import React from "react";
 
+import { Code } from "../../components/Code";
 import { Container } from "../../components/Container";
 import { Heading } from "../../components/Heading";
 import { VisualTestsIcon } from "../../components/icons/VisualTestsIcon";
@@ -16,7 +17,8 @@ export const NoDevServer = () => {
             <VisualTestsIcon />
             <Heading>Visual tests</Heading>
             <Text>
-              Running this addon with the Storybook dev server is not supported at this time.
+              Visual tests only runs locally. To test this Storybook, clone it to your machine and
+              run <Code>npx storybook dev</Code>.
             </Text>
           </div>
         </Stack>
