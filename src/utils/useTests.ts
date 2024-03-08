@@ -33,7 +33,11 @@ export function useTests(tests: StoryTestFieldsFragment[]) {
     const changed = tests.filter(({ status }) => status !== TestStatus.Passed);
     const candidates = changed.length ? changed : tests;
     // const test = candidates.find(({ mode }) => mode.globals.theme === theme) || candidates[0];
-    const test = candidates.find(({ mode }) => mode.name === userSelectedModeName) || candidates[0];
+    let test = candidates.find(({ mode }) => mode.name === userSelectedModeName);
+    if (!test) {
+      setUserSelectedModeName("");
+      [test] = candidates;
+    }
     return test?.mode.name;
   });
 
