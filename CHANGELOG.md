@@ -1,3 +1,15 @@
+# v1.2.12 (Fri Mar 08 2024)
+
+#### 🐛 Bug Fix
+
+- Preserve selected mode and/or browser, if possible, while navigating between stories [#203](https://github.com/chromaui/addon-visual-tests/pull/203) ([@andrewortwein](https://github.com/andrewortwein))
+
+#### Authors: 1
+
+- Andrew Ortwein ([@andrewortwein](https://github.com/andrewortwein))
+
+---
+
 # v1.2.11 (Fri Mar 08 2024)
 
 #### 🐛 Bug Fix
