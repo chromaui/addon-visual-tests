@@ -36,7 +36,7 @@ const Label = styled.span(({ theme }) => ({
   "@container (min-width: 300px)": {
     display: "inline-block",
   },
-  color: theme.base === "light" ? `${theme.color.defaultText}99` : theme.color.light,
+  color: theme.base === "light" ? theme.color.dark : theme.color.light,
 }));
 
 type BrowserData = Pick<BrowserInfo, "id" | "key" | "name">;
