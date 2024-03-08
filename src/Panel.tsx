@@ -119,7 +119,7 @@ export const Panel = ({ active, api }: PanelProps) => {
       />
     );
 
-  if (gitInfoError || !gitInfo) {
+  if (global.CONFIG_TYPE === "DEVELOPMENT" && (gitInfoError || !gitInfo)) {
     // eslint-disable-next-line no-console
     console.error(gitInfoError);
     return withProviders(<GitNotFound />);
@@ -144,12 +144,12 @@ export const Panel = ({ active, api }: PanelProps) => {
     );
   }
 
-  const localBuildIsRightBranch = gitInfo.branch === localBuildProgress?.branch;
+  const localBuildIsRightBranch = gitInfo?.branch === localBuildProgress?.branch;
   return withProviders(
     <ControlsProvider>
       <VisualTests
         dismissBuildError={() => setLocalBuildProgress(undefined)}
-        isOutdated={!!isOutdated}
+        isOutdated={!!isOutdated && global.CONFIG_TYPE === 'DEVELOPMENT'}
         localBuildProgress={localBuildIsRightBranch ? localBuildProgress : undefined}
         setOutdated={setOutdated}
         updateBuildStatus={updateBuildStatus}

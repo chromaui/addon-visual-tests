@@ -18,9 +18,9 @@ export const useProjectId = () => {
     [setProjectInfo]
   );
 
-  const { projectId, written, configFile } = projectInfo || {};
+  const { projectId, written, configFile, isProjectInfoLoading } = projectInfo || {};
   return {
-    loading: !projectInfo,
+    loading: !!isProjectInfoLoading,
     projectId,
     configFile,
     updateProject,

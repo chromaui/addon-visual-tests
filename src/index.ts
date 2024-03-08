@@ -150,6 +150,10 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
   projectInfoState.on("change", async ({ projectId } = {}) => {
     if (!projectId || projectId === lastProjectId) return;
     lastProjectId = projectId;
+    projectInfoState.value = {
+      ...projectInfoState.value,
+      isProjectInfoLoading: true,
+    };
 
     const writtenConfigFile = configFile;
     try {
@@ -170,6 +174,11 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
         ...projectInfoState.value,
         written: false,
         configFile: writtenConfigFile,
+      };
+    } finally {
+      projectInfoState.value = {
+        ...projectInfoState.value,
+        isProjectInfoLoading: false,
       };
     }
   });

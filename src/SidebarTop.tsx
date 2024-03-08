@@ -161,6 +161,10 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
   if (gitInfoError) warning = "Visual tests locked due to Git synchronization problem.";
   if (hasConfigProblem) warning = "Visual tests locked due to configuration problem.";
 
+  if (global.CONFIG_TYPE !== "DEVELOPMENT") {
+    return null;
+  }
+
   return (
     <SidebarTopButton
       isDisabled={!!warning}
