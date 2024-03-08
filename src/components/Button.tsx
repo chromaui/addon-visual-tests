@@ -10,7 +10,7 @@ export const Button = styled(BaseButton)<{
     "&&": {
       display: "inline-flex",
       borderRadius: 4,
-      fontSize: 13,
+      fontSize: 14,
       lineHeight: "14px",
       padding: "9px 12px",
       alignItems: "center",

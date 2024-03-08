@@ -19,14 +19,14 @@ const Wrapper = styled.div({
 });
 
 const TooltipTitle = styled.div(({ theme }) => ({
-  fontSize: 13,
+  fontSize: 14,
   lineHeight: "18px",
   fontWeight: 700,
   color: theme.color.defaultText,
 }));
 
 const TooltipContent = styled.div(({ theme }) => ({
-  fontSize: 13,
+  fontSize: 14,
   lineHeight: "18px",
   textAlign: "start",
   color: theme.color.defaultText,

@@ -5,7 +5,7 @@ import { Link } from "./design-system";
 
 const OpaqueLink = styled(Link)({
   "&&": {
-    fontSize: 13,
+    fontSize: 14,
     lineHeight: "18px",
     position: "absolute",
     top: 10,
