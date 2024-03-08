@@ -14,11 +14,11 @@ const IconWrapper = styled.div(({ theme }) => ({
   gap: 6,
   height: 14,
   margin: "7px 7px",
-  color: `${theme.color.defaultText}99`,
+  color: theme.color.mediumdark,
   svg: {
     verticalAlign: "top",
     path: {
-      fill: theme.base === "light" ? `${theme.color.defaultText}99` : theme.color.light,
+      fill: theme.base === "light" ? theme.color.mediumdark : theme.color.light,
     },
   },
 }));
@@ -29,7 +29,7 @@ const Label = styled.span(({ theme }) => ({
   "@container (min-width: 300px)": {
     display: "inline-block",
   },
-  color: theme.base === "light" ? `${theme.color.defaultText}99` : theme.color.light,
+  color: theme.base === "light" ? theme.color.dark : theme.color.light,
 }));
 
 type ModeData = Pick<TestMode, "name">;

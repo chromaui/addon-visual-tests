@@ -15,12 +15,14 @@ import { Bar, Col, Section } from "./layout";
 
 const WarningSection = styled(Section)(({ theme }) => ({
   background: theme.background.warning,
+  borderBottom: `1px solid ${theme.appBorderColor}`,
   color: theme.color.warningText,
   paddingLeft: 5,
 }));
 
 const InfoSection = styled(Section)(({ theme }) => ({
   background: theme.background.hoverable,
+  borderBottom: `1px solid ${theme.appBorderColor}`,
   color: theme.color.defaultText,
   paddingLeft: 5,
 }));
