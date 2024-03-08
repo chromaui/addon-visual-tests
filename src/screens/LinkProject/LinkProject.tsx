@@ -1,11 +1,10 @@
-import { Link } from "@storybook/components";
 import { AddIcon } from "@storybook/icons";
-import { styled } from "@storybook/theming";
+import { styled, useTheme } from "@storybook/theming";
 import React, { useCallback, useEffect, useState } from "react";
 import { useQuery } from "urql";
 
 import { Container } from "../../components/Container";
-import { Avatar, ListItem } from "../../components/design-system";
+import { Avatar, Link, ListItem } from "../../components/design-system";
 import { Heading } from "../../components/Heading";
 import { Text } from "../../components/layout";
 import { Screen } from "../../components/Screen";
@@ -121,6 +120,7 @@ function SelectProject({
   setCreatedProjectId: (projectId: Project["id"]) => void;
   onSelectProjectId: (projectId: string) => Promise<void>;
 }) {
+  const theme = useTheme();
   const [{ data, fetching, error }, rerunProjectsQuery] = useQuery<SelectProjectsQueryQuery>({
     query: SelectProjectsQuery,
   });
@@ -247,18 +247,16 @@ function SelectProject({
                 <List data-testid="right-list">
                   {selectedAccount && (
                     <ListItem
+                      isLink={false}
+                      onClick={() => {
+                        if (!selectedAccount?.newProjectUrl) {
+                          throw new Error("Unexpected missing `newProjectUrl` on account");
+                        }
+                        openDialog(selectedAccount.newProjectUrl);
+                      }}
                       title={
                         // eslint-disable-next-line jsx-a11y/anchor-is-valid
-                        <Link
-                          isButton
-                          withArrow
-                          onClick={() => {
-                            if (!selectedAccount?.newProjectUrl) {
-                              throw new Error("Unexpected missing `newProjectUrl` on account");
-                            }
-                            openDialog(selectedAccount.newProjectUrl);
-                          }}
-                        >
+                        <Link isButton withArrow>
                           Create new project
                         </Link>
                       }
