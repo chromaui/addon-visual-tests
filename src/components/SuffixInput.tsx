@@ -11,7 +11,7 @@ const InputWrapper = styled.div(({ theme }) => ({
     background: theme.input.background,
     boxShadow: `${theme.input.border} 0 0 0 1px inset`,
     borderRadius: theme.input.borderRadius,
-    fontSize: theme.typography.size.s2 - 1,
+    fontSize: theme.typography.size.s2,
     lineHeight: "20px",
   },
 }));

@@ -1,5 +1,5 @@
-import { Link, TooltipNote, WithTooltip } from "@storybook/components";
-import { AlertIcon as Alert, MarkupIcon as Markup, WandIcon as Wand } from "@storybook/icons";
+import { Link } from "@storybook/components";
+import { AlertIcon as Alert, InfoIcon as Markup, WandIcon as Wand } from "@storybook/icons";
 import { styled } from "@storybook/theming";
 import React from "react";
 
@@ -132,26 +132,31 @@ const configSchema = {
 
 const StyledCloseButton = styled(CloseButton)({
   position: "absolute",
-  top: 10,
   right: 16,
+  top: 10,
 });
 
 const Page = styled.div(({ theme }) => ({
-  position: "relative",
   backgroundColor: theme.background.content,
-  boxShadow: `0px 1px 1px ${theme.color.border}`,
   display: "flex",
   flexDirection: "column",
-  padding: 15,
+  minHeight: "100%",
+  overflowY: "auto",
+  padding: 20,
+  position: "relative",
 }));
 
 const PageWrapper = styled.div(({ theme }) => ({
   margin: "0 auto",
-  maxWidth: 400,
+  maxWidth: 600,
   width: "100%",
 }));
 
 const PageDescription = styled.div(({ theme }) => ({
+  borderBottom: `1px solid ${theme.appBorderColor}`,
+  marginBottom: 20,
+  paddingBottom: 20,
+
   code: {
     fontSize: "90%",
   },
@@ -164,18 +169,14 @@ const Heading = styled(StyledHeading)({
 const Table = styled.div(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
-  gap: 15,
-  marginTop: 15,
+  gap: 20,
 }));
 
 const Setting = styled.div(({ theme }) => ({
+  alignItems: "center",
+  borderRadius: theme.appBorderRadius,
   display: "flex",
   flexWrap: "wrap",
-  gap: 10,
-  alignItems: "center",
-  padding: "10px 15px",
-  border: `1px solid ${theme.appBorderColor}`,
-  borderRadius: theme.appBorderRadius,
 
   "> div": {
     width: "100%",
@@ -186,84 +187,88 @@ const SettingHeading = styled.div(({ theme }) => ({
   display: "flex",
   flexGrow: 1,
   flexWrap: "wrap",
-  justifyContent: "space-between",
   gap: "5px 10px",
 }));
 
 const SettingLabel = styled.div(({ theme }) => ({
-  color: theme.base === "dark" ? theme.color.medium : theme.color.dark,
-  fontSize: theme.typography.size.s1,
+  fontWeight: theme.typography.weight.bold,
 
   div: {
+    marginLeft: 5,
     position: "relative",
     top: 2,
-    marginLeft: 5,
   },
 }));
 
 const SettingContent = styled.div(({ theme }) => ({
-  color: theme.color.defaultText,
-  margin: "8px 0 3px",
-
-  p: {
-    margin: 0,
-  },
+  marginTop: 10,
 }));
 
-const SettingValue = styled.div(({ theme }) => ({
-  // fontFamily: theme.typography.fonts.mono,
+const SettingValue = styled.div<{ hideBorderRadius?: boolean }>(({ hideBorderRadius, theme }) => ({
+  background: theme.base === "dark" ? theme.color.darkest : theme.color.lighter,
+  border: `1px solid ${theme.appBorderColor}`,
+  borderRadius: theme.appBorderRadius,
+  borderBottomLeftRadius: hideBorderRadius ? 0 : theme.appBorderRadius,
+  borderBottomRightRadius: hideBorderRadius ? 0 : theme.appBorderRadius,
+  color: theme.base === "dark" ? theme.color.medium : theme.color.dark,
+  lineHeight: "20px",
+  padding: "5px 10px",
   wordWrap: "break-word",
 }));
 
 const DisabledNote = styled.div(({ theme }) => ({
   color: theme.color.warningText,
-  fontSize: theme.typography.size.s1,
 }));
 
-const ValueSuggestion = styled.div(({ theme }) => ({
-  fontFamily: theme.typography.fonts.base,
+const SettingDescription = styled.div(({ theme }) => ({
   color: theme.base === "dark" ? theme.color.medium : theme.color.dark,
-}));
-
-const Description = styled.div(({ theme }) => ({
-  color: theme.base === "dark" ? theme.color.medium : theme.color.dark,
-  fontSize: theme.typography.size.s1,
-  margin: "5px 15px 0",
+  marginTop: 2,
 }));
 
 const Suggestion = styled.div<{ warning?: boolean }>(({ warning, theme }) => ({
-  display: "flex",
   alignItems: "center",
+  display: "flex",
   // eslint-disable-next-line no-nested-ternary
   backgroundColor: warning
     ? theme.base === "dark"
       ? "#342E1A"
       : theme.background.warning
     : theme.background.hoverable,
-  borderRadius: 3,
   border: `1px solid ${theme.appBorderColor}`,
+  borderRadius: 3,
+  borderTopLeftRadius: 0,
+  borderTopRightRadius: 0,
+  borderTop: 0,
+  fontSize: theme.typography.size.s1,
   gap: 5,
-  margin: "5px 0",
-  padding: 10,
+  lineHeight: "20px",
+  padding: 5,
+
   svg: {
-    flexShrink: 0,
     // eslint-disable-next-line no-nested-ternary
     color: warning
       ? theme.base === "dark"
         ? theme.color.warning
         : theme.color.warningText
       : theme.color.secondary,
+    flexShrink: 0,
   },
   code: {
-    fontSize: "90%",
+    fontSize: "85%",
   },
 }));
 
+const DangerZone = styled.div(({ theme }) => ({
+  borderTop: `1px solid ${theme.appBorderColor}`,
+  marginTop: 10,
+  paddingTop: 20,
+}));
+
 const iconStyles = {
-  width: 12,
   height: 12,
   margin: 2,
   verticalAlign: "top",
+  width: 12,
 };
 
 const AlertIcon = styled(Alert)(iconStyles);
@@ -325,38 +330,20 @@ export const Configuration = ({ onClose }: ConfigurationProps) => {
             {config.map(({ key, value, problem, suggestion }) => (
               <div key={key} id={`${key}-option`}>
                 <Setting>
-                  <div>
-                    <SettingHeading>
-                      <SettingLabel>
-                        {key}{" "}
-                        <WithTooltip
-                          hasChrome={false}
-                          trigger="hover"
-                          tooltip={
-                            <TooltipNote
-                              note={`Set to ${
-                                configSchema[key as keyof typeof configSchema]?.type
-                              } `}
-                            />
-                          }
-                        >
-                          <Markup size={12} />
-                        </WithTooltip>
-                      </SettingLabel>
-                      {key in CONFIG_OVERRIDES && (
-                        <DisabledNote>*Disabled for local builds</DisabledNote>
-                      )}
-                    </SettingHeading>
-                    <SettingContent>
-                      <SettingValue>
-                        {value === undefined ? (
-                          <ValueSuggestion>-</ValueSuggestion>
-                        ) : (
-                          JSON.stringify(value)
-                        )}
-                      </SettingValue>
-                    </SettingContent>
-                  </div>
+                  <SettingHeading>
+                    <SettingLabel>{key} </SettingLabel>
+                    {key in CONFIG_OVERRIDES && (
+                      <DisabledNote>*Disabled for local builds</DisabledNote>
+                    )}
+                  </SettingHeading>
+                  <SettingDescription>
+                    {configSchema[key as keyof typeof configSchema]?.description}
+                  </SettingDescription>
+                  <SettingContent>
+                    <SettingValue hideBorderRadius={problem || suggestion}>
+                      {value === undefined ? "undefined" : JSON.stringify(value)}
+                    </SettingValue>
+                  </SettingContent>
                 </Setting>
                 {problem !== undefined && (
                   <Suggestion warning>
@@ -382,28 +369,22 @@ export const Configuration = ({ onClose }: ConfigurationProps) => {
                     </span>
                   </Suggestion>
                 )}
-                <Description>
-                  {configSchema[key as keyof typeof configSchema]?.description}
-                </Description>
               </div>
             ))}
-            <div>
-              <Heading style={{ marginTop: 15 }}>Danger zone</Heading>
+            <DangerZone>
               <Setting>
-                <div style={{ maxWidth: 270 }}>
-                  <SettingHeading>
-                    <SettingLabel>Uninstall addon</SettingLabel>
-                  </SettingHeading>
-                  <SettingContent>
-                    <p>
-                      Removing the addon updates your Storybook configuration and uninstalls the
-                      dependency.
-                    </p>
-                  </SettingContent>
-                </div>
-                <Button onClick={uninstallAddon}>Remove</Button>
+                <SettingHeading>
+                  <SettingLabel>Uninstall addon</SettingLabel>
+                </SettingHeading>
+                <SettingDescription>
+                  Removing the addon updates your Storybook configuration and uninstalls the
+                  dependency.
+                </SettingDescription>
+                <SettingContent>
+                  <Button onClick={uninstallAddon}>Uninstall</Button>
+                </SettingContent>
               </Setting>
-            </div>
+            </DangerZone>
           </Table>
         )}
       </PageWrapper>
