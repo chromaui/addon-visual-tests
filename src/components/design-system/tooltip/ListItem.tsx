@@ -15,7 +15,7 @@ const Right = styled.span({});
 const ItemWrapper = styled.li(({ theme }) => ({
   listStyle: "none",
 
-  "&:not(:first-child)": {
+  "&:not(:first-of-type)": {
     borderTop: `1px solid ${theme.appBorderColor}`,
   },
 }));
@@ -133,7 +133,7 @@ const linkStyles = ({
   }),
 });
 
-const Item = styled(
+const LinkItem = styled(
   ({
     active,
     activeColor,
@@ -144,6 +144,8 @@ const Item = styled(
     return <a {...rest} />;
   }
 )(linkStyles);
+
+const NormalItem = styled.span(linkStyles);
 
 // `LinkWrapper` is an input prop that gets internally wrapped with this function here
 // `weakMemoize` ensures that for any given `LinkWrapper` we always createa single "WrappedLinkWrapper"
@@ -173,6 +175,7 @@ interface ListItemProps {
   disabled?: boolean;
   LinkWrapper?: LinkWrapperType | null;
   onClick?: ComponentProps<typeof ItemInner>["onClick"];
+  isLink?: boolean;
 }
 
 export const ListItem = ({
@@ -183,6 +186,7 @@ export const ListItem = ({
   right,
   onClick,
   LinkWrapper,
+  isLink = true,
   ...rest
 }: ListItemProps & Omit<StyledLinkWrapperProps, "activeColor">) => {
   const theme = useTheme();
@@ -207,6 +211,8 @@ export const ListItem = ({
       </ItemWrapper>
     );
   }
+
+  const Item = isLink ? LinkItem : NormalItem;
 
   return (
     <ItemWrapper>

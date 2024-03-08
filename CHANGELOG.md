@@ -1,3 +1,15 @@
+# v1.2.10 (Fri Mar 08 2024)
+
+#### 🐛 Bug Fix
+
+- Remove nested a from Project Picker [#204](https://github.com/chromaui/addon-visual-tests/pull/204) ([@thafryer](https://github.com/thafryer))
+
+#### Authors: 1
+
+- Jarel Fryer ([@thafryer](https://github.com/thafryer))
+
+---
+
 # v1.2.9 (Thu Mar 07 2024)
 
 #### 🐛 Bug Fix
