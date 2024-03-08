@@ -21,6 +21,7 @@ import { GitNotFound } from "./screens/Errors/GitNotFound";
 import { LinkedProject } from "./screens/LinkProject/LinkedProject";
 import { LinkingProjectFailed } from "./screens/LinkProject/LinkingProjectFailed";
 import { LinkProject } from "./screens/LinkProject/LinkProject";
+import { NoDevServer } from "./screens/NoDevServer/NoDevServer";
 import { UninstallProvider } from "./screens/Uninstalled/UninstallContext";
 import { Uninstalled } from "./screens/Uninstalled/Uninstalled";
 import { ControlsProvider } from "./screens/VisualTests/ControlsContext";
@@ -88,6 +89,10 @@ export const Panel = ({ active, api }: PanelProps) => {
       </AuthProvider>
     </Provider>
   );
+
+  if (global.CONFIG_TYPE !== "DEVELOPMENT") {
+    return withProviders(<NoDevServer />);
+  }
 
   if (addonUninstalled) {
     return withProviders(<Uninstalled />);
