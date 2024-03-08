@@ -1,8 +1,8 @@
-import { useAddonState, useGlobals, useGlobalTypes } from "@storybook/manager-api";
+import { useGlobals, useGlobalTypes } from "@storybook/manager-api";
 import { useCallback, useState } from "react";
 
-import { ADDON_ID } from "../constants";
 import { BrowserInfo, StoryTestFieldsFragment, TestMode, TestStatus } from "../gql/graphql";
+import { useSharedState } from "./useSharedState";
 
 type BrowserData = Pick<BrowserInfo, "id" | "key" | "name">;
 type ModeData = Pick<TestMode, "name">;
@@ -27,10 +27,7 @@ export function useTests(tests: StoryTestFieldsFragment[]) {
     return test?.comparisons[0]?.browser.id;
   });
 
-  const [userSelectedModeName, setUserSelectedModeName] = useAddonState<string>(
-    `${ADDON_ID}/userSelectedModeName`,
-    ""
-  );
+  const [userSelectedModeName, setUserSelectedModeName] = useSharedState<string>("");
 
   const [selectedModeName, onSelectModeName] = useState<ModeData["name"]>(() => {
     const changed = tests.filter(({ status }) => status !== TestStatus.Passed);
