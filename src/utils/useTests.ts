@@ -1,6 +1,7 @@
-import { useGlobals, useGlobalTypes } from "@storybook/manager-api";
+import { useAddonState, useGlobals, useGlobalTypes } from "@storybook/manager-api";
 import { useCallback, useState } from "react";
 
+import { ADDON_ID } from "../constants";
 import { BrowserInfo, StoryTestFieldsFragment, TestMode, TestStatus } from "../gql/graphql";
 
 type BrowserData = Pick<BrowserInfo, "id" | "key" | "name">;
@@ -25,15 +26,28 @@ export function useTests(tests: StoryTestFieldsFragment[]) {
     const test = tests.find(({ status }) => status !== TestStatus.Passed) || tests[0];
     return test?.comparisons[0]?.browser.id;
   });
+
+  const [userSelectedModeName, setUserSelectedModeName] = useAddonState<string>(
+    `${ADDON_ID}/userSelectedModeName`,
+    ""
+  );
+
   const [selectedModeName, onSelectModeName] = useState<ModeData["name"]>(() => {
     const changed = tests.filter(({ status }) => status !== TestStatus.Passed);
     const candidates = changed.length ? changed : tests;
-    const test = candidates.find(({ mode }) => mode.globals.theme === theme) || candidates[0];
+    // const test = candidates.find(({ mode }) => mode.globals.theme === theme) || candidates[0];
+    const test = candidates.find(({ mode }) => mode.name === userSelectedModeName) || candidates[0];
     return test?.mode.name;
   });
 
   const onSelectBrowser = useCallback(({ id }: BrowserData) => onSelectBrowserId(id), []);
-  const onSelectMode = useCallback(({ name }: ModeData) => onSelectModeName(name), []);
+  const onSelectMode = useCallback(
+    ({ name }: ModeData) => {
+      setUserSelectedModeName(name);
+      onSelectModeName(name);
+    },
+    [setUserSelectedModeName]
+  );
 
   const selectedTest = tests.find(({ mode }) => mode.name === selectedModeName) || tests[0];
   const selectedComparison =
