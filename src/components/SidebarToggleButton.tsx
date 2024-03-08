@@ -12,7 +12,7 @@ const Badge = styled(BaseBadge)(({ theme }) => ({
 
 const Button = styled(IconButton)(
   ({ theme }) => ({
-    fontSize: theme.typography.size.s2,
+    fontSize: theme.typography.size.s1,
     "&:hover [data-badge], [data-badge=true]": {
       background: "#E3F3FF",
       borderColor: "rgba(2, 113, 182, 0.1)",
