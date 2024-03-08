@@ -1,3 +1,15 @@
+# v1.2.11 (Fri Mar 08 2024)
+
+#### 🐛 Bug Fix
+
+- Show screen when there's no dev server [#205](https://github.com/chromaui/addon-visual-tests/pull/205) ([@thafryer](https://github.com/thafryer))
+
+#### Authors: 1
+
+- Jarel Fryer ([@thafryer](https://github.com/thafryer))
+
+---
+
 # v1.2.10 (Fri Mar 08 2024)
 
 #### 🐛 Bug Fix
