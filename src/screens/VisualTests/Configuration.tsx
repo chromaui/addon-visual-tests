@@ -340,7 +340,7 @@ export const Configuration = ({ onClose }: ConfigurationProps) => {
                     {configSchema[key as keyof typeof configSchema]?.description}
                   </SettingDescription>
                   <SettingContent>
-                    <SettingValue hideBorderRadius={problem || suggestion}>
+                    <SettingValue hideBorderRadius={!!(problem || suggestion)}>
                       {value === undefined ? "undefined" : JSON.stringify(value)}
                     </SettingValue>
                   </SettingContent>
