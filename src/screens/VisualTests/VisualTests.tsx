@@ -319,7 +319,7 @@ export const VisualTestsWithoutSelectedBuildId = ({
 
   return (
     <>
-      {!selectedBuild || !hasSelectedBuild || !hasData || queryError ? (
+      {(!selectedBuild || !hasSelectedBuild || !hasData || queryError) && global.CONFIG_TYPE === "DEVELOPMENT" ? (
         <NoBuild
           {...{
             queryError,

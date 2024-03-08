@@ -315,7 +315,7 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
             </WithTooltip>
           )}
 
-          <WithTooltip
+          {global.CONFIG_TYPE === 'DEVELOPMENT' && (<WithTooltip
             tooltip={<TooltipNote note={isOutdated ? "Run new tests" : "Rerun tests"} />}
             trigger="hover"
             hasChrome={false}
@@ -329,7 +329,7 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
             >
               {isOutdated ? <PlayIcon /> : <SyncIcon />}
             </ActionButton>
-          </WithTooltip>
+          </WithTooltip>)}
         </Actions>
       )}
     </>

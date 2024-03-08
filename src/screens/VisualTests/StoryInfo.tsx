@@ -198,7 +198,7 @@ export const StoryInfo = ({
     <>
       {details}
 
-      {showButton && (
+      {showButton && global.CONFIG_TYPE === 'DEVELOPMENT' && (
         <Actions>
           <Button size="medium" variant="solid" onClick={startBuild} disabled={isRunning}>
             {isRunning ? <ProgressIcon parentComponent="Button" /> : <PlayIcon />}

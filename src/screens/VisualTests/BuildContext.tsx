@@ -99,7 +99,7 @@ export const useBuild = ({
   return {
     hasData: !!data && !storyDataIsStale,
     hasProject: !!data?.project,
-    hasSelectedBuild: selectedBuild?.branch === gitInfo?.branch || global.CONFIG_TYPE !== "DEVELOPMENT",
+    hasSelectedBuild: selectedBuild?.branch === gitInfo?.branch,
     lastBuildOnBranch,
     lastBuildOnBranchIsNewer,
     lastBuildOnBranchIsReady,
