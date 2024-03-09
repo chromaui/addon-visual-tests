@@ -6,63 +6,49 @@ import { CaptureImage, CaptureOverlayImage, ComparisonResult, Test } from "../gq
 import { Stack } from "./Stack";
 import { Text } from "./Text";
 
-export const Container = styled.div<{ href?: string; target?: string }>(
-  ({ theme }) => ({
-    position: "relative",
-    display: "flex",
-    background: "transparent",
-    overflow: "hidden",
-    margin: 2,
+export const Container = styled.div(({ theme }) => ({
+  position: "relative",
+  display: "flex",
+  width: "max-content",
+  background: "transparent",
+  overflow: "hidden",
+  margin: 2,
 
-    img: {
-      maxWidth: "100%",
-      transition: "filter 0.1s ease-in-out",
+  img: {
+    maxWidth: "100%",
+    transition: "filter 0.1s ease-in-out",
+  },
+  "img[data-overlay]": {
+    position: "absolute",
+    opacity: 0.7,
+    pointerEvents: "none",
+  },
+  div: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    width: "100%",
+    p: {
+      maxWidth: 380,
+      textAlign: "center",
     },
-    "img[data-overlay]": {
-      position: "absolute",
-      opacity: 0.7,
-      pointerEvents: "none",
+    svg: {
+      width: 24,
+      height: 24,
     },
-    div: {
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      width: "100%",
-      p: {
-        maxWidth: 380,
-        textAlign: "center",
-      },
-      svg: {
-        width: 24,
-        height: 24,
-      },
-    },
-    "& > svg": {
-      position: "absolute",
-      left: "calc(50% - 14px)",
-      top: "calc(50% - 14px)",
-      width: 20,
-      height: 20,
-      color: theme.color.lightest,
-      opacity: 0,
-      transition: "opacity 0.1s ease-in-out",
-      pointerEvents: "none",
-    },
-  }),
-  ({ href }) =>
-    href && {
-      display: "inline-flex",
-      cursor: "pointer",
-      "&:hover": {
-        "& > svg": {
-          opacity: 1,
-        },
-        img: {
-          filter: "brightness(85%)",
-        },
-      },
-    }
-);
+  },
+  "& > svg": {
+    position: "absolute",
+    left: "calc(50% - 14px)",
+    top: "calc(50% - 14px)",
+    width: 20,
+    height: 20,
+    color: theme.color.lightest,
+    opacity: 0,
+    transition: "opacity 0.1s ease-in-out",
+    pointerEvents: "none",
+  },
+}));
 
 const StyledStack = styled(Stack)(({ theme }) => ({
   margin: "30px 15px",
@@ -71,7 +57,6 @@ const StyledStack = styled(Stack)(({ theme }) => ({
 interface SnapshotImageProps {
   componentName?: NonNullable<NonNullable<Test["story"]>["component"]>["name"];
   storyName?: NonNullable<Test["story"]>["name"];
-  testUrl: Test["webUrl"];
   comparisonResult?: ComparisonResult;
   latestImage?: Pick<CaptureImage, "imageUrl" | "imageWidth">;
   baselineImage?: Pick<CaptureImage, "imageUrl" | "imageWidth">;
@@ -85,7 +70,6 @@ interface SnapshotImageProps {
 export const SnapshotImage = ({
   componentName,
   storyName,
-  testUrl,
   comparisonResult,
   latestImage,
   baselineImage,
@@ -100,20 +84,16 @@ export const SnapshotImage = ({
   const hasDiff = !!latestImage && !!diffImage && comparisonResult === ComparisonResult.Changed;
   const hasError = comparisonResult === ComparisonResult.CaptureError;
   const hasFocus = hasDiff && !!focusImage;
-  const containerProps = hasDiff
-    ? { as: "a" as any, href: testUrl, target: "_blank", title: "View on Chromatic.com" }
-    : {};
   const showDiff = hasDiff && diffVisible;
   const showFocus = hasFocus && focusVisible;
 
   return (
-    <Container {...props} {...containerProps}>
+    <Container {...props}>
       {latestImage && (
         <img
           alt={`Latest snapshot for the '${storyName}' story of the '${componentName}' component`}
           src={latestImage.imageUrl}
           style={{
-            opacity: showDiff && !showFocus ? 0.7 : 1,
             display: baselineImageVisible ? "none" : "block",
           }}
         />
@@ -123,8 +103,10 @@ export const SnapshotImage = ({
           alt={`Baseline snapshot for the '${storyName}' story of the '${componentName}' component`}
           src={baselineImage.imageUrl}
           style={{
-            opacity: showDiff && !showFocus ? 0.7 : 1,
             display: baselineImageVisible ? "block" : "none",
+            maxWidth: latestImage
+              ? `${(baselineImage.imageWidth / latestImage.imageWidth) * 100}%`
+              : "100%",
           }}
         />
       )}
@@ -135,7 +117,7 @@ export const SnapshotImage = ({
           src={diffImage.imageUrl}
           style={{
             maxWidth: `${(diffImage.imageWidth / latestImage.imageWidth) * 100}%`,
-            opacity: showDiff ? 1 : 0,
+            opacity: showDiff ? 0.7 : 0,
           }}
         />
       )}
@@ -146,12 +128,11 @@ export const SnapshotImage = ({
           src={focusImage.imageUrl}
           style={{
             maxWidth: `${(focusImage.imageWidth / latestImage.imageWidth) * 100}%`,
-            opacity: showFocus ? 1 : 0,
+            opacity: showFocus ? 0.7 : 0,
             filter: showFocus ? "blur(2px)" : "none",
           }}
         />
       )}
-      {hasDiff && <ShareAltIcon />}
       {hasError && !latestImage && (
         <StyledStack>
           <PhotoIcon color={theme.base === "light" ? "currentColor" : theme.color.medium} />

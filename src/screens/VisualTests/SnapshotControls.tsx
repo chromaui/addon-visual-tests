@@ -103,6 +103,7 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
         <Placeholder />
         <Placeholder />
         <Placeholder />
+        {/* <Placeholder /> */}
       </Controls>
     );
 
