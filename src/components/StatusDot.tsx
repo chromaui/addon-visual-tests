@@ -45,7 +45,7 @@ const Dot = styled.div<StatusDotProps & { overlay?: boolean }>(
       width: 7,
       height: 7,
       border: `1px solid rgba(0, 0, 0, 0.1)`,
-      boxShadow: `0 0 0 2px var(--bg-color, ${theme.background.content})`,
+      boxShadow: `0 0 0 2px var(--bg-color, ${theme.background.bar})`,
       boxSizing: "border-box",
     })
 );

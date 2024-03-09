@@ -1,7 +1,7 @@
 import { action } from "@storybook/addon-actions";
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { Browser, ComparisonResult, TestStatus } from "../gql/graphql";
+import { Browser, ComparisonResult } from "../gql/graphql";
 import { BrowserSelector } from "./BrowserSelector";
 
 const meta = {

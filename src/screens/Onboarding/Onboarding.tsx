@@ -2,7 +2,6 @@ import { PlayIcon } from "@storybook/icons";
 import { styled } from "@storybook/theming";
 import { lighten } from "polished";
 import React, { useEffect, useState } from "react";
-import { gql } from "urql";
 
 import { BuildProgressInline } from "../../components/BuildProgressBarInline";
 import { Button } from "../../components/Button";
@@ -22,20 +21,6 @@ import onboardingAdjustSizeImage from "./onboarding-adjust-size.png";
 import onboardingColorPaletteImage from "./onboarding-color-palette.png";
 import onboardingEmbiggenImage from "./onboarding-embiggen.png";
 import onboardingLayoutImage from "./onboarding-layout.png";
-
-const ProjectQuery = gql`
-  query ProjectQuery($projectId: ID!) {
-    project(id: $projectId) {
-      id
-      name
-      webUrl
-      lastBuild {
-        branch
-        number
-      }
-    }
-  }
-`;
 
 const Box = styled.div(({ theme }) => ({
   border: `1px solid ${theme.appBorderColor}`,
@@ -61,16 +46,21 @@ const WarningText = styled(Text)(({ theme }) => ({
   color: theme.color.darkest,
 }));
 
-const ButtonStackText = styled(Text)(() => ({
+const StyledText = styled(Text)(({ theme }) => ({
+  color: theme.base === "light" ? theme.color.dark : "#C9CDCF",
+}));
+
+const ButtonStackText = styled(Text)(({ theme }) => ({
   marginBottom: 5,
+  color: theme.base === "light" ? theme.color.dark : "#C9CDCF",
 }));
 
 const ErrorContainer = styled.pre(({ theme }) => ({
   display: "block",
   minWidth: "80%",
   color: theme.color.warningText,
-  background: theme.background.warning,
-  border: `1px solid ${lighten(0.5, theme.color.warningText)}`,
+  background: theme.base === "light" ? theme.background.warning : "#342E1A",
+  border: `1px solid ${theme.appBorderColor}`,
   borderRadius: 2,
   padding: 15,
   margin: 0,
@@ -135,7 +125,7 @@ export const Onboarding = ({
           <Stack>
             <div>
               <Heading>Something went wrong</Heading>
-              <Text>Your tests will sync with this project.</Text>
+              <StyledText>Your tests will sync with this project.</StyledText>
             </div>
             <ErrorContainer>
               {Array.isArray(localBuildProgress.originalError)
@@ -163,10 +153,10 @@ export const Onboarding = ({
             <div>
               <VisualTestsIcon />
               <Heading>Get started with visual testing</Heading>
-              <Text>
+              <StyledText>
                 Take an image snapshot of your stories to save their "last known good state" as test
                 baselines.
-              </Text>
+              </StyledText>
             </div>
             <ButtonStack>
               <Button size="medium" variant="solid" onClick={startDevBuild}>
@@ -191,10 +181,10 @@ export const Onboarding = ({
             <div>
               <VisualTestsIcon />
               <Heading>Get started with visual testing</Heading>
-              <Text>
+              <StyledText>
                 Take an image snapshot of your stories to save their "last known good state" as test
                 baselines.
-              </Text>
+              </StyledText>
             </div>
             <BuildProgressInline localBuildProgress={localBuildProgress} />
           </Stack>
@@ -215,7 +205,9 @@ export const Onboarding = ({
           <Stack>
             <div>
               <Heading>Nice. Your stories were saved as test baselines.</Heading>
-              <Text>This story was indexed and snapshotted in a standardized cloud browser.</Text>
+              <StyledText>
+                This story was indexed and snapshotted in a standardized cloud browser.
+              </StyledText>
               {selectedStory?.selectedComparison?.headCapture?.captureImage && (
                 <SnapshotImageThumb
                   {...selectedStory?.selectedComparison?.headCapture.captureImage}
@@ -252,10 +244,10 @@ export const Onboarding = ({
           <Stack>
             <div>
               <Heading>Make a change to this story</Heading>
-              <Text>
+              <StyledText>
                 In your code, adjust the markup, styling, or assets to see how visual testing works.
                 Don’t worry, you can undo it later. Here are a few ideas to get you started.
-              </Text>
+              </StyledText>
             </div>
             <Stack
               style={{ display: "flex", alignItems: "flex-start", gap: "8px", margin: "10px 0" }}
@@ -324,10 +316,10 @@ export const Onboarding = ({
           <Stack>
             <div>
               <Heading>Changes detected</Heading>
-              <Text>
+              <StyledText>
                 Time to run your first visual tests to pinpoint the exact changes made to this
                 story.
-              </Text>
+              </StyledText>
             </div>
             <Button
               variant="solid"
@@ -359,10 +351,10 @@ export const Onboarding = ({
           <Stack>
             <div>
               <Heading>Changes detected</Heading>
-              <Text>
+              <StyledText>
                 Time to run your first visual tests to pinpoint the exact changes made to this
                 story.
-              </Text>
+              </StyledText>
             </div>
             <BuildProgressInline localBuildProgress={localBuildProgress} />
           </Stack>
