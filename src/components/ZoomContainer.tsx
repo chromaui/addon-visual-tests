@@ -87,7 +87,7 @@ export const useZoom = () => {
         const multiplierX = ((e.clientX - x) / containerWidth) * 2 * 1.2 * ratioX - 0.2 * ratioX;
         const multiplierY = ((e.clientY - y) / containerHeight) * 2 * 1.2 * ratioY - 0.2 * ratioY;
 
-        const clicked = e.type === "click";
+        const clicked = e.type === "click" && (e as any).pointerType !== "touch";
         const zoomed = clicked ? !currentState.zoomed : currentState.zoomed;
         const update = {
           ...currentState,
