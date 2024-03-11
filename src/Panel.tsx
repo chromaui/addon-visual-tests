@@ -80,11 +80,13 @@ export const Panel = ({ active, api }: PanelProps) => {
           addonUninstalled={addonUninstalled}
           setAddonUninstalled={setAddonUninstalled}
         >
-          <RunBuildProvider watchState={{ isRunning, startBuild, stopBuild }}>
-            <div hidden={!active} style={{ containerType: "size", height: "100%" }}>
-              {children}
-            </div>
-          </RunBuildProvider>
+          <ControlsProvider>
+            <RunBuildProvider watchState={{ isRunning, startBuild, stopBuild }}>
+              <div hidden={!active} style={{ containerType: "size", height: "100%" }}>
+                {children}
+              </div>
+            </RunBuildProvider>
+          </ControlsProvider>
         </UninstallProvider>
       </AuthProvider>
     </Provider>
@@ -151,17 +153,15 @@ export const Panel = ({ active, api }: PanelProps) => {
 
   const localBuildIsRightBranch = gitInfo.branch === localBuildProgress?.branch;
   return withProviders(
-    <ControlsProvider>
-      <VisualTests
-        dismissBuildError={() => setLocalBuildProgress(undefined)}
-        isOutdated={!!isOutdated}
-        localBuildProgress={localBuildIsRightBranch ? localBuildProgress : undefined}
-        setOutdated={setOutdated}
-        updateBuildStatus={updateBuildStatus}
-        projectId={projectId}
-        gitInfo={gitInfo}
-        storyId={storyId}
-      />
-    </ControlsProvider>
+    <VisualTests
+      dismissBuildError={() => setLocalBuildProgress(undefined)}
+      isOutdated={!!isOutdated}
+      localBuildProgress={localBuildIsRightBranch ? localBuildProgress : undefined}
+      setOutdated={setOutdated}
+      updateBuildStatus={updateBuildStatus}
+      projectId={projectId}
+      gitInfo={gitInfo}
+      storyId={storyId}
+    />
   );
 };

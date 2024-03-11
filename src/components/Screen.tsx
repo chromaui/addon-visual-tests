@@ -27,10 +27,17 @@ const InfoSection = styled(Section)(({ theme }) => ({
 
 interface ConfigSectionProps {
   hidden?: boolean;
+  ignoreConfig?: boolean;
+  ignoreSuggestions?: boolean;
   onOpen: (scrollTo?: keyof ConfigInfoPayload["configuration"]) => void;
 }
 
-export const ConfigSection = ({ hidden, onOpen }: ConfigSectionProps) => {
+export const ConfigSection = ({
+  hidden,
+  ignoreConfig,
+  ignoreSuggestions,
+  onOpen,
+}: ConfigSectionProps) => {
   const [configInfo] = useSharedState<ConfigInfoPayload>(CONFIG_INFO);
   const problems = Object.keys(configInfo?.problems || {});
   const suggestions = Object.keys(configInfo?.suggestions || {});
@@ -48,7 +55,7 @@ export const ConfigSection = ({ hidden, onOpen }: ConfigSectionProps) => {
     </Link>
   );
 
-  if (problems.length > 0)
+  if (problems.length > 0 && !ignoreConfig)
     return (
       <WarningSection hidden={hidden}>
         <Bar>
@@ -62,7 +69,7 @@ export const ConfigSection = ({ hidden, onOpen }: ConfigSectionProps) => {
       </WarningSection>
     );
 
-  if (suggestions.length > 0 && !dismissed)
+  if (suggestions.length > 0 && !dismissed && !ignoreConfig && !ignoreSuggestions)
     return (
       <InfoSection hidden={hidden}>
         <Bar>
@@ -84,6 +91,8 @@ export const ConfigSection = ({ hidden, onOpen }: ConfigSectionProps) => {
 interface ScreenProps {
   children: ReactNode;
   footer?: ReactNode;
+  ignoreConfig?: boolean;
+  ignoreSuggestions?: boolean;
 }
 
 const Container = styled.div({
@@ -122,6 +131,8 @@ export const Screen = ({
       </Col>
     </Footer>
   ),
+  ignoreConfig = false,
+  ignoreSuggestions = !footer,
 }: ScreenProps) => {
   const { configVisible } = useControlsState();
   const { toggleConfig } = useControlsDispatch();
@@ -140,7 +151,12 @@ export const Screen = ({
 
   return (
     <Container>
-      <ConfigSection onOpen={openConfig} hidden={configVisible} />
+      <ConfigSection
+        onOpen={openConfig}
+        hidden={configVisible}
+        ignoreConfig={ignoreConfig}
+        ignoreSuggestions={!footer}
+      />
       <Content hidden={configVisible}>{children}</Content>
       <Content hidden={!configVisible}>
         <Configuration onClose={() => toggleConfig(false)} />
