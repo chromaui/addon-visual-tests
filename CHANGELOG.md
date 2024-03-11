@@ -1,3 +1,15 @@
+# v1.2.18 (Mon Mar 11 2024)
+
+#### 🐛 Bug Fix
+
+- Restyled the Config options and updated colors/fonts [#202](https://github.com/chromaui/addon-visual-tests/pull/202) ([@MichaelArestad](https://github.com/MichaelArestad))
+
+#### Authors: 1
+
+- Michael Arestad ([@MichaelArestad](https://github.com/MichaelArestad))
+
+---
+
 # v1.2.17 (Mon Mar 11 2024)
 
 #### 🐛 Bug Fix
