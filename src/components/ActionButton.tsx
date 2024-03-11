@@ -62,6 +62,7 @@ export const ActionButton: React.FC<ActionButtonProps> = styled(IconButton)<Acti
   ({ containsIcon }) => ({
     border: `1px solid transparent`,
     boxShadow: "none",
+    fontSize: 14,
     fontWeight: 700,
     height: 28,
     padding: containsIcon ? "8px 6px" : 8,
@@ -73,6 +74,7 @@ export const ActionButton: React.FC<ActionButtonProps> = styled(IconButton)<Acti
     },
     "@container (min-width: 800px)": {
       height: 28,
+      fontSize: 12,
       width: containsIcon ? 28 : "auto",
       padding: containsIcon ? "8px 6px" : 8,
     },

@@ -1,13 +1,18 @@
+import { styled } from "@storybook/theming";
 import React from "react";
 
 import { BUILD_STEP_CONFIG } from "../buildSteps";
 import { LocalBuildProgress } from "../types";
-import { Text } from "./Text";
 
 interface BuildProgressLabelProps {
   localBuildProgress: LocalBuildProgress;
   withEmoji?: boolean;
 }
+
+const Label = styled.span({
+  fontSize: 14,
+  lineHeight: "20px",
+});
 
 export const BuildProgressLabel = ({
   localBuildProgress,
@@ -18,8 +23,8 @@ export const BuildProgressLabel = ({
   const { emoji, renderProgress } = BUILD_STEP_CONFIG[localBuildProgress.currentStep];
   const label = renderProgress(localBuildProgress);
   return (
-    <Text {...props}>
+    <Label {...props}>
       {withEmoji && emoji} {label}
-    </Text>
+    </Label>
   );
 };
