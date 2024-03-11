@@ -27,11 +27,11 @@ export const Button = styled(BaseButton)<{
         boxShadow: "none",
         padding: 2,
         fontWeight: "normal",
-        color: theme.base === "light" ? theme.color.darkest : theme.color.lightest,
-        opacity: 0.6,
+        color: theme.base === "light" ? theme.color.dark : "#C9CDCF",
+        opacity: 0.8,
         transition: "opacity 150ms ease-out",
         "&:hover, &:focus": {
-          opacity: 0.9,
+          opacity: 1,
         },
         "&:focus:not(:active)": {
           outline: `1px solid ${theme.color.secondary}`,

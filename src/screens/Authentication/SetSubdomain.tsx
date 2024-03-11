@@ -23,6 +23,7 @@ const Form = styled.form({
 
 const SubmitButton = styled(Button)({
   "&&": {
+    fontSize: 13,
     borderTopLeftRadius: 0,
     borderTopRightRadius: 0,
     borderBottomLeftRadius: 4,

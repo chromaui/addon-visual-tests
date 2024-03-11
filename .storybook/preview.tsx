@@ -64,7 +64,7 @@ const Panel = styled.div<{ orientation: "right" | "bottom" }>(
     boxShadow: `0 0 0 1px ${theme.background.content}`,
     background: theme.background.content,
     color: theme.base === "light" ? theme.color.dark : theme.color.mediumlight,
-    fontSize: theme.typography.size.s2 - 1,
+    fontSize: theme.typography.size.s2,
   })
 );
 
@@ -73,7 +73,7 @@ const ThemedSetRoot = () => {
   React.useEffect(() => {
     document.body.style.background = theme.background.content;
     document.body.style.color = theme.color.defaultText;
-    document.body.style.fontSize = `${theme.typography.size.s2 - 1}px`;
+    document.body.style.fontSize = `${theme.typography.size.s2}px`;
   });
   return null;
 };

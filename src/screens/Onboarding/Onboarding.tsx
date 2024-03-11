@@ -30,6 +30,7 @@ const Box = styled.div(({ theme }) => ({
   border: `1px solid ${theme.appBorderColor}`,
   borderRadius: theme.appBorderRadius,
   padding: "6px 10px",
+  fontSize: 13,
   lineHeight: "18px",
 }));
 
@@ -50,8 +51,13 @@ const WarningText = styled(Text)(({ theme }) => ({
   color: theme.color.darkest,
 }));
 
-const ButtonStackText = styled(Text)(() => ({
+const StyledText = styled(Text)(({ theme }) => ({
+  color: theme.base === "light" ? theme.color.dark : "#C9CDCF",
+}));
+
+const ButtonStackText = styled(Text)(({ theme }) => ({
   marginBottom: 5,
+  color: theme.base === "light" ? theme.color.dark : "#C9CDCF",
 }));
 
 interface OnboardingProps {
@@ -133,10 +139,10 @@ export const Onboarding = ({
             <div>
               <VisualTestsIcon />
               <Heading>Get started with visual testing</Heading>
-              <Text>
+              <StyledText>
                 Take an image snapshot of your stories to save their "last known good state" as test
                 baselines.
-              </Text>
+              </StyledText>
             </div>
             <ButtonStack>
               <Button size="medium" variant="solid" onClick={startBuild}>
@@ -161,10 +167,10 @@ export const Onboarding = ({
             <div>
               <VisualTestsIcon />
               <Heading>Get started with visual testing</Heading>
-              <Text>
+              <StyledText>
                 Take an image snapshot of your stories to save their "last known good state" as test
                 baselines.
-              </Text>
+              </StyledText>
             </div>
             <BuildProgressInline localBuildProgress={localBuildProgress} />
           </Stack>
@@ -185,7 +191,9 @@ export const Onboarding = ({
           <Stack>
             <div>
               <Heading>Nice. Your stories were saved as test baselines.</Heading>
-              <Text>This story was indexed and snapshotted in a standardized cloud browser.</Text>
+              <StyledText>
+                This story was indexed and snapshotted in a standardized cloud browser.
+              </StyledText>
               {selectedStory?.selectedComparison?.headCapture?.captureImage && (
                 <SnapshotImageThumb
                   {...selectedStory?.selectedComparison?.headCapture.captureImage}
@@ -222,10 +230,10 @@ export const Onboarding = ({
           <Stack>
             <div>
               <Heading>Make a change to this story</Heading>
-              <Text>
+              <StyledText>
                 In your code, adjust the markup, styling, or assets to see how visual testing works.
                 Don’t worry, you can undo it later. Here are a few ideas to get you started.
-              </Text>
+              </StyledText>
             </div>
             <Stack
               style={{ display: "flex", alignItems: "flex-start", gap: "8px", margin: "10px 0" }}
@@ -294,10 +302,10 @@ export const Onboarding = ({
           <Stack>
             <div>
               <Heading>Changes detected</Heading>
-              <Text>
+              <StyledText>
                 Time to run your first visual tests to pinpoint the exact changes made to this
                 story.
-              </Text>
+              </StyledText>
             </div>
             <Button
               variant="solid"
@@ -329,10 +337,10 @@ export const Onboarding = ({
           <Stack>
             <div>
               <Heading>Changes detected</Heading>
-              <Text>
+              <StyledText>
                 Time to run your first visual tests to pinpoint the exact changes made to this
                 story.
-              </Text>
+              </StyledText>
             </div>
             <BuildProgressInline localBuildProgress={localBuildProgress} />
           </Stack>

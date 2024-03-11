@@ -1,3 +1,4 @@
+import { styled } from "@storybook/theming";
 import React from "react";
 
 import { BUILD_STEP_CONFIG } from "../buildSteps";
@@ -8,6 +9,11 @@ interface BuildProgressLabelProps {
   withEmoji?: boolean;
 }
 
+const Label = styled.span({
+  fontSize: 14,
+  lineHeight: "20px",
+});
+
 export const BuildProgressLabel = ({
   localBuildProgress,
   withEmoji = false,
@@ -17,8 +23,8 @@ export const BuildProgressLabel = ({
   const { emoji, renderProgress } = BUILD_STEP_CONFIG[localBuildProgress.currentStep];
   const label = renderProgress(localBuildProgress);
   return (
-    <span {...props}>
+    <Label {...props}>
       {withEmoji && emoji} {label}
-    </span>
+    </Label>
   );
 };

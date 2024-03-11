@@ -32,11 +32,13 @@ const IconWrapper = styled.div(({ theme }) => ({
 
 const Label = styled.span(({ theme }) => ({
   display: "none",
-  fontSize: theme.typography.size.s2 - 1,
+  fontSize: theme.typography.size.s1,
+  fontWeight: theme.typography.weight.bold,
+
   "@container (min-width: 300px)": {
     display: "inline-block",
   },
-  color: theme.base === "light" ? `${theme.color.defaultText}99` : theme.color.light,
+  color: theme.base === "light" ? theme.color.dark : theme.color.light,
 }));
 
 type BrowserData = Pick<BrowserInfo, "id" | "key" | "name">;
@@ -95,7 +97,7 @@ export const BrowserSelector = ({
           <Label>{selectedBrowser.name}</Label>
           <ChevronDownIcon
             size={10}
-            color={theme.base === "light" ? `${theme.color.defaultText}99` : theme.color.light}
+            color={theme.base === "light" ? theme.color.dark : theme.color.light}
           />
         </TooltipMenu>
       ) : (

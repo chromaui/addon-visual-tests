@@ -1,3 +1,4 @@
+import { styled } from "@storybook/theming";
 import React from "react";
 import stripAnsi from "strip-ansi";
 
@@ -11,6 +12,10 @@ import { Text } from "../../components/Text";
 import { DOCS_URL } from "../../constants";
 import { LocalBuildProgress } from "../../types";
 
+const StyledText = styled(Text)(({ theme }) => ({
+  color: theme.base === "light" ? theme.color.dark : "#C9CDCF",
+}));
+
 export const ErrorBox = ({
   localBuildProgress,
   title,
@@ -20,20 +25,20 @@ export const ErrorBox = ({
 }) => (
   <Box warning>
     <BoxContent>
-      <div>
+      <span>
         {title && <b>{title}: </b>}
         {stripAnsi(
           Array.isArray(localBuildProgress.originalError)
             ? localBuildProgress.originalError[0]?.message
             : localBuildProgress.originalError?.message || "Unknown error"
         )}
-      </div>
+      </span>{" "}
       <Link
         target="_blank"
         href={localBuildProgress.errorDetailsUrl || `${DOCS_URL}#troubleshooting`}
         withArrow
       >
-        {localBuildProgress.errorDetailsUrl ? "Details" : "Troubleshooting"}
+        {localBuildProgress.errorDetailsUrl ? "Details" : "Troubleshoot"}
       </Link>
     </BoxContent>
   </Box>
@@ -52,7 +57,9 @@ export const BuildError = ({
         <Stack>
           <div>
             <Heading>Build failed</Heading>
-            <Text>Check the Storybook process on the command line for more details.</Text>
+            <StyledText>
+              Check the Storybook process on the command line for more details.
+            </StyledText>
           </div>
           <ErrorBox localBuildProgress={localBuildProgress} />
 

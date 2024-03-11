@@ -24,7 +24,7 @@ export function BuildProgressInline({
   localBuildProgress: LocalBuildProgress;
 }) {
   return (
-    <ProgressTextWrapper as="div">
+    <ProgressTextWrapper small as="div">
       <ProgressTrack>
         {typeof localBuildProgress.buildProgressPercentage === "number" && (
           <ProgressBar style={{ width: `${localBuildProgress.buildProgressPercentage}%` }} />

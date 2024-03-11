@@ -14,22 +14,6 @@ export const FooterMenu = () => {
   const [projectInfo] = useSharedState<ProjectInfoPayload>(PROJECT_INFO);
   const { projectId } = projectInfo || {};
   const links = [
-    ...(accessToken
-      ? [
-          {
-            id: "logout",
-            title: "Log out",
-            icon: <UserIcon aria-hidden />,
-            onClick: () => setAccessToken(null),
-          },
-        ]
-      : []),
-    {
-      id: "configuration",
-      title: "Configuration",
-      icon: <CogIcon aria-hidden />,
-      onClick: () => toggleConfig(),
-    },
     {
       id: "learn",
       title: "About this addon",
@@ -37,16 +21,33 @@ export const FooterMenu = () => {
       href: "https://www.chromatic.com/docs/visual-testing-addon",
       target: "_blank",
     },
+    {
+      id: "configuration",
+      title: "Configuration",
+      icon: <CogIcon aria-hidden />,
+      onClick: () => toggleConfig(),
+    },
+
     ...(projectId
       ? [
           {
             id: "visit",
-            title: "Visit project on Chromatic",
+            title: "View project on Chromatic",
             icon: <ShareAltIcon aria-hidden />,
             href: projectId
               ? `https://www.chromatic.com/builds?appId=${projectId?.split(":")[1]}`
               : "https://www.chromatic.com/start",
             target: "_blank",
+          },
+        ]
+      : []),
+    ...(accessToken
+      ? [
+          {
+            id: "logout",
+            title: "Log out",
+            icon: <UserIcon aria-hidden />,
+            onClick: () => setAccessToken(null),
           },
         ]
       : []),
