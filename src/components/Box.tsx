@@ -14,6 +14,7 @@ export const Box = styled.div<{ warning?: boolean }>(
     flex: 1,
     gap: 14,
     maxWidth: "500px",
+    width: "100%",
   }),
   ({ theme, warning }) =>
     warning && { background: theme.base === "dark" ? "#342e1a" : theme.background.warning }

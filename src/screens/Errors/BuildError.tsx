@@ -25,20 +25,20 @@ export const ErrorBox = ({
 }) => (
   <Box warning>
     <BoxContent>
-      <div>
+      <span>
         {title && <b>{title}: </b>}
         {stripAnsi(
           Array.isArray(localBuildProgress.originalError)
             ? localBuildProgress.originalError[0]?.message
             : localBuildProgress.originalError?.message || "Unknown error"
         )}
-      </div>
+      </span>{" "}
       <Link
         target="_blank"
         href={localBuildProgress.errorDetailsUrl || `${DOCS_URL}#troubleshooting`}
         withArrow
       >
-        {localBuildProgress.errorDetailsUrl ? "Details" : "Troubleshooting"}
+        {localBuildProgress.errorDetailsUrl ? "Details" : "Troubleshoot"}
       </Link>
     </BoxContent>
   </Box>
