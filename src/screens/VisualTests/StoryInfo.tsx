@@ -148,7 +148,16 @@ export const StoryInfo = ({
     details = (
       <Info>
         <span>
-          <b>{brokenCount ? pluralize("error", brokenCount, true) : null}</b>
+          <b>
+            {brokenCount
+              ? null
+              : changeCount
+              ? `${pluralize("change", changeCount, true)}${
+                  status === TestStatus.Accepted ? " accepted" : ""
+                }`
+              : "No changes"}
+            {brokenCount ? pluralize("error", brokenCount, true) : null}
+          </b>
           <StatusIcon
             icon={
               // eslint-disable-next-line no-nested-ternary

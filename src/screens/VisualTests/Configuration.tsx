@@ -146,11 +146,11 @@ const Page = styled.div(({ theme }) => ({
   position: "relative",
 }));
 
-const PageWrapper = styled.div(({ theme }) => ({
+const PageWrapper = styled.div({
   margin: "0 auto",
   maxWidth: 600,
   width: "100%",
-}));
+});
 
 const PageDescription = styled.div(({ theme }) => ({
   borderBottom: `1px solid ${theme.appBorderColor}`,
@@ -166,11 +166,11 @@ const Heading = styled(StyledHeading)({
   marginBottom: 10,
 });
 
-const Table = styled.div(({ theme }) => ({
+const Table = styled.div({
   display: "flex",
   flexDirection: "column",
   gap: 20,
-}));
+});
 
 const Setting = styled.div(({ theme }) => ({
   alignItems: "center",
@@ -200,9 +200,9 @@ const SettingLabel = styled.div(({ theme }) => ({
   },
 }));
 
-const SettingContent = styled.div(({ theme }) => ({
+const SettingContent = styled.div({
   marginTop: 10,
-}));
+});
 
 const SettingValue = styled.div<{ hideBorderRadius?: boolean }>(({ hideBorderRadius, theme }) => ({
   background: theme.base === "dark" ? theme.color.darkest : theme.color.lighter,
