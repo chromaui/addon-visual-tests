@@ -47,7 +47,7 @@ const Header = styled.button<{ isWarning?: boolean }>(({ isWarning, onClick, the
 
     code: {
       fontFamily: theme.typography.fonts.mono,
-      fontSize: theme.typography.size.s1,
+      fontSize: "12px",
     },
   };
 });

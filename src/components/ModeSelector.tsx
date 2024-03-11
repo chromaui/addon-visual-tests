@@ -24,12 +24,14 @@ const IconWrapper = styled.div(({ theme }) => ({
 }));
 
 const Label = styled.span(({ theme }) => ({
+  color: theme.base === "light" ? theme.color.dark : theme.color.light,
   display: "none",
   fontSize: theme.typography.size.s1,
+  fontWeight: theme.typography.weight.bold,
+
   "@container (min-width: 300px)": {
     display: "inline-block",
   },
-  color: theme.base === "light" ? theme.color.dark : theme.color.light,
 }));
 
 type ModeData = Pick<TestMode, "name">;

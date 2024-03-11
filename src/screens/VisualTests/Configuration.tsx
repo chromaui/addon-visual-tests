@@ -1,5 +1,5 @@
 import { Link } from "@storybook/components";
-import { AlertIcon as Alert, InfoIcon as Markup, WandIcon as Wand } from "@storybook/icons";
+import { AlertIcon as Alert, WandIcon as Wand } from "@storybook/icons";
 import { styled } from "@storybook/theming";
 import React from "react";
 

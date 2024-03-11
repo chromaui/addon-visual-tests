@@ -18,6 +18,7 @@ const Bar = styled.div(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   minHeight: 40,
+  lineHeight: "20px",
   padding: "5px 15px",
 }));
 

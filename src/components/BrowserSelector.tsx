@@ -33,6 +33,8 @@ const IconWrapper = styled.div(({ theme }) => ({
 const Label = styled.span(({ theme }) => ({
   display: "none",
   fontSize: theme.typography.size.s1,
+  fontWeight: theme.typography.weight.bold,
+
   "@container (min-width: 300px)": {
     display: "inline-block",
   },
