@@ -1,3 +1,15 @@
+# v1.2.15 (Mon Mar 11 2024)
+
+#### 🐛 Bug Fix
+
+- Show shorter label on very small viewports [#211](https://github.com/chromaui/addon-visual-tests/pull/211) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v1.2.14 (Mon Mar 11 2024)
 
 #### 🐛 Bug Fix
