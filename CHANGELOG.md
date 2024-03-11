@@ -1,3 +1,17 @@
+# v1.2.14 (Mon Mar 11 2024)
+
+#### 🐛 Bug Fix
+
+- Automatically clear notification when connection is restored [#210](https://github.com/chromaui/addon-visual-tests/pull/210) ([@ghengeveld](https://github.com/ghengeveld))
+- Wrap all screens with ControlsProvider and ignore config warnings on Authentication screens [#209](https://github.com/chromaui/addon-visual-tests/pull/209) ([@ghengeveld](https://github.com/ghengeveld))
+- Fix 'Rerun tests' button sizing [#208](https://github.com/chromaui/addon-visual-tests/pull/208) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v1.2.13 (Mon Mar 11 2024)
 
 #### 🐛 Bug Fix
