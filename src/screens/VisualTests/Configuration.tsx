@@ -211,6 +211,8 @@ const SettingValue = styled.div<{ hideBorderRadius?: boolean }>(({ hideBorderRad
   borderBottomLeftRadius: hideBorderRadius ? 0 : theme.appBorderRadius,
   borderBottomRightRadius: hideBorderRadius ? 0 : theme.appBorderRadius,
   color: theme.base === "dark" ? theme.color.medium : theme.color.dark,
+  fontFamily: theme.typography.fonts.mono,
+  fontSize: 13,
   lineHeight: "20px",
   padding: "5px 10px",
   wordWrap: "break-word",

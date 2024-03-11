@@ -36,7 +36,7 @@ const Label = styled.span(({ theme }) => ({
   "@container (min-width: 300px)": {
     display: "inline-block",
   },
-  color: theme.color.mediumdark,
+  color: theme.base === "light" ? theme.color.dark : theme.color.light,
 }));
 
 type BrowserData = Pick<BrowserInfo, "id" | "key" | "name">;
@@ -93,7 +93,10 @@ export const BrowserSelector = ({
         <TooltipMenu placement="bottom" links={links}>
           {icon}
           <Label>{selectedBrowser.name}</Label>
-          <ChevronDownIcon size={10} color={theme.color.mediumdark} />
+          <ChevronDownIcon
+            size={10}
+            color={theme.base === "light" ? theme.color.dark : theme.color.light}
+          />
         </TooltipMenu>
       ) : (
         <IconWrapper>

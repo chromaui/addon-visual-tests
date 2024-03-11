@@ -14,11 +14,11 @@ const IconWrapper = styled.div(({ theme }) => ({
   gap: 6,
   height: 14,
   margin: "7px 7px",
-  color: theme.color.mediumdark,
+  color: theme.base === "light" ? theme.color.dark : theme.color.light,
   svg: {
     verticalAlign: "top",
     path: {
-      fill: theme.color.mediumdark,
+      fill: theme.base === "light" ? theme.color.dark : theme.color.light,
     },
   },
 }));
@@ -29,7 +29,7 @@ const Label = styled.span(({ theme }) => ({
   "@container (min-width: 300px)": {
     display: "inline-block",
   },
-  color: theme.color.mediumdark,
+  color: theme.base === "light" ? theme.color.dark : theme.color.light,
 }));
 
 type ModeData = Pick<TestMode, "name">;
@@ -53,7 +53,7 @@ export const ModeSelector = ({
   const aggregate = aggregateResult(modeResults.map(({ result }) => result));
   if (!aggregate) return null;
 
-  let icon = <DiamondIcon color={theme.color.mediumdark} />;
+  let icon = <DiamondIcon color={theme.base === "light" ? theme.color.dark : theme.color.light} />;
   if (!isAccepted && aggregate !== ComparisonResult.Equal && modeResults.length >= 2) {
     icon = <StatusDotWrapper status={aggregate}>{icon}</StatusDotWrapper>;
   }
@@ -89,7 +89,10 @@ export const ModeSelector = ({
         <TooltipMenu placement="bottom" links={links}>
           {icon}
           <Label>{selectedMode.name}</Label>
-          <ChevronDownIcon size={10} color={theme.color.mediumdark} />
+          <ChevronDownIcon
+            size={10}
+            color={theme.base === "light" ? theme.color.dark : theme.color.light}
+          />
         </TooltipMenu>
       ) : (
         <IconWrapper>
