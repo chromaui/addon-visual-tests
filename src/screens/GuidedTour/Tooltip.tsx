@@ -1,5 +1,5 @@
-import { css, styled } from "@storybook/theming";
-import React, { MouseEventHandler, SyntheticEvent } from "react";
+import { styled } from "@storybook/theming";
+import React, { SyntheticEvent } from "react";
 import { TooltipRenderProps } from "react-joyride";
 
 import { Button } from "../../components/Button";
@@ -54,7 +54,7 @@ export type TooltipProps = TooltipRenderProps & {
   };
 };
 
-export const Tooltip = ({ step, primaryProps, tooltipProps }: TooltipProps) => {
+export const Tooltip = ({ isLastStep, step, primaryProps, tooltipProps }: TooltipProps) => {
   return (
     <TooltipBody {...tooltipProps}>
       <Wrapper>
@@ -63,7 +63,7 @@ export const Tooltip = ({ step, primaryProps, tooltipProps }: TooltipProps) => {
       </Wrapper>
       {(step.hideNextButton || step.hideBackButton) && (
         <TooltipFooter id="buttonNext">
-          {!step.hideSkipButton && (
+          {!step.hideSkipButton && !isLastStep && (
             <Button
               onClick={step.onSkipWalkthroughButtonClick}
               link
