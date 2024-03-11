@@ -4,7 +4,7 @@ import { styled } from "@storybook/theming";
 import pluralize from "pluralize";
 import React from "react";
 
-import { Button } from "../../components/Button";
+import { ActionButton } from "../../components/ActionButton";
 import { AlertIcon } from "../../components/icons/AlertIcon";
 import { ProgressIcon } from "../../components/icons/ProgressIcon";
 import { StatusIcon } from "../../components/icons/StatusIcon";
@@ -200,10 +200,10 @@ export const StoryInfo = ({
 
       {showButton && (
         <Actions>
-          <Button size="medium" variant="solid" onClick={startBuild} disabled={isRunning}>
+          <ActionButton onClick={startBuild} disabled={isRunning}>
             {isRunning ? <ProgressIcon parentComponent="Button" /> : <PlayIcon />}
             {isErrored ? "Rerun tests" : "Run tests"}
-          </Button>
+          </ActionButton>
         </Actions>
       )}
     </>
