@@ -113,7 +113,6 @@ export const SnapshotImage = ({
           alt={`Latest snapshot for the '${storyName}' story of the '${componentName}' component`}
           src={latestImage.imageUrl}
           style={{
-            opacity: showDiff && !showFocus ? 0.7 : 1,
             display: baselineImageVisible ? "none" : "block",
           }}
         />
@@ -123,7 +122,6 @@ export const SnapshotImage = ({
           alt={`Baseline snapshot for the '${storyName}' story of the '${componentName}' component`}
           src={baselineImage.imageUrl}
           style={{
-            opacity: showDiff && !showFocus ? 0.7 : 1,
             display: baselineImageVisible ? "block" : "none",
           }}
         />
@@ -135,7 +133,7 @@ export const SnapshotImage = ({
           src={diffImage.imageUrl}
           style={{
             maxWidth: `${(diffImage.imageWidth / latestImage.imageWidth) * 100}%`,
-            opacity: showDiff ? 1 : 0,
+            opacity: showDiff ? 0.7 : 0,
           }}
         />
       )}
@@ -146,7 +144,7 @@ export const SnapshotImage = ({
           src={focusImage.imageUrl}
           style={{
             maxWidth: `${(focusImage.imageWidth / latestImage.imageWidth) * 100}%`,
-            opacity: showFocus ? 1 : 0,
+            opacity: showFocus ? 0.7 : 0,
             filter: showFocus ? "blur(2px)" : "none",
           }}
         />
