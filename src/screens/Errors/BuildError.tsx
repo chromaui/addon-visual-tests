@@ -1,3 +1,4 @@
+import { styled } from "@storybook/theming";
 import React from "react";
 import stripAnsi from "strip-ansi";
 
@@ -10,6 +11,10 @@ import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
 import { DOCS_URL } from "../../constants";
 import { LocalBuildProgress } from "../../types";
+
+const StyledText = styled(Text)(({ theme }) => ({
+  color: theme.base === "light" ? theme.color.dark : "#C9CDCF",
+}));
 
 export const ErrorBox = ({
   localBuildProgress,
@@ -52,7 +57,9 @@ export const BuildError = ({
         <Stack>
           <div>
             <Heading>Build failed</Heading>
-            <Text>Check the Storybook process on the command line for more details.</Text>
+            <StyledText>
+              Check the Storybook process on the command line for more details.
+            </StyledText>
           </div>
           <ErrorBox localBuildProgress={localBuildProgress} />
 

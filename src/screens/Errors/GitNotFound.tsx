@@ -1,3 +1,4 @@
+import { styled } from "@storybook/theming";
 import React from "react";
 
 import { Box, BoxContent, BoxTitle } from "../../components/Box";
@@ -11,6 +12,10 @@ import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
 import { useUninstallAddon } from "../Uninstalled/UninstallContext";
 
+const StyledText = styled(Text)(({ theme }) => ({
+  color: theme.base === "light" ? theme.color.dark : "#C9CDCF",
+}));
+
 export const GitNotFound = () => {
   const { uninstallAddon } = useUninstallAddon();
   return (
@@ -20,10 +25,10 @@ export const GitNotFound = () => {
           <div>
             <VisualTestsIcon />
             <Heading>Visual tests</Heading>
-            <Text>
+            <StyledText>
               Catch bugs in UI appearance automatically. Compare image snapshots to detect visual
               changes.
-            </Text>
+            </StyledText>
           </div>
           <Box>
             <Icon icon="lock" />
