@@ -117,7 +117,8 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
         <Label>
           <Text>
             <b>
-              {baselineImageVisible ? <span>Baseline snapshot</span> : <span>Latest snapshot</span>}
+              {baselineImageVisible ? "Baseline" : "Latest"}
+              <span> snapshot</span>
             </b>
           </Text>
         </Label>

@@ -16,7 +16,7 @@ interface WelcomeProps {
 
 export const Welcome = ({ onNext, onUninstall }: WelcomeProps) => {
   return (
-    <Screen footer={null}>
+    <Screen footer={null} ignoreConfig>
       <Container>
         <Stack>
           <div>
