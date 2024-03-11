@@ -1,3 +1,16 @@
+# v1.2.16 (Mon Mar 11 2024)
+
+#### 🐛 Bug Fix
+
+- Fix snapshot image opacity [#212](https://github.com/chromaui/addon-visual-tests/pull/212) ([@ghengeveld](https://github.com/ghengeveld))
+- Avoid passing invalid attributes to `img` element [#213](https://github.com/chromaui/addon-visual-tests/pull/213) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v1.2.15 (Mon Mar 11 2024)
 
 #### 🐛 Bug Fix
