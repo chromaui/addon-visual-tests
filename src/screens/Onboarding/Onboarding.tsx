@@ -26,6 +26,7 @@ const Box = styled.div(({ theme }) => ({
   border: `1px solid ${theme.appBorderColor}`,
   borderRadius: theme.appBorderRadius,
   padding: "6px 10px",
+  fontSize: 13,
   lineHeight: "18px",
 }));
 
