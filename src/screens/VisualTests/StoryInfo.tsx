@@ -60,7 +60,7 @@ const Actions = styled.div({
   margin: 15,
 
   "@container (min-width: 800px)": {
-    margin: "6px 15px 6px 0",
+    margin: "4px 15px 0 0",
   },
 });
 
