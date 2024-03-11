@@ -139,7 +139,7 @@ export const Verify = ({
   closeDialogRef.current = closeDialog;
 
   return (
-    <Screen footer={null}>
+    <Screen footer={null} ignoreConfig>
       <Container>
         <BackButton onClick={onBack}>
           <ChevronLeftIcon color={theme.base === "light" ? "currentColor" : theme.color.medium} />
