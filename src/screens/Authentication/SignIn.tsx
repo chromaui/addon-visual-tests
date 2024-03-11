@@ -26,7 +26,7 @@ const Label = styled.span(({ theme }) => ({
 export const SignIn = ({ onBack, onSignIn, onSignInWithSSO }: SignInProps) => {
   const theme = useTheme();
   return (
-    <Screen footer={null}>
+    <Screen footer={null} ignoreConfig>
       <Container>
         {onBack && (
           <BackButton onClick={onBack}>

@@ -3,6 +3,11 @@ import type { Configuration, getConfiguration, GitInfo, TaskName } from "chromat
 
 import { SelectedBuildFieldsFragment } from "./gql/graphql";
 
+declare global {
+  // eslint-disable-next-line no-var, vars-on-top
+  var CONFIG_TYPE: string;
+}
+
 export type AnnouncedBuild = Extract<SelectedBuildFieldsFragment, { __typename: "AnnouncedBuild" }>;
 export type PublishedBuild = Extract<SelectedBuildFieldsFragment, { __typename: "PublishedBuild" }>;
 export type StartedBuild = Extract<SelectedBuildFieldsFragment, { __typename: "StartedBuild" }>;
@@ -65,7 +70,7 @@ export type LocalBuildProgress = {
 
   // Possibly this should be a type exported by the CLI -- these correspond to tasks
   /** The step of the build process we have reached */
-  currentStep: KnownStep | "aborted" | "complete" | "error";
+  currentStep: KnownStep | "aborted" | "complete" | "error" | "limited";
 
   /** Number of visual changes detected */
   changeCount?: number;
@@ -78,6 +83,9 @@ export type LocalBuildProgress = {
 
   /** The original error without formatting */
   originalError?: Error | Error[];
+
+  /** URL relevant to the error */
+  errorDetailsUrl?: string;
 
   /** Progress tracking data for each step */
   stepProgress: Record<KnownStep, StepProgressPayload>;

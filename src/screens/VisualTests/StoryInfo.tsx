@@ -4,13 +4,14 @@ import { styled } from "@storybook/theming";
 import pluralize from "pluralize";
 import React from "react";
 
-import { Button } from "../../components/Button";
+import { ActionButton } from "../../components/ActionButton";
 import { AlertIcon } from "../../components/icons/AlertIcon";
 import { ProgressIcon } from "../../components/icons/ProgressIcon";
 import { StatusIcon } from "../../components/icons/StatusIcon";
 import { StoryTestFieldsFragment, TestStatus } from "../../gql/graphql";
 import { formatDate } from "../../utils/formatDate";
 import { summarizeTests } from "../../utils/summarizeTests";
+import { useRunBuildState } from "./RunBuildContext";
 
 const Info = styled.div(({ theme }) => ({
   gridArea: "info",
@@ -71,10 +72,10 @@ interface StoryInfoSectionProps {
   tests?: StoryTestFieldsFragment[];
   /** Once the test has reached the started status, this is start time of the build */
   startedAt?: Date;
-  /** Start a new build */
-  startDevBuild: () => void;
   /** Did the build fail entirely? */
   isBuildFailed: boolean;
+  /** Are there any code changes since the last build? */
+  isOutdated: boolean;
   /** is the story we are looking at replaced by a capture on the last build on the branch? */
   shouldSwitchToLastBuildOnBranch: boolean;
   /** Select the last build on the branch if it isn't this build */
@@ -85,28 +86,40 @@ export const StoryInfo = ({
   isStarting,
   tests,
   startedAt,
-  startDevBuild,
   isBuildFailed,
+  isOutdated,
   shouldSwitchToLastBuildOnBranch,
   switchToLastBuildOnBranch,
 }: StoryInfoSectionProps) => {
+  const { isRunning, startBuild } = useRunBuildState();
+
   // isInProgress means we have tests but they are still unfinished
   const { status, isInProgress, changeCount, brokenCount, modeResults, browserResults } =
     summarizeTests(tests ?? []);
 
   const startedAgo = !isStarting && startedAt && formatDate(new Date(startedAt).getTime());
-  // isRunning means either we have no tests or they are unfinished
-  const isRunning = isStarting || isInProgress;
+  // isRunningStory means either we have no tests (yet) or they are unfinished
+  const isRunningStory = isStarting || isInProgress;
   // isFailed means either the whole build failed or the story did
   const isFailed = isBuildFailed || status === TestStatus.Failed;
   // isErrored means there's a problem with the story
   const isErrored = isFailed || status === TestStatus.Broken;
 
-  const showButton = isErrored && !isRunning;
-  const buttonInProgress = isRunning && !isFailed;
+  const showButton = (isErrored || isOutdated) && !isRunningStory && !changeCount;
 
   let details;
-  if (isFailed) {
+  if (isOutdated) {
+    details = (
+      <Info>
+        <span>
+          <b>Code edits detected</b>
+        </span>
+        <small>
+          <span>Run tests to see what changed</span>
+        </small>
+      </Info>
+    );
+  } else if (isFailed) {
     details = (
       <Info>
         <span>
@@ -118,7 +131,7 @@ export const StoryInfo = ({
         </small>
       </Info>
     );
-  } else if (isRunning) {
+  } else if (isRunningStory) {
     details = (
       <Info>
         <span>
@@ -192,10 +205,10 @@ export const StoryInfo = ({
 
       {showButton && (
         <Actions>
-          <Button size="medium" variant="solid" onClick={startDevBuild} disabled={buttonInProgress}>
-            {buttonInProgress ? <ProgressIcon parentComponent="Button" /> : <PlayIcon />}
-            {isErrored ? "Rerun" : "Run"} tests
-          </Button>
+          <ActionButton onClick={startBuild} disabled={isRunning}>
+            {isRunning ? <ProgressIcon parentComponent="Button" /> : <PlayIcon />}
+            {isErrored ? "Rerun tests" : "Run tests"}
+          </ActionButton>
         </Actions>
       )}
     </>

@@ -18,6 +18,7 @@ import React, { useState } from "react";
 import { AuthProvider } from "../src/AuthContext";
 import { baseModes } from "../src/modes";
 import { UninstallProvider } from "../src/screens/Uninstalled/UninstallContext";
+import { RunBuildProvider } from "../src/screens/VisualTests/RunBuildContext";
 import { GraphQLClientProvider } from "../src/utils/graphQLClient";
 import { storyWrapper } from "../src/utils/storyWrapper";
 
@@ -144,6 +145,16 @@ const withUninstall: Decorator = (Story) => {
   );
 };
 
+const withRunBuild = storyWrapper(RunBuildProvider, ({ args }) => ({
+  watchState: {
+    isRunning:
+      !!args.localBuildProgress &&
+      !["aborted", "complete", "error"].includes(args.localBuildProgress.currentStep),
+    startBuild: action("startBuild"),
+    stopBuild: action("stopBuild"),
+  },
+}));
+
 /**
  * An experiment with targeted args for GraphQL. This loader will serve a graphql
  * response for any arg nested under $graphql.
@@ -188,7 +199,7 @@ export const graphQLArgLoader: Loader = async ({ argTypes, argsByTarget, paramet
 };
 
 const preview: Preview = {
-  decorators: [withTheme, withGraphQLClient, withAuth, withUninstall, withManagerApi],
+  decorators: [withTheme, withGraphQLClient, withAuth, withUninstall, withManagerApi, withRunBuild],
   loaders: [graphQLArgLoader],
   parameters: {
     actions: {

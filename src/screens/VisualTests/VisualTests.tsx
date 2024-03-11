@@ -1,4 +1,4 @@
-import { type API, useStorybookApi } from "@storybook/manager-api";
+import { useStorybookApi, useStorybookState } from "@storybook/manager-api";
 import type { API_StatusState } from "@storybook/types";
 import React, { useCallback, useEffect, useState } from "react";
 import { useMutation } from "urql";
@@ -32,7 +32,6 @@ interface VisualTestsProps {
   setSelectedBuildInfo: ReturnType<typeof useState<SelectedBuildInfo>>[1];
   dismissBuildError: () => void;
   localBuildProgress?: LocalBuildProgress;
-  startDevBuild: () => void;
   setOutdated: (isOutdated: boolean) => void;
   updateBuildStatus: UpdateStatusFunction;
   projectId: string;
@@ -102,12 +101,15 @@ const MutationUpdateUserPreferences = graphql(/* GraphQL */ `
   }
 `);
 
-const useOnboarding = (
-  { lastBuildOnBranch, vtaOnboarding }: ReturnType<typeof useBuild>,
-  managerApi?: Pick<API, "getUrlState">
-) => {
+const useOnboarding = ({ lastBuildOnBranch, vtaOnboarding }: ReturnType<typeof useBuild>) => {
+  const managerApi = useStorybookApi();
+  const { notifications } = useStorybookState();
+
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = React.useState(false);
-  const completeOnboarding = React.useCallback(() => setHasCompletedOnboarding(true), []);
+  const completeOnboarding = React.useCallback(() => {
+    setHasCompletedOnboarding(true);
+    notifications.forEach(({ id }) => managerApi.clearNotification(id));
+  }, [managerApi, notifications]);
 
   const [walkthroughInProgress, setWalkthroughInProgress] = React.useState(false);
   const startWalkthrough = React.useCallback(() => setWalkthroughInProgress(true), []);
@@ -182,7 +184,6 @@ export const VisualTestsWithoutSelectedBuildId = ({
   setSelectedBuildInfo,
   dismissBuildError,
   localBuildProgress,
-  startDevBuild,
   setOutdated,
   updateBuildStatus,
   projectId,
@@ -285,7 +286,7 @@ export const VisualTestsWithoutSelectedBuildId = ({
     skipWalkthrough,
     startWalkthrough,
     lastBuildHasChanges,
-  } = useOnboarding(buildInfo, managerApi);
+  } = useOnboarding(buildInfo);
 
   if (showOnboarding && hasProject) {
     return (
@@ -299,8 +300,8 @@ export const VisualTestsWithoutSelectedBuildId = ({
               {...{
                 gitInfo,
                 projectId,
-                startDevBuild,
                 updateBuildStatus,
+                dismissBuildError,
                 localBuildProgress,
                 showInitialBuildScreen: !selectedBuild,
                 onComplete: completeOnboarding,
@@ -328,7 +329,6 @@ export const VisualTestsWithoutSelectedBuildId = ({
             isOutdated,
             localBuildProgress,
             ...(lastBuildOnBranchIsSelectable && { switchToLastBuildOnBranch }),
-            startDevBuild,
           }}
         />
       ) : (
@@ -342,7 +342,6 @@ export const VisualTestsWithoutSelectedBuildId = ({
                 localBuildProgress,
                 ...(lastBuildOnBranch && { lastBuildOnBranch }),
                 ...(lastBuildOnBranchIsSelectable && { switchToLastBuildOnBranch }),
-                startDevBuild,
                 userCanReview,
                 storyId,
               }}

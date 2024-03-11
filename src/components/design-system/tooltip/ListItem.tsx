@@ -2,6 +2,8 @@ import weakMemoize from "@emotion/weak-memoize";
 import { styled, type Theme, useTheme } from "@storybook/theming";
 import React, { ComponentProps, ReactNode } from "react";
 
+import { inlineGlow } from "../shared/animation";
+
 const Left = styled.span({});
 const Title = styled.span(({ theme }) => ({
   fontWeight: theme.typography.weight.bold,
@@ -15,7 +17,7 @@ const Right = styled.span({});
 const ItemWrapper = styled.li(({ theme }) => ({
   listStyle: "none",
 
-  "&:not(:first-child)": {
+  "&:not(:first-of-type)": {
     borderTop: `1px solid ${theme.appBorderColor}`,
   },
 }));
@@ -116,10 +118,7 @@ const linkStyles = ({
 
   ...(isLoading && {
     ".sbds-list-item-title": {
-      animation: `${theme.animation.inlineGlow} 1.5s ease-in-out infinite`,
-      background: "rgba(0, 0, 0, 0.05)", // theme.color.tr5,
-      color: "transparent",
-      cursor: "progress",
+      ...inlineGlow,
       flex: "0 1 auto",
       display: "inline-block",
     },
@@ -133,7 +132,7 @@ const linkStyles = ({
   }),
 });
 
-const Item = styled(
+const LinkItem = styled(
   ({
     active,
     activeColor,
@@ -144,6 +143,8 @@ const Item = styled(
     return <a {...rest} />;
   }
 )(linkStyles);
+
+const NormalItem = styled.span(linkStyles);
 
 // `LinkWrapper` is an input prop that gets internally wrapped with this function here
 // `weakMemoize` ensures that for any given `LinkWrapper` we always createa single "WrappedLinkWrapper"
@@ -173,6 +174,7 @@ interface ListItemProps {
   disabled?: boolean;
   LinkWrapper?: LinkWrapperType | null;
   onClick?: ComponentProps<typeof ItemInner>["onClick"];
+  isLink?: boolean;
 }
 
 export const ListItem = ({
@@ -183,6 +185,7 @@ export const ListItem = ({
   right,
   onClick,
   LinkWrapper,
+  isLink = true,
   ...rest
 }: ListItemProps & Omit<StyledLinkWrapperProps, "activeColor">) => {
   const theme = useTheme();
@@ -207,6 +210,8 @@ export const ListItem = ({
       </ItemWrapper>
     );
   }
+
+  const Item = isLink ? LinkItem : NormalItem;
 
   return (
     <ItemWrapper>

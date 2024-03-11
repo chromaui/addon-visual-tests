@@ -34,9 +34,15 @@ addons.register(ADDON_ID, (api) => {
   const channel = api.getChannel();
   if (!channel) return;
 
+  let notificationShown = false;
   channel.on(`${ADDON_ID}/heartbeat`, () => {
     clearTimeout(heartbeatTimeout);
+    if (notificationShown) {
+      notificationShown = false;
+      api.clearNotification(`${ADDON_ID}/connection-lost`);
+    }
     heartbeatTimeout = setTimeout(() => {
+      notificationShown = true;
       api.addNotification({
         id: `${ADDON_ID}/connection-lost`,
         content: {

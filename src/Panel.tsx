@@ -13,16 +13,19 @@ import {
   PANEL_ID,
   REMOVE_ADDON,
   START_BUILD,
+  STOP_BUILD,
 } from "./constants";
 import { Project } from "./gql/graphql";
 import { Authentication } from "./screens/Authentication/Authentication";
-import { GitNotFound } from "./screens/GitNotFound/GitNotFound";
+import { GitNotFound } from "./screens/Errors/GitNotFound";
 import { LinkedProject } from "./screens/LinkProject/LinkedProject";
 import { LinkingProjectFailed } from "./screens/LinkProject/LinkingProjectFailed";
 import { LinkProject } from "./screens/LinkProject/LinkProject";
+import { NoDevServer } from "./screens/NoDevServer/NoDevServer";
 import { UninstallProvider } from "./screens/Uninstalled/UninstallContext";
 import { Uninstalled } from "./screens/Uninstalled/Uninstalled";
 import { ControlsProvider } from "./screens/VisualTests/ControlsContext";
+import { RunBuildProvider } from "./screens/VisualTests/RunBuildContext";
 import { VisualTests } from "./screens/VisualTests/VisualTests";
 import { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from "./types";
 import { client, Provider, useAccessToken } from "./utils/graphQLClient";
@@ -64,6 +67,12 @@ export const Panel = ({ active, api }: PanelProps) => {
   const [createdProjectId, setCreatedProjectId] = useState<Project["id"]>();
   const [addonUninstalled, setAddonUninstalled] = useSharedState<boolean>(REMOVE_ADDON);
 
+  const startBuild = () => emit(START_BUILD, { accessToken });
+  const stopBuild = () => emit(STOP_BUILD);
+  const isRunning =
+    !!localBuildProgress &&
+    !["aborted", "complete", "error"].includes(localBuildProgress.currentStep);
+
   const withProviders = (children: React.ReactNode) => (
     <Provider key={PANEL_ID} value={client}>
       <AuthProvider value={{ accessToken, setAccessToken }}>
@@ -71,13 +80,21 @@ export const Panel = ({ active, api }: PanelProps) => {
           addonUninstalled={addonUninstalled}
           setAddonUninstalled={setAddonUninstalled}
         >
-          <div hidden={!active} style={{ containerType: "size", height: "100%" }}>
-            {children}
-          </div>
+          <ControlsProvider>
+            <RunBuildProvider watchState={{ isRunning, startBuild, stopBuild }}>
+              <div hidden={!active} style={{ containerType: "size", height: "100%" }}>
+                {children}
+              </div>
+            </RunBuildProvider>
+          </ControlsProvider>
         </UninstallProvider>
       </AuthProvider>
     </Provider>
   );
+
+  if (global.CONFIG_TYPE !== "DEVELOPMENT") {
+    return withProviders(<NoDevServer />);
+  }
 
   if (addonUninstalled) {
     return withProviders(<Uninstalled />);
@@ -136,18 +153,15 @@ export const Panel = ({ active, api }: PanelProps) => {
 
   const localBuildIsRightBranch = gitInfo.branch === localBuildProgress?.branch;
   return withProviders(
-    <ControlsProvider>
-      <VisualTests
-        dismissBuildError={() => setLocalBuildProgress(undefined)}
-        isOutdated={!!isOutdated}
-        localBuildProgress={localBuildIsRightBranch ? localBuildProgress : undefined}
-        startDevBuild={() => emit(START_BUILD, { accessToken })}
-        setOutdated={setOutdated}
-        updateBuildStatus={updateBuildStatus}
-        projectId={projectId}
-        gitInfo={gitInfo}
-        storyId={storyId}
-      />
-    </ControlsProvider>
+    <VisualTests
+      dismissBuildError={() => setLocalBuildProgress(undefined)}
+      isOutdated={!!isOutdated}
+      localBuildProgress={localBuildIsRightBranch ? localBuildProgress : undefined}
+      setOutdated={setOutdated}
+      updateBuildStatus={updateBuildStatus}
+      projectId={projectId}
+      gitInfo={gitInfo}
+      storyId={storyId}
+    />
   );
 };

@@ -7,6 +7,7 @@ import { BuildProgressInline } from "../../components/BuildProgressBarInline";
 import { Button } from "../../components/Button";
 import { ButtonStack } from "../../components/ButtonStack";
 import { Container } from "../../components/Container";
+import { Link } from "../../components/design-system";
 import { Heading } from "../../components/Heading";
 import { VisualTestsIcon } from "../../components/icons/VisualTestsIcon";
 import { Row } from "../../components/layout";
@@ -16,7 +17,10 @@ import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
 import { SelectedBuildFieldsFragment } from "../../gql/graphql";
 import { GitInfoPayload, LocalBuildProgress } from "../../types";
+import { BuildError } from "../Errors/BuildError";
+import { BuildLimited } from "../Errors/BuildLimited";
 import { useBuildState, useSelectedStoryState } from "../VisualTests/BuildContext";
+import { useRunBuildState } from "../VisualTests/RunBuildContext";
 import onboardingAdjustSizeImage from "./onboarding-adjust-size.png";
 import onboardingColorPaletteImage from "./onboarding-color-palette.png";
 import onboardingEmbiggenImage from "./onboarding-embiggen.png";
@@ -56,23 +60,10 @@ const ButtonStackText = styled(Text)(({ theme }) => ({
   color: theme.base === "light" ? theme.color.dark : "#C9CDCF",
 }));
 
-const ErrorContainer = styled.pre(({ theme }) => ({
-  display: "block",
-  minWidth: "80%",
-  color: theme.color.warningText,
-  background: theme.base === "light" ? theme.background.warning : "#342E1A",
-  border: `1px solid ${theme.appBorderColor}`,
-  borderRadius: 2,
-  padding: 15,
-  margin: 0,
-  fontSize: theme.typography.size.s1,
-  textAlign: "left",
-}));
-
 interface OnboardingProps {
   onComplete: () => void;
   onSkip: () => void;
-  startDevBuild: () => void;
+  dismissBuildError: () => void;
   selectedBuild?: SelectedBuildFieldsFragment | null;
   localBuildProgress?: LocalBuildProgress;
   showInitialBuildScreen?: boolean;
@@ -80,7 +71,7 @@ interface OnboardingProps {
   gitInfo: Pick<GitInfoPayload, "uncommittedHash" | "branch">;
 }
 export const Onboarding = ({
-  startDevBuild,
+  dismissBuildError,
   localBuildProgress,
   showInitialBuildScreen,
   gitInfo,
@@ -89,6 +80,7 @@ export const Onboarding = ({
   onSkip,
 }: OnboardingProps) => {
   const { selectedBuild } = useBuildState();
+  const { isRunning, startBuild } = useRunBuildState();
   const selectedStory = useSelectedStoryState();
 
   // The initial build screen is only necessary if this is a brand new project with no builds at all. Instead, !selectedBuild would appear on any new branch, even if there are other builds on the project.
@@ -112,40 +104,33 @@ export const Onboarding = ({
 
   const [runningSecondBuild, setRunningSecondBuild] = React.useState(false);
 
-  const localBuildIsRunning =
-    localBuildProgress &&
-    localBuildProgress.currentStep !== "complete" &&
-    localBuildProgress.currentStep !== "error" &&
-    localBuildProgress.currentStep !== "aborted";
-
   // TODO: This design for an error in the Onboarding is incomplete
   if (localBuildProgress && localBuildProgress.currentStep === "error") {
     return (
-      <Screen footer={null}>
-        <Container>
-          <Stack>
-            <div>
-              <Heading>Something went wrong</Heading>
-              <StyledText>Your tests will sync with this project.</StyledText>
-            </div>
-            <ErrorContainer>
-              {Array.isArray(localBuildProgress.originalError)
-                ? localBuildProgress.originalError[0]?.message
-                : localBuildProgress.originalError?.message}
-            </ErrorContainer>
-            <ButtonStack>
-              <Button variant="solid" size="medium" onClick={startDevBuild}>
-                Try again
-              </Button>
-              <Button link onClick={onSkip}>
-                Skip walkthrough
-              </Button>
-            </ButtonStack>
-          </Stack>
-        </Container>
-      </Screen>
+      <BuildError localBuildProgress={localBuildProgress}>
+        <ButtonStack>
+          <Button variant="solid" size="medium" onClick={startBuild}>
+            Try again
+          </Button>
+          <Button link onClick={onSkip}>
+            Skip walkthrough
+          </Button>
+        </ButtonStack>
+      </BuildError>
     );
   }
+
+  if (localBuildProgress?.currentStep === "limited") {
+    return (
+      <BuildLimited localBuildProgress={localBuildProgress}>
+        {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+        <Link isButton tertiary onClick={dismissBuildError}>
+          Continue
+        </Link>
+      </BuildLimited>
+    );
+  }
+
   if (showInitialBuild && !localBuildProgress) {
     return (
       <Screen footer={null}>
@@ -160,7 +145,7 @@ export const Onboarding = ({
               </StyledText>
             </div>
             <ButtonStack>
-              <Button size="medium" variant="solid" onClick={startDevBuild}>
+              <Button size="medium" variant="solid" onClick={startBuild}>
                 Take snapshots
               </Button>
               <Button onClick={onSkip} link>
@@ -173,7 +158,7 @@ export const Onboarding = ({
     );
   }
 
-  if (showInitialBuild && localBuildProgress && localBuildIsRunning) {
+  if (showInitialBuild && localBuildProgress && isRunning) {
     // When the build is in progress, show the build progress bar
     return (
       <Screen footer={null}>
@@ -236,7 +221,7 @@ export const Onboarding = ({
   if (
     showCatchAChange &&
     initialGitHash === gitInfo.uncommittedHash &&
-    !localBuildIsRunning &&
+    !isRunning &&
     !lastBuildHasChanges
   ) {
     return (
@@ -308,7 +293,7 @@ export const Onboarding = ({
   if (
     showCatchAChange &&
     initialGitHash !== gitInfo.uncommittedHash &&
-    !localBuildIsRunning &&
+    !isRunning &&
     !lastBuildHasChanges
   ) {
     return (
@@ -327,7 +312,7 @@ export const Onboarding = ({
               size="medium"
               onClick={() => {
                 setRunningSecondBuild(true);
-                startDevBuild();
+                startBuild();
                 // In case the build does not have changes, reset gitHash to the current value to show Make A Change again.
                 // A timeout is used to prevent "Make a Change" from reappearing briefly before the build starts.
                 setTimeout(() => {
@@ -345,7 +330,7 @@ export const Onboarding = ({
   }
 
   // If the first build is done, changes were detected, and the second build is in progress.
-  if (localBuildProgress && showCatchAChange && localBuildIsRunning) {
+  if (localBuildProgress && showCatchAChange && isRunning) {
     return (
       <Screen footer={null}>
         <Container>
@@ -365,7 +350,7 @@ export const Onboarding = ({
   }
 
   // If the last build has changes, show the "Done" screen
-  if (!localBuildIsRunning && lastBuildHasChanges) {
+  if (!isRunning && lastBuildHasChanges) {
     return (
       <Screen footer={null}>
         <Container style={{ overflowY: "auto" }}>

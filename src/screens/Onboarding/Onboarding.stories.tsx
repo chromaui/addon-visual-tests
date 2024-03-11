@@ -6,13 +6,39 @@ import React from "react";
 
 import { INITIAL_BUILD_PAYLOAD } from "../../buildSteps";
 import { panelModes } from "../../modes";
+import { LocalBuildProgress } from "../../types";
 import { GraphQLClientProvider } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
 import { storyWrapper } from "../../utils/storyWrapper";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
 import { BuildProvider } from "../VisualTests/BuildContext";
 import { acceptedBuild, acceptedTests, buildInfo, withTests } from "../VisualTests/mocks";
+import { RunBuildProvider } from "../VisualTests/RunBuildContext";
 import { Onboarding } from "./Onboarding";
+
+const RunBuildWrapper = ({
+  children,
+  localBuildProgress,
+  startBuild = () => {},
+  stopBuild = () => {},
+}: {
+  children: React.ReactNode;
+  localBuildProgress: LocalBuildProgress | undefined;
+  startBuild?: () => void;
+  stopBuild?: () => void;
+}) => (
+  <RunBuildProvider
+    watchState={{
+      isRunning:
+        !!localBuildProgress &&
+        !["aborted", "complete", "error"].includes(localBuildProgress.currentStep),
+      startBuild,
+      stopBuild,
+    }}
+  >
+    {children}
+  </RunBuildProvider>
+);
 
 const meta = {
   component: Onboarding,
@@ -21,7 +47,7 @@ const meta = {
     storyWrapper(GraphQLClientProvider),
   ],
   args: {
-    startDevBuild: () => {},
+    dismissBuildError: fn(),
     localBuildProgress: undefined,
     gitInfo: {
       uncommittedHash: "123",
@@ -163,12 +189,12 @@ export const ChangesDetected = {
         >
           Change Git
         </button>
-        <meta.component
-          {...args}
-          gitInfo={gitInfo}
-          startDevBuild={() => setLocalBuildProgress(INITIAL_BUILD_PAYLOAD)}
+        <RunBuildWrapper
           localBuildProgress={localBuildProgress}
-        />
+          startBuild={() => setLocalBuildProgress(INITIAL_BUILD_PAYLOAD)}
+        >
+          <meta.component {...args} gitInfo={gitInfo} localBuildProgress={localBuildProgress} />
+        </RunBuildWrapper>
       </>
     );
   },
@@ -215,18 +241,18 @@ export const RunningFirstTest = {
         >
           Change Git
         </button>
-        <meta.component
-          {...args}
-          gitInfo={gitInfo}
-          startDevBuild={() =>
+        <RunBuildWrapper
+          localBuildProgress={localBuildProgress}
+          startBuild={() =>
             setLocalBuildProgress({
               ...INITIAL_BUILD_PAYLOAD,
               currentStep: "upload",
               buildProgressPercentage: 30,
             })
           }
-          localBuildProgress={localBuildProgress}
-        />
+        >
+          <meta.component {...args} gitInfo={gitInfo} localBuildProgress={localBuildProgress} />
+        </RunBuildWrapper>
       </>
     );
   },
@@ -268,18 +294,18 @@ export const RanFirstTestNoChanges = {
         >
           Change Git
         </button>
-        <meta.component
-          {...args}
-          gitInfo={gitInfo}
-          startDevBuild={() => {
+        <RunBuildWrapper
+          localBuildProgress={localBuildProgress}
+          startBuild={() =>
             setLocalBuildProgress({
               ...INITIAL_BUILD_PAYLOAD,
               currentStep: "complete",
               buildProgressPercentage: 30,
-            });
-          }}
-          localBuildProgress={localBuildProgress}
-        />
+            })
+          }
+        >
+          <meta.component {...args} gitInfo={gitInfo} localBuildProgress={localBuildProgress} />
+        </RunBuildWrapper>
       </>
     );
   },
@@ -303,10 +329,9 @@ export const ChangesFound = {
         >
           Change Git
         </button>
-        <meta.component
-          {...args}
-          gitInfo={gitInfo}
-          startDevBuild={() => {
+        <RunBuildWrapper
+          localBuildProgress={localBuildProgress}
+          startBuild={() => {
             setLocalBuildProgress({
               ...INITIAL_BUILD_PAYLOAD,
               buildProgressPercentage: 100,
@@ -314,9 +339,14 @@ export const ChangesFound = {
             });
             setLastBuildHasChanges(true);
           }}
-          localBuildProgress={localBuildProgress}
-          lastBuildHasChanges={lastBuildHasChanges}
-        />
+        >
+          <meta.component
+            {...args}
+            gitInfo={gitInfo}
+            localBuildProgress={localBuildProgress}
+            lastBuildHasChanges={lastBuildHasChanges}
+          />
+        </RunBuildWrapper>
       </>
     );
   },
@@ -339,6 +369,24 @@ export const Error = {
           "\u001b[31m✖\u001b[39m \u001b[1mFailed to verify your Storybook\u001b[22m\nBuild verification timed out",
         name: "Error",
       },
+    },
+    lastBuildHasChanges: false,
+  },
+  parameters: {
+    ...BaselineSaved.parameters,
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318693&t=3EAIRe8423CpOQWY-4"
+    ),
+  },
+} satisfies Story;
+
+export const Limited = {
+  args: {
+    localBuildProgress: {
+      ...INITIAL_BUILD_PAYLOAD,
+      buildProgressPercentage: 50,
+      currentStep: "limited",
+      errorDetailsUrl: "https://www.chromatic.com/billing?accountId=5af25af03c9f2c4bdccc0fcb",
     },
     lastBuildHasChanges: false,
   },

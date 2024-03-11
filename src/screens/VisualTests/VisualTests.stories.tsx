@@ -150,7 +150,6 @@ const meta = {
     },
     storyId: "button--primary",
     projectId: "Project:id123",
-    startDevBuild: fn(),
     setOutdated: fn(),
     updateBuildStatus: fn(),
     addNotification: fn(),
