@@ -1,3 +1,15 @@
+# v1.2.17 (Mon Mar 11 2024)
+
+#### 🐛 Bug Fix
+
+- Hide 'Skip' button on last step of onboarding [#214](https://github.com/chromaui/addon-visual-tests/pull/214) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v1.2.16 (Mon Mar 11 2024)
 
 #### 🐛 Bug Fix
