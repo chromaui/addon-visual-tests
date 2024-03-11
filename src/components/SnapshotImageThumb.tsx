@@ -44,11 +44,10 @@ export const SnapshotImageThumb = ({
   backgroundColor,
   status,
   thumbnailUrl,
-  ...imgProps
 }: SnapshotImageThumbProps & React.ImgHTMLAttributes<HTMLImageElement>) => {
   return (
     <Wrapper status={status} style={backgroundColor ? { backgroundColor } : {}}>
-      <img alt="Snapshot thumbnail" src={thumbnailUrl} {...imgProps} />
+      <img alt="Snapshot thumbnail" src={thumbnailUrl} />
       {status === "positive" && <CheckIcon />}
     </Wrapper>
   );
