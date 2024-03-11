@@ -2,6 +2,8 @@ import weakMemoize from "@emotion/weak-memoize";
 import { styled, type Theme, useTheme } from "@storybook/theming";
 import React, { ComponentProps, ReactNode } from "react";
 
+import { inlineGlow } from "../shared/animation";
+
 const Left = styled.span({});
 const Title = styled.span(({ theme }) => ({
   fontWeight: theme.typography.weight.bold,
@@ -116,10 +118,7 @@ const linkStyles = ({
 
   ...(isLoading && {
     ".sbds-list-item-title": {
-      animation: `${theme.animation.inlineGlow} 1.5s ease-in-out infinite`,
-      background: "rgba(0, 0, 0, 0.05)", // theme.color.tr5,
-      color: "transparent",
-      cursor: "progress",
+      ...inlineGlow,
       flex: "0 1 auto",
       display: "inline-block",
     },
