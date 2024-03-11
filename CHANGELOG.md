@@ -1,3 +1,15 @@
+# v1.2.13 (Mon Mar 11 2024)
+
+#### 🐛 Bug Fix
+
+- Fix inlineGlow animation [#207](https://github.com/chromaui/addon-visual-tests/pull/207) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v1.2.12 (Fri Mar 08 2024)
 
 #### 🐛 Bug Fix
