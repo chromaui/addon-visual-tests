@@ -59,12 +59,15 @@ const Controls = styled.div({
   },
 });
 
-const DisabledIconWrapper = styled.div({
+const DisabledIconWrapper = styled.div(({ theme }) => ({
   padding: 9,
   "> svg": {
     display: "block",
   },
-});
+  path: {
+    fill: theme.color.mediumdark,
+  },
+}));
 
 const Actions = styled.div<{ showDivider?: boolean }>(({ theme, showDivider }) => ({
   gridArea: "actions",
