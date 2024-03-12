@@ -4,7 +4,7 @@ export const Text = styled.div<{ center?: boolean; muted?: boolean; small?: bool
   ({ center, small, theme }) => ({
     display: "inline-block",
     color: theme.color.defaultText,
-    fontSize: small ? theme.typography.size.s1 : theme.typography.size.s2 - 1,
+    fontSize: small ? theme.typography.size.s1 : theme.typography.size.s2,
     lineHeight: small ? "18px" : "20px",
     textAlign: center ? "center" : "left",
     textWrap: "balance",
