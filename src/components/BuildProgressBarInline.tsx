@@ -26,7 +26,7 @@ export function BuildProgressInline({
           <ProgressBar style={{ width: `${localBuildProgress.buildProgressPercentage}%` }} />
         )}
       </ProgressTrack>
-      <BuildProgressLabel center muted localBuildProgress={localBuildProgress} />
+      <BuildProgressLabel center muted small localBuildProgress={localBuildProgress} />
     </ProgressTextWrapper>
   );
 }
