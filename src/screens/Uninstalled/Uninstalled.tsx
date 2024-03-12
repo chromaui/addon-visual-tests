@@ -15,7 +15,9 @@ export const Uninstalled = () => {
           <div>
             <VisualTestsIcon />
             <Heading>Uninstall complete</Heading>
-            <Text>Visual Tests will vanish the next time you restart your Storybook.</Text>
+            <Text center muted>
+              Visual Tests will vanish the next time you restart your Storybook.
+            </Text>
           </div>
         </Stack>
       </Container>

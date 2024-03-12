@@ -7,7 +7,6 @@ import { BuildProgressInline } from "../../components/BuildProgressBarInline";
 import { Button } from "../../components/Button";
 import { ButtonStack } from "../../components/ButtonStack";
 import { Container } from "../../components/Container";
-import { Link } from "../../components/design-system";
 import { Heading } from "../../components/Heading";
 import { VisualTestsIcon } from "../../components/icons/VisualTestsIcon";
 import { Row } from "../../components/layout";
@@ -51,14 +50,7 @@ const WarningText = styled(Text)(({ theme }) => ({
   color: theme.color.darkest,
 }));
 
-const StyledText = styled(Text)(({ theme }) => ({
-  color: theme.base === "light" ? theme.color.dark : "#C9CDCF",
-}));
-
-const ButtonStackText = styled(Text)(({ theme }) => ({
-  marginBottom: 5,
-  color: theme.base === "light" ? theme.color.dark : "#C9CDCF",
-}));
+const ButtonStackText = styled(Text)({ marginBottom: 5 });
 
 interface OnboardingProps {
   onComplete: () => void;
@@ -123,27 +115,30 @@ export const Onboarding = ({
   if (localBuildProgress?.currentStep === "limited") {
     return (
       <BuildLimited localBuildProgress={localBuildProgress}>
-        {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-        <Link isButton tertiary onClick={dismissBuildError}>
+        <Button link onClick={dismissBuildError}>
           Continue
-        </Link>
+        </Button>
       </BuildLimited>
     );
   }
+
+  const intro = (
+    <div>
+      <VisualTestsIcon />
+      <Heading>Get started with visual testing</Heading>
+      <Text center muted>
+        Take an image snapshot of your stories to save their &quot;last known good state&quot; as
+        test baselines.
+      </Text>
+    </div>
+  );
 
   if (showInitialBuild && !localBuildProgress) {
     return (
       <Screen footer={null}>
         <Container>
           <Stack>
-            <div>
-              <VisualTestsIcon />
-              <Heading>Get started with visual testing</Heading>
-              <StyledText>
-                Take an image snapshot of your stories to save their "last known good state" as test
-                baselines.
-              </StyledText>
-            </div>
+            {intro}
             <ButtonStack>
               <Button size="medium" variant="solid" onClick={startBuild}>
                 Take snapshots
@@ -164,14 +159,7 @@ export const Onboarding = ({
       <Screen footer={null}>
         <Container>
           <Stack>
-            <div>
-              <VisualTestsIcon />
-              <Heading>Get started with visual testing</Heading>
-              <StyledText>
-                Take an image snapshot of your stories to save their "last known good state" as test
-                baselines.
-              </StyledText>
-            </div>
+            {intro}
             <BuildProgressInline localBuildProgress={localBuildProgress} />
           </Stack>
         </Container>
@@ -191,9 +179,9 @@ export const Onboarding = ({
           <Stack>
             <div>
               <Heading>Nice. Your stories were saved as test baselines.</Heading>
-              <StyledText>
+              <Text center muted>
                 This story was indexed and snapshotted in a standardized cloud browser.
-              </StyledText>
+              </Text>
               {selectedStory?.selectedComparison?.headCapture?.captureImage && (
                 <SnapshotImageThumb
                   {...selectedStory?.selectedComparison?.headCapture.captureImage}
@@ -202,8 +190,8 @@ export const Onboarding = ({
               )}
             </div>
             <ButtonStack>
-              <ButtonStackText>
-                Let&rsquo;s see the superpower of catching visual changes.
+              <ButtonStackText muted>
+                Let&apos;s see the superpower of catching visual changes.
               </ButtonStackText>
               <Button variant="solid" size="medium" onClick={onCatchAChange}>
                 Catch a UI change
@@ -230,10 +218,10 @@ export const Onboarding = ({
           <Stack>
             <div>
               <Heading>Make a change to this story</Heading>
-              <StyledText>
+              <Text center muted>
                 In your code, adjust the markup, styling, or assets to see how visual testing works.
                 Don’t worry, you can undo it later. Here are a few ideas to get you started.
-              </StyledText>
+              </Text>
             </div>
             <Stack
               style={{ display: "flex", alignItems: "flex-start", gap: "8px", margin: "10px 0" }}
@@ -302,10 +290,10 @@ export const Onboarding = ({
           <Stack>
             <div>
               <Heading>Changes detected</Heading>
-              <StyledText>
+              <Text center muted>
                 Time to run your first visual tests to pinpoint the exact changes made to this
                 story.
-              </StyledText>
+              </Text>
             </div>
             <Button
               variant="solid"
@@ -337,10 +325,10 @@ export const Onboarding = ({
           <Stack>
             <div>
               <Heading>Changes detected</Heading>
-              <StyledText>
+              <Text center muted>
                 Time to run your first visual tests to pinpoint the exact changes made to this
                 story.
-              </StyledText>
+              </Text>
             </div>
             <BuildProgressInline localBuildProgress={localBuildProgress} />
           </Stack>
@@ -357,7 +345,9 @@ export const Onboarding = ({
           <Stack>
             <div>
               <Heading>Nice. Your stories were saved as test baselines.</Heading>
-              <Text>This story was indexed and snapshotted in a standardized cloud browser.</Text>
+              <Text center muted>
+                This story was indexed and snapshotted in a standardized cloud browser.
+              </Text>
               {selectedStory.selectedComparison?.headCapture?.captureImage && (
                 <SnapshotImageThumb
                   {...selectedStory.selectedComparison?.headCapture?.captureImage}

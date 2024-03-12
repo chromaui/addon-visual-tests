@@ -1,8 +1,7 @@
-import { styled } from "@storybook/theming";
-import React from "react";
+import React, { ReactNode } from "react";
 import stripAnsi from "strip-ansi";
 
-import { Box, BoxContent, BoxTitle } from "../../components/Box";
+import { Box } from "../../components/Box";
 import { Container } from "../../components/Container";
 import { Link } from "../../components/design-system";
 import { Heading } from "../../components/Heading";
@@ -12,9 +11,17 @@ import { Text } from "../../components/Text";
 import { DOCS_URL } from "../../constants";
 import { LocalBuildProgress } from "../../types";
 
-const StyledText = styled(Text)(({ theme }) => ({
-  color: theme.base === "light" ? theme.color.dark : "#C9CDCF",
-}));
+const NewlinesAsBreaks = ({ content }: { content: string }) => {
+  const lines = content.split(/\r?\n/);
+  return (
+    <>
+      {lines.reduce<ReactNode[]>(
+        (acc, line, index) => acc.concat([index && <br />, line].filter(Boolean)),
+        []
+      )}
+    </>
+  );
+};
 
 export const ErrorBox = ({
   localBuildProgress,
@@ -24,14 +31,16 @@ export const ErrorBox = ({
   title?: string;
 }) => (
   <Box warning>
-    <BoxContent>
+    <Text>
       <span>
         {title && <b>{title}: </b>}
-        {stripAnsi(
-          Array.isArray(localBuildProgress.originalError)
-            ? localBuildProgress.originalError[0]?.message
-            : localBuildProgress.originalError?.message || "Unknown error"
-        )}
+        <NewlinesAsBreaks
+          content={stripAnsi(
+            Array.isArray(localBuildProgress.originalError)
+              ? localBuildProgress.originalError[0]?.message
+              : localBuildProgress.originalError?.message || "Unknown error"
+          )}
+        />
       </span>{" "}
       <Link
         target="_blank"
@@ -40,7 +49,7 @@ export const ErrorBox = ({
       >
         {localBuildProgress.errorDetailsUrl ? "Details" : "Troubleshoot"}
       </Link>
-    </BoxContent>
+    </Text>
   </Box>
 );
 
@@ -57,9 +66,9 @@ export const BuildError = ({
         <Stack>
           <div>
             <Heading>Build failed</Heading>
-            <StyledText>
+            <Text center muted>
               Check the Storybook process on the command line for more details.
-            </StyledText>
+            </Text>
           </div>
           <ErrorBox localBuildProgress={localBuildProgress} />
 

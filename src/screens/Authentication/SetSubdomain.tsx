@@ -68,7 +68,7 @@ export const SetSubdomain = ({ onBack, onSignIn }: SetSubdomainProps) => {
           <VisualTestsIcon />
         </div>
         <Heading>Sign in with SSO</Heading>
-        <Text>Enter your team&apos;s Chromatic URL.</Text>
+        <Text muted>Enter your team&apos;s Chromatic URL.</Text>
         <Form onSubmit={handleSubmit}>
           <SuffixInput
             autoFocus

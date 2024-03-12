@@ -7,7 +7,6 @@ import { BackButton } from "../../components/BackButton";
 import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
 import { Heading } from "../../components/Heading";
-import { BackIcon } from "../../components/icons/BackIcon";
 import { Screen } from "../../components/Screen";
 import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
@@ -148,10 +147,12 @@ export const Verify = ({
         <Stack>
           <div>
             <Heading>Verify your account</Heading>
-            <Text>
-              Check this verification code on Chromatic to grant access to your published
-              Storybooks.
-            </Text>
+            <div>
+              <Text center muted>
+                Check this verification code on Chromatic to grant access to your published
+                Storybooks.
+              </Text>
+            </div>
             <Digits>
               {userCode?.split("").map((char: string, index: number) => (
                 // eslint-disable-next-line react/no-array-index-key

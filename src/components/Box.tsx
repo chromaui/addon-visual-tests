@@ -1,7 +1,5 @@
 import { styled } from "@storybook/theming";
 
-import { Text } from "./Text";
-
 export const Box = styled.div<{ warning?: boolean }>(
   ({ theme }) => ({
     display: "flex",
@@ -19,13 +17,6 @@ export const Box = styled.div<{ warning?: boolean }>(
   ({ theme, warning }) =>
     warning && { background: theme.base === "dark" ? "#342e1a" : theme.background.warning }
 );
-
-export const BoxContent = styled(Text)(({ theme }) => ({
-  flex: 1,
-  textAlign: "left",
-  whiteSpace: "pre-wrap",
-  color: theme.base === "light" ? theme.color.darker : theme.color.lighter,
-}));
 
 export const BoxTitle = styled.b(() => ({
   display: "block",

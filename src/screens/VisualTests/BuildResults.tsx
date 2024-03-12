@@ -1,6 +1,6 @@
 import { Link } from "@storybook/components";
 import { DocumentIcon } from "@storybook/icons";
-import { styled, useTheme } from "@storybook/theming";
+import { styled } from "@storybook/theming";
 import React from "react";
 
 import { BuildProgressInline } from "../../components/BuildProgressBarInline";
@@ -12,7 +12,7 @@ import { Heading } from "../../components/Heading";
 import { Section, Sections } from "../../components/layout";
 import { Screen } from "../../components/Screen";
 import { Stack } from "../../components/Stack";
-import { Text as CenterText } from "../../components/Text";
+import { Text } from "../../components/Text";
 import { BuildStatus, TestResult } from "../../gql/graphql";
 import { LocalBuildProgress } from "../../types";
 import { useBuildState, useSelectedBuildState, useSelectedStoryState } from "./BuildContext";
@@ -103,11 +103,11 @@ export const BuildResults = ({
           <Stack>
             <div>
               <Heading>New story found</Heading>
-              <CenterText>
-                Take an image snapshot of this story to save its “last known good state” as a test
-                baseline. This unlocks visual regression testing so you can see exactly what has
-                changed down to the pixel.
-              </CenterText>
+              <Text center muted>
+                Take an image snapshot of this story to save its &quot;last known good state&quot;
+                as a test baseline. This unlocks visual regression testing so you can see exactly
+                what has changed down to the pixel.
+              </Text>
             </div>
 
             {localBuildProgress && isLocalBuildProgressOnSelectedBuild ? (
@@ -139,10 +139,10 @@ export const BuildResults = ({
           <Stack>
             <div>
               <Heading>This story was skipped</Heading>
-              <CenterText>
+              <Text center muted>
                 If you would like to resume testing it, comment out or remove
                 <Code>disableSnapshot = true</Code> from the CSF file.
-              </CenterText>
+              </Text>
             </div>
             <Button asChild size="medium" tertiary>
               <a
