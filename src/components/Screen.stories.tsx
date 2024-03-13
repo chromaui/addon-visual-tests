@@ -69,3 +69,26 @@ export const ConfigurationSuggestions = {
     }),
   ],
 } satisfies StoryObj<typeof meta>;
+
+export const SparseConfiguration = {
+  decorators: [
+    withSharedState(CONFIG_INFO, {
+      configuration: { configFile: configuration.configFile },
+      // problems: { storybookBaseDir: "src/frontend" },
+      suggestions: { zip: true },
+    } satisfies ConfigInfoPayload),
+  ],
+  parameters: {
+    initialControls: {
+      configVisible: true,
+    },
+  },
+} satisfies StoryObj<typeof meta>;
+
+export const NoConfiguration = {
+  parameters: {
+    initialControls: {
+      configVisible: true,
+    },
+  },
+} satisfies StoryObj<typeof meta>;
