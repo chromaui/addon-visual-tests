@@ -7,11 +7,11 @@ import { IconButton } from "./IconButton";
 const themeColors = ({ theme, secondary, status }: { theme: Theme } & ActionButtonProps) => {
   if (secondary) {
     return {
-      color: theme.color.defaultText,
+      color: theme.base === "light" ? theme.color.dark : theme.color.medium,
       backgroundColor: theme.background.app,
       borderColor: theme.base === "light" ? theme.color.medium : theme.color.darker,
       "&:hover": {
-        color: theme.color.defaultText,
+        color: theme.base === "light" ? theme.color.darkest : theme.color.lighter,
         backgroundColor: darken(0.03, theme.background.app),
       },
     };
