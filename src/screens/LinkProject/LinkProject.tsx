@@ -1,14 +1,14 @@
 import { AddIcon } from "@storybook/icons";
-import { styled, useTheme } from "@storybook/theming";
+import { styled } from "@storybook/theming";
 import React, { useCallback, useEffect, useState } from "react";
 import { useQuery } from "urql";
 
 import { Container } from "../../components/Container";
 import { Avatar, Link, ListItem } from "../../components/design-system";
 import { Heading } from "../../components/Heading";
-import { Text } from "../../components/layout";
 import { Screen } from "../../components/Screen";
 import { Stack } from "../../components/Stack";
+import { Text } from "../../components/Text";
 import { graphql } from "../../gql";
 import type { Account, Project, SelectProjectsQueryQuery } from "../../gql/graphql";
 import { DialogHandler, useChromaticDialog } from "../../utils/useChromaticDialog";
@@ -120,7 +120,6 @@ function SelectProject({
   setCreatedProjectId: (projectId: Project["id"]) => void;
   onSelectProjectId: (projectId: string) => Promise<void>;
 }) {
-  const theme = useTheme();
   const [{ data, fetching, error }, rerunProjectsQuery] = useQuery<SelectProjectsQueryQuery>({
     query: SelectProjectsQuery,
   });
@@ -198,7 +197,7 @@ function SelectProject({
         <StyledStack>
           <div>
             <Heading>Select a project</Heading>
-            <Text>Your tests will sync with this project.</Text>
+            <Text muted>Your tests will sync with this project.</Text>
           </div>
           {error && <p>{error.message}</p>}
           {!data && fetching && (

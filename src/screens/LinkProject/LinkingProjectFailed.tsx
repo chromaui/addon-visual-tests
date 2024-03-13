@@ -8,7 +8,7 @@ import { Link } from "../../components/design-system";
 import { Heading } from "../../components/Heading";
 import { Screen } from "../../components/Screen";
 import { Stack } from "../../components/Stack";
-import { Text as CenterText } from "../../components/Text";
+import { Text } from "../../components/Text";
 
 type LinkingProjectFailedProps = {
   projectId: string;
@@ -38,10 +38,11 @@ export function LinkingProjectFailed({ projectId, configFile }: LinkingProjectFa
         <Stack>
           <div>
             <Heading>Add the project ID to your Chromatic config</Heading>
-            <CenterText>
+            <Text center muted>
               The <Code>projectId</Code> will be used to sync tests with Chromatic. Please commit
-              this change to continue using the addon. The file should be saved at {configFile}.
-            </CenterText>
+              this change to continue using the addon. The file should be saved at{" "}
+              <Code>{configFile}</Code>.
+            </Text>
           </div>
           <CodeWrapper>
             <Code>
