@@ -1,11 +1,11 @@
-import { css, styled } from "@storybook/theming";
-import React, { MouseEventHandler, SyntheticEvent } from "react";
+import { styled } from "@storybook/theming";
+import React, { SyntheticEvent } from "react";
 import { TooltipRenderProps } from "react-joyride";
 
 import { Button } from "../../components/Button";
 
 const TooltipBody = styled.div(({ theme }) => ({
-  background: theme.base === "dark" ? "#292A2C" : theme.color.lightest,
+  background: theme.base === "light" ? theme.color.lightest : "#292A2C",
   width: 260,
   padding: 15,
   borderRadius: 5,
@@ -19,14 +19,14 @@ const Wrapper = styled.div({
 });
 
 const TooltipTitle = styled.div(({ theme }) => ({
-  fontSize: 13,
+  fontSize: 14,
   lineHeight: "18px",
   fontWeight: 700,
   color: theme.color.defaultText,
 }));
 
 const TooltipContent = styled.div(({ theme }) => ({
-  fontSize: 13,
+  fontSize: 14,
   lineHeight: "18px",
   textAlign: "start",
   color: theme.color.defaultText,
@@ -54,7 +54,7 @@ export type TooltipProps = TooltipRenderProps & {
   };
 };
 
-export const Tooltip = ({ step, primaryProps, tooltipProps }: TooltipProps) => {
+export const Tooltip = ({ isLastStep, step, primaryProps, tooltipProps }: TooltipProps) => {
   return (
     <TooltipBody {...tooltipProps}>
       <Wrapper>
@@ -63,7 +63,7 @@ export const Tooltip = ({ step, primaryProps, tooltipProps }: TooltipProps) => {
       </Wrapper>
       {(step.hideNextButton || step.hideBackButton) && (
         <TooltipFooter id="buttonNext">
-          {!step.hideSkipButton && (
+          {!step.hideSkipButton && !isLastStep && (
             <Button
               onClick={step.onSkipWalkthroughButtonClick}
               link

@@ -1,15 +1,19 @@
-import { Link } from "@storybook/components";
 import { CheckIcon } from "@storybook/icons";
 import { styled } from "@storybook/theming";
 import React from "react";
 import { useQuery } from "urql";
 
 import { Button } from "../../components/Button";
+import { ButtonStack } from "../../components/ButtonStack";
+import { Code } from "../../components/Code";
 import { Container } from "../../components/Container";
-import { FooterSection } from "../../components/FooterSection";
+import { Link } from "../../components/design-system";
+import { FooterMenu } from "../../components/FooterMenu";
 import { Heading } from "../../components/Heading";
-import { Col, Section, Sections, Text } from "../../components/layout";
+import { Col } from "../../components/layout";
+import { Footer, Screen } from "../../components/Screen";
 import { Stack } from "../../components/Stack";
+import { Text } from "../../components/Text";
 import { graphql } from "../../gql";
 import { ProjectQueryQuery } from "../../gql/graphql";
 
@@ -20,6 +24,10 @@ const Check = styled(CheckIcon)(({ theme }) => ({
   background: theme.color.positive,
   borderRadius: "100%",
   color: "white",
+}));
+
+const ButtonStackLink = styled(Link)(() => ({
+  marginTop: 5,
 }));
 
 const ProjectQuery = graphql(/* GraphQL */ `
@@ -40,12 +48,10 @@ export const LinkedProject = ({
   projectId,
   configFile,
   goToNext,
-  setAccessToken,
 }: {
   projectId: string;
   configFile: string;
   goToNext: () => void;
-  setAccessToken: (accessToken: string | null) => void;
 }) => {
   const [{ data, fetching, error }] = useQuery<ProjectQueryQuery>({
     query: ProjectQuery,
@@ -53,51 +59,55 @@ export const LinkedProject = ({
   });
 
   return (
-    <Sections>
-      <Section grow>
-        <Container>
-          <Stack>
-            {fetching && <p>Loading...</p>}
-            {error && <p>{error.message}</p>}
-            {data?.project && (
-              <Stack>
-                <Check />
+    <Screen
+      footer={
+        <Footer>
+          <Col>
+            {data?.project?.lastBuild && (
+              <Text style={{ marginLeft: 5 }}>
+                Last build: {data.project.lastBuild.number} on branch{" "}
+                {data.project.lastBuild.branch}
+              </Text>
+            )}
+          </Col>
+          <Col push>
+            <FooterMenu />
+          </Col>
+        </Footer>
+      }
+    >
+      <Container>
+        <Stack>
+          {fetching && <p>Loading...</p>}
+          {error && <p>{error.message}</p>}
+          {data?.project && (
+            <>
+              <Check />
+              <div>
                 <Heading>Project linked!</Heading>
-                <Text style={{ maxWidth: 380 }}>
-                  The <code>projectId</code> for {data.project.name} has been added to this
-                  project's <code>{configFile}</code>. This will be used to sync with Chromatic.
-                  Please commit this change to continue using this addon.
+                <Text center muted style={{ maxWidth: 500 }}>
+                  The <Code>projectId</Code> for <strong>{data.project.name}</strong> was added in{" "}
+                  <Code>{configFile}</Code> to sync tests with Chromatic. Please commit this change
+                  to continue using this addon.
                 </Text>
+              </div>
+              <ButtonStack>
                 <Button variant="solid" size="medium" onClick={() => goToNext()}>
                   Catch a UI change
                 </Button>
-                <Text>
-                  Why do we need a project ID?{" "}
-                  <Link href="https://www.chromatic.com/docs/cli" target="_blank">
-                    Learn More »
-                  </Link>
-                </Text>
-              </Stack>
-            )}
-          </Stack>
-        </Container>
-      </Section>
-      <FooterSection
-        setAccessToken={setAccessToken}
-        render={({ menu }) => (
-          <>
-            <Col>
-              {data?.project?.lastBuild && (
-                <Text style={{ marginLeft: 5 }}>
-                  Last build: {data.project.lastBuild.number} on branch{" "}
-                  {data.project.lastBuild.branch}
-                </Text>
-              )}
-            </Col>
-            <Col push>{menu}</Col>
-          </>
-        )}
-      />
-    </Sections>
+                <ButtonStackLink
+                  href="https://www.chromatic.com/docs/cli"
+                  target="_blank"
+                  withArrow
+                  secondary
+                >
+                  What&rsquo;s a project ID?
+                </ButtonStackLink>
+              </ButtonStack>
+            </>
+          )}
+        </Stack>
+      </Container>
+    </Screen>
   );
 };

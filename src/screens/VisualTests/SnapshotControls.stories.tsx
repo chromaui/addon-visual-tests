@@ -1,8 +1,7 @@
-import { expect } from "@storybook/jest";
 import type { Meta, StoryObj } from "@storybook/react";
+import { expect } from "@storybook/test";
 import { fireEvent, screen, userEvent, within } from "@storybook/testing-library";
 
-import { SelectedBuildFieldsFragment } from "../../gql/graphql";
 import { panelModes } from "../../modes";
 import { action } from "../../utils/action";
 import { playAll } from "../../utils/playAll";
@@ -31,7 +30,6 @@ const meta = {
   ],
   args: {
     isOutdated: false,
-    startDevBuild: action("startDevBuild"),
   },
   parameters: {
     chromatic: {
@@ -52,12 +50,6 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default = {} satisfies Story;
-
-export const Outdated = {
-  args: {
-    isOutdated: true,
-  },
-} satisfies Story;
 
 export const InProgress = {
   parameters: {

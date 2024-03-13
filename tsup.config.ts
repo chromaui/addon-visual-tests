@@ -26,7 +26,6 @@ export default defineConfig(async (options) => {
     packageJson;
 
   const commonConfig: Options = {
-
     splitting: false,
     minify: !options.watch,
     treeshake: true,
@@ -36,7 +35,9 @@ export default defineConfig(async (options) => {
 
   const configs: Options[] = [];
 
-  const globalManagerPackagesNoIcons = globalManagerPackages.filter(packageJson => packageJson !== "@storybook/icons")
+  const globalManagerPackagesNoIcons = globalManagerPackages.filter(
+    (packageJson) => packageJson !== "@storybook/icons"
+  );
 
   // export entries are entries meant to be manually imported by the user
   // they are not meant to be loaded by the manager or preview
@@ -49,7 +50,7 @@ export default defineConfig(async (options) => {
         resolve: true,
       },
       format: ["esm", "cjs"],
-      platform: "neutral",
+      platform: "node",
       external: [...globalManagerPackagesNoIcons, ...globalPreviewPackages],
     });
   }

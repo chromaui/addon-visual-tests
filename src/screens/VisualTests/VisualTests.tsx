@@ -1,18 +1,15 @@
-import { type API, useStorybookApi } from "@storybook/manager-api";
+import { useStorybookApi, useStorybookState } from "@storybook/manager-api";
 import type { API_StatusState } from "@storybook/types";
 import React, { useCallback, useEffect, useState } from "react";
 import { useMutation } from "urql";
 
-// TODO: Remove this after completing AP-3586
-// import { WALKTHROUGH_COMPLETED_KEY } from "../../constants";
-import { getFragment } from "../../gql";
+import { getFragment, graphql } from "../../gql";
 import {
-  BuildStatus,
   ReviewTestBatch,
   ReviewTestInputStatus,
-  Test,
   TestResult,
   TestStatus,
+  VtaOnboardingPreference,
 } from "../../gql/graphql";
 import { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from "../../types";
 import { testsToStatusUpdate } from "../../utils/testsToStatusUpdate";
@@ -35,8 +32,6 @@ interface VisualTestsProps {
   setSelectedBuildInfo: ReturnType<typeof useState<SelectedBuildInfo>>[1];
   dismissBuildError: () => void;
   localBuildProgress?: LocalBuildProgress;
-  startDevBuild: () => void;
-  setAccessToken: (accessToken: string | null) => void;
   setOutdated: (isOutdated: boolean) => void;
   updateBuildStatus: UpdateStatusFunction;
   projectId: string;
@@ -96,37 +91,62 @@ const useReview = ({
   return { isReviewing, acceptTest, unacceptTest, buildIsReviewable, userCanReview };
 };
 
-const useOnboarding = (
-  { lastBuildOnBranch }: ReturnType<typeof useBuild>,
-  managerApi?: Pick<API, "getUrlState">
-) => {
+const MutationUpdateUserPreferences = graphql(/* GraphQL */ `
+  mutation UpdateUserPreferences($input: UserPreferencesInput!) {
+    updateUserPreferences(input: $input) {
+      updatedPreferences {
+        vtaOnboarding
+      }
+    }
+  }
+`);
+
+const useOnboarding = ({ lastBuildOnBranch, vtaOnboarding }: ReturnType<typeof useBuild>) => {
+  const managerApi = useStorybookApi();
+  const { notifications } = useStorybookState();
+
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = React.useState(false);
   const completeOnboarding = React.useCallback(() => {
     setHasCompletedOnboarding(true);
-  }, []);
-
-  const [hasCompletedWalkthrough, setHasCompletedWalkthrough] = React.useState(() => {
-    // Force the onboarding to show by adding ?vtaOnboarding=true to the URL
-    const force = managerApi?.getUrlState?.().queryParams.vtaOnboarding === "true";
-    // Only using force instead of localStorage. WALKTHROUGH_COMPLETED flag will be moved to user model in AP-3586
-    return !force; // && localStorage.getItem(WALKTHROUGH_COMPLETED_KEY) === "true";
-  });
+    notifications.forEach(({ id }) => managerApi.clearNotification(id));
+  }, [managerApi, notifications]);
 
   const [walkthroughInProgress, setWalkthroughInProgress] = React.useState(false);
-  const startWalkthrough = React.useCallback(() => {
-    setWalkthroughInProgress(true);
-  }, []);
+  const startWalkthrough = React.useCallback(() => setWalkthroughInProgress(true), []);
 
-  const completeWalkthrough = React.useCallback(() => {
-    setHasCompletedWalkthrough(true);
-    // TODO: Replace with user model mutation in AP-3586
-    // localStorage.setItem(WALKTHROUGH_COMPLETED_KEY, "true");
-    setWalkthroughInProgress(false);
-    // remove onboarding query parameter from current url
-    const url = new URL(window.location.href);
-    url.searchParams.delete("vtaOnboarding");
-    window.history.replaceState({}, "", url.href);
-  }, []);
+  const [hasCompletedWalkthrough, setHasCompletedWalkthrough] = React.useState(true);
+  React.useEffect(() => {
+    // Force the onboarding to show by adding ?vtaOnboarding=true to the URL
+    if (managerApi?.getUrlState?.().queryParams.vtaOnboarding === "true") {
+      setHasCompletedWalkthrough(false);
+      return;
+    }
+    setHasCompletedWalkthrough(
+      vtaOnboarding === VtaOnboardingPreference.Completed ||
+        vtaOnboarding === VtaOnboardingPreference.Dismissed
+    );
+  }, [managerApi, vtaOnboarding]);
+
+  const [{ fetching: isUpdating }, runMutation] = useMutation(MutationUpdateUserPreferences);
+
+  const exitWalkthrough = React.useCallback(
+    async (completed: boolean) => {
+      const preference = completed
+        ? VtaOnboardingPreference.Completed
+        : VtaOnboardingPreference.Dismissed;
+      await runMutation({ input: { vtaOnboarding: preference } });
+
+      setHasCompletedWalkthrough(true);
+      setWalkthroughInProgress(false);
+
+      const url = new URL(window.location.href);
+      if (url.searchParams.has("vtaOnboarding")) {
+        url.searchParams.delete("vtaOnboarding");
+        window.history.replaceState({}, "", url.href);
+      }
+    },
+    [runMutation]
+  );
 
   const lastBuildHasChanges = React.useMemo(() => {
     // select only testsForStatus (or empty array) and return true if any of them are pending and changed
@@ -149,9 +169,12 @@ const useOnboarding = (
     showOnboarding,
     showGuidedTour: !showOnboarding && !hasCompletedWalkthrough,
     completeOnboarding,
-    completeWalkthrough,
+    skipOnboarding: React.useCallback(() => exitWalkthrough(false), [exitWalkthrough]),
+    completeWalkthrough: React.useCallback(() => exitWalkthrough(true), [exitWalkthrough]),
+    skipWalkthrough: React.useCallback(() => exitWalkthrough(false), [exitWalkthrough]),
     startWalkthrough,
     lastBuildHasChanges,
+    isUpdating,
   };
 };
 
@@ -161,8 +184,6 @@ export const VisualTestsWithoutSelectedBuildId = ({
   setSelectedBuildInfo,
   dismissBuildError,
   localBuildProgress,
-  startDevBuild,
-  setAccessToken,
   setOutdated,
   updateBuildStatus,
   projectId,
@@ -261,11 +282,13 @@ export const VisualTestsWithoutSelectedBuildId = ({
     showGuidedTour,
     completeOnboarding,
     completeWalkthrough,
+    skipOnboarding,
+    skipWalkthrough,
     startWalkthrough,
     lastBuildHasChanges,
-  } = useOnboarding(buildInfo, managerApi);
+  } = useOnboarding(buildInfo);
 
-  if (showOnboarding) {
+  if (showOnboarding && hasProject) {
     return (
       <>
         {/* Don't render onboarding until data has loaded to allow initial build logic ot work. */}
@@ -277,13 +300,12 @@ export const VisualTestsWithoutSelectedBuildId = ({
               {...{
                 gitInfo,
                 projectId,
-                setAccessToken,
-                startDevBuild,
                 updateBuildStatus,
+                dismissBuildError,
                 localBuildProgress,
                 showInitialBuildScreen: !selectedBuild,
                 onComplete: completeOnboarding,
-                onSkip: completeWalkthrough,
+                onSkip: skipOnboarding,
                 lastBuildHasChanges,
               }}
             />
@@ -307,8 +329,6 @@ export const VisualTestsWithoutSelectedBuildId = ({
             isOutdated,
             localBuildProgress,
             ...(lastBuildOnBranchIsSelectable && { switchToLastBuildOnBranch }),
-            startDevBuild,
-            setAccessToken,
           }}
         />
       ) : (
@@ -322,9 +342,7 @@ export const VisualTestsWithoutSelectedBuildId = ({
                 localBuildProgress,
                 ...(lastBuildOnBranch && { lastBuildOnBranch }),
                 ...(lastBuildOnBranchIsSelectable && { switchToLastBuildOnBranch }),
-                startDevBuild,
                 userCanReview,
-                setAccessToken,
                 storyId,
               }}
             />
@@ -335,7 +353,7 @@ export const VisualTestsWithoutSelectedBuildId = ({
         <BuildProvider watchState={{ selectedBuild }}>
           <GuidedTour
             managerApi={managerApi}
-            skipWalkthrough={completeWalkthrough}
+            skipWalkthrough={skipWalkthrough}
             startWalkthrough={startWalkthrough}
             completeWalkthrough={completeWalkthrough}
           />

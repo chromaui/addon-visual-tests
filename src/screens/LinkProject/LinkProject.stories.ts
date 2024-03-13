@@ -6,15 +6,12 @@ import { delay, graphql, HttpResponse } from "msw";
 
 import { SelectProjectsQueryQuery } from "../../gql/graphql";
 import { panelModes } from "../../modes";
-import { GraphQLClientProvider } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
-import { storyWrapper } from "../../utils/storyWrapper";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
 import { LinkProject } from "./LinkProject";
 
 const meta = {
   component: LinkProject,
-  decorators: [storyWrapper(GraphQLClientProvider)],
   args: {
     createdProjectId: undefined,
     onUpdateProject: action("updateProject"),
@@ -185,7 +182,7 @@ const manyProjects = {
         ],
       },
       {
-        id: "account:4567",
+        id: "account:4568",
         name: "below the fold corp",
         newProjectUrl: "https://www.chromatic.com/apps?accountId=4567&view=createProject",
         projects: [

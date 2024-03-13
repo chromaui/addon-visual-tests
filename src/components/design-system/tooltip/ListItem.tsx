@@ -1,27 +1,26 @@
 import weakMemoize from "@emotion/weak-memoize";
-import { css, styled } from "@storybook/theming";
+import { styled, type Theme, useTheme } from "@storybook/theming";
 import React, { ComponentProps, ReactNode } from "react";
 
 import { inlineGlow } from "../shared/animation";
-import { background, color, typography } from "../shared/styles";
 
 const Left = styled.span({});
-const Title = styled.span({
-  fontWeight: typography.weight.bold,
+const Title = styled.span(({ theme }) => ({
+  fontWeight: theme.typography.weight.bold,
   whiteSpace: "nowrap",
   overflow: "hidden",
   textOverflow: "ellipsis",
-});
+}));
 const Center = styled.span({});
 const Right = styled.span({});
 
-const ItemWrapper = styled.li({
+const ItemWrapper = styled.li(({ theme }) => ({
   listStyle: "none",
 
   "&:not(:first-of-type)": {
-    borderTop: `1px solid ${color.border}`,
+    borderTop: `1px solid ${theme.appBorderColor}`,
   },
-});
+}));
 
 const ItemInner = styled.span({
   lineHeight: "18px",
@@ -62,78 +61,78 @@ interface LinkStyleProps {
   disabled?: boolean;
 }
 
-const linkStyles = (props: LinkStyleProps) => css`
-  font-size: ${typography.size.s1}px;
-  transition: all 150ms ease-out;
-  color: ${color.mediumdark};
-  text-decoration: none;
-  display: block;
+const linkStyles = ({
+  active,
+  activeColor,
+  disabled,
+  isLoading,
+  theme,
+}: LinkStyleProps & { theme: Theme }) => ({
+  fontSize: `${theme.typography.size.s1}px`,
+  transition: "all 150ms ease-out",
+  color: theme.color.mediumdark,
+  textDecoration: "none",
+  display: "block",
 
   /* Styling */
-  .sbds-list-item-title {
-    color: ${color.darker};
-  }
+  ".sbds-list-item-title": {
+    color: theme.base === "light" ? theme.color.darker : theme.color.lighter,
+  },
 
-  .sbds-list-item-right svg {
-    transition: all 200ms ease-out;
-    opacity: 0;
-    height: 12px;
-    width: 12px;
-    margin: 3px 0;
-    vertical-align: top;
+  ".sbds-list-item-right svg": {
+    transition: "all 200ms ease-out",
+    opacity: 0,
+    height: 12,
+    width: 12,
+    margin: "3px 0",
+    verticalAlign: "top",
 
-    path {
-      fill: ${color.mediumdark};
-    }
-  }
+    path: {
+      fill: theme.color.mediumdark,
+    },
+  },
 
-  &:hover {
-    background: ${background.calmBlue};
-    cursor: pointer;
+  "&:hover": {
+    background: theme.background.hoverable,
+    cursor: "pointer",
 
-    .sbds-list-item-right svg {
-      opacity: 1;
-    }
-  }
+    ".sbds-list-item-right svg": {
+      opacity: 1,
+    },
+  },
 
-  ${props.active &&
-  css`
-    .sbds-list-item-title {
-      font-weight: ${typography.weight.bold};
-    }
-    .sbds-list-item-title,
-    .sbds-list-item-center {
-      color: ${props.activeColor};
-    }
+  ...(active && {
+    ".sbds-list-item-title": {
+      fontWeight: theme.typography.weight.bold,
+    },
+    ".sbds-list-item-title, .sbds-list-item-center": {
+      color: activeColor,
+    },
+    ".sbds-list-item-right svg": {
+      opacity: 1,
+      path: {
+        fill: activeColor,
+      },
+    },
+  }),
 
-    .sbds-list-item-right svg {
-      opacity: 1;
-      path {
-        fill: ${props.activeColor};
-      }
-    }
-  `};
+  ...(isLoading && {
+    ".sbds-list-item-title": {
+      ...inlineGlow,
+      flex: "0 1 auto",
+      display: "inline-block",
+    },
+  }),
 
-  ${props.isLoading &&
-  css`
-    .sbds-list-item-title {
-      ${inlineGlow};
-      flex: 0 1 auto;
-      display: inline-block;
-    }
-  `};
+  ...(disabled && {
+    cursor: "not-allowed !important",
+    ".sbds-list-item-title, .sbds-list-item-center": {
+      color: theme.color.mediumdark,
+    },
+  }),
+});
 
-  ${props.disabled &&
-  css`
-    cursor: not-allowed !important;
-    .sbds-list-item-title,
-    .sbds-list-item-center {
-      color: ${color.mediumdark};
-    }
-  `};
-`;
-
-const Item = styled(
+const LinkItem = styled(
   ({
     active,
     activeColor,
@@ -143,25 +142,23 @@ const Item = styled(
     // eslint-disable-next-line jsx-a11y/anchor-has-content
     return <a {...rest} />;
   }
-)`
-  ${linkStyles}
-`;
+)(linkStyles);
+
+const NormalItem = styled.span(linkStyles);
 
 // `LinkWrapper` is an input prop that gets internally wrapped with this function here
 // `weakMemoize` ensures that for any given `LinkWrapper` we always createa single "WrappedLinkWrapper"
 // without this memoization the `LinkWrapper` gets *remounted* each render
 // this happens because React can't reconcile it correctly, given that the component's type (a styled component) is recreated each render
-const buildStyledLinkWrapper = weakMemoize(
-  (LinkWrapper: LinkWrapperType) => styled(
+const buildStyledLinkWrapper = weakMemoize((LinkWrapper: LinkWrapperType) =>
+  styled(
     ({
       active,
       isLoading,
       activeColor,
       ...linkWrapperRest
     }: ComponentProps<LinkWrapperType> & LinkStyleProps) => <LinkWrapper {...linkWrapperRest} />
-  )`
-    ${linkStyles}
-  `
+  )(linkStyles)
 );
 
 type StyledLinkWrapperProps = ComponentProps<ReturnType<typeof buildStyledLinkWrapper>>;
@@ -177,6 +174,7 @@ interface ListItemProps {
   disabled?: boolean;
   LinkWrapper?: LinkWrapperType | null;
   onClick?: ComponentProps<typeof ItemInner>["onClick"];
+  isLink?: boolean;
 }
 
 export const ListItem = ({
@@ -187,9 +185,11 @@ export const ListItem = ({
   right,
   onClick,
   LinkWrapper,
+  isLink = true,
   ...rest
 }: ListItemProps & Omit<StyledLinkWrapperProps, "activeColor">) => {
-  const listItemActiveColor = color[appearance];
+  const theme = useTheme();
+  const listItemActiveColor = theme.color[appearance];
   const linkInner = (
     <ItemInner onClick={onClick} role="presentation">
       {left && <Left className="sbds-list-item-left">{left}</Left>}
@@ -210,6 +210,8 @@ export const ListItem = ({
       </ItemWrapper>
     );
   }
+
+  const Item = isLink ? LinkItem : NormalItem;
 
   return (
     <ItemWrapper>

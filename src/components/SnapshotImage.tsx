@@ -1,8 +1,9 @@
 import { PhotoIcon, ShareAltIcon } from "@storybook/icons";
-import { styled } from "@storybook/theming";
+import { styled, useTheme } from "@storybook/theming";
 import React, { ComponentProps } from "react";
 
 import { CaptureImage, CaptureOverlayImage, ComparisonResult, Test } from "../gql/graphql";
+import { Stack } from "./Stack";
 import { Text } from "./Text";
 
 export const Container = styled.div<{ href?: string; target?: string }>(
@@ -27,23 +28,21 @@ export const Container = styled.div<{ href?: string; target?: string }>(
       flexDirection: "column",
       alignItems: "center",
       width: "100%",
-      margin: "30px 15px",
-      color: theme.color.mediumdark,
       p: {
         maxWidth: 380,
         textAlign: "center",
       },
       svg: {
-        width: 28,
-        height: 28,
+        width: 24,
+        height: 24,
       },
     },
     "& > svg": {
       position: "absolute",
       left: "calc(50% - 14px)",
       top: "calc(50% - 14px)",
-      width: 28,
-      height: 28,
+      width: 20,
+      height: 20,
       color: theme.color.lightest,
       opacity: 0,
       transition: "opacity 0.1s ease-in-out",
@@ -53,6 +52,7 @@ export const Container = styled.div<{ href?: string; target?: string }>(
   ({ href }) =>
     href && {
       display: "inline-flex",
+      cursor: "pointer",
       "&:hover": {
         "& > svg": {
           opacity: 1,
@@ -63,6 +63,10 @@ export const Container = styled.div<{ href?: string; target?: string }>(
       },
     }
 );
+
+const StyledStack = styled(Stack)(({ theme }) => ({
+  margin: "30px 15px",
+}));
 
 interface SnapshotImageProps {
   componentName?: NonNullable<NonNullable<Test["story"]>["component"]>["name"];
@@ -92,10 +96,13 @@ export const SnapshotImage = ({
   focusVisible,
   ...props
 }: SnapshotImageProps & ComponentProps<typeof Container>) => {
+  const theme = useTheme();
   const hasDiff = !!latestImage && !!diffImage && comparisonResult === ComparisonResult.Changed;
   const hasError = comparisonResult === ComparisonResult.CaptureError;
   const hasFocus = hasDiff && !!focusImage;
-  const containerProps = hasDiff ? { as: "a" as any, href: testUrl, target: "_blank" } : {};
+  const containerProps = hasDiff
+    ? { as: "a" as any, href: testUrl, target: "_blank", title: "View on Chromatic.com" }
+    : {};
   const showDiff = hasDiff && diffVisible;
   const showFocus = hasFocus && focusVisible;
 
@@ -106,7 +113,6 @@ export const SnapshotImage = ({
           alt={`Latest snapshot for the '${storyName}' story of the '${componentName}' component`}
           src={latestImage.imageUrl}
           style={{
-            opacity: showDiff && !showFocus ? 0.7 : 1,
             display: baselineImageVisible ? "none" : "block",
           }}
         />
@@ -116,7 +122,6 @@ export const SnapshotImage = ({
           alt={`Baseline snapshot for the '${storyName}' story of the '${componentName}' component`}
           src={baselineImage.imageUrl}
           style={{
-            opacity: showDiff && !showFocus ? 0.7 : 1,
             display: baselineImageVisible ? "block" : "none",
           }}
         />
@@ -128,7 +133,7 @@ export const SnapshotImage = ({
           src={diffImage.imageUrl}
           style={{
             maxWidth: `${(diffImage.imageWidth / latestImage.imageWidth) * 100}%`,
-            opacity: showDiff ? 1 : 0,
+            opacity: showDiff ? 0.7 : 0,
           }}
         />
       )}
@@ -139,20 +144,21 @@ export const SnapshotImage = ({
           src={focusImage.imageUrl}
           style={{
             maxWidth: `${(focusImage.imageWidth / latestImage.imageWidth) * 100}%`,
-            opacity: showFocus ? 1 : 0,
+            opacity: showFocus ? 0.7 : 0,
+            filter: showFocus ? "blur(2px)" : "none",
           }}
         />
       )}
       {hasDiff && <ShareAltIcon />}
       {hasError && !latestImage && (
-        <div>
-          <PhotoIcon />
-          <Text>
+        <StyledStack>
+          <PhotoIcon color={theme.base === "light" ? "currentColor" : theme.color.medium} />
+          <Text center muted>
             A snapshot couldn’t be captured. This often occurs when a story has a code error.
             Confirm that this story successfully renders in your local Storybook and run the build
             again.
           </Text>
-        </div>
+        </StyledStack>
       )}
     </Container>
   );

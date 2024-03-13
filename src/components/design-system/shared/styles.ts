@@ -166,7 +166,7 @@ export const headers = {
 
 export const subheading = {
   regular: css({
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: typography.weight.extrabold,
     lineHeight: "18px",
     letterSpacing: "0.38em",
@@ -181,12 +181,12 @@ export const subheading = {
 
 export const text = {
   storybookMediumBold: css({
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: typography.weight.bold,
     lineHeight: "18px",
   }),
   storybookMedium: css({
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: typography.weight.regular,
     lineHeight: "18px",
   }),

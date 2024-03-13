@@ -1,7 +1,12 @@
 import type { API } from "@storybook/manager-api";
-import type { GitInfo, TaskName } from "chromatic/node";
+import type { Configuration, getConfiguration, GitInfo, TaskName } from "chromatic/node";
 
 import { SelectedBuildFieldsFragment } from "./gql/graphql";
+
+declare global {
+  // eslint-disable-next-line no-var, vars-on-top
+  var CONFIG_TYPE: string;
+}
 
 export type AnnouncedBuild = Extract<SelectedBuildFieldsFragment, { __typename: "AnnouncedBuild" }>;
 export type PublishedBuild = Extract<SelectedBuildFieldsFragment, { __typename: "PublishedBuild" }>;
@@ -16,6 +21,16 @@ export type UpdateStatusFunction = (
   update: StoryStatusUpdater
 ) => ReturnType<API["experimental_updateStatus"]>;
 
+export type ConfigurationUpdate = {
+  // Suggestions adhere to the Configuration schema, but may be null to suggest removal
+  [Property in keyof Configuration]: Configuration[Property] | null;
+};
+
+export type ConfigInfoPayload = {
+  configuration: Awaited<ReturnType<typeof getConfiguration>>;
+  problems?: ConfigurationUpdate;
+  suggestions?: ConfigurationUpdate;
+};
 export type GitInfoPayload = Omit<GitInfo, "committerEmail" | "committerName">;
 
 export type ProjectInfoPayload = {
@@ -55,7 +70,7 @@ export type LocalBuildProgress = {
 
   // Possibly this should be a type exported by the CLI -- these correspond to tasks
   /** The step of the build process we have reached */
-  currentStep: KnownStep | "aborted" | "complete" | "error";
+  currentStep: KnownStep | "aborted" | "complete" | "error" | "limited";
 
   /** Number of visual changes detected */
   changeCount?: number;
@@ -68,6 +83,9 @@ export type LocalBuildProgress = {
 
   /** The original error without formatting */
   originalError?: Error | Error[];
+
+  /** URL relevant to the error */
+  errorDetailsUrl?: string;
 
   /** Progress tracking data for each step */
   stepProgress: Record<KnownStep, StepProgressPayload>;

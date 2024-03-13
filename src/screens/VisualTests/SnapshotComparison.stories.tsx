@@ -6,13 +6,7 @@ import type { StoryContext } from "@storybook/types";
 import { delay, http } from "msw";
 import React, { ComponentProps } from "react";
 
-import {
-  Browser,
-  ComparisonResult,
-  SelectedBuildFieldsFragment,
-  TestResult,
-  TestStatus,
-} from "../../gql/graphql";
+import { Browser, ComparisonResult, TestResult, TestStatus } from "../../gql/graphql";
 import { panelModes } from "../../modes";
 import { playAll } from "../../utils/playAll";
 import { makeComparison, makeTest, makeTests } from "../../utils/storyData";
@@ -257,3 +251,26 @@ export const InteractionFailure = {
     selectedBuild: withTests(build, interactionFailureTests),
   },
 };
+
+export const NewBaseline = {
+  parameters: {
+    selectedBuild: withTests(
+      build,
+      makeTests({
+        browsers: [Browser.Chrome, Browser.Safari],
+        viewports: [
+          { status: TestStatus.Passed, viewport: 800 },
+          {
+            status: TestStatus.Pending,
+            result: TestResult.Changed,
+            viewport: 1200,
+            comparisons: [
+              makeComparison({ result: ComparisonResult.Added, baseCapture: null }),
+              makeComparison({ result: ComparisonResult.Equal }),
+            ],
+          },
+        ],
+      })
+    ),
+  },
+} satisfies Story;

@@ -10,9 +10,9 @@ export const FooterSection = ({
   setAccessToken: (accessToken: string | null) => void;
   render?: ({ menu }: { menu: ReactNode }) => ReactNode;
 }) => {
-  const menu = <FooterMenu setAccessToken={setAccessToken} />;
+  const menu = <FooterMenu />;
   return (
-    <Section last>
+    <Section>
       <Bar>
         {render ? (
           render({ menu })

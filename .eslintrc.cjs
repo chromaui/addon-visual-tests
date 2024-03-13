@@ -18,6 +18,7 @@ module.exports = {
         minimumDescriptionLength: 3,
       },
     ],
+    "jest/no-deprecated-functions": "off",
   },
   parser: "@typescript-eslint/parser",
   parserOptions: {

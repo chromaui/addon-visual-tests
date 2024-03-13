@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 // eslint-disable-next-line import/no-unresolved
 import { VariablesOf } from "@graphql-typed-document-node/core";
-import { expect } from "@storybook/jest";
 import type { Meta, StoryObj } from "@storybook/react";
-import { fn } from "@storybook/test";
+import { expect, fn } from "@storybook/test";
 import {
   findByLabelText,
   findByRole,
@@ -17,8 +16,6 @@ import { delay, HttpResponse } from "msw";
 import React from "react";
 
 import { INITIAL_BUILD_PAYLOAD } from "../../buildSteps";
-// TODO: Remove after completing AP-3586
-// import { WALKTHROUGH_COMPLETED_KEY } from "../../constants";
 import type {
   LastBuildOnBranchBuildFieldsFragment,
   MakeOptional,
@@ -30,7 +27,6 @@ import {
   withGraphQLMutationParameters,
   withGraphQLQueryParameters,
 } from "../../utils/gqlStoryHelpers";
-import { GraphQLClientProvider } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
 import { makeComparison, makeTest, makeTests } from "../../utils/storyData";
 import { storyWrapper } from "../../utils/storyWrapper";
@@ -92,6 +88,9 @@ function mapQuery(
     },
     selectedBuild,
     viewer: {
+      preferences: {
+        vtaOnboarding: "COMPLETED",
+      },
       projectMembership: {
         userCanReview,
       },
@@ -121,15 +120,7 @@ type StoryArgs = Parameters<typeof VisualTestsWithoutSelectedBuildId>[0] & {
 const meta = {
   title: "screens/VisualTests/VisualTests",
   component: VisualTestsWithoutSelectedBuildId,
-  decorators: [
-    storyWrapper(ControlsProvider),
-    storyWrapper(GraphQLClientProvider),
-    (Story) => {
-      // TODO: Need to replace this mocking when completing AP-3586 - mock the graphql query instead
-      // localStorage.setItem(WALKTHROUGH_COMPLETED_KEY, "true");
-      return <Story />;
-    },
-  ],
+  decorators: [storyWrapper(ControlsProvider)],
   parameters: { chromatic: { modes: panelModes } },
   argTypes: {
     addNotification: { type: "function", target: "manager-api" },
@@ -159,8 +150,6 @@ const meta = {
     },
     storyId: "button--primary",
     projectId: "Project:id123",
-    startDevBuild: fn(),
-    setAccessToken: fn(),
     setOutdated: fn(),
     updateBuildStatus: fn(),
     addNotification: fn(),
@@ -207,7 +196,7 @@ export const NoAccess = {
           {
             extensions: { code: "FORBIDDEN" },
             locations: [{ line: 13, column: 3 }],
-            message: "No Access",
+            message: "No access",
             path: ["selectedBuild"],
           },
         ],

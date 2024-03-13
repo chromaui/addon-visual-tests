@@ -13,6 +13,7 @@ import React, { useEffect, useRef } from "react";
 
 import { BUILD_STEP_CONFIG, BUILD_STEP_ORDER } from "../../buildSteps";
 import { BuildProgressLabel } from "../../components/BuildProgressLabel";
+import { Code } from "../../components/Code";
 import { IconButton } from "../../components/IconButton";
 import { LocalBuildProgress } from "../../types";
 
@@ -24,7 +25,7 @@ const spin = keyframes({
 const stepIconStyle = { width: 10, marginRight: 8 };
 
 const Header = styled.button<{ isWarning?: boolean }>(({ isWarning, onClick, theme }) => {
-  const warningColor = theme.base === "dark" ? "#2e271a" : theme.background.warning;
+  const warningColor = theme.base === "light" ? theme.background.warning : "#2e271a";
   return {
     position: "relative",
     display: "flex",
@@ -46,14 +47,14 @@ const Header = styled.button<{ isWarning?: boolean }>(({ isWarning, onClick, the
 
     code: {
       fontFamily: theme.typography.fonts.mono,
-      fontSize: theme.typography.size.s1,
+      fontSize: "12px",
     },
   };
 });
 
 const Bar = styled.div<{ isWarning?: boolean; percentage: number }>(
   ({ isWarning, percentage, theme }) => {
-    const warningColor = theme.base === "dark" ? "#43361f" : "#FFE6B1";
+    const warningColor = theme.base === "light" ? "#FFE6B1" : "#43361f";
     return {
       display: "block",
       position: "absolute",
@@ -81,10 +82,11 @@ const ExpandableDiv = styled.div<{ expanded: boolean }>(({ expanded, theme }) =>
   transition: "grid-template-rows 150ms ease-out",
 }));
 
-const StepDetails = styled.div({
+const StepDetails = styled.div(({ theme }) => ({
   whiteSpace: "nowrap",
   overflow: "hidden",
-});
+  color: theme.base === "light" ? theme.color.dark : theme.color.lightest,
+}));
 
 const StepDetail = styled.div<{ isCurrent: boolean; isFailed: boolean; isPending: boolean }>(
   ({ isCurrent, isFailed, isPending, theme }) => ({
@@ -226,15 +228,15 @@ export const BuildEyebrow = ({
     if (!switchToLastBuildOnBranch) {
       return (
         <Label>
-          Reviewing is disabled because there's a newer build on <code>{branch}</code>.
+          Reviewing is disabled because there&rsquo;s a newer build on <Code>{branch}</Code>.
         </Label>
       );
     }
     if (lastBuildOnBranchInProgress) {
       return (
         <Label>
-          Reviewing is disabled because there's a newer build in progress on main. This can happen
-          when a build runs in CI.
+          Reviewing is disabled because there&rsquo;s a newer build in progress on{" "}
+          <Code>{branch}</Code>. This can happen when a build runs in CI.
         </Label>
       );
     }

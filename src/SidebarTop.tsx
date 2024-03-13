@@ -1,4 +1,4 @@
-import { type API, useChannel } from "@storybook/manager-api";
+import { type API, useChannel, useStorybookState } from "@storybook/manager-api";
 import { color } from "@storybook/theming";
 import pluralize from "pluralize";
 import React, { useEffect, useRef } from "react";
@@ -6,13 +6,15 @@ import React, { useEffect, useRef } from "react";
 import { SidebarTopButton } from "./components/SidebarTopButton";
 import {
   ADDON_ID,
+  CONFIG_INFO,
   GIT_INFO_ERROR,
   IS_OUTDATED,
   LOCAL_BUILD_PROGRESS,
+  PANEL_ID,
   START_BUILD,
   STOP_BUILD,
 } from "./constants";
-import { LocalBuildProgress } from "./types";
+import { ConfigInfoPayload, LocalBuildProgress } from "./types";
 import { useAccessToken } from "./utils/graphQLClient";
 import { useProjectId } from "./utils/useProjectId";
 import { useSharedState } from "./utils/useSharedState";
@@ -22,7 +24,7 @@ interface SidebarTopProps {
 }
 
 export const SidebarTop = ({ api }: SidebarTopProps) => {
-  const { addNotification, clearNotification } = api;
+  const { addNotification, clearNotification, setOptions, togglePanel } = api;
 
   const { projectId } = useProjectId();
   const [accessToken] = useAccessToken();
@@ -32,11 +34,19 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
   const [localBuildProgress] = useSharedState<LocalBuildProgress>(LOCAL_BUILD_PROGRESS);
   const isRunning =
     !!localBuildProgress &&
-    !["aborted", "complete", "error"].includes(localBuildProgress.currentStep);
+    !["aborted", "complete", "error", "limited"].includes(localBuildProgress.currentStep);
+
+  const [configInfo] = useSharedState<ConfigInfoPayload>(CONFIG_INFO);
+  const hasConfigProblem = Object.keys(configInfo?.problems || {}).length > 0;
 
   const [gitInfoError] = useSharedState<Error>(GIT_INFO_ERROR);
 
   const lastStep = useRef(localBuildProgress?.currentStep);
+  const { status } = useStorybookState();
+  const changedStoryCount = Object.values(status).filter(
+    (value) => value[ADDON_ID]?.status === "warn"
+  );
+
   useEffect(() => {
     if (localBuildProgress?.currentStep === lastStep.current) return;
     lastStep.current = localBuildProgress?.currentStep;
@@ -83,8 +93,11 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
           // eslint-disable-next-line no-nested-ternary
           subHeadline: localBuildProgress.errorCount
             ? `Encountered ${pluralize("component error", localBuildProgress.errorCount, true)}`
-            : localBuildProgress.changeCount
-            ? `Found ${pluralize("change", localBuildProgress.changeCount, true)}`
+            : changedStoryCount.length
+            ? `Found ${pluralize("story", changedStoryCount.length, true)} with ${pluralize(
+                "change",
+                changedStoryCount.length
+              )}`
             : "No visual changes detected",
         },
         icon: {
@@ -112,27 +125,57 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
         link: undefined,
       });
     }
+
+    if (localBuildProgress?.currentStep === "limited") {
+      addNotification({
+        id: `${ADDON_ID}/build-limited`,
+        content: {
+          headline: "Build limited",
+          subHeadline:
+            "Your account has insufficient snapshots remaining to run this build. Visit your billing page to find out more.",
+        },
+        icon: {
+          name: "failed",
+          color: color.negative,
+        },
+        // @ts-expect-error SB needs a proper API for no link
+        link: undefined,
+      });
+    }
   }, [
     addNotification,
     clearNotification,
     localBuildProgress?.currentStep,
     localBuildProgress?.errorCount,
     localBuildProgress?.changeCount,
+    changedStoryCount.length,
   ]);
 
   const emit = useChannel({});
   const startBuild = () => emit(START_BUILD, { accessToken });
   const stopBuild = () => emit(STOP_BUILD);
 
-  if (!projectId || isLoggedIn === false || gitInfoError) {
+  let warning;
+  if (!projectId) warning = "Visual tests locked until a project is selected.";
+  if (!isLoggedIn) warning = "Visual tests locked until you are logged in.";
+  if (gitInfoError) warning = "Visual tests locked due to Git synchronization problem.";
+  if (hasConfigProblem) warning = "Visual tests locked due to configuration problem.";
+
+  if (global.CONFIG_TYPE !== "DEVELOPMENT") {
     return null;
   }
 
   return (
     <SidebarTopButton
+      isDisabled={!!warning}
       isOutdated={isOutdated}
       isRunning={isRunning}
       localBuildProgress={localBuildProgress}
+      warning={warning}
+      clickWarning={() => {
+        setOptions({ selectedPanel: PANEL_ID });
+        togglePanel(true);
+      }}
       startBuild={startBuild}
       stopBuild={stopBuild}
     />

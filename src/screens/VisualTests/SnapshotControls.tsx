@@ -15,13 +15,14 @@ import React from "react";
 import { ActionButton, ButtonGroup } from "../../components/ActionButton";
 import { IconButton } from "../../components/IconButton";
 import { ProgressIcon } from "../../components/icons/ProgressIcon";
-import { Text } from "../../components/layout";
 import { Placeholder } from "../../components/Placeholder";
+import { Text } from "../../components/Text";
 import { TooltipMenu } from "../../components/TooltipMenu";
 import { ComparisonResult, ReviewTestBatch, TestStatus } from "../../gql/graphql";
 import { useSelectedStoryState } from "./BuildContext";
 import { useControlsDispatch, useControlsState } from "./ControlsContext";
 import { useReviewTestState } from "./ReviewTestContext";
+import { useRunBuildState } from "./RunBuildContext";
 
 const Label = styled.div(({ theme }) => ({
   gridArea: "label",
@@ -47,7 +48,7 @@ const Label = styled.div(({ theme }) => ({
 
 const Controls = styled.div({
   gridArea: "controls",
-  margin: "8px 15px",
+  margin: "6px 15px",
   display: "flex",
   alignItems: "center",
   justifyContent: "flex-end",
@@ -57,6 +58,16 @@ const Controls = styled.div({
     margin: 8,
   },
 });
+
+const DisabledIconWrapper = styled.div(({ theme }) => ({
+  padding: 9,
+  "> svg": {
+    display: "block",
+  },
+  path: {
+    fill: theme.color.mediumdark,
+  },
+}));
 
 const Actions = styled.div<{ showDivider?: boolean }>(({ theme, showDivider }) => ({
   gridArea: "actions",
@@ -78,15 +89,10 @@ const Actions = styled.div<{ showDivider?: boolean }>(({ theme, showDivider }) =
   },
 }));
 
-export const SnapshotControls = ({
-  isOutdated,
-  startDevBuild,
-}: {
-  isOutdated: boolean;
-  startDevBuild: () => void;
-}) => {
+export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
   const { baselineImageVisible, diffVisible, focusVisible } = useControlsState();
   const { toggleBaselineImage, toggleDiff, toggleFocus } = useControlsDispatch();
+  const { isRunning, startBuild } = useRunBuildState();
 
   const { selectedTest, selectedComparison, summary } = useSelectedStoryState();
   const { changeCount, isInProgress } = summary;
@@ -109,68 +115,66 @@ export const SnapshotControls = ({
 
   return (
     <>
-      <Label>
-        <Text>
-          <b>
-            {baselineImageVisible ? "Baseline" : "Latest"}
-            <span> snapshot</span>
-          </b>
-        </Text>
-      </Label>
+      {hasControls && (
+        <Label>
+          <Text>
+            <b>
+              {baselineImageVisible ? "Baseline" : "Latest"}
+              <span> snapshot</span>
+            </b>
+          </Text>
+        </Label>
+      )}
 
-      <Controls>
-        {hasControls && (
-          <>
-            <WithTooltip
-              tooltip={
-                <TooltipNote
-                  note={baselineImageVisible ? "Show latest snapshot" : "Show baseline snapshot"}
-                />
-              }
-              trigger="hover"
-              hasChrome={false}
+      {hasControls && (
+        <Controls>
+          <WithTooltip
+            tooltip={
+              <TooltipNote
+                note={baselineImageVisible ? "Show latest snapshot" : "Show baseline snapshot"}
+              />
+            }
+            trigger="hover"
+            hasChrome={false}
+          >
+            <IconButton
+              id="button-toggle-snapshot"
+              aria-label={baselineImageVisible ? "Show latest snapshot" : "Show baseline snapshot"}
+              onClick={() => toggleBaselineImage()}
             >
-              <IconButton
-                id="button-toggle-snapshot"
-                aria-label={
-                  baselineImageVisible ? "Show latest snapshot" : "Show baseline snapshot"
-                }
-                onClick={() => toggleBaselineImage()}
-              >
-                <TransferIcon />
-              </IconButton>
-            </WithTooltip>
-            <WithTooltip
-              tooltip={<TooltipNote note={focusVisible ? "Hide spotlight" : "Show spotlight"} />}
-              trigger="hover"
-              hasChrome={false}
+              <TransferIcon />
+            </IconButton>
+          </WithTooltip>
+          <WithTooltip
+            tooltip={<TooltipNote note={focusVisible ? "Hide spotlight" : "Show spotlight"} />}
+            trigger="hover"
+            hasChrome={false}
+          >
+            <IconButton
+              id="button-toggle-spotlight"
+              active={focusVisible}
+              aria-label={focusVisible ? "Hide spotlight" : "Show spotlight"}
+              onClick={() => toggleFocus(!focusVisible)}
             >
-              <IconButton
-                id="button-toggle-spotlight"
-                active={focusVisible}
-                aria-label={focusVisible ? "Hide spotlight" : "Show spotlight"}
-                onClick={() => toggleFocus(!focusVisible)}
-              >
-                <LocationIcon />
-              </IconButton>
-            </WithTooltip>
-            <WithTooltip
-              tooltip={<TooltipNote note={diffVisible ? "Hide diff" : "Show diff"} />}
-              trigger="hover"
-              hasChrome={false}
+              <LocationIcon />
+            </IconButton>
+          </WithTooltip>
+          <WithTooltip
+            tooltip={<TooltipNote note={diffVisible ? "Hide diff" : "Show diff"} />}
+            trigger="hover"
+            hasChrome={false}
+          >
+            <IconButton
+              id="button-diff-visible"
+              active={diffVisible}
+              aria-label={diffVisible ? "Hide diff" : "Show diff"}
+              onClick={() => toggleDiff(!diffVisible)}
             >
-              <IconButton
-                id="button-diff-visible"
-                active={diffVisible}
-                aria-label={diffVisible ? "Hide diff" : "Show diff"}
-                onClick={() => toggleDiff(!diffVisible)}
-              >
-                <ContrastIcon />
-              </IconButton>
-            </WithTooltip>
-          </>
-        )}
-      </Controls>
+              <ContrastIcon />
+            </IconButton>
+          </WithTooltip>
+        </Controls>
+      )}
 
       {(isAcceptable || isUnacceptable) && (
         <Actions showDivider={hasControls}>
@@ -309,9 +313,9 @@ export const SnapshotControls = ({
               trigger="hover"
               hasChrome={false}
             >
-              <IconButton as="span">
+              <DisabledIconWrapper>
                 <LockIcon />
-              </IconButton>
+              </DisabledIconWrapper>
             </WithTooltip>
           )}
 
@@ -323,7 +327,8 @@ export const SnapshotControls = ({
             <ActionButton
               containsIcon
               aria-label={isOutdated ? "Run new tests" : "Rerun tests"}
-              onClick={() => startDevBuild()}
+              onClick={startBuild}
+              disabled={isRunning}
               secondary
             >
               {isOutdated ? <PlayIcon /> : <SyncIcon />}

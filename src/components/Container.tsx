@@ -1,11 +1,10 @@
 import { styled } from "@storybook/theming";
 
-export const Container = styled.div(({ theme }) => ({
-  background: theme.background.app,
+export const Container = styled.div({
   display: "flex",
   flexDirection: "column",
+  flexGrow: 1,
   alignItems: "center",
   justifyContent: "center",
-  minHeight: "100%",
   padding: 10,
-}));
+});

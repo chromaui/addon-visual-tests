@@ -7,11 +7,11 @@ import { IconButton } from "./IconButton";
 const themeColors = ({ theme, secondary, status }: { theme: Theme } & ActionButtonProps) => {
   if (secondary) {
     return {
-      color: theme.color.defaultText,
+      color: theme.base === "light" ? theme.color.dark : theme.color.medium,
       backgroundColor: theme.background.app,
-      borderColor: theme.base === "dark" ? theme.color.darker : theme.color.medium,
+      borderColor: theme.base === "light" ? theme.color.medium : theme.color.darker,
       "&:hover": {
-        color: theme.color.defaultText,
+        color: theme.base === "light" ? theme.color.darkest : theme.color.lighter,
         backgroundColor: darken(0.03, theme.background.app),
       },
     };
@@ -43,9 +43,9 @@ const themeColors = ({ theme, secondary, status }: { theme: Theme } & ActionButt
     backgroundColor: theme.color.secondary,
     borderWidth: 0,
     borderColor:
-      theme.base === "dark"
-        ? darken(0.1, theme.color.secondary)
-        : lighten(0.2, theme.color.secondary),
+      theme.base === "light"
+        ? lighten(0.2, theme.color.secondary)
+        : darken(0.1, theme.color.secondary),
     "&:hover": {
       color: theme.color.lightest,
       backgroundColor: darken(0.05, theme.color.secondary),
@@ -62,6 +62,7 @@ export const ActionButton: React.FC<ActionButtonProps> = styled(IconButton)<Acti
   ({ containsIcon }) => ({
     border: `1px solid transparent`,
     boxShadow: "none",
+    fontSize: 12,
     fontWeight: 700,
     height: 28,
     padding: containsIcon ? "8px 6px" : 8,
@@ -73,6 +74,7 @@ export const ActionButton: React.FC<ActionButtonProps> = styled(IconButton)<Acti
     },
     "@container (min-width: 800px)": {
       height: 28,
+      fontSize: 12,
       width: containsIcon ? 28 : "auto",
       padding: containsIcon ? "8px 6px" : 8,
     },

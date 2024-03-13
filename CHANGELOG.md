@@ -1,3 +1,340 @@
+# v1.2.18 (Mon Mar 11 2024)
+
+#### 🐛 Bug Fix
+
+- Restyled the Config options and updated colors/fonts [#202](https://github.com/chromaui/addon-visual-tests/pull/202) ([@MichaelArestad](https://github.com/MichaelArestad))
+
+#### Authors: 1
+
+- Michael Arestad ([@MichaelArestad](https://github.com/MichaelArestad))
+
+---
+
+# v1.2.17 (Mon Mar 11 2024)
+
+#### 🐛 Bug Fix
+
+- Hide 'Skip' button on last step of onboarding [#214](https://github.com/chromaui/addon-visual-tests/pull/214) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v1.2.16 (Mon Mar 11 2024)
+
+#### 🐛 Bug Fix
+
+- Fix snapshot image opacity [#212](https://github.com/chromaui/addon-visual-tests/pull/212) ([@ghengeveld](https://github.com/ghengeveld))
+- Avoid passing invalid attributes to `img` element [#213](https://github.com/chromaui/addon-visual-tests/pull/213) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v1.2.15 (Mon Mar 11 2024)
+
+#### 🐛 Bug Fix
+
+- Show shorter label on very small viewports [#211](https://github.com/chromaui/addon-visual-tests/pull/211) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v1.2.14 (Mon Mar 11 2024)
+
+#### 🐛 Bug Fix
+
+- Automatically clear notification when connection is restored [#210](https://github.com/chromaui/addon-visual-tests/pull/210) ([@ghengeveld](https://github.com/ghengeveld))
+- Wrap all screens with ControlsProvider and ignore config warnings on Authentication screens [#209](https://github.com/chromaui/addon-visual-tests/pull/209) ([@ghengeveld](https://github.com/ghengeveld))
+- Fix 'Rerun tests' button sizing [#208](https://github.com/chromaui/addon-visual-tests/pull/208) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v1.2.13 (Mon Mar 11 2024)
+
+#### 🐛 Bug Fix
+
+- Fix inlineGlow animation [#207](https://github.com/chromaui/addon-visual-tests/pull/207) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v1.2.12 (Fri Mar 08 2024)
+
+#### 🐛 Bug Fix
+
+- Preserve selected mode and/or browser, if possible, while navigating between stories [#203](https://github.com/chromaui/addon-visual-tests/pull/203) ([@andrewortwein](https://github.com/andrewortwein))
+
+#### Authors: 1
+
+- Andrew Ortwein ([@andrewortwein](https://github.com/andrewortwein))
+
+---
+
+# v1.2.11 (Fri Mar 08 2024)
+
+#### 🐛 Bug Fix
+
+- Show screen when there's no dev server [#205](https://github.com/chromaui/addon-visual-tests/pull/205) ([@thafryer](https://github.com/thafryer))
+
+#### Authors: 1
+
+- Jarel Fryer ([@thafryer](https://github.com/thafryer))
+
+---
+
+# v1.2.10 (Fri Mar 08 2024)
+
+#### 🐛 Bug Fix
+
+- Remove nested a from Project Picker [#204](https://github.com/chromaui/addon-visual-tests/pull/204) ([@thafryer](https://github.com/thafryer))
+
+#### Authors: 1
+
+- Jarel Fryer ([@thafryer](https://github.com/thafryer))
+
+---
+
+# v1.2.9 (Thu Mar 07 2024)
+
+#### 🐛 Bug Fix
+
+- Clear all notifications when starting guided tour [#200](https://github.com/chromaui/addon-visual-tests/pull/200) ([@ghengeveld](https://github.com/ghengeveld))
+- Fix "run tests" button and other UI issues [#199](https://github.com/chromaui/addon-visual-tests/pull/199) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v1.2.8 (Thu Mar 07 2024)
+
+#### 🐛 Bug Fix
+
+- Show error when build is limited (account is out of snapshots) [#194](https://github.com/chromaui/addon-visual-tests/pull/194) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v1.2.7 (Wed Mar 06 2024)
+
+#### 🐛 Bug Fix
+
+- Ensure onboarding is triggered when query param is set [#198](https://github.com/chromaui/addon-visual-tests/pull/198) ([@thafryer](https://github.com/thafryer))
+
+#### Authors: 1
+
+- Jarel Fryer ([@thafryer](https://github.com/thafryer))
+
+---
+
+# v1.2.6 (Tue Mar 05 2024)
+
+#### 🐛 Bug Fix
+
+- Rerender Joyride when changing Storybook layout [#197](https://github.com/chromaui/addon-visual-tests/pull/197) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v1.2.5 (Tue Mar 05 2024)
+
+#### 🐛 Bug Fix
+
+- Prevent flashing wrong screen by increasing timeout [#195](https://github.com/chromaui/addon-visual-tests/pull/195) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v1.2.4 (Tue Mar 05 2024)
+
+#### 🐛 Bug Fix
+
+- Show notification when connection to server is lost [#196](https://github.com/chromaui/addon-visual-tests/pull/196) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v1.2.3 (Tue Mar 05 2024)
+
+#### 🐛 Bug Fix
+
+- Various fixes [#193](https://github.com/chromaui/addon-visual-tests/pull/193) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v1.2.2 (Mon Mar 04 2024)
+
+#### 🐛 Bug Fix
+
+- Use API to track when onboarding is completed or dismissed [#192](https://github.com/chromaui/addon-visual-tests/pull/192) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v1.2.1 (Tue Feb 27 2024)
+
+#### 🐛 Bug Fix
+
+- Resolve Git Info Check Regression [#190](https://github.com/chromaui/addon-visual-tests/pull/190) ([@thafryer](https://github.com/thafryer))
+
+#### Authors: 1
+
+- Jarel Fryer ([@thafryer](https://github.com/thafryer))
+
+---
+
+# v1.2.0 (Tue Feb 27 2024)
+
+#### 🚀 Enhancement
+
+- Display chromatic config and suggestion in UI panel [#176](https://github.com/chromaui/addon-visual-tests/pull/176) ([@ghengeveld](https://github.com/ghengeveld) [@thafryer](https://github.com/thafryer) [@chromatic-support](https://github.com/chromatic-support) [@andrewortwein](https://github.com/andrewortwein))
+
+#### Authors: 4
+
+- [@chromatic-support](https://github.com/chromatic-support)
+- Andrew Ortwein ([@andrewortwein](https://github.com/andrewortwein))
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Jarel Fryer ([@thafryer](https://github.com/thafryer))
+
+---
+
+# v1.1.12 (Tue Feb 27 2024)
+
+#### 🐛 Bug Fix
+
+- Align changed story count in notification and sidebar [#189](https://github.com/chromaui/addon-visual-tests/pull/189) ([@thafryer](https://github.com/thafryer))
+
+#### Authors: 1
+
+- Jarel Fryer ([@thafryer](https://github.com/thafryer))
+
+---
+
+# v1.1.11 (Mon Feb 26 2024)
+
+#### 🐛 Bug Fix
+
+- Minor copy changes and visual tweaks [#188](https://github.com/chromaui/addon-visual-tests/pull/188) ([@MichaelArestad](https://github.com/MichaelArestad))
+
+#### Authors: 1
+
+- Michael Arestad ([@MichaelArestad](https://github.com/MichaelArestad))
+
+---
+
+# v1.1.10 (Sat Feb 24 2024)
+
+#### 🐛 Bug Fix
+
+- Reset Diff Toggles for New Stories [#187](https://github.com/chromaui/addon-visual-tests/pull/187) ([@thafryer](https://github.com/thafryer))
+
+#### Authors: 1
+
+- Jarel Fryer ([@thafryer](https://github.com/thafryer))
+
+---
+
+# v1.1.9 (Fri Feb 16 2024)
+
+#### 🐛 Bug Fix
+
+- Track configuration file and suggest `storybookBaseDir` value [#175](https://github.com/chromaui/addon-visual-tests/pull/175) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v1.1.8 (Wed Feb 14 2024)
+
+#### 🐛 Bug Fix
+
+- Adjust UI to Support Dark Mode [#179](https://github.com/chromaui/addon-visual-tests/pull/179) ([@thafryer](https://github.com/thafryer) [@domyen](https://github.com/domyen))
+
+#### Authors: 2
+
+- Dominic Nguyen ([@domyen](https://github.com/domyen))
+- Jarel Fryer ([@thafryer](https://github.com/thafryer))
+
+---
+
+# v1.1.7 (Tue Feb 13 2024)
+
+#### 🐛 Bug Fix
+
+- Only throw errors for Git messages after a Project ID has been set [#186](https://github.com/chromaui/addon-visual-tests/pull/186) ([@thafryer](https://github.com/thafryer))
+
+#### Authors: 1
+
+- Jarel Fryer ([@thafryer](https://github.com/thafryer))
+
+---
+
+# v1.1.6 (Sun Feb 11 2024)
+
+#### 🐛 Bug Fix
+
+- Pull screen container `Section` into `Screen` component [#185](https://github.com/chromaui/addon-visual-tests/pull/185) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v1.1.5 (Fri Feb 09 2024)
+
+#### 🐛 Bug Fix
+
+- Refactor UI architecture to avoid repetition [#184](https://github.com/chromaui/addon-visual-tests/pull/184) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### 📝 Documentation
+
+- Docs: Minor Readme cleanup [#180](https://github.com/chromaui/addon-visual-tests/pull/180) ([@jonniebigodes](https://github.com/jonniebigodes))
+
+#### Authors: 2
+
+- [@jonniebigodes](https://github.com/jonniebigodes)
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v1.1.4 (Thu Feb 08 2024)
 
 #### 🐛 Bug Fix

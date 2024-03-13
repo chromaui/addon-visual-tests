@@ -1,66 +1,61 @@
 import { PlayIcon } from "@storybook/icons";
 import { styled } from "@storybook/theming";
+import { lighten } from "polished";
 import React, { useEffect, useState } from "react";
-import { gql } from "urql";
 
 import { BuildProgressInline } from "../../components/BuildProgressBarInline";
 import { Button } from "../../components/Button";
+import { ButtonStack } from "../../components/ButtonStack";
 import { Container } from "../../components/Container";
 import { Heading } from "../../components/Heading";
 import { VisualTestsIcon } from "../../components/icons/VisualTestsIcon";
-import { Row, Section } from "../../components/layout";
+import { Row } from "../../components/layout";
+import { Screen } from "../../components/Screen";
 import { SnapshotImageThumb } from "../../components/SnapshotImageThumb";
 import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
 import { SelectedBuildFieldsFragment } from "../../gql/graphql";
-import { GitInfoPayload, LocalBuildProgress, SelectedBuildWithTests } from "../../types";
-import {
-  useBuildState,
-  useSelectedBuildState,
-  useSelectedStoryState,
-} from "../VisualTests/BuildContext";
+import { GitInfoPayload, LocalBuildProgress } from "../../types";
+import { BuildError } from "../Errors/BuildError";
+import { BuildLimited } from "../Errors/BuildLimited";
+import { useBuildState, useSelectedStoryState } from "../VisualTests/BuildContext";
+import { useRunBuildState } from "../VisualTests/RunBuildContext";
 import onboardingAdjustSizeImage from "./onboarding-adjust-size.png";
 import onboardingColorPaletteImage from "./onboarding-color-palette.png";
 import onboardingEmbiggenImage from "./onboarding-embiggen.png";
 import onboardingLayoutImage from "./onboarding-layout.png";
 
-const ProjectQuery = gql`
-  query ProjectQuery($projectId: ID!) {
-    project(id: $projectId) {
-      id
-      name
-      webUrl
-      lastBuild {
-        branch
-        number
-      }
-    }
-  }
-`;
-
 const Box = styled.div(({ theme }) => ({
-  border: `1px solid ${theme.color.border}`,
+  border: `1px solid ${theme.appBorderColor}`,
   borderRadius: theme.appBorderRadius,
   padding: "6px 10px",
+  fontSize: 13,
   lineHeight: "18px",
 }));
 
 const Warning = styled.div(({ theme }) => ({
-  background: theme.background.warning,
-  padding: 10,
   lineHeight: "18px",
   position: "relative",
-  margin: "0 27px",
+  borderRadius: 5,
+  display: "block",
+  minWidth: "80%",
+  color: theme.color.warningText,
+  background: theme.background.warning,
+  border: `1px solid ${lighten(0.5, theme.color.warningText)}`,
+  padding: 15,
+  margin: 0,
 }));
 
 const WarningText = styled(Text)(({ theme }) => ({
   color: theme.color.darkest,
 }));
 
+const ButtonStackText = styled(Text)({ marginBottom: 5 });
+
 interface OnboardingProps {
   onComplete: () => void;
   onSkip: () => void;
-  startDevBuild: () => void;
+  dismissBuildError: () => void;
   selectedBuild?: SelectedBuildFieldsFragment | null;
   localBuildProgress?: LocalBuildProgress;
   showInitialBuildScreen?: boolean;
@@ -68,7 +63,7 @@ interface OnboardingProps {
   gitInfo: Pick<GitInfoPayload, "uncommittedHash" | "branch">;
 }
 export const Onboarding = ({
-  startDevBuild,
+  dismissBuildError,
   localBuildProgress,
   showInitialBuildScreen,
   gitInfo,
@@ -77,6 +72,7 @@ export const Onboarding = ({
   onSkip,
 }: OnboardingProps) => {
   const { selectedBuild } = useBuildState();
+  const { isRunning, startBuild } = useRunBuildState();
   const selectedStory = useSelectedStoryState();
 
   // The initial build screen is only necessary if this is a brand new project with no builds at all. Instead, !selectedBuild would appear on any new branch, even if there are other builds on the project.
@@ -100,72 +96,74 @@ export const Onboarding = ({
 
   const [runningSecondBuild, setRunningSecondBuild] = React.useState(false);
 
-  const localBuildIsRunning =
-    localBuildProgress &&
-    localBuildProgress.currentStep !== "complete" &&
-    localBuildProgress.currentStep !== "error" &&
-    localBuildProgress.currentStep !== "aborted";
-
   // TODO: This design for an error in the Onboarding is incomplete
   if (localBuildProgress && localBuildProgress.currentStep === "error") {
     return (
-      <Container>
-        <Stack>
-          <h1>Something went wrong</h1>
-          <p>
-            {Array.isArray(localBuildProgress.originalError)
-              ? localBuildProgress.originalError[0]?.message
-              : localBuildProgress.originalError?.message}
-          </p>
-          <Button small secondary onClick={startDevBuild}>
+      <BuildError localBuildProgress={localBuildProgress}>
+        <ButtonStack>
+          <Button variant="solid" size="medium" onClick={startBuild}>
             Try again
           </Button>
           <Button link onClick={onSkip}>
             Skip walkthrough
           </Button>
-        </Stack>
-      </Container>
-    );
-  }
-  if (showInitialBuild && !localBuildProgress) {
-    return (
-      <Container>
-        <Stack>
-          <div>
-            <VisualTestsIcon />
-            <Heading>Get started with visual testing</Heading>
-            <Text>
-              Take an image snapshot of each story to save their “last known good state” as test
-              baselines.{" "}
-            </Text>
-          </div>
-          <Button size="medium" variant="solid" onClick={startDevBuild}>
-            Take snapshots
-          </Button>
-          <Button onClick={onSkip} link>
-            Skip walkthrough
-          </Button>
-        </Stack>
-      </Container>
+        </ButtonStack>
+      </BuildError>
     );
   }
 
-  if (showInitialBuild && localBuildProgress && localBuildIsRunning) {
+  if (localBuildProgress?.currentStep === "limited") {
+    return (
+      <BuildLimited localBuildProgress={localBuildProgress}>
+        <Button link onClick={dismissBuildError}>
+          Continue
+        </Button>
+      </BuildLimited>
+    );
+  }
+
+  const intro = (
+    <div>
+      <VisualTestsIcon />
+      <Heading>Get started with visual testing</Heading>
+      <Text center muted>
+        Take an image snapshot of your stories to save their &quot;last known good state&quot; as
+        test baselines.
+      </Text>
+    </div>
+  );
+
+  if (showInitialBuild && !localBuildProgress) {
+    return (
+      <Screen footer={null}>
+        <Container>
+          <Stack>
+            {intro}
+            <ButtonStack>
+              <Button size="medium" variant="solid" onClick={startBuild}>
+                Take snapshots
+              </Button>
+              <Button onClick={onSkip} link>
+                Skip walkthrough
+              </Button>
+            </ButtonStack>
+          </Stack>
+        </Container>
+      </Screen>
+    );
+  }
+
+  if (showInitialBuild && localBuildProgress && isRunning) {
     // When the build is in progress, show the build progress bar
     return (
-      <Container>
-        <Stack>
-          <div>
-            <VisualTestsIcon />
-            <Heading>Get started with visual testing</Heading>
-            <Text>
-              Take an image snapshot of each story to save their “last known good state” as test
-              baselines.
-            </Text>
-          </div>
-          <BuildProgressInline localBuildProgress={localBuildProgress} />
-        </Stack>
-      </Container>
+      <Screen footer={null}>
+        <Container>
+          <Stack>
+            {intro}
+            <BuildProgressInline localBuildProgress={localBuildProgress} />
+          </Stack>
+        </Container>
+      </Screen>
     );
   }
 
@@ -176,82 +174,106 @@ export const Onboarding = ({
     !runningSecondBuild
   ) {
     return (
-      <Container>
-        <Stack>
-          <div>
-            <Heading>Nice. You saved your stories as a test baseline.</Heading>
-            <Text>This story was indexed and snapshotted in a standardized cloud browser.</Text>
-            {selectedStory?.selectedComparison?.headCapture?.captureImage && (
-              <SnapshotImageThumb
-                {...selectedStory?.selectedComparison?.headCapture.captureImage}
-                status="positive"
-              />
-            )}
-            <Text>Let’s see the superpower of catching visual changes.</Text>
-            <Button small secondary onClick={onCatchAChange}>
-              Catch a UI change
-            </Button>
-          </div>
-          <Button link onClick={onSkip}>
-            Skip walkthrough
-          </Button>
-        </Stack>
-      </Container>
+      <Screen footer={null}>
+        <Container>
+          <Stack>
+            <div>
+              <Heading>Nice. Your stories were saved as test baselines.</Heading>
+              <Text center muted>
+                This story was indexed and snapshotted in a standardized cloud browser.
+              </Text>
+              {selectedStory?.selectedComparison?.headCapture?.captureImage && (
+                <SnapshotImageThumb
+                  {...selectedStory?.selectedComparison?.headCapture.captureImage}
+                  status="positive"
+                />
+              )}
+            </div>
+            <ButtonStack>
+              <ButtonStackText muted>
+                Let&apos;s see the superpower of catching visual changes.
+              </ButtonStackText>
+              <Button variant="solid" size="medium" onClick={onCatchAChange}>
+                Catch a UI change
+              </Button>
+              <Button link onClick={onSkip}>
+                Skip walkthrough
+              </Button>
+            </ButtonStack>
+          </Stack>
+        </Container>
+      </Screen>
     );
   }
 
   if (
     showCatchAChange &&
     initialGitHash === gitInfo.uncommittedHash &&
-    !localBuildIsRunning &&
+    !isRunning &&
     !lastBuildHasChanges
   ) {
     return (
-      <Container>
-        <Stack>
-          {!lastBuildHasChanges && runningSecondBuild && (
-            <Warning>
-              <WarningText>
-                No changes found in the Storybook you published. Make a UI tweak and publish again
-                to continue.
-              </WarningText>
-            </Warning>
-          )}
-          <div>
-            <Heading>Make a change to this story</Heading>
-            <Text>
-              In your code, adjust the markup, styling, or assets to see how visual testing works.
-              Don’t worry, you can undo it later. Here are a few ideas to get you started.
-            </Text>
-          </div>
-          <Stack style={{ display: "flex", alignItems: "flex-start", gap: "8px" }}>
-            <Row style={{ margin: 0, alignItems: "center", gap: "10px" }}>
-              <img
-                src={onboardingColorPaletteImage}
-                alt="Color Palette"
-                style={{ width: 32, height: 32 }}
-              />
-              Shift the color palette
-            </Row>
-            <Row style={{ margin: 0, alignItems: "center", gap: "10px" }}>
-              <img src={onboardingEmbiggenImage} alt="Embiggen" style={{ width: 32, height: 32 }} />{" "}
-              Embiggen the type
-            </Row>
-            <Row style={{ margin: 0, alignItems: "center", gap: "10px" }}>
-              <img src={onboardingLayoutImage} alt="Layout" style={{ width: 32, height: 32 }} />
-              Change the layout
-            </Row>
-            <Row style={{ margin: 0, alignItems: "center", gap: "10px" }}>
-              <img src={onboardingAdjustSizeImage} alt="Adjust" style={{ width: 32, height: 32 }} />
-              Adjust the size or scale
-            </Row>
+      <Screen footer={null}>
+        <Container>
+          <Stack>
+            <div>
+              <Heading>Make a change to this story</Heading>
+              <Text center muted>
+                In your code, adjust the markup, styling, or assets to see how visual testing works.
+                Don’t worry, you can undo it later. Here are a few ideas to get you started.
+              </Text>
+            </div>
+            <Stack
+              style={{ display: "flex", alignItems: "flex-start", gap: "8px", margin: "10px 0" }}
+            >
+              <Row style={{ margin: 0, alignItems: "center", gap: "10px" }}>
+                <img
+                  src={onboardingColorPaletteImage}
+                  alt="Color Palette"
+                  style={{ width: 32, height: 32 }}
+                />
+                Shift the color palette
+              </Row>
+              <Row style={{ margin: 0, alignItems: "center", gap: "10px" }}>
+                <img
+                  src={onboardingEmbiggenImage}
+                  alt="Embiggen"
+                  style={{ width: 32, height: 32 }}
+                />{" "}
+                Embiggen the type
+              </Row>
+              <Row style={{ margin: 0, alignItems: "center", gap: "10px" }}>
+                <img src={onboardingLayoutImage} alt="Layout" style={{ width: 32, height: 32 }} />
+                Change the layout
+              </Row>
+              <Row style={{ margin: 0, alignItems: "center", gap: "10px" }}>
+                <img
+                  src={onboardingAdjustSizeImage}
+                  alt="Adjust"
+                  style={{ width: 32, height: 32 }}
+                />
+                Adjust the size or scale
+              </Row>
+            </Stack>
+            <ButtonStack>
+              {runningSecondBuild ? (
+                <Warning>
+                  <WarningText>
+                    No changes found in the Storybook you published. Make a UI tweak and try again
+                    to continue.
+                  </WarningText>
+                </Warning>
+              ) : (
+                <Box>Awaiting changes...</Box>
+              )}
+
+              <Button link onClick={onSkip}>
+                Skip walkthrough
+              </Button>
+            </ButtonStack>
           </Stack>
-          <Box>Awaiting changes...</Box>
-          <Button link onClick={onSkip}>
-            Skip walkthrough
-          </Button>
-        </Stack>
-      </Container>
+        </Container>
+      </Screen>
     );
   }
 
@@ -259,78 +281,89 @@ export const Onboarding = ({
   if (
     showCatchAChange &&
     initialGitHash !== gitInfo.uncommittedHash &&
-    !localBuildIsRunning &&
+    !isRunning &&
     !lastBuildHasChanges
   ) {
     return (
-      <Container>
-        <Stack>
-          <div>
-            <Heading>Changes detected</Heading>
-            <Text>
-              Time to run your first visual test! Visual tests will pinpoint the exact changes made
-              to this story.
-            </Text>
-          </div>
-          <Button
-            small
-            secondary
-            onClick={() => {
-              setRunningSecondBuild(true);
-              startDevBuild();
-              // In case the build does not have changes, reset gitHash to the current value to show Make A Change again. Timeout 1s to prevent Make a Change reappearing briefly before build starts.
-              setTimeout(() => {
-                setInitialGitHash(gitInfo.uncommittedHash);
-              }, 1000);
-            }}
-          >
-            <PlayIcon />
-            Run visual tests
-          </Button>
-        </Stack>
-      </Container>
+      <Screen footer={null}>
+        <Container>
+          <Stack>
+            <div>
+              <Heading>Changes detected</Heading>
+              <Text center muted>
+                Time to run your first visual tests to pinpoint the exact changes made to this
+                story.
+              </Text>
+            </div>
+            <Button
+              variant="solid"
+              size="medium"
+              onClick={() => {
+                setRunningSecondBuild(true);
+                startBuild();
+                // In case the build does not have changes, reset gitHash to the current value to show Make A Change again.
+                // A timeout is used to prevent "Make a Change" from reappearing briefly before the build starts.
+                setTimeout(() => {
+                  setInitialGitHash(gitInfo.uncommittedHash);
+                }, 10000);
+              }}
+            >
+              <PlayIcon />
+              Run visual tests
+            </Button>
+          </Stack>
+        </Container>
+      </Screen>
     );
   }
 
   // If the first build is done, changes were detected, and the second build is in progress.
-  if (localBuildProgress && showCatchAChange && localBuildIsRunning) {
+  if (localBuildProgress && showCatchAChange && isRunning) {
     return (
-      <Container>
-        <Stack>
-          <div>
-            <Heading>Changes detected</Heading>
-            <Text>
-              Time to run your first visual test! Visual tests will pinpoint the exact changes made
-              to this story.
-            </Text>
-          </div>
-          <BuildProgressInline localBuildProgress={localBuildProgress} />
-        </Stack>
-      </Container>
+      <Screen footer={null}>
+        <Container>
+          <Stack>
+            <div>
+              <Heading>Changes detected</Heading>
+              <Text center muted>
+                Time to run your first visual tests to pinpoint the exact changes made to this
+                story.
+              </Text>
+            </div>
+            <BuildProgressInline localBuildProgress={localBuildProgress} />
+          </Stack>
+        </Container>
+      </Screen>
     );
   }
 
   // If the last build has changes, show the "Done" screen
-  if (!localBuildIsRunning && lastBuildHasChanges) {
+  if (!isRunning && lastBuildHasChanges) {
     return (
-      <Container style={{ overflowY: "auto" }}>
-        <Stack>
-          <div>
-            <Heading>Nice. You saved your stories as a test baseline.</Heading>
-            <Text>This story was indexed and snapshotted in a standardized cloud browser.</Text>
-            {selectedStory.selectedComparison?.headCapture?.captureImage && (
-              <SnapshotImageThumb
-                {...selectedStory.selectedComparison?.headCapture?.captureImage}
-                status="positive"
-              />
-            )}
-          </div>
-        </Stack>
-        <Text>You're ready to start testing!</Text>
-        <Button small secondary onClick={onComplete}>
-          Done!
-        </Button>
-      </Container>
+      <Screen footer={null}>
+        <Container style={{ overflowY: "auto" }}>
+          <Stack>
+            <div>
+              <Heading>Nice. Your stories were saved as test baselines.</Heading>
+              <Text center muted>
+                This story was indexed and snapshotted in a standardized cloud browser.
+              </Text>
+              {selectedStory.selectedComparison?.headCapture?.captureImage && (
+                <SnapshotImageThumb
+                  {...selectedStory.selectedComparison?.headCapture?.captureImage}
+                  status="positive"
+                />
+              )}
+            </div>
+            <ButtonStack>
+              <ButtonStackText>You&rsquo;re ready to start testing!</ButtonStackText>
+              <Button variant="solid" size="medium" onClick={onComplete}>
+                Done
+              </Button>
+            </ButtonStack>
+          </Stack>
+        </Container>
+      </Screen>
     );
   }
 
@@ -347,8 +380,10 @@ export const Onboarding = ({
     },
   });
   return (
-    <Container>
-      <></>
-    </Container>
+    <Screen footer={null}>
+      <Container>
+        <></>
+      </Container>
+    </Screen>
   );
 };

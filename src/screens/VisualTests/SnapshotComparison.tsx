@@ -3,8 +3,8 @@ import { styled } from "@storybook/theming";
 import React, { useEffect } from "react";
 
 import { Link } from "../../components/design-system";
-import { Text } from "../../components/layout";
 import { SnapshotImage } from "../../components/SnapshotImage";
+import { Text } from "../../components/Text";
 import { ComparisonResult, TestResult, TestStatus } from "../../gql/graphql";
 import { summarizeTests } from "../../utils/summarizeTests";
 import { useSelectedBuildState, useSelectedStoryState } from "./BuildContext";
@@ -21,7 +21,7 @@ export const Grid = styled.div(({ theme }) => ({
     "label controls"
   `,
   gridTemplateColumns: "1fr fit-content(50%)",
-  gridTemplateRows: "auto auto 40px",
+  gridTemplateRows: "auto auto auto",
   borderBottom: `1px solid ${theme.appBorderColor}`,
 
   "@container (min-width: 300px)": {
@@ -30,7 +30,7 @@ export const Grid = styled.div(({ theme }) => ({
       "label controls"
     `,
     gridTemplateColumns: "1fr auto",
-    gridTemplateRows: "auto 40px",
+    gridTemplateRows: "auto auto",
   },
 
   "@container (min-width: 800px)": {
@@ -72,6 +72,7 @@ const MainSection = styled.div(({ theme }) => ({
   gridArea: "main",
   overflowY: "auto",
   maxHeight: "100%",
+  background: theme.background.content,
 }));
 
 const FooterSection = styled.div(({ theme }) => ({
@@ -79,8 +80,6 @@ const FooterSection = styled.div(({ theme }) => ({
   position: "sticky",
   zIndex: 1,
   bottom: 0,
-  borderTop: `1px solid ${theme.appBorderColor}`,
-  background: theme.background.content,
 }));
 
 const Divider = styled.div(({ children, theme }) => ({
@@ -108,20 +107,15 @@ const Warning = styled.div(({ theme }) => ({
   padding: "10px 15px",
   lineHeight: "18px",
   position: "relative",
-}));
-
-const WarningText = styled(Text)(({ theme }) => ({
-  color: theme.color.defaultText,
+  borderBottom: `1px solid ${theme.appBorderColor}`,
 }));
 
 interface SnapshotComparisonProps {
   isOutdated: boolean;
   isStarting: boolean;
-  startDevBuild: () => void;
   isBuildFailed: boolean;
   shouldSwitchToLastBuildOnBranch: boolean;
   switchToLastBuildOnBranch?: () => void;
-  setAccessToken: (accessToken: string | null) => void;
   hidden?: boolean;
   storyId: string;
 }
@@ -129,11 +123,9 @@ interface SnapshotComparisonProps {
 export const SnapshotComparison = ({
   isOutdated,
   isStarting,
-  startDevBuild,
   isBuildFailed,
   shouldSwitchToLastBuildOnBranch,
   switchToLastBuildOnBranch,
-  setAccessToken,
   hidden,
   storyId,
 }: SnapshotComparisonProps) => {
@@ -150,59 +142,6 @@ export const SnapshotComparison = ({
   const prevSelectedComparisonIdRef = React.useRef(selectedStory.selectedComparison?.id);
   const prevSelectedBuildIdRef = React.useRef(selectedBuild.id);
 
-  useEffect(() => {
-    // It's possible this component doesn't unmount when the selected build, comparison, or story changes, so we need to reset state values.
-    // This is most important for the baseline image toggle because baseline can not exist for a different story.
-    if (
-      prevStoryIdRef.current !== storyId ||
-      prevSelectedComparisonIdRef.current !== selectedStory.selectedComparison?.id ||
-      prevSelectedBuildIdRef.current !== selectedBuild.id
-    ) {
-      toggleBaselineImage(false);
-      toggleSettings(false);
-      toggleWarnings(false);
-    }
-    prevSelectedComparisonIdRef.current = selectedStory.selectedComparison?.id;
-    prevStoryIdRef.current = storyId;
-    prevSelectedBuildIdRef.current = selectedBuild.id;
-  }, [
-    selectedBuild.id,
-    storyId,
-    selectedStory,
-    toggleBaselineImage,
-    toggleSettings,
-    toggleWarnings,
-  ]);
-
-  const storyInfo = (
-    <StoryInfo
-      {...{
-        tests,
-        startedAt,
-        isStarting,
-        startDevBuild,
-        isBuildFailed,
-        shouldSwitchToLastBuildOnBranch,
-        switchToLastBuildOnBranch,
-      }}
-    />
-  );
-
-  if (isStarting || !tests.length) {
-    return (
-      <ParentGrid hidden={hidden}>
-        <HeaderSection>
-          <Grid>{storyInfo}</Grid>
-        </HeaderSection>
-        <FooterSection>
-          <BuildResultsFooter setAccessToken={setAccessToken} />
-        </FooterSection>
-      </ParentGrid>
-    );
-  }
-
-  const testSummary = summarizeTests(tests);
-  const { isInProgress } = testSummary;
   const { selectedTest, selectedComparison } = selectedStory;
 
   // isNewStory is when the story itself is added and all tests should also be added
@@ -223,6 +162,67 @@ export const SnapshotComparison = ({
     selectedTest.result !== TestResult.Added &&
     selectedTest.status !== TestStatus.Accepted;
 
+  useEffect(() => {
+    // It's possible this component doesn't unmount when the selected build, comparison, or story changes, so we need to reset state values.
+    // This is most important for the baseline image toggle because baseline can not exist for a different story.
+    if (
+      prevStoryIdRef.current !== storyId ||
+      prevSelectedComparisonIdRef.current !== selectedStory.selectedComparison?.id ||
+      prevSelectedBuildIdRef.current !== selectedBuild.id ||
+      isNewStory ||
+      isNewMode ||
+      isNewBrowser
+    ) {
+      toggleBaselineImage(false);
+      toggleSettings(false);
+      toggleWarnings(false);
+    }
+
+    prevSelectedComparisonIdRef.current = selectedStory.selectedComparison?.id;
+    prevStoryIdRef.current = storyId;
+    prevSelectedBuildIdRef.current = selectedBuild.id;
+  }, [
+    selectedBuild.id,
+    storyId,
+    selectedStory,
+    toggleBaselineImage,
+    toggleSettings,
+    toggleWarnings,
+    isNewStory,
+    isNewMode,
+    isNewBrowser,
+  ]);
+
+  const storyInfo = (
+    <StoryInfo
+      {...{
+        tests,
+        startedAt,
+        isStarting,
+        isBuildFailed,
+        isOutdated,
+        shouldSwitchToLastBuildOnBranch,
+        switchToLastBuildOnBranch,
+      }}
+    />
+  );
+
+  if (isStarting || !tests.length) {
+    return (
+      <ParentGrid hidden={hidden}>
+        <HeaderSection>
+          <Grid>{storyInfo}</Grid>
+        </HeaderSection>
+        <FooterSection>
+          <BuildResultsFooter />
+        </FooterSection>
+      </ParentGrid>
+    );
+  }
+
+  const testSummary = summarizeTests(tests);
+  const { isInProgress } = testSummary;
+
   const captureErrorData =
     selectedComparison?.headCapture?.captureError &&
     "error" in selectedComparison?.headCapture?.captureError &&
@@ -233,7 +233,7 @@ export const SnapshotComparison = ({
       <HeaderSection>
         <Grid>
           {storyInfo}
-          <SnapshotControls isOutdated={isOutdated} startDevBuild={startDevBuild} />
+          <SnapshotControls isOutdated={isOutdated} />
         </Grid>
       </HeaderSection>
 
@@ -241,32 +241,44 @@ export const SnapshotComparison = ({
         {isInProgress && <Loader />}
         {!isInProgress && isNewStory && (
           <Warning>
-            <WarningText>
+            <Text>
               New story found. Accept this snapshot as a test baseline.{" "}
-              <Link href="https://www.chromatic.com/docs/branching-and-baselines" target="_blank">
-                Learn More »
+              <Link
+                withArrow
+                href="https://www.chromatic.com/docs/branching-and-baselines"
+                target="_blank"
+              >
+                Learn more
               </Link>
-            </WarningText>
+            </Text>
           </Warning>
         )}
         {!isInProgress && isNewMode && (
           <Warning>
-            <WarningText>
+            <Text>
               New mode found. Accept this snapshot as a test baseline.{" "}
-              <Link href="https://www.chromatic.com/docs/branching-and-baselines" target="_blank">
-                Learn More »
+              <Link
+                withArrow
+                href="https://www.chromatic.com/docs/branching-and-baselines"
+                target="_blank"
+              >
+                Learn more
               </Link>
-            </WarningText>
+            </Text>
           </Warning>
         )}
         {!isInProgress && isNewBrowser && (
           <Warning>
-            <WarningText>
+            <Text>
               New browser found. Accept this snapshot as a test baseline.{" "}
-              <Link href="https://www.chromatic.com/docs/branching-and-baselines" target="_blank">
-                Learn More »
+              <Link
+                withArrow
+                href="https://www.chromatic.com/docs/branching-and-baselines"
+                target="_blank"
+              >
+                Learn more
               </Link>
-            </WarningText>
+            </Text>
           </Warning>
         )}
         {!isInProgress && selectedComparison && (
@@ -296,7 +308,7 @@ export const SnapshotComparison = ({
         )}
       </MainSection>
       <FooterSection>
-        <BuildResultsFooter setAccessToken={setAccessToken} {...testSummary} />
+        <BuildResultsFooter />
       </FooterSection>
     </ParentGrid>
   );

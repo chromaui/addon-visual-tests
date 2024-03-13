@@ -1,7 +1,7 @@
-import { action } from "@storybook/addon-actions"
-import { API, ManagerContext, State } from "@storybook/manager-api";
+import { action } from "@storybook/addon-actions";
+import { ManagerContext } from "@storybook/manager-api";
 import type { Decorator, Loader, Preview } from "@storybook/react";
-import { fn } from "@storybook/test"
+import { fn } from "@storybook/test";
 import {
   Global,
   ThemeProvider,
@@ -15,9 +15,12 @@ import { HttpResponse, graphql } from "msw";
 import { initialize, mswLoader } from "msw-storybook-addon";
 import React, { useState } from "react";
 
+import { AuthProvider } from "../src/AuthContext";
 import { baseModes } from "../src/modes";
-import { UninstallProvider } from "../src/screens/Uninstalled/UninstallContext"
-
+import { UninstallProvider } from "../src/screens/Uninstalled/UninstallContext";
+import { RunBuildProvider } from "../src/screens/VisualTests/RunBuildContext";
+import { GraphQLClientProvider } from "../src/utils/graphQLClient";
+import { storyWrapper } from "../src/utils/storyWrapper";
 
 // Initialize MSW
 initialize({
@@ -60,8 +63,8 @@ const Panel = styled.div<{ orientation: "right" | "bottom" }>(
     // Add a backdrop to the outline because appBorderColor is semi-transparent
     boxShadow: `0 0 0 1px ${theme.background.content}`,
     background: theme.background.content,
-    color: theme.color.defaultText,
-    fontSize: theme.typography.size.s2 - 1,
+    color: theme.base === "light" ? theme.color.dark : theme.color.mediumlight,
+    fontSize: theme.typography.size.s2,
   })
 );
 
@@ -70,7 +73,7 @@ const ThemedSetRoot = () => {
   React.useEffect(() => {
     document.body.style.background = theme.background.content;
     document.body.style.color = theme.color.defaultText;
-    document.body.style.fontSize = `${theme.typography.size.s2 - 1}px`;
+    document.body.style.fontSize = `${theme.typography.size.s2}px`;
   });
   return null;
 };
@@ -117,25 +120,40 @@ const withTheme = (StoryFn, { globals, parameters }) => {
   );
 };
 
-const withManagerApi: Decorator = (Story, { argsByTarget }) => (
-  <ManagerContext.Provider
-    value={{
-      api: { ...argsByTarget["manager-api"] } as API,
-      state: {} as State,
-    }}
-  >
-    <Story />
-  </ManagerContext.Provider>
-);
+const withGraphQLClient = storyWrapper(GraphQLClientProvider);
+
+const withAuth = storyWrapper(AuthProvider, () => ({
+  value: {
+    accessToken: "token",
+    setAccessToken: fn(),
+  },
+}));
+
+const withManagerApi = storyWrapper(ManagerContext.Provider, ({ argsByTarget }) => ({
+  value: {
+    api: { ...argsByTarget["manager-api"] },
+    state: {},
+  },
+}));
 
 const withUninstall: Decorator = (Story) => {
-  const [addonInstalled, setAddonInstalled] = useState(false)
+  const [addonInstalled, setAddonInstalled] = useState(false);
   return (
-  <UninstallProvider addonUninstalled={addonInstalled} setAddonUninstalled={setAddonInstalled}>
-    <Story />
-  </UninstallProvider>
-  )
-}
+    <UninstallProvider addonUninstalled={addonInstalled} setAddonUninstalled={setAddonInstalled}>
+      <Story />
+    </UninstallProvider>
+  );
+};
+
+const withRunBuild = storyWrapper(RunBuildProvider, ({ args }) => ({
+  watchState: {
+    isRunning:
+      !!args.localBuildProgress &&
+      !["aborted", "complete", "error"].includes(args.localBuildProgress.currentStep),
+    startBuild: action("startBuild"),
+    stopBuild: action("stopBuild"),
+  },
+}));
 
 /**
  * An experiment with targeted args for GraphQL. This loader will serve a graphql
@@ -181,7 +199,7 @@ export const graphQLArgLoader: Loader = async ({ argTypes, argsByTarget, paramet
 };
 
 const preview: Preview = {
-  decorators: [withTheme, withUninstall, withManagerApi ],
+  decorators: [withTheme, withGraphQLClient, withAuth, withUninstall, withManagerApi, withRunBuild],
   loaders: [graphQLArgLoader],
   parameters: {
     actions: {
@@ -211,7 +229,7 @@ const preview: Preview = {
     getChannel: { type: "function", target: "manager-api" },
   },
   args: {
-    getChannel: () => ({on: fn(), off: fn(), emit: action("channel.emit")}),
+    getChannel: () => ({ on: fn(), off: fn(), emit: action("channel.emit") }),
   },
   globalTypes: {
     theme: {

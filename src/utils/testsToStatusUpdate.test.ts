@@ -1,3 +1,5 @@
+import { expect, it } from "vitest";
+
 import { TestStatus } from "../gql/graphql";
 import { testsToStatusUpdate } from "./testsToStatusUpdate";
 

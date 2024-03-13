@@ -11,7 +11,7 @@ import { StatusDotWrapper } from "./StatusDot";
 export const TooltipContent = styled.div(({ theme }) => ({
   width: 220,
   padding: 3,
-  color: theme.color.defaultText,
+  color: theme.base === "light" ? theme.color.defaultText : theme.color.light,
 
   "& > div": {
     margin: 7,
@@ -21,7 +21,8 @@ export const TooltipContent = styled.div(({ theme }) => ({
 export const ProgressTrack = styled.div(({ theme }) => ({
   height: 5,
   background: theme.background.hoverable,
-  borderRadius: 1,
+  borderRadius: 5,
+  overflow: "hidden",
 }));
 
 export const ProgressBar = styled(ProgressTrack)(({ theme }) => ({
@@ -72,22 +73,50 @@ export const SidebarIconButton = styled(IconButton)<ComponentProps<typeof IconBu
     color: theme.textMutedColor,
     marginTop: 0,
     zIndex: 1,
+    marginRight: 4,
   })
 );
 
 export const SidebarTopButton = ({
+  isDisabled = false,
   isOutdated = false,
   isRunning = false,
   localBuildProgress,
+  warning,
+  clickWarning,
   startBuild,
   stopBuild,
 }: {
+  isDisabled?: boolean;
   isOutdated?: boolean;
   isRunning?: boolean;
   localBuildProgress?: LocalBuildProgress;
+  warning?: string;
+  clickWarning?: () => void;
   startBuild: () => void;
   stopBuild: () => void;
 }) => {
+  if (isDisabled) {
+    return warning ? (
+      <WithTooltip tooltip={<TooltipNote note={warning} />} trigger="hover" hasChrome={false}>
+        <SidebarIconButton
+          id="button-run-tests"
+          aria-label="Visual Tests locked"
+          disabled={!clickWarning}
+          onClick={clickWarning}
+        >
+          <StatusDotWrapper status="warning">
+            <PlayIcon />
+          </StatusDotWrapper>
+        </SidebarIconButton>
+      </WithTooltip>
+    ) : (
+      <SidebarIconButton id="button-run-tests" aria-label="Visual Tests locked" disabled>
+        <PlayIcon />
+      </SidebarIconButton>
+    );
+  }
+
   if (isRunning && localBuildProgress) {
     const { buildProgressPercentage } = localBuildProgress;
     return (
@@ -107,7 +136,7 @@ export const SidebarTopButton = ({
         }
       >
         <SidebarIconButton aria-label="Stop tests" onClick={() => stopBuild()}>
-          <StopAltIcon style={{ width: 10 }} />
+          <StopAltIcon style={{ width: 10, margin: 2 }} />
           <ProgressCircle xmlns="http://www.w3.org/2000/svg">
             <circle />
           </ProgressCircle>
@@ -124,33 +153,33 @@ export const SidebarTopButton = ({
     );
   }
 
-  return isOutdated ? (
+  if (isOutdated) {
+    return (
+      <WithTooltip
+        tooltip={<TooltipNote note="Code changes detected; click to run tests" />}
+        trigger="hover"
+        hasChrome={false}
+      >
+        <SidebarIconButton
+          id="button-run-tests"
+          aria-label="Run tests"
+          onClick={() => startBuild()}
+        >
+          <StatusDotWrapper status="notification">
+            <PlayIcon />
+          </StatusDotWrapper>
+        </SidebarIconButton>
+      </WithTooltip>
+    );
+  }
+
+  return (
     <WithTooltip
-      tooltip={<TooltipNote note="Code changes detected; click to run tests" />}
       trigger="hover"
       hasChrome={false}
+      tooltip={<TooltipNote note="No code changes detected. Rerun tests to take new snapshots." />}
     >
       <SidebarIconButton id="button-run-tests" aria-label="Run tests" onClick={() => startBuild()}>
-        <StatusDotWrapper status="notification">
-          <PlayIcon />
-        </StatusDotWrapper>
-      </SidebarIconButton>
-    </WithTooltip>
-  ) : (
-    <WithTooltip
-      trigger="click"
-      closeOnOutsideClick
-      tooltip={
-        <TooltipContent>
-          <div>No code changes detected. Rerun tests to take new snapshots.</div>
-          <IconButton secondary onClick={() => startBuild()} aria-label="Rerun tests">
-            <SyncIcon />
-            Rerun tests
-          </IconButton>
-        </TooltipContent>
-      }
-    >
-      <SidebarIconButton id="button-run-tests" aria-label="Run tests">
         <PlayIcon />
       </SidebarIconButton>
     </WithTooltip>
