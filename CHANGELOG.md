@@ -1,3 +1,20 @@
+# v1.2.19 (Wed Mar 13 2024)
+
+#### 🐛 Bug Fix
+
+- Set Zip to true by default on config updates [#220](https://github.com/chromaui/addon-visual-tests/pull/220) ([@thafryer](https://github.com/thafryer))
+- Fixed up ActionButton and the Mode/Browser selectors [#216](https://github.com/chromaui/addon-visual-tests/pull/216) ([@MichaelArestad](https://github.com/MichaelArestad))
+- Update text style and use it more consistently [#217](https://github.com/chromaui/addon-visual-tests/pull/217) ([@ghengeveld](https://github.com/ghengeveld))
+- Require PR labels before merging [#215](https://github.com/chromaui/addon-visual-tests/pull/215) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 3
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Jarel Fryer ([@thafryer](https://github.com/thafryer))
+- Michael Arestad ([@MichaelArestad](https://github.com/MichaelArestad))
+
+---
+
 # v1.2.18 (Mon Mar 11 2024)
 
 #### 🐛 Bug Fix
