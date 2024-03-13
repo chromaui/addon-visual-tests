@@ -74,7 +74,6 @@ export const SparseConfiguration = {
   decorators: [
     withSharedState(CONFIG_INFO, {
       configuration: { configFile: configuration.configFile },
-      // problems: { storybookBaseDir: "src/frontend" },
       suggestions: { zip: true },
     } satisfies ConfigInfoPayload),
   ],
