@@ -23,37 +23,44 @@ const useGlobalValue = (key: string) => {
  */
 export function useTests(tests: StoryTestFieldsFragment[]) {
   const [theme, themeType] = useGlobalValue("theme");
-  const [selectedBrowserId, setSelectedBrowserId] = useSharedState<string>(SELECTED_BROWSER_ID);
-  const [selectedModeName, setSelectedModeName] = useSharedState<string>(SELECTED_MODE_NAME);
+  const [globalSelectedBrowserId, setGlobalSelectedBrowserId] =
+    useSharedState<string>(SELECTED_BROWSER_ID);
+  const [globalSelectedModeName, setGlobalSelectedModeName] =
+    useSharedState<string>(SELECTED_MODE_NAME);
+  const [selectedModeName, setSelectedModeName] = useState<ModeData["name"]>(() => {
+    // Select the initial test mode based on the following criteria (in order of priority):
+    // 1. The first test with changes detected and the mode name matches the one previously selected
+    // 2. The first test with changes detected
+    // 3. The first test where the mode name matches the one previously selected
+    // 4. The first test
+    const changedTests = tests.filter(({ status }) => status !== TestStatus.Passed);
+    const candidateTests = changedTests.length ? changedTests : tests;
+    const test =
+      candidateTests.find(({ mode }) => mode.name === globalSelectedModeName) || candidateTests[0];
+    if (test?.mode.name !== globalSelectedModeName) {
+      setGlobalSelectedModeName(test?.mode.name);
+    }
+    return test?.mode.name;
+  });
 
   const onSelectBrowser = useCallback(
-    ({ id }: BrowserData) => setSelectedBrowserId(id),
-    [setSelectedBrowserId]
+    ({ id }: BrowserData) => setGlobalSelectedBrowserId(id),
+    [setGlobalSelectedBrowserId]
   );
   const onSelectMode = useCallback(
-    ({ name }: ModeData) => setSelectedModeName(name),
-    [setSelectedModeName]
+    ({ name }: ModeData) => {
+      setSelectedModeName(name);
+      setGlobalSelectedModeName(name);
+    },
+    [setGlobalSelectedModeName]
   );
 
-  // Select the test based on the following criteria (in order of priority):
-  // 1. The first test with changes detected and the mode name matches the one previously selected
-  // 2. The first test with changes detected
-  // 3. The first test where the mode name matches the one previously selected
-  // 4. The first test
-  const changedTests = tests.filter(({ status }) => status !== TestStatus.Passed);
-  const selectedTest =
-    changedTests.find(({ mode }) => mode.name === selectedModeName) ||
-    changedTests[0] ||
-    tests.find(({ mode }) => mode.name === selectedModeName) ||
-    tests[0];
-  if (selectedTest?.mode.name !== selectedModeName) {
-    setSelectedModeName(selectedTest?.mode.name);
-  }
+  const selectedTest = tests.find(({ mode }) => mode.name === selectedModeName) || tests[0];
   const selectedComparison =
-    selectedTest?.comparisons.find(({ browser }) => browser.id === selectedBrowserId) ||
+    selectedTest?.comparisons.find(({ browser }) => browser.id === globalSelectedBrowserId) ||
     selectedTest?.comparisons[0];
-  if (selectedComparison?.browser.id !== selectedBrowserId) {
-    setSelectedBrowserId(selectedComparison?.browser.id);
+  if (selectedComparison?.browser.id !== globalSelectedBrowserId) {
+    setGlobalSelectedBrowserId(selectedComparison?.browser.id);
   }
 
   return {
