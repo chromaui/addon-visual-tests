@@ -1,4 +1,4 @@
-import { TooltipNote, WithTooltip } from "@storybook/components";
+import { WithTooltip } from "@storybook/components";
 import { ChevronDownIcon } from "@storybook/icons";
 import { styled, useTheme } from "@storybook/theming";
 import React, { ComponentProps } from "react";
@@ -10,6 +10,7 @@ import { EdgeIcon } from "./icons/EdgeIcon";
 import { FirefoxIcon } from "./icons/FirefoxIcon";
 import { SafariIcon } from "./icons/SafariIcon";
 import { StatusDot, StatusDotWrapper } from "./StatusDot";
+import { Tooltip } from "./Tooltip";
 import { TooltipMenu } from "./TooltipMenu";
 
 const browserIcons = {
@@ -96,9 +97,7 @@ export const BrowserSelector = ({
       placement="top"
       trigger="hover"
       tooltip={
-        <TooltipNote
-          note={links ? "Switch browser" : `Tested in ${browserResults[0].browser.name}`}
-        />
+        <Tooltip note={links ? "Switch browser" : `Tested in ${browserResults[0].browser.name}`} />
       }
     >
       {links ? (

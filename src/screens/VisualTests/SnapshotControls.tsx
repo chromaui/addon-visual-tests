@@ -1,4 +1,4 @@
-import { TooltipNote, WithTooltip } from "@storybook/components";
+import { WithTooltip } from "@storybook/components";
 import {
   BatchAcceptIcon,
   ContrastIcon,
@@ -17,6 +17,7 @@ import { IconButton } from "../../components/IconButton";
 import { ProgressIcon } from "../../components/icons/ProgressIcon";
 import { Placeholder } from "../../components/Placeholder";
 import { Text } from "../../components/Text";
+import { Tooltip } from "../../components/Tooltip";
 import { TooltipMenu } from "../../components/TooltipMenu";
 import { ComparisonResult, ReviewTestBatch, TestStatus } from "../../gql/graphql";
 import { useSelectedStoryState } from "./BuildContext";
@@ -130,7 +131,7 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
         <Controls>
           <WithTooltip
             tooltip={
-              <TooltipNote
+              <Tooltip
                 note={baselineImageVisible ? "Show latest snapshot" : "Show baseline snapshot"}
               />
             }
@@ -146,7 +147,7 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
             </IconButton>
           </WithTooltip>
           <WithTooltip
-            tooltip={<TooltipNote note={focusVisible ? "Hide spotlight" : "Show spotlight"} />}
+            tooltip={<Tooltip note={focusVisible ? "Hide spotlight" : "Show spotlight"} />}
             trigger="hover"
             hasChrome={false}
           >
@@ -160,7 +161,7 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
             </IconButton>
           </WithTooltip>
           <WithTooltip
-            tooltip={<TooltipNote note={diffVisible ? "Hide diff" : "Show diff"} />}
+            tooltip={<Tooltip note={diffVisible ? "Hide diff" : "Show diff"} />}
             trigger="hover"
             hasChrome={false}
           >
@@ -181,7 +182,7 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
           {userCanReview && buildIsReviewable && isAcceptable && (
             <ButtonGroup>
               <WithTooltip
-                tooltip={<TooltipNote note="Accept this story" />}
+                tooltip={<Tooltip note="Accept this story" />}
                 trigger="hover"
                 hasChrome={false}
               >
@@ -196,7 +197,7 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
                 </ActionButton>
               </WithTooltip>
               <WithTooltip
-                tooltip={<TooltipNote note="Batch accept options" />}
+                tooltip={<Tooltip note="Batch accept options" />}
                 trigger="hover"
                 hasChrome={false}
               >
@@ -244,7 +245,7 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
           {userCanReview && buildIsReviewable && isUnacceptable && (
             <ButtonGroup>
               <WithTooltip
-                tooltip={<TooltipNote note="Unaccept this story" />}
+                tooltip={<Tooltip note="Unaccept this story" />}
                 trigger="hover"
                 hasChrome={false}
               >
@@ -261,7 +262,7 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
                 </ActionButton>
               </WithTooltip>
               <WithTooltip
-                tooltip={<TooltipNote note="Batch unaccept options" />}
+                tooltip={<Tooltip note="Batch unaccept options" />}
                 trigger="hover"
                 hasChrome={false}
               >
@@ -309,7 +310,7 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
 
           {!(userCanReview && buildIsReviewable) && (
             <WithTooltip
-              tooltip={<TooltipNote note="Reviewing disabled" />}
+              tooltip={<Tooltip note="Reviewing disabled" />}
               trigger="hover"
               hasChrome={false}
             >
@@ -320,7 +321,7 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
           )}
 
           <WithTooltip
-            tooltip={<TooltipNote note={isOutdated ? "Run new tests" : "Rerun tests"} />}
+            tooltip={<Tooltip note={isOutdated ? "Run new tests" : "Rerun tests"} />}
             trigger="hover"
             hasChrome={false}
           >

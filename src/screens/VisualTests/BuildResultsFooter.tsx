@@ -5,6 +5,7 @@ import { FooterMenu } from "../../components/FooterMenu";
 import { Col } from "../../components/layout";
 import { ModeSelector } from "../../components/ModeSelector";
 import { Footer } from "../../components/Screen";
+import { Tooltip } from "../../components/Tooltip";
 import { TestStatus } from "../../gql/graphql";
 import { useSelectedStoryState } from "./BuildContext";
 
@@ -33,7 +34,7 @@ export const BuildResultsFooter = () => {
       )}
       {/* <Col push>
         <WithTooltip
-          tooltip={<TooltipNote note="Render settings" />}
+          tooltip={<Tooltip note="Render settings" />}
           trigger="hover"
           hasChrome={false}
         >
@@ -51,7 +52,7 @@ export const BuildResultsFooter = () => {
       </Col> */}
       {/* <Col>
         <WithTooltip
-          tooltip={<TooltipNote note="View warnings" />}
+          tooltip={<Tooltip note="View warnings" />}
           trigger="hover"
           hasChrome={false}
         >

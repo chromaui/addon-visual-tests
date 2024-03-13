@@ -1,4 +1,4 @@
-import { TooltipNote, WithTooltip } from "@storybook/components";
+import { WithTooltip } from "@storybook/components";
 import { PlayIcon, StopAltIcon, SyncIcon } from "@storybook/icons";
 import { keyframes, styled } from "@storybook/theming";
 import React, { ComponentProps } from "react";
@@ -7,6 +7,7 @@ import { LocalBuildProgress } from "../types";
 import { BuildProgressLabel } from "./BuildProgressLabel";
 import { IconButton } from "./IconButton";
 import { StatusDotWrapper } from "./StatusDot";
+import { Tooltip } from "./Tooltip";
 
 export const TooltipContent = styled.div(({ theme }) => ({
   width: 220,
@@ -98,7 +99,7 @@ export const SidebarTopButton = ({
 }) => {
   if (isDisabled) {
     return warning ? (
-      <WithTooltip tooltip={<TooltipNote note={warning} />} trigger="hover" hasChrome={false}>
+      <WithTooltip tooltip={<Tooltip note={warning} />} trigger="hover" hasChrome={false}>
         <SidebarIconButton
           id="button-run-tests"
           aria-label="Visual Tests locked"
@@ -156,7 +157,7 @@ export const SidebarTopButton = ({
   if (isOutdated) {
     return (
       <WithTooltip
-        tooltip={<TooltipNote note="Code changes detected; click to run tests" />}
+        tooltip={<Tooltip note="Code changes detected; click to run tests" />}
         trigger="hover"
         hasChrome={false}
       >
@@ -177,7 +178,7 @@ export const SidebarTopButton = ({
     <WithTooltip
       trigger="hover"
       hasChrome={false}
-      tooltip={<TooltipNote note="No code changes detected. Rerun tests to take new snapshots." />}
+      tooltip={<Tooltip note="No code changes detected. Rerun tests to take new snapshots." />}
     >
       <SidebarIconButton id="button-run-tests" aria-label="Run tests" onClick={() => startBuild()}>
         <PlayIcon />
