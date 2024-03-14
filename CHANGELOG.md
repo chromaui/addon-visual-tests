@@ -1,3 +1,15 @@
+# v1.2.20 (Thu Mar 14 2024)
+
+#### 🐛 Bug Fix
+
+- Don't show extra border when no config is available [#221](https://github.com/chromaui/addon-visual-tests/pull/221) ([@andrewortwein](https://github.com/andrewortwein))
+
+#### Authors: 1
+
+- Andrew Ortwein ([@andrewortwein](https://github.com/andrewortwein))
+
+---
+
 # v1.2.19 (Wed Mar 13 2024)
 
 #### 🐛 Bug Fix
