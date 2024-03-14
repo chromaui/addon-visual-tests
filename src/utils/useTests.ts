@@ -60,37 +60,32 @@ export const getMostUsefulComparison = (
  * for the same story.
  */
 export function useTests(tests: StoryTestFieldsFragment[]) {
-  // console.log("rendering useTests");
   const [initialRender, setInitialRender] = useState(true);
   const themeType = useGlobalValue("theme")[1];
 
-  const [globalSelectedModeName, setGlobalSelectedModeName] =
-    useSharedState<string>(SELECTED_MODE_NAME);
-  const [globalSelectedBrowserId, setGlobalSelectedBrowserId] =
-    useSharedState<string>(SELECTED_BROWSER_ID);
+  const [selectedModeName, setSelectedModeName] = useSharedState<string>(SELECTED_MODE_NAME);
+  const [selectedBrowserId, setSelectedBrowserId] = useSharedState<string>(SELECTED_BROWSER_ID);
 
-  // TODO: how should we actually handle when there are no tests?
-  // if (!tests.length) {
-  //   return {};
-  // }
+  let selectedTest;
+  let selectedComparison;
+  if (tests.length) {
+    selectedTest = initialRender
+      ? getMostUsefulTest(tests, selectedModeName)
+      : tests.find(({ mode }) => mode.name === selectedModeName) || tests[0];
+    selectedComparison = initialRender
+      ? getMostUsefulComparison(selectedTest.comparisons, selectedBrowserId)
+      : selectedTest?.comparisons.find(({ browser }) => browser.id === selectedBrowserId) ||
+        selectedTest?.comparisons[0];
 
-  const selectedTest = initialRender
-    ? getMostUsefulTest(tests, globalSelectedModeName)
-    : tests.find(({ mode }) => mode.name === globalSelectedModeName);
-  // console.log("selectedTest", selectedTest);
-  const selectedComparison = initialRender
-    ? getMostUsefulComparison(selectedTest?.comparisons, globalSelectedBrowserId)
-    : selectedTest?.comparisons.find(({ browser }) => browser.id === globalSelectedBrowserId);
-
-  if (selectedTest?.mode.name !== globalSelectedModeName) {
-    setGlobalSelectedModeName(selectedTest?.mode.name);
-  }
-  if (selectedComparison?.browser.id !== globalSelectedBrowserId) {
-    setGlobalSelectedBrowserId(selectedComparison?.browser.id);
-  }
-
-  if (initialRender) {
-    setInitialRender(false);
+    if (initialRender) {
+      if (selectedModeName !== selectedTest?.mode.name) {
+        setSelectedModeName(selectedTest?.mode.name);
+      }
+      if (selectedBrowserId !== selectedComparison?.browser.id) {
+        setSelectedBrowserId(selectedComparison?.browser.id);
+      }
+      setInitialRender(false);
+    }
   }
 
   return {
@@ -98,12 +93,12 @@ export function useTests(tests: StoryTestFieldsFragment[]) {
     selectedTest,
     selectedComparison,
     onSelectBrowser: useCallback(
-      (browser: BrowserData) => setGlobalSelectedBrowserId(browser.id),
-      [setGlobalSelectedBrowserId]
+      (browser: BrowserData) => setSelectedBrowserId(browser.id),
+      [setSelectedBrowserId]
     ),
     onSelectMode: useCallback(
-      (mode: ModeData) => setGlobalSelectedModeName(mode.name),
-      [setGlobalSelectedModeName]
+      (mode: ModeData) => setSelectedModeName(mode.name),
+      [setSelectedModeName]
     ),
   };
 }
