@@ -1,3 +1,15 @@
+# v1.2.21 (Fri Mar 15 2024)
+
+#### 🐛 Bug Fix
+
+- Normalize `configDir` before comparing [#222](https://github.com/chromaui/addon-visual-tests/pull/222) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v1.2.20 (Thu Mar 14 2024)
 
 #### 🐛 Bug Fix
