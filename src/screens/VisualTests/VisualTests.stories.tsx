@@ -470,13 +470,6 @@ export const ModeAddedInSelectedBuild = {
       },
     },
   },
-  play: playAll(async ({ canvasElement, canvasIndex }) => {
-    const canvas = within(canvasElement);
-    const menu = await canvas.findByRole("button", { name: "480px" });
-    await userEvent.click(menu);
-    const items = await screen.findAllByText("1200px");
-    await userEvent.click(items[canvasIndex]);
-  }),
 } satisfies Story;
 
 export const ModeAddedAndAccepted = {
@@ -508,13 +501,6 @@ export const BrowserAddedInSelectedBuild = {
       },
     },
   },
-  play: playAll(async ({ canvasElement, canvasIndex }) => {
-    const canvas = within(canvasElement);
-    const menu = await canvas.findByRole("button", { name: "Chrome" });
-    await userEvent.click(menu);
-    const items = await screen.findAllByText("Safari");
-    await userEvent.click(items[canvasIndex]);
-  }),
 } satisfies Story;
 
 export const BrowserAddedAndAccepted: Story = {
