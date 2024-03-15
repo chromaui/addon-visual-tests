@@ -152,15 +152,15 @@ export const SnapshotComparison = ({
   // This checks if the specific comparison is new, but the story itself is not. This indicates it was probably a new mode being added.
   const isNewMode =
     !isNewStory &&
-    selectedTest.result === TestResult.Added &&
-    selectedTest.status !== TestStatus.Accepted;
+    selectedTest?.result === TestResult.Added &&
+    selectedTest?.status !== TestStatus.Accepted;
 
   // If any of the tests has a new comparison, and the test isn't new it is a new browser.
   const isNewBrowser =
     !isNewStory &&
-    selectedComparison.result === ComparisonResult.Added &&
-    selectedTest.result !== TestResult.Added &&
-    selectedTest.status !== TestStatus.Accepted;
+    selectedComparison?.result === ComparisonResult.Added &&
+    selectedTest?.result !== TestResult.Added &&
+    selectedTest?.status !== TestStatus.Accepted;
 
   useEffect(() => {
     // It's possible this component doesn't unmount when the selected build, comparison, or story changes, so we need to reset state values.
@@ -284,9 +284,9 @@ export const SnapshotComparison = ({
         {!isInProgress && selectedComparison && (
           <SnapshotImage
             key={selectedComparison.id}
-            componentName={selectedTest.story?.component?.name}
-            storyName={selectedTest.story?.name}
-            testUrl={selectedTest.webUrl}
+            componentName={selectedTest?.story?.component?.name}
+            storyName={selectedTest?.story?.name}
+            testUrl={selectedTest?.webUrl}
             comparisonResult={selectedComparison.result ?? undefined}
             latestImage={selectedComparison.headCapture?.captureImage ?? undefined}
             baselineImage={selectedComparison.baseCapture?.captureImage ?? undefined}

@@ -101,11 +101,9 @@ export const SpotlightOnly = {
 } satisfies Story;
 
 /**
- * Sort of confusing situation where the only comparison with changes (1200px/Safari) is on the
- * "opposite" side of the current comparison (800px/Chrome). In this case we still show the first
- * test, which does not have a visual diff.
+ * When first loading a story, we prefer to show changed comparisons over unchanged comparisons.
  */
-export const FirstPassed: Story = {
+export const PrefersChanged: Story = {
   parameters: {
     selectedBuild: withTests(
       build,
