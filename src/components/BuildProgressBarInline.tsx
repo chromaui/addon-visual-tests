@@ -14,23 +14,19 @@ const ProgressTextWrapper = styled(Text)({
   marginTop: 15,
 });
 
-const StyledBuildProgressLabel = styled(BuildProgressLabel)({
-  fontSize: 12,
-});
-
 export function BuildProgressInline({
   localBuildProgress,
 }: {
   localBuildProgress: LocalBuildProgress;
 }) {
   return (
-    <ProgressTextWrapper small as="div">
+    <ProgressTextWrapper center small>
       <ProgressTrack>
         {typeof localBuildProgress.buildProgressPercentage === "number" && (
           <ProgressBar style={{ width: `${localBuildProgress.buildProgressPercentage}%` }} />
         )}
       </ProgressTrack>
-      <StyledBuildProgressLabel localBuildProgress={localBuildProgress} />
+      <BuildProgressLabel center muted small localBuildProgress={localBuildProgress} />
     </ProgressTextWrapper>
   );
 }

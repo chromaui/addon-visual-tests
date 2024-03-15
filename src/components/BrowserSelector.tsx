@@ -20,17 +20,20 @@ const browserIcons = {
 } as const;
 
 const IconWrapper = styled.div(({ theme }) => ({
-  display: "inline-flex",
   alignItems: "center",
+  color: theme.base === "light" ? theme.color.dark : theme.color.light,
+  display: "inline-flex",
   gap: 6,
   height: 16,
   margin: "6px 7px",
+
   svg: {
     verticalAlign: "top",
   },
 }));
 
 const Label = styled.span(({ theme }) => ({
+  color: theme.base === "light" ? theme.color.dark : theme.color.light,
   display: "none",
   fontSize: theme.typography.size.s1,
   fontWeight: theme.typography.weight.bold,
@@ -38,7 +41,14 @@ const Label = styled.span(({ theme }) => ({
   "@container (min-width: 300px)": {
     display: "inline-block",
   },
-  color: theme.base === "light" ? theme.color.dark : theme.color.light,
+
+  "+ svg": {
+    color: theme.base === "light" ? theme.color.dark : theme.color.light,
+  },
+
+  "button:hover > &, button:hover > & + svg": {
+    color: theme.color.secondary,
+  },
 }));
 
 type BrowserData = Pick<BrowserInfo, "id" | "key" | "name">;
@@ -95,10 +105,7 @@ export const BrowserSelector = ({
         <TooltipMenu placement="bottom" links={links}>
           {icon}
           <Label>{selectedBrowser.name}</Label>
-          <ChevronDownIcon
-            size={10}
-            color={theme.base === "light" ? theme.color.dark : theme.color.light}
-          />
+          <ChevronDownIcon size={10} />
         </TooltipMenu>
       ) : (
         <IconWrapper>

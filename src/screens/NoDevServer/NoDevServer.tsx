@@ -16,7 +16,7 @@ export const NoDevServer = () => {
           <div>
             <VisualTestsIcon />
             <Heading>Visual tests</Heading>
-            <Text>
+            <Text center muted>
               Visual tests only runs locally. To test this Storybook, clone it to your machine and
               run <Code>npx storybook dev</Code>.
             </Text>

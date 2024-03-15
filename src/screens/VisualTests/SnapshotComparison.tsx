@@ -3,8 +3,8 @@ import { styled } from "@storybook/theming";
 import React, { useEffect } from "react";
 
 import { Link } from "../../components/design-system";
-import { Text } from "../../components/layout";
 import { SnapshotImage } from "../../components/SnapshotImage";
+import { Text } from "../../components/Text";
 import { ComparisonResult, TestResult, TestStatus } from "../../gql/graphql";
 import { summarizeTests } from "../../utils/summarizeTests";
 import { useSelectedBuildState, useSelectedStoryState } from "./BuildContext";
@@ -108,10 +108,6 @@ const Warning = styled.div(({ theme }) => ({
   lineHeight: "18px",
   position: "relative",
   borderBottom: `1px solid ${theme.appBorderColor}`,
-}));
-
-const WarningText = styled(Text)(({ theme }) => ({
-  color: theme.color.defaultText,
 }));
 
 interface SnapshotComparisonProps {
@@ -245,7 +241,7 @@ export const SnapshotComparison = ({
         {isInProgress && <Loader />}
         {!isInProgress && isNewStory && (
           <Warning>
-            <WarningText>
+            <Text>
               New story found. Accept this snapshot as a test baseline.{" "}
               <Link
                 withArrow
@@ -254,12 +250,12 @@ export const SnapshotComparison = ({
               >
                 Learn more
               </Link>
-            </WarningText>
+            </Text>
           </Warning>
         )}
         {!isInProgress && isNewMode && (
           <Warning>
-            <WarningText>
+            <Text>
               New mode found. Accept this snapshot as a test baseline.{" "}
               <Link
                 withArrow
@@ -268,12 +264,12 @@ export const SnapshotComparison = ({
               >
                 Learn more
               </Link>
-            </WarningText>
+            </Text>
           </Warning>
         )}
         {!isInProgress && isNewBrowser && (
           <Warning>
-            <WarningText>
+            <Text>
               New browser found. Accept this snapshot as a test baseline.{" "}
               <Link
                 withArrow
@@ -282,7 +278,7 @@ export const SnapshotComparison = ({
               >
                 Learn more
               </Link>
-            </WarningText>
+            </Text>
           </Warning>
         )}
         {!isInProgress && selectedComparison && (

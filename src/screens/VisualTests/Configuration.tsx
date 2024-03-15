@@ -260,10 +260,11 @@ const Suggestion = styled.div<{ warning?: boolean }>(({ warning, theme }) => ({
   },
 }));
 
-const DangerZone = styled.div(({ theme }) => ({
-  borderTop: `1px solid ${theme.appBorderColor}`,
-  marginTop: 10,
-  paddingTop: 20,
+const ConfigItem = styled.div(({ theme }) => ({
+  "&:nth-last-of-type(2)": {
+    borderBottom: `1px solid ${theme.appBorderColor}`,
+    paddingBottom: 30,
+  },
 }));
 
 const iconStyles = {
@@ -330,7 +331,7 @@ export const Configuration = ({ onClose }: ConfigurationProps) => {
         {config && (
           <Table>
             {config.map(({ key, value, problem, suggestion }) => (
-              <div key={key} id={`${key}-option`}>
+              <ConfigItem key={key} id={`${key}-option`}>
                 <Setting>
                   <SettingHeading>
                     <SettingLabel>{key} </SettingLabel>
@@ -371,9 +372,9 @@ export const Configuration = ({ onClose }: ConfigurationProps) => {
                     </span>
                   </Suggestion>
                 )}
-              </div>
+              </ConfigItem>
             ))}
-            <DangerZone>
+            <div>
               <Setting>
                 <SettingHeading>
                   <SettingLabel>Uninstall addon</SettingLabel>
@@ -386,7 +387,7 @@ export const Configuration = ({ onClose }: ConfigurationProps) => {
                   <Button onClick={uninstallAddon}>Uninstall</Button>
                 </SettingContent>
               </Setting>
-            </DangerZone>
+            </div>
           </Table>
         )}
       </PageWrapper>

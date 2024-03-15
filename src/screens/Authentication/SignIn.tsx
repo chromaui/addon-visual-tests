@@ -39,7 +39,7 @@ export const SignIn = ({ onBack, onSignIn, onSignInWithSSO }: SignInProps) => {
             <LinkIcon />
             <VisualTestsIcon />
             <Heading>Sign in to begin visual testing</Heading>
-            <Text>
+            <Text center muted>
               Pinpoint bugs instantly by connecting with cloud browsers that run visual tests in
               parallel.
             </Text>

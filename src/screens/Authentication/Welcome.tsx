@@ -22,7 +22,7 @@ export const Welcome = ({ onNext, onUninstall }: WelcomeProps) => {
           <div>
             <VisualTestsIcon />
             <Heading>Visual tests</Heading>
-            <Text>
+            <Text center muted>
               Catch bugs in UI appearance automatically. Compare image snapshots to detect visual
               changes.
             </Text>

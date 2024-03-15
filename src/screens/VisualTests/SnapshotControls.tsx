@@ -15,8 +15,8 @@ import React from "react";
 import { ActionButton, ButtonGroup } from "../../components/ActionButton";
 import { IconButton } from "../../components/IconButton";
 import { ProgressIcon } from "../../components/icons/ProgressIcon";
-import { Text } from "../../components/layout";
 import { Placeholder } from "../../components/Placeholder";
+import { Text } from "../../components/Text";
 import { TooltipMenu } from "../../components/TooltipMenu";
 import { ComparisonResult, ReviewTestBatch, TestStatus } from "../../gql/graphql";
 import { useSelectedStoryState } from "./BuildContext";
@@ -59,12 +59,15 @@ const Controls = styled.div({
   },
 });
 
-const DisabledIconWrapper = styled.div({
+const DisabledIconWrapper = styled.div(({ theme }) => ({
   padding: 9,
   "> svg": {
     display: "block",
   },
-});
+  path: {
+    fill: theme.color.mediumdark,
+  },
+}));
 
 const Actions = styled.div<{ showDivider?: boolean }>(({ theme, showDivider }) => ({
   gridArea: "actions",

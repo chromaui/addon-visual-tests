@@ -156,7 +156,7 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
       // No config file may be found (file is about to be created)
       const { configFile: foundConfigFile, ...config } = await getConfiguration(writtenConfigFile);
       const targetConfigFile = foundConfigFile || writtenConfigFile || "chromatic.config.json";
-      await updateChromaticConfig(targetConfigFile, { ...config, projectId });
+      await updateChromaticConfig(targetConfigFile, { ...config, projectId, zip: true });
 
       projectInfoState.value = {
         ...projectInfoState.value,

@@ -24,7 +24,7 @@ export const IconButton: React.FC<IconButtonProps> = styled(BaseIconButton)<Icon
     verticalAlign: "top",
     gap: 6,
     margin: 0,
-    color: active || secondary ? theme.color.secondary : `${theme.color.defaultText}99`,
+    color: active || secondary ? theme.color.secondary : theme.color.mediumdark,
     fontWeight: "normal",
     "& > svg": {
       width: "auto",
@@ -37,7 +37,10 @@ export const IconButton: React.FC<IconButtonProps> = styled(BaseIconButton)<Icon
     const hoverBg = isLightTheme ? "rgb(229,243,255)" : "rgb(29,44,56)";
     return {
       "--bg-color": active ? activeBg : theme.background.content,
-      "&:hover": { "--bg-color": hoverBg },
+      "&:hover": {
+        "--bg-color": hoverBg,
+        color: theme.color.secondary,
+      },
     };
   }
 );

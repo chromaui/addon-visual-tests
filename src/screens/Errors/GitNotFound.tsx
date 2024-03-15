@@ -1,20 +1,16 @@
-import { styled } from "@storybook/theming";
+import { LockIcon } from "@storybook/icons";
 import React from "react";
 
-import { Box, BoxContent, BoxTitle } from "../../components/Box";
+import { Box, BoxTitle } from "../../components/Box";
 import { Code } from "../../components/Code";
 import { Container } from "../../components/Container";
-import { Icon, Link } from "../../components/design-system";
+import { Link } from "../../components/design-system";
 import { Heading } from "../../components/Heading";
 import { VisualTestsIcon } from "../../components/icons/VisualTestsIcon";
 import { Screen } from "../../components/Screen";
 import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
 import { useUninstallAddon } from "../Uninstalled/UninstallContext";
-
-const StyledText = styled(Text)(({ theme }) => ({
-  color: theme.base === "light" ? theme.color.dark : "#C9CDCF",
-}));
 
 export const GitNotFound = () => {
   const { uninstallAddon } = useUninstallAddon();
@@ -25,19 +21,19 @@ export const GitNotFound = () => {
           <div>
             <VisualTestsIcon />
             <Heading>Visual tests</Heading>
-            <StyledText>
+            <Text center muted>
               Catch bugs in UI appearance automatically. Compare image snapshots to detect visual
               changes.
-            </StyledText>
+            </Text>
           </div>
           <Box>
-            <Icon icon="lock" />
-            <BoxContent>
+            <LockIcon style={{ flexShrink: 0 }} />
+            <Text>
               <BoxTitle>Git not detected</BoxTitle>
               This addon requires Git to associate test results with commits and branches. Run{" "}
               <Code>git init</Code> and make your first commit
               <Code>git commit -m</Code> to get started!
-            </BoxContent>
+            </Text>
           </Box>
           <Link
             target="_blank"
