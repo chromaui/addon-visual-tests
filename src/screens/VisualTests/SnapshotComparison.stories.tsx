@@ -122,6 +122,13 @@ export const FirstPassed: Story = {
       })
     ),
   },
+  play: playAll(async ({ canvasElement, canvasIndex }) => {
+    const canvas = within(canvasElement);
+    const menu = await canvas.findByRole("button", { name: "Safari" });
+    await userEvent.click(menu);
+    const items = await screen.findAllByText("Chrome");
+    await userEvent.click(items[canvasIndex]);
+  }),
 } satisfies Story;
 
 export const StoryAdded: Story = {
