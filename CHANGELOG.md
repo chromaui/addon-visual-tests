@@ -1,3 +1,16 @@
+# v1.2.22 (Fri Mar 15 2024)
+
+#### 🐛 Bug Fix
+
+- Only use criteria to select mode when story first loads [#218](https://github.com/chromaui/addon-visual-tests/pull/218) ([@andrewortwein](https://github.com/andrewortwein) [@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 2
+
+- Andrew Ortwein ([@andrewortwein](https://github.com/andrewortwein))
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v1.2.21 (Fri Mar 15 2024)
 
 #### 🐛 Bug Fix
