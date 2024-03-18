@@ -1,7 +1,5 @@
 import { styled } from "@storybook/theming";
 
-import { Text as BaseText } from "./Text";
-
 export const Base = styled.div<{ hidden?: boolean }>(({ hidden, theme }) => ({
   background: theme.background.app,
   containerType: "size",
