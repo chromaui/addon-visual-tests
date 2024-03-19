@@ -1,0 +1,36 @@
+name: Bug report 🐞
+description: >-
+  Something is broken and you have a reliable reproduction? Let us know here.
+  To get help, check out the documentation or contact Chromatic customer support.
+title: "[Bug]: "
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the bug
+      description: A clear and concise description of what the bug is. Include screenshots if you can.
+      placeholder: >-
+        BE AWARE THIS IS A PUBLIC REPOSITORY. DO NOT INCLUDE SENSITIVE INFORMATION.
+        Contact customer support directly if you need to share sensitive details.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: To reproduce
+      description: >-
+        Explain the steps to reproduce the bug. If you have a public repository with a reproduction, please provide a link to it here.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: >-
+        Include as many relevant details about the environment you experienced the bug in.
+        - Operating system
+        - Browser
+        - Storybook version
+        - Visual Test Addon version
+    validations:
+      required: true
