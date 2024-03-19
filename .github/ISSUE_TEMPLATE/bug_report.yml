@@ -2,7 +2,6 @@ name: Bug report 🐞
 description: >-
   Something is broken and you have a reliable reproduction? Let us know here.
   To get help, check out the documentation or contact Chromatic customer support.
-title: "[Bug]: "
 body:
   - type: textarea
     id: description
