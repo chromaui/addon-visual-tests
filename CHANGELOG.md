@@ -1,3 +1,15 @@
+# v1.2.23 (Mon Mar 18 2024)
+
+#### 🐛 Bug Fix
+
+- Fix dramatic layout bug during onboarding [#223](https://github.com/chromaui/addon-visual-tests/pull/223) ([@MichaelArestad](https://github.com/MichaelArestad))
+
+#### Authors: 1
+
+- Michael Arestad ([@MichaelArestad](https://github.com/MichaelArestad))
+
+---
+
 # v1.2.22 (Fri Mar 15 2024)
 
 #### 🐛 Bug Fix

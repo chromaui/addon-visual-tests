@@ -1,8 +1,13 @@
 import { styled } from "@storybook/theming";
 
-export const Text = styled.div<{ center?: boolean; muted?: boolean; small?: boolean }>(
-  ({ center, small, theme }) => ({
-    display: "inline-block",
+export const Text = styled.div<{
+  center?: boolean;
+  muted?: boolean;
+  small?: boolean;
+  block?: boolean;
+}>(
+  ({ center, small, block, theme }) => ({
+    display: block ? "block" : "inline-block",
     color: theme.color.defaultText,
     fontSize: small ? theme.typography.size.s1 : theme.typography.size.s2,
     lineHeight: small ? "18px" : "20px",
