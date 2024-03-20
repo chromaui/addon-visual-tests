@@ -1,4 +1,4 @@
-import { TooltipNote, WithTooltip } from "@storybook/components";
+import { WithTooltip } from "@storybook/components";
 import {
   BatchAcceptIcon,
   ContrastIcon,
@@ -18,6 +18,7 @@ import { ProgressIcon } from "../../components/icons/ProgressIcon";
 import { Placeholder } from "../../components/Placeholder";
 import { Text } from "../../components/Text";
 import { TooltipMenu } from "../../components/TooltipMenu";
+import { TooltipNote } from "../../components/TooltipNote";
 import { ComparisonResult, ReviewTestBatch, TestStatus } from "../../gql/graphql";
 import { useSelectedStoryState } from "./BuildContext";
 import { useControlsDispatch, useControlsState } from "./ControlsContext";

@@ -5,6 +5,7 @@ import { FooterMenu } from "../../components/FooterMenu";
 import { Col } from "../../components/layout";
 import { ModeSelector } from "../../components/ModeSelector";
 import { Footer } from "../../components/Screen";
+import { TooltipNote } from "../../components/TooltipNote";
 import { TestStatus } from "../../gql/graphql";
 import { useSelectedStoryState } from "./BuildContext";
 

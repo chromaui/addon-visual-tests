@@ -1,4 +1,4 @@
-import { TooltipNote, WithTooltip } from "@storybook/components";
+import { WithTooltip } from "@storybook/components";
 import { ChevronDownIcon } from "@storybook/icons";
 import { styled, useTheme } from "@storybook/theming";
 import React, { ComponentProps } from "react";
@@ -11,6 +11,7 @@ import { FirefoxIcon } from "./icons/FirefoxIcon";
 import { SafariIcon } from "./icons/SafariIcon";
 import { StatusDot, StatusDotWrapper } from "./StatusDot";
 import { TooltipMenu } from "./TooltipMenu";
+import { TooltipNote } from "./TooltipNote";
 
 const browserIcons = {
   [Browser.Chrome]: <ChromeIcon alt="Chrome" />,

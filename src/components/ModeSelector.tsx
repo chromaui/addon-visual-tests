@@ -1,4 +1,4 @@
-import { TooltipNote, WithTooltip } from "@storybook/components";
+import { WithTooltip } from "@storybook/components";
 import { ChevronDownIcon, DiamondIcon } from "@storybook/icons";
 import { styled, useTheme } from "@storybook/theming";
 import React from "react";
@@ -7,6 +7,7 @@ import { ComparisonResult, TestMode } from "../gql/graphql";
 import { aggregateResult } from "../utils/aggregateResult";
 import { StatusDot, StatusDotWrapper } from "./StatusDot";
 import { TooltipMenu } from "./TooltipMenu";
+import { TooltipNote } from "./TooltipNote";
 
 const IconWrapper = styled.div(({ theme }) => ({
   alignItems: "center",

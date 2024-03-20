@@ -1,4 +1,4 @@
-import { TooltipNote, WithTooltip } from "@storybook/components";
+import { WithTooltip } from "@storybook/components";
 import { PlayIcon, StopAltIcon, SyncIcon } from "@storybook/icons";
 import { keyframes, styled } from "@storybook/theming";
 import React, { ComponentProps } from "react";
@@ -7,6 +7,7 @@ import { LocalBuildProgress } from "../types";
 import { BuildProgressLabel } from "./BuildProgressLabel";
 import { IconButton } from "./IconButton";
 import { StatusDotWrapper } from "./StatusDot";
+import { TooltipNote } from "./TooltipNote";
 
 export const TooltipContent = styled.div(({ theme }) => ({
   width: 220,
