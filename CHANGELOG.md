@@ -1,3 +1,15 @@
+# v1.2.25 (Wed Mar 20 2024)
+
+#### 🐛 Bug Fix
+
+- VTA: Fix tooltip spacing [#219](https://github.com/chromaui/addon-visual-tests/pull/219) ([@MichaelArestad](https://github.com/MichaelArestad))
+
+#### Authors: 1
+
+- Michael Arestad ([@MichaelArestad](https://github.com/MichaelArestad))
+
+---
+
 # v1.2.24 (Wed Mar 20 2024)
 
 #### 🐛 Bug Fix
