@@ -110,8 +110,8 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
       </Controls>
     );
 
-  const isAcceptable = changeCount > 0 && selectedTest.status !== TestStatus.Accepted;
-  const isUnacceptable = changeCount > 0 && selectedTest.status === TestStatus.Accepted;
+  const isAcceptable = changeCount > 0 && selectedTest?.status !== TestStatus.Accepted;
+  const isUnacceptable = changeCount > 0 && selectedTest?.status === TestStatus.Accepted;
   const hasControls = selectedComparison?.result === ComparisonResult.Changed;
 
   return (
@@ -179,7 +179,7 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
 
       {(isAcceptable || isUnacceptable) && (
         <Actions showDivider={hasControls}>
-          {userCanReview && buildIsReviewable && isAcceptable && (
+          {userCanReview && buildIsReviewable && isAcceptable && selectedTest && (
             <ButtonGroup>
               <WithTooltip
                 tooltip={<TooltipNote note="Accept this story" />}

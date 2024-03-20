@@ -179,7 +179,7 @@ export const Onboarding = ({
           <Stack>
             <div>
               <Heading>Nice. Your stories were saved as test baselines.</Heading>
-              <Text center muted>
+              <Text center muted block>
                 This story was indexed and snapshotted in a standardized cloud browser.
               </Text>
               {selectedStory?.selectedComparison?.headCapture?.captureImage && (
@@ -218,7 +218,7 @@ export const Onboarding = ({
           <Stack>
             <div>
               <Heading>Make a change to this story</Heading>
-              <Text center muted>
+              <Text center muted block>
                 In your code, adjust the markup, styling, or assets to see how visual testing works.
                 Don’t worry, you can undo it later. Here are a few ideas to get you started.
               </Text>
@@ -345,7 +345,7 @@ export const Onboarding = ({
           <Stack>
             <div>
               <Heading>Nice. Your stories were saved as test baselines.</Heading>
-              <Text center muted>
+              <Text center muted block>
                 This story was indexed and snapshotted in a standardized cloud browser.
               </Text>
               {selectedStory.selectedComparison?.headCapture?.captureImage && (

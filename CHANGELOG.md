@@ -1,3 +1,84 @@
+# v1.2.24 (Wed Mar 20 2024)
+
+#### 🐛 Bug Fix
+
+- Update guided tour tooltip to match Storybook [#226](https://github.com/chromaui/addon-visual-tests/pull/226) ([@MichaelArestad](https://github.com/MichaelArestad))
+- Setup GitHub issue template [#224](https://github.com/chromaui/addon-visual-tests/pull/224) ([@ghengeveld](https://github.com/ghengeveld))
+- Create `SECURITY.md` [#225](https://github.com/chromaui/addon-visual-tests/pull/225) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 2
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Michael Arestad ([@MichaelArestad](https://github.com/MichaelArestad))
+
+---
+
+# v1.2.23 (Mon Mar 18 2024)
+
+#### 🐛 Bug Fix
+
+- Fix dramatic layout bug during onboarding [#223](https://github.com/chromaui/addon-visual-tests/pull/223) ([@MichaelArestad](https://github.com/MichaelArestad))
+
+#### Authors: 1
+
+- Michael Arestad ([@MichaelArestad](https://github.com/MichaelArestad))
+
+---
+
+# v1.2.22 (Fri Mar 15 2024)
+
+#### 🐛 Bug Fix
+
+- Only use criteria to select mode when story first loads [#218](https://github.com/chromaui/addon-visual-tests/pull/218) ([@andrewortwein](https://github.com/andrewortwein) [@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 2
+
+- Andrew Ortwein ([@andrewortwein](https://github.com/andrewortwein))
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v1.2.21 (Fri Mar 15 2024)
+
+#### 🐛 Bug Fix
+
+- Normalize `configDir` before comparing [#222](https://github.com/chromaui/addon-visual-tests/pull/222) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v1.2.20 (Thu Mar 14 2024)
+
+#### 🐛 Bug Fix
+
+- Don't show extra border when no config is available [#221](https://github.com/chromaui/addon-visual-tests/pull/221) ([@andrewortwein](https://github.com/andrewortwein))
+
+#### Authors: 1
+
+- Andrew Ortwein ([@andrewortwein](https://github.com/andrewortwein))
+
+---
+
+# v1.2.19 (Wed Mar 13 2024)
+
+#### 🐛 Bug Fix
+
+- Set Zip to true by default on config updates [#220](https://github.com/chromaui/addon-visual-tests/pull/220) ([@thafryer](https://github.com/thafryer))
+- Fixed up ActionButton and the Mode/Browser selectors [#216](https://github.com/chromaui/addon-visual-tests/pull/216) ([@MichaelArestad](https://github.com/MichaelArestad))
+- Update text style and use it more consistently [#217](https://github.com/chromaui/addon-visual-tests/pull/217) ([@ghengeveld](https://github.com/ghengeveld))
+- Require PR labels before merging [#215](https://github.com/chromaui/addon-visual-tests/pull/215) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 3
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Jarel Fryer ([@thafryer](https://github.com/thafryer))
+- Michael Arestad ([@MichaelArestad](https://github.com/MichaelArestad))
+
+---
+
 # v1.2.18 (Mon Mar 11 2024)
 
 #### 🐛 Bug Fix

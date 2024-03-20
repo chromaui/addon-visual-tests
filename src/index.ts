@@ -54,7 +54,7 @@ const suggestRemovals = (
 // Detect problems in the current configuration and suggest updates.
 const getConfigInfo = async (
   configuration: Awaited<ReturnType<typeof getConfiguration>>,
-  { configDir }: Options
+  options: Options
 ) => {
   const defaults: Configuration = {
     storybookBaseDir: ".",
@@ -70,8 +70,9 @@ const getConfigInfo = async (
     problems.storybookBaseDir = baseDir;
   }
 
+  const configDir = normalize(relative(process.cwd(), options.configDir));
   if (configDir !== normalize(configuration.storybookConfigDir ?? "")) {
-    problems.storybookConfigDir = normalize(relative(process.cwd(), configDir));
+    problems.storybookConfigDir = configDir;
   }
 
   if (!configuration.zip) {
@@ -156,7 +157,7 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
       // No config file may be found (file is about to be created)
       const { configFile: foundConfigFile, ...config } = await getConfiguration(writtenConfigFile);
       const targetConfigFile = foundConfigFile || writtenConfigFile || "chromatic.config.json";
-      await updateChromaticConfig(targetConfigFile, { ...config, projectId });
+      await updateChromaticConfig(targetConfigFile, { ...config, projectId, zip: true });
 
       projectInfoState.value = {
         ...projectInfoState.value,

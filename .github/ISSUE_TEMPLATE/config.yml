@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation 📚
+    url: https://www.chromatic.com/docs/visual-tests-addon/
+    about: Check out the official docs for answers to common questions.
+  - name: Customer support 💬
+    url: https://www.chromatic.com/start?support
+    about: Chat with Chromatic customer support for help with your account or technical issues.
