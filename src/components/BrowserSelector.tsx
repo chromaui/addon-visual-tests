@@ -10,8 +10,8 @@ import { EdgeIcon } from "./icons/EdgeIcon";
 import { FirefoxIcon } from "./icons/FirefoxIcon";
 import { SafariIcon } from "./icons/SafariIcon";
 import { StatusDot, StatusDotWrapper } from "./StatusDot";
-import { Tooltip } from "./Tooltip";
 import { TooltipMenu } from "./TooltipMenu";
+import { TooltipNote } from "./TooltipNote";
 
 const browserIcons = {
   [Browser.Chrome]: <ChromeIcon alt="Chrome" />,
@@ -97,7 +97,9 @@ export const BrowserSelector = ({
       placement="top"
       trigger="hover"
       tooltip={
-        <Tooltip note={links ? "Switch browser" : `Tested in ${browserResults[0].browser.name}`} />
+        <TooltipNote
+          note={links ? "Switch browser" : `Tested in ${browserResults[0].browser.name}`}
+        />
       }
     >
       {links ? (

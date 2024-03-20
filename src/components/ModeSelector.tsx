@@ -6,8 +6,8 @@ import React from "react";
 import { ComparisonResult, TestMode } from "../gql/graphql";
 import { aggregateResult } from "../utils/aggregateResult";
 import { StatusDot, StatusDotWrapper } from "./StatusDot";
-import { Tooltip } from "./Tooltip";
 import { TooltipMenu } from "./TooltipMenu";
+import { TooltipNote } from "./TooltipNote";
 
 const IconWrapper = styled.div(({ theme }) => ({
   alignItems: "center",
@@ -110,7 +110,9 @@ export const ModeSelector = ({
       hasChrome={false}
       placement="top"
       trigger="hover"
-      tooltip={<Tooltip note={links ? "Switch mode" : `View mode: ${modeResults[0].mode.name}`} />}
+      tooltip={
+        <TooltipNote note={links ? "Switch mode" : `View mode: ${modeResults[0].mode.name}`} />
+      }
     >
       {links ? (
         <StyledTooltipMenu placement="bottom" links={links}>
