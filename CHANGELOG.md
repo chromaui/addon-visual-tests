@@ -1,3 +1,18 @@
+# v1.2.24 (Wed Mar 20 2024)
+
+#### 🐛 Bug Fix
+
+- Update guided tour tooltip to match Storybook [#226](https://github.com/chromaui/addon-visual-tests/pull/226) ([@MichaelArestad](https://github.com/MichaelArestad))
+- Setup GitHub issue template [#224](https://github.com/chromaui/addon-visual-tests/pull/224) ([@ghengeveld](https://github.com/ghengeveld))
+- Create `SECURITY.md` [#225](https://github.com/chromaui/addon-visual-tests/pull/225) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 2
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Michael Arestad ([@MichaelArestad](https://github.com/MichaelArestad))
+
+---
+
 # v1.2.23 (Mon Mar 18 2024)
 
 #### 🐛 Bug Fix
