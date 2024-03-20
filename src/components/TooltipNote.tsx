@@ -4,5 +4,5 @@ import { styled } from "@storybook/theming";
 export const TooltipNote = styled(OriginalTooltip)(({ theme }) => ({
   marginBottom: "-4px",
   marginTop: "-4px",
-  transform: "translateX(-8px)",
+  left: -8,
 }));
