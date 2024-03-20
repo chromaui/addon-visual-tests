@@ -19,14 +19,14 @@ const Wrapper = styled.div({
 });
 
 const TooltipTitle = styled.div(({ theme }) => ({
-  fontSize: 14,
+  fontSize: 13,
   lineHeight: "18px",
   fontWeight: 700,
   color: theme.color.defaultText,
 }));
 
 const TooltipContent = styled.div(({ theme }) => ({
-  fontSize: 14,
+  fontSize: 13,
   lineHeight: "18px",
   textAlign: "start",
   color: theme.color.defaultText,
@@ -39,10 +39,6 @@ const TooltipFooter = styled.div({
   justifyContent: "flex-end",
   marginTop: 15,
 });
-
-const NextButton = styled(Button)(
-  ({ secondary }) => secondary && { "&&:focus": { boxShadow: "none" } }
-);
 
 export type TooltipProps = TooltipRenderProps & {
   step: TooltipRenderProps["step"] & {
@@ -62,9 +58,10 @@ export const Tooltip = ({ isLastStep, step, primaryProps, tooltipProps }: Toolti
         <TooltipContent>{step.content}</TooltipContent>
       </Wrapper>
       {(step.hideNextButton || step.hideBackButton) && (
-        <TooltipFooter id="buttonNext">
+        <TooltipFooter id="buttonSkip">
           {!step.hideSkipButton && !isLastStep && (
             <Button
+              size="medium"
               onClick={step.onSkipWalkthroughButtonClick}
               link
               style={{ paddingRight: 12, paddingLeft: 12, marginRight: 8 }}
@@ -73,17 +70,17 @@ export const Tooltip = ({ isLastStep, step, primaryProps, tooltipProps }: Toolti
             </Button>
           )}
           {!step.hideNextButton && (
-            <NextButton
+            <Button
               {...{
                 ...primaryProps,
                 // @tmeasday - I'm not sure if we ever use this, but this makes the types work
                 onClick: primaryProps.onClick as (event: SyntheticEvent) => void,
-                secondary: true,
+                primary: true,
                 ...(step.onNextButtonClick ? { onClick: step.onNextButtonClick } : {}),
               }}
             >
               {step.nextButtonText || "Next"}
-            </NextButton>
+            </Button>
           )}
         </TooltipFooter>
       )}
