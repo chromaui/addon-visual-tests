@@ -15,7 +15,7 @@
     "react-confetti": "^6.1.0",
     "strip-ansi": "^7.1.0"
   },
-  "description": "Visual Testing addon with Chromatic",
+  "description": "Catch unexpected visual changes & UI bugs in your stories",
   "devDependencies": {
     "@emotion/weak-memoize": "^0.3.1",
     "@graphql-codegen/cli": "^4.0.1",
@@ -106,11 +106,11 @@
     "*.d.ts"
   ],
   "keywords": [
-    "tests",
+    "storybook-addons",
+    "test",
     "visual tests",
     "vrt",
-    "chromatic",
-    "storybook-addons"
+    "chromatic"
   ],
   "license": "MIT",
   "main": "dist/index.js",
@@ -146,7 +146,7 @@
   },
   "storybook": {
     "displayName": "Visual Tests",
-    "icon": "https://user-images.githubusercontent.com/341738/63501763-88dbf600-c4cc-11e9-96cd-94adadc2fd72.png",
+    "icon": "https://github.com/chromaui/addon-visual-tests/assets/486540/9acf6f3f-eadb-4b9e-b934-c4b0f87d9430",
     "supportedFrameworks": [
       "react",
       "vue",
