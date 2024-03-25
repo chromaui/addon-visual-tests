@@ -67,6 +67,10 @@ export const Panel = ({ active, api }: PanelProps) => {
   const [createdProjectId, setCreatedProjectId] = useState<Project["id"]>();
   const [addonUninstalled, setAddonUninstalled] = useSharedState<boolean>(REMOVE_ADDON);
 
+  if (!active) {
+    return null;
+  }
+
   const startBuild = () => emit(START_BUILD, { accessToken });
   const stopBuild = () => emit(STOP_BUILD);
   const isRunning =
