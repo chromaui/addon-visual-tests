@@ -3,12 +3,12 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { SharedState } from "./SharedState";
 
-export function useSharedState<S>(key: string) {
+export function useSharedState<T>(key: string) {
   const channel = useStorybookApi().getChannel();
   if (!channel) throw new Error("Channel not available");
 
-  const sharedStateRef = useRef(SharedState.subscribe<S>(key, channel));
-  const [state, setState] = useState<S | undefined>(sharedStateRef.current.value);
+  const sharedStateRef = useRef(SharedState.subscribe<T>(key, channel));
+  const [state, setState] = useState<T | undefined>(sharedStateRef.current.value);
 
   useEffect(() => {
     const sharedState = sharedStateRef.current;
@@ -18,14 +18,9 @@ export function useSharedState<S>(key: string) {
 
   return [
     state,
-    useCallback(
-      (update: S | undefined | ((currentValue: S) => S | undefined)) =>
-        setState((currentValue: S | undefined) => {
-          const newValue = typeof update === "function" ? (update as any)(currentValue) : update;
-          sharedStateRef.current.value = newValue;
-          return newValue;
-        }),
-      []
-    ),
+    useCallback((newValue: T | undefined) => {
+      setState(newValue);
+      sharedStateRef.current.value = newValue;
+    }, []),
   ] as const;
 }

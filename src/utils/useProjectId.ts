@@ -13,14 +13,14 @@ export const useProjectId = () => {
     projectId,
     configFile,
     updateProject: useCallback(
-      (id: string) => setProjectInfo((info) => ({ ...info, projectId: id, dismissed: false })),
-      [setProjectInfo]
+      (id: string) => setProjectInfo({ ...projectInfo, projectId: id, dismissed: false }),
+      [projectInfo, setProjectInfo]
     ),
     projectUpdatingFailed: !dismissed && written === false,
     projectIdUpdated: !dismissed && written === true,
     clearProjectIdUpdated: useCallback(
-      () => setProjectInfo((info) => ({ ...info, dismissed: true })),
-      [setProjectInfo]
+      () => setProjectInfo({ ...projectInfo, dismissed: true }),
+      [projectInfo, setProjectInfo]
     ),
   };
 };
