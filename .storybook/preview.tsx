@@ -21,8 +21,7 @@ import { UninstallProvider } from "../src/screens/Uninstalled/UninstallContext";
 import { RunBuildProvider } from "../src/screens/VisualTests/RunBuildContext";
 import { GraphQLClientProvider } from "../src/utils/graphQLClient";
 import { storyWrapper } from "../src/utils/storyWrapper";
-import { clearSessionState, useSessionState } from "../src/utils/useSessionState";
-import { withSetup } from "../src/utils/withSetup";
+import { useSessionState } from "../src/utils/useSessionState";
 
 // Initialize MSW
 initialize({
@@ -204,15 +203,7 @@ export const graphQLArgLoader: Loader = async ({ argTypes, argsByTarget, paramet
 };
 
 const preview: Preview = {
-  decorators: [
-    withSetup(clearSessionState),
-    withTheme,
-    withGraphQLClient,
-    withAuth,
-    withUninstall,
-    withManagerApi,
-    withRunBuild,
-  ],
+  decorators: [withTheme, withGraphQLClient, withAuth, withUninstall, withManagerApi, withRunBuild],
   loaders: [graphQLArgLoader],
   parameters: {
     actions: {
