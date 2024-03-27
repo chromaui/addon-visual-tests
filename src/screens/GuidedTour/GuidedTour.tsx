@@ -3,7 +3,7 @@ import { useTheme } from "@storybook/theming";
 import React, { useEffect, useRef } from "react";
 import Joyride from "react-joyride";
 
-import { ADDON_ID, PANEL_ID } from "../../constants";
+import { PANEL_ID } from "../../constants";
 import { ENABLE_FILTER } from "../../SidebarBottom";
 import { useSessionState } from "../../utils/useSessionState";
 import { useSelectedStoryState } from "../VisualTests/BuildContext";
@@ -57,8 +57,8 @@ export const GuidedTour = ({
     managerApi.setSelectedPanel(PANEL_ID);
   }, [managerApi]);
 
-  const [showConfetti, setShowConfetti] = useSessionState(`${ADDON_ID}/showConfetti`, false);
-  const [stepIndex, setStepIndex] = useSessionState<number>(`${ADDON_ID}/stepIndex`, 0);
+  const [showConfetti, setShowConfetti] = useSessionState("showConfetti", false);
+  const [stepIndex, setStepIndex] = useSessionState("stepIndex", 0);
   const nextStep = () => setStepIndex((prev = 0) => prev + 1);
 
   useEffect(() => {

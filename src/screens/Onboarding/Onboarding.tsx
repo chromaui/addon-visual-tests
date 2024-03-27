@@ -1,7 +1,7 @@
 import { PlayIcon } from "@storybook/icons";
 import { styled } from "@storybook/theming";
 import { lighten } from "polished";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 
 import { BuildProgressInline } from "../../components/BuildProgressBarInline";
 import { Button } from "../../components/Button";
@@ -14,7 +14,6 @@ import { Screen } from "../../components/Screen";
 import { SnapshotImageThumb } from "../../components/SnapshotImageThumb";
 import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
-import { ADDON_ID } from "../../constants";
 import { SelectedBuildFieldsFragment } from "../../gql/graphql";
 import { GitInfoPayload, LocalBuildProgress } from "../../types";
 import { useSessionState } from "../../utils/useSessionState";
@@ -81,7 +80,7 @@ export const Onboarding = ({
   // TODO: Removed this entirely to solve for the most common case of an existing user with some builds to use as a baseline.
   // Removing instead of fixing to avoid additional work as this project is past due. We need to revisit this later.
   const [showInitialBuild, setShowInitialBuild] = useSessionState(
-    `${ADDON_ID}/showInitialBuild`,
+    "showInitialBuild",
     showInitialBuildScreen
   );
   useEffect(() => {
@@ -90,11 +89,11 @@ export const Onboarding = ({
   }, [showInitialBuildScreen, setShowInitialBuild]);
 
   const [showCatchAChange, setShowCatchAChange] = useSessionState(
-    `${ADDON_ID}/showCatchAChange`,
+    "showCatchAChange",
     !showInitialBuild
   );
   const [initialGitHash, setInitialGitHash] = useSessionState(
-    `${ADDON_ID}/initialGitHash`,
+    "initialGitHash",
     gitInfo.uncommittedHash
   );
 
@@ -103,10 +102,7 @@ export const Onboarding = ({
     setShowCatchAChange(true);
   };
 
-  const [runningSecondBuild, setRunningSecondBuild] = useSessionState(
-    `${ADDON_ID}/runningSecondBuild`,
-    false
-  );
+  const [runningSecondBuild, setRunningSecondBuild] = useSessionState("runningSecondBuild", false);
 
   // TODO: This design for an error in the Onboarding is incomplete
   if (localBuildProgress && localBuildProgress.currentStep === "error") {

@@ -1,6 +1,6 @@
 import type { API } from "@storybook/manager-api";
 import { useChannel, useStorybookState } from "@storybook/manager-api";
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 
 import { AuthProvider } from "./AuthContext";
 import { Spinner } from "./components/design-system";
@@ -15,7 +15,6 @@ import {
   START_BUILD,
   STOP_BUILD,
 } from "./constants";
-import { Project } from "./gql/graphql";
 import { Authentication } from "./screens/Authentication/Authentication";
 import { GitNotFound } from "./screens/Errors/GitNotFound";
 import { LinkedProject } from "./screens/LinkProject/LinkedProject";
@@ -65,9 +64,7 @@ export const Panel = ({ active, api }: PanelProps) => {
   } = useProjectId();
 
   // If the user creates a project in a dialog (either during login or later, it get set here)
-  const [createdProjectId, setCreatedProjectId] = useSessionState<Project["id"]>(
-    `${ADDON_ID}/createdProjectId`
-  );
+  const [createdProjectId, setCreatedProjectId] = useSessionState<string>("createdProjectId");
   const [addonUninstalled, setAddonUninstalled] = useSharedState<boolean>(REMOVE_ADDON);
 
   const startBuild = () => emit(START_BUILD, { accessToken });

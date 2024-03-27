@@ -1,5 +1,7 @@
 import { Dispatch, SetStateAction, useCallback, useState } from "react";
 
+import { ADDON_ID } from "../constants";
+
 const debounce = (callback: (...args: any[]) => unknown, wait: number) => {
   let timeoutId: number;
   return (...args: any[]) => {
@@ -9,18 +11,20 @@ const debounce = (callback: (...args: any[]) => unknown, wait: number) => {
 };
 
 const persist = debounce((key, value) => {
-  if (value === undefined) sessionStorage.removeItem(key);
-  else sessionStorage.setItem(key, JSON.stringify(value));
+  const storageKey = `${ADDON_ID}/state/${key}`;
+  const items = sessionStorage.getItem(`${ADDON_ID}/state`)?.split(";") || [];
+  if (value === undefined) {
+    sessionStorage.removeItem(storageKey);
+    sessionStorage.setItem(`${ADDON_ID}/state`, items.filter((i) => i !== key).join(";"));
+  } else {
+    sessionStorage.setItem(storageKey, JSON.stringify(value));
+    sessionStorage.setItem(`${ADDON_ID}/state`, items.concat(key).join(";"));
+  }
 }, 500);
-
-export function useSessionState<S = undefined>(
-  key: string,
-  initialState?: undefined
-): [S | undefined, Dispatch<SetStateAction<S | undefined>>];
 
 export function useSessionState<S>(
   key: string,
-  initialState: S | (() => S)
+  initialState?: S | (() => S)
 ): [S, Dispatch<SetStateAction<S>>] {
   const [state, setState] = useState<S>(() => {
     try {
@@ -42,4 +46,9 @@ export function useSessionState<S>(
       [key]
     ),
   ] as const;
+}
+
+export function clearSessionState() {
+  const items = sessionStorage.getItem(`${ADDON_ID}/state`)?.split(";") || [];
+  items.forEach((key) => sessionStorage.removeItem(`${ADDON_ID}/state/${key}`));
 }

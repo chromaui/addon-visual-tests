@@ -3,7 +3,6 @@ import type { API_StatusState } from "@storybook/types";
 import React, { useCallback, useEffect } from "react";
 import { useMutation } from "urql";
 
-import { ADDON_ID } from "../../constants";
 import { getFragment, graphql } from "../../gql";
 import {
   ReviewTestBatch,
@@ -374,9 +373,8 @@ export const VisualTestsWithoutSelectedBuildId = ({
 export const VisualTests = (
   props: Omit<VisualTestsProps, "selectedBuildInfo" | "setSelectedBuildInfo">
 ) => {
-  const [selectedBuildInfo, setSelectedBuildInfo] = useSessionState<SelectedBuildInfo>(
-    `${ADDON_ID}/selectedBuildInfo`
-  );
+  const [selectedBuildInfo, setSelectedBuildInfo] =
+    useSessionState<SelectedBuildInfo>("selectedBuildInfo");
 
   return (
     <VisualTestsWithoutSelectedBuildId {...{ selectedBuildInfo, setSelectedBuildInfo, ...props }} />

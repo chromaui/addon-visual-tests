@@ -9,9 +9,8 @@ import { Heading } from "../../components/Heading";
 import { Screen } from "../../components/Screen";
 import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
-import { ADDON_ID } from "../../constants";
 import { graphql } from "../../gql";
-import type { Account, Project, SelectProjectsQueryQuery } from "../../gql/graphql";
+import type { Project, SelectProjectsQueryQuery } from "../../gql/graphql";
 import { DialogHandler, useChromaticDialog } from "../../utils/useChromaticDialog";
 import { useSessionState } from "../../utils/useSessionState";
 
@@ -132,9 +131,7 @@ function SelectProject({
     return () => clearInterval(interval);
   }, [rerunProjectsQuery]);
 
-  const [selectedAccountId, setSelectedAccountId] = useSessionState<Account["id"]>(
-    `${ADDON_ID}/selectedAccountId`
-  );
+  const [selectedAccountId, setSelectedAccountId] = useSessionState<string>("selectedAccountId");
   const selectedAccount = data?.viewer?.accounts.find((a) => a.id === selectedAccountId);
 
   const onSelectAccount = React.useCallback(
@@ -149,10 +146,7 @@ function SelectProject({
     }
   }, [data, selectedAccountId, onSelectAccount]);
 
-  const [isSelectingProject, setSelectingProject] = useSessionState(
-    `${ADDON_ID}/isSelectingProject`,
-    false
-  );
+  const [isSelectingProject, setSelectingProject] = useSessionState("isSelectingProject", false);
 
   const handleSelectProject = React.useCallback(
     (

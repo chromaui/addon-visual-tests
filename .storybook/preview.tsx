@@ -21,8 +21,8 @@ import { UninstallProvider } from "../src/screens/Uninstalled/UninstallContext";
 import { RunBuildProvider } from "../src/screens/VisualTests/RunBuildContext";
 import { GraphQLClientProvider } from "../src/utils/graphQLClient";
 import { storyWrapper } from "../src/utils/storyWrapper";
-import { useSessionState } from "../src/utils/useSessionState";
-import { ADDON_ID } from "../src/constants";
+import { clearSessionState, useSessionState } from "../src/utils/useSessionState";
+import { withSetup } from "../src/utils/withSetup";
 
 // Initialize MSW
 initialize({
@@ -139,10 +139,7 @@ const withManagerApi = storyWrapper(ManagerContext.Provider, ({ argsByTarget }) 
 }));
 
 const withUninstall: Decorator = (Story) => {
-  const [addonUninstalled, setAddonUninstalled] = useSessionState(
-    `${ADDON_ID}/addonUninstalled`,
-    false
-  );
+  const [addonUninstalled, setAddonUninstalled] = useSessionState("addonUninstalled", false);
   return (
     <UninstallProvider
       addonUninstalled={addonUninstalled}
@@ -207,7 +204,15 @@ export const graphQLArgLoader: Loader = async ({ argTypes, argsByTarget, paramet
 };
 
 const preview: Preview = {
-  decorators: [withTheme, withGraphQLClient, withAuth, withUninstall, withManagerApi, withRunBuild],
+  decorators: [
+    withSetup(clearSessionState),
+    withTheme,
+    withGraphQLClient,
+    withAuth,
+    withUninstall,
+    withManagerApi,
+    withRunBuild,
+  ],
   loaders: [graphQLArgLoader],
   parameters: {
     actions: {
