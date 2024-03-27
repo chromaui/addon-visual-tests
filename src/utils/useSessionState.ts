@@ -5,22 +5,34 @@ import { ADDON_ID } from "../constants";
 const debounce = (callback: (...args: any[]) => unknown, wait: number) => {
   let timeoutId: number;
   return (...args: any[]) => {
-    window.clearTimeout(timeoutId);
-    timeoutId = window.setTimeout(() => callback(...args), wait);
+    if (timeoutId) {
+      window.clearTimeout(timeoutId);
+      timeoutId = 0;
+    } else {
+      // Leading edge call
+      callback(...args);
+    }
+    timeoutId = window.setTimeout(() => {
+      // Trailing edge call
+      callback(...args);
+      timeoutId = 0;
+    }, wait);
   };
 };
 
-const persist = debounce((key, value) => {
-  const storageKey = `${ADDON_ID}/state/${key}`;
-  const items = sessionStorage.getItem(`${ADDON_ID}/state`)?.split(";") || [];
-  if (value === undefined) {
-    sessionStorage.removeItem(storageKey);
-    sessionStorage.setItem(`${ADDON_ID}/state`, items.filter((i) => i !== key).join(";"));
-  } else {
-    sessionStorage.setItem(storageKey, JSON.stringify(value));
-    sessionStorage.setItem(`${ADDON_ID}/state`, items.concat(key).join(";"));
-  }
-}, 500);
+const persist = (key: string) =>
+  debounce((value: unknown) => {
+    const storageKey = `${ADDON_ID}/state/${key}`;
+    const stateKeys = new Set(sessionStorage.getItem(`${ADDON_ID}/state`)?.split(";"));
+    if (value === undefined || value === null) {
+      sessionStorage.removeItem(storageKey);
+      stateKeys.delete(key);
+    } else {
+      sessionStorage.setItem(storageKey, JSON.stringify(value));
+      stateKeys.add(key);
+    }
+    sessionStorage.setItem(`${ADDON_ID}/state`, Array.from(stateKeys).join(";"));
+  }, 500);
 
 export function useSessionState<S>(
   key: string,
@@ -28,19 +40,21 @@ export function useSessionState<S>(
 ): readonly [S, Dispatch<SetStateAction<S>>] {
   const [state, setState] = useState<S>(() => {
     try {
-      return JSON.parse(sessionStorage.getItem(key) as string) as S;
+      const value = sessionStorage.getItem(key) as string;
+      if (value !== undefined && value !== null) return JSON.parse(value) as S;
     } catch (e) {
-      return typeof initialState === "function" ? (initialState as () => S)() : (initialState as S);
+      // ignore
     }
+    return typeof initialState === "function" ? (initialState as () => S)() : (initialState as S);
   });
 
   return [
     state,
     useCallback(
       (update: S | ((currentValue: S) => S)) =>
-        setState((value: S | undefined) => {
-          const newValue = typeof update === "function" ? (update as any)(value) : update;
-          persist(key, newValue);
+        setState((currentValue: S | undefined) => {
+          const newValue = typeof update === "function" ? (update as any)(currentValue) : update;
+          persist(key)(newValue);
           return newValue;
         }),
       [key]
