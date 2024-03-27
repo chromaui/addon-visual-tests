@@ -51,4 +51,5 @@ export function useSessionState<S>(
 export function clearSessionState() {
   const items = sessionStorage.getItem(`${ADDON_ID}/state`)?.split(";") || [];
   items.forEach((key) => sessionStorage.removeItem(`${ADDON_ID}/state/${key}`));
+  sessionStorage.removeItem(`${ADDON_ID}/state`);
 }
