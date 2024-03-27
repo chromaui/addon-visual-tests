@@ -1,6 +1,6 @@
 import { AddIcon } from "@storybook/icons";
 import { styled } from "@storybook/theming";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useQuery } from "urql";
 
 import { Container } from "../../components/Container";
@@ -9,9 +9,11 @@ import { Heading } from "../../components/Heading";
 import { Screen } from "../../components/Screen";
 import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
+import { ADDON_ID } from "../../constants";
 import { graphql } from "../../gql";
 import type { Account, Project, SelectProjectsQueryQuery } from "../../gql/graphql";
 import { DialogHandler, useChromaticDialog } from "../../utils/useChromaticDialog";
+import { useSessionState } from "../../utils/useSessionState";
 
 const SelectProjectsQuery = graphql(/* GraphQL */ `
   query SelectProjectsQuery {
@@ -130,13 +132,14 @@ function SelectProject({
     return () => clearInterval(interval);
   }, [rerunProjectsQuery]);
 
-  const [selectedAccountId, setSelectedAccountId] = useState<Account["id"]>();
+  const [selectedAccountId, setSelectedAccountId] = useSessionState<Account["id"]>(
+    `${ADDON_ID}/selectedAccountId`
+  );
   const selectedAccount = data?.viewer?.accounts.find((a) => a.id === selectedAccountId);
 
   const onSelectAccount = React.useCallback(
-    (account: NonNullable<SelectProjectsQueryQuery["viewer"]>["accounts"][number]) => {
-      setSelectedAccountId(account.id);
-    },
+    (account: NonNullable<SelectProjectsQueryQuery["viewer"]>["accounts"][number]) =>
+      setSelectedAccountId(account.id),
     [setSelectedAccountId]
   );
 
@@ -146,7 +149,10 @@ function SelectProject({
     }
   }, [data, selectedAccountId, onSelectAccount]);
 
-  const [isSelectingProject, setSelectingProject] = useState(false);
+  const [isSelectingProject, setSelectingProject] = useSessionState(
+    `${ADDON_ID}/isSelectingProject`,
+    false
+  );
 
   const handleSelectProject = React.useCallback(
     (

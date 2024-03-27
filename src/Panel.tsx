@@ -30,6 +30,7 @@ import { VisualTests } from "./screens/VisualTests/VisualTests";
 import { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from "./types";
 import { client, Provider, useAccessToken } from "./utils/graphQLClient";
 import { useProjectId } from "./utils/useProjectId";
+import { useSessionState } from "./utils/useSessionState";
 import { useSharedState } from "./utils/useSharedState";
 
 interface PanelProps {
@@ -64,7 +65,9 @@ export const Panel = ({ active, api }: PanelProps) => {
   } = useProjectId();
 
   // If the user creates a project in a dialog (either during login or later, it get set here)
-  const [createdProjectId, setCreatedProjectId] = useState<Project["id"]>();
+  const [createdProjectId, setCreatedProjectId] = useSessionState<Project["id"]>(
+    `${ADDON_ID}/createdProjectId`
+  );
   const [addonUninstalled, setAddonUninstalled] = useSharedState<boolean>(REMOVE_ADDON);
 
   const startBuild = () => emit(START_BUILD, { accessToken });

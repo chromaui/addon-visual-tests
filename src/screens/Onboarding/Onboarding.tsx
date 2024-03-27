@@ -14,8 +14,10 @@ import { Screen } from "../../components/Screen";
 import { SnapshotImageThumb } from "../../components/SnapshotImageThumb";
 import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
+import { ADDON_ID } from "../../constants";
 import { SelectedBuildFieldsFragment } from "../../gql/graphql";
 import { GitInfoPayload, LocalBuildProgress } from "../../types";
+import { useSessionState } from "../../utils/useSessionState";
 import { BuildError } from "../Errors/BuildError";
 import { BuildLimited } from "../Errors/BuildLimited";
 import { useBuildState, useSelectedStoryState } from "../VisualTests/BuildContext";
@@ -78,23 +80,33 @@ export const Onboarding = ({
   // The initial build screen is only necessary if this is a brand new project with no builds at all. Instead, !selectedBuild would appear on any new branch, even if there are other builds on the project.
   // TODO: Removed this entirely to solve for the most common case of an existing user with some builds to use as a baseline.
   // Removing instead of fixing to avoid additional work as this project is past due. We need to revisit this later.
-  const [showInitialBuild, setShowInitialBuild] = useState(showInitialBuildScreen);
+  const [showInitialBuild, setShowInitialBuild] = useSessionState(
+    `${ADDON_ID}/showInitialBuild`,
+    showInitialBuildScreen
+  );
   useEffect(() => {
     // Watch the value of showInitialBuildScreen, and if it becomes true, set the state to true. This is necessary because Onboarding may render before there is data to determine if there are any builds.
-    if (showInitialBuildScreen) {
-      setShowInitialBuild(true);
-    }
-  }, [showInitialBuildScreen]);
+    if (showInitialBuildScreen) setShowInitialBuild(true);
+  }, [showInitialBuildScreen, setShowInitialBuild]);
 
-  const [showCatchAChange, setShowCatchAChange] = useState(() => !showInitialBuild);
-  const [initialGitHash, setInitialGitHash] = React.useState(gitInfo.uncommittedHash);
+  const [showCatchAChange, setShowCatchAChange] = useSessionState(
+    `${ADDON_ID}/showCatchAChange`,
+    !showInitialBuild
+  );
+  const [initialGitHash, setInitialGitHash] = useSessionState(
+    `${ADDON_ID}/initialGitHash`,
+    gitInfo.uncommittedHash
+  );
 
   const onCatchAChange = () => {
     setInitialGitHash(gitInfo.uncommittedHash);
     setShowCatchAChange(true);
   };
 
-  const [runningSecondBuild, setRunningSecondBuild] = React.useState(false);
+  const [runningSecondBuild, setRunningSecondBuild] = useSessionState(
+    `${ADDON_ID}/runningSecondBuild`,
+    false
+  );
 
   // TODO: This design for an error in the Onboarding is incomplete
   if (localBuildProgress && localBuildProgress.currentStep === "error") {
