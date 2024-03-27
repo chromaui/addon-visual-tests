@@ -30,7 +30,7 @@ const createEmptyStoryStatusUpdate = (state: API_StatusState) => {
 interface VisualTestsProps {
   isOutdated: boolean;
   selectedBuildInfo?: SelectedBuildInfo;
-  setSelectedBuildInfo: ReturnType<typeof useSessionState<SelectedBuildInfo>>[1];
+  setSelectedBuildInfo: ReturnType<typeof useSessionState<SelectedBuildInfo | undefined>>[1];
   dismissBuildError: () => void;
   localBuildProgress?: LocalBuildProgress;
   setOutdated: (isOutdated: boolean) => void;
@@ -373,8 +373,9 @@ export const VisualTestsWithoutSelectedBuildId = ({
 export const VisualTests = (
   props: Omit<VisualTestsProps, "selectedBuildInfo" | "setSelectedBuildInfo">
 ) => {
-  const [selectedBuildInfo, setSelectedBuildInfo] =
-    useSessionState<SelectedBuildInfo>("selectedBuildInfo");
+  const [selectedBuildInfo, setSelectedBuildInfo] = useSessionState<SelectedBuildInfo | undefined>(
+    "selectedBuildInfo"
+  );
 
   return (
     <VisualTestsWithoutSelectedBuildId {...{ selectedBuildInfo, setSelectedBuildInfo, ...props }} />

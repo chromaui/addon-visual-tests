@@ -25,7 +25,7 @@ const persist = debounce((key, value) => {
 export function useSessionState<S>(
   key: string,
   initialState?: S | (() => S)
-): [S, Dispatch<SetStateAction<S>>] {
+): readonly [S, Dispatch<SetStateAction<S>>] {
   const [state, setState] = useState<S>(() => {
     try {
       return JSON.parse(sessionStorage.getItem(key) as string) as S;
