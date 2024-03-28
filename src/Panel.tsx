@@ -29,7 +29,7 @@ import { VisualTests } from "./screens/VisualTests/VisualTests";
 import { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from "./types";
 import { client, Provider, useAccessToken } from "./utils/graphQLClient";
 import { useProjectId } from "./utils/useProjectId";
-import { useSessionState } from "./utils/useSessionState";
+import { clearSessionState, useSessionState } from "./utils/useSessionState";
 import { useSharedState } from "./utils/useSharedState";
 
 interface PanelProps {
@@ -38,7 +38,14 @@ interface PanelProps {
 }
 
 export const Panel = ({ active, api }: PanelProps) => {
-  const [accessToken, setAccessToken] = useAccessToken();
+  const [accessToken, updateAccessToken] = useAccessToken();
+  const setAccessToken = useCallback(
+    (token: string | null) => {
+      updateAccessToken(token);
+      if (!token) clearSessionState("authenticationScreen", "exchangeParameters");
+    },
+    [updateAccessToken]
+  );
   const { storyId } = useStorybookState();
 
   const [gitInfo] = useSharedState<GitInfoPayload>(GIT_INFO);

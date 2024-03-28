@@ -21,12 +21,6 @@ const debounce = (callback: (...args: any[]) => unknown, wait: number) => {
   return debounced;
 };
 
-const useDebounce = (callback: (...args: unknown[]) => unknown, wait: number) => {
-  const debounced = useMemo(() => debounce(callback, wait), [callback, wait]);
-  useEffect(() => () => debounced.cancel(), [debounced]);
-  return debounced;
-};
-
 export function useSessionState<S>(
   key: string,
   initialState?: S | (() => S)
@@ -41,17 +35,23 @@ export function useSessionState<S>(
     return typeof initialState === "function" ? (initialState as () => S)() : (initialState as S);
   });
 
-  const persist = useDebounce((value: unknown) => {
-    const stateKeys = new Set(sessionStorage.getItem(`${ADDON_ID}/state`)?.split(";"));
-    if (value === undefined || value === null) {
-      sessionStorage.removeItem(`${ADDON_ID}/state/${key}`);
-      stateKeys.delete(key);
-    } else {
-      sessionStorage.setItem(`${ADDON_ID}/state/${key}`, JSON.stringify(value));
-      stateKeys.add(key);
-    }
-    sessionStorage.setItem(`${ADDON_ID}/state`, Array.from(stateKeys).join(";"));
-  }, 500);
+  const persist = useMemo(
+    () =>
+      debounce((value: unknown) => {
+        const stateKeys = new Set(sessionStorage.getItem(`${ADDON_ID}/state`)?.split(";"));
+        if (value === undefined || value === null) {
+          sessionStorage.removeItem(`${ADDON_ID}/state/${key}`);
+          stateKeys.delete(key);
+        } else {
+          sessionStorage.setItem(`${ADDON_ID}/state/${key}`, JSON.stringify(value));
+          stateKeys.add(key);
+        }
+        sessionStorage.setItem(`${ADDON_ID}/state`, Array.from(stateKeys).join(";"));
+      }, 5000),
+    [key]
+  );
+
+  useEffect(() => persist.cancel, [persist]);
 
   return [
     state,
@@ -67,8 +67,13 @@ export function useSessionState<S>(
   ] as const;
 }
 
-export function clearSessionState() {
+export function clearSessionState(...keys: string[]) {
   const items = sessionStorage.getItem(`${ADDON_ID}/state`)?.split(";") || [];
-  items.forEach((key) => sessionStorage.removeItem(`${ADDON_ID}/state/${key}`));
-  sessionStorage.removeItem(`${ADDON_ID}/state`);
+  if (keys.length) {
+    keys.forEach((key) => sessionStorage.removeItem(`${ADDON_ID}/state/${key}`));
+    sessionStorage.setItem(`${ADDON_ID}/state`, items.filter((i) => !keys.includes(i)).join(";"));
+  } else {
+    items.forEach((item) => sessionStorage.removeItem(`${ADDON_ID}/state/${item}`));
+    sessionStorage.removeItem(`${ADDON_ID}/state`);
+  }
 }
