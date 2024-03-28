@@ -2,7 +2,7 @@ import { expect, waitFor } from "@storybook/test";
 import React, { useEffect } from "react";
 
 import { SELECTED_BROWSER_ID, SELECTED_MODE_NAME } from "../constants";
-import { ComparisonResult, StoryTestFieldsFragment, TestStatus } from "../gql/graphql";
+import { ComparisonResult, StoryTestFieldsFragment } from "../gql/graphql";
 import { playAll } from "./playAll";
 import { useSharedState } from "./useSharedState";
 import { useTests } from "./useTests";

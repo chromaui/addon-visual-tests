@@ -1,6 +1,6 @@
 import type { API } from "@storybook/manager-api";
 import { useChannel, useStorybookState } from "@storybook/manager-api";
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 
 import { AuthProvider } from "./AuthContext";
 import { Spinner } from "./components/design-system";
@@ -15,7 +15,6 @@ import {
   START_BUILD,
   STOP_BUILD,
 } from "./constants";
-import { Project } from "./gql/graphql";
 import { Authentication } from "./screens/Authentication/Authentication";
 import { GitNotFound } from "./screens/Errors/GitNotFound";
 import { LinkedProject } from "./screens/LinkProject/LinkedProject";
@@ -30,6 +29,7 @@ import { VisualTests } from "./screens/VisualTests/VisualTests";
 import { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from "./types";
 import { client, Provider, useAccessToken } from "./utils/graphQLClient";
 import { useProjectId } from "./utils/useProjectId";
+import { clearSessionState, useSessionState } from "./utils/useSessionState";
 import { useSharedState } from "./utils/useSharedState";
 
 interface PanelProps {
@@ -38,7 +38,14 @@ interface PanelProps {
 }
 
 export const Panel = ({ active, api }: PanelProps) => {
-  const [accessToken, setAccessToken] = useAccessToken();
+  const [accessToken, updateAccessToken] = useAccessToken();
+  const setAccessToken = useCallback(
+    (token: string | null) => {
+      updateAccessToken(token);
+      if (!token) clearSessionState("authenticationScreen", "exchangeParameters");
+    },
+    [updateAccessToken]
+  );
   const { storyId } = useStorybookState();
 
   const [gitInfo] = useSharedState<GitInfoPayload>(GIT_INFO);
@@ -64,7 +71,7 @@ export const Panel = ({ active, api }: PanelProps) => {
   } = useProjectId();
 
   // If the user creates a project in a dialog (either during login or later, it get set here)
-  const [createdProjectId, setCreatedProjectId] = useState<Project["id"]>();
+  const [createdProjectId, setCreatedProjectId] = useSessionState<string>("createdProjectId");
   const [addonUninstalled, setAddonUninstalled] = useSharedState<boolean>(REMOVE_ADDON);
 
   const startBuild = () => emit(START_BUILD, { accessToken });

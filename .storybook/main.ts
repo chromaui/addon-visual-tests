@@ -29,7 +29,7 @@ const config: StorybookConfig = {
         configFile: configFileMap[CHROMATIC_BASE_URL || '"https://www.chromatic.com"'],
       },
     },
-    "@storybook/addon-mdx-gfm"
+    "@storybook/addon-mdx-gfm",
   ],
   docs: {
     autodocs: "tag",
@@ -43,8 +43,14 @@ const config: StorybookConfig = {
   stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|ts|tsx)"],
   refs: {
     "@storybook/components": {
-      title: "@storybook/components",
-      url: "https://next--635781f3500dd2c49e189caf.chromatic.com",
+      title: "Storybook Components",
+      url: "https://next--635781f3500dd2c49e189caf.chromatic.com/",
+      expanded: false,
+    },
+    "@storybook/icons": {
+      title: "Storybook Icons",
+      url: "https://main--64b56e737c0aeefed9d5e675.chromatic.com/",
+      expanded: false,
     },
   },
   async viteFinal(config, { configType }) {

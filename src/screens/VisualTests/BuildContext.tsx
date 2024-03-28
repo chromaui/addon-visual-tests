@@ -2,11 +2,7 @@ import React, { createContext, useEffect, useMemo } from "react";
 import { useQuery } from "urql";
 
 import { getFragment } from "../../gql";
-import {
-  SelectedBuildFieldsFragment,
-  StoryTestFieldsFragment,
-  TestStatus,
-} from "../../gql/graphql";
+import { StoryTestFieldsFragment, TestStatus } from "../../gql/graphql";
 import { GitInfoPayload } from "../../types";
 import { summarizeTests } from "../../utils/summarizeTests";
 import { statusMap } from "../../utils/testsToStatusUpdate";

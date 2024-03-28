@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 
 import { PROJECT_INFO } from "../constants";
 import { ProjectInfoPayload } from "../types";
@@ -6,26 +6,21 @@ import { useSharedState } from "./useSharedState";
 
 export const useProjectId = () => {
   const [projectInfo, setProjectInfo] = useSharedState<ProjectInfoPayload>(PROJECT_INFO);
+  const { projectId, written, dismissed, configFile } = projectInfo || {};
 
-  // Once we've seen the state of the update, we can "clear" it to move on
-  const [clearUpdated, setClearUpdated] = useState(false);
-
-  const updateProject = useCallback(
-    (newProjectId: string) => {
-      setClearUpdated(false);
-      setProjectInfo({ projectId: newProjectId });
-    },
-    [setProjectInfo]
-  );
-
-  const { projectId, written, configFile } = projectInfo || {};
   return {
     loading: !projectInfo,
     projectId,
     configFile,
-    updateProject,
-    projectUpdatingFailed: !clearUpdated && written === false,
-    projectIdUpdated: !clearUpdated && written === true,
-    clearProjectIdUpdated: () => setClearUpdated(true),
+    updateProject: useCallback(
+      (id: string) => setProjectInfo({ ...projectInfo, projectId: id, dismissed: false }),
+      [projectInfo, setProjectInfo]
+    ),
+    projectUpdatingFailed: !dismissed && written === false,
+    projectIdUpdated: !dismissed && written === true,
+    clearProjectIdUpdated: useCallback(
+      () => setProjectInfo({ ...projectInfo, dismissed: true }),
+      [projectInfo, setProjectInfo]
+    ),
   };
 };

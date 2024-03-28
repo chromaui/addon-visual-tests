@@ -13,7 +13,7 @@ import {
 } from "@storybook/theming";
 import { HttpResponse, graphql } from "msw";
 import { initialize, mswLoader } from "msw-storybook-addon";
-import React, { useState } from "react";
+import React from "react";
 
 import { AuthProvider } from "../src/AuthContext";
 import { baseModes } from "../src/modes";
@@ -21,6 +21,7 @@ import { UninstallProvider } from "../src/screens/Uninstalled/UninstallContext";
 import { RunBuildProvider } from "../src/screens/VisualTests/RunBuildContext";
 import { GraphQLClientProvider } from "../src/utils/graphQLClient";
 import { storyWrapper } from "../src/utils/storyWrapper";
+import { useSessionState } from "../src/utils/useSessionState";
 
 // Initialize MSW
 initialize({
@@ -137,9 +138,12 @@ const withManagerApi = storyWrapper(ManagerContext.Provider, ({ argsByTarget }) 
 }));
 
 const withUninstall: Decorator = (Story) => {
-  const [addonInstalled, setAddonInstalled] = useState(false);
+  const [addonUninstalled, setAddonUninstalled] = useSessionState("addonUninstalled", false);
   return (
-    <UninstallProvider addonUninstalled={addonInstalled} setAddonUninstalled={setAddonInstalled}>
+    <UninstallProvider
+      addonUninstalled={addonUninstalled}
+      setAddonUninstalled={setAddonUninstalled}
+    >
       <Story />
     </UninstallProvider>
   );
