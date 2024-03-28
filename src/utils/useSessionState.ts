@@ -2,6 +2,12 @@ import { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useRef, useS
 
 import { ADDON_ID } from "../constants";
 
+declare global {
+  interface WindowEventMap {
+    "session-storage": CustomEvent;
+  }
+}
+
 const debounce = (callback: (...args: any[]) => unknown, wait: number) => {
   let timeoutId: number;
   const cancel = () => {
@@ -25,7 +31,7 @@ export function useSessionState<S>(
   key: string,
   initialState?: S | (() => S)
 ): readonly [S, Dispatch<SetStateAction<S>>] {
-  const [state, setState] = useState<S>(() => {
+  const readValue = useCallback(() => {
     try {
       const value = sessionStorage.getItem(`${ADDON_ID}/state/${key}`) as string;
       if (value !== undefined && value !== null) return JSON.parse(value) as S;
@@ -33,7 +39,9 @@ export function useSessionState<S>(
       // Fall back to initial state
     }
     return typeof initialState === "function" ? (initialState as () => S)() : (initialState as S);
-  });
+  }, [key, initialState]);
+
+  const [state, setState] = useState<S>(readValue);
 
   const persist = useMemo(
     () =>
@@ -47,11 +55,29 @@ export function useSessionState<S>(
           stateKeys.add(key);
         }
         sessionStorage.setItem(`${ADDON_ID}/state`, Array.from(stateKeys).join(";"));
+        window.dispatchEvent(new StorageEvent("session-storage", { key }));
       }, 5000),
     [key]
   );
 
   useEffect(() => persist.cancel, [persist]);
+
+  const handleStorageChange = useCallback(
+    (event: StorageEvent | CustomEvent) => {
+      const storageEvent = event as StorageEvent;
+      if (!storageEvent.key || storageEvent.key === key) setState(readValue());
+    },
+    [key, readValue]
+  );
+
+  useEffect(() => {
+    window.addEventListener("storage", handleStorageChange);
+    window.addEventListener("session-storage", handleStorageChange);
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("session-storage", handleStorageChange);
+    };
+  }, [handleStorageChange]);
 
   return [
     state,
