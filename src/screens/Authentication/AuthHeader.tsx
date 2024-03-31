@@ -9,7 +9,8 @@ import { TooltipNote } from "../../components/TooltipNote";
 
 const HeaderButton = styled(IconButton)(({ theme }) => ({
   color: theme.base === "light" ? "currentColor" : theme.color.medium,
-  fontSize: theme.typography.size.s2 - 1,
+  fontSize: theme.typography.size.s2,
+  fontWeight: theme.typography.weight.bold,
 }));
 
 interface AuthHeaderProps {
