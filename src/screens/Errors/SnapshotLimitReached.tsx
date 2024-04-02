@@ -8,7 +8,7 @@ import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
 import { LocalBuildProgress } from "../../types";
 
-export const BuildLimited = ({
+export const SnapshotLimitReached = ({
   children,
   localBuildProgress,
 }: {

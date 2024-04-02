@@ -17,7 +17,7 @@ import { Text } from "../../components/Text";
 import { SelectedBuildFieldsFragment } from "../../gql/graphql";
 import { GitInfoPayload, LocalBuildProgress } from "../../types";
 import { BuildError } from "../Errors/BuildError";
-import { BuildLimited } from "../Errors/BuildLimited";
+import { SnapshotLimitReached } from "../Errors/SnapshotLimitReached";
 import { useBuildState, useSelectedStoryState } from "../VisualTests/BuildContext";
 import { useRunBuildState } from "../VisualTests/RunBuildContext";
 import onboardingAdjustSizeImage from "./onboarding-adjust-size.png";
@@ -114,11 +114,11 @@ export const Onboarding = ({
 
   if (localBuildProgress?.currentStep === "limited") {
     return (
-      <BuildLimited localBuildProgress={localBuildProgress}>
+      <SnapshotLimitReached localBuildProgress={localBuildProgress}>
         <Button link onClick={dismissBuildError}>
           Continue
         </Button>
-      </BuildLimited>
+      </SnapshotLimitReached>
     );
   }
 
