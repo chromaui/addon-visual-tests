@@ -1,3 +1,18 @@
+# v1.2.26 (Tue Apr 02 2024)
+
+#### 🐛 Bug Fix
+
+- Add link to Visual Tests webpage on Authentication screens [#276](https://github.com/chromaui/addon-visual-tests/pull/276) ([@ghengeveld](https://github.com/ghengeveld))
+- Upgrade Chromatic CLI and pass `skipUpdateCheck: false` [#278](https://github.com/chromaui/addon-visual-tests/pull/278) ([@ghengeveld](https://github.com/ghengeveld))
+- Update addon metadata [#227](https://github.com/chromaui/addon-visual-tests/pull/227) ([@kylegach](https://github.com/kylegach))
+
+#### Authors: 2
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Kyle Gach ([@kylegach](https://github.com/kylegach))
+
+---
+
 # v1.2.25 (Wed Mar 20 2024)
 
 #### 🐛 Bug Fix
