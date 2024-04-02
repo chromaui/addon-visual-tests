@@ -9,7 +9,7 @@
     ]
   },
   "dependencies": {
-    "chromatic": "^11.0.0",
+    "chromatic": "^11.3.0",
     "filesize": "^10.0.12",
     "jsonfile": "^6.1.0",
     "react-confetti": "^6.1.0",
