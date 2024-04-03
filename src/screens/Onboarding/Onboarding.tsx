@@ -114,7 +114,7 @@ export const Onboarding = ({
 
   if (localBuildProgress?.currentStep === "limited") {
     return (
-      <SnapshotLimitReached localBuildProgress={localBuildProgress}>
+      <SnapshotLimitReached billingUrl={localBuildProgress.errorDetailsUrl}>
         <Button link onClick={dismissBuildError}>
           Continue
         </Button>

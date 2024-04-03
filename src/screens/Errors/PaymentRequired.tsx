@@ -7,7 +7,7 @@ import { Screen } from "../../components/Screen";
 import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
 
-export const SnapshotLimitReached = ({
+export const PaymentRequired = ({
   children,
   billingUrl,
 }: {
@@ -19,17 +19,17 @@ export const SnapshotLimitReached = ({
       <Container>
         <Stack>
           <div>
-            <Heading>Snapshot limit reached</Heading>
+            <Heading>Payment required</Heading>
             <Text center muted>
-              Your account has reached its monthly snapshot limit. Visual testing is disabled.
-              Upgrade your plan to increase your quota.
+              Your subscription payment is past due. Review or replace your payment method continue
+              using Chromatic.
             </Text>
           </div>
 
           {billingUrl && (
             <Button asChild size="medium" variant="solid">
               <a href={billingUrl} target="_new">
-                Upgrade plan
+                Review billing details
               </a>
             </Button>
           )}

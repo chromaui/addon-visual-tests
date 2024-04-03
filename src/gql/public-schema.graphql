@@ -39,6 +39,9 @@ type AnnouncedBuild implements Node & Temporal & Build {
   """Git commit hash (unshortened)."""
   commit: String!
 
+  """Commit hashes for which we have a build, used to determine baselines."""
+  parentCommits: [String!]!
+
   """Hash of uncommitted changes, or empty string for no changes."""
   uncommittedHash: String
 
@@ -113,6 +116,9 @@ interface Build implements Node & Temporal {
 
   """Git commit hash (unshortened)."""
   commit: String!
+
+  """Commit hashes for which we have a build, used to determine baselines."""
+  parentCommits: [String!]!
 
   """Hash of uncommitted changes, or empty string for no changes."""
   uncommittedHash: String
@@ -227,6 +233,9 @@ type PublishedBuild implements Node & Temporal & Build {
   """Git commit hash (unshortened)."""
   commit: String!
 
+  """Commit hashes for which we have a build, used to determine baselines."""
+  parentCommits: [String!]!
+
   """Hash of uncommitted changes, or empty string for no changes."""
   uncommittedHash: String
 
@@ -297,6 +306,9 @@ type PreparedBuild implements Node & Temporal & Build {
 
   """Git commit hash (unshortened)."""
   commit: String!
+
+  """Commit hashes for which we have a build, used to determine baselines."""
+  parentCommits: [String!]!
 
   """Hash of uncommitted changes, or empty string for no changes."""
   uncommittedHash: String
@@ -478,7 +490,7 @@ type Test implements Node & Temporal {
   parameters: TestParameters!
 
   """
-  The mode applied to this test. If this test was not using modes, the viewport is set as the mode name (e.g. "[viewport]px")
+  The mode applied to this test. If this test was not using modes, the viewport is set as the mode name (e.g. "[viewport]px") 
   """
   mode: TestMode!
 
@@ -769,6 +781,9 @@ type TestParameters {
 
   """This test only contains representative snapshots."""
   representativeOnly: Boolean
+
+  """Crop snapshots to the viewport."""
+  cropToViewport: Boolean
 }
 
 type TestMode {
@@ -971,6 +986,9 @@ type StartedBuild implements Node & Temporal & Build {
   """Git commit hash (unshortened)."""
   commit: String!
 
+  """Commit hashes for which we have a build, used to determine baselines."""
+  parentCommits: [String!]!
+
   """Hash of uncommitted changes, or empty string for no changes."""
   uncommittedHash: String
 
@@ -1133,6 +1151,9 @@ type CompletedBuild implements Node & Temporal & Build {
 
   """Git commit hash (unshortened)."""
   commit: String!
+
+  """Commit hashes for which we have a build, used to determine baselines."""
+  parentCommits: [String!]!
 
   """Hash of uncommitted changes, or empty string for no changes."""
   uncommittedHash: String
@@ -1442,11 +1463,18 @@ type Account implements Node & Temporal {
   """Is this a personal account?"""
   isPersonal: Boolean!
   avatarUrl: String
+  billingUrl: String
   newProjectUrl: String
+  notificationsUrl: String
+  webUrl: String
 
   """Account name, typically the repository owner."""
   name: String!
   projects(limit: Int): [Project]
+  subscription: AccountSubscription!
+
+  """If suspended, the reason for suspending the account."""
+  suspensionReason: AccountSuspensionReason
 
   """When the entity was first created in Chromatic."""
   createdAt: DateTime!
@@ -1464,6 +1492,9 @@ type Project implements Node & Temporal {
 
   """Account information which does not require the `account` scope."""
   publicAccountInfo: PublicAccountInfo!
+
+  """Account to which this project belongs."""
+  account: Account!
 
   """Link to the project on Chromatic."""
   webUrl: URL!
@@ -1530,6 +1561,52 @@ input LocalBuildsSpecifierInput {
   If set, return all global builds, and only local builds from this email hash
   """
   localBuildEmailHash: String
+}
+
+type AccountSubscription {
+  """The plan the account is subscribed to."""
+  plan: String!
+
+  """The current subscription status."""
+  status: AccountSubscriptionStatus!
+}
+
+enum AccountSubscriptionStatus {
+  """The account has not yet run a build."""
+  PRE_SUBSCRIBED
+
+  """The subscription is in a trial period."""
+  IN_TRIAL
+
+  """The subscription is in a trial period which is ending soon."""
+  TRIAL_ENDING
+
+  """The account has an active subscription."""
+  SUBSCRIBED
+
+  """
+  The account has exceeded the snapshot quota for the current billing cycle.
+  """
+  EXCEEDED_THRESHOLD
+
+  """The last payment attempt failed."""
+  PAYMENT_FAILED
+
+  """Payment is required to resume usage."""
+  PAYMENT_REQUIRED
+}
+
+enum AccountSuspensionReason {
+  """
+  The account has exceeded the snapshot quota for the current billing cycle.
+  """
+  EXCEEDED_THRESHOLD
+
+  """Payment is required to resume usage."""
+  PAYMENT_REQUIRED
+
+  """Another reason for suspension, contact support for more information."""
+  OTHER
 }
 
 type FigmaMetadata implements Node & Temporal {
