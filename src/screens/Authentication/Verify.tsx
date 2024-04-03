@@ -1,4 +1,4 @@
-import { styled, useTheme } from "@storybook/theming";
+import { styled } from "@storybook/theming";
 import React, { useCallback, useRef } from "react";
 import { useClient } from "urql";
 
@@ -63,7 +63,6 @@ export const Verify = ({
 }: VerifyProps) => {
   const client = useClient();
   const onError = useErrorNotification();
-  const theme = useTheme();
 
   const { user_code: userCode, verificationUrl } = exchangeParameters;
 

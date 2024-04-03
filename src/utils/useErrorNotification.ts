@@ -2,12 +2,21 @@ import { useStorybookApi } from "@storybook/manager-api";
 import { color } from "@storybook/theming";
 import { useCallback } from "react";
 
-import { ADDON_ID } from "../constants";
+import { ADDON_ID, PANEL_ID } from "../constants";
 
 export function useErrorNotification() {
   const api = useStorybookApi();
 
-  const { addNotification } = api;
+  const { addNotification, setOptions, togglePanel } = api;
+  const clickNotification = useCallback(
+    ({ onDismiss }) => {
+      onDismiss();
+      setOptions({ selectedPanel: PANEL_ID });
+      togglePanel(true);
+    },
+    [setOptions, togglePanel]
+  );
+
   return useCallback(
     (headline: string, err: any) => {
       addNotification({
@@ -20,10 +29,9 @@ export function useErrorNotification() {
           name: "failed",
           color: color.negative,
         },
-        // @ts-expect-error SB needs a proper API for no link
-        link: undefined,
+        onClick: clickNotification,
       });
     },
-    [addNotification]
+    [addNotification, clickNotification]
   );
 }

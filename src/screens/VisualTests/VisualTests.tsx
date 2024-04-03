@@ -216,8 +216,6 @@ export const VisualTestsWithoutSelectedBuildId = ({
       if (err instanceof Error) {
         addNotification({
           id: "chromatic/errorAccepting",
-          // @ts-expect-error we need a better API for not passing a link
-          link: undefined,
           content: {
             headline: `Failed to ${
               update.status === ReviewTestInputStatus.Accepted ? "accept" : "unaccept"
