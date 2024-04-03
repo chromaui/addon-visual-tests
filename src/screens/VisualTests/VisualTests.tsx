@@ -5,7 +5,6 @@ import { useMutation } from "urql";
 
 import { getFragment, graphql } from "../../gql";
 import {
-  AccountSuspensionReason,
   ReviewTestBatch,
   ReviewTestInputStatus,
   TestResult,
@@ -15,8 +14,7 @@ import {
 import { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from "../../types";
 import { testsToStatusUpdate } from "../../utils/testsToStatusUpdate";
 import { SelectedBuildInfo, updateSelectedBuildInfo } from "../../utils/updateSelectedBuildInfo";
-import { PaymentRequired } from "../Errors/PaymentRequired";
-import { SnapshotLimitReached } from "../Errors/SnapshotLimitReached";
+import { AccountSuspended } from "../Errors/AccountSuspended";
 import { GuidedTour } from "../GuidedTour/GuidedTour";
 import { Onboarding } from "../Onboarding/Onboarding";
 import { BuildProvider, useBuild } from "./BuildContext";
@@ -292,12 +290,13 @@ export const VisualTestsWithoutSelectedBuildId = ({
     lastBuildHasChanges,
   } = useOnboarding(buildInfo);
 
-  if (account?.suspensionReason === AccountSuspensionReason.PaymentRequired) {
-    return <PaymentRequired billingUrl={account.billingUrl} />;
-  }
-
-  if (account?.suspensionReason === AccountSuspensionReason.ExceededThreshold) {
-    return <SnapshotLimitReached billingUrl={account.billingUrl} />;
+  if (account?.suspensionReason) {
+    return (
+      <AccountSuspended
+        billingUrl={account.billingUrl}
+        suspensionReason={account.suspensionReason}
+      />
+    );
   }
 
   if (showOnboarding && hasProject) {

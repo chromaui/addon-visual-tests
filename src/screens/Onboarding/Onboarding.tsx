@@ -16,8 +16,8 @@ import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
 import { SelectedBuildFieldsFragment } from "../../gql/graphql";
 import { GitInfoPayload, LocalBuildProgress } from "../../types";
+import { AccountSuspended } from "../Errors/AccountSuspended";
 import { BuildError } from "../Errors/BuildError";
-import { SnapshotLimitReached } from "../Errors/SnapshotLimitReached";
 import { useBuildState, useSelectedStoryState } from "../VisualTests/BuildContext";
 import { useRunBuildState } from "../VisualTests/RunBuildContext";
 import onboardingAdjustSizeImage from "./onboarding-adjust-size.png";
@@ -114,11 +114,11 @@ export const Onboarding = ({
 
   if (localBuildProgress?.currentStep === "limited") {
     return (
-      <SnapshotLimitReached billingUrl={localBuildProgress.errorDetailsUrl}>
+      <AccountSuspended billingUrl={localBuildProgress.errorDetailsUrl}>
         <Button link onClick={dismissBuildError}>
           Continue
         </Button>
-      </SnapshotLimitReached>
+      </AccountSuspended>
     );
   }
 
