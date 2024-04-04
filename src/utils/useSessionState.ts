@@ -8,20 +8,20 @@ declare global {
   }
 }
 
-const debounce = (callback: (...args: any[]) => unknown, wait: number) => {
-  let timeoutId: number;
+const timeoutIds = new Map<string, number>();
+const debounce = (key: string, callback: (...args: any[]) => unknown, wait: number) => {
   const cancel = () => {
-    window.clearTimeout(timeoutId);
-    timeoutId = 0;
+    window.clearTimeout(timeoutIds.get(key));
+    timeoutIds.delete(key);
   };
   const debounced = (...args: any[]) => {
-    if (timeoutId) cancel();
+    if (timeoutIds.has(key)) cancel();
     else callback(...args); // Leading edge call
 
-    timeoutId = window.setTimeout(() => {
-      callback(...args); // Trailing edge call
-      timeoutId = 0;
-    }, wait);
+    timeoutIds.set(
+      key,
+      window.setTimeout(() => timeoutIds.delete(key) && callback(...args), wait) // Trailing edge call
+    );
   };
   debounced.cancel = cancel;
   return debounced;
@@ -45,18 +45,22 @@ export function useSessionState<S>(
 
   const persist = useMemo(
     () =>
-      debounce((value: unknown) => {
-        const stateKeys = new Set(sessionStorage.getItem(`${ADDON_ID}/state`)?.split(";"));
-        if (value === undefined || value === null) {
-          sessionStorage.removeItem(`${ADDON_ID}/state/${key}`);
-          stateKeys.delete(key);
-        } else {
-          sessionStorage.setItem(`${ADDON_ID}/state/${key}`, JSON.stringify(value));
-          stateKeys.add(key);
-        }
-        sessionStorage.setItem(`${ADDON_ID}/state`, Array.from(stateKeys).join(";"));
-        window.dispatchEvent(new StorageEvent("session-storage", { key }));
-      }, 5000),
+      debounce(
+        key,
+        (value: unknown) => {
+          const stateKeys = new Set(sessionStorage.getItem(`${ADDON_ID}/state`)?.split(";"));
+          if (value === undefined || value === null) {
+            sessionStorage.removeItem(`${ADDON_ID}/state/${key}`);
+            stateKeys.delete(key);
+          } else {
+            sessionStorage.setItem(`${ADDON_ID}/state/${key}`, JSON.stringify(value));
+            stateKeys.add(key);
+          }
+          sessionStorage.setItem(`${ADDON_ID}/state`, Array.from(stateKeys).join(";"));
+          window.dispatchEvent(new StorageEvent("session-storage", { key }));
+        },
+        1000
+      ),
     [key]
   );
 
