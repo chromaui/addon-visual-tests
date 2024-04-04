@@ -132,3 +132,5 @@ export const INITIAL_BUILD_PAYLOAD = {
     StepProgressPayload
   >,
 };
+
+export const INITIAL_BUILD_PAYLOAD_JSON = JSON.stringify(INITIAL_BUILD_PAYLOAD);
