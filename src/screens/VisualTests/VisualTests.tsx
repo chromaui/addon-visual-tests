@@ -3,6 +3,7 @@ import type { API_StatusState } from "@storybook/types";
 import React, { useCallback, useEffect, useState } from "react";
 import { useMutation } from "urql";
 
+import { PANEL_ID } from "../../constants";
 import { getFragment, graphql } from "../../gql";
 import {
   ReviewTestBatch,
@@ -191,7 +192,7 @@ export const VisualTestsWithoutSelectedBuildId = ({
   storyId,
 }: VisualTestsProps) => {
   const managerApi = useStorybookApi();
-  const { addNotification } = managerApi;
+  const { addNotification, setOptions, togglePanel } = managerApi;
   const buildInfo = useBuild({ projectId, storyId, gitInfo, selectedBuildInfo });
 
   const {
@@ -207,6 +208,15 @@ export const VisualTestsWithoutSelectedBuildId = ({
     rerunQuery,
     userCanReview,
   } = buildInfo;
+
+  const clickNotification = useCallback(
+    ({ onDismiss }) => {
+      onDismiss();
+      setOptions({ selectedPanel: PANEL_ID });
+      togglePanel(true);
+    },
+    [setOptions, togglePanel]
+  );
 
   const reviewState = useReview({
     buildIsReviewable: !!selectedBuild && selectedBuild.id === lastBuildOnBranch?.id,
@@ -226,6 +236,9 @@ export const VisualTestsWithoutSelectedBuildId = ({
             name: "cross",
             color: "red",
           },
+          // @ts-expect-error `duration` and `onClick` require a newer version of Storybook
+          duration: 8_000,
+          onClick: clickNotification,
         });
       }
     },

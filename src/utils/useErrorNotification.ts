@@ -29,6 +29,7 @@ export function useErrorNotification() {
           name: "failed",
           color: color.negative,
         },
+        // @ts-expect-error `duration` and `onClick` require a newer version of Storybook
         onClick: clickNotification,
       });
     },

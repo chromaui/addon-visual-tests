@@ -75,6 +75,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
           name: "passed",
           color: color.positive,
         },
+        // @ts-expect-error `duration` and `onClick` require a newer version of Storybook
         duration: 8_000,
         onClick: clickNotification,
       });
@@ -94,6 +95,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
           name: "failed",
           color: color.negative,
         },
+        // @ts-expect-error `duration` and `onClick` require a newer version of Storybook
         duration: 8_000,
         onClick: clickNotification,
       });
@@ -121,6 +123,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
           name: "passed",
           color: color.positive,
         },
+        // @ts-expect-error `duration` and `onClick` require a newer version of Storybook
         duration: 8_000,
         onClick: clickNotification,
       });
@@ -140,6 +143,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
           name: "failed",
           color: color.negative,
         },
+        // @ts-expect-error `duration` and `onClick` require a newer version of Storybook
         onClick: clickNotification,
       });
     }
@@ -156,6 +160,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
           name: "failed",
           color: color.negative,
         },
+        // @ts-expect-error `duration` and `onClick` require a newer version of Storybook
         onClick: clickNotification,
       });
     }
