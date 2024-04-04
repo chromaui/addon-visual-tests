@@ -1,15 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { GitNotFound as component } from "./GitNotFound";
+import { GitNotFound } from "./GitNotFound";
 
 const meta = {
-  component,
+  component: GitNotFound,
   args: {
     gitInfoError: new Error("Git info not found"),
   },
-} satisfies Meta<typeof component>;
+} satisfies Meta<typeof GitNotFound>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const GitNotFound: Story = {};
+export const Default: Story = {};

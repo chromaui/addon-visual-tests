@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { INITIAL_BUILD_PAYLOAD } from "../../buildSteps";
-import { BuildError as component } from "./BuildError";
+import { BuildError } from "./BuildError";
 
 const meta = {
-  component,
+  component: BuildError,
   args: {
     localBuildProgress: {
       buildProgressPercentage: 50,
@@ -13,9 +13,9 @@ const meta = {
       originalError: new Error("Caught exception in play function"),
     },
   },
-} satisfies Meta<typeof component>;
+} satisfies Meta<typeof BuildError>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const BuildError: Story = {};
+export const Default: Story = {};
