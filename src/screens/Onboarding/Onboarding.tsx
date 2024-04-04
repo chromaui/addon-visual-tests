@@ -14,7 +14,7 @@ import { Screen } from "../../components/Screen";
 import { SnapshotImageThumb } from "../../components/SnapshotImageThumb";
 import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
-import { SelectedBuildFieldsFragment } from "../../gql/graphql";
+import { AccountSuspensionReason, SelectedBuildFieldsFragment } from "../../gql/graphql";
 import { GitInfoPayload, LocalBuildProgress } from "../../types";
 import { AccountSuspended } from "../Errors/AccountSuspended";
 import { BuildError } from "../Errors/BuildError";
@@ -114,7 +114,10 @@ export const Onboarding = ({
 
   if (localBuildProgress?.currentStep === "limited") {
     return (
-      <AccountSuspended billingUrl={localBuildProgress.errorDetailsUrl}>
+      <AccountSuspended
+        billingUrl={localBuildProgress.errorDetailsUrl}
+        suspensionReason={AccountSuspensionReason.ExceededThreshold}
+      >
         <Button link onClick={dismissBuildError}>
           Continue
         </Button>
