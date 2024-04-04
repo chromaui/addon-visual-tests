@@ -14,11 +14,11 @@ import { Screen } from "../../components/Screen";
 import { SnapshotImageThumb } from "../../components/SnapshotImageThumb";
 import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
-import { SelectedBuildFieldsFragment } from "../../gql/graphql";
+import { AccountSuspensionReason, SelectedBuildFieldsFragment } from "../../gql/graphql";
 import { GitInfoPayload, LocalBuildProgress } from "../../types";
 import { useSessionState } from "../../utils/useSessionState";
+import { AccountSuspended } from "../Errors/AccountSuspended";
 import { BuildError } from "../Errors/BuildError";
-import { BuildLimited } from "../Errors/BuildLimited";
 import { useBuildState, useSelectedStoryState } from "../VisualTests/BuildContext";
 import { useRunBuildState } from "../VisualTests/RunBuildContext";
 import onboardingAdjustSizeImage from "./onboarding-adjust-size.png";
@@ -122,11 +122,14 @@ export const Onboarding = ({
 
   if (localBuildProgress?.currentStep === "limited") {
     return (
-      <BuildLimited localBuildProgress={localBuildProgress}>
+      <AccountSuspended
+        billingUrl={localBuildProgress.errorDetailsUrl}
+        suspensionReason={AccountSuspensionReason.ExceededThreshold}
+      >
         <Button link onClick={dismissBuildError}>
           Continue
         </Button>
-      </BuildLimited>
+      </AccountSuspended>
     );
   }
 

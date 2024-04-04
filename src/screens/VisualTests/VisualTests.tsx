@@ -3,6 +3,7 @@ import type { API_StatusState } from "@storybook/types";
 import React, { useCallback, useEffect } from "react";
 import { useMutation } from "urql";
 
+import { PANEL_ID } from "../../constants";
 import { getFragment, graphql } from "../../gql";
 import {
   ReviewTestBatch,
@@ -15,6 +16,7 @@ import { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from "../../
 import { testsToStatusUpdate } from "../../utils/testsToStatusUpdate";
 import { SelectedBuildInfo, updateSelectedBuildInfo } from "../../utils/updateSelectedBuildInfo";
 import { useSessionState } from "../../utils/useSessionState";
+import { AccountSuspended } from "../Errors/AccountSuspended";
 import { GuidedTour } from "../GuidedTour/GuidedTour";
 import { Onboarding } from "../Onboarding/Onboarding";
 import { BuildProvider, useBuild } from "./BuildContext";
@@ -192,10 +194,11 @@ export const VisualTestsWithoutSelectedBuildId = ({
   storyId,
 }: VisualTestsProps) => {
   const managerApi = useStorybookApi();
-  const { addNotification } = managerApi;
+  const { addNotification, setOptions, togglePanel } = managerApi;
   const buildInfo = useBuild({ projectId, storyId, gitInfo, selectedBuildInfo });
 
   const {
+    account,
     hasData,
     hasProject,
     hasSelectedBuild,
@@ -209,6 +212,15 @@ export const VisualTestsWithoutSelectedBuildId = ({
     userCanReview,
   } = buildInfo;
 
+  const clickNotification = useCallback(
+    ({ onDismiss }) => {
+      onDismiss();
+      setOptions({ selectedPanel: PANEL_ID });
+      togglePanel(true);
+    },
+    [setOptions, togglePanel]
+  );
+
   const reviewState = useReview({
     buildIsReviewable: !!selectedBuild && selectedBuild.id === lastBuildOnBranch?.id,
     userCanReview,
@@ -217,8 +229,6 @@ export const VisualTestsWithoutSelectedBuildId = ({
       if (err instanceof Error) {
         addNotification({
           id: "chromatic/errorAccepting",
-          // @ts-expect-error we need a better API for not passing a link
-          link: undefined,
           content: {
             headline: `Failed to ${
               update.status === ReviewTestInputStatus.Accepted ? "accept" : "unaccept"
@@ -229,6 +239,9 @@ export const VisualTestsWithoutSelectedBuildId = ({
             name: "cross",
             color: "red",
           },
+          // @ts-expect-error `duration` and `onClick` require a newer version of Storybook
+          duration: 8_000,
+          onClick: clickNotification,
         });
       }
     },
@@ -288,6 +301,15 @@ export const VisualTestsWithoutSelectedBuildId = ({
     startWalkthrough,
     lastBuildHasChanges,
   } = useOnboarding(buildInfo);
+
+  if (account?.suspensionReason) {
+    return (
+      <AccountSuspended
+        billingUrl={account.billingUrl}
+        suspensionReason={account.suspensionReason}
+      />
+    );
+  }
 
   if (showOnboarding && hasProject) {
     return (

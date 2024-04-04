@@ -1,7 +1,7 @@
 import { type API, useChannel, useStorybookState } from "@storybook/manager-api";
 import { color } from "@storybook/theming";
 import pluralize from "pluralize";
-import React, { useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 
 import { SidebarTopButton } from "./components/SidebarTopButton";
 import {
@@ -47,6 +47,19 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
     (value) => value[ADDON_ID]?.status === "warn"
   );
 
+  const openVisualTestsPanel = useCallback(() => {
+    setOptions({ selectedPanel: PANEL_ID });
+    togglePanel(true);
+  }, [setOptions, togglePanel]);
+
+  const clickNotification = useCallback(
+    ({ onDismiss }) => {
+      onDismiss();
+      openVisualTestsPanel();
+    },
+    [openVisualTestsPanel]
+  );
+
   useEffect(() => {
     if (localBuildProgress?.currentStep === lastStep.current) return;
     lastStep.current = localBuildProgress?.currentStep;
@@ -62,10 +75,13 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
           name: "passed",
           color: color.positive,
         },
-        // @ts-expect-error SB needs a proper API for no link
-        link: undefined,
+        // @ts-expect-error `duration` and `onClick` require a newer version of Storybook
+        duration: 8_000,
+        onClick: clickNotification,
       });
-      setTimeout(() => clearNotification(`${ADDON_ID}/build-initialize`), 10_000);
+
+      // Kept for backwards compatibility (before `duration` support was added)
+      setTimeout(() => clearNotification(`${ADDON_ID}/build-initialize`), 8_000);
     }
 
     if (localBuildProgress?.currentStep === "aborted") {
@@ -79,10 +95,13 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
           name: "failed",
           color: color.negative,
         },
-        // @ts-expect-error SB needs a proper API for no link
-        link: undefined,
+        // @ts-expect-error `duration` and `onClick` require a newer version of Storybook
+        duration: 8_000,
+        onClick: clickNotification,
       });
-      setTimeout(() => clearNotification(`${ADDON_ID}/build-aborted`), 10_000);
+
+      // Kept for backwards compatibility (before `duration` support was added)
+      setTimeout(() => clearNotification(`${ADDON_ID}/build-aborted`), 8_000);
     }
 
     if (localBuildProgress?.currentStep === "complete") {
@@ -104,10 +123,13 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
           name: "passed",
           color: color.positive,
         },
-        // @ts-expect-error SB needs a proper API for no link
-        link: undefined,
+        // @ts-expect-error `duration` and `onClick` require a newer version of Storybook
+        duration: 8_000,
+        onClick: clickNotification,
       });
-      setTimeout(() => clearNotification(`${ADDON_ID}/build-complete`), 10_000);
+
+      // Kept for backwards compatibility (before `duration` support was added)
+      setTimeout(() => clearNotification(`${ADDON_ID}/build-complete`), 8_000);
     }
 
     if (localBuildProgress?.currentStep === "error") {
@@ -121,8 +143,8 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
           name: "failed",
           color: color.negative,
         },
-        // @ts-expect-error SB needs a proper API for no link
-        link: undefined,
+        // @ts-expect-error `duration` and `onClick` require a newer version of Storybook
+        onClick: clickNotification,
       });
     }
 
@@ -138,13 +160,14 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
           name: "failed",
           color: color.negative,
         },
-        // @ts-expect-error SB needs a proper API for no link
-        link: undefined,
+        // @ts-expect-error `duration` and `onClick` require a newer version of Storybook
+        onClick: clickNotification,
       });
     }
   }, [
     addNotification,
     clearNotification,
+    clickNotification,
     localBuildProgress?.currentStep,
     localBuildProgress?.errorCount,
     localBuildProgress?.changeCount,
@@ -172,10 +195,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
       isRunning={isRunning}
       localBuildProgress={localBuildProgress}
       warning={warning}
-      clickWarning={() => {
-        setOptions({ selectedPanel: PANEL_ID });
-        togglePanel(true);
-      }}
+      clickWarning={openVisualTestsPanel}
       startBuild={startBuild}
       stopBuild={stopBuild}
     />

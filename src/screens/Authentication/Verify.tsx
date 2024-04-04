@@ -1,9 +1,7 @@
-import { ChevronLeftIcon } from "@storybook/icons";
-import { styled, useTheme } from "@storybook/theming";
+import { styled } from "@storybook/theming";
 import React, { useCallback, useRef } from "react";
 import { useClient } from "urql";
 
-import { BackButton } from "../../components/BackButton";
 import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
 import { Heading } from "../../components/Heading";
@@ -16,6 +14,7 @@ import { getFetchOptions } from "../../utils/graphQLClient";
 import { fetchAccessToken, TokenExchangeParameters } from "../../utils/requestAccessToken";
 import { DialogHandler, useChromaticDialog } from "../../utils/useChromaticDialog";
 import { useErrorNotification } from "../../utils/useErrorNotification";
+import { AuthHeader } from "./AuthHeader";
 
 const Digits = styled.ol(({ theme }) => ({
   display: "inline-flex",
@@ -64,7 +63,6 @@ export const Verify = ({
 }: VerifyProps) => {
   const client = useClient();
   const onError = useErrorNotification();
-  const theme = useTheme();
 
   const { user_code: userCode, verificationUrl } = exchangeParameters;
 
@@ -139,11 +137,8 @@ export const Verify = ({
 
   return (
     <Screen footer={null} ignoreConfig>
+      <AuthHeader onBack={onBack} />
       <Container>
-        <BackButton onClick={onBack}>
-          <ChevronLeftIcon color={theme.base === "light" ? "currentColor" : theme.color.medium} />
-          Back
-        </BackButton>
         <Stack>
           <div>
             <Heading>Verify your account</Heading>
