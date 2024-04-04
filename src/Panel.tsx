@@ -92,6 +92,10 @@ export const Panel = ({ active, api }: PanelProps) => {
     </Provider>
   );
 
+  if (!active) {
+    return withProviders(null);
+  }
+
   if (global.CONFIG_TYPE !== "DEVELOPMENT") {
     return withProviders(<NoDevServer />);
   }
