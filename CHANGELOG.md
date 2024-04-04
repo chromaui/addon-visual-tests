@@ -1,3 +1,22 @@
+# v1.3.0 (Thu Apr 04 2024)
+
+#### 🚀 Enhancement
+
+- Open addon panel when notification is clicked, and pass new `duration` option [#281](https://github.com/chromaui/addon-visual-tests/pull/281) ([@ghengeveld](https://github.com/ghengeveld))
+- Show error screen when account is suspended [#282](https://github.com/chromaui/addon-visual-tests/pull/282) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### 🐛 Bug Fix
+
+- Save local state in `sessionStorage` or shared state [#274](https://github.com/chromaui/addon-visual-tests/pull/274) ([@ghengeveld](https://github.com/ghengeveld))
+- Fix misbehaving in rendering when addon is not active [#272](https://github.com/chromaui/addon-visual-tests/pull/272) ([@yannbf](https://github.com/yannbf) [@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 2
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Yann Braga ([@yannbf](https://github.com/yannbf))
+
+---
+
 # v1.2.26 (Tue Apr 02 2024)
 
 #### 🐛 Bug Fix
