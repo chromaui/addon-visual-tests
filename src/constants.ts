@@ -37,12 +37,14 @@ export const CONFIG_OVERRIDES = {
   forceRebuild: true,
   // This should never be set for local builds
   fromCI: false,
+  // No prompts from the Build proces
+  interactive: false,
   // Builds initiated from the addon are always considered local
   isLocalBuild: true,
   // Never skip local builds
   skip: false,
-  // No prompts from the Build proces
-  interactive: false,
+  // Don't check for CLI updates
+  skipUpdateCheck: true,
 };
 
 export const DOCS_URL = "https://www.chromatic.com/docs/visual-tests-addon";

@@ -162,7 +162,7 @@ export const Screen = ({
         onOpen={openConfig}
         hidden={configVisible}
         ignoreConfig={ignoreConfig}
-        ignoreSuggestions={!footer}
+        ignoreSuggestions={ignoreSuggestions}
       />
       <Content hidden={configVisible}>{children}</Content>
       <Content hidden={!configVisible}>
