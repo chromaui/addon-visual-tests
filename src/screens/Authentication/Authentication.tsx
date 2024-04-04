@@ -3,6 +3,7 @@ import React, { useCallback, useState } from "react";
 import { Project } from "../../gql/graphql";
 import { initiateSignin, TokenExchangeParameters } from "../../utils/requestAccessToken";
 import { useErrorNotification } from "../../utils/useErrorNotification";
+import { useSessionState } from "../../utils/useSessionState";
 import { useUninstallAddon } from "../Uninstalled/UninstallContext";
 import { SetSubdomain } from "./SetSubdomain";
 import { SignIn } from "./SignIn";
@@ -22,8 +23,12 @@ export const Authentication = ({
   setCreatedProjectId,
   hasProjectId,
 }: AuthenticationProps) => {
-  const [screen, setScreen] = useState<AuthenticationScreen>(hasProjectId ? "signin" : "welcome");
-  const [exchangeParameters, setExchangeParameters] = useState<TokenExchangeParameters>();
+  const [screen, setScreen] = useSessionState<AuthenticationScreen>(
+    "authenticationScreen",
+    hasProjectId ? "signin" : "welcome"
+  );
+  const [exchangeParameters, setExchangeParameters] =
+    useSessionState<TokenExchangeParameters>("exchangeParameters");
   const onError = useErrorNotification();
   const { uninstallAddon } = useUninstallAddon();
 
@@ -36,7 +41,7 @@ export const Authentication = ({
         onError("Sign in Error", err);
       }
     },
-    [onError]
+    [onError, setExchangeParameters, setScreen]
   );
 
   if (screen === "welcome" && !hasProjectId) {

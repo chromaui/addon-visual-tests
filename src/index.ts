@@ -162,6 +162,7 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
       projectInfoState.value = {
         ...projectInfoState.value,
         written: true,
+        dismissed: false,
         configFile: targetConfigFile,
       };
     } catch (err) {
@@ -170,6 +171,7 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
       projectInfoState.value = {
         ...projectInfoState.value,
         written: false,
+        dismissed: false,
         configFile: writtenConfigFile,
       };
     }

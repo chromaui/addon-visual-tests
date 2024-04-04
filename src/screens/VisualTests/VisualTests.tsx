@@ -1,6 +1,6 @@
 import { useStorybookApi, useStorybookState } from "@storybook/manager-api";
 import type { API_StatusState } from "@storybook/types";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useMutation } from "urql";
 
 import { PANEL_ID } from "../../constants";
@@ -15,6 +15,7 @@ import {
 import { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from "../../types";
 import { testsToStatusUpdate } from "../../utils/testsToStatusUpdate";
 import { SelectedBuildInfo, updateSelectedBuildInfo } from "../../utils/updateSelectedBuildInfo";
+import { useSessionState } from "../../utils/useSessionState";
 import { AccountSuspended } from "../Errors/AccountSuspended";
 import { GuidedTour } from "../GuidedTour/GuidedTour";
 import { Onboarding } from "../Onboarding/Onboarding";
@@ -31,7 +32,7 @@ const createEmptyStoryStatusUpdate = (state: API_StatusState) => {
 interface VisualTestsProps {
   isOutdated: boolean;
   selectedBuildInfo?: SelectedBuildInfo;
-  setSelectedBuildInfo: ReturnType<typeof useState<SelectedBuildInfo>>[1];
+  setSelectedBuildInfo: ReturnType<typeof useSessionState<SelectedBuildInfo | undefined>>[1];
   dismissBuildError: () => void;
   localBuildProgress?: LocalBuildProgress;
   setOutdated: (isOutdated: boolean) => void;
@@ -394,7 +395,9 @@ export const VisualTestsWithoutSelectedBuildId = ({
 export const VisualTests = (
   props: Omit<VisualTestsProps, "selectedBuildInfo" | "setSelectedBuildInfo">
 ) => {
-  const [selectedBuildInfo, setSelectedBuildInfo] = useState<SelectedBuildInfo>();
+  const [selectedBuildInfo, setSelectedBuildInfo] = useSessionState<SelectedBuildInfo | undefined>(
+    "selectedBuildInfo"
+  );
 
   return (
     <VisualTestsWithoutSelectedBuildId {...{ selectedBuildInfo, setSelectedBuildInfo, ...props }} />

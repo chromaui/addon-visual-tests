@@ -10,7 +10,9 @@ import { LocalBuildProgress } from "../../types";
 import { GraphQLClientProvider } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
 import { storyWrapper } from "../../utils/storyWrapper";
+import { clearSessionState } from "../../utils/useSessionState";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
+import { withSetup } from "../../utils/withSetup";
 import { BuildProvider } from "../VisualTests/BuildContext";
 import { acceptedBuild, acceptedTests, buildInfo, withTests } from "../VisualTests/mocks";
 import { RunBuildProvider } from "../VisualTests/RunBuildContext";
@@ -43,6 +45,7 @@ const RunBuildWrapper = ({
 const meta = {
   component: Onboarding,
   decorators: [
+    withSetup(clearSessionState),
     storyWrapper(BuildProvider, (ctx) => ({ watchState: buildInfo(ctx.parameters.selectedBuild) })),
     storyWrapper(GraphQLClientProvider),
   ],

@@ -5,6 +5,7 @@ import Joyride from "react-joyride";
 
 import { PANEL_ID } from "../../constants";
 import { ENABLE_FILTER } from "../../SidebarBottom";
+import { useSessionState } from "../../utils/useSessionState";
 import { useSelectedStoryState } from "../VisualTests/BuildContext";
 import { Confetti } from "./Confetti";
 import { Tooltip, TooltipProps } from "./Tooltip";
@@ -56,11 +57,9 @@ export const GuidedTour = ({
     managerApi.setSelectedPanel(PANEL_ID);
   }, [managerApi]);
 
-  const [showConfetti, setShowConfetti] = React.useState(false);
-  const [stepIndex, setStepIndex] = React.useState<number>(0);
-  const nextStep = () => {
-    setStepIndex((prev) => prev + 1);
-  };
+  const [showConfetti, setShowConfetti] = useSessionState("showConfetti", false);
+  const [stepIndex, setStepIndex] = useSessionState("stepIndex", 0);
+  const nextStep = () => setStepIndex((prev = 0) => prev + 1);
 
   useEffect(() => {
     // Listen for internal event to indicate a filter was set before moving to next step.
@@ -71,7 +70,7 @@ export const GuidedTour = ({
         window.dispatchEvent(new Event("resize"));
       }, 100);
     });
-  }, [managerApi]);
+  }, [managerApi, setStepIndex]);
 
   useEffect(() => {
     // Listen for the test status to change to ACCEPTED and move to the completed step.
@@ -79,7 +78,7 @@ export const GuidedTour = ({
       setShowConfetti(true);
       setStepIndex(6);
     }
-  }, [selectedStory?.selectedTest?.status, showConfetti, setShowConfetti, stepIndex]);
+  }, [selectedStory?.selectedTest?.status, showConfetti, setShowConfetti, stepIndex, setStepIndex]);
 
   const steps: Partial<GuidedTourStep>[] = [
     {
