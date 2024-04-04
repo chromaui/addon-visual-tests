@@ -202,6 +202,7 @@ export const announcedBuild = {
   branch: "feature-branch",
   commit: "abc123",
   committedAt: Date.now() - 2000,
+  parentCommits: [],
   uncommittedHash: "",
   status: BuildStatus.Announced,
   browsers: [makeBrowserInfo(Browser.Chrome), makeBrowserInfo(Browser.Safari)],
