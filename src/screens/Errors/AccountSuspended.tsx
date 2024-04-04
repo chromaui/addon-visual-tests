@@ -18,7 +18,7 @@ const reasons = {
   [AccountSuspensionReason.PaymentRequired]: {
     heading: "Payment required",
     message:
-      "Your subscription payment is past due. Review or replace your payment method continue using Chromatic.",
+      "Your subscription payment is past due. Review or replace your payment method to continue using Chromatic.",
     action: "Review billing details",
   },
   [AccountSuspensionReason.Other]: {
