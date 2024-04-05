@@ -125,7 +125,7 @@ const withTheme = (StoryFn, { globals, parameters }) => {
 const withGraphQLClient = storyWrapper(GraphQLClientProvider);
 
 const withTelemetry = storyWrapper(TelemetryProvider, () => ({
-  value: action("trackEvent"),
+  value: action("telemetry"),
 }));
 
 const withAuth = storyWrapper(AuthProvider, () => ({
