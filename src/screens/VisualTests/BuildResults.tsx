@@ -91,6 +91,8 @@ export const BuildResults = ({
     />
   );
 
+  // If we loaded tests for the build (if started/completed) but there are no tests for the selected
+  // story, then the story must be new since it doesn't exist in the last build.
   const isNewStory = selectedStory?.hasTests && selectedStory?.tests.length === 0;
 
   const isLocalBuildProgressOnSelectedBuild =
@@ -100,35 +102,42 @@ export const BuildResults = ({
     return (
       <Screen>
         <Container>
-          <Stack>
-            <div>
-              <Heading>New story found</Heading>
-              <Text center muted>
-                Take an image snapshot of this story to save its &quot;last known good state&quot;
-                as a test baseline. This unlocks visual regression testing so you can see exactly
-                what has changed down to the pixel.
-              </Text>
-            </div>
-
-            {localBuildProgress && isLocalBuildProgressOnSelectedBuild ? (
+          {localBuildProgress && isLocalBuildProgressOnSelectedBuild ? (
+            <Stack>
+              <div>
+                <Heading>Snapshotting new story</Heading>
+                <Text center muted>
+                  A new snapshot is being created in a standardized cloud browser to save its
+                  &quot;last known good state&quot; as a test baseline.
+                </Text>
+              </div>
               <BuildProgressInline localBuildProgress={localBuildProgress} />
-            ) : (
-              <>
-                <Button
-                  belowText
-                  size="medium"
-                  variant="solid"
-                  onClick={isRunning ? stopBuild : startBuild}
-                >
-                  {isRunning ? "Cancel build" : "Create visual test"}
-                </Button>
-              </>
-            )}
-          </Stack>
+            </Stack>
+          ) : (
+            <Stack>
+              <div>
+                <Heading>New story found</Heading>
+                <Text center muted>
+                  Take an image snapshot of this story to save its &quot;last known good state&quot;
+                  as a test baseline. This unlocks visual regression testing so you can see exactly
+                  what has changed down to the pixel.
+                </Text>
+              </div>
+              <Button
+                belowText
+                size="medium"
+                variant="solid"
+                onClick={isRunning ? stopBuild : startBuild}
+              >
+                {isRunning ? "Cancel build" : "Create visual test"}
+              </Button>
+            </Stack>
+          )}
         </Container>
       </Screen>
     );
   }
+
   // It shouldn't be possible for one test to be skipped but not all of them
   const isSkipped = !!selectedStory?.tests?.find((t) => t.result === TestResult.Skipped);
   if (isSkipped) {
