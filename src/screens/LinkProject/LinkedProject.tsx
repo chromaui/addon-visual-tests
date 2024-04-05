@@ -104,7 +104,7 @@ export const LinkedProject = ({
                   withArrow
                   secondary
                 >
-                  What&rsquo;s a project ID?
+                  What&apos;s a project ID?
                 </ButtonStackLink>
               </ButtonStack>
             </>

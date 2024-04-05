@@ -186,11 +186,11 @@ export const BuildResults = ({
           <Eyebrow>
             {userCanReview ? (
               <>
-                Reviewing is disabled because there&rsquo;s a newer build on <Code>{branch}</Code>.
+                Reviewing is disabled because there&apos;s a newer build on <Code>{branch}</Code>.
               </>
             ) : (
               <>
-                You don&rsquo;t have permission to accept changes.{" "}
+                You don&apos;t have permission to accept changes.{" "}
                 <Link
                   href="https://www.chromatic.com/docs/collaborators#roles"
                   target="_blank"

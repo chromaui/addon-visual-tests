@@ -57,7 +57,7 @@ export function LinkingProjectFailed({ projectId, configFile }: LinkingProjectFa
             </Code>
           </CodeWrapper>
           <Link secondary withArrow target="_blank" href={configureDocsLink}>
-            What&rsquo;s this for?
+            What&apos;s this for?
           </Link>
         </Stack>
       </Container>
