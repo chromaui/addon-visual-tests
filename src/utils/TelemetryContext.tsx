@@ -1,6 +1,6 @@
 import React, { createContext, useEffect } from "react";
 
-import { useRequiredContext } from "./utils/useRequiredContext";
+import { useRequiredContext } from "./useRequiredContext";
 
 export type TrackEvent = (event: { [key: string]: any }) => void;
 
