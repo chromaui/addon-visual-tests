@@ -1,39 +1,28 @@
-import { styled } from "@storybook/theming";
 import React, { useEffect } from "react";
 
-import { BuildProgressInline } from "../../components/BuildProgressBarInline";
 import { Button } from "../../components/Button";
 import { ButtonStack } from "../../components/ButtonStack";
-import { Container } from "../../components/Container";
-import { Heading } from "../../components/Heading";
-import { Screen } from "../../components/Screen";
-import { SnapshotImageThumb } from "../../components/SnapshotImageThumb";
-import { Stack } from "../../components/Stack";
-import { Text } from "../../components/Text";
-import { AccountSuspensionReason, SelectedBuildFieldsFragment } from "../../gql/graphql";
+import { AccountSuspensionReason } from "../../gql/graphql";
 import { GitInfoPayload, LocalBuildProgress } from "../../types";
 import { useSessionState } from "../../utils/useSessionState";
 import { AccountSuspended } from "../Errors/AccountSuspended";
 import { BuildError } from "../Errors/BuildError";
-import { useBuildState, useSelectedStoryState } from "../VisualTests/BuildContext";
 import { useRunBuildState } from "../VisualTests/RunBuildContext";
 import { CatchAChange } from "./CatchAChange";
 import { CatchAChangeComplete } from "./CatchAChangeComplete";
 import { InitialBuild } from "./InitialBuild";
 import { InitialBuildComplete } from "./InitialBuildComplete";
 
-const ButtonStackText = styled(Text)({ marginBottom: 5 });
-
 interface OnboardingProps {
   onComplete: () => void;
   onSkip: () => void;
   dismissBuildError: () => void;
-  selectedBuild?: SelectedBuildFieldsFragment | null;
   localBuildProgress?: LocalBuildProgress;
   showInitialBuildScreen?: boolean;
   lastBuildHasChanges: boolean;
   gitInfo: Pick<GitInfoPayload, "uncommittedHash" | "branch">;
 }
+
 export const Onboarding = ({
   dismissBuildError,
   localBuildProgress,
@@ -43,9 +32,7 @@ export const Onboarding = ({
   onComplete,
   onSkip,
 }: OnboardingProps) => {
-  const { selectedBuild } = useBuildState();
   const { isRunning, startBuild } = useRunBuildState();
-  const selectedStory = useSelectedStoryState();
 
   // The initial build screen is only necessary if this is a brand new project with no builds at all. Instead, !selectedBuild would appear on any new branch, even if there are other builds on the project.
   // TODO: Removed this entirely to solve for the most common case of an existing user with some builds to use as a baseline.
