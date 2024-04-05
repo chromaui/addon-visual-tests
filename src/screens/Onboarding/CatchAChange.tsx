@@ -56,7 +56,7 @@ const MakeAChange = ({ onSkip, runningSecondBuild }: MakeAChangeProps) => (
           <Heading>Make a change to this story</Heading>
           <Text center muted block>
             In your code, adjust the markup, styling, or assets to see how visual testing works.
-            Don’t worry, you can undo it later. Here are a few ideas to get you started.
+            Don&apos;t worry, you can undo it later. Here are a few ideas to get you started.
           </Text>
         </div>
         <Stack style={{ display: "flex", alignItems: "flex-start", gap: "8px", margin: "10px 0" }}>
