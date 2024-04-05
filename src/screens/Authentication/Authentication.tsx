@@ -1,7 +1,8 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 
 import { Project } from "../../gql/graphql";
 import { initiateSignin, TokenExchangeParameters } from "../../utils/requestAccessToken";
+import { useTelemetry } from "../../utils/TelemetryContext";
 import { useErrorNotification } from "../../utils/useErrorNotification";
 import { useSessionState } from "../../utils/useSessionState";
 import { useUninstallAddon } from "../Uninstalled/UninstallContext";
@@ -31,6 +32,8 @@ export const Authentication = ({
     useSessionState<TokenExchangeParameters>("exchangeParameters");
   const onError = useErrorNotification();
   const { uninstallAddon } = useUninstallAddon();
+
+  useTelemetry("Authentication", screen.charAt(0).toUpperCase() + screen.slice(1));
 
   const initiateSignInAndMoveToVerify = useCallback(
     async (subdomain?: string) => {

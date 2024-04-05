@@ -21,6 +21,7 @@ import { UninstallProvider } from "../src/screens/Uninstalled/UninstallContext";
 import { RunBuildProvider } from "../src/screens/VisualTests/RunBuildContext";
 import { GraphQLClientProvider } from "../src/utils/graphQLClient";
 import { storyWrapper } from "../src/utils/storyWrapper";
+import { TelemetryProvider } from "../src/utils/TelemetryContext";
 import { useSessionState } from "../src/utils/useSessionState";
 
 // Initialize MSW
@@ -123,6 +124,10 @@ const withTheme = (StoryFn, { globals, parameters }) => {
 
 const withGraphQLClient = storyWrapper(GraphQLClientProvider);
 
+const withTelemetry = storyWrapper(TelemetryProvider, () => ({
+  value: action("trackEvent"),
+}));
+
 const withAuth = storyWrapper(AuthProvider, () => ({
   value: {
     accessToken: "token",
@@ -203,7 +208,15 @@ export const graphQLArgLoader: Loader = async ({ argTypes, argsByTarget, paramet
 };
 
 const preview: Preview = {
-  decorators: [withTheme, withGraphQLClient, withAuth, withUninstall, withManagerApi, withRunBuild],
+  decorators: [
+    withTheme,
+    withGraphQLClient,
+    withTelemetry,
+    withAuth,
+    withUninstall,
+    withManagerApi,
+    withRunBuild,
+  ],
   loaders: [graphQLArgLoader],
   parameters: {
     actions: {

@@ -1,5 +1,5 @@
 import { Button } from "@storybook/components";
-import { styled, useTheme } from "@storybook/theming";
+import { styled } from "@storybook/theming";
 import React, { useCallback, useState } from "react";
 
 import { Container } from "../../components/Container";
@@ -36,7 +36,6 @@ interface SetSubdomainProps {
 }
 
 export const SetSubdomain = ({ onBack, onSignIn }: SetSubdomainProps) => {
-  const theme = useTheme();
   const [subdomain, setSubdomain] = useState("");
   const [inputError, setInputError] = useState<string | null>(null);
 

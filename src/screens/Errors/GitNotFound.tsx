@@ -10,9 +10,11 @@ import { VisualTestsIcon } from "../../components/icons/VisualTestsIcon";
 import { Screen } from "../../components/Screen";
 import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
+import { useTelemetry } from "../../utils/TelemetryContext";
 import { useUninstallAddon } from "../Uninstalled/UninstallContext";
 
 export const GitNotFound = () => {
+  useTelemetry("Errors", "GitNotFound");
   const { uninstallAddon } = useUninstallAddon();
   return (
     <Screen footer={null}>

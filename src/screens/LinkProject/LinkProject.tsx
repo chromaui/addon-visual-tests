@@ -11,6 +11,7 @@ import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
 import { graphql } from "../../gql";
 import type { Project, SelectProjectsQueryQuery } from "../../gql/graphql";
+import { useTelemetry } from "../../utils/TelemetryContext";
 import { DialogHandler, useChromaticDialog } from "../../utils/useChromaticDialog";
 import { useSessionState } from "../../utils/useSessionState";
 
@@ -134,7 +135,7 @@ function SelectProject({
   const [selectedAccountId, setSelectedAccountId] = useSessionState<string>("selectedAccountId");
   const selectedAccount = data?.viewer?.accounts.find((a) => a.id === selectedAccountId);
 
-  const onSelectAccount = React.useCallback(
+  const onSelectAccount = useCallback(
     (account: NonNullable<SelectProjectsQueryQuery["viewer"]>["accounts"][number]) =>
       setSelectedAccountId(account.id),
     [setSelectedAccountId]
@@ -148,7 +149,7 @@ function SelectProject({
 
   const [isSelectingProject, setSelectingProject] = useSessionState("isSelectingProject", false);
 
-  const handleSelectProject = React.useCallback(
+  const handleSelectProject = useCallback(
     (
       project: NonNullable<
         NonNullable<
@@ -190,6 +191,8 @@ function SelectProject({
       handleSelectProject(createdProject);
     }
   }, [createdProject, handleSelectProject, closeDialog]);
+
+  useTelemetry("LinkProject", "LinkProject");
 
   return (
     <Screen>

@@ -23,6 +23,7 @@ export const STOP_BUILD = `${ADDON_ID}/stopBuild`;
 export const LOCAL_BUILD_PROGRESS = `${ADDON_ID}/localBuildProgress`;
 export const SELECTED_MODE_NAME = `${ADDON_ID}/selectedModeName`;
 export const SELECTED_BROWSER_ID = `${ADDON_ID}/selectedBrowserId`;
+export const TELEMETRY = `${ADDON_ID}/telemetry`;
 
 export const REMOVE_ADDON = `${ADDON_ID}/removeAddon`;
 

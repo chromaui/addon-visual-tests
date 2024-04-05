@@ -7,6 +7,7 @@ import { Screen } from "../../components/Screen";
 import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
 import { AccountSuspensionReason } from "../../gql/graphql";
+import { useTelemetry } from "../../utils/TelemetryContext";
 
 const reasons = {
   [AccountSuspensionReason.ExceededThreshold]: {
@@ -37,6 +38,7 @@ export const AccountSuspended = ({
   billingUrl?: string | null;
   suspensionReason?: AccountSuspensionReason;
 }) => {
+  useTelemetry("Errors", "AccountSuspended");
   const { heading, message, action } =
     reasons[suspensionReason] || reasons[AccountSuspensionReason.Other];
 
