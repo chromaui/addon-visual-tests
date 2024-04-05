@@ -1,3 +1,17 @@
+# v1.3.1 (Fri Apr 05 2024)
+
+#### 🐛 Bug Fix
+
+- Deeply reset the build progress when starting a new build [#284](https://github.com/chromaui/addon-visual-tests/pull/284) ([@ghengeveld](https://github.com/ghengeveld))
+- Fix white background on snapshot image thumbnail with transparent `backgroundColor` [#283](https://github.com/chromaui/addon-visual-tests/pull/283) ([@ghengeveld](https://github.com/ghengeveld))
+- Tweak messaging for snapshotting new story [#285](https://github.com/chromaui/addon-visual-tests/pull/285) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v1.3.0 (Thu Apr 04 2024)
 
 #### 🚀 Enhancement
