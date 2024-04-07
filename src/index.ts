@@ -41,19 +41,19 @@ function managerEntries(entry: string[] = []) {
   return [...entry, require.resolve("./manager.mjs")];
 }
 
-let addonVersion: string | null;
-const getAddonVersion = async () => {
-  if (addonVersion !== undefined) {
-    return addonVersion;
-  }
-  try {
-    const packageJsonPath = require.resolve("@chromatic-com/storybook/package.json");
-    const packageJsonData = await readFile(packageJsonPath, "utf-8");
-    addonVersion = JSON.parse(packageJsonData).version || null;
-  } catch (e) {
-    addonVersion = null;
-  }
-  return addonVersion;
+// Load the addon version from the package.json file, once.
+let getAddonVersion = async (): Promise<string | null> => {
+  const promise = (async () => {
+    try {
+      const packageJsonPath = require.resolve("@chromatic-com/storybook/package.json");
+      const packageJsonData = await readFile(packageJsonPath, "utf-8");
+      return JSON.parse(packageJsonData).version || null;
+    } catch (e) {
+      return null;
+    }
+  })();
+  getAddonVersion = () => promise;
+  return promise;
 };
 
 // Nullify any suggestions that are the same as the defaults, to suggest removal.
