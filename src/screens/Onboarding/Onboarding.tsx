@@ -62,7 +62,6 @@ export const Onboarding = ({
 
   const [runningSecondBuild, setRunningSecondBuild] = useSessionState("runningSecondBuild", false);
 
-  // TODO: This design for an error in the Onboarding is incomplete
   if (localBuildProgress?.currentStep === "error") {
     return (
       <BuildError localBuildProgress={localBuildProgress}>
@@ -93,7 +92,7 @@ export const Onboarding = ({
 
   // Only show the initial build screen if no build has finished yet.
   if (showInitialBuild && (!localBuildProgress || (localBuildProgress && isRunning))) {
-    return <InitialBuild {...{ localBuildProgress, startBuild, onSkip }} />;
+    return <InitialBuild {...{ isRunning, localBuildProgress, startBuild, onSkip }} />;
   }
 
   if (localBuildProgress?.currentStep === "complete" && !showCatchAChange && !runningSecondBuild) {

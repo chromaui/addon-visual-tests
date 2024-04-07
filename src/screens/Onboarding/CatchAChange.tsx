@@ -104,6 +104,7 @@ const MakeAChange = ({ onSkip, runningSecondBuild }: MakeAChangeProps) => (
 );
 
 interface ChangesDetectedProps {
+  isRunning: boolean;
   setRunningSecondBuild: (value: boolean) => void;
   startBuild: () => void;
   setInitialGitHash: (value: string) => void;
@@ -111,6 +112,7 @@ interface ChangesDetectedProps {
 }
 
 const ChangesDetected = ({
+  isRunning,
   setRunningSecondBuild,
   startBuild,
   setInitialGitHash,
@@ -129,6 +131,7 @@ const ChangesDetected = ({
           <Button
             variant="solid"
             size="medium"
+            disabled={isRunning}
             onClick={() => {
               setRunningSecondBuild(true);
               startBuild();
@@ -175,13 +178,8 @@ interface CatchAChangeProps extends MakeAChangeProps, ChangesDetectedProps {
   localBuildProgress?: LocalBuildProgress;
 }
 
-export const CatchAChange = ({
-  isRunning,
-  isUnchanged,
-  localBuildProgress,
-  ...props
-}: CatchAChangeProps) => {
+export const CatchAChange = ({ isUnchanged, localBuildProgress, ...props }: CatchAChangeProps) => {
   useTelemetry("Onboarding", "CatchAChange");
-  if (isRunning && localBuildProgress) return <RunningTests {...{ localBuildProgress }} />;
+  if (props.isRunning && localBuildProgress) return <RunningTests {...{ localBuildProgress }} />;
   return isUnchanged ? <MakeAChange {...props} /> : <ChangesDetected {...props} />;
 };

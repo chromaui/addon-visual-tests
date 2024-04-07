@@ -43,11 +43,11 @@ export const NoBuild = ({
   branch,
 }: NoBuildProps) => {
   const { setAccessToken } = useAuthState();
-  const { startBuild } = useRunBuildState();
+  const { isRunning, startBuild } = useRunBuildState();
 
   const getDetails = () => {
     const button = (
-      <Button size="medium" variant="solid" onClick={startBuild}>
+      <Button disabled={isRunning} size="medium" variant="solid" onClick={startBuild}>
         <PlayIcon />
         Take snapshots
       </Button>

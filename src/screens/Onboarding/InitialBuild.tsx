@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import { BuildProgressInline } from "../../components/BuildProgressBarInline";
 import { Button } from "../../components/Button";
@@ -24,12 +24,18 @@ const Intro = () => (
 );
 
 type InitialBuildProps = {
+  isRunning: boolean;
   localBuildProgress?: LocalBuildProgress;
   startBuild: () => void;
   onSkip: () => void;
 };
 
-export const InitialBuild = ({ localBuildProgress, startBuild, onSkip }: InitialBuildProps) => {
+export const InitialBuild = ({
+  isRunning,
+  localBuildProgress,
+  startBuild,
+  onSkip,
+}: InitialBuildProps) => {
   useTelemetry("Onboarding", "InitialBuild");
   return (
     <Screen footer={null}>
@@ -43,7 +49,7 @@ export const InitialBuild = ({ localBuildProgress, startBuild, onSkip }: Initial
           <Stack>
             <Intro />
             <ButtonStack>
-              <Button size="medium" variant="solid" onClick={startBuild}>
+              <Button disabled={isRunning} size="medium" variant="solid" onClick={startBuild}>
                 Take snapshots
               </Button>
               <Button onClick={onSkip} link>
