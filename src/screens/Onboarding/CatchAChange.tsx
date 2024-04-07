@@ -12,6 +12,7 @@ import { Row } from "../../components/layout";
 import { Screen } from "../../components/Screen";
 import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
+import { LocalBuildProgress } from "../../types";
 import { useTelemetry } from "../../utils/TelemetryContext";
 import onboardingAdjustSizeImage from "./onboarding-adjust-size.png";
 import onboardingColorPaletteImage from "./onboarding-color-palette.png";
@@ -148,7 +149,7 @@ const ChangesDetected = ({
 };
 
 interface RunningTestsProps {
-  localBuildProgress?: any;
+  localBuildProgress: LocalBuildProgress;
 }
 
 const RunningTests = ({ localBuildProgress }: RunningTestsProps) => (
@@ -168,16 +169,19 @@ const RunningTests = ({ localBuildProgress }: RunningTestsProps) => (
   </Screen>
 );
 
-interface CatchAChangeProps {
+interface CatchAChangeProps extends MakeAChangeProps, ChangesDetectedProps {
   isRunning: boolean;
   isUnchanged: boolean;
+  localBuildProgress?: LocalBuildProgress;
 }
 
-export const CatchAChange = (
-  props: CatchAChangeProps & MakeAChangeProps & ChangesDetectedProps & RunningTestsProps
-) => {
+export const CatchAChange = ({
+  isRunning,
+  isUnchanged,
+  localBuildProgress,
+  ...props
+}: CatchAChangeProps) => {
   useTelemetry("Onboarding", "CatchAChange");
-  const { isRunning, isUnchanged } = props;
-  if (isRunning) return <RunningTests {...props} />;
+  if (isRunning && localBuildProgress) return <RunningTests {...{ localBuildProgress }} />;
   return isUnchanged ? <MakeAChange {...props} /> : <ChangesDetected {...props} />;
 };

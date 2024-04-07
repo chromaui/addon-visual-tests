@@ -19,7 +19,7 @@ interface OnboardingProps {
   dismissBuildError: () => void;
   localBuildProgress?: LocalBuildProgress;
   showInitialBuildScreen?: boolean;
-  lastBuildHasChanges: boolean;
+  lastBuildHasChangesForStory: boolean;
   gitInfo: Pick<GitInfoPayload, "uncommittedHash" | "branch">;
 }
 
@@ -28,7 +28,7 @@ export const Onboarding = ({
   localBuildProgress,
   showInitialBuildScreen,
   gitInfo,
-  lastBuildHasChanges,
+  lastBuildHasChangesForStory,
   onComplete,
   onSkip,
 }: OnboardingProps) => {
@@ -63,7 +63,7 @@ export const Onboarding = ({
   const [runningSecondBuild, setRunningSecondBuild] = useSessionState("runningSecondBuild", false);
 
   // TODO: This design for an error in the Onboarding is incomplete
-  if (localBuildProgress && localBuildProgress.currentStep === "error") {
+  if (localBuildProgress?.currentStep === "error") {
     return (
       <BuildError localBuildProgress={localBuildProgress}>
         <ButtonStack>
@@ -96,22 +96,17 @@ export const Onboarding = ({
     return <InitialBuild {...{ localBuildProgress, startBuild, onSkip }} />;
   }
 
-  if (
-    localBuildProgress &&
-    localBuildProgress.currentStep === "complete" &&
-    !showCatchAChange &&
-    !runningSecondBuild
-  ) {
+  if (localBuildProgress?.currentStep === "complete" && !showCatchAChange && !runningSecondBuild) {
     // It's possible the "first" build we just ran actually found a baseline,
     // in this case we skip the "catch a change" part and short-circuit to the "Done" screen.
-    return lastBuildHasChanges ? (
+    return lastBuildHasChangesForStory ? (
       <CatchAChangeComplete {...{ onComplete }} />
     ) : (
       <InitialBuildComplete {...{ onCatchAChange, onSkip }} />
     );
   }
 
-  if (showCatchAChange && !lastBuildHasChanges) {
+  if (showCatchAChange && !lastBuildHasChangesForStory) {
     return (
       <CatchAChange
         {...{
@@ -130,7 +125,7 @@ export const Onboarding = ({
   }
 
   // If the last build has changes, show the "Done" screen
-  if (lastBuildHasChanges) {
+  if (lastBuildHasChangesForStory) {
     return <CatchAChangeComplete {...{ onComplete }} />;
   }
 

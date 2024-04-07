@@ -106,7 +106,7 @@ const MutationUpdateUserPreferences = graphql(/* GraphQL */ `
 
 const useOnboarding = ({ lastBuildOnBranch, vtaOnboarding }: ReturnType<typeof useBuild>) => {
   const managerApi = useStorybookApi();
-  const { notifications } = useStorybookState();
+  const { notifications, storyId } = useStorybookState();
 
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = React.useState(false);
   const completeOnboarding = React.useCallback(() => {
@@ -124,10 +124,12 @@ const useOnboarding = ({ lastBuildOnBranch, vtaOnboarding }: ReturnType<typeof u
       setHasCompletedWalkthrough(false);
       return;
     }
-    setHasCompletedWalkthrough(
-      vtaOnboarding === VtaOnboardingPreference.Completed ||
-        vtaOnboarding === VtaOnboardingPreference.Dismissed
-    );
+    if (vtaOnboarding) {
+      setHasCompletedWalkthrough(
+        vtaOnboarding === VtaOnboardingPreference.Completed ||
+          vtaOnboarding === VtaOnboardingPreference.Dismissed
+      );
+    }
   }, [managerApi, vtaOnboarding]);
 
   const [{ fetching: isUpdating }, runMutation] = useMutation(MutationUpdateUserPreferences);
@@ -151,7 +153,7 @@ const useOnboarding = ({ lastBuildOnBranch, vtaOnboarding }: ReturnType<typeof u
     [runMutation]
   );
 
-  const lastBuildHasChanges = React.useMemo(() => {
+  const lastBuildHasChangesForStory = React.useMemo(() => {
     // select only testsForStatus (or empty array) and return true if any of them are pending and changed
     const testsForStatus =
       (lastBuildOnBranch &&
@@ -161,9 +163,12 @@ const useOnboarding = ({ lastBuildOnBranch, vtaOnboarding }: ReturnType<typeof u
       [];
 
     return testsForStatus.some(
-      (t) => t?.status === TestStatus.Pending && t?.result === TestResult.Changed
+      (t) =>
+        t?.status === TestStatus.Pending &&
+        t?.result === TestResult.Changed &&
+        t?.story?.storyId === storyId
     );
-  }, [lastBuildOnBranch]);
+  }, [lastBuildOnBranch, storyId]);
 
   const showOnboarding =
     !hasCompletedOnboarding && !hasCompletedWalkthrough && !walkthroughInProgress;
@@ -176,7 +181,7 @@ const useOnboarding = ({ lastBuildOnBranch, vtaOnboarding }: ReturnType<typeof u
     completeWalkthrough: React.useCallback(() => exitWalkthrough(true), [exitWalkthrough]),
     skipWalkthrough: React.useCallback(() => exitWalkthrough(false), [exitWalkthrough]),
     startWalkthrough,
-    lastBuildHasChanges,
+    lastBuildHasChangesForStory,
     isUpdating,
   };
 };
@@ -299,7 +304,7 @@ export const VisualTestsWithoutSelectedBuildId = ({
     skipOnboarding,
     skipWalkthrough,
     startWalkthrough,
-    lastBuildHasChanges,
+    lastBuildHasChangesForStory,
   } = useOnboarding(buildInfo);
 
   if (account?.suspensionReason) {
@@ -329,7 +334,7 @@ export const VisualTestsWithoutSelectedBuildId = ({
                 showInitialBuildScreen: !selectedBuild,
                 onComplete: completeOnboarding,
                 onSkip: skipOnboarding,
-                lastBuildHasChanges,
+                lastBuildHasChangesForStory,
               }}
             />
           </BuildProvider>

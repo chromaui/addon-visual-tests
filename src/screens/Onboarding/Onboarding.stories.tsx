@@ -94,7 +94,7 @@ export const Default = {
   ),
   args: {
     showInitialBuildScreen: true,
-    lastBuildHasChanges: false,
+    lastBuildHasChangesForStory: false,
   },
 } satisfies Story;
 
@@ -104,7 +104,7 @@ export const InProgress = {
       ...INITIAL_BUILD_PAYLOAD,
     },
     showInitialBuildScreen: true,
-    lastBuildHasChanges: false,
+    lastBuildHasChangesForStory: false,
   },
   parameters: withFigmaDesign(
     "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318374&t=3EAIRe8423CpOQWY-4"
@@ -119,7 +119,7 @@ export const BaselineSaved = {
       currentStep: "complete",
     },
     showInitialBuildScreen: true,
-    lastBuildHasChanges: false,
+    lastBuildHasChangesForStory: false,
   },
   parameters: {
     selectedBuild: withTests(acceptedBuild, acceptedTests),
@@ -347,7 +347,7 @@ export const ChangesFound = {
             {...args}
             gitInfo={gitInfo}
             localBuildProgress={localBuildProgress}
-            lastBuildHasChanges={lastBuildHasChanges}
+            lastBuildHasChangesForStory={lastBuildHasChanges}
           />
         </RunBuildWrapper>
       </>
@@ -373,7 +373,7 @@ export const Error = {
         name: "Error",
       },
     },
-    lastBuildHasChanges: false,
+    lastBuildHasChangesForStory: false,
   },
   parameters: {
     ...BaselineSaved.parameters,
@@ -391,7 +391,7 @@ export const Limited = {
       currentStep: "limited",
       errorDetailsUrl: "https://www.chromatic.com/billing?accountId=5af25af03c9f2c4bdccc0fcb",
     },
-    lastBuildHasChanges: false,
+    lastBuildHasChangesForStory: false,
   },
   parameters: {
     ...BaselineSaved.parameters,
