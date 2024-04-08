@@ -3,6 +3,8 @@ import { useCallback, useEffect, useState } from "react";
 
 import { START_BUILD, STOP_BUILD } from "../constants";
 import { LocalBuildProgress } from "../types";
+import { TelemetryContext } from "./TelemetryContext";
+import { useRequiredContext } from "./useRequiredContext";
 
 export const useBuildEvents = ({
   localBuildProgress,
@@ -13,16 +15,19 @@ export const useBuildEvents = ({
 }) => {
   const emit = useChannel({});
   const [isStarting, setStarting] = useState(false);
+  const trackEvent = useRequiredContext(TelemetryContext, "Telemetry");
 
   const startBuild = useCallback(() => {
     setStarting(true);
     emit(START_BUILD, { accessToken });
-  }, [emit, accessToken]);
+    trackEvent({ action: "startBuild" });
+  }, [accessToken, emit, trackEvent]);
 
   const stopBuild = useCallback(() => {
     setStarting(false);
     emit(STOP_BUILD);
-  }, [emit]);
+    trackEvent({ action: "stopBuild" });
+  }, [emit, trackEvent]);
 
   useEffect(() => {
     const timeout = isStarting && setTimeout(() => setStarting(false), 5000);
