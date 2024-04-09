@@ -99,7 +99,7 @@ export const Onboarding = ({
     // It's possible the "first" build we just ran actually found a baseline,
     // in this case we skip the "catch a change" part and short-circuit to the "Done" screen.
     return lastBuildHasChangesForStory ? (
-      <CatchAChangeComplete {...{ onComplete }} />
+      <CatchAChangeComplete {...{ onComplete, onSkip }} />
     ) : (
       <InitialBuildComplete {...{ onCatchAChange, onSkip }} />
     );
@@ -125,7 +125,7 @@ export const Onboarding = ({
 
   // If the last build has changes, show the "Done" screen
   if (lastBuildHasChangesForStory) {
-    return <CatchAChangeComplete {...{ onComplete }} />;
+    return <CatchAChangeComplete {...{ onComplete, onSkip }} ranSecondBuild />;
   }
 
   // This should never happen

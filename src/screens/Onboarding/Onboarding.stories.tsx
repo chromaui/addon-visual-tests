@@ -361,6 +361,20 @@ export const ChangesFound = {
   },
 } satisfies Story;
 
+export const ChangesFoundOnFirstBuild = {
+  ...BaselineSaved,
+  args: {
+    ...BaselineSaved.args,
+    lastBuildHasChangesForStory: true,
+  },
+  parameters: {
+    ...BaselineSaved.parameters,
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=352-258984&t=3EAIRe8423CpOQWY-4"
+    ),
+  },
+} satisfies Story;
+
 export const Error = {
   args: {
     localBuildProgress: {
