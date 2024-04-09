@@ -207,7 +207,8 @@ export const GuidedTour = ({
       disableOverlay: true,
       content: (
         <>
-          You’ve got the basics down! You can always unaccept if you’re not happy with the changes.
+          You&apos;ve got the basics down! You can always unaccept if you&apos;re not happy with the
+          changes.
         </>
       ),
       onNextButtonClick: nextStep,

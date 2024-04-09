@@ -9,6 +9,7 @@ import { Heading } from "../../components/Heading";
 import { Screen } from "../../components/Screen";
 import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
+import { useTelemetry } from "../../utils/TelemetryContext";
 
 type LinkingProjectFailedProps = {
   projectId: string;
@@ -32,6 +33,8 @@ const CodeWrapper = styled.div(({ theme }) => ({
 const configureDocsLink = "https://www.chromatic.com/docs/visual-tests-addon/#configure";
 
 export function LinkingProjectFailed({ projectId, configFile }: LinkingProjectFailedProps) {
+  useTelemetry("LinkProject", "LinkingProjectFailed");
+
   return (
     <Screen>
       <Container>
@@ -54,7 +57,7 @@ export function LinkingProjectFailed({ projectId, configFile }: LinkingProjectFa
             </Code>
           </CodeWrapper>
           <Link secondary withArrow target="_blank" href={configureDocsLink}>
-            What&rsquo;s this for?
+            What&apos;s this for?
           </Link>
         </Stack>
       </Container>

@@ -1,8 +1,10 @@
 /* eslint-disable no-console */
 import { watch } from "node:fs";
+import { readFile } from "node:fs/promises";
 import { normalize, relative } from "node:path";
 
 import type { Channel } from "@storybook/channels";
+import { telemetry } from "@storybook/telemetry";
 import type { Options } from "@storybook/types";
 // eslint-disable-next-line import/no-unresolved
 import { type Configuration, getConfiguration, getGitInfo, type GitInfo } from "chromatic/node";
@@ -19,6 +21,7 @@ import {
   REMOVE_ADDON,
   START_BUILD,
   STOP_BUILD,
+  TELEMETRY,
 } from "./constants";
 import { runChromaticBuild, stopChromaticBuild } from "./runChromaticBuild";
 import {
@@ -37,6 +40,21 @@ import { updateChromaticConfig } from "./utils/updateChromaticConfig";
 function managerEntries(entry: string[] = []) {
   return [...entry, require.resolve("./manager.mjs")];
 }
+
+// Load the addon version from the package.json file, once.
+let getAddonVersion = async (): Promise<string | null> => {
+  const promise = (async () => {
+    try {
+      const packageJsonPath = require.resolve("@chromatic-com/storybook/package.json");
+      const packageJsonData = await readFile(packageJsonPath, "utf-8");
+      return JSON.parse(packageJsonData).version || null;
+    } catch (e) {
+      return null;
+    }
+  })();
+  getAddonVersion = () => promise;
+  return promise;
+};
 
 // Nullify any suggestions that are the same as the defaults, to suggest removal.
 // Drop suggestions for removal that don't actually appear in the current config.
@@ -138,8 +156,9 @@ const watchConfigFile = async (
 async function serverChannel(channel: Channel, options: Options & { configFile?: string }) {
   const { configFile, presets } = options;
 
-  // Lazy load the API since we don't need it right away
+  // Lazy load these APIs since we don't need them right away
   const apiPromise = presets.apply<any>("experimental_serverAPI");
+  const corePromise = presets.apply("core");
 
   // This yields an empty object if the file doesn't exist and no explicit configFile is specified
   const { projectId: initialProjectId } = await getConfiguration(configFile);
@@ -195,6 +214,11 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
   channel.on(REMOVE_ADDON, () =>
     apiPromise.then((api) => api.removeAddon(PACKAGE_NAME)).catch((e) => console.error(e))
   );
+
+  channel.on(TELEMETRY, async (event: Event) => {
+    if ((await corePromise).disableTelemetry) return;
+    telemetry("addon-visual-tests" as any, { ...event, addonVersion: await getAddonVersion() });
+  });
 
   const configInfoState = SharedState.subscribe<ConfigInfoPayload>(CONFIG_INFO, channel);
   const gitInfoState = SharedState.subscribe<GitInfoPayload>(GIT_INFO, channel);

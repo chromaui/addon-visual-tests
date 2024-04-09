@@ -10,6 +10,7 @@ import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
 import { DOCS_URL } from "../../constants";
 import { LocalBuildProgress } from "../../types";
+import { useTelemetry } from "../../utils/TelemetryContext";
 
 const NewlinesAsBreaks = ({ content }: { content: string }) => {
   const lines = content.split(/\r?\n/);
@@ -60,6 +61,7 @@ export const BuildError = ({
   children?: React.ReactNode;
   localBuildProgress: LocalBuildProgress;
 }) => {
+  useTelemetry("Errors", "BuildError");
   return (
     <Screen footer={null}>
       <Container>

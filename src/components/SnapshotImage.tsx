@@ -154,7 +154,7 @@ export const SnapshotImage = ({
         <StyledStack>
           <PhotoIcon color={theme.base === "light" ? "currentColor" : theme.color.medium} />
           <Text center muted>
-            A snapshot couldn’t be captured. This often occurs when a story has a code error.
+            A snapshot couldn&apos;t be captured. This often occurs when a story has a code error.
             Confirm that this story successfully renders in your local Storybook and run the build
             again.
           </Text>

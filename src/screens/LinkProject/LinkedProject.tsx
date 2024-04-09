@@ -16,6 +16,7 @@ import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
 import { graphql } from "../../gql";
 import { ProjectQueryQuery } from "../../gql/graphql";
+import { useTelemetry } from "../../utils/TelemetryContext";
 
 const Check = styled(CheckIcon)(({ theme }) => ({
   width: 40,
@@ -53,6 +54,8 @@ export const LinkedProject = ({
   configFile: string;
   goToNext: () => void;
 }) => {
+  useTelemetry("LinkProject", "LinkedProject");
+
   const [{ data, fetching, error }] = useQuery<ProjectQueryQuery>({
     query: ProjectQuery,
     variables: { projectId },
@@ -101,7 +104,7 @@ export const LinkedProject = ({
                   withArrow
                   secondary
                 >
-                  What&rsquo;s a project ID?
+                  What&apos;s a project ID?
                 </ButtonStackLink>
               </ButtonStack>
             </>

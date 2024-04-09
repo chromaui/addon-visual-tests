@@ -1,4 +1,4 @@
-import { type API, useChannel, useStorybookState } from "@storybook/manager-api";
+import { type API, useStorybookState } from "@storybook/manager-api";
 import { color } from "@storybook/theming";
 import pluralize from "pluralize";
 import React, { useCallback, useEffect, useRef } from "react";
@@ -11,11 +11,10 @@ import {
   IS_OUTDATED,
   LOCAL_BUILD_PROGRESS,
   PANEL_ID,
-  START_BUILD,
-  STOP_BUILD,
 } from "./constants";
 import { ConfigInfoPayload, LocalBuildProgress } from "./types";
 import { useAccessToken } from "./utils/graphQLClient";
+import { useBuildEvents } from "./utils/useBuildEvents";
 import { useProjectId } from "./utils/useProjectId";
 import { useSharedState } from "./utils/useSharedState";
 
@@ -32,9 +31,6 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
 
   const [isOutdated] = useSharedState<boolean>(IS_OUTDATED);
   const [localBuildProgress] = useSharedState<LocalBuildProgress>(LOCAL_BUILD_PROGRESS);
-  const isRunning =
-    !!localBuildProgress &&
-    !["aborted", "complete", "error", "limited"].includes(localBuildProgress.currentStep);
 
   const [configInfo] = useSharedState<ConfigInfoPayload>(CONFIG_INFO);
   const hasConfigProblem = Object.keys(configInfo?.problems || {}).length > 0;
@@ -174,9 +170,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
     changedStoryCount.length,
   ]);
 
-  const emit = useChannel({});
-  const startBuild = () => emit(START_BUILD, { accessToken });
-  const stopBuild = () => emit(STOP_BUILD);
+  const { isRunning, startBuild, stopBuild } = useBuildEvents({ localBuildProgress, accessToken });
 
   let warning;
   if (!projectId) warning = "Visual tests locked until a project is selected.";

@@ -26,8 +26,8 @@ export const Warnings = ({ onClose }: WarningsProps) => (
         </CloseButton>
       </Heading>
       <p>
-        It’s essential that your components and stories render in a consistent fashion to prevent
-        false positives. Two issues detected in this story may cause false positives.
+        It&apos;s essential that your components and stories render in a consistent fashion to
+        prevent false positives. Two issues detected in this story may cause false positives.
       </p>
       <p>
         <Button variant="outline">

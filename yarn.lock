@@ -3440,7 +3440,7 @@
     memoizerific "^1.11.3"
     qs "^6.10.0"
 
-"@storybook/telemetry@8.0.6":
+"@storybook/telemetry@8.0.6", "@storybook/telemetry@^8.0.0":
   version "8.0.6"
   resolved "https://registry.yarnpkg.com/@storybook/telemetry/-/telemetry-8.0.6.tgz#5a7cf64fb7fb6f3fc3ca2e9a871e383782415095"
   integrity sha512-kzxhhzGRSBYR4oe/Vlp/adKVxD8KWbIDMCgLWaINe14ILfEmpyrC00MXRSjS1tMF1qfrtn600Oe/xkHFQUpivQ==

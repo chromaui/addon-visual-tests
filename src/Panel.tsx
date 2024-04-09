@@ -12,8 +12,7 @@ import {
   LOCAL_BUILD_PROGRESS,
   PANEL_ID,
   REMOVE_ADDON,
-  START_BUILD,
-  STOP_BUILD,
+  TELEMETRY,
 } from "./constants";
 import { Authentication } from "./screens/Authentication/Authentication";
 import { GitNotFound } from "./screens/Errors/GitNotFound";
@@ -28,6 +27,8 @@ import { RunBuildProvider } from "./screens/VisualTests/RunBuildContext";
 import { VisualTests } from "./screens/VisualTests/VisualTests";
 import { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from "./types";
 import { client, Provider, useAccessToken } from "./utils/graphQLClient";
+import { TelemetryProvider } from "./utils/TelemetryContext";
+import { useBuildEvents } from "./utils/useBuildEvents";
 import { useProjectId } from "./utils/useProjectId";
 import { clearSessionState, useSessionState } from "./utils/useSessionState";
 import { useSharedState } from "./utils/useSharedState";
@@ -74,28 +75,27 @@ export const Panel = ({ active, api }: PanelProps) => {
   const [createdProjectId, setCreatedProjectId] = useSessionState<string>("createdProjectId");
   const [addonUninstalled, setAddonUninstalled] = useSharedState<boolean>(REMOVE_ADDON);
 
-  const startBuild = () => emit(START_BUILD, { accessToken });
-  const stopBuild = () => emit(STOP_BUILD);
-  const isRunning =
-    !!localBuildProgress &&
-    !["aborted", "complete", "error"].includes(localBuildProgress.currentStep);
+  const trackEvent = useCallback((data: any) => emit(TELEMETRY, data), [emit]);
+  const { isRunning, startBuild, stopBuild } = useBuildEvents({ localBuildProgress, accessToken });
 
   const withProviders = (children: React.ReactNode) => (
     <Provider key={PANEL_ID} value={client}>
-      <AuthProvider value={{ accessToken, setAccessToken }}>
-        <UninstallProvider
-          addonUninstalled={addonUninstalled}
-          setAddonUninstalled={setAddonUninstalled}
-        >
-          <ControlsProvider>
-            <RunBuildProvider watchState={{ isRunning, startBuild, stopBuild }}>
-              <div hidden={!active} style={{ containerType: "size", height: "100%" }}>
-                {children}
-              </div>
-            </RunBuildProvider>
-          </ControlsProvider>
-        </UninstallProvider>
-      </AuthProvider>
+      <TelemetryProvider value={trackEvent}>
+        <AuthProvider value={{ accessToken, setAccessToken }}>
+          <UninstallProvider
+            addonUninstalled={addonUninstalled}
+            setAddonUninstalled={setAddonUninstalled}
+          >
+            <ControlsProvider>
+              <RunBuildProvider watchState={{ isRunning, startBuild, stopBuild }}>
+                <div hidden={!active} style={{ containerType: "size", height: "100%" }}>
+                  {children}
+                </div>
+              </RunBuildProvider>
+            </ControlsProvider>
+          </UninstallProvider>
+        </AuthProvider>
+      </TelemetryProvider>
     </Provider>
   );
 
