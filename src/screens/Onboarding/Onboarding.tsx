@@ -125,7 +125,12 @@ export const Onboarding = ({
 
   // If the last build has changes, show the "Done" screen
   if (lastBuildHasChangesForStory) {
-    return <CatchAChangeComplete {...{ onComplete, onSkip }} ranSecondBuild />;
+    return (
+      <CatchAChangeComplete
+        {...{ onComplete, onSkip }}
+        ranSecondBuild={showCatchAChange && runningSecondBuild}
+      />
+    );
   }
 
   // This should never happen
