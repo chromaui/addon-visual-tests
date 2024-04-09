@@ -1,3 +1,16 @@
+# v1.3.2 (Tue Apr 09 2024)
+
+#### 🐛 Bug Fix
+
+- Refactor and add telemetry to onboarding screens [#287](https://github.com/chromaui/addon-visual-tests/pull/287) ([@ghengeveld](https://github.com/ghengeveld))
+- Upgrade to latest stable Storybook version (8.0.6) [#286](https://github.com/chromaui/addon-visual-tests/pull/286) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v1.3.1 (Fri Apr 05 2024)
 
 #### 🐛 Bug Fix
