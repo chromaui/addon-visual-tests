@@ -217,7 +217,6 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
 
   channel.on(TELEMETRY, async (event: Event) => {
     if ((await corePromise).disableTelemetry) return;
-    console.debug("Sending telemetry event", event);
     telemetry("addon-visual-tests" as any, { ...event, addonVersion: await getAddonVersion() });
   });
 
