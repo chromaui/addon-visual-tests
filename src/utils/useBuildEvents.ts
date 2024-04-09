@@ -1,10 +1,9 @@
 import { useChannel } from "@storybook/manager-api";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 
 import { START_BUILD, STOP_BUILD } from "../constants";
 import { LocalBuildProgress } from "../types";
 import { TelemetryContext } from "./TelemetryContext";
-import { useRequiredContext } from "./useRequiredContext";
 
 export const useBuildEvents = ({
   localBuildProgress,
@@ -14,19 +13,19 @@ export const useBuildEvents = ({
   accessToken: string | null;
 }) => {
   const emit = useChannel({});
+  const trackEvent = useContext(TelemetryContext);
   const [isStarting, setStarting] = useState(false);
-  const trackEvent = useRequiredContext(TelemetryContext, "Telemetry");
 
   const startBuild = useCallback(() => {
     setStarting(true);
     emit(START_BUILD, { accessToken });
-    trackEvent({ action: "startBuild" });
+    trackEvent?.({ action: "startBuild" });
   }, [accessToken, emit, trackEvent]);
 
   const stopBuild = useCallback(() => {
     setStarting(false);
     emit(STOP_BUILD);
-    trackEvent({ action: "stopBuild" });
+    trackEvent?.({ action: "stopBuild" });
   }, [emit, trackEvent]);
 
   useEffect(() => {
