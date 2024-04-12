@@ -34,7 +34,12 @@ export default defineConfig(async (options) => {
     name,
     dependencies,
     peerDependencies,
-    bundler: { nodeEntries = [], managerEntries = [], externals: extraExternals = [] } = {},
+    bundler: {
+      exportEntries = [],
+      nodeEntries = [],
+      managerEntries = [],
+      externals: extraExternals = [],
+    } = {},
   } = packageJson;
 
   const commonConfig: Options = {
@@ -42,6 +47,12 @@ export default defineConfig(async (options) => {
     minify: !options.watch,
     treeshake: true,
     clean: true,
+  };
+
+  const browserOptions: Options = {
+    target: ["chrome100", "safari15", "firefox91"],
+    platform: "browser",
+    format: ["esm"],
   };
 
   const commonExternals = [
@@ -85,6 +96,21 @@ export default defineConfig(async (options) => {
         };
       },
       external: globalManagerPackagesNoIcons,
+    });
+  }
+
+  if (exportEntries.length > 0) {
+    configs.push({
+      ...commonConfig,
+      ...browserOptions,
+      entry: exportEntries,
+    });
+    configs.push({
+      ...commonConfig,
+      entry: exportEntries,
+      format: ["cjs"],
+      target: browserOptions.target,
+      platform: "neutral",
     });
   }
 

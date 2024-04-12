@@ -16,8 +16,14 @@
   "license": "MIT",
   "author": "Chromatic <support@chromatic.com>",
   "exports": {
-    ".": "./dist/index.js",
-    "./manager": "./dist/manager.mjs",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "node": "./dist/index.js",
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs"
+    },
+    "./manager": "./dist/manager.js",
+    "./preset": "./dist/preset.js",
     "./package.json": "./package.json"
   },
   "main": "dist/index.js",
@@ -131,11 +137,14 @@
     "access": "public"
   },
   "bundler": {
+    "exportEntries": [
+      "./src/index.ts"
+    ],
     "managerEntries": [
-      "src/manager.tsx"
+      "./src/manager.tsx"
     ],
     "nodeEntries": [
-      "src/index.ts"
+      "./src/preset.ts"
     ]
   },
   "msw": {
