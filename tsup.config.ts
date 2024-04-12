@@ -1,15 +1,21 @@
 import { defineConfig, type Options } from "tsup";
 import { readFile } from "fs/promises";
 import { globalPackages as globalManagerPackages } from "@storybook/manager/globals";
-import { globalPackages as globalPreviewPackages } from "@storybook/preview/globals";
+import type { PackageJson } from "type-fest";
 
+type Formats = "esm" | "cjs";
 type BundlerConfig = {
-  bundler?: {
-    exportEntries?: string[];
-    nodeEntries?: string[];
-    managerEntries?: string[];
-    previewEntries?: string[];
-  };
+  previewEntries: string[];
+  managerEntries: string[];
+  nodeEntries: string[];
+  exportEntries: string[];
+  externals: string[];
+  pre: string;
+  post: string;
+  formats: Formats[];
+};
+type PackageJsonWithBundlerConfig = PackageJson & {
+  bundler: BundlerConfig;
 };
 
 export default defineConfig(async (options) => {
@@ -17,21 +23,33 @@ export default defineConfig(async (options) => {
   // {
   //  ...
   //   "bundler": {
-  //     "exportEntries": ["./src/index.ts"],
+  //     "nodeEntries": ["./src/index.ts"],
   //     "managerEntries": ["./src/manager.tsx"],
   //   }
   // }
-  const packageJson = (await readFile("./package.json", "utf8").then(JSON.parse)) as BundlerConfig;
-  const { bundler: { exportEntries = [], managerEntries = [], previewEntries = [] } = {} } =
-    packageJson;
+  const packageJson = (await readFile("./package.json", "utf8").then(
+    JSON.parse
+  )) as PackageJsonWithBundlerConfig;
+  const {
+    name,
+    dependencies,
+    peerDependencies,
+    bundler: { nodeEntries = [], managerEntries = [], externals: extraExternals = [] } = {},
+  } = packageJson;
 
   const commonConfig: Options = {
     splitting: false,
     minify: !options.watch,
     treeshake: true,
-    sourcemap: true,
     clean: true,
   };
+
+  const commonExternals = [
+    name,
+    ...extraExternals,
+    ...Object.keys(dependencies || {}),
+    ...Object.keys(peerDependencies || {}),
+  ] as string[];
 
   const configs: Options[] = [];
 
@@ -39,19 +57,14 @@ export default defineConfig(async (options) => {
     (packageJson) => packageJson !== "@storybook/icons"
   );
 
-  // export entries are entries meant to be manually imported by the user
-  // they are not meant to be loaded by the manager or preview
-  // they'll be usable in both node and browser environments, depending on which features and modules they depend on
-  if (exportEntries.length) {
+  if (nodeEntries.length) {
     configs.push({
       ...commonConfig,
-      entry: exportEntries,
-      dts: {
-        resolve: true,
-      },
-      format: ["esm", "cjs"],
+      entry: nodeEntries,
+      format: ["cjs"],
+      target: "node18",
       platform: "node",
-      external: [...globalManagerPackagesNoIcons, ...globalPreviewPackages],
+      external: commonExternals,
     });
   }
 
