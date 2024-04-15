@@ -1,3 +1,15 @@
+# v1.3.3 (Mon Apr 15 2024)
+
+#### 🐛 Bug Fix
+
+- Fix bundling strategy of tsup [#289](https://github.com/chromaui/addon-visual-tests/pull/289) ([@valentinpalkovic](https://github.com/valentinpalkovic))
+
+#### Authors: 1
+
+- Valentin Palkovic ([@valentinpalkovic](https://github.com/valentinpalkovic))
+
+---
+
 # v1.3.2 (Tue Apr 09 2024)
 
 #### 🐛 Bug Fix
