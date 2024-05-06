@@ -24,7 +24,7 @@ const config: StorybookConfig = {
     "@storybook/addon-interactions",
     "@storybook/addon-designs",
     {
-      name: useDistVersion ? "../dist/index.js" : "../src/dev.ts",
+      name: useDistVersion ? "../dist/preset.js" : "../src/dev.ts",
       options: {
         configFile: configFileMap[CHROMATIC_BASE_URL || '"https://www.chromatic.com"'],
       },

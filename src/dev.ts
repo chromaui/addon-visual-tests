@@ -1,4 +1,4 @@
-import config from "./index";
+import config from "./preset";
 
 export default {
   ...config,
