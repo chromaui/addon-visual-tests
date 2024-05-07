@@ -22,6 +22,10 @@ const spin = keyframes({
   to: { transform: "rotate(359deg)" },
 });
 
+const SpinIcon = styled(SyncIcon)({
+  animation: `${spin} 1s linear infinite`,
+});
+
 const stepIconStyle = { width: 10, marginRight: 8 };
 
 const Header = styled.button<{ isWarning?: boolean }>(({ isWarning, onClick, theme }) => {
@@ -144,7 +148,7 @@ const BuildProgress = ({ localBuildProgress, expanded = false }: BuildProgressPr
     if (isCurrent) {
       return {
         ...config,
-        icon: <SyncIcon style={{ ...stepIconStyle, animation: `${spin} 1s linear infinite` }} />,
+        icon: <SpinIcon style={stepIconStyle} />,
         renderLabel: config.renderProgress,
       };
     }
