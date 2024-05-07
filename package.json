@@ -53,7 +53,7 @@
     "jackspeak": "2.1.1"
   },
   "dependencies": {
-    "chromatic": "^11.3.0",
+    "chromatic": "^11.3.1",
     "filesize": "^10.0.12",
     "jsonfile": "^6.1.0",
     "react-confetti": "^6.1.0",
@@ -134,7 +134,8 @@
     "yarn": ">=1.22.18"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   },
   "bundler": {
     "exportEntries": [
