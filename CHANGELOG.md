@@ -1,3 +1,16 @@
+# v1.3.4 (Tue May 07 2024)
+
+#### 🐛 Bug Fix
+
+- Upgrade Chromatic CLI dependency [#297](https://github.com/chromaui/addon-visual-tests/pull/297) ([@ghengeveld](https://github.com/ghengeveld))
+- Update dev config to load `preset.ts` rather than `index.ts` [#296](https://github.com/chromaui/addon-visual-tests/pull/296) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v1.3.3 (Mon Apr 15 2024)
 
 #### 🐛 Bug Fix
