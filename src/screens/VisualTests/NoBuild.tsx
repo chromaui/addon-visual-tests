@@ -1,5 +1,6 @@
 import { Loader } from "@storybook/components";
 import { PlayIcon } from "@storybook/icons";
+import { useParameter } from "@storybook/manager-api";
 import { styled } from "@storybook/theming";
 import React from "react";
 import { CombinedError } from "urql";
@@ -44,6 +45,7 @@ export const NoBuild = ({
 }: NoBuildProps) => {
   const { setAccessToken } = useAuthState();
   const { isRunning, startBuild } = useRunBuildState();
+  const { disable, disableSnapshot, docsOnly } = useParameter("chromatic", {} as any);
 
   const getDetails = () => {
     const button = (
@@ -127,6 +129,31 @@ export const NoBuild = ({
 
             <ButtonStackLink isButton onClick={() => setAccessToken(null)} withArrow>
               Switch account
+            </ButtonStackLink>
+          </Stack>
+        </Container>
+      );
+    }
+
+    if (disable || disableSnapshot || docsOnly) {
+      // eslint-disable-next-line no-nested-ternary
+      const param = disable ? "disable" : disableSnapshot ? "disableSnapshot" : "docsOnly";
+      return (
+        <Container>
+          <Stack>
+            <div>
+              <Heading>Visual Tests disabled for this story</Heading>
+              <Text center muted>
+                Update <code>parameters.chromatic.{param}</code> to enable snapshots for this story.
+              </Text>
+            </div>
+
+            <ButtonStackLink
+              withArrow
+              href="https://www.chromatic.com/docs/ignoring-elements/#ignore-stories"
+              target="_blank"
+            >
+              Read more
             </ButtonStackLink>
           </Stack>
         </Container>
