@@ -114,6 +114,7 @@ type StoryArgs = Parameters<typeof VisualTestsWithoutSelectedBuildId>[0] & {
   togglePanelPosition: () => void;
   setSelectedPanel: () => void;
   getCurrentStoryData: () => any;
+  getCurrentParameter: () => any;
   once: () => void;
   $graphql?: { AddonVisualTestsBuild?: QueryInput };
 };
@@ -131,6 +132,7 @@ const meta = {
     togglePanelPosition: { type: "function", target: "manager-api" },
     setSelectedPanel: { type: "function", target: "manager-api" },
     getCurrentStoryData: { type: "function", target: "manager-api" },
+    getCurrentParameter: { type: "function", target: "manager-api" },
     once: { type: "function", target: "manager-api" },
     $graphql: {
       AddonVisualTestsBuild: { map: mapQuery },
@@ -160,6 +162,7 @@ const meta = {
     togglePanelPosition: fn(),
     setSelectedPanel: fn(),
     getCurrentStoryData: () => ({ type: "story" }),
+    getCurrentParameter: () => ({}),
     once: fn(),
     $graphql: { AddonVisualTestsBuild: {} },
   },
@@ -814,6 +817,19 @@ export const Accepted = {
   parameters: {
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-305053&t=0rxMQnkxsVpVj1qy-4"
+    ),
+  },
+} satisfies Story;
+
+export const Disabled = {
+  args: {
+    storyId: "button--tertiary",
+    selectedBuildInfo: { buildId: pendingBuild.id, storyId: meta.args.storyId },
+    getCurrentParameter: () => ({ disableSnapshot: true }),
+  },
+  parameters: {
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2255-42087&t=a8NRPgQk3kXMyxqZ-0"
     ),
   },
 } satisfies Story;
