@@ -1,3 +1,18 @@
+# v1.3.5 (Fri May 10 2024)
+
+#### 🐛 Bug Fix
+
+- Upgrade Chromatic CLI to v11.3.2 [#302](https://github.com/chromaui/addon-visual-tests/pull/302) ([@ghengeveld](https://github.com/ghengeveld))
+- Support builds from (supposed) forked repository or monorepo setup [#299](https://github.com/chromaui/addon-visual-tests/pull/299) ([@ghengeveld](https://github.com/ghengeveld))
+- Show message when snapshotting is disabled for story [#300](https://github.com/chromaui/addon-visual-tests/pull/300) ([@ghengeveld](https://github.com/ghengeveld))
+- Fix spin animation on build progress eyebrow [#298](https://github.com/chromaui/addon-visual-tests/pull/298) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v1.3.4 (Tue May 07 2024)
 
 #### 🐛 Bug Fix
