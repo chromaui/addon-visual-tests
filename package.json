@@ -53,7 +53,7 @@
     "jackspeak": "2.1.1"
   },
   "dependencies": {
-    "chromatic": "^11.3.1",
+    "chromatic": "^11.3.2",
     "filesize": "^10.0.12",
     "jsonfile": "^6.1.0",
     "react-confetti": "^6.1.0",
