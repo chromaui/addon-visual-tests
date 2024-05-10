@@ -11,6 +11,7 @@ import { type Configuration, getConfiguration, getGitInfo, type GitInfo } from "
 
 import {
   ADDON_ID,
+  API_INFO,
   CHROMATIC_API_URL,
   CHROMATIC_BASE_URL,
   CONFIG_INFO,
@@ -26,6 +27,7 @@ import {
 } from "./constants";
 import { runChromaticBuild, stopChromaticBuild } from "./runChromaticBuild";
 import {
+  APIInfoPayload,
   ConfigInfoPayload,
   ConfigurationUpdate,
   GitInfoPayload,
@@ -244,14 +246,14 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
     telemetry("addon-visual-tests" as any, { ...event, addonVersion: await getAddonVersion() });
   });
 
-  let apiConnected = false;
-  observeAPIConnection(5000, (connected: boolean) => {
-    apiConnected = connected;
-  });
-
+  const apiInfoState = SharedState.subscribe<APIInfoPayload>(API_INFO, channel);
   const configInfoState = SharedState.subscribe<ConfigInfoPayload>(CONFIG_INFO, channel);
   const gitInfoState = SharedState.subscribe<GitInfoPayload>(GIT_INFO, channel);
   const gitInfoError = SharedState.subscribe<Error>(GIT_INFO_ERROR, channel);
+
+  observeAPIConnection(5000, (connected: boolean) => {
+    apiInfoState.value = { connected };
+  });
 
   observeGitInfo(
     5000,
@@ -269,7 +271,10 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
     configInfoState.value = await getConfigInfo(configuration, options);
   });
 
-  setInterval(() => channel.emit(`${ADDON_ID}/heartbeat`, { apiConnected }), 1000);
+  setInterval(
+    () => channel.emit(`${ADDON_ID}/heartbeat`, { apiConnected: apiInfoState.value?.connected }),
+    1000
+  );
 
   return channel;
 }
