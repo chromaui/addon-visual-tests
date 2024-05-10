@@ -11,6 +11,7 @@ import { type Configuration, getConfiguration, getGitInfo, type GitInfo } from "
 
 import {
   ADDON_ID,
+  CHROMATIC_API_URL,
   CHROMATIC_BASE_URL,
   CONFIG_INFO,
   GIT_INFO,
@@ -102,6 +103,29 @@ const getConfigInfo = async (
     problems: suggestRemovals(configuration, defaults, problems),
     suggestions: suggestRemovals(configuration, defaults, suggestions),
   };
+};
+
+// Polls for a connection to the Chromatic API.
+// Uses a recursive setTimeout instead of setInterval to avoid overlapping async calls.
+const observeAPIConnection = async (interval: number, callback: (connected: boolean) => void) => {
+  let timer: NodeJS.Timeout | undefined;
+  const act = async () => {
+    try {
+      const res = await fetch(CHROMATIC_API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: `{ viewer { id } }` }),
+      });
+      callback(res.ok);
+    } catch (e: any) {
+      callback(false);
+    } finally {
+      timer = setTimeout(act, interval);
+    }
+  };
+  act();
+
+  return () => clearTimeout(timer);
 };
 
 // Polls for changes to the Git state and invokes the callback when it changes.
@@ -220,6 +244,11 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
     telemetry("addon-visual-tests" as any, { ...event, addonVersion: await getAddonVersion() });
   });
 
+  let apiConnected = false;
+  observeAPIConnection(5000, (connected: boolean) => {
+    apiConnected = connected;
+  });
+
   const configInfoState = SharedState.subscribe<ConfigInfoPayload>(CONFIG_INFO, channel);
   const gitInfoState = SharedState.subscribe<GitInfoPayload>(GIT_INFO, channel);
   const gitInfoError = SharedState.subscribe<Error>(GIT_INFO_ERROR, channel);
@@ -240,7 +269,7 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
     configInfoState.value = await getConfigInfo(configuration, options);
   });
 
-  setInterval(() => channel.emit(`${ADDON_ID}/heartbeat`), 1000);
+  setInterval(() => channel.emit(`${ADDON_ID}/heartbeat`, { apiConnected }), 1000);
 
   return channel;
 }

@@ -35,9 +35,9 @@ addons.register(ADDON_ID, (api) => {
   if (!channel) return;
 
   let notificationShown = false;
-  channel.on(`${ADDON_ID}/heartbeat`, () => {
+  channel.on(`${ADDON_ID}/heartbeat`, ({ apiConnected }: { apiConnected: boolean }) => {
     clearTimeout(heartbeatTimeout);
-    if (notificationShown) {
+    if (notificationShown && apiConnected) {
       notificationShown = false;
       api.clearNotification(`${ADDON_ID}/connection-lost`);
     }
@@ -57,5 +57,22 @@ addons.register(ADDON_ID, (api) => {
         link: undefined,
       });
     }, 3000);
+
+    if (!apiConnected && !notificationShown) {
+      notificationShown = true;
+      api.addNotification({
+        id: `${ADDON_ID}/connection-lost`,
+        content: {
+          headline: "No network",
+          subHeadline: "Lost connection to the Chromatic API. Are you offline?",
+        },
+        icon: {
+          name: "failed",
+          color: color.negative,
+        },
+        // @ts-expect-error SB needs a proper API for no link
+        link: undefined,
+      });
+    }
   });
 });
