@@ -90,14 +90,14 @@ export const useBuild = ({
     account: data?.project?.account,
     hasData: !!data && !storyDataIsStale,
     hasProject: !!data?.project,
-    hasSelectedBuild: selectedBuild?.branch === gitInfo.branch,
+    hasSelectedBuild: selectedBuild?.branch.split(":").at(-1) === gitInfo.branch,
     lastBuildOnBranch,
     lastBuildOnBranchIsNewer,
     lastBuildOnBranchIsReady,
     lastBuildOnBranchIsSelectable,
     selectedBuild,
     selectedBuildMatchesGit:
-      selectedBuild?.branch === gitInfo.branch &&
+      selectedBuild?.branch.split(":").at(-1) === gitInfo.branch &&
       selectedBuild?.commit === gitInfo.commit &&
       selectedBuild?.uncommittedHash === gitInfo.uncommittedHash,
     rerunQuery,
