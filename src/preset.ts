@@ -109,21 +109,27 @@ const getConfigInfo = async (
 
 // Polls for a connection to the Chromatic API.
 // Uses a recursive setTimeout instead of setInterval to avoid overlapping async calls.
-const observeAPIConnection = async (interval: number, callback: (connected: boolean) => void) => {
+// Two consecutive failures are needed before considering the connection as lost.
+// Retries with an increasing delay after the first failure and aborts after 10 attempts.
+const observeAPIInfo = async (interval: number, callback: (apiInfo: APIInfoPayload) => void) => {
   let timer: NodeJS.Timeout | undefined;
-  const act = async () => {
-    try {
-      const res = await fetch(CHROMATIC_API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: `{ viewer { id } }` }),
-      });
-      callback(res.ok);
-    } catch (e: any) {
-      callback(false);
-    } finally {
-      timer = setTimeout(act, interval);
+  const act = async (attempt = 1) => {
+    if (attempt > 10) {
+      callback({ aborted: true, connected: false });
+      return;
     }
+    const ok = await fetch(CHROMATIC_API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query: `{ viewer { id } }` }),
+    }).then(
+      (res) => res.ok,
+      () => false
+    );
+    if (ok || attempt > 1) {
+      callback({ aborted: false, connected: ok });
+    }
+    timer = ok ? setTimeout(act, interval) : setTimeout(act, attempt * 1000, attempt + 1);
   };
   act();
 
@@ -251,8 +257,8 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
   const gitInfoState = SharedState.subscribe<GitInfoPayload>(GIT_INFO, channel);
   const gitInfoError = SharedState.subscribe<Error>(GIT_INFO_ERROR, channel);
 
-  observeAPIConnection(5000, (connected: boolean) => {
-    apiInfoState.value = { connected };
+  observeAPIInfo(5000, (info: APIInfoPayload) => {
+    apiInfoState.value = info;
   });
 
   observeGitInfo(

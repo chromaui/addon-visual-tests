@@ -27,6 +27,7 @@ export type ConfigurationUpdate = {
 };
 
 export type APIInfoPayload = {
+  aborted: boolean;
   connected: boolean;
 };
 export type ConfigInfoPayload = {
