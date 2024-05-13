@@ -1,4 +1,4 @@
-import { AlertIcon, SyncIcon } from "@storybook/icons";
+import { SyncIcon } from "@storybook/icons";
 import { useChannel } from "@storybook/manager-api";
 import { styled } from "@storybook/theming";
 import React, { useEffect, useState } from "react";
@@ -34,7 +34,6 @@ export const NoNetwork = ({ aborted }: { aborted: boolean }) => {
     <Screen footer={null}>
       <Container>
         <Stack>
-          <AlertIcon width={32} height={32} />
           <div>
             <Heading>Can't connect to Chromatic</Heading>
             <Text center muted>
