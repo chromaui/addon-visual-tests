@@ -278,6 +278,7 @@ export const GuidedTour = ({
           overlay: {
             mixBlendMode: "unset",
             backgroundColor: "none",
+            pointerEvents: "none",
           },
           spotlight: {
             backgroundColor: "none",
