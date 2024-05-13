@@ -88,6 +88,8 @@ export const useBuild = ({
 
   return {
     account: data?.project?.account,
+    features: data?.project?.features,
+    manageUrl: data?.project?.manageUrl,
     hasData: !!data && !storyDataIsStale,
     hasProject: !!data?.project,
     hasSelectedBuild: selectedBuild?.branch.split(":").at(-1) === gitInfo.branch,

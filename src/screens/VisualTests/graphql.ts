@@ -13,9 +13,13 @@ export const QueryBuild = graphql(/* GraphQL */ `
   ) {
     project(id: $projectId) {
       name
+      manageUrl
       account {
         billingUrl
         suspensionReason
+      }
+      features {
+        uiTests
       }
       lastBuildOnBranch: lastBuild(
         branches: [$branch]
