@@ -115,7 +115,7 @@ export const Panel = ({ active, api }: PanelProps) => {
   }
 
   if (apiInfo?.connected === false) {
-    return withProviders(<NoNetwork />);
+    return withProviders(<NoNetwork aborted={apiInfo.aborted} />);
   }
 
   // Render the Authentication flow if the user is not signed in.
