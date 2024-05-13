@@ -21,6 +21,7 @@ import {
   PACKAGE_NAME,
   PROJECT_INFO,
   REMOVE_ADDON,
+  RETRY_CONNECTION,
   START_BUILD,
   STOP_BUILD,
   TELEMETRY,
@@ -111,7 +112,7 @@ const getConfigInfo = async (
 // Uses a recursive setTimeout instead of setInterval to avoid overlapping async calls.
 // Two consecutive failures are needed before considering the connection as lost.
 // Retries with an increasing delay after the first failure and aborts after 10 attempts.
-const observeAPIInfo = async (interval: number, callback: (apiInfo: APIInfoPayload) => void) => {
+const observeAPIInfo = (interval: number, callback: (apiInfo: APIInfoPayload) => void) => {
   let timer: NodeJS.Timeout | undefined;
   const act = async (attempt = 1) => {
     if (attempt > 10) {
@@ -133,12 +134,12 @@ const observeAPIInfo = async (interval: number, callback: (apiInfo: APIInfoPaylo
   };
   act();
 
-  return () => clearTimeout(timer);
+  return { cancel: () => clearTimeout(timer) };
 };
 
 // Polls for changes to the Git state and invokes the callback when it changes.
 // Uses a recursive setTimeout instead of setInterval to avoid overlapping async calls.
-const observeGitInfo = async (
+const observeGitInfo = (
   interval: number,
   callback: (info: GitInfo, prevInfo?: GitInfo) => void,
   errorCallback: (e: Error) => void,
@@ -168,7 +169,7 @@ const observeGitInfo = async (
   };
   act();
 
-  return () => clearTimeout(timer);
+  return { cancel: () => clearTimeout(timer) };
 };
 
 const watchConfigFile = async (
@@ -243,9 +244,6 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
   });
 
   channel.on(STOP_BUILD, stopChromaticBuild);
-  channel.on(REMOVE_ADDON, () =>
-    apiPromise.then((api) => api.removeAddon(PACKAGE_NAME)).catch((e) => console.error(e))
-  );
 
   channel.on(TELEMETRY, async (event: Event) => {
     if ((await corePromise).disableTelemetry) return;
@@ -257,11 +255,11 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
   const gitInfoState = SharedState.subscribe<GitInfoPayload>(GIT_INFO, channel);
   const gitInfoError = SharedState.subscribe<Error>(GIT_INFO_ERROR, channel);
 
-  observeAPIInfo(5000, (info: APIInfoPayload) => {
+  let apiInfoObserver = observeAPIInfo(5000, (info: APIInfoPayload) => {
     apiInfoState.value = info;
   });
 
-  observeGitInfo(
+  const gitInfoObserver = observeGitInfo(
     5000,
     (info) => {
       gitInfoError.value = undefined;
@@ -278,6 +276,19 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
   });
 
   setInterval(() => channel.emit(`${ADDON_ID}/heartbeat`), 1000);
+
+  channel.on(REMOVE_ADDON, () => {
+    apiPromise.then((api) => api.removeAddon(PACKAGE_NAME)).catch((e) => console.error(e));
+    apiInfoObserver.cancel();
+    gitInfoObserver.cancel();
+  });
+
+  channel.on(RETRY_CONNECTION, () => {
+    apiInfoObserver.cancel();
+    apiInfoObserver = observeAPIInfo(5000, (info: APIInfoPayload) => {
+      apiInfoState.value = info;
+    });
+  });
 
   return channel;
 }

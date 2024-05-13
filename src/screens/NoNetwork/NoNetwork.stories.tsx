@@ -6,6 +6,6 @@ const meta = {
   component: NoNetwork,
 } satisfies Meta<typeof NoNetwork>;
 
-export const Default = {} satisfies StoryObj<typeof meta>;
-
 export default meta;
+
+export const Default = {} satisfies StoryObj<typeof meta>;

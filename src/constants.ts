@@ -27,6 +27,7 @@ export const SELECTED_BROWSER_ID = `${ADDON_ID}/selectedBrowserId`;
 export const TELEMETRY = `${ADDON_ID}/telemetry`;
 
 export const REMOVE_ADDON = `${ADDON_ID}/removeAddon`;
+export const RETRY_CONNECTION = `${ADDON_ID}/retryConnection`;
 
 export const CONFIG_OVERRIDES = {
   // Local changes should never be auto-accepted
