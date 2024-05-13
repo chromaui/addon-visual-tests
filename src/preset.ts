@@ -271,10 +271,7 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
     configInfoState.value = await getConfigInfo(configuration, options);
   });
 
-  setInterval(
-    () => channel.emit(`${ADDON_ID}/heartbeat`, { apiConnected: apiInfoState.value?.connected }),
-    1000
-  );
+  setInterval(() => channel.emit(`${ADDON_ID}/heartbeat`), 1000);
 
   return channel;
 }
