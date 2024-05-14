@@ -93,7 +93,11 @@ const getConfigInfo = async (
     problems.storybookConfigDir = configDir;
   }
 
-  if (!configuration.zip) {
+  if (configuration.onlyChanged === undefined) {
+    suggestions.onlyChanged = true;
+  }
+
+  if (configuration.zip === undefined) {
     suggestions.zip = true;
   }
 
@@ -181,7 +185,6 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
         ...config,
         ...problems,
         ...suggestions,
-        onlyChanged: true,
         projectId,
       });
 

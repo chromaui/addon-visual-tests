@@ -302,7 +302,7 @@ export const Configuration = ({ onClose }: ConfigurationProps) => {
         <CloseIcon aria-label="Close" />
       </StyledCloseButton>
       <PageWrapper>
-        <Heading>Configuration </Heading>
+        <Heading>Configuration</Heading>
         {configFile ? (
           <PageDescription>
             This is a read-only representation of the Chromatic configuration options found in{" "}
