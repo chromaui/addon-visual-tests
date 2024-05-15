@@ -62,6 +62,20 @@ export const GuidedTour = ({
   const nextStep = () => setStepIndex((prev = 0) => prev + 1);
 
   useEffect(() => {
+    // Hide composed Storybooks (refs) in the sidebar while the guided tour is active.
+    const explorer = document.getElementById("storybook-explorer-tree");
+    const refElements = Array.from(explorer instanceof HTMLElement ? explorer.children : [])
+      .filter((el): el is HTMLElement => el instanceof HTMLElement)
+      .slice(1);
+
+    // eslint-disable-next-line no-param-reassign, no-return-assign
+    refElements.forEach((el) => (el.style.display = "none"));
+
+    // eslint-disable-next-line no-param-reassign, no-return-assign
+    return () => refElements.forEach((el) => (el.style.display = ""));
+  }, []);
+
+  useEffect(() => {
     // Listen for internal event to indicate a filter was set before moving to next step.
     managerApi.once(ENABLE_FILTER, () => {
       setStepIndex(1);
