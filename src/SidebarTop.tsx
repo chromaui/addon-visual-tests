@@ -6,13 +6,14 @@ import React, { useCallback, useEffect, useRef } from "react";
 import { SidebarTopButton } from "./components/SidebarTopButton";
 import {
   ADDON_ID,
+  API_INFO,
   CONFIG_INFO,
   GIT_INFO_ERROR,
   IS_OUTDATED,
   LOCAL_BUILD_PROGRESS,
   PANEL_ID,
 } from "./constants";
-import { ConfigInfoPayload, LocalBuildProgress } from "./types";
+import { APIInfoPayload, ConfigInfoPayload, LocalBuildProgress } from "./types";
 import { useAccessToken } from "./utils/graphQLClient";
 import { useBuildEvents } from "./utils/useBuildEvents";
 import { useProjectId } from "./utils/useProjectId";
@@ -32,6 +33,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
   const [isOutdated] = useSharedState<boolean>(IS_OUTDATED);
   const [localBuildProgress] = useSharedState<LocalBuildProgress>(LOCAL_BUILD_PROGRESS);
 
+  const [apiInfo] = useSharedState<APIInfoPayload>(API_INFO);
   const [configInfo] = useSharedState<ConfigInfoPayload>(CONFIG_INFO);
   const hasConfigProblem = Object.keys(configInfo?.problems || {}).length > 0;
 
@@ -173,6 +175,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
   const { isRunning, startBuild, stopBuild } = useBuildEvents({ localBuildProgress, accessToken });
 
   let warning;
+  if (apiInfo?.connected === false) warning = "Visual tests locked while waiting for network.";
   if (!projectId) warning = "Visual tests locked until a project is selected.";
   if (!isLoggedIn) warning = "Visual tests locked until you are logged in.";
   if (gitInfoError) warning = "Visual tests locked due to Git synchronization problem.";

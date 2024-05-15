@@ -26,6 +26,10 @@ export type ConfigurationUpdate = {
   [Property in keyof Configuration]: Configuration[Property] | null;
 };
 
+export type APIInfoPayload = {
+  aborted: boolean;
+  connected: boolean;
+};
 export type ConfigInfoPayload = {
   configuration: Awaited<ReturnType<typeof getConfiguration>>;
   problems?: ConfigurationUpdate;

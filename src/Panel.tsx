@@ -6,6 +6,7 @@ import { AuthProvider } from "./AuthContext";
 import { Spinner } from "./components/design-system";
 import {
   ADDON_ID,
+  API_INFO,
   GIT_INFO,
   GIT_INFO_ERROR,
   IS_OUTDATED,
@@ -20,12 +21,13 @@ import { LinkedProject } from "./screens/LinkProject/LinkedProject";
 import { LinkingProjectFailed } from "./screens/LinkProject/LinkingProjectFailed";
 import { LinkProject } from "./screens/LinkProject/LinkProject";
 import { NoDevServer } from "./screens/NoDevServer/NoDevServer";
+import { NoNetwork } from "./screens/NoNetwork/NoNetwork";
 import { UninstallProvider } from "./screens/Uninstalled/UninstallContext";
 import { Uninstalled } from "./screens/Uninstalled/Uninstalled";
 import { ControlsProvider } from "./screens/VisualTests/ControlsContext";
 import { RunBuildProvider } from "./screens/VisualTests/RunBuildContext";
 import { VisualTests } from "./screens/VisualTests/VisualTests";
-import { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from "./types";
+import { APIInfoPayload, GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from "./types";
 import { client, Provider, useAccessToken } from "./utils/graphQLClient";
 import { TelemetryProvider } from "./utils/TelemetryContext";
 import { useBuildEvents } from "./utils/useBuildEvents";
@@ -49,6 +51,7 @@ export const Panel = ({ active, api }: PanelProps) => {
   );
   const { storyId } = useStorybookState();
 
+  const [apiInfo] = useSharedState<APIInfoPayload>(API_INFO);
   const [gitInfo] = useSharedState<GitInfoPayload>(GIT_INFO);
   const [gitInfoError] = useSharedState<Error>(GIT_INFO_ERROR);
   const [isOutdated] = useSharedState<boolean>(IS_OUTDATED);
@@ -109,6 +112,10 @@ export const Panel = ({ active, api }: PanelProps) => {
 
   if (addonUninstalled) {
     return withProviders(<Uninstalled />);
+  }
+
+  if (apiInfo?.connected === false) {
+    return withProviders(<NoNetwork aborted={apiInfo.aborted} />);
   }
 
   // Render the Authentication flow if the user is not signed in.
