@@ -3,8 +3,7 @@ import { useTheme } from "@storybook/theming";
 import React, { useEffect, useRef } from "react";
 import Joyride from "react-joyride";
 
-import { PANEL_ID } from "../../constants";
-import { ENABLE_FILTER } from "../../SidebarBottom";
+import { ENABLE_FILTER, PANEL_ID } from "../../constants";
 import { useSessionState } from "../../utils/useSessionState";
 import { useSelectedStoryState } from "../VisualTests/BuildContext";
 import { Confetti } from "./Confetti";

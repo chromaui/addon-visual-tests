@@ -25,7 +25,7 @@ export const LOCAL_BUILD_PROGRESS = `${ADDON_ID}/localBuildProgress`;
 export const SELECTED_MODE_NAME = `${ADDON_ID}/selectedModeName`;
 export const SELECTED_BROWSER_ID = `${ADDON_ID}/selectedBrowserId`;
 export const TELEMETRY = `${ADDON_ID}/telemetry`;
-
+export const ENABLE_FILTER = `${ADDON_ID}/enableFilter`;
 export const REMOVE_ADDON = `${ADDON_ID}/removeAddon`;
 export const RETRY_CONNECTION = `${ADDON_ID}/retryConnection`;
 
