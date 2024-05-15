@@ -1,3 +1,21 @@
+# v1.4.0 (Wed May 15 2024)
+
+#### 🚀 Enhancement
+
+- Suggest enabling TurboSnap and use all suggestions in generated config file [#306](https://github.com/chromaui/addon-visual-tests/pull/306) ([@ghengeveld](https://github.com/ghengeveld))
+- Show "Visual Tests disabled" screen when `uiTests` feature is disabled [#304](https://github.com/chromaui/addon-visual-tests/pull/304) ([@ghengeveld](https://github.com/ghengeveld))
+- Poll for API connection and show notification when it fails [#303](https://github.com/chromaui/addon-visual-tests/pull/303) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### 🐛 Bug Fix
+
+- Hide refs (composed Storybooks) while guided tour is active [#307](https://github.com/chromaui/addon-visual-tests/pull/307) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v1.3.5 (Fri May 10 2024)
 
 #### 🐛 Bug Fix
