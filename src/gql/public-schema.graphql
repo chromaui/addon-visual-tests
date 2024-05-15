@@ -671,6 +671,9 @@ enum CaptureErrorKind {
 
   """The component was rendered off screen."""
   COMPONENT_OFF_PAGE
+
+  """The screenshot took too long to capture."""
+  SCREENSHOT_TIMEOUT
 }
 
 type CaptureRegion {
@@ -1445,6 +1448,19 @@ type CaptureErrorStoryMissing implements CaptureError {
   kind: CaptureErrorKind!
 }
 
+type CaptureErrorScreenshotTimeout implements CaptureError {
+  """The ID of the capture error."""
+  id: ID!
+
+  """The kind of capture error."""
+  kind: CaptureErrorKind!
+
+  """
+  The maximum number of milliseconds allowed for a screenshot to be taken.
+  """
+  screenshotTimeoutMs: Int!
+}
+
 type Query {
   account(id: ID!): Account
   build(id: ID!): Build
@@ -1489,6 +1505,7 @@ type Project implements Node & Temporal {
 
   """Project name, typically the repository name."""
   name: String!
+  features: ProjectFeatures!
 
   """Account information which does not require the `account` scope."""
   publicAccountInfo: PublicAccountInfo!
@@ -1496,7 +1513,10 @@ type Project implements Node & Temporal {
   """Account to which this project belongs."""
   account: Account!
 
-  """Link to the project on Chromatic."""
+  """Link to the project's manage screen on Chromatic."""
+  manageUrl: URL!
+
+  """Link to the project home on Chromatic."""
   webUrl: URL!
 
   """Project token to start builds with Chromatic CLI."""
@@ -1543,6 +1563,11 @@ type Project implements Node & Temporal {
 
   """When the entity was last updated or created in Chromatic."""
   updatedAt: DateTime!
+}
+
+type ProjectFeatures {
+  uiReview: Boolean!
+  uiTests: Boolean!
 }
 
 type PublicAccountInfo {

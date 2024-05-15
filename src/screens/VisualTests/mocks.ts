@@ -18,6 +18,8 @@ import { SelectedBuildWithTests } from "../../types";
 import { makeBrowserInfo, makeComparison, makeTest, makeTests } from "../../utils/storyData";
 
 export const buildInfo = (selectedBuild?: SelectedBuildFieldsFragment) => ({
+  features: { uiTests: true },
+  manageUrl: "https://www.chromatic.com/manage?appId=123",
   hasData: true,
   hasProject: true,
   hasSelectedBuild: !!selectedBuild,

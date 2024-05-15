@@ -17,6 +17,7 @@ import { testsToStatusUpdate } from "../../utils/testsToStatusUpdate";
 import { SelectedBuildInfo, updateSelectedBuildInfo } from "../../utils/updateSelectedBuildInfo";
 import { useSessionState } from "../../utils/useSessionState";
 import { AccountSuspended } from "../Errors/AccountSuspended";
+import { VisualTestsDisabled } from "../Errors/VisualTestsDisabled";
 import { GuidedTour } from "../GuidedTour/GuidedTour";
 import { Onboarding } from "../Onboarding/Onboarding";
 import { BuildProvider, useBuild } from "./BuildContext";
@@ -204,6 +205,8 @@ export const VisualTestsWithoutSelectedBuildId = ({
 
   const {
     account,
+    features,
+    manageUrl,
     hasData,
     hasProject,
     hasSelectedBuild,
@@ -306,6 +309,10 @@ export const VisualTestsWithoutSelectedBuildId = ({
     startWalkthrough,
     lastBuildHasChangesForStory,
   } = useOnboarding(buildInfo);
+
+  if (features && !features.uiTests) {
+    return <VisualTestsDisabled manageUrl={manageUrl} />;
+  }
 
   if (account?.suspensionReason) {
     return (

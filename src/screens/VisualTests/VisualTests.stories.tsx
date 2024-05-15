@@ -67,10 +67,17 @@ type QueryInput = {
   /** If `selectedBuild` is unset, `lastBuildOnBranch` will be used *if* it matches `selectedBuildId` */
   selectedBuild?: LastOrSelectedBuildFragment;
 
+  uiTests?: boolean;
+
   userCanReview?: boolean;
 };
 function mapQuery(
-  { lastBuildOnBranch, selectedBuild: selectedBuildInput, userCanReview = true }: QueryInput,
+  {
+    lastBuildOnBranch,
+    selectedBuild: selectedBuildInput,
+    uiTests = true,
+    userCanReview = true,
+  }: QueryInput,
   { selectedBuildId }: VariablesOf<typeof QueryBuild>
 ) {
   if (selectedBuildInput && selectedBuildInput?.id !== selectedBuildId) {
@@ -84,6 +91,8 @@ function mapQuery(
   return {
     project: {
       name: "acme",
+      features: { uiTests },
+      manageUrl: "https://www.chromatic.com/manage?appId=123",
       lastBuildOnBranch,
     },
     selectedBuild,
@@ -821,7 +830,19 @@ export const Accepted = {
   },
 } satisfies Story;
 
-export const Disabled = {
+export const FeatureDisabled = {
+  args: {
+    storyId: "button--tertiary",
+    selectedBuildInfo: { buildId: pendingBuild.id, storyId: meta.args.storyId },
+    $graphql: {
+      AddonVisualTestsBuild: {
+        uiTests: false,
+      },
+    },
+  },
+} satisfies Story;
+
+export const ParameterDisabled = {
   args: {
     storyId: "button--tertiary",
     selectedBuildInfo: { buildId: pendingBuild.id, storyId: meta.args.storyId },
