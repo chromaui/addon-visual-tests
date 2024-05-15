@@ -97,7 +97,11 @@ const getConfigInfo = async (
     problems.storybookConfigDir = configDir;
   }
 
-  if (!configuration.zip) {
+  if (configuration.onlyChanged === undefined) {
+    suggestions.onlyChanged = true;
+  }
+
+  if (configuration.zip === undefined) {
     suggestions.zip = true;
   }
 
@@ -209,7 +213,13 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
       // No config file may be found (file is about to be created)
       const { configFile: foundConfigFile, ...config } = await getConfiguration(writtenConfigFile);
       const targetConfigFile = foundConfigFile || writtenConfigFile || "chromatic.config.json";
-      await updateChromaticConfig(targetConfigFile, { ...config, projectId, zip: true });
+      const { problems, suggestions } = await getConfigInfo(config, options);
+      await updateChromaticConfig(targetConfigFile, {
+        ...config,
+        ...problems,
+        ...suggestions,
+        projectId,
+      });
 
       projectInfoState.value = {
         ...projectInfoState.value,
