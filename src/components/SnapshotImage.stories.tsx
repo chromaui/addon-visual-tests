@@ -11,8 +11,8 @@ const meta = {
   args: {
     componentName: "Shapes",
     storyName: "Primary",
-    baselineImage: { imageUrl: "/A.png", imageWidth: 880 },
-    latestImage: { imageUrl: "/B.png", imageWidth: 880 },
+    baselineImage: { imageUrl: "/A.png", imageWidth: 880, imageHeight: 280 },
+    latestImage: { imageUrl: "/B.png", imageWidth: 880, imageHeight: 280 },
     diffImage: { imageUrl: "/B-comparison.png", imageWidth: 880 },
     focusImage: { imageUrl: "/B-focus.png", imageWidth: 880 },
     comparisonResult: ComparisonResult.Changed,
@@ -51,7 +51,7 @@ export const BothVisible = {
 
 export const Wider = {
   args: {
-    latestImage: { imageUrl: "/shapes-wider.png", imageWidth: 768 },
+    latestImage: { imageUrl: "/shapes-wider.png", imageWidth: 768, imageHeight: 472 },
     diffImage: { imageUrl: "/shapes-comparison.png", imageWidth: 768 },
     focusImage: { imageUrl: "/shapes-focus.png", imageWidth: 768 },
     diffVisible: true,
@@ -68,7 +68,7 @@ export const WiderConstrained = {
 
 export const Taller = {
   args: {
-    latestImage: { imageUrl: "/shapes-taller.png", imageWidth: 588 },
+    latestImage: { imageUrl: "/shapes-taller.png", imageWidth: 588, imageHeight: 684 },
     diffImage: { imageUrl: "/shapes-comparison.png", imageWidth: 768 },
     focusImage: { imageUrl: "/shapes-focus.png", imageWidth: 768 },
     diffVisible: true,
@@ -95,6 +95,18 @@ export const Loading = {
   parameters: {
     msw: {
       handlers: [http.get("/B.png", () => delay("infinite"))],
+    },
+  },
+} satisfies Story;
+
+export const OverlayLoading = {
+  ...BothVisible,
+  parameters: {
+    msw: {
+      handlers: [
+        http.get("/B-comparison.png", () => delay("infinite")),
+        http.get("/B-focus.png", () => delay("infinite")),
+      ],
     },
   },
 } satisfies Story;

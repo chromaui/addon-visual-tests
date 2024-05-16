@@ -18,6 +18,7 @@ export const baseCapture: StoryTestFieldsFragment["comparisons"][number]["baseCa
   captureImage: {
     imageUrl: "/A.png",
     imageWidth: 880,
+    imageHeight: 280,
   },
 };
 
@@ -26,6 +27,7 @@ export const headCapture: StoryTestFieldsFragment["comparisons"][number]["headCa
     backgroundColor: "rgba(255, 255, 255, 1)",
     imageUrl: "/B.png",
     imageWidth: 880,
+    imageHeight: 280,
     thumbnailUrl: "/B.png",
   },
 };
