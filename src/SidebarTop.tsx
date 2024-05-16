@@ -1,7 +1,7 @@
 import { type API, useStorybookState } from "@storybook/manager-api";
 import { color } from "@storybook/theming";
 import pluralize from "pluralize";
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useContext, useEffect, useRef } from "react";
 
 import { SidebarTopButton } from "./components/SidebarTopButton";
 import {
@@ -15,6 +15,7 @@ import {
 } from "./constants";
 import { APIInfoPayload, ConfigInfoPayload, LocalBuildProgress } from "./types";
 import { useAccessToken } from "./utils/graphQLClient";
+import { TelemetryContext } from "./utils/TelemetryContext";
 import { useBuildEvents } from "./utils/useBuildEvents";
 import { useProjectId } from "./utils/useProjectId";
 import { useSharedState } from "./utils/useSharedState";
@@ -26,6 +27,7 @@ interface SidebarTopProps {
 export const SidebarTop = ({ api }: SidebarTopProps) => {
   const { addNotification, clearNotification, setOptions, togglePanel } = api;
 
+  const trackEvent = useContext(TelemetryContext);
   const { projectId } = useProjectId();
   const [accessToken] = useAccessToken();
   const isLoggedIn = !!accessToken;
@@ -45,10 +47,14 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
     (value) => value[ADDON_ID]?.status === "warn"
   );
 
-  const openVisualTestsPanel = useCallback(() => {
-    setOptions({ selectedPanel: PANEL_ID });
-    togglePanel(true);
-  }, [setOptions, togglePanel]);
+  const openVisualTestsPanel = useCallback(
+    (warning?: string) => {
+      setOptions({ selectedPanel: PANEL_ID });
+      togglePanel(true);
+      if (warning) trackEvent?.({ action: "openWarning", warning });
+    },
+    [setOptions, togglePanel, trackEvent]
+  );
 
   const clickNotification = useCallback(
     ({ onDismiss }) => {
@@ -174,12 +180,17 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
 
   const { isRunning, startBuild, stopBuild } = useBuildEvents({ localBuildProgress, accessToken });
 
-  let warning;
+  let warning: string | undefined;
   if (apiInfo?.connected === false) warning = "Visual tests locked while waiting for network.";
   if (!projectId) warning = "Visual tests locked until a project is selected.";
   if (!isLoggedIn) warning = "Visual tests locked until you are logged in.";
   if (gitInfoError) warning = "Visual tests locked due to Git synchronization problem.";
   if (hasConfigProblem) warning = "Visual tests locked due to configuration problem.";
+
+  const clickWarning = useCallback(
+    () => openVisualTestsPanel(warning),
+    [openVisualTestsPanel, warning]
+  );
 
   if (global.CONFIG_TYPE !== "DEVELOPMENT") {
     return null;
@@ -192,7 +203,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
       isRunning={isRunning}
       localBuildProgress={localBuildProgress}
       warning={warning}
-      clickWarning={openVisualTestsPanel}
+      clickWarning={clickWarning}
       startBuild={startBuild}
       stopBuild={stopBuild}
     />
