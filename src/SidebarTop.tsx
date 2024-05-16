@@ -25,7 +25,7 @@ interface SidebarTopProps {
 }
 
 export const SidebarTop = ({ api }: SidebarTopProps) => {
-  const { addNotification, clearNotification, setOptions, togglePanel } = api;
+  const { addNotification, clearNotification, selectStory, setOptions, togglePanel } = api;
 
   const trackEvent = useContext(TelemetryContext);
   const { projectId } = useProjectId();
@@ -42,7 +42,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
   const [gitInfoError] = useSharedState<Error>(GIT_INFO_ERROR);
 
   const lastStep = useRef(localBuildProgress?.currentStep);
-  const { status } = useStorybookState();
+  const { index, status, storyId, viewMode } = useStorybookState();
   const changedStoryCount = Object.values(status).filter(
     (value) => value[ADDON_ID]?.status === "warn"
   );
@@ -51,9 +51,18 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
     (warning?: string) => {
       setOptions({ selectedPanel: PANEL_ID });
       togglePanel(true);
-      if (warning) trackEvent?.({ action: "openWarning", warning });
+      if (index && viewMode !== "story") {
+        // Select the next story in the index, because docs mode doesn't show addon panels
+        const currentIndex = Object.keys(index).indexOf(storyId);
+        const entries = Object.entries(index).slice(currentIndex > 0 ? currentIndex : 0);
+        const [nextStoryId] = entries.find(([, { type }]) => type === "story") || [];
+        if (nextStoryId) selectStory(nextStoryId);
+      }
+      if (warning) {
+        trackEvent?.({ action: "openWarning", warning });
+      }
     },
-    [setOptions, togglePanel, trackEvent]
+    [setOptions, togglePanel, trackEvent, index, selectStory, storyId, viewMode]
   );
 
   const clickNotification = useCallback(
