@@ -145,7 +145,7 @@ export const SnapshotImage = ({
             aspectRatio: `${latestImage.imageWidth} / ${latestImage.imageHeight}`,
             width: latestImage.imageWidth,
             maxWidth: "100%",
-            minHeight: 40,
+            minHeight: 100,
           }}
         >
           {!latestImageLoaded && <Spinner />}
