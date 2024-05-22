@@ -1,7 +1,7 @@
 import { Badge as BaseBadge } from "@storybook/components";
 import { css, styled } from "@storybook/theming";
 import pluralize from "pluralize";
-import React, { useEffect, useState } from "react";
+import React, { ComponentProps } from "react";
 
 import { IconButton } from "./IconButton";
 
@@ -13,10 +13,15 @@ const Badge = styled(BaseBadge)(({ theme }) => ({
 const Button = styled(IconButton)(
   ({ theme }) => ({
     fontSize: theme.typography.size.s2,
-    "&:hover [data-badge], [data-badge=true]": {
+    "&:hover [data-badge][data-status=warning], [data-badge=true][data-status=warning]": {
       background: "#E3F3FF",
       borderColor: "rgba(2, 113, 182, 0.1)",
       color: "#0271B6",
+    },
+    "&:hover [data-badge][data-status=critical], [data-badge=true][data-status=critical]": {
+      background: theme.background.negative,
+      boxShadow: `inset 0 0 0 1px rgba(182, 2, 2, 0.1)`,
+      color: theme.color.negativeText,
     },
   }),
   ({ active, theme }) =>
@@ -33,33 +38,25 @@ const Label = styled.span(({ theme }) => ({
 }));
 
 interface SidebarToggleButtonProps {
+  active: boolean;
   count: number;
-  onEnable: () => void;
-  onDisable: () => void;
+  label: string;
+  status: ComponentProps<typeof Badge>["status"];
 }
 
-export const SidebarToggleButton = React.memo(function SidebarToggleButton({
+export const SidebarToggleButton = ({
+  active,
   count,
-  onEnable,
-  onDisable,
-}: SidebarToggleButtonProps) {
-  const [filter, setFilter] = useState(false);
-
-  const toggleFilter = () => {
-    setFilter(!filter);
-    if (filter) onDisable();
-    else onEnable();
-  };
-
-  // Ensure the filter is disabled if the button is not visible
-  useEffect(() => () => onDisable(), [onDisable]);
-
+  label,
+  status,
+  ...props
+}: SidebarToggleButtonProps & Omit<ComponentProps<typeof Button>, "status">) => {
   return (
-    <Button id="changes-found-filter" active={filter} onClick={toggleFilter}>
-      <Badge status="warning" data-badge={filter}>
+    <Button active={active} {...props}>
+      <Badge status={status} data-badge={active} data-status={status}>
         {count}
       </Badge>
-      <Label>{pluralize("Change", count)}</Label>
+      <Label>{pluralize(label, count)}</Label>
     </Button>
   );
-});
+};
