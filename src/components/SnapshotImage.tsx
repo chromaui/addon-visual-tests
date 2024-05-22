@@ -86,8 +86,11 @@ export const Container = styled.div<{ loading?: boolean; href?: string; target?:
     }
 );
 
-const StyledStack = styled(Stack)(({ theme }) => ({
-  margin: "30px 15px",
+const ImageWrapper = styled.div<{ isVisible?: boolean }>(({ isVisible }) => ({
+  position: isVisible ? "static" : "absolute",
+  visibility: isVisible ? "visible" : "hidden",
+  maxWidth: "100%",
+  minHeight: 100,
 }));
 
 const Image = styled.img({
@@ -101,6 +104,10 @@ const Image = styled.img({
     opacity: 0.7,
     pointerEvents: "none",
   },
+});
+
+const StyledStack = styled(Stack)({
+  margin: "30px 15px",
 });
 
 interface SnapshotImageProps {
@@ -160,14 +167,11 @@ export const SnapshotImage = ({
   return (
     <Container {...props} {...containerProps} loading={loading && !hasError}>
       {latestImage && (
-        <div
+        <ImageWrapper
+          isVisible={!baselineImage || !baselineImageVisible}
           style={{
-            position: baselineImageVisible ? "absolute" : "static",
-            visibility: baselineImageVisible ? "hidden" : "visible",
             aspectRatio: `${latestImage.imageWidth} / ${latestImage.imageHeight}`,
             width: latestImage.imageWidth,
-            maxWidth: "100%",
-            minHeight: 100,
           }}
         >
           <Image
@@ -176,17 +180,14 @@ export const SnapshotImage = ({
             style={{ opacity: latestImageLoaded ? 1 : 0 }}
             onLoad={() => setLatestImageLoaded(true)}
           />
-        </div>
+        </ImageWrapper>
       )}
       {baselineImage && (
-        <div
+        <ImageWrapper
+          isVisible={baselineImageVisible}
           style={{
-            position: baselineImageVisible ? "static" : "absolute",
-            visibility: baselineImageVisible ? "visible" : "hidden",
             aspectRatio: `${baselineImage.imageWidth} / ${baselineImage.imageHeight}`,
             width: baselineImage.imageWidth,
-            maxWidth: "100%",
-            minHeight: 40,
           }}
         >
           <Image
@@ -195,7 +196,7 @@ export const SnapshotImage = ({
             style={{ opacity: baselineImageLoaded ? 1 : 0 }}
             onLoad={() => setBaselineImageLoaded(true)}
           />
-        </div>
+        </ImageWrapper>
       )}
       {hasDiff && snapshotImageLoaded && (
         <Image
