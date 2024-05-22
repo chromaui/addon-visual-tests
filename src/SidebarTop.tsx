@@ -1,7 +1,7 @@
 import { type API, useStorybookState } from "@storybook/manager-api";
 import { color } from "@storybook/theming";
 import pluralize from "pluralize";
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useContext, useEffect, useRef } from "react";
 
 import { SidebarTopButton } from "./components/SidebarTopButton";
 import {
@@ -15,6 +15,7 @@ import {
 } from "./constants";
 import { APIInfoPayload, ConfigInfoPayload, LocalBuildProgress } from "./types";
 import { useAccessToken } from "./utils/graphQLClient";
+import { TelemetryContext } from "./utils/TelemetryContext";
 import { useBuildEvents } from "./utils/useBuildEvents";
 import { useProjectId } from "./utils/useProjectId";
 import { useSharedState } from "./utils/useSharedState";
@@ -24,8 +25,9 @@ interface SidebarTopProps {
 }
 
 export const SidebarTop = ({ api }: SidebarTopProps) => {
-  const { addNotification, clearNotification, setOptions, togglePanel } = api;
+  const { addNotification, clearNotification, selectStory, setOptions, togglePanel } = api;
 
+  const trackEvent = useContext(TelemetryContext);
   const { projectId } = useProjectId();
   const [accessToken] = useAccessToken();
   const isLoggedIn = !!accessToken;
@@ -40,15 +42,28 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
   const [gitInfoError] = useSharedState<Error>(GIT_INFO_ERROR);
 
   const lastStep = useRef(localBuildProgress?.currentStep);
-  const { status } = useStorybookState();
+  const { index, status, storyId, viewMode } = useStorybookState();
   const changedStoryCount = Object.values(status).filter(
     (value) => value[ADDON_ID]?.status === "warn"
   );
 
-  const openVisualTestsPanel = useCallback(() => {
-    setOptions({ selectedPanel: PANEL_ID });
-    togglePanel(true);
-  }, [setOptions, togglePanel]);
+  const openVisualTestsPanel = useCallback(
+    (warning?: string) => {
+      setOptions({ selectedPanel: PANEL_ID });
+      togglePanel(true);
+      if (index && viewMode !== "story") {
+        // Select the next story in the index, because docs mode doesn't show addon panels
+        const currentIndex = Object.keys(index).indexOf(storyId);
+        const entries = Object.entries(index).slice(currentIndex > 0 ? currentIndex : 0);
+        const [nextStoryId] = entries.find(([, { type }]) => type === "story") || [];
+        if (nextStoryId) selectStory(nextStoryId);
+      }
+      if (warning) {
+        trackEvent?.({ action: "openWarning", warning });
+      }
+    },
+    [setOptions, togglePanel, trackEvent, index, selectStory, storyId, viewMode]
+  );
 
   const clickNotification = useCallback(
     ({ onDismiss }) => {
@@ -174,12 +189,17 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
 
   const { isRunning, startBuild, stopBuild } = useBuildEvents({ localBuildProgress, accessToken });
 
-  let warning;
+  let warning: string | undefined;
   if (apiInfo?.connected === false) warning = "Visual tests locked while waiting for network.";
   if (!projectId) warning = "Visual tests locked until a project is selected.";
   if (!isLoggedIn) warning = "Visual tests locked until you are logged in.";
   if (gitInfoError) warning = "Visual tests locked due to Git synchronization problem.";
   if (hasConfigProblem) warning = "Visual tests locked due to configuration problem.";
+
+  const clickWarning = useCallback(
+    () => openVisualTestsPanel(warning),
+    [openVisualTestsPanel, warning]
+  );
 
   if (global.CONFIG_TYPE !== "DEVELOPMENT") {
     return null;
@@ -192,7 +212,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
       isRunning={isRunning}
       localBuildProgress={localBuildProgress}
       warning={warning}
-      clickWarning={openVisualTestsPanel}
+      clickWarning={clickWarning}
       startBuild={startBuild}
       stopBuild={stopBuild}
     />
