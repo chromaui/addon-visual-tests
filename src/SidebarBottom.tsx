@@ -12,6 +12,13 @@ const filterError: API_FilterFunction = ({ status }) => status?.[ADDON_ID]?.stat
 const filterBoth: API_FilterFunction = ({ status }) =>
   status?.[ADDON_ID]?.status === "warn" || status?.[ADDON_ID]?.status === "error";
 
+const getFilter = (showWarnings = false, showErrors = false) => {
+  if (showWarnings && showErrors) return filterBoth;
+  if (showWarnings) return filterWarn;
+  if (showErrors) return filterError;
+  return filterNone;
+};
+
 const Wrapper = styled.div({
   display: "flex",
   gap: 5,
@@ -35,9 +42,7 @@ export const SidebarBottom = ({ api }: SidebarBottomProps) => {
   const toggleErrors = useCallback(() => setShowErrors((shown) => !shown), []);
 
   useEffect(() => {
-    let filter = filterNone;
-    if (hasWarnings && showWarnings) filter = filterWarn;
-    if (hasErrors && showErrors) filter = filter === filterWarn ? filterBoth : filterError;
+    const filter = getFilter(hasWarnings && showWarnings, hasErrors && showErrors);
     api.experimental_setFilter(ADDON_ID, filter);
     api.emit(ENABLE_FILTER, filter);
   }, [api, hasWarnings, hasErrors, showWarnings, showErrors]);
