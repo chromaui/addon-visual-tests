@@ -110,6 +110,23 @@ const StyledStack = styled(Stack)({
   margin: "30px 15px",
 });
 
+const getOverlayImageLoaded = ({
+  comparisonImageLoaded,
+  focusImageLoaded,
+  showDiff,
+  showFocus,
+}: {
+  comparisonImageLoaded: boolean;
+  focusImageLoaded: boolean;
+  showDiff: boolean;
+  showFocus: boolean;
+}) => {
+  if (showDiff && showFocus) return comparisonImageLoaded && focusImageLoaded;
+  if (showDiff) return comparisonImageLoaded;
+  if (showFocus) return focusImageLoaded;
+  return true;
+};
+
 interface SnapshotImageProps {
   componentName?: NonNullable<NonNullable<Test["story"]>["component"]>["name"];
   storyName?: NonNullable<Test["story"]>["name"];
@@ -153,15 +170,12 @@ export const SnapshotImage = ({
   const [comparisonImageLoaded, setComparisonImageLoaded] = React.useState(false);
   const [focusImageLoaded, setFocusImageLoaded] = React.useState(false);
   const snapshotImageLoaded = baselineImageVisible ? baselineImageLoaded : latestImageLoaded;
-
-  let overlayImageLoaded = true;
-  if (showDiff && showFocus) {
-    overlayImageLoaded = comparisonImageLoaded && focusImageLoaded;
-  } else if (showDiff) {
-    overlayImageLoaded = comparisonImageLoaded;
-  } else if (showFocus) {
-    overlayImageLoaded = focusImageLoaded;
-  }
+  const overlayImageLoaded = getOverlayImageLoaded({
+    comparisonImageLoaded,
+    focusImageLoaded,
+    showDiff,
+    showFocus,
+  });
   const loading = !latestImageLoaded || !overlayImageLoaded;
 
   return (
