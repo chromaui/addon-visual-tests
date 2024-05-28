@@ -4,7 +4,6 @@ import { color } from "@storybook/theming";
 import pluralize from "pluralize";
 import React, { useCallback, useContext, useEffect, useRef } from "react";
 
-import { SidebarTopButton } from "./components/SidebarTopButton";
 import {
   ADDON_ID,
   CONFIG_INFO,
@@ -13,13 +12,14 @@ import {
   IS_OUTDATED,
   LOCAL_BUILD_PROGRESS,
   PANEL_ID,
-} from "./constants";
-import { ConfigInfoPayload, LocalBuildProgress } from "./types";
-import { useAccessToken } from "./utils/graphQLClient";
-import { TelemetryContext } from "./utils/TelemetryContext";
-import { useBuildEvents } from "./utils/useBuildEvents";
-import { useProjectId } from "./utils/useProjectId";
-import { useSharedState } from "./utils/useSharedState";
+} from "../constants";
+import { ConfigInfoPayload, LocalBuildProgress } from "../types";
+import { useAccessToken } from "../utils/graphQLClient";
+import { TelemetryContext } from "../utils/TelemetryContext";
+import { useBuildEvents } from "../utils/useBuildEvents";
+import { useProjectId } from "../utils/useProjectId";
+import { useSharedState } from "../utils/useSharedState";
+import { SidebarTopButton } from "./SidebarTopButton";
 
 interface SidebarTopProps {
   api: API;

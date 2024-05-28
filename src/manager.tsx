@@ -4,10 +4,10 @@ import { color } from "@storybook/theming";
 import { Addon_TypesEnum } from "@storybook/types";
 import React from "react";
 
+import { SidebarBottom } from "./components/SidebarBottom";
+import { SidebarTop } from "./components/SidebarTop";
 import { ADDON_ID, PANEL_ID, SIDEBAR_BOTTOM_ID, SIDEBAR_TOP_ID } from "./constants";
 import { Panel } from "./Panel";
-import { SidebarBottom } from "./SidebarBottom";
-import { SidebarTop } from "./SidebarTop";
 
 let heartbeatTimeout: NodeJS.Timeout;
 const expectHeartbeat = (api: API) => {
