@@ -205,17 +205,15 @@ export const BuildEyebrow = ({
   if (localBuildProgress) {
     const aborted = localBuildProgress.currentStep === "aborted";
     const errored = localBuildProgress.currentStep === "error";
+    const isWarning = aborted || errored;
     return (
       <>
         <Header
           as={errored ? "div" : "button"}
           onClick={errored ? undefined : toggleExpanded}
-          isWarning={errored}
+          isWarning={isWarning}
         >
-          <Bar
-            percentage={localBuildProgress.buildProgressPercentage}
-            isWarning={errored || aborted}
-          />
+          <Bar percentage={localBuildProgress.buildProgressPercentage} isWarning={isWarning} />
           <Label>
             <BuildProgressLabel localBuildProgress={localBuildProgress} withEmoji />
           </Label>
