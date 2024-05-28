@@ -1,3 +1,21 @@
+# v1.5.0 (Tue May 28 2024)
+
+#### 🚀 Enhancement
+
+- Show spinner while snapshot image is loading [#309](https://github.com/chromaui/addon-visual-tests/pull/309) ([@ghengeveld](https://github.com/ghengeveld))
+- Show Errors filter in sidebar when there's component errors [#308](https://github.com/chromaui/addon-visual-tests/pull/308) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### 🐛 Bug Fix
+
+- Upgrade Chromatic CLI to v11.4.0 to fix baseline behavior with TurboSnap [#311](https://github.com/chromaui/addon-visual-tests/pull/311) ([@ghengeveld](https://github.com/ghengeveld))
+- Ensure VTA panel opens when clicking run tests button in warning state [#310](https://github.com/chromaui/addon-visual-tests/pull/310) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v1.4.0 (Wed May 15 2024)
 
 #### 🚀 Enhancement
