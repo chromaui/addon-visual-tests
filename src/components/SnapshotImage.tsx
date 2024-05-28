@@ -1,49 +1,20 @@
 import { PhotoIcon, ShareAltIcon } from "@storybook/icons";
-import { keyframes, styled, useTheme } from "@storybook/theming";
+import { styled, useTheme } from "@storybook/theming";
 import React, { ComponentProps } from "react";
 
 import { CaptureImage, CaptureOverlayImage, ComparisonResult, Test } from "../gql/graphql";
+import { Spinner } from "./design-system";
 import { Stack } from "./Stack";
 import { Text } from "./Text";
 
-const indeterminateProgressBar = keyframes({
-  "0%": {
-    transform: "translateX(0) scaleX(0)",
-  },
-  "40%": {
-    transform: "translateX(0) scaleX(0.4)",
-  },
-  "100%": {
-    transform: "translateX(100%) scaleX(0.5)",
-  },
-});
-
-export const Container = styled.div<{ loading?: boolean; href?: string; target?: string }>(
-  ({ loading, theme }) => ({
+export const Container = styled.div<{ href?: string; target?: string }>(
+  ({ theme }) => ({
     position: "relative",
     display: "flex",
     background: "transparent",
     overflow: "hidden",
     margin: 2,
     maxWidth: "calc(100% - 4px)",
-    verticalAlign: "top",
-
-    "&::before": {
-      content: "''",
-      display: "block",
-      position: "absolute",
-      top: 0,
-      left: 0,
-      height: 3,
-      width: "100%",
-      opacity: loading ? 1 : 0,
-      transform: "translateX(0) scaleX(0)",
-      background: theme.color.secondary,
-      animation: `1.5s linear 1s infinite ${indeterminateProgressBar}`,
-      transformOrigin: "0% 50%",
-      transition: "opacity 0.1s",
-      zIndex: 1,
-    },
 
     "& > div": {
       display: "flex",
@@ -97,12 +68,13 @@ const Image = styled.img({
   display: "block",
   width: "100%",
   height: "auto",
-  transition: "filter 0.1s ease-in-out",
+  transition: "filter 0.1s ease-in-out, opacity 0.1s ease-in-out",
 
   "&[data-overlay]": {
     position: "absolute",
     opacity: 0.7,
     pointerEvents: "none",
+    transition: "opacity 0.1s ease-in-out",
   },
 });
 
@@ -176,10 +148,9 @@ export const SnapshotImage = ({
     showDiff,
     showFocus,
   });
-  const loading = !latestImageLoaded || !overlayImageLoaded;
 
   return (
-    <Container {...props} {...containerProps} loading={loading && !hasError}>
+    <Container {...props} {...containerProps}>
       {latestImage && (
         <ImageWrapper
           isVisible={!baselineImage || !baselineImageVisible}
@@ -188,6 +159,7 @@ export const SnapshotImage = ({
             width: latestImage.imageWidth,
           }}
         >
+          {(!latestImageLoaded || !overlayImageLoaded) && <Spinner />}
           <Image
             alt={`Latest snapshot for the '${storyName}' story of the '${componentName}' component`}
             src={latestImage.imageUrl}
@@ -204,6 +176,7 @@ export const SnapshotImage = ({
             width: baselineImage.imageWidth,
           }}
         >
+          {(!baselineImageLoaded || !overlayImageLoaded) && <Spinner />}
           <Image
             alt={`Baseline snapshot for the '${storyName}' story of the '${componentName}' component`}
             src={baselineImage.imageUrl}
