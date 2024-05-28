@@ -200,6 +200,7 @@ export const SwitchingMode = {
               captureImage: {
                 imageUrl,
                 imageWidth: parseInt(test.mode.name, 10),
+                imageHeight: 753,
                 thumbnailUrl: imageUrl,
               },
             },

@@ -3,6 +3,7 @@ import { styled, useTheme } from "@storybook/theming";
 import React, { ComponentProps } from "react";
 
 import { CaptureImage, CaptureOverlayImage, ComparisonResult, Test } from "../gql/graphql";
+import { Spinner } from "./design-system";
 import { Stack } from "./Stack";
 import { Text } from "./Text";
 
@@ -13,17 +14,9 @@ export const Container = styled.div<{ href?: string; target?: string }>(
     background: "transparent",
     overflow: "hidden",
     margin: 2,
+    maxWidth: "calc(100% - 4px)",
 
-    img: {
-      maxWidth: "100%",
-      transition: "filter 0.1s ease-in-out",
-    },
-    "img[data-overlay]": {
-      position: "absolute",
-      opacity: 0.7,
-      pointerEvents: "none",
-    },
-    div: {
+    "& > div": {
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
@@ -64,17 +57,55 @@ export const Container = styled.div<{ href?: string; target?: string }>(
     }
 );
 
-const StyledStack = styled(Stack)(({ theme }) => ({
-  margin: "30px 15px",
+const ImageWrapper = styled.div<{ isVisible?: boolean }>(({ isVisible }) => ({
+  position: isVisible ? "static" : "absolute",
+  visibility: isVisible ? "visible" : "hidden",
+  maxWidth: "100%",
+  minHeight: 100,
 }));
+
+const Image = styled.img({
+  display: "block",
+  width: "100%",
+  height: "auto",
+  transition: "filter 0.1s ease-in-out, opacity 0.1s ease-in-out",
+
+  "&[data-overlay]": {
+    position: "absolute",
+    opacity: 0.7,
+    pointerEvents: "none",
+    transition: "opacity 0.1s ease-in-out",
+  },
+});
+
+const StyledStack = styled(Stack)({
+  margin: "30px 15px",
+});
+
+const getOverlayImageLoaded = ({
+  comparisonImageLoaded,
+  focusImageLoaded,
+  showDiff,
+  showFocus,
+}: {
+  comparisonImageLoaded: boolean;
+  focusImageLoaded: boolean;
+  showDiff: boolean;
+  showFocus: boolean;
+}) => {
+  if (showDiff && showFocus) return comparisonImageLoaded && focusImageLoaded;
+  if (showDiff) return comparisonImageLoaded;
+  if (showFocus) return focusImageLoaded;
+  return true;
+};
 
 interface SnapshotImageProps {
   componentName?: NonNullable<NonNullable<Test["story"]>["component"]>["name"];
   storyName?: NonNullable<Test["story"]>["name"];
   testUrl: Test["webUrl"];
   comparisonResult?: ComparisonResult;
-  latestImage?: Pick<CaptureImage, "imageUrl" | "imageWidth">;
-  baselineImage?: Pick<CaptureImage, "imageUrl" | "imageWidth">;
+  latestImage?: Pick<CaptureImage, "imageUrl" | "imageWidth" | "imageHeight">;
+  baselineImage?: Pick<CaptureImage, "imageUrl" | "imageWidth" | "imageHeight">;
   baselineImageVisible?: boolean;
   diffImage?: Pick<CaptureOverlayImage, "imageUrl" | "imageWidth">;
   focusImage?: Pick<CaptureOverlayImage, "imageUrl" | "imageWidth">;
@@ -106,47 +137,79 @@ export const SnapshotImage = ({
   const showDiff = hasDiff && diffVisible;
   const showFocus = hasFocus && focusVisible;
 
+  const [latestImageLoaded, setLatestImageLoaded] = React.useState(false);
+  const [baselineImageLoaded, setBaselineImageLoaded] = React.useState(false);
+  const [comparisonImageLoaded, setComparisonImageLoaded] = React.useState(false);
+  const [focusImageLoaded, setFocusImageLoaded] = React.useState(false);
+  const snapshotImageLoaded = baselineImageVisible ? baselineImageLoaded : latestImageLoaded;
+  const overlayImageLoaded = getOverlayImageLoaded({
+    comparisonImageLoaded,
+    focusImageLoaded,
+    showDiff,
+    showFocus,
+  });
+
   return (
     <Container {...props} {...containerProps}>
       {latestImage && (
-        <img
-          alt={`Latest snapshot for the '${storyName}' story of the '${componentName}' component`}
-          src={latestImage.imageUrl}
+        <ImageWrapper
+          isVisible={!baselineImage || !baselineImageVisible}
           style={{
-            display: baselineImageVisible ? "none" : "block",
+            aspectRatio: `${latestImage.imageWidth} / ${latestImage.imageHeight}`,
+            width: latestImage.imageWidth,
           }}
-        />
+        >
+          {(!latestImageLoaded || !overlayImageLoaded) && <Spinner />}
+          <Image
+            alt={`Latest snapshot for the '${storyName}' story of the '${componentName}' component`}
+            src={latestImage.imageUrl}
+            style={{ opacity: latestImageLoaded ? 1 : 0 }}
+            onLoad={() => setLatestImageLoaded(true)}
+          />
+        </ImageWrapper>
       )}
       {baselineImage && (
-        <img
-          alt={`Baseline snapshot for the '${storyName}' story of the '${componentName}' component`}
-          src={baselineImage.imageUrl}
+        <ImageWrapper
+          isVisible={baselineImageVisible}
           style={{
-            display: baselineImageVisible ? "block" : "none",
+            aspectRatio: `${baselineImage.imageWidth} / ${baselineImage.imageHeight}`,
+            width: baselineImage.imageWidth,
           }}
-        />
+        >
+          {(!baselineImageLoaded || !overlayImageLoaded) && <Spinner />}
+          <Image
+            alt={`Baseline snapshot for the '${storyName}' story of the '${componentName}' component`}
+            src={baselineImage.imageUrl}
+            style={{ opacity: baselineImageLoaded ? 1 : 0 }}
+            onLoad={() => setBaselineImageLoaded(true)}
+          />
+        </ImageWrapper>
       )}
-      {hasDiff && (
-        <img
+      {hasDiff && snapshotImageLoaded && (
+        <Image
           alt=""
           data-overlay="diff"
           src={diffImage.imageUrl}
           style={{
+            width: diffImage.imageWidth,
             maxWidth: `${(diffImage.imageWidth / latestImage.imageWidth) * 100}%`,
-            opacity: showDiff ? 0.7 : 0,
+            opacity: showDiff && comparisonImageLoaded ? 0.7 : 0,
           }}
+          onLoad={() => setComparisonImageLoaded(true)}
         />
       )}
-      {hasFocus && (
-        <img
+      {hasFocus && snapshotImageLoaded && (
+        <Image
           alt=""
           data-overlay="focus"
           src={focusImage.imageUrl}
           style={{
+            width: focusImage.imageWidth,
             maxWidth: `${(focusImage.imageWidth / latestImage.imageWidth) * 100}%`,
-            opacity: showFocus ? 0.7 : 0,
+            opacity: showFocus && focusImageLoaded ? 0.7 : 0,
             filter: showFocus ? "blur(2px)" : "none",
           }}
+          onLoad={() => setFocusImageLoaded(true)}
         />
       )}
       {hasDiff && <ShareAltIcon />}

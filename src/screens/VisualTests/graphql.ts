@@ -160,6 +160,7 @@ export const FragmentStoryTestFields = graphql(/* GraphQL */ `
           backgroundColor
           imageUrl
           imageWidth
+          imageHeight
           thumbnailUrl
         }
         captureError {
@@ -179,6 +180,7 @@ export const FragmentStoryTestFields = graphql(/* GraphQL */ `
         captureImage(signed: true) {
           imageUrl
           imageWidth
+          imageHeight
         }
       }
     }
