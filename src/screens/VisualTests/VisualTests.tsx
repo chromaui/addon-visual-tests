@@ -1,4 +1,6 @@
+import { FailedIcon } from "@storybook/icons";
 import { useStorybookApi, useStorybookState } from "@storybook/manager-api";
+import { color } from "@storybook/theming";
 import type { API_StatusState } from "@storybook/types";
 import React, { useCallback, useEffect } from "react";
 import { useMutation } from "urql";
@@ -243,10 +245,7 @@ export const VisualTestsWithoutSelectedBuildId = ({
             } changes`,
             subHeadline: err.message,
           },
-          icon: {
-            name: "cross",
-            color: "red",
-          },
+          icon: <FailedIcon color={color.negative} />,
           // @ts-expect-error `duration` and `onClick` require a newer version of Storybook
           duration: 8_000,
           onClick: clickNotification,
