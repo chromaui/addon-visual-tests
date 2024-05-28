@@ -203,19 +203,23 @@ export const BuildEyebrow = ({
   };
 
   if (localBuildProgress) {
-    const isWarning = ["aborted", "error"].includes(localBuildProgress.currentStep);
+    const aborted = localBuildProgress.currentStep === "aborted";
+    const errored = localBuildProgress.currentStep === "error";
     return (
       <>
         <Header
-          as={isWarning ? "div" : "button"}
-          onClick={isWarning ? undefined : toggleExpanded}
-          isWarning={isWarning}
+          as={errored ? "div" : "button"}
+          onClick={errored ? undefined : toggleExpanded}
+          isWarning={errored}
         >
-          <Bar percentage={localBuildProgress.buildProgressPercentage} isWarning={isWarning} />
+          <Bar
+            percentage={localBuildProgress.buildProgressPercentage}
+            isWarning={errored || aborted}
+          />
           <Label>
             <BuildProgressLabel localBuildProgress={localBuildProgress} withEmoji />
           </Label>
-          {isWarning ? (
+          {errored ? (
             <IconButton onClick={dismissBuildError}>
               <CloseIcon aria-label="Dismiss" />
             </IconButton>
@@ -223,7 +227,7 @@ export const BuildEyebrow = ({
             <IconButton as="div">{expanded ? <CollapseIcon /> : <ExpandAltIcon />}</IconButton>
           )}
         </Header>
-        <BuildProgress localBuildProgress={localBuildProgress} expanded={expanded || isWarning} />
+        <BuildProgress localBuildProgress={localBuildProgress} expanded={expanded || errored} />
       </>
     );
   }
