@@ -1,7 +1,7 @@
 import { action } from "@storybook/addon-actions";
 import type { Meta, StoryObj } from "@storybook/react";
 import { within } from "@storybook/test";
-import { fireEvent, userEvent } from "@storybook/testing-library";
+import { userEvent } from "@storybook/testing-library";
 import React from "react";
 
 import { Container } from "./Container";
@@ -43,7 +43,7 @@ export const Hover = {
 export const Open = {
   play: async ({ canvasElement }) => {
     const buttons = await within(canvasElement).findAllByRole("button");
-    buttons.forEach((button) => fireEvent.click(button));
+    buttons.forEach((button) => userEvent.click(button));
   },
 } satisfies Story;
 
