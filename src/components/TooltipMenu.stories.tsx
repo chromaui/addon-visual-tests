@@ -21,7 +21,7 @@ const meta = {
   },
   decorators: [
     (Story) => (
-      <Container>
+      <Container style={{ display: "inline-flex", paddingTop: 120, width: 200 }}>
         <Story />
       </Container>
     ),
