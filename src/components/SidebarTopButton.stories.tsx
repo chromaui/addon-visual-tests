@@ -74,7 +74,7 @@ const WithProgress = (props: ComponentProps<typeof SidebarTopButton>) => {
   );
 };
 
-export const IsRunning: Story = {
+export const Running: Story = {
   render: WithProgress,
   play: playAll(async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -84,4 +84,11 @@ export const IsRunning: Story = {
     await userEvent.hover(button);
     await screen.findAllByText("🏗 Building your Storybook...");
   }),
+};
+
+export const Unstoppable: Story = {
+  ...Running,
+  args: {
+    isDisallowed: true,
+  },
 };

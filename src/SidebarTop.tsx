@@ -187,7 +187,10 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
     changedStoryCount.length,
   ]);
 
-  const { isRunning, startBuild, stopBuild } = useBuildEvents({ localBuildProgress, accessToken });
+  const { isDisallowed, isRunning, startBuild, stopBuild } = useBuildEvents({
+    localBuildProgress,
+    accessToken,
+  });
 
   let warning: string | undefined;
   if (apiInfo?.connected === false) warning = "Visual tests locked while waiting for network.";
@@ -208,6 +211,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
   return (
     <SidebarTopButton
       isDisabled={!!warning}
+      isDisallowed={isDisallowed}
       isOutdated={isOutdated}
       isRunning={isRunning}
       localBuildProgress={localBuildProgress}
