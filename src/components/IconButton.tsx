@@ -13,18 +13,17 @@ const getStatusStyles = (theme: Theme, status?: IconButtonProps["status"]) =>
 interface IconButtonProps extends ComponentProps<typeof BaseIconButton> {
   active?: boolean;
   as?: string;
-  secondary?: boolean;
   status?: "positive" | "warning";
 }
 
 export const IconButton: React.FC<IconButtonProps> = styled(BaseIconButton)<IconButtonProps>(
-  ({ active, secondary, theme }) => ({
+  ({ active, variant, theme }) => ({
     display: "inline-flex",
     alignItems: "center",
     verticalAlign: "top",
     gap: 6,
     margin: 0,
-    color: active || secondary ? theme.color.secondary : theme.color.mediumdark,
+    color: active || variant === "outline" ? theme.color.secondary : theme.color.mediumdark,
     fontWeight: "normal",
     "& > svg": {
       width: "auto",
