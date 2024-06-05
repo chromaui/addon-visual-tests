@@ -1,4 +1,4 @@
-import { css, styled } from "@storybook/theming";
+import { styled } from "@storybook/theming";
 import React, { ComponentProps, FunctionComponent } from "react";
 
 import { rotate360 } from "./shared/animation";

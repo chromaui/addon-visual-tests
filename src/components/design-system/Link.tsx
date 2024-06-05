@@ -1,4 +1,4 @@
-import { css, styled } from "@storybook/theming";
+import { styled } from "@storybook/theming";
 import { darken } from "polished";
 import React, { ComponentProps, forwardRef } from "react";
 
@@ -20,7 +20,6 @@ const LinkInner = styled.span<{ withArrow: boolean }>(
 );
 
 export interface StyledLinkProps {
-  containsIcon?: boolean;
   secondary?: boolean;
   tertiary?: boolean;
   nochrome?: boolean;
@@ -56,17 +55,6 @@ const StyledLink = styled.a<StyledLinkProps>(
     },
   },
   (props) => ({
-    ...(props.containsIcon && {
-      svg: {
-        height: "1em",
-        width: "1em",
-        verticalAlign: "middle",
-        position: "relative",
-        bottom: 0,
-        marginRight: 0,
-      },
-    }),
-
     ...(props.secondary && {
       color: props.theme.base === "light" ? color.mediumdark : color.medium,
 
@@ -137,19 +125,7 @@ export type LinkProps = React.ComponentProps<typeof StyledLink> & {
 // down to the styled component, so that we don't end up passing them to a
 // tag which would throw warnings for non-standard props.
 const LinkComponentPicker = forwardRef<HTMLAnchorElement | HTMLButtonElement, LinkProps>(
-  (
-    {
-      containsIcon,
-      inverse,
-      isButton,
-      LinkWrapper,
-      nochrome,
-      secondary,
-      tertiary,
-      ...rest
-    }: LinkProps,
-    ref
-  ) => {
+  ({ inverse, isButton, LinkWrapper, nochrome, secondary, tertiary, ...rest }: LinkProps, ref) => {
     // Use the UnstyledLink here to avoid duplicating styles and creating
     // specificity conflicts by first rendering the StyledLink higher up the chain
     // and then re-rendering it through the 'as' prop.
@@ -194,7 +170,6 @@ Link.displayName = "Link";
 Link.defaultProps = {
   withArrow: false,
   isButton: false,
-  containsIcon: false,
   secondary: false,
   tertiary: false,
   nochrome: false,

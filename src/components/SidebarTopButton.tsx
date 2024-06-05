@@ -1,5 +1,5 @@
 import { WithTooltip } from "@storybook/components";
-import { PlayIcon, StopAltIcon, SyncIcon } from "@storybook/icons";
+import { PlayIcon, StopAltIcon } from "@storybook/icons";
 import { keyframes, styled } from "@storybook/theming";
 import React, { ComponentProps } from "react";
 
