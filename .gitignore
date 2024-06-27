@@ -8,3 +8,11 @@ build-storybook.log
 chromatic.log
 chromatic-build-*.xml
 chromatic-diagnostics.json
+
+**/.pnp.*
+**/.yarn/*
+!**/.yarn/patches
+!**/.yarn/plugins
+!**/.yarn/releases
+!**/.yarn/sdks
+!**/.yarn/versions
