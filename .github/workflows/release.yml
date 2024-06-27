@@ -17,7 +17,7 @@ jobs:
         run: git fetch --unshallow --tags
 
       - name: Install dependencies
-        run: yarn install --ignore-scripts
+        run: yarn install --immutable --immutable-cache --check-cache
 
       - name: Create Release
         run: yarn run release
