@@ -10,7 +10,7 @@ jobs:
           fetch-depth: 0
 
       - name: Install dependencies
-        run: yarn install --immutable --immutable-cache --check-cache
+        run: yarn install --immutable --immutable-cache
 
       - name: Publish to Chromatic
         uses: chromaui/action@v1
