@@ -12,12 +12,12 @@ export const SIDEBAR_TOP_ID = `${ADDON_ID}/sidebarTop`;
 export const SIDEBAR_BOTTOM_ID = `${ADDON_ID}/sidebarBottom`;
 export const ACCESS_TOKEN_KEY = `${ADDON_ID}/access-token/${CHROMATIC_BASE_URL}`;
 export const DEV_BUILD_ID_KEY = `${ADDON_ID}/dev-build-id`;
-export const API_INFO = `${ADDON_ID}/apiInfo`;
 export const CONFIG_INFO = `${ADDON_ID}/configInfo`;
 export const CONFIG_INFO_DISMISSED = `${ADDON_ID}/configInfoDismissed`;
 export const GIT_INFO = `${ADDON_ID}/gitInfo`;
 export const GIT_INFO_ERROR = `${ADDON_ID}/gitInfoError`;
 export const PROJECT_INFO = `${ADDON_ID}/projectInfo`;
+export const IS_OFFLINE = `${ADDON_ID}/isOffline`;
 export const IS_OUTDATED = `${ADDON_ID}/isOutdated`;
 export const START_BUILD = `${ADDON_ID}/startBuild`;
 export const STOP_BUILD = `${ADDON_ID}/stopBuild`;
@@ -27,7 +27,6 @@ export const SELECTED_BROWSER_ID = `${ADDON_ID}/selectedBrowserId`;
 export const TELEMETRY = `${ADDON_ID}/telemetry`;
 export const ENABLE_FILTER = `${ADDON_ID}/enableFilter`;
 export const REMOVE_ADDON = `${ADDON_ID}/removeAddon`;
-export const RETRY_CONNECTION = `${ADDON_ID}/retryConnection`;
 
 export const CONFIG_OVERRIDES = {
   // Local changes should never be auto-accepted
