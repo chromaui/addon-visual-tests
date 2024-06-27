@@ -1,6 +1,6 @@
 import type { API } from "@storybook/manager-api";
 import { useChannel, useStorybookState } from "@storybook/manager-api";
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import { AuthProvider } from "./AuthContext";
 import { Spinner } from "./components/design-system";
@@ -50,6 +50,18 @@ export const Panel = ({ active, api }: PanelProps) => {
     [updateAccessToken]
   );
   const { storyId } = useStorybookState();
+
+  const [isOnline, setOnline] = useState<boolean>(window.navigator.onLine);
+  useEffect(() => {
+    const online = () => setOnline(true);
+    const offline = () => setOnline(false);
+    window.addEventListener("online", online);
+    window.addEventListener("offline", offline);
+    return () => {
+      window.removeEventListener("online", online);
+      window.removeEventListener("offline", offline);
+    };
+  }, []);
 
   const [apiInfo] = useSharedState<APIInfoPayload>(API_INFO);
   const [gitInfo] = useSharedState<GitInfoPayload>(GIT_INFO);
@@ -114,8 +126,8 @@ export const Panel = ({ active, api }: PanelProps) => {
     return withProviders(<Uninstalled />);
   }
 
-  if (apiInfo?.connected === false) {
-    return withProviders(<NoNetwork aborted={apiInfo.aborted} />);
+  if (!isOnline || apiInfo?.connected === false) {
+    return withProviders(<NoNetwork aborted={!!apiInfo?.aborted} online={isOnline} />);
   }
 
   // Render the Authentication flow if the user is not signed in.

@@ -12,7 +12,6 @@ import { type Configuration, getConfiguration, getGitInfo, type GitInfo } from "
 import {
   ADDON_ID,
   API_INFO,
-  CHROMATIC_API_URL,
   CHROMATIC_BASE_URL,
   CONFIG_INFO,
   GIT_INFO,
@@ -123,14 +122,9 @@ const observeAPIInfo = (interval: number, callback: (apiInfo: APIInfoPayload) =>
       callback({ aborted: true, connected: false });
       return;
     }
-    const ok = await fetch(CHROMATIC_API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query: `{ viewer { id } }` }),
-    }).then(
-      (res) => res.ok,
-      () => false
-    );
+    const ok = await fetch("https://index.chromatic.com/healthz")
+      .then((res) => res.json().then(({ message }) => message === "OK"))
+      .catch(() => false);
     if (ok || attempt > 1) {
       callback({ aborted: false, connected: ok });
     }
@@ -265,7 +259,7 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
   const gitInfoState = SharedState.subscribe<GitInfoPayload>(GIT_INFO, channel);
   const gitInfoError = SharedState.subscribe<Error>(GIT_INFO_ERROR, channel);
 
-  let apiInfoObserver = observeAPIInfo(5000, (info: APIInfoPayload) => {
+  let apiInfoObserver = observeAPIInfo(30000, (info: APIInfoPayload) => {
     apiInfoState.value = info;
   });
 

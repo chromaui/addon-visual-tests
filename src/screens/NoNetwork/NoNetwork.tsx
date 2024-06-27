@@ -17,7 +17,7 @@ const SpinIcon = styled(SyncIcon)({
   animation: `${rotate360} 1s linear infinite`,
 });
 
-export const NoNetwork = ({ aborted }: { aborted: boolean }) => {
+export const NoNetwork = ({ aborted, online }: { aborted: boolean; online: boolean }) => {
   const [retried, setRetried] = useState(false);
   const emit = useChannel({});
 
@@ -37,7 +37,9 @@ export const NoNetwork = ({ aborted }: { aborted: boolean }) => {
           <div>
             <Heading>Can't connect to Chromatic</Heading>
             <Text center muted>
-              Double check your internet connection and firewall settings.
+              {online
+                ? "We're having trouble connecting to the Chromatic API."
+                : "You're offline. Double check your internet connection."}
             </Text>
           </div>
           {aborted ? (
