@@ -137,6 +137,7 @@
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
+  "packageManager": "yarn@4.1.1",
   "bundler": {
     "exportEntries": [
       "./src/index.ts"
