@@ -48,6 +48,8 @@ export const CONFIG_OVERRIDES = {
   skip: false,
   // Don't check for CLI updates
   skipUpdateCheck: true,
+  // VTA doesn't support "manual" Storybook builds
+  storybookBuildDir: undefined,
 };
 
 export const DOCS_URL = "https://www.chromatic.com/docs/visual-tests-addon";
