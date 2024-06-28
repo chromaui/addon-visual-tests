@@ -224,7 +224,7 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
                 >
                   {(active) => (
                     <ActionButton
-                      containsIcon
+                      square
                       active={active}
                       disabled={isReviewing}
                       aria-label="Batch accept options"
@@ -289,7 +289,7 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
                 >
                   {(active) => (
                     <ActionButton
-                      containsIcon
+                      square
                       active={active}
                       disabled={isReviewing}
                       aria-label="Batch unaccept options"
@@ -326,11 +326,11 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
             hasChrome={false}
           >
             <ActionButton
-              containsIcon
+              square
               aria-label={isOutdated ? "Run new tests" : "Rerun tests"}
               onClick={startBuild}
               disabled={isRunning}
-              secondary
+              variant="outline"
             >
               {isOutdated ? <PlayIcon /> : <SyncIcon />}
             </ActionButton>

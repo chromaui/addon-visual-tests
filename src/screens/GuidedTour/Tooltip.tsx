@@ -75,7 +75,7 @@ export const Tooltip = ({ isLastStep, step, primaryProps, tooltipProps }: Toolti
                 ...primaryProps,
                 // @tmeasday - I'm not sure if we ever use this, but this makes the types work
                 onClick: primaryProps.onClick as (event: SyntheticEvent) => void,
-                primary: true,
+                variant: "solid",
                 ...(step.onNextButtonClick ? { onClick: step.onNextButtonClick } : {}),
               }}
             >

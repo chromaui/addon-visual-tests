@@ -4,8 +4,8 @@ import { ComponentProps } from "react";
 
 import { IconButton } from "./IconButton";
 
-const themeColors = ({ theme, secondary, status }: { theme: Theme } & ActionButtonProps) => {
-  if (secondary) {
+const themeColors = ({ theme, status, variant }: { theme: Theme } & ActionButtonProps) => {
+  if (variant === "outline") {
     return {
       color: theme.base === "light" ? theme.color.dark : theme.color.medium,
       backgroundColor: theme.background.app,
@@ -54,29 +54,29 @@ const themeColors = ({ theme, secondary, status }: { theme: Theme } & ActionButt
 };
 
 interface ActionButtonProps extends ComponentProps<typeof IconButton> {
-  containsIcon?: boolean;
+  square?: boolean;
   side?: "left" | "right";
 }
 
 export const ActionButton: React.FC<ActionButtonProps> = styled(IconButton)<ActionButtonProps>(
-  ({ containsIcon }) => ({
+  ({ square }) => ({
     border: `1px solid transparent`,
     boxShadow: "none",
     fontSize: 12,
     fontWeight: 700,
     height: 28,
-    padding: containsIcon ? "8px 6px" : 8,
+    padding: square ? "8px 6px" : 8,
     transition: "background-color 150ms ease-out",
     "@container (min-width: 300px)": {
       height: 32,
-      width: containsIcon ? 32 : "auto",
-      padding: containsIcon ? "9px 8px" : 9,
+      width: square ? 32 : "auto",
+      padding: square ? "9px 8px" : 9,
     },
     "@container (min-width: 800px)": {
       height: 28,
       fontSize: 12,
-      width: containsIcon ? 28 : "auto",
-      padding: containsIcon ? "8px 6px" : 8,
+      width: square ? 28 : "auto",
+      padding: square ? "8px 6px" : 8,
     },
   }),
   themeColors,

@@ -15,18 +15,32 @@ export const useBuildEvents = ({
   const emit = useChannel({});
   const trackEvent = useContext(TelemetryContext);
   const [isStarting, setStarting] = useState(false);
+  const [isDisallowed, setDisallowed] = useState(false);
+
+  const isCancelable = localBuildProgress
+    ? ["initialize", "build", "upload"].includes(localBuildProgress?.currentStep)
+    : false;
+
+  const isRunning = localBuildProgress
+    ? !["aborted", "complete", "error", "limited"].includes(localBuildProgress.currentStep)
+    : isStarting;
 
   const startBuild = useCallback(() => {
+    setDisallowed(false);
     setStarting(true);
     emit(START_BUILD, { accessToken });
     trackEvent?.({ action: "startBuild" });
   }, [accessToken, emit, trackEvent]);
 
   const stopBuild = useCallback(() => {
-    setStarting(false);
-    emit(STOP_BUILD);
-    trackEvent?.({ action: "stopBuild" });
-  }, [emit, trackEvent]);
+    if (!isCancelable) {
+      setDisallowed(true);
+    } else {
+      setStarting(false);
+      emit(STOP_BUILD);
+      trackEvent?.({ action: "stopBuild" });
+    }
+  }, [isCancelable, emit, trackEvent]);
 
   useEffect(() => {
     const timeout = isStarting && setTimeout(() => setStarting(false), 5000);
@@ -35,9 +49,5 @@ export const useBuildEvents = ({
     };
   }, [isStarting]);
 
-  const isRunning = localBuildProgress
-    ? !["aborted", "complete", "error", "limited"].includes(localBuildProgress.currentStep)
-    : isStarting;
-
-  return { isRunning, startBuild, stopBuild };
+  return { isDisallowed, isRunning, startBuild, stopBuild };
 };

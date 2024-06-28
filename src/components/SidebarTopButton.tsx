@@ -1,10 +1,11 @@
 import { WithTooltip } from "@storybook/components";
-import { PlayIcon, StopAltIcon, SyncIcon } from "@storybook/icons";
+import { PlayIcon, StopAltIcon } from "@storybook/icons";
 import { keyframes, styled } from "@storybook/theming";
 import React, { ComponentProps } from "react";
 
 import { LocalBuildProgress } from "../types";
 import { BuildProgressLabel } from "./BuildProgressLabel";
+import { jiggle } from "./design-system/shared/animation";
 import { IconButton } from "./IconButton";
 import { StatusDotWrapper } from "./StatusDot";
 import { TooltipNote } from "./TooltipNote";
@@ -67,19 +68,28 @@ export const ProgressCircle = styled.svg<{ progress?: boolean; spinner?: boolean
     }
 );
 
-export const SidebarIconButton = styled(IconButton)<ComponentProps<typeof IconButton>>(
-  ({ theme }) => ({
-    position: "relative",
-    overflow: "visible",
-    color: theme.textMutedColor,
-    marginTop: 0,
-    zIndex: 1,
-    marginRight: 4,
-  })
-);
+const WarningText = styled.div(({ theme }) => ({
+  color: theme.color.warningText,
+  "&&": { marginTop: 10 },
+}));
+
+export const SidebarIconButton = styled(IconButton)<
+  ComponentProps<typeof IconButton> & { isDisallowed?: boolean }
+>(({ isDisallowed, theme }) => ({
+  position: "relative",
+  overflow: "visible",
+  color: theme.textMutedColor,
+  marginTop: 0,
+  zIndex: 1,
+  marginRight: 4,
+  ...(isDisallowed && {
+    animation: `${jiggle} 700ms ease-out`,
+  }),
+}));
 
 export const SidebarTopButton = ({
   isDisabled = false,
+  isDisallowed = false,
   isOutdated = false,
   isRunning = false,
   localBuildProgress,
@@ -89,6 +99,7 @@ export const SidebarTopButton = ({
   stopBuild,
 }: {
   isDisabled?: boolean;
+  isDisallowed?: boolean;
   isOutdated?: boolean;
   isRunning?: boolean;
   localBuildProgress?: LocalBuildProgress;
@@ -126,17 +137,26 @@ export const SidebarTopButton = ({
         tooltip={
           <TooltipContent>
             <div>
-              <BuildProgressLabel localBuildProgress={localBuildProgress} withEmoji />
+              <BuildProgressLabel localBuildProgress={localBuildProgress} small withEmoji />
             </div>
             <ProgressTrack>
               {typeof buildProgressPercentage === "number" && (
                 <ProgressBar style={{ width: `${buildProgressPercentage}%` }} />
               )}
             </ProgressTrack>
+            {isDisallowed && (
+              <WarningText>
+                This job has already reached the capture cloud and cannot be stopped locally.
+              </WarningText>
+            )}
           </TooltipContent>
         }
       >
-        <SidebarIconButton aria-label="Stop tests" onClick={() => stopBuild()}>
+        <SidebarIconButton
+          aria-label="Stop tests"
+          isDisallowed={isDisallowed}
+          onClick={() => stopBuild()}
+        >
           <StopAltIcon style={{ width: 10, margin: 2 }} />
           <ProgressCircle xmlns="http://www.w3.org/2000/svg">
             <circle />

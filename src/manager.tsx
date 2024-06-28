@@ -1,3 +1,4 @@
+import { FailedIcon } from "@storybook/icons";
 import { addons, type API } from "@storybook/manager-api";
 import { color } from "@storybook/theming";
 import { Addon_TypesEnum } from "@storybook/types";
@@ -49,10 +50,7 @@ addons.register(ADDON_ID, (api) => {
           headline: "Connection lost",
           subHeadline: "Lost connection to the Storybook server. Try refreshing the page.",
         },
-        icon: {
-          name: "failed",
-          color: color.negative,
-        },
+        icon: <FailedIcon color={color.negative} />,
         // @ts-expect-error SB needs a proper API for no link
         link: undefined,
       });
