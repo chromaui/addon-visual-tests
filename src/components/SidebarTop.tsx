@@ -6,14 +6,14 @@ import React, { useCallback, useContext, useEffect, useRef } from "react";
 
 import {
   ADDON_ID,
-  API_INFO,
   CONFIG_INFO,
   GIT_INFO_ERROR,
+  IS_OFFLINE,
   IS_OUTDATED,
   LOCAL_BUILD_PROGRESS,
   PANEL_ID,
 } from "../constants";
-import { APIInfoPayload, ConfigInfoPayload, LocalBuildProgress } from "../types";
+import { ConfigInfoPayload, LocalBuildProgress } from "../types";
 import { useAccessToken } from "../utils/graphQLClient";
 import { TelemetryContext } from "../utils/TelemetryContext";
 import { useBuildEvents } from "../utils/useBuildEvents";
@@ -33,10 +33,10 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
   const [accessToken] = useAccessToken();
   const isLoggedIn = !!accessToken;
 
+  const [isOffline, setOffline] = useSharedState<boolean>(IS_OFFLINE);
   const [isOutdated] = useSharedState<boolean>(IS_OUTDATED);
   const [localBuildProgress] = useSharedState<LocalBuildProgress>(LOCAL_BUILD_PROGRESS);
 
-  const [apiInfo] = useSharedState<APIInfoPayload>(API_INFO);
   const [configInfo] = useSharedState<ConfigInfoPayload>(CONFIG_INFO);
   const hasConfigProblem = Object.keys(configInfo?.problems || {}).length > 0;
 
@@ -73,6 +73,17 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
     },
     [openVisualTestsPanel]
   );
+
+  useEffect(() => {
+    const offline = () => setOffline(true);
+    const online = () => setOffline(false);
+    window.addEventListener("offline", offline);
+    window.addEventListener("online", online);
+    return () => {
+      window.removeEventListener("offline", offline);
+      window.removeEventListener("online", online);
+    };
+  }, [setOffline]);
 
   useEffect(() => {
     if (localBuildProgress?.currentStep === lastStep.current) return;
@@ -179,11 +190,11 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
   });
 
   let warning: string | undefined;
-  if (apiInfo?.connected === false) warning = "Visual tests locked while waiting for network.";
   if (!projectId) warning = "Visual tests locked until a project is selected.";
   if (!isLoggedIn) warning = "Visual tests locked until you are logged in.";
   if (gitInfoError) warning = "Visual tests locked due to Git synchronization problem.";
   if (hasConfigProblem) warning = "Visual tests locked due to configuration problem.";
+  if (isOffline) warning = "Visual tests locked while offline.";
 
   const clickWarning = useCallback(
     () => openVisualTestsPanel(warning),

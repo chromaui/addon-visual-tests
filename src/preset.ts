@@ -11,8 +11,6 @@ import { type Configuration, getConfiguration, getGitInfo, type GitInfo } from "
 
 import {
   ADDON_ID,
-  API_INFO,
-  CHROMATIC_API_URL,
   CHROMATIC_BASE_URL,
   CONFIG_INFO,
   GIT_INFO,
@@ -21,14 +19,12 @@ import {
   PACKAGE_NAME,
   PROJECT_INFO,
   REMOVE_ADDON,
-  RETRY_CONNECTION,
   START_BUILD,
   STOP_BUILD,
   TELEMETRY,
 } from "./constants";
 import { runChromaticBuild, stopChromaticBuild } from "./runChromaticBuild";
 import {
-  APIInfoPayload,
   ConfigInfoPayload,
   ConfigurationUpdate,
   GitInfoPayload,
@@ -110,35 +106,6 @@ const getConfigInfo = async (
     problems: suggestRemovals(configuration, defaults, problems),
     suggestions: suggestRemovals(configuration, defaults, suggestions),
   };
-};
-
-// Polls for a connection to the Chromatic API.
-// Uses a recursive setTimeout instead of setInterval to avoid overlapping async calls.
-// Two consecutive failures are needed before considering the connection as lost.
-// Retries with an increasing delay after the first failure and aborts after 10 attempts.
-const observeAPIInfo = (interval: number, callback: (apiInfo: APIInfoPayload) => void) => {
-  let timer: NodeJS.Timeout | undefined;
-  const act = async (attempt = 1) => {
-    if (attempt > 10) {
-      callback({ aborted: true, connected: false });
-      return;
-    }
-    const ok = await fetch(CHROMATIC_API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query: `{ viewer { id } }` }),
-    }).then(
-      (res) => res.ok,
-      () => false
-    );
-    if (ok || attempt > 1) {
-      callback({ aborted: false, connected: ok });
-    }
-    timer = ok ? setTimeout(act, interval) : setTimeout(act, attempt * 1000, attempt + 1);
-  };
-  act();
-
-  return { cancel: () => clearTimeout(timer) };
 };
 
 // Polls for changes to the Git state and invokes the callback when it changes.
@@ -260,14 +227,9 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
     telemetry("addon-visual-tests" as any, { ...event, addonVersion: await getAddonVersion() });
   });
 
-  const apiInfoState = SharedState.subscribe<APIInfoPayload>(API_INFO, channel);
   const configInfoState = SharedState.subscribe<ConfigInfoPayload>(CONFIG_INFO, channel);
   const gitInfoState = SharedState.subscribe<GitInfoPayload>(GIT_INFO, channel);
   const gitInfoError = SharedState.subscribe<Error>(GIT_INFO_ERROR, channel);
-
-  let apiInfoObserver = observeAPIInfo(5000, (info: APIInfoPayload) => {
-    apiInfoState.value = info;
-  });
 
   const gitInfoObserver = observeGitInfo(
     5000,
@@ -289,15 +251,7 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
 
   channel.on(REMOVE_ADDON, () => {
     apiPromise.then((api) => api.removeAddon(PACKAGE_NAME)).catch((e) => console.error(e));
-    apiInfoObserver.cancel();
     gitInfoObserver.cancel();
-  });
-
-  channel.on(RETRY_CONNECTION, () => {
-    apiInfoObserver.cancel();
-    apiInfoObserver = observeAPIInfo(5000, (info: APIInfoPayload) => {
-      apiInfoState.value = info;
-    });
   });
 
   return channel;

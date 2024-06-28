@@ -1,14 +1,14 @@
 import type { API } from "@storybook/manager-api";
 import { useChannel, useStorybookState } from "@storybook/manager-api";
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import { AuthProvider } from "./AuthContext";
 import { Spinner } from "./components/design-system";
 import {
   ADDON_ID,
-  API_INFO,
   GIT_INFO,
   GIT_INFO_ERROR,
+  IS_OFFLINE,
   IS_OUTDATED,
   LOCAL_BUILD_PROGRESS,
   PANEL_ID,
@@ -27,7 +27,7 @@ import { Uninstalled } from "./screens/Uninstalled/Uninstalled";
 import { ControlsProvider } from "./screens/VisualTests/ControlsContext";
 import { RunBuildProvider } from "./screens/VisualTests/RunBuildContext";
 import { VisualTests } from "./screens/VisualTests/VisualTests";
-import { APIInfoPayload, GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from "./types";
+import { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from "./types";
 import { client, Provider, useAccessToken } from "./utils/graphQLClient";
 import { TelemetryProvider } from "./utils/TelemetryContext";
 import { useBuildEvents } from "./utils/useBuildEvents";
@@ -51,9 +51,21 @@ export const Panel = ({ active, api }: PanelProps) => {
   );
   const { storyId } = useStorybookState();
 
-  const [apiInfo] = useSharedState<APIInfoPayload>(API_INFO);
+  const [isOnline, setOnline] = useState<boolean>(window.navigator.onLine);
+  useEffect(() => {
+    const online = () => setOnline(true);
+    const offline = () => setOnline(false);
+    window.addEventListener("online", online);
+    window.addEventListener("offline", offline);
+    return () => {
+      window.removeEventListener("online", online);
+      window.removeEventListener("offline", offline);
+    };
+  }, []);
+
   const [gitInfo] = useSharedState<GitInfoPayload>(GIT_INFO);
   const [gitInfoError] = useSharedState<Error>(GIT_INFO_ERROR);
+  const [isOffline] = useSharedState<boolean>(IS_OFFLINE);
   const [isOutdated] = useSharedState<boolean>(IS_OUTDATED);
   const [localBuildProgress, setLocalBuildProgress] =
     useSharedState<LocalBuildProgress>(LOCAL_BUILD_PROGRESS);
@@ -114,8 +126,8 @@ export const Panel = ({ active, api }: PanelProps) => {
     return withProviders(<Uninstalled />);
   }
 
-  if (apiInfo?.connected === false) {
-    return withProviders(<NoNetwork aborted={apiInfo.aborted} />);
+  if (isOffline) {
+    return withProviders(<NoNetwork offline={isOffline} />);
   }
 
   // Render the Authentication flow if the user is not signed in.
