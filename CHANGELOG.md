@@ -1,3 +1,25 @@
+# v1.6.0 (Fri Jun 28 2024)
+
+#### 🚀 Enhancement
+
+- Ignore `storybookBuildDir` property for VTA builds [#324](https://github.com/chromaui/addon-visual-tests/pull/324) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### 🐛 Bug Fix
+
+- Replace API polling with browser-native "online" status check [#326](https://github.com/chromaui/addon-visual-tests/pull/326) ([@ghengeveld](https://github.com/ghengeveld))
+- Add stories for `SidebarBottom` [#314](https://github.com/chromaui/addon-visual-tests/pull/314) ([@ghengeveld](https://github.com/ghengeveld))
+- Use modern Yarn and run on port 6004 [#325](https://github.com/chromaui/addon-visual-tests/pull/325) ([@ghengeveld](https://github.com/ghengeveld))
+- Upgrade some deprecated uses of `@storybook/components` [#316](https://github.com/chromaui/addon-visual-tests/pull/316) ([@ghengeveld](https://github.com/ghengeveld))
+- Disallow stopping build after upload step [#317](https://github.com/chromaui/addon-visual-tests/pull/317) ([@ghengeveld](https://github.com/ghengeveld))
+- Don't auto-expand build eyebrow when canceling build [#315](https://github.com/chromaui/addon-visual-tests/pull/315) ([@ghengeveld](https://github.com/ghengeveld))
+- Add stories for `TooltipMenu` component [#313](https://github.com/chromaui/addon-visual-tests/pull/313) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v1.5.0 (Tue May 28 2024)
 
 #### 🚀 Enhancement
