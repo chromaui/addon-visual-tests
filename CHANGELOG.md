@@ -20,6 +20,18 @@
 
 ---
 
+# v1.5.1 (Fri Jun 28 2024)
+
+#### 🐛 Bug Fix
+
+- Replace API polling with browser-native "online" status check [#326](https://github.com/chromaui/addon-visual-tests/pull/326) ([@ghengeveld](https://github.com/ghengeveld))
+
+# v1.4.1 (Fri Jun 28 2024)
+
+#### 🐛 Bug Fix
+
+- Replace API polling with browser-native "online" status check [#326](https://github.com/chromaui/addon-visual-tests/pull/326) ([@ghengeveld](https://github.com/ghengeveld))
+
 # v1.5.0 (Tue May 28 2024)
 
 #### 🚀 Enhancement
