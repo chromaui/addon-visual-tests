@@ -1,5 +1,6 @@
 import { Loader } from "@storybook/components";
 import { PlayIcon } from "@storybook/icons";
+import { useParameter } from "@storybook/manager-api";
 import { styled } from "@storybook/theming";
 import React from "react";
 import { CombinedError } from "urql";
@@ -12,10 +13,10 @@ import { Container } from "../../components/Container";
 import { Link } from "../../components/design-system";
 import { FooterMenu } from "../../components/FooterMenu";
 import { Heading } from "../../components/Heading";
-import { Col, Text } from "../../components/layout";
+import { Col } from "../../components/layout";
 import { Footer, Screen } from "../../components/Screen";
 import { Stack } from "../../components/Stack";
-import { Text as CenterText } from "../../components/Text";
+import { Text } from "../../components/Text";
 import { DOCS_URL } from "../../constants";
 import { LocalBuildProgress } from "../../types";
 import { ErrorBox } from "../Errors/BuildError";
@@ -43,11 +44,12 @@ export const NoBuild = ({
   branch,
 }: NoBuildProps) => {
   const { setAccessToken } = useAuthState();
-  const { startBuild } = useRunBuildState();
+  const { isRunning, startBuild } = useRunBuildState();
+  const { disable, disableSnapshot, docsOnly } = useParameter("chromatic", {} as any);
 
   const getDetails = () => {
     const button = (
-      <Button size="medium" variant="solid" onClick={startBuild}>
+      <Button disabled={isRunning} size="medium" variant="solid" onClick={startBuild}>
         <PlayIcon />
         Take snapshots
       </Button>
@@ -74,7 +76,7 @@ export const NoBuild = ({
           <Stack>
             <div>
               <Heading>Network error</Heading>
-              <CenterText>{queryError.networkError.message}</CenterText>
+              <Text>{queryError.networkError.message}</Text>
             </div>
 
             <Button size="medium" variant="solid" onClick={() => setAccessToken(null)}>
@@ -91,11 +93,11 @@ export const NoBuild = ({
           <Stack>
             <div>
               <Heading>{queryError.graphQLErrors[0].message}</Heading>
-              <CenterText>
+              <Text center muted>
                 {queryError.graphQLErrors[0].extensions.code === "FORBIDDEN"
                   ? "You may have insufficient permissions. Try logging out and back in again."
                   : "Try logging out or clear your browser's local storage."}
-              </CenterText>
+              </Text>
             </div>
             <ButtonStack>
               <Button size="medium" variant="solid" onClick={() => setAccessToken(null)}>
@@ -120,11 +122,38 @@ export const NoBuild = ({
           <Stack>
             <div>
               <Heading>Project not found</Heading>
-              <CenterText>You may not have access to this project or it may not exist.</CenterText>
+              <Text center muted>
+                You may not have access to this project or it may not exist.
+              </Text>
             </div>
 
             <ButtonStackLink isButton onClick={() => setAccessToken(null)} withArrow>
               Switch account
+            </ButtonStackLink>
+          </Stack>
+        </Container>
+      );
+    }
+
+    if (disable || disableSnapshot || docsOnly) {
+      // eslint-disable-next-line no-nested-ternary
+      const param = disable ? "disable" : disableSnapshot ? "disableSnapshot" : "docsOnly";
+      return (
+        <Container>
+          <Stack>
+            <div>
+              <Heading>Visual Tests disabled for this story</Heading>
+              <Text center muted>
+                Update <code>parameters.chromatic.{param}</code> to enable snapshots for this story.
+              </Text>
+            </div>
+
+            <ButtonStackLink
+              withArrow
+              href="https://www.chromatic.com/docs/ignoring-elements/#ignore-stories"
+              target="_blank"
+            >
+              Read more
             </ButtonStackLink>
           </Stack>
         </Container>
@@ -137,10 +166,10 @@ export const NoBuild = ({
           <Stack>
             <div>
               <Heading>Create a test baseline</Heading>
-              <CenterText>
-                Take an image snapshot of your stories to save their "last known good state" as test
-                baselines.
-              </CenterText>
+              <Text center muted>
+                Take an image snapshot of your stories to save their &quot;last known good
+                state&quot; as test baselines.
+              </Text>
             </div>
             {getDetails()}
           </Stack>
@@ -157,7 +186,9 @@ export const NoBuild = ({
         <Footer>
           <Col>
             {hasData && !queryError && hasProject && (
-              <Text style={{ marginLeft: 5 }}>Waiting for build on {branch}</Text>
+              <Text muted style={{ marginLeft: 5 }}>
+                Waiting for build on {branch}
+              </Text>
             )}
           </Col>
           <Col push>

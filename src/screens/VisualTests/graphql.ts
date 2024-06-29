@@ -13,6 +13,14 @@ export const QueryBuild = graphql(/* GraphQL */ `
   ) {
     project(id: $projectId) {
       name
+      manageUrl
+      account {
+        billingUrl
+        suspensionReason
+      }
+      features {
+        uiTests
+      }
       lastBuildOnBranch: lastBuild(
         branches: [$branch]
         repositoryOwnerName: $repositoryOwnerName
@@ -152,6 +160,7 @@ export const FragmentStoryTestFields = graphql(/* GraphQL */ `
           backgroundColor
           imageUrl
           imageWidth
+          imageHeight
           thumbnailUrl
         }
         captureError {
@@ -171,6 +180,7 @@ export const FragmentStoryTestFields = graphql(/* GraphQL */ `
         captureImage(signed: true) {
           imageUrl
           imageWidth
+          imageHeight
         }
       }
     }

@@ -5,13 +5,9 @@ import React from "react";
 const Wrapper = styled.div<{ status?: "positive" }>(({ status, theme }) => ({
   position: "relative",
   display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  backgroundColor: theme.background.content,
   border: `1px solid ${status === "positive" ? theme.color.green : theme.appBorderColor}`,
   borderRadius: 5,
   margin: "15px 15px 0",
-  padding: 5,
   minHeight: 200,
   minWidth: 200,
   maxWidth: 500,
@@ -19,7 +15,6 @@ const Wrapper = styled.div<{ status?: "positive" }>(({ status, theme }) => ({
   img: {
     display: "block",
     maxWidth: "100%",
-    borderRadius: 3,
   },
   svg: {
     position: "absolute",
@@ -34,6 +29,22 @@ const Wrapper = styled.div<{ status?: "positive" }>(({ status, theme }) => ({
   },
 }));
 
+const Background = styled.div({
+  width: "100%",
+  margin: 2,
+  background: "white",
+  borderRadius: 3,
+  overflow: "hidden",
+
+  div: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+    height: "100%",
+  },
+});
+
 interface SnapshotImageThumbProps {
   backgroundColor?: string | null;
   status?: "positive";
@@ -46,8 +57,12 @@ export const SnapshotImageThumb = ({
   thumbnailUrl,
 }: SnapshotImageThumbProps & React.ImgHTMLAttributes<HTMLImageElement>) => {
   return (
-    <Wrapper status={status} style={backgroundColor ? { backgroundColor } : {}}>
-      <img alt="Snapshot thumbnail" src={thumbnailUrl} />
+    <Wrapper status={status}>
+      <Background>
+        <div style={backgroundColor ? { backgroundColor } : {}}>
+          <img alt="Snapshot thumbnail" src={thumbnailUrl} />
+        </div>
+      </Background>
       {status === "positive" && <CheckIcon />}
     </Wrapper>
   );

@@ -1,17 +1,19 @@
 import { AddIcon } from "@storybook/icons";
-import { styled, useTheme } from "@storybook/theming";
-import React, { useCallback, useEffect, useState } from "react";
+import { styled } from "@storybook/theming";
+import React, { useCallback, useEffect } from "react";
 import { useQuery } from "urql";
 
 import { Container } from "../../components/Container";
 import { Avatar, Link, ListItem } from "../../components/design-system";
 import { Heading } from "../../components/Heading";
-import { Text } from "../../components/layout";
 import { Screen } from "../../components/Screen";
 import { Stack } from "../../components/Stack";
+import { Text } from "../../components/Text";
 import { graphql } from "../../gql";
-import type { Account, Project, SelectProjectsQueryQuery } from "../../gql/graphql";
+import type { Project, SelectProjectsQueryQuery } from "../../gql/graphql";
+import { useTelemetry } from "../../utils/TelemetryContext";
 import { DialogHandler, useChromaticDialog } from "../../utils/useChromaticDialog";
+import { useSessionState } from "../../utils/useSessionState";
 
 const SelectProjectsQuery = graphql(/* GraphQL */ `
   query SelectProjectsQuery {
@@ -120,7 +122,6 @@ function SelectProject({
   setCreatedProjectId: (projectId: Project["id"]) => void;
   onSelectProjectId: (projectId: string) => Promise<void>;
 }) {
-  const theme = useTheme();
   const [{ data, fetching, error }, rerunProjectsQuery] = useQuery<SelectProjectsQueryQuery>({
     query: SelectProjectsQuery,
   });
@@ -131,13 +132,12 @@ function SelectProject({
     return () => clearInterval(interval);
   }, [rerunProjectsQuery]);
 
-  const [selectedAccountId, setSelectedAccountId] = useState<Account["id"]>();
+  const [selectedAccountId, setSelectedAccountId] = useSessionState<string>("selectedAccountId");
   const selectedAccount = data?.viewer?.accounts.find((a) => a.id === selectedAccountId);
 
-  const onSelectAccount = React.useCallback(
-    (account: NonNullable<SelectProjectsQueryQuery["viewer"]>["accounts"][number]) => {
-      setSelectedAccountId(account.id);
-    },
+  const onSelectAccount = useCallback(
+    (account: NonNullable<SelectProjectsQueryQuery["viewer"]>["accounts"][number]) =>
+      setSelectedAccountId(account.id),
     [setSelectedAccountId]
   );
 
@@ -147,9 +147,9 @@ function SelectProject({
     }
   }, [data, selectedAccountId, onSelectAccount]);
 
-  const [isSelectingProject, setSelectingProject] = useState(false);
+  const [isSelectingProject, setSelectingProject] = useSessionState("isSelectingProject", false);
 
-  const handleSelectProject = React.useCallback(
+  const handleSelectProject = useCallback(
     (
       project: NonNullable<
         NonNullable<
@@ -192,13 +192,15 @@ function SelectProject({
     }
   }, [createdProject, handleSelectProject, closeDialog]);
 
+  useTelemetry("LinkProject", "LinkProject");
+
   return (
     <Screen>
       <Container>
         <StyledStack>
           <div>
             <Heading>Select a project</Heading>
-            <Text>Your tests will sync with this project.</Text>
+            <Text muted>Your tests will sync with this project.</Text>
           </div>
           {error && <p>{error.message}</p>}
           {!data && fetching && (

@@ -61,7 +61,7 @@ const Actions = styled.div({
   margin: 15,
 
   "@container (min-width: 800px)": {
-    margin: "6px 15px 6px 0",
+    margin: "6px 15px 0 0",
   },
 });
 
@@ -162,12 +162,17 @@ export const StoryInfo = ({
       <Info>
         <span>
           <b>
-            {changeCount
-              ? `${pluralize("change", changeCount, true)}${
-                  status === TestStatus.Accepted ? " accepted" : ""
-                }`
-              : "No changes"}
-            {brokenCount ? `, ${pluralize("error", brokenCount, true)}` : null}
+            {
+              // eslint-disable-next-line no-nested-ternary
+              brokenCount
+                ? null
+                : changeCount
+                ? `${pluralize("change", changeCount, true)}${
+                    status === TestStatus.Accepted ? " accepted" : ""
+                  }`
+                : "No changes"
+            }
+            {brokenCount ? pluralize("error", brokenCount, true) : null}
           </b>
           <StatusIcon
             icon={

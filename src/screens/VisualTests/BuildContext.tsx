@@ -2,11 +2,7 @@ import React, { createContext, useEffect, useMemo } from "react";
 import { useQuery } from "urql";
 
 import { getFragment } from "../../gql";
-import {
-  SelectedBuildFieldsFragment,
-  StoryTestFieldsFragment,
-  TestStatus,
-} from "../../gql/graphql";
+import { StoryTestFieldsFragment, TestStatus } from "../../gql/graphql";
 import { GitInfoPayload } from "../../types";
 import { summarizeTests } from "../../utils/summarizeTests";
 import { statusMap } from "../../utils/testsToStatusUpdate";
@@ -91,16 +87,19 @@ export const useBuild = ({
   );
 
   return {
+    account: data?.project?.account,
+    features: data?.project?.features,
+    manageUrl: data?.project?.manageUrl,
     hasData: !!data && !storyDataIsStale,
     hasProject: !!data?.project,
-    hasSelectedBuild: selectedBuild?.branch === gitInfo.branch,
+    hasSelectedBuild: selectedBuild?.branch.split(":").at(-1) === gitInfo.branch,
     lastBuildOnBranch,
     lastBuildOnBranchIsNewer,
     lastBuildOnBranchIsReady,
     lastBuildOnBranchIsSelectable,
     selectedBuild,
     selectedBuildMatchesGit:
-      selectedBuild?.branch === gitInfo.branch &&
+      selectedBuild?.branch.split(":").at(-1) === gitInfo.branch &&
       selectedBuild?.commit === gitInfo.commit &&
       selectedBuild?.uncommittedHash === gitInfo.uncommittedHash,
     rerunQuery,

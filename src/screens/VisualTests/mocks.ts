@@ -18,6 +18,8 @@ import { SelectedBuildWithTests } from "../../types";
 import { makeBrowserInfo, makeComparison, makeTest, makeTests } from "../../utils/storyData";
 
 export const buildInfo = (selectedBuild?: SelectedBuildFieldsFragment) => ({
+  features: { uiTests: true },
+  manageUrl: "https://www.chromatic.com/manage?appId=123",
   hasData: true,
   hasProject: true,
   hasSelectedBuild: !!selectedBuild,
@@ -202,6 +204,7 @@ export const announcedBuild = {
   branch: "feature-branch",
   commit: "abc123",
   committedAt: Date.now() - 2000,
+  parentCommits: [],
   uncommittedHash: "",
   status: BuildStatus.Announced,
   browsers: [makeBrowserInfo(Browser.Chrome), makeBrowserInfo(Browser.Safari)],

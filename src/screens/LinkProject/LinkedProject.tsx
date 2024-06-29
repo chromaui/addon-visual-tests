@@ -10,11 +10,13 @@ import { Container } from "../../components/Container";
 import { Link } from "../../components/design-system";
 import { FooterMenu } from "../../components/FooterMenu";
 import { Heading } from "../../components/Heading";
-import { Col, Text } from "../../components/layout";
+import { Col } from "../../components/layout";
 import { Footer, Screen } from "../../components/Screen";
 import { Stack } from "../../components/Stack";
+import { Text } from "../../components/Text";
 import { graphql } from "../../gql";
 import { ProjectQueryQuery } from "../../gql/graphql";
+import { useTelemetry } from "../../utils/TelemetryContext";
 
 const Check = styled(CheckIcon)(({ theme }) => ({
   width: 40,
@@ -52,6 +54,8 @@ export const LinkedProject = ({
   configFile: string;
   goToNext: () => void;
 }) => {
+  useTelemetry("LinkProject", "LinkedProject");
+
   const [{ data, fetching, error }] = useQuery<ProjectQueryQuery>({
     query: ProjectQuery,
     variables: { projectId },
@@ -84,8 +88,8 @@ export const LinkedProject = ({
               <Check />
               <div>
                 <Heading>Project linked!</Heading>
-                <Text style={{ maxWidth: 500 }}>
-                  The <Code>projectId</Code> for {data.project.name} was added in{" "}
+                <Text center muted style={{ maxWidth: 500 }}>
+                  The <Code>projectId</Code> for <strong>{data.project.name}</strong> was added in{" "}
                   <Code>{configFile}</Code> to sync tests with Chromatic. Please commit this change
                   to continue using this addon.
                 </Text>
@@ -100,7 +104,7 @@ export const LinkedProject = ({
                   withArrow
                   secondary
                 >
-                  What&rsquo;s a project ID?
+                  What&apos;s a project ID?
                 </ButtonStackLink>
               </ButtonStack>
             </>

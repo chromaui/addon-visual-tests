@@ -6,7 +6,7 @@ import {
   BUILD_STEP_CONFIG,
   BUILD_STEP_ORDER,
   hasProgressEvent,
-  INITIAL_BUILD_PAYLOAD,
+  INITIAL_BUILD_PAYLOAD_JSON,
   isKnownStep,
 } from "./buildSteps";
 import { CONFIG_OVERRIDES } from "./constants";
@@ -184,7 +184,8 @@ export const runChromaticBuild = async (
   if (!options.projectId) throw new Error("Missing projectId");
   if (!options.userToken) throw new Error("Missing userToken");
 
-  localBuildProgress.value = INITIAL_BUILD_PAYLOAD;
+  // Set initial progress state. JSON.parse avoids mutating the constant.
+  localBuildProgress.value = JSON.parse(INITIAL_BUILD_PAYLOAD_JSON);
 
   // Timeout is defined here so it's shared between all handlers
   let timeout: ReturnType<typeof setTimeout> | undefined;

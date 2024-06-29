@@ -8,6 +8,7 @@ import { VisualTestsIcon } from "../../components/icons/VisualTestsIcon";
 import { Screen } from "../../components/Screen";
 import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
+import { AuthHeader } from "./AuthHeader";
 
 interface WelcomeProps {
   onNext: () => void;
@@ -17,12 +18,13 @@ interface WelcomeProps {
 export const Welcome = ({ onNext, onUninstall }: WelcomeProps) => {
   return (
     <Screen footer={null} ignoreConfig>
+      <AuthHeader />
       <Container>
         <Stack>
           <div>
             <VisualTestsIcon />
             <Heading>Visual tests</Heading>
-            <Text>
+            <Text center muted>
               Catch bugs in UI appearance automatically. Compare image snapshots to detect visual
               changes.
             </Text>

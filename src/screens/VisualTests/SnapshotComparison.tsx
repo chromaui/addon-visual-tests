@@ -3,8 +3,8 @@ import { styled } from "@storybook/theming";
 import React, { useEffect } from "react";
 
 import { Link } from "../../components/design-system";
-import { Text } from "../../components/layout";
 import { SnapshotImage } from "../../components/SnapshotImage";
+import { Text } from "../../components/Text";
 import { ZoomContainer } from "../../components/ZoomContainer";
 import { ComparisonResult, TestResult, TestStatus } from "../../gql/graphql";
 import { summarizeTests } from "../../utils/summarizeTests";
@@ -111,10 +111,6 @@ const Warning = styled.div(({ theme }) => ({
   borderBottom: `1px solid ${theme.appBorderColor}`,
 }));
 
-const WarningText = styled(Text)(({ theme }) => ({
-  color: theme.color.defaultText,
-}));
-
 interface SnapshotComparisonProps {
   isOutdated: boolean;
   isStarting: boolean;
@@ -157,15 +153,15 @@ export const SnapshotComparison = ({
   // This checks if the specific comparison is new, but the story itself is not. This indicates it was probably a new mode being added.
   const isNewMode =
     !isNewStory &&
-    selectedTest.result === TestResult.Added &&
-    selectedTest.status !== TestStatus.Accepted;
+    selectedTest?.result === TestResult.Added &&
+    selectedTest?.status !== TestStatus.Accepted;
 
   // If any of the tests has a new comparison, and the test isn't new it is a new browser.
   const isNewBrowser =
     !isNewStory &&
-    selectedComparison.result === ComparisonResult.Added &&
-    selectedTest.result !== TestResult.Added &&
-    selectedTest.status !== TestStatus.Accepted;
+    selectedComparison?.result === ComparisonResult.Added &&
+    selectedTest?.result !== TestResult.Added &&
+    selectedTest?.status !== TestStatus.Accepted;
 
   useEffect(() => {
     // It's possible this component doesn't unmount when the selected build, comparison, or story changes, so we need to reset state values.
@@ -246,7 +242,7 @@ export const SnapshotComparison = ({
         {isInProgress && <Loader />}
         {!isInProgress && isNewStory && (
           <Warning>
-            <WarningText>
+            <Text>
               New story found. Accept this snapshot as a test baseline.{" "}
               <Link
                 withArrow
@@ -255,12 +251,12 @@ export const SnapshotComparison = ({
               >
                 Learn more
               </Link>
-            </WarningText>
+            </Text>
           </Warning>
         )}
         {!isInProgress && isNewMode && (
           <Warning>
-            <WarningText>
+            <Text>
               New mode found. Accept this snapshot as a test baseline.{" "}
               <Link
                 withArrow
@@ -269,12 +265,12 @@ export const SnapshotComparison = ({
               >
                 Learn more
               </Link>
-            </WarningText>
+            </Text>
           </Warning>
         )}
         {!isInProgress && isNewBrowser && (
           <Warning>
-            <WarningText>
+            <Text>
               New browser found. Accept this snapshot as a test baseline.{" "}
               <Link
                 withArrow
@@ -283,7 +279,7 @@ export const SnapshotComparison = ({
               >
                 Learn more
               </Link>
-            </WarningText>
+            </Text>
           </Warning>
         )}
         {!isInProgress && selectedComparison && (
@@ -291,8 +287,8 @@ export const SnapshotComparison = ({
             render={(zoomProps) => (
               <SnapshotImage
                 key={selectedComparison.id}
-                componentName={selectedTest.story?.component?.name}
-                storyName={selectedTest.story?.name}
+                componentName={selectedTest?.story?.component?.name}
+                storyName={selectedTest?.story?.name}
                 comparisonResult={selectedComparison.result ?? undefined}
                 latestImage={selectedComparison.headCapture?.captureImage ?? undefined}
                 baselineImage={selectedComparison.baseCapture?.captureImage ?? undefined}

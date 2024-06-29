@@ -1,7 +1,8 @@
-import React from "react";
+import React, { ComponentProps } from "react";
 
 import { BUILD_STEP_CONFIG } from "../buildSteps";
 import { LocalBuildProgress } from "../types";
+import { Text } from "./Text";
 
 interface BuildProgressLabelProps {
   localBuildProgress: LocalBuildProgress;
@@ -11,14 +12,13 @@ interface BuildProgressLabelProps {
 export const BuildProgressLabel = ({
   localBuildProgress,
   withEmoji = false,
-
   ...props
-}: BuildProgressLabelProps) => {
+}: BuildProgressLabelProps & ComponentProps<typeof Text>) => {
   const { emoji, renderProgress } = BUILD_STEP_CONFIG[localBuildProgress.currentStep];
   const label = renderProgress(localBuildProgress);
   return (
-    <span {...props}>
+    <Text {...props}>
       {withEmoji && emoji} {label}
-    </span>
+    </Text>
   );
 };

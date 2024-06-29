@@ -8,12 +8,14 @@ import { panelModes } from "../../modes";
 import { GraphQLClientProvider } from "../../utils/graphQLClient";
 import { playAll } from "../../utils/playAll";
 import { storyWrapper } from "../../utils/storyWrapper";
+import { clearSessionState } from "../../utils/useSessionState";
 import { withFigmaDesign } from "../../utils/withFigmaDesign";
+import { withSetup } from "../../utils/withSetup";
 import { Authentication } from "./Authentication";
 
 const meta = {
   component: Authentication,
-  decorators: [storyWrapper(GraphQLClientProvider)],
+  decorators: [withSetup(clearSessionState), storyWrapper(GraphQLClientProvider)],
   args: {
     setAccessToken: action("setAccessToken"),
     hasProjectId: false,

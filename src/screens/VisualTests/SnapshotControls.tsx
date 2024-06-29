@@ -1,4 +1,4 @@
-import { TooltipNote, WithTooltip } from "@storybook/components";
+import { WithTooltip } from "@storybook/components";
 import {
   BatchAcceptIcon,
   ContrastIcon,
@@ -15,9 +15,10 @@ import React from "react";
 import { ActionButton, ButtonGroup } from "../../components/ActionButton";
 import { IconButton } from "../../components/IconButton";
 import { ProgressIcon } from "../../components/icons/ProgressIcon";
-import { Text } from "../../components/layout";
 import { Placeholder } from "../../components/Placeholder";
+import { Text } from "../../components/Text";
 import { TooltipMenu } from "../../components/TooltipMenu";
+import { TooltipNote } from "../../components/TooltipNote";
 import { ComparisonResult, ReviewTestBatch, TestStatus } from "../../gql/graphql";
 import { useSelectedStoryState } from "./BuildContext";
 import { useControlsDispatch, useControlsState } from "./ControlsContext";
@@ -59,12 +60,15 @@ const Controls = styled.div({
   },
 });
 
-const DisabledIconWrapper = styled.div({
+const DisabledIconWrapper = styled.div(({ theme }) => ({
   padding: 9,
   "> svg": {
     display: "block",
   },
-});
+  path: {
+    fill: theme.color.mediumdark,
+  },
+}));
 
 const Actions = styled.div<{ showDivider?: boolean }>(({ theme, showDivider }) => ({
   gridArea: "actions",
@@ -107,8 +111,8 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
       </Controls>
     );
 
-  const isAcceptable = changeCount > 0 && selectedTest.status !== TestStatus.Accepted;
-  const isUnacceptable = changeCount > 0 && selectedTest.status === TestStatus.Accepted;
+  const isAcceptable = changeCount > 0 && selectedTest?.status !== TestStatus.Accepted;
+  const isUnacceptable = changeCount > 0 && selectedTest?.status === TestStatus.Accepted;
   const hasControls = selectedComparison?.result === ComparisonResult.Changed;
 
   return (
@@ -176,7 +180,7 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
 
       {(isAcceptable || isUnacceptable) && (
         <Actions showDivider={hasControls}>
-          {userCanReview && buildIsReviewable && isAcceptable && (
+          {userCanReview && buildIsReviewable && isAcceptable && selectedTest && (
             <ButtonGroup>
               <WithTooltip
                 tooltip={<TooltipNote note="Accept this story" />}
@@ -221,7 +225,7 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
                 >
                   {(active) => (
                     <ActionButton
-                      containsIcon
+                      square
                       active={active}
                       disabled={isReviewing}
                       aria-label="Batch accept options"
@@ -286,7 +290,7 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
                 >
                   {(active) => (
                     <ActionButton
-                      containsIcon
+                      square
                       active={active}
                       disabled={isReviewing}
                       aria-label="Batch unaccept options"
@@ -323,11 +327,11 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
             hasChrome={false}
           >
             <ActionButton
-              containsIcon
+              square
               aria-label={isOutdated ? "Run new tests" : "Rerun tests"}
               onClick={startBuild}
               disabled={isRunning}
-              secondary
+              variant="outline"
             >
               {isOutdated ? <PlayIcon /> : <SyncIcon />}
             </ActionButton>

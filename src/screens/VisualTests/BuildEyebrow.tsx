@@ -22,6 +22,10 @@ const spin = keyframes({
   to: { transform: "rotate(359deg)" },
 });
 
+const SpinIcon = styled(SyncIcon)({
+  animation: `${spin} 1s linear infinite`,
+});
+
 const stepIconStyle = { width: 10, marginRight: 8 };
 
 const Header = styled.button<{ isWarning?: boolean }>(({ isWarning, onClick, theme }) => {
@@ -47,7 +51,7 @@ const Header = styled.button<{ isWarning?: boolean }>(({ isWarning, onClick, the
 
     code: {
       fontFamily: theme.typography.fonts.mono,
-      fontSize: theme.typography.size.s1,
+      fontSize: "12px",
     },
   };
 });
@@ -144,7 +148,7 @@ const BuildProgress = ({ localBuildProgress, expanded = false }: BuildProgressPr
     if (isCurrent) {
       return {
         ...config,
-        icon: <SyncIcon style={{ ...stepIconStyle, animation: `${spin} 1s linear infinite` }} />,
+        icon: <SpinIcon style={stepIconStyle} />,
         renderLabel: config.renderProgress,
       };
     }
@@ -199,19 +203,21 @@ export const BuildEyebrow = ({
   };
 
   if (localBuildProgress) {
-    const isWarning = ["aborted", "error"].includes(localBuildProgress.currentStep);
+    const aborted = localBuildProgress.currentStep === "aborted";
+    const errored = localBuildProgress.currentStep === "error";
+    const isWarning = aborted || errored;
     return (
       <>
         <Header
-          as={isWarning ? "div" : "button"}
-          onClick={isWarning ? undefined : toggleExpanded}
+          as={errored ? "div" : "button"}
+          onClick={errored ? undefined : toggleExpanded}
           isWarning={isWarning}
         >
           <Bar percentage={localBuildProgress.buildProgressPercentage} isWarning={isWarning} />
           <Label>
             <BuildProgressLabel localBuildProgress={localBuildProgress} withEmoji />
           </Label>
-          {isWarning ? (
+          {errored ? (
             <IconButton onClick={dismissBuildError}>
               <CloseIcon aria-label="Dismiss" />
             </IconButton>
@@ -219,7 +225,7 @@ export const BuildEyebrow = ({
             <IconButton as="div">{expanded ? <CollapseIcon /> : <ExpandAltIcon />}</IconButton>
           )}
         </Header>
-        <BuildProgress localBuildProgress={localBuildProgress} expanded={expanded || isWarning} />
+        <BuildProgress localBuildProgress={localBuildProgress} expanded={expanded || errored} />
       </>
     );
   }
@@ -228,14 +234,14 @@ export const BuildEyebrow = ({
     if (!switchToLastBuildOnBranch) {
       return (
         <Label>
-          Reviewing is disabled because there&rsquo;s a newer build on <Code>{branch}</Code>.
+          Reviewing is disabled because there&apos;s a newer build on <Code>{branch}</Code>.
         </Label>
       );
     }
     if (lastBuildOnBranchInProgress) {
       return (
         <Label>
-          Reviewing is disabled because there&rsquo;s a newer build in progress on{" "}
+          Reviewing is disabled because there&apos;s a newer build in progress on{" "}
           <Code>{branch}</Code>. This can happen when a build runs in CI.
         </Label>
       );

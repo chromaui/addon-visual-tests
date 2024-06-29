@@ -11,18 +11,25 @@ import { useSharedState } from "../utils/useSharedState";
 import { Link } from "./design-system";
 import { FooterMenu } from "./FooterMenu";
 import { IconButton } from "./IconButton";
-import { Bar, Col, Section } from "./layout";
+import { Col, Section } from "./layout";
+
+const Bar = styled.div(({ theme }) => ({
+  borderBottom: `1px solid ${theme.appBorderColor}`,
+  display: "flex",
+  alignItems: "center",
+  minHeight: 40,
+  lineHeight: "20px",
+  padding: "5px 15px",
+}));
 
 const WarningSection = styled(Section)(({ theme }) => ({
   background: theme.background.warning,
   color: theme.color.warningText,
-  paddingLeft: 5,
 }));
 
 const InfoSection = styled(Section)(({ theme }) => ({
   background: theme.background.hoverable,
   color: theme.color.defaultText,
-  paddingLeft: 5,
 }));
 
 interface ConfigSectionProps {
@@ -155,7 +162,7 @@ export const Screen = ({
         onOpen={openConfig}
         hidden={configVisible}
         ignoreConfig={ignoreConfig}
-        ignoreSuggestions={!footer}
+        ignoreSuggestions={ignoreSuggestions}
       />
       <Content hidden={configVisible}>{children}</Content>
       <Content hidden={!configVisible}>

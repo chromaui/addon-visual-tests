@@ -1,8 +1,11 @@
+import { FailedIcon } from "@storybook/icons";
 import { useStorybookApi, useStorybookState } from "@storybook/manager-api";
+import { color } from "@storybook/theming";
 import type { API_StatusState } from "@storybook/types";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useMutation } from "urql";
 
+import { PANEL_ID } from "../../constants";
 import { getFragment, graphql } from "../../gql";
 import {
   ReviewTestBatch,
@@ -14,6 +17,9 @@ import {
 import { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from "../../types";
 import { testsToStatusUpdate } from "../../utils/testsToStatusUpdate";
 import { SelectedBuildInfo, updateSelectedBuildInfo } from "../../utils/updateSelectedBuildInfo";
+import { useSessionState } from "../../utils/useSessionState";
+import { AccountSuspended } from "../Errors/AccountSuspended";
+import { VisualTestsDisabled } from "../Errors/VisualTestsDisabled";
 import { GuidedTour } from "../GuidedTour/GuidedTour";
 import { Onboarding } from "../Onboarding/Onboarding";
 import { BuildProvider, useBuild } from "./BuildContext";
@@ -29,7 +35,7 @@ const createEmptyStoryStatusUpdate = (state: API_StatusState) => {
 interface VisualTestsProps {
   isOutdated: boolean;
   selectedBuildInfo?: SelectedBuildInfo;
-  setSelectedBuildInfo: ReturnType<typeof useState<SelectedBuildInfo>>[1];
+  setSelectedBuildInfo: ReturnType<typeof useSessionState<SelectedBuildInfo | undefined>>[1];
   dismissBuildError: () => void;
   localBuildProgress?: LocalBuildProgress;
   setOutdated: (isOutdated: boolean) => void;
@@ -103,7 +109,7 @@ const MutationUpdateUserPreferences = graphql(/* GraphQL */ `
 
 const useOnboarding = ({ lastBuildOnBranch, vtaOnboarding }: ReturnType<typeof useBuild>) => {
   const managerApi = useStorybookApi();
-  const { notifications } = useStorybookState();
+  const { notifications, storyId } = useStorybookState();
 
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = React.useState(false);
   const completeOnboarding = React.useCallback(() => {
@@ -121,10 +127,12 @@ const useOnboarding = ({ lastBuildOnBranch, vtaOnboarding }: ReturnType<typeof u
       setHasCompletedWalkthrough(false);
       return;
     }
-    setHasCompletedWalkthrough(
-      vtaOnboarding === VtaOnboardingPreference.Completed ||
-        vtaOnboarding === VtaOnboardingPreference.Dismissed
-    );
+    if (vtaOnboarding) {
+      setHasCompletedWalkthrough(
+        vtaOnboarding === VtaOnboardingPreference.Completed ||
+          vtaOnboarding === VtaOnboardingPreference.Dismissed
+      );
+    }
   }, [managerApi, vtaOnboarding]);
 
   const [{ fetching: isUpdating }, runMutation] = useMutation(MutationUpdateUserPreferences);
@@ -148,7 +156,7 @@ const useOnboarding = ({ lastBuildOnBranch, vtaOnboarding }: ReturnType<typeof u
     [runMutation]
   );
 
-  const lastBuildHasChanges = React.useMemo(() => {
+  const lastBuildHasChangesForStory = React.useMemo(() => {
     // select only testsForStatus (or empty array) and return true if any of them are pending and changed
     const testsForStatus =
       (lastBuildOnBranch &&
@@ -158,9 +166,12 @@ const useOnboarding = ({ lastBuildOnBranch, vtaOnboarding }: ReturnType<typeof u
       [];
 
     return testsForStatus.some(
-      (t) => t?.status === TestStatus.Pending && t?.result === TestResult.Changed
+      (t) =>
+        t?.status === TestStatus.Pending &&
+        t?.result === TestResult.Changed &&
+        t?.story?.storyId === storyId
     );
-  }, [lastBuildOnBranch]);
+  }, [lastBuildOnBranch, storyId]);
 
   const showOnboarding =
     !hasCompletedOnboarding && !hasCompletedWalkthrough && !walkthroughInProgress;
@@ -173,7 +184,7 @@ const useOnboarding = ({ lastBuildOnBranch, vtaOnboarding }: ReturnType<typeof u
     completeWalkthrough: React.useCallback(() => exitWalkthrough(true), [exitWalkthrough]),
     skipWalkthrough: React.useCallback(() => exitWalkthrough(false), [exitWalkthrough]),
     startWalkthrough,
-    lastBuildHasChanges,
+    lastBuildHasChangesForStory,
     isUpdating,
   };
 };
@@ -191,10 +202,13 @@ export const VisualTestsWithoutSelectedBuildId = ({
   storyId,
 }: VisualTestsProps) => {
   const managerApi = useStorybookApi();
-  const { addNotification } = managerApi;
+  const { addNotification, setOptions, togglePanel } = managerApi;
   const buildInfo = useBuild({ projectId, storyId, gitInfo, selectedBuildInfo });
 
   const {
+    account,
+    features,
+    manageUrl,
     hasData,
     hasProject,
     hasSelectedBuild,
@@ -208,6 +222,15 @@ export const VisualTestsWithoutSelectedBuildId = ({
     userCanReview,
   } = buildInfo;
 
+  const clickNotification = useCallback(
+    ({ onDismiss }) => {
+      onDismiss();
+      setOptions({ selectedPanel: PANEL_ID });
+      togglePanel(true);
+    },
+    [setOptions, togglePanel]
+  );
+
   const reviewState = useReview({
     buildIsReviewable: !!selectedBuild && selectedBuild.id === lastBuildOnBranch?.id,
     userCanReview,
@@ -216,18 +239,16 @@ export const VisualTestsWithoutSelectedBuildId = ({
       if (err instanceof Error) {
         addNotification({
           id: "chromatic/errorAccepting",
-          // @ts-expect-error we need a better API for not passing a link
-          link: undefined,
           content: {
             headline: `Failed to ${
               update.status === ReviewTestInputStatus.Accepted ? "accept" : "unaccept"
             } changes`,
             subHeadline: err.message,
           },
-          icon: {
-            name: "cross",
-            color: "red",
-          },
+          icon: <FailedIcon color={color.negative} />,
+          // @ts-expect-error `duration` and `onClick` require a newer version of Storybook
+          duration: 8_000,
+          onClick: clickNotification,
         });
       }
     },
@@ -285,8 +306,21 @@ export const VisualTestsWithoutSelectedBuildId = ({
     skipOnboarding,
     skipWalkthrough,
     startWalkthrough,
-    lastBuildHasChanges,
+    lastBuildHasChangesForStory,
   } = useOnboarding(buildInfo);
+
+  if (features && !features.uiTests) {
+    return <VisualTestsDisabled manageUrl={manageUrl} />;
+  }
+
+  if (account?.suspensionReason) {
+    return (
+      <AccountSuspended
+        billingUrl={account.billingUrl}
+        suspensionReason={account.suspensionReason}
+      />
+    );
+  }
 
   if (showOnboarding && hasProject) {
     return (
@@ -306,7 +340,7 @@ export const VisualTestsWithoutSelectedBuildId = ({
                 showInitialBuildScreen: !selectedBuild,
                 onComplete: completeOnboarding,
                 onSkip: skipOnboarding,
-                lastBuildHasChanges,
+                lastBuildHasChangesForStory,
               }}
             />
           </BuildProvider>
@@ -372,7 +406,9 @@ export const VisualTestsWithoutSelectedBuildId = ({
 export const VisualTests = (
   props: Omit<VisualTestsProps, "selectedBuildInfo" | "setSelectedBuildInfo">
 ) => {
-  const [selectedBuildInfo, setSelectedBuildInfo] = useState<SelectedBuildInfo>();
+  const [selectedBuildInfo, setSelectedBuildInfo] = useSessionState<SelectedBuildInfo | undefined>(
+    "selectedBuildInfo"
+  );
 
   return (
     <VisualTestsWithoutSelectedBuildId {...{ selectedBuildInfo, setSelectedBuildInfo, ...props }} />

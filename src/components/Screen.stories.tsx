@@ -29,7 +29,6 @@ export const Default: Story = {};
 const configuration = {
   configFile: "chromatic.config.json",
   projectId: "Project:6480e1b0042842f149cfd74c",
-  onlyChanged: true,
   externals: ["public/**"],
   autoAcceptChanges: "main",
   exitOnceUploaded: true,
@@ -40,7 +39,7 @@ export const Configuration: Story = {
     withSharedState(CONFIG_INFO, {
       configuration,
       problems: { storybookBaseDir: "src/frontend" },
-      suggestions: { zip: true },
+      suggestions: { onlyChanged: true, zip: true },
     } satisfies ConfigInfoPayload),
   ],
   parameters: {
@@ -55,7 +54,6 @@ export const ConfigurationProblems = {
     withSharedState(CONFIG_INFO, {
       configuration,
       problems: { storybookBaseDir: "src/frontend" },
-      suggestions: { zip: true },
     }),
   ],
 } satisfies StoryObj<typeof meta>;
@@ -65,7 +63,29 @@ export const ConfigurationSuggestions = {
     withSetup(() => localStorage.removeItem(CONFIG_INFO_DISMISSED)),
     withSharedState(CONFIG_INFO, {
       configuration,
-      suggestions: { zip: true },
+      suggestions: { onlyChanged: true, zip: true },
     }),
   ],
+} satisfies StoryObj<typeof meta>;
+
+export const SparseConfiguration = {
+  decorators: [
+    withSharedState(CONFIG_INFO, {
+      configuration: { configFile: configuration.configFile },
+      suggestions: { zip: true },
+    } satisfies ConfigInfoPayload),
+  ],
+  parameters: {
+    initialControls: {
+      configVisible: true,
+    },
+  },
+} satisfies StoryObj<typeof meta>;
+
+export const NoConfiguration = {
+  parameters: {
+    initialControls: {
+      configVisible: true,
+    },
+  },
 } satisfies StoryObj<typeof meta>;

@@ -17,13 +17,15 @@ export const CONFIG_INFO_DISMISSED = `${ADDON_ID}/configInfoDismissed`;
 export const GIT_INFO = `${ADDON_ID}/gitInfo`;
 export const GIT_INFO_ERROR = `${ADDON_ID}/gitInfoError`;
 export const PROJECT_INFO = `${ADDON_ID}/projectInfo`;
+export const IS_OFFLINE = `${ADDON_ID}/isOffline`;
 export const IS_OUTDATED = `${ADDON_ID}/isOutdated`;
 export const START_BUILD = `${ADDON_ID}/startBuild`;
 export const STOP_BUILD = `${ADDON_ID}/stopBuild`;
 export const LOCAL_BUILD_PROGRESS = `${ADDON_ID}/localBuildProgress`;
 export const SELECTED_MODE_NAME = `${ADDON_ID}/selectedModeName`;
 export const SELECTED_BROWSER_ID = `${ADDON_ID}/selectedBrowserId`;
-
+export const TELEMETRY = `${ADDON_ID}/telemetry`;
+export const ENABLE_FILTER = `${ADDON_ID}/enableFilter`;
 export const REMOVE_ADDON = `${ADDON_ID}/removeAddon`;
 
 export const CONFIG_OVERRIDES = {
@@ -37,12 +39,16 @@ export const CONFIG_OVERRIDES = {
   forceRebuild: true,
   // This should never be set for local builds
   fromCI: false,
+  // No prompts from the Build proces
+  interactive: false,
   // Builds initiated from the addon are always considered local
   isLocalBuild: true,
   // Never skip local builds
   skip: false,
-  // No prompts from the Build proces
-  interactive: false,
+  // Don't check for CLI updates
+  skipUpdateCheck: true,
+  // VTA doesn't support "manual" Storybook builds
+  storybookBuildDir: undefined,
 };
 
 export const DOCS_URL = "https://www.chromatic.com/docs/visual-tests-addon";

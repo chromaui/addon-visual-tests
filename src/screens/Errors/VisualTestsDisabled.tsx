@@ -6,30 +6,31 @@ import { Heading } from "../../components/Heading";
 import { Screen } from "../../components/Screen";
 import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
-import { LocalBuildProgress } from "../../types";
+import { useTelemetry } from "../../utils/TelemetryContext";
 
-export const BuildLimited = ({
+export const VisualTestsDisabled = ({
   children,
-  localBuildProgress,
+  manageUrl,
 }: {
   children?: React.ReactNode;
-  localBuildProgress: LocalBuildProgress;
+  manageUrl: string;
 }) => {
+  useTelemetry("Errors", "VisualTestsDisabled");
+
   return (
     <Screen footer={null}>
       <Container>
         <Stack>
           <div>
-            <Heading>Snapshot limit reached</Heading>
-            <Text>
-              Your account has reached its monthly snapshot limit. Visual testing is disabled.
-              Upgrade your plan to increase your quota.
+            <Heading>Visual Tests disabled for your project</Heading>
+            <Text center muted>
+              Update your project settings to enable visual testing.
             </Text>
           </div>
 
           <Button asChild size="medium" variant="solid">
-            <a href={localBuildProgress.errorDetailsUrl} target="_new">
-              Upgrade plan
+            <a href={manageUrl} target="_new">
+              Manage project settings
             </a>
           </Button>
 

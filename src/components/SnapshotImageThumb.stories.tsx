@@ -31,7 +31,18 @@ export const Positive = {
 
 export const Small = {
   args: {
-    backgroundColor: "rgba(255, 255, 255, 1)",
     thumbnailUrl: "/capture-16b798d6.png",
+  },
+} satisfies Story;
+
+export const BackgroundColor = {
+  args: {
+    backgroundColor: "#313d4c",
+  },
+} satisfies Story;
+
+export const TransparentBackground = {
+  args: {
+    backgroundColor: "rbga(0, 0, 0, 0)",
   },
 } satisfies Story;

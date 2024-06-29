@@ -52,37 +52,3 @@ export const Col = styled.div<{ push?: boolean }>(
   },
   ({ push }) => push && { marginLeft: "auto" }
 );
-
-export const Text = styled.div(({ theme }) => ({
-  lineHeight: "18px",
-  color: `${theme.color.defaultText}99`,
-  b: {
-    color: theme.color.defaultText,
-  },
-  code: {
-    fontSize: theme.typography.size.s1,
-    border: `1px solid ${theme.appBorderColor}`,
-    borderRadius: 3,
-    padding: "0 3px",
-  },
-  small: {
-    fontSize: theme.typography.size.s1,
-  },
-  span: {
-    whiteSpace: "nowrap",
-  },
-  svg: {
-    verticalAlign: "top",
-  },
-  "@container (min-width: 800px)": {
-    br: {
-      verticalAlign: "top",
-      display: "inline-block",
-      content: "''",
-      background: theme.appBorderColor,
-      width: 1,
-      height: "100%",
-      margin: "0 6px",
-    },
-  },
-}));

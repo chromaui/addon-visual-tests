@@ -1,47 +1,91 @@
 {
+  "name": "@chromatic-com/storybook",
+  "version": "1.6.0",
+  "description": "Catch unexpected visual changes & UI bugs in your stories",
+  "keywords": [
+    "storybook-addons",
+    "test",
+    "visual tests",
+    "vrt",
+    "chromatic"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chromaui/addon-visual-tests.git"
+  },
+  "license": "MIT",
   "author": "Chromatic <support@chromatic.com>",
-  "bundler": {
-    "exportEntries": [
-      "src/index.ts"
-    ],
-    "managerEntries": [
-      "src/manager.tsx"
-    ]
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "node": "./dist/index.js",
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs"
+    },
+    "./manager": "./dist/manager.js",
+    "./preset": "./dist/preset.js",
+    "./package.json": "./package.json"
+  },
+  "main": "dist/index.js",
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "*.js",
+    "*.d.ts"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "build-storybook": "storybook build",
+    "build:staging": "CHROMATIC_BASE_URL=https://www.staging-chromatic.com tsup",
+    "build:watch": "run-p 'build --watch' 'codegen --watch'",
+    "chromatic": "chromatic --config-file production.config.json",
+    "codegen": "graphql-codegen",
+    "lint": "eslint src --max-warnings 0 --report-unused-disable-directives",
+    "prerelease": "zx scripts/prepublish-checks.mjs",
+    "release": "yarn run build && auto shipit",
+    "start": "run-p build:watch 'storybook --quiet'",
+    "storybook": "CHROMATIC_ADDON_NAME='../src/dev.ts' storybook dev -p 6004",
+    "storybook-from-dist": "CHROMATIC_USE_DIST_VERSION=true CHROMATIC_ADDON_NAME='../dist/index.js' storybook dev -p 6004",
+    "test": "vitest",
+    "typecheck": "tsc --noemit"
+  },
+  "resolutions": {
+    "jackspeak": "2.1.1"
   },
   "dependencies": {
-    "chromatic": "^11.0.0",
+    "chromatic": "^11.4.0",
     "filesize": "^10.0.12",
     "jsonfile": "^6.1.0",
     "react-confetti": "^6.1.0",
     "strip-ansi": "^7.1.0"
   },
-  "description": "Visual Testing addon with Chromatic",
   "devDependencies": {
     "@emotion/weak-memoize": "^0.3.1",
     "@graphql-codegen/cli": "^4.0.1",
     "@graphql-codegen/client-preset": "^4.0.1",
     "@graphql-typed-document-node/core": "^3.2.0",
-    "@storybook/addon-actions": "^8.0.0-rc.3",
-    "@storybook/addon-designs": "^8.0.0-next.0",
-    "@storybook/addon-essentials": "^8.0.0-rc.3",
-    "@storybook/addon-interactions": "^8.0.0-rc.3",
-    "@storybook/addon-mdx-gfm": "^8.0.0-rc.3",
-    "@storybook/blocks": "^8.0.0-rc.3",
-    "@storybook/channels": "^8.0.0-rc.3",
-    "@storybook/client-logger": "^8.0.0-rc.3",
-    "@storybook/components": "^8.0.0-rc.3",
-    "@storybook/core-events": "^8.0.0-rc.3",
+    "@storybook/addon-actions": "^8.0.0",
+    "@storybook/addon-designs": "^8.0.0",
+    "@storybook/addon-essentials": "^8.0.0",
+    "@storybook/addon-interactions": "^8.0.0",
+    "@storybook/addon-mdx-gfm": "^8.0.0",
+    "@storybook/blocks": "^8.0.0",
+    "@storybook/channels": "^8.0.0",
+    "@storybook/client-logger": "^8.0.0",
+    "@storybook/components": "^8.0.0",
+    "@storybook/core-events": "^8.0.0",
     "@storybook/eslint-config-storybook": "^3.1.2",
     "@storybook/icons": "^1.2.8",
-    "@storybook/manager": "^8.0.0-rc.3",
-    "@storybook/manager-api": "^8.0.0-rc.3",
-    "@storybook/preview": "^8.0.0-rc.3",
-    "@storybook/react": "^8.0.0-rc.3",
-    "@storybook/react-vite": "^8.0.0-rc.3",
-    "@storybook/test": "^8.0.0-rc.3",
+    "@storybook/manager": "^8.0.0",
+    "@storybook/manager-api": "^8.0.0",
+    "@storybook/preview": "^8.0.0",
+    "@storybook/react": "^8.0.0",
+    "@storybook/react-vite": "^8.0.0",
+    "@storybook/telemetry": "^8.0.0",
+    "@storybook/test": "^8.0.0",
     "@storybook/testing-library": "^0.2.2",
-    "@storybook/theming": "^8.0.0-rc.3",
-    "@storybook/types": "^8.0.0-rc.3",
+    "@storybook/theming": "^8.0.0",
+    "@storybook/types": "^8.0.0",
     "@types/jsonfile": "^6.1.1",
     "@types/node": "^18.15.0",
     "@types/pluralize": "^0.0.29",
@@ -72,7 +116,7 @@
     "react-dom": "^16.14.0",
     "react-joyride": "^2.7.2",
     "rimraf": "^3.0.2",
-    "storybook": "^8.0.0-rc.3",
+    "storybook": "^8.0.0",
     "ts-dedent": "^2.2.0",
     "tsup": "^6.6.3",
     "typescript": "^4.9.5",
@@ -89,64 +133,28 @@
     "node": ">=16.0.0",
     "yarn": ">=1.22.18"
   },
-  "exports": {
-    ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
-    },
-    "./manager": {
-      "import": "./dist/manager.mjs"
-    },
-    "./package.json": "./package.json"
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   },
-  "files": [
-    "dist/**/*",
-    "README.md",
-    "*.js",
-    "*.d.ts"
-  ],
-  "keywords": [
-    "tests",
-    "visual tests",
-    "vrt",
-    "chromatic",
-    "storybook-addons"
-  ],
-  "license": "MIT",
-  "main": "dist/index.js",
+  "packageManager": "yarn@4.1.1",
+  "bundler": {
+    "exportEntries": [
+      "./src/index.ts"
+    ],
+    "managerEntries": [
+      "./src/manager.tsx"
+    ],
+    "nodeEntries": [
+      "./src/preset.ts"
+    ]
+  },
   "msw": {
     "workerDirectory": "public"
   },
-  "name": "@chromatic-com/storybook",
-  "publishConfig": {
-    "access": "public"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/chromaui/addon-visual-tests.git"
-  },
-  "resolutions": {
-    "jackspeak": "2.1.1"
-  },
-  "scripts": {
-    "build": "tsup",
-    "build-storybook": "storybook build",
-    "build:staging": "CHROMATIC_BASE_URL=https://www.staging-chromatic.com tsup",
-    "build:watch": "run-p 'build --watch' 'codegen --watch'",
-    "chromatic": "chromatic --config-file production.config.json",
-    "codegen": "graphql-codegen",
-    "lint": "eslint src --max-warnings 0 --report-unused-disable-directives",
-    "prerelease": "zx scripts/prepublish-checks.mjs",
-    "release": "yarn run build && auto shipit",
-    "start": "run-p build:watch 'storybook --quiet'",
-    "storybook": "CHROMATIC_ADDON_NAME='../src/dev.ts' storybook dev -p 6006",
-    "storybook-from-dist": "CHROMATIC_USE_DIST_VERSION=true CHROMATIC_ADDON_NAME='../dist/index.js' storybook dev -p 6006",
-    "test": "vitest",
-    "typecheck": "tsc --noemit"
-  },
   "storybook": {
     "displayName": "Visual Tests",
-    "icon": "https://user-images.githubusercontent.com/341738/63501763-88dbf600-c4cc-11e9-96cd-94adadc2fd72.png",
+    "icon": "https://github.com/chromaui/addon-visual-tests/assets/486540/9acf6f3f-eadb-4b9e-b934-c4b0f87d9430",
     "supportedFrameworks": [
       "react",
       "vue",
@@ -158,6 +166,5 @@
       "preact",
       "react-native"
     ]
-  },
-  "version": "1.2.15"
+  }
 }

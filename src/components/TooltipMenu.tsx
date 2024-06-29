@@ -1,10 +1,11 @@
-import { TooltipLinkList, TooltipNote, WithTooltip } from "@storybook/components";
+import { TooltipLinkList, WithTooltip } from "@storybook/components";
 import { styled } from "@storybook/theming";
 import React, { ComponentProps } from "react";
 
 import { IconButton } from "./IconButton";
+import { TooltipNote } from "./TooltipNote";
 
-const Tooltip = styled.div({
+const TooltipWrapper = styled.div({
   "& > div": {
     minWidth: 120,
   },
@@ -26,7 +27,7 @@ export const TooltipMenu = ({ children, links, note, ...props }: TooltipMenuProp
       closeOnTriggerHidden
       onVisibleChange={(visible) => setActive(visible)}
       tooltip={({ onHide }) => (
-        <Tooltip>
+        <TooltipWrapper>
           <TooltipLinkList
             links={links.map((link) => ({
               ...link,
@@ -36,7 +37,7 @@ export const TooltipMenu = ({ children, links, note, ...props }: TooltipMenuProp
               },
             }))}
           />
-        </Tooltip>
+        </TooltipWrapper>
       )}
       trigger="click"
       {...props}

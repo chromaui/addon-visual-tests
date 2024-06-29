@@ -3,8 +3,8 @@ import { useTheme } from "@storybook/theming";
 import React, { useEffect, useRef } from "react";
 import Joyride from "react-joyride";
 
-import { PANEL_ID } from "../../constants";
-import { ENABLE_FILTER } from "../../SidebarBottom";
+import { ENABLE_FILTER, PANEL_ID } from "../../constants";
+import { useSessionState } from "../../utils/useSessionState";
 import { useSelectedStoryState } from "../VisualTests/BuildContext";
 import { Confetti } from "./Confetti";
 import { Tooltip, TooltipProps } from "./Tooltip";
@@ -56,11 +56,23 @@ export const GuidedTour = ({
     managerApi.setSelectedPanel(PANEL_ID);
   }, [managerApi]);
 
-  const [showConfetti, setShowConfetti] = React.useState(false);
-  const [stepIndex, setStepIndex] = React.useState<number>(0);
-  const nextStep = () => {
-    setStepIndex((prev) => prev + 1);
-  };
+  const [showConfetti, setShowConfetti] = useSessionState("showConfetti", false);
+  const [stepIndex, setStepIndex] = useSessionState("stepIndex", 0);
+  const nextStep = () => setStepIndex((prev = 0) => prev + 1);
+
+  useEffect(() => {
+    // Hide composed Storybooks (refs) in the sidebar while the guided tour is active.
+    const explorer = document.getElementById("storybook-explorer-tree");
+    const refElements = Array.from(explorer instanceof HTMLElement ? explorer.children : [])
+      .filter((el): el is HTMLElement => el instanceof HTMLElement)
+      .slice(1);
+
+    // eslint-disable-next-line no-param-reassign, no-return-assign
+    refElements.forEach((el) => (el.style.display = "none"));
+
+    // eslint-disable-next-line no-param-reassign, no-return-assign
+    return () => refElements.forEach((el) => (el.style.display = ""));
+  }, []);
 
   useEffect(() => {
     // Listen for internal event to indicate a filter was set before moving to next step.
@@ -71,7 +83,7 @@ export const GuidedTour = ({
         window.dispatchEvent(new Event("resize"));
       }, 100);
     });
-  }, [managerApi]);
+  }, [managerApi, setStepIndex]);
 
   useEffect(() => {
     // Listen for the test status to change to ACCEPTED and move to the completed step.
@@ -79,7 +91,7 @@ export const GuidedTour = ({
       setShowConfetti(true);
       setStepIndex(6);
     }
-  }, [selectedStory?.selectedTest?.status, showConfetti, setShowConfetti, stepIndex]);
+  }, [selectedStory?.selectedTest?.status, showConfetti, setShowConfetti, stepIndex, setStepIndex]);
 
   const steps: Partial<GuidedTourStep>[] = [
     {
@@ -208,7 +220,8 @@ export const GuidedTour = ({
       disableOverlay: true,
       content: (
         <>
-          You’ve got the basics down! You can always unaccept if you’re not happy with the changes.
+          You&apos;ve got the basics down! You can always unaccept if you&apos;re not happy with the
+          changes.
         </>
       ),
       onNextButtonClick: nextStep,

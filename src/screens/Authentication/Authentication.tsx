@@ -1,8 +1,10 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 
 import { Project } from "../../gql/graphql";
 import { initiateSignin, TokenExchangeParameters } from "../../utils/requestAccessToken";
+import { useTelemetry } from "../../utils/TelemetryContext";
 import { useErrorNotification } from "../../utils/useErrorNotification";
+import { useSessionState } from "../../utils/useSessionState";
 import { useUninstallAddon } from "../Uninstalled/UninstallContext";
 import { SetSubdomain } from "./SetSubdomain";
 import { SignIn } from "./SignIn";
@@ -22,10 +24,16 @@ export const Authentication = ({
   setCreatedProjectId,
   hasProjectId,
 }: AuthenticationProps) => {
-  const [screen, setScreen] = useState<AuthenticationScreen>(hasProjectId ? "signin" : "welcome");
-  const [exchangeParameters, setExchangeParameters] = useState<TokenExchangeParameters>();
+  const [screen, setScreen] = useSessionState<AuthenticationScreen>(
+    "authenticationScreen",
+    hasProjectId ? "signin" : "welcome"
+  );
+  const [exchangeParameters, setExchangeParameters] =
+    useSessionState<TokenExchangeParameters>("exchangeParameters");
   const onError = useErrorNotification();
   const { uninstallAddon } = useUninstallAddon();
+
+  useTelemetry("Authentication", screen.charAt(0).toUpperCase() + screen.slice(1));
 
   const initiateSignInAndMoveToVerify = useCallback(
     async (subdomain?: string) => {
@@ -36,7 +44,7 @@ export const Authentication = ({
         onError("Sign in Error", err);
       }
     },
-    [onError]
+    [onError, setExchangeParameters, setScreen]
   );
 
   if (screen === "welcome" && !hasProjectId) {

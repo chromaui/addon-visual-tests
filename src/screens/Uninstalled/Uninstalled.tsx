@@ -6,8 +6,10 @@ import { VisualTestsIcon } from "../../components/icons/VisualTestsIcon";
 import { Screen } from "../../components/Screen";
 import { Stack } from "../../components/Stack";
 import { Text } from "../../components/Text";
+import { useTelemetry } from "../../utils/TelemetryContext";
 
 export const Uninstalled = () => {
+  useTelemetry("Uninstalled", "uninstalled");
   return (
     <Screen footer={false}>
       <Container>
@@ -15,7 +17,9 @@ export const Uninstalled = () => {
           <div>
             <VisualTestsIcon />
             <Heading>Uninstall complete</Heading>
-            <Text>Visual Tests will vanish the next time you restart your Storybook.</Text>
+            <Text center muted>
+              Visual Tests will vanish the next time you restart your Storybook.
+            </Text>
           </div>
         </Stack>
       </Container>

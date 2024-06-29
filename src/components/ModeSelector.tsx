@@ -1,4 +1,4 @@
-import { TooltipNote, WithTooltip } from "@storybook/components";
+import { WithTooltip } from "@storybook/components";
 import { ChevronDownIcon, DiamondIcon } from "@storybook/icons";
 import { styled, useTheme } from "@storybook/theming";
 import React from "react";
@@ -7,29 +7,58 @@ import { ComparisonResult, TestMode } from "../gql/graphql";
 import { aggregateResult } from "../utils/aggregateResult";
 import { StatusDot, StatusDotWrapper } from "./StatusDot";
 import { TooltipMenu } from "./TooltipMenu";
+import { TooltipNote } from "./TooltipNote";
 
 const IconWrapper = styled.div(({ theme }) => ({
-  display: "inline-flex",
   alignItems: "center",
+  color: theme.base === "light" ? theme.color.darkest : theme.color.light,
+  display: "inline-flex",
   gap: 6,
   height: 14,
   margin: "7px 7px",
-  color: `${theme.color.defaultText}99`,
+
   svg: {
     verticalAlign: "top",
+
     path: {
-      fill: theme.base === "light" ? `${theme.color.defaultText}99` : theme.color.light,
+      fill: theme.base === "light" ? theme.color.dark : theme.color.light,
+    },
+  },
+}));
+
+const StyledTooltipMenu = styled(TooltipMenu)(({ theme }) => ({
+  button: {
+    svg: {
+      verticalAlign: "top",
+
+      path: {
+        fill: theme.base === "light" ? theme.color.dark : theme.color.light,
+      },
+    },
+
+    "&:hover": {
+      svg: {
+        path: {
+          fill: theme.color.secondary,
+        },
+      },
     },
   },
 }));
 
 const Label = styled.span(({ theme }) => ({
+  color: theme.base === "light" ? theme.color.dark : theme.color.light,
   display: "none",
-  fontSize: theme.typography.size.s2 - 1,
+  fontSize: theme.typography.size.s1,
+  fontWeight: theme.typography.weight.bold,
+
   "@container (min-width: 300px)": {
     display: "inline-block",
   },
-  color: theme.base === "light" ? `${theme.color.defaultText}99` : theme.color.light,
+
+  "button:hover > &": {
+    color: theme.color.secondary,
+  },
 }));
 
 type ModeData = Pick<TestMode, "name">;
@@ -53,11 +82,7 @@ export const ModeSelector = ({
   const aggregate = aggregateResult(modeResults.map(({ result }) => result));
   if (!aggregate) return null;
 
-  let icon = (
-    <DiamondIcon
-      color={theme.base === "light" ? `${theme.color.defaultText}99` : theme.color.light}
-    />
-  );
+  let icon = <DiamondIcon />;
   if (!isAccepted && aggregate !== ComparisonResult.Equal && modeResults.length >= 2) {
     icon = <StatusDotWrapper status={aggregate}>{icon}</StatusDotWrapper>;
   }
@@ -90,11 +115,11 @@ export const ModeSelector = ({
       }
     >
       {links ? (
-        <TooltipMenu placement="bottom" links={links}>
+        <StyledTooltipMenu placement="bottom" links={links}>
           {icon}
           <Label>{selectedMode.name}</Label>
-          <ChevronDownIcon style={{ width: 10, height: 10 }} />
-        </TooltipMenu>
+          <ChevronDownIcon size={10} />
+        </StyledTooltipMenu>
       ) : (
         <IconWrapper>
           {icon}

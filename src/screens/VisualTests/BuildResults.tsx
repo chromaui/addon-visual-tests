@@ -1,6 +1,6 @@
 import { Link } from "@storybook/components";
 import { DocumentIcon } from "@storybook/icons";
-import { styled, useTheme } from "@storybook/theming";
+import { styled } from "@storybook/theming";
 import React from "react";
 
 import { BuildProgressInline } from "../../components/BuildProgressBarInline";
@@ -12,7 +12,7 @@ import { Heading } from "../../components/Heading";
 import { Section, Sections } from "../../components/layout";
 import { Screen } from "../../components/Screen";
 import { Stack } from "../../components/Stack";
-import { Text as CenterText } from "../../components/Text";
+import { Text } from "../../components/Text";
 import { BuildStatus, TestResult } from "../../gql/graphql";
 import { LocalBuildProgress } from "../../types";
 import { useBuildState, useSelectedBuildState, useSelectedStoryState } from "./BuildContext";
@@ -91,6 +91,8 @@ export const BuildResults = ({
     />
   );
 
+  // If we loaded tests for the build (if started/completed) but there are no tests for the selected
+  // story, then the story must be new since it doesn't exist in the last build.
   const isNewStory = selectedStory?.hasTests && selectedStory?.tests.length === 0;
 
   const isLocalBuildProgressOnSelectedBuild =
@@ -100,35 +102,42 @@ export const BuildResults = ({
     return (
       <Screen>
         <Container>
-          <Stack>
-            <div>
-              <Heading>New story found</Heading>
-              <CenterText>
-                Take an image snapshot of this story to save its “last known good state” as a test
-                baseline. This unlocks visual regression testing so you can see exactly what has
-                changed down to the pixel.
-              </CenterText>
-            </div>
-
-            {localBuildProgress && isLocalBuildProgressOnSelectedBuild ? (
+          {localBuildProgress && isLocalBuildProgressOnSelectedBuild ? (
+            <Stack>
+              <div>
+                <Heading>Snapshotting new story</Heading>
+                <Text center muted>
+                  A new snapshot is being created in a standardized cloud browser to save its
+                  &quot;last known good state&quot; as a test baseline.
+                </Text>
+              </div>
               <BuildProgressInline localBuildProgress={localBuildProgress} />
-            ) : (
-              <>
-                <Button
-                  belowText
-                  size="medium"
-                  variant="solid"
-                  onClick={isRunning ? stopBuild : startBuild}
-                >
-                  {isRunning ? "Cancel build" : "Create visual test"}
-                </Button>
-              </>
-            )}
-          </Stack>
+            </Stack>
+          ) : (
+            <Stack>
+              <div>
+                <Heading>New story found</Heading>
+                <Text center muted>
+                  Take an image snapshot of this story to save its &quot;last known good state&quot;
+                  as a test baseline. This unlocks visual regression testing so you can see exactly
+                  what has changed down to the pixel.
+                </Text>
+              </div>
+              <Button
+                belowText
+                size="medium"
+                variant="solid"
+                onClick={isRunning ? stopBuild : startBuild}
+              >
+                {isRunning ? "Cancel build" : "Create visual test"}
+              </Button>
+            </Stack>
+          )}
         </Container>
       </Screen>
     );
   }
+
   // It shouldn't be possible for one test to be skipped but not all of them
   const isSkipped = !!selectedStory?.tests?.find((t) => t.result === TestResult.Skipped);
   if (isSkipped) {
@@ -139,12 +148,12 @@ export const BuildResults = ({
           <Stack>
             <div>
               <Heading>This story was skipped</Heading>
-              <CenterText>
+              <Text center muted>
                 If you would like to resume testing it, comment out or remove
                 <Code>disableSnapshot = true</Code> from the CSF file.
-              </CenterText>
+              </Text>
             </div>
-            <Button asChild size="medium" tertiary>
+            <Button asChild size="medium" variant="outline">
               <a
                 href="https://www.chromatic.com/docs/ignoring-elements#ignore-stories"
                 target="_new"
@@ -177,11 +186,11 @@ export const BuildResults = ({
           <Eyebrow>
             {userCanReview ? (
               <>
-                Reviewing is disabled because there&rsquo;s a newer build on <Code>{branch}</Code>.
+                Reviewing is disabled because there&apos;s a newer build on <Code>{branch}</Code>.
               </>
             ) : (
               <>
-                You don&rsquo;t have permission to accept changes.{" "}
+                You don&apos;t have permission to accept changes.{" "}
                 <Link
                   href="https://www.chromatic.com/docs/collaborators#roles"
                   target="_blank"

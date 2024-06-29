@@ -1,3 +1,304 @@
+# v1.6.0 (Fri Jun 28 2024)
+
+#### 🚀 Enhancement
+
+- Ignore `storybookBuildDir` property for VTA builds [#324](https://github.com/chromaui/addon-visual-tests/pull/324) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### 🐛 Bug Fix
+
+- Replace API polling with browser-native "online" status check [#326](https://github.com/chromaui/addon-visual-tests/pull/326) ([@ghengeveld](https://github.com/ghengeveld))
+- Add stories for `SidebarBottom` [#314](https://github.com/chromaui/addon-visual-tests/pull/314) ([@ghengeveld](https://github.com/ghengeveld))
+- Use modern Yarn and run on port 6004 [#325](https://github.com/chromaui/addon-visual-tests/pull/325) ([@ghengeveld](https://github.com/ghengeveld))
+- Upgrade some deprecated uses of `@storybook/components` [#316](https://github.com/chromaui/addon-visual-tests/pull/316) ([@ghengeveld](https://github.com/ghengeveld))
+- Disallow stopping build after upload step [#317](https://github.com/chromaui/addon-visual-tests/pull/317) ([@ghengeveld](https://github.com/ghengeveld))
+- Don't auto-expand build eyebrow when canceling build [#315](https://github.com/chromaui/addon-visual-tests/pull/315) ([@ghengeveld](https://github.com/ghengeveld))
+- Add stories for `TooltipMenu` component [#313](https://github.com/chromaui/addon-visual-tests/pull/313) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v1.5.1 (Fri Jun 28 2024)
+
+#### 🐛 Bug Fix
+
+- Replace API polling with browser-native "online" status check [#326](https://github.com/chromaui/addon-visual-tests/pull/326) ([@ghengeveld](https://github.com/ghengeveld))
+
+# v1.4.1 (Fri Jun 28 2024)
+
+#### 🐛 Bug Fix
+
+- Replace API polling with browser-native "online" status check [#326](https://github.com/chromaui/addon-visual-tests/pull/326) ([@ghengeveld](https://github.com/ghengeveld))
+
+# v1.5.0 (Tue May 28 2024)
+
+#### 🚀 Enhancement
+
+- Show spinner while snapshot image is loading [#309](https://github.com/chromaui/addon-visual-tests/pull/309) ([@ghengeveld](https://github.com/ghengeveld))
+- Show Errors filter in sidebar when there's component errors [#308](https://github.com/chromaui/addon-visual-tests/pull/308) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### 🐛 Bug Fix
+
+- Upgrade Chromatic CLI to v11.4.0 to fix baseline behavior with TurboSnap [#311](https://github.com/chromaui/addon-visual-tests/pull/311) ([@ghengeveld](https://github.com/ghengeveld))
+- Ensure VTA panel opens when clicking run tests button in warning state [#310](https://github.com/chromaui/addon-visual-tests/pull/310) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v1.4.0 (Wed May 15 2024)
+
+#### 🚀 Enhancement
+
+- Suggest enabling TurboSnap and use all suggestions in generated config file [#306](https://github.com/chromaui/addon-visual-tests/pull/306) ([@ghengeveld](https://github.com/ghengeveld))
+- Show "Visual Tests disabled" screen when `uiTests` feature is disabled [#304](https://github.com/chromaui/addon-visual-tests/pull/304) ([@ghengeveld](https://github.com/ghengeveld))
+- Poll for API connection and show notification when it fails [#303](https://github.com/chromaui/addon-visual-tests/pull/303) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### 🐛 Bug Fix
+
+- Hide refs (composed Storybooks) while guided tour is active [#307](https://github.com/chromaui/addon-visual-tests/pull/307) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v1.3.5 (Fri May 10 2024)
+
+#### 🐛 Bug Fix
+
+- Upgrade Chromatic CLI to v11.3.2 [#302](https://github.com/chromaui/addon-visual-tests/pull/302) ([@ghengeveld](https://github.com/ghengeveld))
+- Support builds from (supposed) forked repository or monorepo setup [#299](https://github.com/chromaui/addon-visual-tests/pull/299) ([@ghengeveld](https://github.com/ghengeveld))
+- Show message when snapshotting is disabled for story [#300](https://github.com/chromaui/addon-visual-tests/pull/300) ([@ghengeveld](https://github.com/ghengeveld))
+- Fix spin animation on build progress eyebrow [#298](https://github.com/chromaui/addon-visual-tests/pull/298) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v1.3.4 (Tue May 07 2024)
+
+#### 🐛 Bug Fix
+
+- Upgrade Chromatic CLI dependency [#297](https://github.com/chromaui/addon-visual-tests/pull/297) ([@ghengeveld](https://github.com/ghengeveld))
+- Update dev config to load `preset.ts` rather than `index.ts` [#296](https://github.com/chromaui/addon-visual-tests/pull/296) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v1.3.3 (Mon Apr 15 2024)
+
+#### 🐛 Bug Fix
+
+- Fix bundling strategy of tsup [#289](https://github.com/chromaui/addon-visual-tests/pull/289) ([@valentinpalkovic](https://github.com/valentinpalkovic))
+
+#### Authors: 1
+
+- Valentin Palkovic ([@valentinpalkovic](https://github.com/valentinpalkovic))
+
+---
+
+# v1.3.2 (Tue Apr 09 2024)
+
+#### 🐛 Bug Fix
+
+- Refactor and add telemetry to onboarding screens [#287](https://github.com/chromaui/addon-visual-tests/pull/287) ([@ghengeveld](https://github.com/ghengeveld))
+- Upgrade to latest stable Storybook version (8.0.6) [#286](https://github.com/chromaui/addon-visual-tests/pull/286) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v1.3.1 (Fri Apr 05 2024)
+
+#### 🐛 Bug Fix
+
+- Deeply reset the build progress when starting a new build [#284](https://github.com/chromaui/addon-visual-tests/pull/284) ([@ghengeveld](https://github.com/ghengeveld))
+- Fix white background on snapshot image thumbnail with transparent `backgroundColor` [#283](https://github.com/chromaui/addon-visual-tests/pull/283) ([@ghengeveld](https://github.com/ghengeveld))
+- Tweak messaging for snapshotting new story [#285](https://github.com/chromaui/addon-visual-tests/pull/285) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v1.3.0 (Thu Apr 04 2024)
+
+#### 🚀 Enhancement
+
+- Open addon panel when notification is clicked, and pass new `duration` option [#281](https://github.com/chromaui/addon-visual-tests/pull/281) ([@ghengeveld](https://github.com/ghengeveld))
+- Show error screen when account is suspended [#282](https://github.com/chromaui/addon-visual-tests/pull/282) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### 🐛 Bug Fix
+
+- Save local state in `sessionStorage` or shared state [#274](https://github.com/chromaui/addon-visual-tests/pull/274) ([@ghengeveld](https://github.com/ghengeveld))
+- Fix misbehaving in rendering when addon is not active [#272](https://github.com/chromaui/addon-visual-tests/pull/272) ([@yannbf](https://github.com/yannbf) [@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 2
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Yann Braga ([@yannbf](https://github.com/yannbf))
+
+---
+
+# v1.2.26 (Tue Apr 02 2024)
+
+#### 🐛 Bug Fix
+
+- Add link to Visual Tests webpage on Authentication screens [#276](https://github.com/chromaui/addon-visual-tests/pull/276) ([@ghengeveld](https://github.com/ghengeveld))
+- Upgrade Chromatic CLI and pass `skipUpdateCheck: false` [#278](https://github.com/chromaui/addon-visual-tests/pull/278) ([@ghengeveld](https://github.com/ghengeveld))
+- Update addon metadata [#227](https://github.com/chromaui/addon-visual-tests/pull/227) ([@kylegach](https://github.com/kylegach))
+
+#### Authors: 2
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Kyle Gach ([@kylegach](https://github.com/kylegach))
+
+---
+
+# v1.2.25 (Wed Mar 20 2024)
+
+#### 🐛 Bug Fix
+
+- VTA: Fix tooltip spacing [#219](https://github.com/chromaui/addon-visual-tests/pull/219) ([@MichaelArestad](https://github.com/MichaelArestad))
+
+#### Authors: 1
+
+- Michael Arestad ([@MichaelArestad](https://github.com/MichaelArestad))
+
+---
+
+# v1.2.24 (Wed Mar 20 2024)
+
+#### 🐛 Bug Fix
+
+- Update guided tour tooltip to match Storybook [#226](https://github.com/chromaui/addon-visual-tests/pull/226) ([@MichaelArestad](https://github.com/MichaelArestad))
+- Setup GitHub issue template [#224](https://github.com/chromaui/addon-visual-tests/pull/224) ([@ghengeveld](https://github.com/ghengeveld))
+- Create `SECURITY.md` [#225](https://github.com/chromaui/addon-visual-tests/pull/225) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 2
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Michael Arestad ([@MichaelArestad](https://github.com/MichaelArestad))
+
+---
+
+# v1.2.23 (Mon Mar 18 2024)
+
+#### 🐛 Bug Fix
+
+- Fix dramatic layout bug during onboarding [#223](https://github.com/chromaui/addon-visual-tests/pull/223) ([@MichaelArestad](https://github.com/MichaelArestad))
+
+#### Authors: 1
+
+- Michael Arestad ([@MichaelArestad](https://github.com/MichaelArestad))
+
+---
+
+# v1.2.22 (Fri Mar 15 2024)
+
+#### 🐛 Bug Fix
+
+- Only use criteria to select mode when story first loads [#218](https://github.com/chromaui/addon-visual-tests/pull/218) ([@andrewortwein](https://github.com/andrewortwein) [@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 2
+
+- Andrew Ortwein ([@andrewortwein](https://github.com/andrewortwein))
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v1.2.21 (Fri Mar 15 2024)
+
+#### 🐛 Bug Fix
+
+- Normalize `configDir` before comparing [#222](https://github.com/chromaui/addon-visual-tests/pull/222) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v1.2.20 (Thu Mar 14 2024)
+
+#### 🐛 Bug Fix
+
+- Don't show extra border when no config is available [#221](https://github.com/chromaui/addon-visual-tests/pull/221) ([@andrewortwein](https://github.com/andrewortwein))
+
+#### Authors: 1
+
+- Andrew Ortwein ([@andrewortwein](https://github.com/andrewortwein))
+
+---
+
+# v1.2.19 (Wed Mar 13 2024)
+
+#### 🐛 Bug Fix
+
+- Set Zip to true by default on config updates [#220](https://github.com/chromaui/addon-visual-tests/pull/220) ([@thafryer](https://github.com/thafryer))
+- Fixed up ActionButton and the Mode/Browser selectors [#216](https://github.com/chromaui/addon-visual-tests/pull/216) ([@MichaelArestad](https://github.com/MichaelArestad))
+- Update text style and use it more consistently [#217](https://github.com/chromaui/addon-visual-tests/pull/217) ([@ghengeveld](https://github.com/ghengeveld))
+- Require PR labels before merging [#215](https://github.com/chromaui/addon-visual-tests/pull/215) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 3
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Jarel Fryer ([@thafryer](https://github.com/thafryer))
+- Michael Arestad ([@MichaelArestad](https://github.com/MichaelArestad))
+
+---
+
+# v1.2.18 (Mon Mar 11 2024)
+
+#### 🐛 Bug Fix
+
+- Restyled the Config options and updated colors/fonts [#202](https://github.com/chromaui/addon-visual-tests/pull/202) ([@MichaelArestad](https://github.com/MichaelArestad))
+
+#### Authors: 1
+
+- Michael Arestad ([@MichaelArestad](https://github.com/MichaelArestad))
+
+---
+
+# v1.2.17 (Mon Mar 11 2024)
+
+#### 🐛 Bug Fix
+
+- Hide 'Skip' button on last step of onboarding [#214](https://github.com/chromaui/addon-visual-tests/pull/214) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v1.2.16 (Mon Mar 11 2024)
+
+#### 🐛 Bug Fix
+
+- Fix snapshot image opacity [#212](https://github.com/chromaui/addon-visual-tests/pull/212) ([@ghengeveld](https://github.com/ghengeveld))
+- Avoid passing invalid attributes to `img` element [#213](https://github.com/chromaui/addon-visual-tests/pull/213) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v1.2.15 (Mon Mar 11 2024)
 
 #### 🐛 Bug Fix

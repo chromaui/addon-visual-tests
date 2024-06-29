@@ -13,7 +13,7 @@ import {
 } from "@storybook/theming";
 import { HttpResponse, graphql } from "msw";
 import { initialize, mswLoader } from "msw-storybook-addon";
-import React, { useState } from "react";
+import React from "react";
 
 import { AuthProvider } from "../src/AuthContext";
 import { baseModes } from "../src/modes";
@@ -21,6 +21,8 @@ import { UninstallProvider } from "../src/screens/Uninstalled/UninstallContext";
 import { RunBuildProvider } from "../src/screens/VisualTests/RunBuildContext";
 import { GraphQLClientProvider } from "../src/utils/graphQLClient";
 import { storyWrapper } from "../src/utils/storyWrapper";
+import { TelemetryProvider } from "../src/utils/TelemetryContext";
+import { useSessionState } from "../src/utils/useSessionState";
 
 // Initialize MSW
 initialize({
@@ -64,7 +66,7 @@ const Panel = styled.div<{ orientation: "right" | "bottom" }>(
     boxShadow: `0 0 0 1px ${theme.background.content}`,
     background: theme.background.content,
     color: theme.base === "light" ? theme.color.dark : theme.color.mediumlight,
-    fontSize: theme.typography.size.s2 - 1,
+    fontSize: theme.typography.size.s2,
   })
 );
 
@@ -73,7 +75,7 @@ const ThemedSetRoot = () => {
   React.useEffect(() => {
     document.body.style.background = theme.background.content;
     document.body.style.color = theme.color.defaultText;
-    document.body.style.fontSize = `${theme.typography.size.s2 - 1}px`;
+    document.body.style.fontSize = `${theme.typography.size.s2}px`;
   });
   return null;
 };
@@ -122,6 +124,10 @@ const withTheme = (StoryFn, { globals, parameters }) => {
 
 const withGraphQLClient = storyWrapper(GraphQLClientProvider);
 
+const withTelemetry = storyWrapper(TelemetryProvider, () => ({
+  value: action("telemetry"),
+}));
+
 const withAuth = storyWrapper(AuthProvider, () => ({
   value: {
     accessToken: "token",
@@ -137,9 +143,12 @@ const withManagerApi = storyWrapper(ManagerContext.Provider, ({ argsByTarget }) 
 }));
 
 const withUninstall: Decorator = (Story) => {
-  const [addonInstalled, setAddonInstalled] = useState(false);
+  const [addonUninstalled, setAddonUninstalled] = useSessionState("addonUninstalled", false);
   return (
-    <UninstallProvider addonUninstalled={addonInstalled} setAddonUninstalled={setAddonInstalled}>
+    <UninstallProvider
+      addonUninstalled={addonUninstalled}
+      setAddonUninstalled={setAddonUninstalled}
+    >
       <Story />
     </UninstallProvider>
   );
@@ -199,7 +208,15 @@ export const graphQLArgLoader: Loader = async ({ argTypes, argsByTarget, paramet
 };
 
 const preview: Preview = {
-  decorators: [withTheme, withGraphQLClient, withAuth, withUninstall, withManagerApi, withRunBuild],
+  decorators: [
+    withTheme,
+    withGraphQLClient,
+    withTelemetry,
+    withAuth,
+    withUninstall,
+    withManagerApi,
+    withRunBuild,
+  ],
   loaders: [graphQLArgLoader],
   parameters: {
     actions: {

@@ -1,5 +1,5 @@
-import { css, styled } from "@storybook/theming";
-import React, { MouseEventHandler, SyntheticEvent } from "react";
+import { styled } from "@storybook/theming";
+import React, { SyntheticEvent } from "react";
 import { TooltipRenderProps } from "react-joyride";
 
 import { Button } from "../../components/Button";
@@ -40,10 +40,6 @@ const TooltipFooter = styled.div({
   marginTop: 15,
 });
 
-const NextButton = styled(Button)(
-  ({ secondary }) => secondary && { "&&:focus": { boxShadow: "none" } }
-);
-
 export type TooltipProps = TooltipRenderProps & {
   step: TooltipRenderProps["step"] & {
     hideSkipButton?: boolean;
@@ -54,7 +50,7 @@ export type TooltipProps = TooltipRenderProps & {
   };
 };
 
-export const Tooltip = ({ step, primaryProps, tooltipProps }: TooltipProps) => {
+export const Tooltip = ({ isLastStep, step, primaryProps, tooltipProps }: TooltipProps) => {
   return (
     <TooltipBody {...tooltipProps}>
       <Wrapper>
@@ -62,9 +58,10 @@ export const Tooltip = ({ step, primaryProps, tooltipProps }: TooltipProps) => {
         <TooltipContent>{step.content}</TooltipContent>
       </Wrapper>
       {(step.hideNextButton || step.hideBackButton) && (
-        <TooltipFooter id="buttonNext">
-          {!step.hideSkipButton && (
+        <TooltipFooter id="buttonSkip">
+          {!step.hideSkipButton && !isLastStep && (
             <Button
+              size="medium"
               onClick={step.onSkipWalkthroughButtonClick}
               link
               style={{ paddingRight: 12, paddingLeft: 12, marginRight: 8 }}
@@ -73,17 +70,17 @@ export const Tooltip = ({ step, primaryProps, tooltipProps }: TooltipProps) => {
             </Button>
           )}
           {!step.hideNextButton && (
-            <NextButton
+            <Button
               {...{
                 ...primaryProps,
                 // @tmeasday - I'm not sure if we ever use this, but this makes the types work
                 onClick: primaryProps.onClick as (event: SyntheticEvent) => void,
-                secondary: true,
+                variant: "solid",
                 ...(step.onNextButtonClick ? { onClick: step.onNextButtonClick } : {}),
               }}
             >
               {step.nextButtonText || "Next"}
-            </NextButton>
+            </Button>
           )}
         </TooltipFooter>
       )}

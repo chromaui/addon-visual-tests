@@ -84,7 +84,7 @@ export const Error: Story = {
 export const Aborted: Story = {
   args: buildProgressStories.Aborted.args,
   parameters: buildProgressStories.Aborted.parameters,
-  play: dismissEyebrow,
+  play: expandEyebrow,
 };
 
 export const NewBuildRunning: Story = {

@@ -10,8 +10,7 @@ const InputWrapper = styled.div(({ theme }) => ({
     color: theme.input.color || "inherit",
     background: theme.input.background,
     boxShadow: `${theme.input.border} 0 0 0 1px inset`,
-    borderRadius: theme.input.borderRadius,
-    fontSize: theme.typography.size.s2 - 1,
+    fontSize: theme.typography.size.s2,
     lineHeight: "20px",
   },
 }));
@@ -29,6 +28,7 @@ const SuffixWrapper = styled.div(({ theme }) => ({
   alignItems: "center",
   lineHeight: "20px",
   color: theme.input.color || "inherit",
+  fontSize: theme.typography.size.s2,
 
   span: {
     opacity: 0,

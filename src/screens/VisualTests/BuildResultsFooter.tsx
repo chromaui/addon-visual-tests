@@ -5,6 +5,7 @@ import { FooterMenu } from "../../components/FooterMenu";
 import { Col } from "../../components/layout";
 import { ModeSelector } from "../../components/ModeSelector";
 import { Footer } from "../../components/Screen";
+import { TooltipNote } from "../../components/TooltipNote";
 import { TestStatus } from "../../gql/graphql";
 import { useSelectedStoryState } from "./BuildContext";
 
@@ -14,7 +15,7 @@ export const BuildResultsFooter = () => {
 
   return (
     <Footer>
-      {modeResults.length > 0 && (
+      {modeResults.length > 0 && storyState.selectedTest && (
         <ModeSelector
           isAccepted={storyState.summary.status === TestStatus.Accepted}
           modeOrder={storyState.modeOrder}
@@ -23,7 +24,7 @@ export const BuildResultsFooter = () => {
           onSelectMode={storyState.onSelectMode}
         />
       )}
-      {browserResults.length > 0 && (
+      {browserResults.length > 0 && storyState.selectedComparison && (
         <BrowserSelector
           isAccepted={storyState.summary.status === TestStatus.Accepted}
           selectedBrowser={storyState.selectedComparison.browser}

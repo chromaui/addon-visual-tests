@@ -3,15 +3,7 @@
 import { VariablesOf } from "@graphql-typed-document-node/core";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, fn } from "@storybook/test";
-import {
-  findByLabelText,
-  findByRole,
-  fireEvent,
-  screen,
-  userEvent,
-  waitFor,
-  within,
-} from "@storybook/testing-library";
+import { findByLabelText, findByRole, fireEvent, waitFor } from "@storybook/testing-library";
 import { delay, HttpResponse } from "msw";
 import React from "react";
 
@@ -67,10 +59,17 @@ type QueryInput = {
   /** If `selectedBuild` is unset, `lastBuildOnBranch` will be used *if* it matches `selectedBuildId` */
   selectedBuild?: LastOrSelectedBuildFragment;
 
+  uiTests?: boolean;
+
   userCanReview?: boolean;
 };
 function mapQuery(
-  { lastBuildOnBranch, selectedBuild: selectedBuildInput, userCanReview = true }: QueryInput,
+  {
+    lastBuildOnBranch,
+    selectedBuild: selectedBuildInput,
+    uiTests = true,
+    userCanReview = true,
+  }: QueryInput,
   { selectedBuildId }: VariablesOf<typeof QueryBuild>
 ) {
   if (selectedBuildInput && selectedBuildInput?.id !== selectedBuildId) {
@@ -84,6 +83,8 @@ function mapQuery(
   return {
     project: {
       name: "acme",
+      features: { uiTests },
+      manageUrl: "https://www.chromatic.com/manage?appId=123",
       lastBuildOnBranch,
     },
     selectedBuild,
@@ -114,6 +115,7 @@ type StoryArgs = Parameters<typeof VisualTestsWithoutSelectedBuildId>[0] & {
   togglePanelPosition: () => void;
   setSelectedPanel: () => void;
   getCurrentStoryData: () => any;
+  getCurrentParameter: () => any;
   once: () => void;
   $graphql?: { AddonVisualTestsBuild?: QueryInput };
 };
@@ -131,6 +133,7 @@ const meta = {
     togglePanelPosition: { type: "function", target: "manager-api" },
     setSelectedPanel: { type: "function", target: "manager-api" },
     getCurrentStoryData: { type: "function", target: "manager-api" },
+    getCurrentParameter: { type: "function", target: "manager-api" },
     once: { type: "function", target: "manager-api" },
     $graphql: {
       AddonVisualTestsBuild: { map: mapQuery },
@@ -160,6 +163,7 @@ const meta = {
     togglePanelPosition: fn(),
     setSelectedPanel: fn(),
     getCurrentStoryData: () => ({ type: "story" }),
+    getCurrentParameter: () => ({}),
     once: fn(),
     $graphql: { AddonVisualTestsBuild: {} },
   },
@@ -470,13 +474,6 @@ export const ModeAddedInSelectedBuild = {
       },
     },
   },
-  play: playAll(async ({ canvasElement, canvasIndex }) => {
-    const canvas = within(canvasElement);
-    const menu = await canvas.findByRole("button", { name: "480px" });
-    await userEvent.click(menu);
-    const items = await screen.findAllByText("1200px");
-    await userEvent.click(items[canvasIndex]);
-  }),
 } satisfies Story;
 
 export const ModeAddedAndAccepted = {
@@ -508,13 +505,6 @@ export const BrowserAddedInSelectedBuild = {
       },
     },
   },
-  play: playAll(async ({ canvasElement, canvasIndex }) => {
-    const canvas = within(canvasElement);
-    const menu = await canvas.findByRole("button", { name: "Chrome" });
-    await userEvent.click(menu);
-    const items = await screen.findAllByText("Safari");
-    await userEvent.click(items[canvasIndex]);
-  }),
 } satisfies Story;
 
 export const BrowserAddedAndAccepted: Story = {
@@ -828,6 +818,31 @@ export const Accepted = {
   parameters: {
     ...withFigmaDesign(
       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-305053&t=0rxMQnkxsVpVj1qy-4"
+    ),
+  },
+} satisfies Story;
+
+export const FeatureDisabled = {
+  args: {
+    storyId: "button--tertiary",
+    selectedBuildInfo: { buildId: pendingBuild.id, storyId: meta.args.storyId },
+    $graphql: {
+      AddonVisualTestsBuild: {
+        uiTests: false,
+      },
+    },
+  },
+} satisfies Story;
+
+export const ParameterDisabled = {
+  args: {
+    storyId: "button--tertiary",
+    selectedBuildInfo: { buildId: pendingBuild.id, storyId: meta.args.storyId },
+    getCurrentParameter: () => ({ disableSnapshot: true }),
+  },
+  parameters: {
+    ...withFigmaDesign(
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2255-42087&t=a8NRPgQk3kXMyxqZ-0"
     ),
   },
 } satisfies Story;
