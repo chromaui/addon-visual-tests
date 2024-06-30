@@ -1,5 +1,16 @@
 import { styled } from "@storybook/theming";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  createContext,
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 const TRANSITION_DURATION_MS = 200;
 
@@ -18,23 +29,33 @@ const Content = styled.div({
   width: "max-content",
 });
 
+const initialState = {
+  containerHeight: 0,
+  containerWidth: 0,
+  contentHeight: 0,
+  contentWidth: 0,
+  contentScale: 1,
+  translateX: 0,
+  translateY: 0,
+  multiplierX: 1,
+  multiplierY: 1,
+  zoomed: false,
+  transition: "none",
+  transitionTimeout: 0,
+};
+
+type State = typeof initialState;
+
+export const ZoomContext = createContext<[State, Dispatch<SetStateAction<State>>]>(null as any);
+
+export const ZoomProvider = ({ children }: { children: ReactNode }) => {
+  return <ZoomContext.Provider value={useState(initialState)}>{children}</ZoomContext.Provider>;
+};
+
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
 
 export const useZoom = () => {
-  const [state, setState] = useState({
-    containerHeight: 0,
-    containerWidth: 0,
-    contentHeight: 0,
-    contentWidth: 0,
-    contentScale: 1,
-    translateX: 0,
-    translateY: 0,
-    multiplierX: 1,
-    multiplierY: 1,
-    zoomed: false,
-    transition: "none",
-    transitionTimeout: 0,
-  });
+  const [state, setState] = useContext(ZoomContext);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -73,21 +94,25 @@ export const useZoom = () => {
       translateX,
       translateY,
     }));
-  }, [containerRef, contentRef]);
+  }, [containerRef, contentRef, setState]);
 
   const onMouseEvent = useCallback(
     (e: MouseEvent) => {
       if (!containerRef.current) return;
-      const { x, y } = containerRef.current.getBoundingClientRect();
+      const { x, y, width, height } = containerRef.current.getBoundingClientRect();
 
       setState((currentState) => {
+        const { clientX: cx, clientY: cy, type: eventType } = e;
+        const hovered = cx >= x && cx <= x + width && cy >= y && cy <= y + height;
+        if (!hovered) return currentState;
+
         const { containerHeight, containerWidth, contentHeight, contentWidth } = currentState;
         const ratioX = contentWidth < containerWidth ? contentWidth / contentHeight + 1 : 1;
         const ratioY = contentHeight < containerHeight ? contentHeight / contentWidth + 1 : 1;
-        const multiplierX = ((e.clientX - x) / containerWidth) * 2 * 1.2 * ratioX - 0.2 * ratioX;
-        const multiplierY = ((e.clientY - y) / containerHeight) * 2 * 1.2 * ratioY - 0.2 * ratioY;
+        const multiplierX = ((cx - x) / containerWidth) * 2 * 1.2 * ratioX - 0.2 * ratioX;
+        const multiplierY = ((cy - y) / containerHeight) * 2 * 1.2 * ratioY - 0.2 * ratioY;
 
-        const clicked = e.type === "click" && (e as any).pointerType !== "touch";
+        const clicked = eventType === "click" && (e as any).pointerType !== "touch";
         const zoomed = clicked ? !currentState.zoomed : currentState.zoomed;
         const update = {
           ...currentState,
@@ -108,7 +133,7 @@ export const useZoom = () => {
         };
       });
     },
-    [containerRef]
+    [containerRef, setState]
   );
 
   const onToggleZoom = useCallback(
@@ -151,6 +176,7 @@ export const useZoom = () => {
   const contentStyle = {
     transform: `translate(${translateX}px, ${translateY}px) scale(${scale})`,
     transition: state.transition,
+    ...(state.contentScale < 1 && { cursor: state.zoomed ? "zoom-out" : "zoom-in" }),
   };
 
   return {
@@ -173,8 +199,8 @@ export const ZoomContainer = ({
   children,
   render,
 }: {
-  children?: React.ReactNode;
-  render?: (props: ReturnType<typeof useZoom>["renderProps"]) => React.ReactChild;
+  children?: ReactNode;
+  render?: (props: ReturnType<typeof useZoom>["renderProps"]) => ReactNode;
 }) => {
   const { containerProps, contentProps, renderProps } = useZoom();
 
