@@ -5,6 +5,7 @@ import React, { useEffect } from "react";
 import { Link } from "../../components/design-system";
 import { SnapshotImage } from "../../components/SnapshotImage";
 import { Text } from "../../components/Text";
+import { ZoomContainer, ZoomProvider } from "../../components/ZoomContainer";
 import { ComparisonResult, TestResult, TestStatus } from "../../gql/graphql";
 import { summarizeTests } from "../../utils/summarizeTests";
 import { useSelectedBuildState, useSelectedStoryState } from "./BuildContext";
@@ -282,20 +283,26 @@ export const SnapshotComparison = ({
           </Warning>
         )}
         {!isInProgress && selectedComparison && (
-          <SnapshotImage
-            key={selectedComparison.id}
-            componentName={selectedTest?.story?.component?.name}
-            storyName={selectedTest?.story?.name}
-            testUrl={selectedTest?.webUrl}
-            comparisonResult={selectedComparison.result ?? undefined}
-            latestImage={selectedComparison.headCapture?.captureImage ?? undefined}
-            baselineImage={selectedComparison.baseCapture?.captureImage ?? undefined}
-            baselineImageVisible={baselineImageVisible}
-            diffImage={selectedComparison.captureDiff?.diffImage ?? undefined}
-            focusImage={selectedComparison.captureDiff?.focusImage ?? undefined}
-            diffVisible={diffVisible}
-            focusVisible={focusVisible}
-          />
+          <ZoomProvider>
+            <ZoomContainer
+              render={(zoomProps) => (
+                <SnapshotImage
+                  key={selectedComparison.id}
+                  componentName={selectedTest?.story?.component?.name}
+                  storyName={selectedTest?.story?.name}
+                  comparisonResult={selectedComparison.result ?? undefined}
+                  latestImage={selectedComparison.headCapture?.captureImage ?? undefined}
+                  baselineImage={selectedComparison.baseCapture?.captureImage ?? undefined}
+                  baselineImageVisible={baselineImageVisible}
+                  diffImage={selectedComparison.captureDiff?.diffImage ?? undefined}
+                  focusImage={selectedComparison.captureDiff?.focusImage ?? undefined}
+                  diffVisible={diffVisible}
+                  focusVisible={focusVisible}
+                  {...zoomProps}
+                />
+              )}
+            />
+          </ZoomProvider>
         )}
 
         {!isInProgress && captureErrorData && (
