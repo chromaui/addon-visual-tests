@@ -91,8 +91,8 @@ const Actions = styled.div<{ showDivider?: boolean }>(({ theme, showDivider }) =
 }));
 
 export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
-  const { baselineImageVisible, diffVisible, focusVisible } = useControlsState();
-  const { toggleBaselineImage, toggleDiff, toggleFocus } = useControlsDispatch();
+  const { baselineImageVisible, diffVisible, focusVisible, sliderVisible } = useControlsState();
+  const { toggleBaselineImage, toggleDiff, toggleFocus, toggleSlider } = useControlsDispatch();
   const { isRunning, startBuild } = useRunBuildState();
 
   const { selectedTest, selectedComparison, summary } = useSelectedStoryState();
@@ -107,7 +107,7 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
         <Placeholder />
         <Placeholder />
         <Placeholder />
-        {/* <Placeholder /> */}
+        <Placeholder />
       </Controls>
     );
 
@@ -145,6 +145,34 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
               onClick={() => toggleBaselineImage()}
             >
               <TransferIcon />
+            </IconButton>
+          </WithTooltip>
+          <WithTooltip
+            tooltip={<TooltipNote note={sliderVisible ? "Hide slider" : "Show slider"} />}
+            trigger="hover"
+            hasChrome={false}
+          >
+            <IconButton
+              id="button-toggle-slider"
+              active={sliderVisible}
+              aria-label={sliderVisible ? "Hide slider" : "Show slider"}
+              onClick={() => toggleSlider(!sliderVisible)}
+            >
+              {/* TODO Add this to @storybook/icons and import from there */}
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none">
+                <g clipPath="url(#a)">
+                  <path stroke="currentColor" strokeLinecap="round" d="M7.5.5v13" />
+                  <path
+                    fill="currentColor"
+                    d="M6 2H.5a.5.5 0 0 0-.5.5v9c0 .28.22.5.5.5H6v-1H1V3h5V2Zm1 9h6V3H7V2h6.5c.28 0 .5.23.5.5v9a.5.5 0 0 1-.5.5H7v-1Z"
+                  />
+                </g>
+                <defs>
+                  <clipPath id="a">
+                    <path d="M0 0h14v14H0z" />
+                  </clipPath>
+                </defs>
+              </svg>
             </IconButton>
           </WithTooltip>
           <WithTooltip

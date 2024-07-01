@@ -19,7 +19,7 @@ export const Container = styled.div<{ isZoomed?: boolean }>(({ isZoomed, theme }
   overflow: "hidden",
 }));
 
-const Divider = styled.div(({ theme }) => ({
+const Divider = styled.div<{ left: string; right: string }>(({ left, right, theme }) => ({
   position: "absolute",
   height: "100%",
   width: 1,
@@ -40,21 +40,21 @@ const Divider = styled.div(({ theme }) => ({
     transition: "opacity 0.2s",
   },
   "&::before": {
-    content: '"Baseline"',
+    content: `'${left}'`,
     right: 4,
   },
   "&::after": {
-    content: '"Latest"',
+    content: `'${right}'`,
     left: 4,
   },
 }));
 
-type State = number | null;
+type State = number;
 
 export const SliderContext = createContext<[State, Dispatch<SetStateAction<State>>]>(null as any);
 
 export const SliderProvider = ({ children }: { children: ReactNode }) => (
-  <SliderContext.Provider value={useState<State>(null)}>{children}</SliderContext.Provider>
+  <SliderContext.Provider value={useState<State>(50)}>{children}</SliderContext.Provider>
 );
 
 const useDividerPosition = (targetRef: RefObject<HTMLElement>) => {
@@ -74,12 +74,24 @@ const useDividerPosition = (targetRef: RefObject<HTMLElement>) => {
   return dividerPosition;
 };
 
-export const Slider = ({ left, right }: { left?: ReactNode; right?: ReactNode }) => {
+export const Slider = ({
+  left,
+  right,
+  leftLabel = "Baseline",
+  rightLabel = "Latest",
+  visible = true,
+}: {
+  left?: ReactNode;
+  right?: ReactNode;
+  leftLabel?: string;
+  rightLabel?: string;
+  visible?: boolean;
+}) => {
   const imageRef = useRef<HTMLImageElement>(null);
   const dividerPosition = useDividerPosition(imageRef);
 
   const baselineImageVisible = false;
-  const showDivider = !!left && !!right && !!dividerPosition;
+  const showDivider = !!left && !!right && !!dividerPosition && visible;
 
   return (
     <Container ref={imageRef}>
@@ -114,7 +126,9 @@ export const Slider = ({ left, right }: { left?: ReactNode; right?: ReactNode })
           {right}
         </div>
       )}
-      {showDivider && <Divider style={{ left: `${dividerPosition}%` }} />}
+      {showDivider && (
+        <Divider left={leftLabel} right={rightLabel} style={{ left: `${dividerPosition}%` }} />
+      )}
     </Container>
   );
 };
