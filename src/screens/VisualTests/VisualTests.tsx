@@ -5,7 +5,7 @@ import type { API_StatusState } from "@storybook/types";
 import React, { useCallback, useEffect } from "react";
 import { useMutation } from "urql";
 
-import { PANEL_ID } from "../../constants";
+import { ADDON_ID, PANEL_ID } from "../../constants";
 import { getFragment, graphql } from "../../gql";
 import {
   ReviewTestBatch,
@@ -238,7 +238,7 @@ export const VisualTestsWithoutSelectedBuildId = ({
     onReviewError: (err, update) => {
       if (err instanceof Error) {
         addNotification({
-          id: "chromatic/errorAccepting",
+          id: `${ADDON_ID}/errorAccepting/${Date.now()}`,
           content: {
             headline: `Failed to ${
               update.status === ReviewTestInputStatus.Accepted ? "accept" : "unaccept"

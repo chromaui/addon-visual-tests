@@ -21,7 +21,7 @@ export function useErrorNotification() {
   return useCallback(
     (headline: string, err: any) => {
       addNotification({
-        id: `${ADDON_ID}/error`,
+        id: `${ADDON_ID}/error/${Date.now()}`,
         content: {
           headline,
           subHeadline: err.toString(),
