@@ -117,7 +117,7 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
 
   return (
     <>
-      {hasControls && (
+      {hasControls && !sliderVisible && (
         <Label>
           <Text>
             <b>
@@ -130,23 +130,27 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
 
       {hasControls && (
         <Controls>
-          <WithTooltip
-            tooltip={
-              <TooltipNote
-                note={baselineImageVisible ? "Show latest snapshot" : "Show baseline snapshot"}
-              />
-            }
-            trigger="hover"
-            hasChrome={false}
-          >
-            <IconButton
-              id="button-toggle-snapshot"
-              aria-label={baselineImageVisible ? "Show latest snapshot" : "Show baseline snapshot"}
-              onClick={() => toggleBaselineImage()}
+          {!sliderVisible && (
+            <WithTooltip
+              tooltip={
+                <TooltipNote
+                  note={baselineImageVisible ? "Show latest snapshot" : "Show baseline snapshot"}
+                />
+              }
+              trigger="hover"
+              hasChrome={false}
             >
-              <TransferIcon />
-            </IconButton>
-          </WithTooltip>
+              <IconButton
+                id="button-toggle-snapshot"
+                aria-label={
+                  baselineImageVisible ? "Show latest snapshot" : "Show baseline snapshot"
+                }
+                onClick={() => toggleBaselineImage()}
+              >
+                <TransferIcon />
+              </IconButton>
+            </WithTooltip>
+          )}
           <WithTooltip
             tooltip={<TooltipNote note={sliderVisible ? "Hide slider" : "Show slider"} />}
             trigger="hover"

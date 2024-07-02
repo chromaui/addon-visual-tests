@@ -19,7 +19,7 @@ export const Container = styled.div<{ isZoomed?: boolean }>(({ isZoomed, theme }
   overflow: "hidden",
 }));
 
-const Divider = styled.div<{ left: string; right: string }>(({ left, right, theme }) => ({
+const Divider = styled.div(({ theme }) => ({
   position: "absolute",
   height: "100%",
   width: 1,
@@ -40,11 +40,11 @@ const Divider = styled.div<{ left: string; right: string }>(({ left, right, them
     transition: "opacity 0.2s",
   },
   "&::before": {
-    content: `'${left}'`,
+    content: `'Baseline'`,
     right: 4,
   },
   "&::after": {
-    content: `'${right}'`,
+    content: `'Latest'`,
     left: 4,
   },
 }));
@@ -74,31 +74,25 @@ const useDividerPosition = (targetRef: RefObject<HTMLElement>) => {
   return dividerPosition;
 };
 
-export const Slider = ({
-  left,
-  right,
-  leftLabel = "Baseline",
-  rightLabel = "Latest",
-  visible = true,
-}: {
-  left?: ReactNode;
-  right?: ReactNode;
-  leftLabel?: string;
-  rightLabel?: string;
+type SliderProps = {
+  baseline: ReactNode;
+  latest: ReactNode;
   visible?: boolean;
-}) => {
+};
+
+export const Slider = ({ baseline, latest, visible = true }: SliderProps) => {
   const imageRef = useRef<HTMLImageElement>(null);
   const dividerPosition = useDividerPosition(imageRef);
 
   const baselineImageVisible = false;
-  const showDivider = !!left && !!right && !!dividerPosition && visible;
+  const showDivider = !!baseline && !!latest && !!dividerPosition && visible;
 
   return (
     <Container ref={imageRef}>
-      {left && (
+      {baseline && (
         <div
           style={{
-            position: right ? "absolute" : "relative",
+            position: latest ? "absolute" : "relative",
             zIndex: baselineImageVisible ? 1 : 0,
             clipPath:
               showDivider && baselineImageVisible
@@ -106,15 +100,15 @@ export const Slider = ({
                 : "none",
             cursor: showDivider ? "ew-resize" : "auto",
             maxWidth: "100%",
-            // maxWidth: right
+            // maxWidth: latest
             //   ? `${(baselineImage.imageWidth / latestImage.imageWidth) * 100}%`
             //   : "100%",
           }}
         >
-          {left}
+          {baseline}
         </div>
       )}
-      {right && (
+      {latest && (
         <div
           style={{
             zIndex: baselineImageVisible ? 0 : 1,
@@ -123,12 +117,10 @@ export const Slider = ({
             maxWidth: "100%",
           }}
         >
-          {right}
+          {latest}
         </div>
       )}
-      {showDivider && (
-        <Divider left={leftLabel} right={rightLabel} style={{ left: `${dividerPosition}%` }} />
-      )}
+      {showDivider && <Divider style={{ left: `${dividerPosition}%` }} />}
     </Container>
   );
 };

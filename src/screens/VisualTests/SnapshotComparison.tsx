@@ -287,7 +287,7 @@ export const SnapshotComparison = ({
           <SliderProvider>
             <ZoomProvider>
               <Slider
-                left={
+                baseline={
                   <ZoomContainer
                     render={(zoomProps) => (
                       <SnapshotImage
@@ -297,7 +297,7 @@ export const SnapshotComparison = ({
                         comparisonResult={selectedComparison.result ?? undefined}
                         latestImage={selectedComparison.headCapture?.captureImage ?? undefined}
                         baselineImage={selectedComparison.baseCapture?.captureImage ?? undefined}
-                        baselineImageVisible={baselineImageVisible}
+                        baselineImageVisible={baselineImageVisible && !sliderVisible}
                         diffImage={selectedComparison.captureDiff?.diffImage ?? undefined}
                         focusImage={selectedComparison.captureDiff?.focusImage ?? undefined}
                         diffVisible={diffVisible}
@@ -307,7 +307,7 @@ export const SnapshotComparison = ({
                     )}
                   />
                 }
-                right={
+                latest={
                   <ZoomContainer
                     render={(zoomProps) => (
                       <SnapshotImage
@@ -317,7 +317,7 @@ export const SnapshotComparison = ({
                         comparisonResult={selectedComparison.result ?? undefined}
                         latestImage={selectedComparison.headCapture?.captureImage ?? undefined}
                         baselineImage={selectedComparison.baseCapture?.captureImage ?? undefined}
-                        baselineImageVisible={!baselineImageVisible}
+                        baselineImageVisible={!baselineImageVisible || sliderVisible}
                         diffImage={selectedComparison.captureDiff?.diffImage ?? undefined}
                         focusImage={selectedComparison.captureDiff?.focusImage ?? undefined}
                         diffVisible={diffVisible}
@@ -327,8 +327,6 @@ export const SnapshotComparison = ({
                     )}
                   />
                 }
-                leftLabel={baselineImageVisible ? "Latest" : "Baseline"}
-                rightLabel={baselineImageVisible ? "Baseline" : "Latest"}
                 visible={sliderVisible}
               />
             </ZoomProvider>
