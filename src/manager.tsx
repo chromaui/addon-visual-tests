@@ -35,17 +35,17 @@ addons.register(ADDON_ID, (api) => {
   const channel = api.getChannel();
   if (!channel) return;
 
-  let notificationShown = false;
+  let notificationId: string | undefined;
   channel.on(`${ADDON_ID}/heartbeat`, () => {
     clearTimeout(heartbeatTimeout);
-    if (notificationShown) {
-      notificationShown = false;
-      api.clearNotification(`${ADDON_ID}/connection-lost`);
+    if (notificationId) {
+      api.clearNotification(notificationId);
+      notificationId = undefined;
     }
     heartbeatTimeout = setTimeout(() => {
-      notificationShown = true;
+      notificationId = `${ADDON_ID}/connection-lost/${Date.now()}`;
       api.addNotification({
-        id: `${ADDON_ID}/connection-lost`,
+        id: notificationId,
         content: {
           headline: "Connection lost",
           subHeadline: "Lost connection to the Storybook server. Try refreshing the page.",
