@@ -7,6 +7,7 @@ const initialControls = {
   settingsVisible: false,
   warningsVisible: false,
   baselineImageVisible: false,
+  sliderVisible: false,
   focusVisible: false,
   diffVisible: false,
 };
@@ -23,6 +24,7 @@ const toggle =
 const handlers = {
   toggleDiff: toggle("diffVisible"),
   toggleFocus: toggle("focusVisible"),
+  toggleSlider: toggle("sliderVisible"),
   toggleConfig: toggle("configVisible"),
   toggleSettings: toggle("settingsVisible"),
   toggleWarnings: toggle("warningsVisible"),
@@ -44,6 +46,7 @@ export const useControlsDispatch = () => {
     () => ({
       toggleDiff: (visible?: boolean) => dispatch({ type: "toggleDiff", payload: visible }),
       toggleFocus: (visible?: boolean) => dispatch({ type: "toggleFocus", payload: visible }),
+      toggleSlider: (visible?: boolean) => dispatch({ type: "toggleSlider", payload: visible }),
       toggleConfig: (visible?: boolean) => dispatch({ type: "toggleConfig", payload: visible }),
       toggleSettings: (visible?: boolean) => dispatch({ type: "toggleSettings", payload: visible }),
       toggleWarnings: (visible?: boolean) => dispatch({ type: "toggleWarnings", payload: visible }),
