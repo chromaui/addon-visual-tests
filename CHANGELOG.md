@@ -1,3 +1,16 @@
+# v1.6.1 (Thu Jul 04 2024)
+
+#### 🐛 Bug Fix
+
+- Fix closing multiple notifications of the same type [#329](https://github.com/chromaui/addon-visual-tests/pull/329) ([@ghengeveld](https://github.com/ghengeveld))
+- Add backport releases to changelog [#327](https://github.com/chromaui/addon-visual-tests/pull/327) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v1.6.0 (Fri Jun 28 2024)
 
 #### 🚀 Enhancement
