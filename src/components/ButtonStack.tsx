@@ -1,4 +1,4 @@
-import { styled } from "@storybook/theming";
+import { styled } from "storybook/internal/theming";
 
 export const ButtonStack = styled.div(() => ({
   display: "flex",

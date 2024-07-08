@@ -1,6 +1,6 @@
-import { TooltipLinkList, WithTooltip } from "@storybook/components";
-import { styled } from "@storybook/theming";
 import React, { ComponentProps } from "react";
+import { TooltipLinkList, WithTooltip } from "storybook/internal/components";
+import { styled } from "storybook/internal/theming";
 
 import { IconButton } from "./IconButton";
 import { TooltipNote } from "./TooltipNote";

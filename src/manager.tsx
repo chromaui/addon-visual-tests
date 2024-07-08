@@ -1,8 +1,8 @@
 import { FailedIcon } from "@storybook/icons";
-import { addons, type API } from "@storybook/manager-api";
-import { color } from "@storybook/theming";
-import { Addon_TypesEnum } from "@storybook/types";
 import React from "react";
+import { addons, type API } from "storybook/internal/manager-api";
+import { color } from "storybook/internal/theming";
+import { Addon_TypesEnum } from "storybook/internal/types";
 
 import { SidebarBottom } from "./components/SidebarBottom";
 import { SidebarTop } from "./components/SidebarTop";

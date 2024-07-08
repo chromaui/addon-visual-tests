@@ -2,7 +2,7 @@
 import { action } from "@storybook/addon-actions";
 import type { Meta, StoryObj } from "@storybook/react";
 import { findByRole, fireEvent, screen, userEvent, within } from "@storybook/testing-library";
-import type { StoryContext } from "@storybook/types";
+import type { StoryContext } from "storybook/internal/types";
 import { delay, http } from "msw";
 import React, { ComponentProps } from "react";
 

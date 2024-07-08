@@ -1,5 +1,5 @@
-import { styled } from "@storybook/theming";
 import React from "react";
+import { styled } from "storybook/internal/theming";
 import { dedent } from "ts-dedent";
 
 import { Code } from "../../components/Code";

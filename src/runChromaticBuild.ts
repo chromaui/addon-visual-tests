@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-// eslint-disable-next-line import/no-unresolved
+
 import { Context, InitialContext, Options, run, TaskName } from "chromatic/node";
 
 import {

@@ -1,7 +1,7 @@
-import { type API, type State, useStorybookState } from "@storybook/manager-api";
-import { styled } from "@storybook/theming";
-import type { API_FilterFunction } from "@storybook/types";
+import type { API_FilterFunction } from "storybook/internal/types";
 import React, { useCallback, useEffect } from "react";
+import { type API, type State, useStorybookState } from "storybook/internal/manager-api";
+import { styled } from "storybook/internal/theming";
 
 import { ADDON_ID, ENABLE_FILTER } from "../constants";
 import { SidebarToggleButton } from "./SidebarToggleButton";

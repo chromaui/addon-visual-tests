@@ -1,5 +1,5 @@
 import type { Decorator } from "@storybook/react";
-import type { StoryContext } from "@storybook/types";
+import type { StoryContext } from "storybook/internal/types";
 import React from "react";
 
 export const storyWrapper = (
