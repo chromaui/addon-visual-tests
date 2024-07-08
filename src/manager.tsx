@@ -51,7 +51,6 @@ addons.register(ADDON_ID, (api) => {
           subHeadline: "Lost connection to the Storybook server. Try refreshing the page.",
         },
         icon: <FailedIcon color={color.negative} />,
-        // @ts-expect-error SB needs a proper API for no link
         link: undefined,
       });
     }, 3000);

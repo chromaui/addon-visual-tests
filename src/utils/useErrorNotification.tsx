@@ -27,7 +27,6 @@ export function useErrorNotification() {
           subHeadline: err.toString(),
         },
         icon: <FailedIcon color={color.negative} />,
-        // @ts-expect-error `duration` and `onClick` require a newer version of Storybook
         onClick: clickNotification,
       });
     },
