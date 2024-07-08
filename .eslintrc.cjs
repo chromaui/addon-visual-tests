@@ -2,6 +2,7 @@ module.exports = {
   root: true,
   extends: ["@storybook/eslint-config-storybook", "plugin:storybook/recommended"],
   rules: {
+    'import/no-unresolved': 'off',
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "eslint-comments/disable-enable-pair": "off",
     "simple-import-sort/imports": "error",

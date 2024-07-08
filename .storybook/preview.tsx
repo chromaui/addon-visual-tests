@@ -1,7 +1,10 @@
 import { action } from "@storybook/addon-actions";
-import { ManagerContext } from "@storybook/manager-api";
 import type { Decorator, Loader, Preview } from "@storybook/react";
 import { fn } from "@storybook/test";
+import { HttpResponse, graphql } from "msw";
+import { initialize, mswLoader } from "msw-storybook-addon";
+import React from "react";
+import { ManagerContext } from "storybook/internal/manager-api";
 import {
   Global,
   ThemeProvider,
@@ -10,10 +13,7 @@ import {
   styled,
   themes,
   useTheme,
-} from "@storybook/theming";
-import { HttpResponse, graphql } from "msw";
-import { initialize, mswLoader } from "msw-storybook-addon";
-import React from "react";
+} from "storybook/internal/theming";
 
 import { AuthProvider } from "../src/AuthContext";
 import { baseModes } from "../src/modes";

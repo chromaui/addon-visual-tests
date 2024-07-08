@@ -1,6 +1,6 @@
-import { styled } from "@storybook/theming";
 import { darken } from "polished";
 import React, { ComponentProps, forwardRef } from "react";
+import { styled } from "storybook/internal/theming";
 
 import { Icon } from "./Icon";
 import { color } from "./shared/styles";

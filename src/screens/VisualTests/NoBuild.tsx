@@ -1,8 +1,8 @@
-import { Loader } from "@storybook/components";
 import { PlayIcon } from "@storybook/icons";
-import { useParameter } from "@storybook/manager-api";
-import { styled } from "@storybook/theming";
 import React from "react";
+import { Loader } from "storybook/internal/components";
+import { useParameter } from "storybook/internal/manager-api";
+import { styled } from "storybook/internal/theming";
 import { CombinedError } from "urql";
 
 import { useAuthState } from "../../AuthContext";

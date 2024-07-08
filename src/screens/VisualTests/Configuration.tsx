@@ -1,7 +1,7 @@
-import { Link } from "@storybook/components";
 import { AlertIcon as Alert, WandIcon as Wand } from "@storybook/icons";
-import { styled } from "@storybook/theming";
 import React from "react";
+import { Link } from "storybook/internal/components";
+import { styled } from "storybook/internal/theming";
 
 import { CloseButton, CloseIcon, Heading as StyledHeading } from "../../components/Accordions";
 import { Button } from "../../components/Button";

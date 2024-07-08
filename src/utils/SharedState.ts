@@ -1,4 +1,4 @@
-import type { Channel } from "@storybook/channels";
+import type { Channel } from "storybook/internal/channels";
 
 export const GET_VALUE = `experimental_useSharedState_getValue`;
 export const SET_VALUE = `experimental_useSharedState_setValue`;

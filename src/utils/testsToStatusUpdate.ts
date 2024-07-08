@@ -1,4 +1,4 @@
-import type { API_StatusUpdate, API_StatusValue, StoryId } from "@storybook/types";
+import type { API_StatusUpdate, API_StatusValue, StoryId } from "storybook/internal/types";
 
 import { StatusTestFieldsFragment, TestStatus } from "../gql/graphql";
 

@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-unresolved
 import { TaskName } from "chromatic/node";
 import { filesize } from "filesize";
 

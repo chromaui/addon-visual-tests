@@ -3,11 +3,10 @@ import { watch } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { normalize, relative } from "node:path";
 
-import type { Channel } from "@storybook/channels";
-import { telemetry } from "@storybook/telemetry";
-import type { Options } from "@storybook/types";
-// eslint-disable-next-line import/no-unresolved
 import { type Configuration, getConfiguration, getGitInfo, type GitInfo } from "chromatic/node";
+import type { Channel } from "storybook/internal/channels";
+import { telemetry } from "storybook/internal/telemetry";
+import type { Options } from "storybook/internal/types";
 
 import {
   ADDON_ID,
