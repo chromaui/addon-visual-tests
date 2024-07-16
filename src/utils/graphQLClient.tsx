@@ -1,12 +1,10 @@
 import { useAddonState } from "@storybook/manager-api";
 import { authExchange } from "@urql/exchange-auth";
 import React from "react";
-import { Client, fetchExchange, mapExchange, Provider } from "urql";
+import { Client, ClientOptions, fetchExchange, mapExchange, Provider } from "urql";
 import { v4 as uuid } from "uuid";
 
 import { ACCESS_TOKEN_KEY, ADDON_ID, CHROMATIC_API_URL } from "../constants";
-
-export { Provider };
 
 let currentToken: string | null;
 let currentTokenExpiration: number | null;
@@ -56,56 +54,69 @@ export const getFetchOptions = (token?: string) => ({
   },
 });
 
-export const client = new Client({
-  url: CHROMATIC_API_URL,
-  exchanges: [
-    // We don't use cacheExchange, because it would inadvertently share data between stories.
-    mapExchange({
-      onResult(result) {
-        // Not all queries contain the `viewer` field, in which case it will be `undefined`.
-        // When we do retrieve the field but the token is invalid, it will be `null`.
-        if (result.data?.viewer === null) setCurrentToken(null);
-      },
-    }),
-    authExchange(async (utils) => {
-      return {
-        addAuthToOperation(operation) {
-          if (!currentToken) return operation;
-          return utils.appendHeaders(operation, { Authorization: `Bearer ${currentToken}` });
+export const createClient = (options?: Partial<ClientOptions>) =>
+  new Client({
+    url: CHROMATIC_API_URL,
+    exchanges: [
+      // We don't use cacheExchange, because it would inadvertently share data between stories.
+      mapExchange({
+        onResult(result) {
+          // Not all queries contain the `viewer` field, in which case it will be `undefined`.
+          // When we do retrieve the field but the token is invalid, it will be `null`.
+          if (result.data?.viewer === null) setCurrentToken(null);
         },
+      }),
+      authExchange(async (utils) => {
+        return {
+          addAuthToOperation(operation) {
+            if (!currentToken) return operation;
+            return utils.appendHeaders(operation, { Authorization: `Bearer ${currentToken}` });
+          },
 
-        // Determine if the current error is an authentication error.
-        didAuthError: (error) =>
-          error.response.status === 401 ||
-          error.graphQLErrors.some((e) => e.message.includes("Must login")),
+          // Determine if the current error is an authentication error.
+          didAuthError: (error) =>
+            error.response.status === 401 ||
+            error.graphQLErrors.some((e) => e.message.includes("Must login")),
 
-        // If didAuthError returns true, clear the token. Ideally we should refresh the token here.
-        // The operation will be retried automatically.
-        async refreshAuth() {
-          setCurrentToken(null);
-        },
+          // If didAuthError returns true, clear the token. Ideally we should refresh the token here.
+          // The operation will be retried automatically.
+          async refreshAuth() {
+            setCurrentToken(null);
+          },
 
-        // Prevent making a request if we know the token is missing, invalid or expired.
-        // This handler is called repeatedly so we avoid parsing the token each time.
-        willAuthError() {
-          if (!currentToken) return true;
-          try {
-            if (!currentTokenExpiration) {
-              const { exp } = JSON.parse(atob(currentToken.split(".")[1]));
-              currentTokenExpiration = exp;
+          // Prevent making a request if we know the token is missing, invalid or expired.
+          // This handler is called repeatedly so we avoid parsing the token each time.
+          willAuthError() {
+            if (!currentToken) return true;
+            try {
+              if (!currentTokenExpiration) {
+                const { exp } = JSON.parse(atob(currentToken.split(".")[1]));
+                currentTokenExpiration = exp;
+              }
+              return Date.now() / 1000 > (currentTokenExpiration || 0);
+            } catch (e) {
+              return true;
             }
-            return Date.now() / 1000 > (currentTokenExpiration || 0);
-          } catch (e) {
-            return true;
-          }
-        },
-      };
-    }),
-    fetchExchange,
-  ],
-  fetchOptions: getFetchOptions(), // Auth header (token) is handled by authExchange
-});
+          },
+        };
+      }),
+      fetchExchange,
+    ],
+    fetchOptions: getFetchOptions(), // Auth header (token) is handled by authExchange
+    ...options,
+  });
 
-export const GraphQLClientProvider = ({ children }: { children: React.ReactNode }) => {
-  return <Provider value={client}>{children}</Provider>;
+export const GraphQLClientProvider = ({
+  children,
+  value = createClient(),
+  ...rest
+}: {
+  children: React.ReactNode;
+  value?: Client;
+}) => {
+  return (
+    <Provider value={value} {...rest}>
+      {children}
+    </Provider>
+  );
 };

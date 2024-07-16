@@ -28,9 +28,10 @@ import { ControlsProvider } from "./screens/VisualTests/ControlsContext";
 import { RunBuildProvider } from "./screens/VisualTests/RunBuildContext";
 import { VisualTests } from "./screens/VisualTests/VisualTests";
 import { APIInfoPayload, GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from "./types";
-import { client, Provider, useAccessToken } from "./utils/graphQLClient";
+import { createClient, GraphQLClientProvider, useAccessToken } from "./utils/graphQLClient";
 import { TelemetryProvider } from "./utils/TelemetryContext";
 import { useBuildEvents } from "./utils/useBuildEvents";
+import { useChannelFetch } from "./utils/useChannelFetch";
 import { useProjectId } from "./utils/useProjectId";
 import { clearSessionState, useSessionState } from "./utils/useSessionState";
 import { useSharedState } from "./utils/useSharedState";
@@ -81,8 +82,9 @@ export const Panel = ({ active, api }: PanelProps) => {
   const trackEvent = useCallback((data: any) => emit(TELEMETRY, data), [emit]);
   const { isRunning, startBuild, stopBuild } = useBuildEvents({ localBuildProgress, accessToken });
 
+  const fetch = useChannelFetch();
   const withProviders = (children: React.ReactNode) => (
-    <Provider key={PANEL_ID} value={client}>
+    <GraphQLClientProvider key={PANEL_ID} value={createClient({ fetch })}>
       <TelemetryProvider value={trackEvent}>
         <AuthProvider value={{ accessToken, setAccessToken }}>
           <UninstallProvider
@@ -99,7 +101,7 @@ export const Panel = ({ active, api }: PanelProps) => {
           </UninstallProvider>
         </AuthProvider>
       </TelemetryProvider>
-    </Provider>
+    </GraphQLClientProvider>
   );
 
   if (!active) {
