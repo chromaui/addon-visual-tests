@@ -1,8 +1,6 @@
 import { useChannel } from "@storybook/manager-api";
 
-const FETCH_ABORTED = "ChannelFetch/aborted";
-const FETCH_REQUEST = "ChannelFetch/request";
-const FETCH_RESPONSE = "ChannelFetch/response";
+import { FETCH_ABORTED, FETCH_REQUEST, FETCH_RESPONSE } from "../constants";
 
 type SerializedResponse = {
   status: number;

@@ -1,8 +1,6 @@
 import type { Channel } from "@storybook/channels";
 
-export const FETCH_ABORTED = "ChannelFetch/aborted";
-export const FETCH_REQUEST = "ChannelFetch/request";
-export const FETCH_RESPONSE = "ChannelFetch/response";
+import { FETCH_ABORTED, FETCH_REQUEST, FETCH_RESPONSE } from "../constants";
 
 type ChannelLike = Pick<Channel, "emit" | "on" | "off">;
 
