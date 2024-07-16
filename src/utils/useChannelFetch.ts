@@ -36,10 +36,17 @@ export const useChannelFetch: () => typeof fetch = () => {
   });
 
   return async (input: string | URL | Request, { signal, ...init }: RequestInit = {}) => {
-    const requestId = Math.random().toString(36).slice(2);
-    emit(FETCH_REQUEST, { requestId, input, init });
+    if (signal?.aborted) {
+      return Promise.reject(signal.reason);
+    }
 
-    signal?.addEventListener("abort", () => emit(FETCH_ABORTED, { requestId }));
+    const requestId = Math.random().toString(36).slice(2);
+    signal?.addEventListener("abort", () => {
+      emit(FETCH_ABORTED, { requestId });
+      pendingRequests.get(requestId)?.reject(signal.reason);
+      pendingRequests.delete(requestId);
+    });
+    emit(FETCH_REQUEST, { requestId, input, init });
 
     return new Promise((resolve, reject) => {
       pendingRequests.set(requestId, { resolve, reject });
