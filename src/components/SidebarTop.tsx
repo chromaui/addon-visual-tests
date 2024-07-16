@@ -4,22 +4,22 @@ import { color } from "@storybook/theming";
 import pluralize from "pluralize";
 import React, { useCallback, useContext, useEffect, useRef } from "react";
 
-import { SidebarTopButton } from "./components/SidebarTopButton";
 import {
   ADDON_ID,
-  API_INFO,
   CONFIG_INFO,
   GIT_INFO_ERROR,
+  IS_OFFLINE,
   IS_OUTDATED,
   LOCAL_BUILD_PROGRESS,
   PANEL_ID,
-} from "./constants";
-import { APIInfoPayload, ConfigInfoPayload, LocalBuildProgress } from "./types";
-import { useAccessToken } from "./utils/graphQLClient";
-import { TelemetryContext } from "./utils/TelemetryContext";
-import { useBuildEvents } from "./utils/useBuildEvents";
-import { useProjectId } from "./utils/useProjectId";
-import { useSharedState } from "./utils/useSharedState";
+} from "../constants";
+import { ConfigInfoPayload, LocalBuildProgress } from "../types";
+import { useAccessToken } from "../utils/graphQLClient";
+import { TelemetryContext } from "../utils/TelemetryContext";
+import { useBuildEvents } from "../utils/useBuildEvents";
+import { useProjectId } from "../utils/useProjectId";
+import { useSharedState } from "../utils/useSharedState";
+import { SidebarTopButton } from "./SidebarTopButton";
 
 interface SidebarTopProps {
   api: API;
@@ -33,10 +33,10 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
   const [accessToken] = useAccessToken();
   const isLoggedIn = !!accessToken;
 
+  const [isOffline, setOffline] = useSharedState<boolean>(IS_OFFLINE);
   const [isOutdated] = useSharedState<boolean>(IS_OUTDATED);
   const [localBuildProgress] = useSharedState<LocalBuildProgress>(LOCAL_BUILD_PROGRESS);
 
-  const [apiInfo] = useSharedState<APIInfoPayload>(API_INFO);
   const [configInfo] = useSharedState<ConfigInfoPayload>(CONFIG_INFO);
   const hasConfigProblem = Object.keys(configInfo?.problems || {}).length > 0;
 
@@ -75,12 +75,24 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
   );
 
   useEffect(() => {
+    const offline = () => setOffline(true);
+    const online = () => setOffline(false);
+    window.addEventListener("offline", offline);
+    window.addEventListener("online", online);
+    return () => {
+      window.removeEventListener("offline", offline);
+      window.removeEventListener("online", online);
+    };
+  }, [setOffline]);
+
+  useEffect(() => {
     if (localBuildProgress?.currentStep === lastStep.current) return;
     lastStep.current = localBuildProgress?.currentStep;
 
     if (localBuildProgress?.currentStep === "initialize") {
+      const notificationId = `${ADDON_ID}/build-initialize/${Date.now()}`;
       addNotification({
-        id: `${ADDON_ID}/build-initialize`,
+        id: notificationId,
         content: {
           headline: "Build started",
           subHeadline: "Check the visual test addon to see the progress of your build.",
@@ -92,12 +104,13 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
       });
 
       // Kept for backwards compatibility (before `duration` support was added)
-      setTimeout(() => clearNotification(`${ADDON_ID}/build-initialize`), 8_000);
+      setTimeout(() => clearNotification(notificationId), 8_000);
     }
 
     if (localBuildProgress?.currentStep === "aborted") {
+      const notificationId = `${ADDON_ID}/build-aborted/${Date.now()}`;
       addNotification({
-        id: `${ADDON_ID}/build-aborted`,
+        id: notificationId,
         content: {
           headline: "Build canceled",
           subHeadline: "Aborted by user.",
@@ -109,12 +122,13 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
       });
 
       // Kept for backwards compatibility (before `duration` support was added)
-      setTimeout(() => clearNotification(`${ADDON_ID}/build-aborted`), 8_000);
+      setTimeout(() => clearNotification(notificationId), 8_000);
     }
 
     if (localBuildProgress?.currentStep === "complete") {
+      const notificationId = `${ADDON_ID}/build-complete/${Date.now()}`;
       addNotification({
-        id: `${ADDON_ID}/build-complete`,
+        id: notificationId,
         content: {
           headline: "Build complete",
           // eslint-disable-next-line no-nested-ternary
@@ -134,12 +148,12 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
       });
 
       // Kept for backwards compatibility (before `duration` support was added)
-      setTimeout(() => clearNotification(`${ADDON_ID}/build-complete`), 8_000);
+      setTimeout(() => clearNotification(notificationId), 8_000);
     }
 
     if (localBuildProgress?.currentStep === "error") {
       addNotification({
-        id: `${ADDON_ID}/build-error`,
+        id: `${ADDON_ID}/build-error/${Date.now()}`,
         content: {
           headline: "Build error",
           subHeadline: "Check the Storybook process on the command line for more details.",
@@ -152,7 +166,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
 
     if (localBuildProgress?.currentStep === "limited") {
       addNotification({
-        id: `${ADDON_ID}/build-limited`,
+        id: `${ADDON_ID}/build-limited/${Date.now()}`,
         content: {
           headline: "Build limited",
           subHeadline:
@@ -179,11 +193,11 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
   });
 
   let warning: string | undefined;
-  if (apiInfo?.connected === false) warning = "Visual tests locked while waiting for network.";
   if (!projectId) warning = "Visual tests locked until a project is selected.";
   if (!isLoggedIn) warning = "Visual tests locked until you are logged in.";
   if (gitInfoError) warning = "Visual tests locked due to Git synchronization problem.";
   if (hasConfigProblem) warning = "Visual tests locked due to configuration problem.";
+  if (isOffline) warning = "Visual tests locked while offline.";
 
   const clickWarning = useCallback(
     () => openVisualTestsPanel(warning),

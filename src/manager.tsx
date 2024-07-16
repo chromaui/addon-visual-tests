@@ -4,10 +4,10 @@ import { color } from "@storybook/theming";
 import { Addon_TypesEnum } from "@storybook/types";
 import React from "react";
 
+import { SidebarBottom } from "./components/SidebarBottom";
+import { SidebarTop } from "./components/SidebarTop";
 import { ADDON_ID, PANEL_ID, SIDEBAR_BOTTOM_ID, SIDEBAR_TOP_ID } from "./constants";
 import { Panel } from "./Panel";
-import { SidebarBottom } from "./SidebarBottom";
-import { SidebarTop } from "./SidebarTop";
 
 let heartbeatTimeout: NodeJS.Timeout;
 const expectHeartbeat = (api: API) => {
@@ -35,17 +35,17 @@ addons.register(ADDON_ID, (api) => {
   const channel = api.getChannel();
   if (!channel) return;
 
-  let notificationShown = false;
+  let notificationId: string | undefined;
   channel.on(`${ADDON_ID}/heartbeat`, () => {
     clearTimeout(heartbeatTimeout);
-    if (notificationShown) {
-      notificationShown = false;
-      api.clearNotification(`${ADDON_ID}/connection-lost`);
+    if (notificationId) {
+      api.clearNotification(notificationId);
+      notificationId = undefined;
     }
     heartbeatTimeout = setTimeout(() => {
-      notificationShown = true;
+      notificationId = `${ADDON_ID}/connection-lost/${Date.now()}`;
       api.addNotification({
-        id: `${ADDON_ID}/connection-lost`,
+        id: notificationId,
         content: {
           headline: "Connection lost",
           subHeadline: "Lost connection to the Storybook server. Try refreshing the page.",

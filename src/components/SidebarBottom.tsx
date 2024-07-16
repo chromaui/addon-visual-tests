@@ -1,10 +1,10 @@
-import { type API, useStorybookState } from "@storybook/manager-api";
+import { type API, type State, useStorybookState } from "@storybook/manager-api";
 import { styled } from "@storybook/theming";
 import type { API_FilterFunction } from "@storybook/types";
 import React, { useCallback, useEffect } from "react";
 
-import { SidebarToggleButton } from "./components/SidebarToggleButton";
-import { ADDON_ID, ENABLE_FILTER } from "./constants";
+import { ADDON_ID, ENABLE_FILTER } from "../constants";
+import { SidebarToggleButton } from "./SidebarToggleButton";
 
 const filterNone: API_FilterFunction = () => true;
 const filterWarn: API_FilterFunction = ({ status }) => status?.[ADDON_ID]?.status === "warn";
@@ -26,13 +26,13 @@ const Wrapper = styled.div({
 
 interface SidebarBottomProps {
   api: API;
+  status: State["status"];
 }
 
-export const SidebarBottom = ({ api }: SidebarBottomProps) => {
+export const SidebarBottomBase = ({ api, status }: SidebarBottomProps) => {
   const [showWarnings, setShowWarnings] = React.useState(false);
   const [showErrors, setShowErrors] = React.useState(false);
 
-  const { status } = useStorybookState();
   const warnings = Object.values(status).filter((value) => value[ADDON_ID]?.status === "warn");
   const errors = Object.values(status).filter((value) => value[ADDON_ID]?.status === "error");
   const hasWarnings = warnings.length > 0;
@@ -73,4 +73,9 @@ export const SidebarBottom = ({ api }: SidebarBottomProps) => {
       )}
     </Wrapper>
   );
+};
+
+export const SidebarBottom = (props: Omit<SidebarBottomProps, "status">) => {
+  const { status } = useStorybookState();
+  return <SidebarBottomBase {...props} status={status} />;
 };
