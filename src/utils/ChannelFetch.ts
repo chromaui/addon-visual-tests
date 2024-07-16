@@ -11,7 +11,7 @@ export class ChannelFetch {
 
   abortControllers: Map<string, AbortController>;
 
-  constructor(channel: ChannelLike) {
+  constructor(channel: ChannelLike, _fetch = fetch) {
     this.channel = channel;
     this.abortControllers = new Map<string, AbortController>();
 
@@ -25,12 +25,13 @@ export class ChannelFetch {
       this.abortControllers.set(requestId, controller);
 
       try {
-        const res = await fetch(input as RequestInfo, { ...init, signal: controller.signal });
+        const res = await _fetch(input as RequestInfo, { ...init, signal: controller.signal });
         const body = await res.text();
         const headers = Array.from(res.headers as any);
         const response = { body, headers, status: res.status, statusText: res.statusText };
         this.channel.emit(FETCH_RESPONSE, { requestId, response });
-      } catch (error) {
+      } catch (err) {
+        const error = err instanceof Error ? err.message : String(err);
         this.channel.emit(FETCH_RESPONSE, { requestId, error });
       } finally {
         this.abortControllers.delete(requestId);
@@ -38,8 +39,8 @@ export class ChannelFetch {
     });
   }
 
-  static subscribe<T>(key: string, channel: ChannelLike) {
-    const instance = instances.get(key) || new ChannelFetch(channel);
+  static subscribe(key: string, channel: ChannelLike, _fetch = fetch) {
+    const instance = instances.get(key) || new ChannelFetch(channel, _fetch);
     if (!instances.has(key)) instances.set(key, instance);
     return instance;
   }
