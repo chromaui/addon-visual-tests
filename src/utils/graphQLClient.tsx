@@ -109,14 +109,7 @@ export const createClient = (options?: Partial<ClientOptions>) =>
 export const GraphQLClientProvider = ({
   children,
   value = createClient(),
-  ...rest
 }: {
   children: React.ReactNode;
   value?: Client;
-}) => {
-  return (
-    <Provider value={value} {...rest}>
-      {children}
-    </Provider>
-  );
-};
+}) => <Provider value={value}>{children}</Provider>;

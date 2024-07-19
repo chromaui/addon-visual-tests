@@ -11,7 +11,6 @@ import {
   IS_OFFLINE,
   IS_OUTDATED,
   LOCAL_BUILD_PROGRESS,
-  PANEL_ID,
   REMOVE_ADDON,
   TELEMETRY,
 } from "./constants";
@@ -96,7 +95,7 @@ export const Panel = ({ active, api }: PanelProps) => {
 
   const fetch = useChannelFetch();
   const withProviders = (children: React.ReactNode) => (
-    <GraphQLClientProvider key={PANEL_ID} value={createClient({ fetch })}>
+    <GraphQLClientProvider value={createClient({ fetch })}>
       <TelemetryProvider value={trackEvent}>
         <AuthProvider value={{ accessToken, setAccessToken }}>
           <UninstallProvider
@@ -136,7 +135,6 @@ export const Panel = ({ active, api }: PanelProps) => {
   if (!accessToken) {
     return withProviders(
       <Authentication
-        key={PANEL_ID}
         setAccessToken={setAccessToken}
         setCreatedProjectId={setCreatedProjectId}
         hasProjectId={!!projectId}
