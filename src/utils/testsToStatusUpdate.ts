@@ -1,5 +1,7 @@
+import type { API } from "@storybook/manager-api";
 import type { API_StatusUpdate, API_StatusValue, StoryId } from "@storybook/types";
 
+import { PANEL_ID } from "../constants";
 import { StatusTestFieldsFragment, TestStatus } from "../gql/graphql";
 
 export const statusMap: Partial<Record<TestStatus, API_StatusValue>> = {
@@ -22,6 +24,7 @@ function chooseWorseStatus(status: API_StatusValue | null, oldStatus: API_Status
 }
 
 export function testsToStatusUpdate<T extends StatusTestFieldsFragment>(
+  api: API,
   tests: readonly T[]
 ): API_StatusUpdate {
   const storyIdToStatus: Record<StoryId, API_StatusValue | null> = {};
@@ -34,6 +37,10 @@ export function testsToStatusUpdate<T extends StatusTestFieldsFragment>(
       storyIdToStatus[test.story.storyId]
     );
   });
+  const openAddonPanel = () => {
+    api.setSelectedPanel(PANEL_ID);
+    api.togglePanel(true);
+  };
   const update = Object.fromEntries(
     Object.entries(storyIdToStatus).map(([storyId, status]) => [
       storyId,
@@ -41,6 +48,7 @@ export function testsToStatusUpdate<T extends StatusTestFieldsFragment>(
         status,
         title: "Visual Tests",
         description: "Chromatic Visual Tests",
+        onClick: openAddonPanel,
       },
     ])
   );

@@ -9,6 +9,8 @@ import { useSelectedStoryState } from "../VisualTests/BuildContext";
 import { Confetti } from "./Confetti";
 import { Tooltip, TooltipProps } from "./Tooltip";
 
+const SET_FILTER = "setFilter"; // TODO: Import from @storybook/core-events once available
+
 type GuidedTourStep = TooltipProps["step"];
 
 interface TourProps {
@@ -75,14 +77,22 @@ export const GuidedTour = ({
   }, []);
 
   useEffect(() => {
-    // Listen for internal event to indicate a filter was set before moving to next step.
-    managerApi.once(ENABLE_FILTER, () => {
+    const onFilter = () => {
       setStepIndex(1);
       // Force a resize to make sure the react-joyride centers on the sidebar properly. Timeout is needed to make sure the filter takes place.
       setTimeout(() => {
         window.dispatchEvent(new Event("resize"));
       }, 100);
-    });
+    };
+
+    // Listen for event to indicate a filter was set before moving to next step.
+    // Storybook before v8.3 didn't have SET_FILTER, those versions use ENABLE_FILTER instead.
+    managerApi.on(ENABLE_FILTER, onFilter);
+    managerApi.on(SET_FILTER, onFilter);
+    return () => {
+      managerApi.off(ENABLE_FILTER, onFilter);
+      managerApi.off(SET_FILTER, onFilter);
+    };
   }, [managerApi, setStepIndex]);
 
   useEffect(() => {
