@@ -1,11 +1,17 @@
-import { expect, it } from "vitest";
+import type { API } from "@storybook/manager-api";
+import { expect, it, vi } from "vitest";
 
 import { TestStatus } from "../gql/graphql";
 import { testsToStatusUpdate } from "./testsToStatusUpdate";
 
+const api: API = {
+  setSelectedPanel: vi.fn(),
+  togglePanel: vi.fn(),
+} as any;
+
 it("handles single test with no changes", () => {
   expect(
-    testsToStatusUpdate([
+    testsToStatusUpdate(api, [
       {
         id: "1",
         status: TestStatus.Passed,
@@ -23,7 +29,7 @@ it("handles single test with no changes", () => {
 
 it("handles single test with changes", () => {
   expect(
-    testsToStatusUpdate([
+    testsToStatusUpdate(api, [
       {
         id: "1",
         status: TestStatus.Pending,
@@ -36,6 +42,7 @@ it("handles single test with changes", () => {
     {
       "story--id": {
         "description": "Chromatic Visual Tests",
+        "onClick": [Function],
         "status": "warn",
         "title": "Visual Tests",
       },
@@ -45,7 +52,7 @@ it("handles single test with changes", () => {
 
 it("handles multiple tests", () => {
   expect(
-    testsToStatusUpdate([
+    testsToStatusUpdate(api, [
       {
         id: "1",
         status: TestStatus.Pending,
@@ -65,11 +72,13 @@ it("handles multiple tests", () => {
     {
       "story--id": {
         "description": "Chromatic Visual Tests",
+        "onClick": [Function],
         "status": "warn",
         "title": "Visual Tests",
       },
       "story2--id": {
         "description": "Chromatic Visual Tests",
+        "onClick": [Function],
         "status": "error",
         "title": "Visual Tests",
       },
@@ -79,7 +88,7 @@ it("handles multiple tests", () => {
 
 it("handles multiple viewports", () => {
   expect(
-    testsToStatusUpdate([
+    testsToStatusUpdate(api, [
       {
         id: "1",
         status: TestStatus.Broken,
@@ -99,6 +108,7 @@ it("handles multiple viewports", () => {
     {
       "story--id": {
         "description": "Chromatic Visual Tests",
+        "onClick": [Function],
         "status": "error",
         "title": "Visual Tests",
       },
@@ -108,7 +118,7 @@ it("handles multiple viewports", () => {
 
 it("handles multiple viewports, reverse order", () => {
   expect(
-    testsToStatusUpdate([
+    testsToStatusUpdate(api, [
       {
         id: "1",
         status: TestStatus.Pending,
@@ -128,6 +138,7 @@ it("handles multiple viewports, reverse order", () => {
     {
       "story--id": {
         "description": "Chromatic Visual Tests",
+        "onClick": [Function],
         "status": "error",
         "title": "Visual Tests",
       },
