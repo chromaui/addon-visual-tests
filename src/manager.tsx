@@ -6,7 +6,7 @@ import React from "react";
 
 import { SidebarBottom } from "./components/SidebarBottom";
 import { SidebarTop } from "./components/SidebarTop";
-import { ADDON_ID, PANEL_ID, SIDEBAR_BOTTOM_ID, SIDEBAR_TOP_ID } from "./constants";
+import { ADDON_ID, PANEL_ID, PARAM_KEY, SIDEBAR_BOTTOM_ID, SIDEBAR_TOP_ID } from "./constants";
 import { Panel } from "./Panel";
 
 let heartbeatTimeout: NodeJS.Timeout;
@@ -18,6 +18,7 @@ addons.register(ADDON_ID, (api) => {
   addons.add(PANEL_ID, {
     type: Addon_TypesEnum.PANEL,
     title: "Visual Tests",
+    paramKey: PARAM_KEY,
     match: ({ viewMode }) => viewMode === "story",
     render: ({ active }) => <Panel active={!!active} api={api} />,
   });
