@@ -1,3 +1,15 @@
+# v1.7.0 (Tue Aug 20 2024)
+
+#### 🚀 Enhancement
+
+- Update story status reporting for Storybook 8.3 and use new `SET_FILTER` event [#332](https://github.com/chromaui/addon-visual-tests/pull/332) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v1.6.1 (Thu Jul 04 2024)
 
 #### 🐛 Bug Fix
