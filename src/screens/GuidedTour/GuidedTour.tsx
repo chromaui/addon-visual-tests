@@ -117,7 +117,7 @@ export const GuidedTour = ({
         </>
       ),
       floaterProps: {
-        target: "#changes-found-filter",
+        target: "#warnings-found-filter",
         options: {
           preventOverflow: {
             boundariesElement: "window",

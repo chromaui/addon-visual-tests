@@ -53,7 +53,7 @@ export const SidebarBottomBase = ({ api, status }: SidebarBottomProps) => {
     <Wrapper id="sidebar-bottom-wrapper">
       {hasWarnings && (
         <SidebarToggleButton
-          id="changes-found-filter"
+          id="warnings-found-filter"
           active={showWarnings}
           count={warnings.length}
           label="Change"
