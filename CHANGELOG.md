@@ -1,3 +1,15 @@
+# v1.8.0 (Thu Aug 29 2024)
+
+#### 🚀 Enhancement
+
+- Add `paramKey: "chromatic"` to allow disabling the VTA panel through story parameters [#334](https://github.com/chromaui/addon-visual-tests/pull/334) ([@mellm0](https://github.com/mellm0))
+
+#### Authors: 1
+
+- Mell ([@mellm0](https://github.com/mellm0))
+
+---
+
 # v1.7.0 (Tue Aug 20 2024)
 
 #### 🚀 Enhancement
