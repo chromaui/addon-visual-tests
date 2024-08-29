@@ -263,7 +263,8 @@ export const VisualTestsWithoutSelectedBuildId = ({
     "testsForStatus" in lastBuildOnBranch &&
     lastBuildOnBranch.testsForStatus?.nodes &&
     getFragment(FragmentStatusTestFields, lastBuildOnBranch.testsForStatus.nodes);
-  const statusUpdate = lastBuildOnBranchIsSelectable && testsToStatusUpdate(testsForStatus || []);
+  const statusUpdate =
+    lastBuildOnBranchIsSelectable && testsToStatusUpdate(managerApi, testsForStatus || []);
   useEffect(() => {
     updateBuildStatus((state) => ({
       ...createEmptyStoryStatusUpdate(state),

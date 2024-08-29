@@ -704,6 +704,7 @@ export const Pending = {
       expect(args.updateBuildStatus).toHaveBeenCalledWith({
         "button--primary": {
           status: "warn",
+          onClick: expect.anything(),
           title: "Visual Tests",
           description: "Chromatic Visual Tests",
         },
