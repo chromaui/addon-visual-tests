@@ -27,6 +27,7 @@ export const SELECTED_BROWSER_ID = `${ADDON_ID}/selectedBrowserId`;
 export const TELEMETRY = `${ADDON_ID}/telemetry`;
 export const ENABLE_FILTER = `${ADDON_ID}/enableFilter`;
 export const REMOVE_ADDON = `${ADDON_ID}/removeAddon`;
+export const PARAM_KEY = "chromatic";
 
 export const FETCH_ABORTED = `${ADDON_ID}/ChannelFetch/aborted`;
 export const FETCH_REQUEST = `${ADDON_ID}ChannelFetch/request`;
