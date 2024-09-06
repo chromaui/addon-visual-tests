@@ -30,6 +30,7 @@ import {
   LocalBuildProgress,
   ProjectInfoPayload,
 } from "./types";
+import { ChannelFetch } from "./utils/ChannelFetch";
 import { SharedState } from "./utils/SharedState";
 import { updateChromaticConfig } from "./utils/updateChromaticConfig";
 
@@ -158,6 +159,9 @@ const watchConfigFile = async (
 
 async function serverChannel(channel: Channel, options: Options & { configFile?: string }) {
   const { configFile, presets } = options;
+
+  // Handle relayed fetch requests from the client
+  ChannelFetch.subscribe(ADDON_ID, channel);
 
   // Lazy load these APIs since we don't need them right away
   const apiPromise = presets.apply<any>("experimental_serverAPI");

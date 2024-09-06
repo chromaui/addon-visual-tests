@@ -1,3 +1,15 @@
+# v1.9.0 (Fri Sep 06 2024)
+
+#### 🚀 Enhancement
+
+- Relay client-side fetch requests to the server using the Storybook channel API [#331](https://github.com/chromaui/addon-visual-tests/pull/331) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v1.8.0 (Thu Aug 29 2024)
 
 #### 🚀 Enhancement
