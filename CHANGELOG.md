@@ -1,3 +1,16 @@
+# v2.0.0 (Mon Sep 09 2024)
+
+#### 💥 Breaking Change
+
+- Align with Storybook 8.2 core package layout [#330](https://github.com/chromaui/addon-visual-tests/pull/330) ([@ndelangen](https://github.com/ndelangen) [@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 2
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+
+---
+
 # v1.9.0 (Fri Sep 06 2024)
 
 #### 🚀 Enhancement
