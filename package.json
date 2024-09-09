@@ -67,6 +67,7 @@
     "@graphql-codegen/cli": "^4.0.1",
     "@graphql-codegen/client-preset": "^4.0.1",
     "@graphql-typed-document-node/core": "^3.2.0",
+    "@mdx-js/rollup": "^3.0.1",
     "@storybook/addon-actions": "^8.2.9",
     "@storybook/addon-designs": "^8.0.3",
     "@storybook/addon-essentials": "^8.2.9",
