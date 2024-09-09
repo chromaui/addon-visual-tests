@@ -1,7 +1,7 @@
 import { FailedIcon } from "@storybook/icons";
-import { useStorybookApi } from "@storybook/manager-api";
-import { color } from "@storybook/theming";
 import React, { useCallback } from "react";
+import { useStorybookApi } from "storybook/internal/manager-api";
+import { color } from "storybook/internal/theming";
 
 import { ADDON_ID, PANEL_ID } from "../constants";
 
@@ -27,7 +27,6 @@ export function useErrorNotification() {
           subHeadline: err.toString(),
         },
         icon: <FailedIcon color={color.negative} />,
-        // @ts-expect-error `duration` and `onClick` require a newer version of Storybook
         onClick: clickNotification,
       });
     },
