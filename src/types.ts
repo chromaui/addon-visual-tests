@@ -1,5 +1,5 @@
+import type { API } from "@storybook/manager-api";
 import type { Configuration, getConfiguration, GitInfo, TaskName } from "chromatic/node";
-import type { API } from "storybook/internal/manager-api";
 
 import { SelectedBuildFieldsFragment } from "./gql/graphql";
 

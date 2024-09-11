@@ -1,8 +1,8 @@
+import { Link } from "@storybook/components";
 import { PlayIcon } from "@storybook/icons";
+import { styled } from "@storybook/theming";
 import pluralize from "pluralize";
 import React from "react";
-import { Link } from "storybook/internal/components";
-import { styled } from "storybook/internal/theming";
 
 import { ActionButton } from "../../components/ActionButton";
 import { AlertIcon } from "../../components/icons/AlertIcon";

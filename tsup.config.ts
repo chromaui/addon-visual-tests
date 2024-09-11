@@ -1,5 +1,6 @@
 import { defineConfig, type Options } from "tsup";
 import { readFile } from "fs/promises";
+import { globalPackages as globalManagerPackages } from "@storybook/manager/globals";
 import type { PackageJson } from "type-fest";
 
 type Formats = "esm" | "cjs";
@@ -63,7 +64,9 @@ export default defineConfig(async (options) => {
 
   const configs: Options[] = [];
 
-  const globalManagerPackagesNoIcons = ["storybook"];
+  const globalManagerPackagesNoIcons = globalManagerPackages.filter(
+    (packageJson) => packageJson !== "@storybook/icons"
+  );
 
   if (nodeEntries.length) {
     configs.push({
@@ -76,6 +79,9 @@ export default defineConfig(async (options) => {
     });
   }
 
+  // manager entries are entries meant to be loaded into the manager UI
+  // they'll have manager-specific packages externalized and they won't be usable in node
+  // they won't have types generated for them as they're usually loaded automatically by Storybook
   if (managerEntries.length) {
     configs.push({
       ...commonConfig,
@@ -107,6 +113,21 @@ export default defineConfig(async (options) => {
       platform: "neutral",
     });
   }
+
+  // This addon doesn't use preview entries but this is the recommended way to do it if we ever do
+
+  // preview entries are entries meant to be loaded into the preview iframe
+  // they'll have preview-specific packages externalized and they won't be usable in node
+  // they won't have types generated for them as they're usually loaded automatically by Storybook
+  // if (previewEntries.length) {
+  //   configs.push({
+  //     ...commonConfig,
+  //     entry: previewEntries,
+  //     format: ["esm"],
+  //     platform: "browser",
+  //     external: globalPreviewPackages,
+  //   });
+  // }
 
   return configs;
 });

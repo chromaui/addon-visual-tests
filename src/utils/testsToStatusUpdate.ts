@@ -1,5 +1,5 @@
-import type { API } from "storybook/internal/manager-api";
-import type { API_StatusUpdate, API_StatusValue, StoryId } from "storybook/internal/types";
+import type { API } from "@storybook/manager-api";
+import type { API_StatusUpdate, API_StatusValue, StoryId } from "@storybook/types";
 
 import { PANEL_ID } from "../constants";
 import { StatusTestFieldsFragment, TestStatus } from "../gql/graphql";

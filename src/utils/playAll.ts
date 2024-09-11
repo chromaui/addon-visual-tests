@@ -1,5 +1,5 @@
 import type { ReactRenderer } from "@storybook/react";
-import type { StoryAnnotations } from "storybook/internal/types";
+import type { StoryAnnotations } from "@storybook/types";
 
 export function playAll<Story extends StoryAnnotations<ReactRenderer>>(
   ...sequence: (Story | Story["play"])[]

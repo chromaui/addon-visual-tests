@@ -1,4 +1,4 @@
-import { styled } from "storybook/internal/theming";
+import { styled } from "@storybook/theming";
 
 export const Base = styled.div<{ hidden?: boolean }>(({ hidden, theme }) => ({
   background: theme.background.app,

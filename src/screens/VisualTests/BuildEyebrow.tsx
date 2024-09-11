@@ -1,3 +1,4 @@
+import { Link } from "@storybook/components";
 import {
   CheckIcon,
   ChevronRightIcon,
@@ -7,9 +8,8 @@ import {
   FailedIcon,
   SyncIcon,
 } from "@storybook/icons";
+import { keyframes, styled } from "@storybook/theming";
 import React, { useEffect, useRef } from "react";
-import { Link } from "storybook/internal/components";
-import { keyframes, styled } from "storybook/internal/theming";
 
 import { BUILD_STEP_CONFIG, BUILD_STEP_ORDER } from "../../buildSteps";
 import { BuildProgressLabel } from "../../components/BuildProgressLabel";

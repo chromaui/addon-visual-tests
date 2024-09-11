@@ -14,17 +14,30 @@ const configFileMap = {
 
 const config: StorybookConfig = {
   addons: [
+    {
+      name: "@storybook/addon-essentials",
+      options: {
+        backgrounds: false,
+        viewport: false,
+      },
+    },
     "@storybook/addon-interactions",
     "@storybook/addon-designs",
-    "@storybook/addon-mdx-gfm",
     {
       name: useDistVersion ? "../dist/preset.js" : "../src/dev.ts",
       options: {
         configFile: configFileMap[CHROMATIC_BASE_URL || '"https://www.chromatic.com"'],
       },
     },
+    "@storybook/addon-mdx-gfm",
   ],
-  framework: "@storybook/react-vite",
+  docs: {
+    autodocs: "tag",
+  },
+  framework: {
+    name: "@storybook/react-vite",
+    options: {},
+  },
   logLevel: "debug",
   staticDirs: ["../public"],
   stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|ts|tsx)"],

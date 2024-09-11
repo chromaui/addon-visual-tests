@@ -1,6 +1,6 @@
 import weakMemoize from "@emotion/weak-memoize";
+import { styled, type Theme, useTheme } from "@storybook/theming";
 import React, { ComponentProps, ReactNode } from "react";
-import { styled, type Theme, useTheme } from "storybook/internal/theming";
 
 import { inlineGlow } from "../shared/animation";
 

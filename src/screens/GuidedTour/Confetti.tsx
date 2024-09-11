@@ -1,7 +1,7 @@
+import { styled } from "@storybook/theming";
 import React, { useEffect, useState } from "react";
 import ReactConfetti from "react-confetti";
 import { createPortal } from "react-dom";
-import { styled } from "storybook/internal/theming";
 
 interface ConfettiProps extends Omit<React.ComponentProps<typeof ReactConfetti>, "drawShape"> {
   top?: number;

@@ -140,6 +140,7 @@ export const MakeAChange = {
     await userEvent.click(button);
   }),
   render: (args) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [gitInfo, setGitInfo] = React.useState(args.gitInfo);
     return (
       <>
@@ -178,7 +179,9 @@ export const ChangesDetected = {
     await userEvent.click(gitButton);
   }),
   render: (args) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [gitInfo, setGitInfo] = React.useState(args.gitInfo);
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [localBuildProgress, setLocalBuildProgress] = React.useState(args.localBuildProgress);
     return (
       <>
@@ -228,7 +231,9 @@ export const RunningFirstTest = {
     await userEvent.click(runTestsButton);
   }),
   render: (args) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [gitInfo, setGitInfo] = React.useState(args.gitInfo);
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [localBuildProgress, setLocalBuildProgress] = React.useState(args.localBuildProgress);
     return (
       <>
@@ -279,7 +284,9 @@ export const RanFirstTestNoChanges = {
     },
   },
   render: (args) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [gitInfo, setGitInfo] = React.useState(args.gitInfo);
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [localBuildProgress, setLocalBuildProgress] = React.useState(args.localBuildProgress);
     return (
       <>
@@ -310,8 +317,11 @@ export const RanFirstTestNoChanges = {
 export const ChangesFound = {
   ...RunningFirstTest,
   render: (args) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [gitInfo, setGitInfo] = React.useState(args.gitInfo);
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [localBuildProgress, setLocalBuildProgress] = React.useState(args.localBuildProgress);
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [lastBuildHasChanges, setLastBuildHasChanges] = React.useState(false);
     return (
       <>
