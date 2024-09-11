@@ -1,7 +1,7 @@
+import { WithTooltip } from "@storybook/components";
 import { ChevronDownIcon } from "@storybook/icons";
+import { styled, useTheme } from "@storybook/theming";
 import React, { ComponentProps } from "react";
-import { WithTooltip } from "storybook/internal/components";
-import { styled, useTheme } from "storybook/internal/theming";
 
 import { Browser, BrowserInfo, ComparisonResult } from "../gql/graphql";
 import { aggregateResult } from "../utils/aggregateResult";

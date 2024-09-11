@@ -1,6 +1,6 @@
+import { Loader } from "@storybook/components";
+import { styled } from "@storybook/theming";
 import React, { useEffect } from "react";
-import { Loader } from "storybook/internal/components";
-import { styled } from "storybook/internal/theming";
 
 import { Link } from "../../components/design-system";
 import { SnapshotImage } from "../../components/SnapshotImage";

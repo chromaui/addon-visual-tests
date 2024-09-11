@@ -1,3 +1,5 @@
+import { TooltipMessage, WithTooltip } from "@storybook/components";
+import { css, styled } from "@storybook/theming";
 import React, {
   ComponentProps,
   forwardRef,
@@ -8,8 +10,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { TooltipMessage, WithTooltip } from "storybook/internal/components";
-import { css, styled } from "storybook/internal/theming";
 
 import { Icon } from "./Icon";
 import { Link } from "./Link";

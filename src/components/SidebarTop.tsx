@@ -1,8 +1,8 @@
 import { FailedIcon, PassedIcon } from "@storybook/icons";
+import { type API, useStorybookState } from "@storybook/manager-api";
+import { color } from "@storybook/theming";
 import pluralize from "pluralize";
 import React, { useCallback, useContext, useEffect, useRef } from "react";
-import { type API, useStorybookState } from "storybook/internal/manager-api";
-import { color } from "storybook/internal/theming";
 
 import {
   ADDON_ID,
@@ -98,6 +98,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
           subHeadline: "Check the visual test addon to see the progress of your build.",
         },
         icon: <PassedIcon color={color.positive} />,
+        // @ts-expect-error `duration` and `onClick` require a newer version of Storybook
         duration: 8_000,
         onClick: clickNotification,
       });
@@ -115,6 +116,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
           subHeadline: "Aborted by user.",
         },
         icon: <FailedIcon color={color.negative} />,
+        // @ts-expect-error `duration` and `onClick` require a newer version of Storybook
         duration: 8_000,
         onClick: clickNotification,
       });
@@ -140,6 +142,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
             : "No visual changes detected",
         },
         icon: <PassedIcon color={color.positive} />,
+        // @ts-expect-error `duration` and `onClick` require a newer version of Storybook
         duration: 8_000,
         onClick: clickNotification,
       });
@@ -156,6 +159,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
           subHeadline: "Check the Storybook process on the command line for more details.",
         },
         icon: <FailedIcon color={color.negative} />,
+        // @ts-expect-error `duration` and `onClick` require a newer version of Storybook
         onClick: clickNotification,
       });
     }
@@ -169,6 +173,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
             "Your account has insufficient snapshots remaining to run this build. Visit your billing page to find out more.",
         },
         icon: <FailedIcon color={color.negative} />,
+        // @ts-expect-error `duration` and `onClick` require a newer version of Storybook
         onClick: clickNotification,
       });
     }

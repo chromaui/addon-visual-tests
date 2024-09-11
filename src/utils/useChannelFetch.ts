@@ -1,4 +1,4 @@
-import { useChannel } from "storybook/internal/manager-api";
+import { useChannel } from "@storybook/manager-api";
 
 import { FETCH_ABORTED, FETCH_REQUEST, FETCH_RESPONSE } from "../constants";
 

@@ -1,3 +1,4 @@
+import { WithTooltip } from "@storybook/components";
 import {
   BatchAcceptIcon,
   ContrastIcon,
@@ -8,9 +9,8 @@ import {
   TransferIcon,
   UndoIcon,
 } from "@storybook/icons";
+import { styled } from "@storybook/theming";
 import React from "react";
-import { WithTooltip } from "storybook/internal/components";
-import { styled } from "storybook/internal/theming";
 
 import { ActionButton, ButtonGroup } from "../../components/ActionButton";
 import { IconButton } from "../../components/IconButton";

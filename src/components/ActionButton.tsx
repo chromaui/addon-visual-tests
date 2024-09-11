@@ -1,6 +1,6 @@
+import { styled, type Theme } from "@storybook/theming";
 import { darken, lighten } from "polished";
 import { ComponentProps } from "react";
-import { styled, type Theme } from "storybook/internal/theming";
 
 import { IconButton } from "./IconButton";
 

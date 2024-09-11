@@ -1,7 +1,7 @@
+import { WithTooltip } from "@storybook/components";
 import { PlayIcon, StopAltIcon } from "@storybook/icons";
+import { keyframes, styled } from "@storybook/theming";
 import React, { ComponentProps } from "react";
-import { WithTooltip } from "storybook/internal/components";
-import { keyframes, styled } from "storybook/internal/theming";
 
 import { LocalBuildProgress } from "../types";
 import { BuildProgressLabel } from "./BuildProgressLabel";

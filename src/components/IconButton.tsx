@@ -1,6 +1,6 @@
+import { IconButton as BaseIconButton } from "@storybook/components";
+import { styled, type Theme } from "@storybook/theming";
 import { ComponentProps } from "react";
-import { IconButton as BaseIconButton } from "storybook/internal/components";
-import { styled, type Theme } from "storybook/internal/theming";
 
 const getStatusStyles = (theme: Theme, status?: IconButtonProps["status"]) =>
   (status &&

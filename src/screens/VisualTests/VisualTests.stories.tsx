@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-
+// eslint-disable-next-line import/no-unresolved
 import { VariablesOf } from "@graphql-typed-document-node/core";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, fn } from "@storybook/test";

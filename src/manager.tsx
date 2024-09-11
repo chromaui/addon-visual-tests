@@ -1,8 +1,8 @@
 import { FailedIcon } from "@storybook/icons";
+import { addons, type API } from "@storybook/manager-api";
+import { color } from "@storybook/theming";
+import { Addon_TypesEnum } from "@storybook/types";
 import React from "react";
-import { addons, type API } from "storybook/internal/manager-api";
-import { color } from "storybook/internal/theming";
-import { Addon_TypesEnum } from "storybook/internal/types";
 
 import { SidebarBottom } from "./components/SidebarBottom";
 import { SidebarTop } from "./components/SidebarTop";
@@ -52,6 +52,7 @@ addons.register(ADDON_ID, (api) => {
           subHeadline: "Lost connection to the Storybook server. Try refreshing the page.",
         },
         icon: <FailedIcon color={color.negative} />,
+        // @ts-expect-error SB needs a proper API for no link
         link: undefined,
       });
     }, 3000);

@@ -1,5 +1,5 @@
+import { useGlobals, useGlobalTypes } from "@storybook/manager-api";
 import { useCallback, useState } from "react";
-import { useGlobals, useGlobalTypes } from "storybook/internal/manager-api";
 
 import { SELECTED_BROWSER_ID, SELECTED_MODE_NAME } from "../constants";
 import { BrowserInfo, ComparisonResult, StoryTestFieldsFragment, TestMode } from "../gql/graphql";

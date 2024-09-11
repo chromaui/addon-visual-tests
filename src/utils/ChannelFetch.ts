@@ -1,4 +1,4 @@
-import type { Channel } from "storybook/internal/channels";
+import type { Channel } from "@storybook/channels";
 
 import { FETCH_ABORTED, FETCH_REQUEST, FETCH_RESPONSE } from "../constants";
 
