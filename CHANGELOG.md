@@ -1,3 +1,15 @@
+# v2.0.1 (Wed Sep 11 2024)
+
+#### 🐛 Bug Fix
+
+- Revert "Align with Storybook 8.2 core package layout" [#338](https://github.com/chromaui/addon-visual-tests/pull/338) ([@yannbf](https://github.com/yannbf))
+
+#### Authors: 1
+
+- Yann Braga ([@yannbf](https://github.com/yannbf))
+
+---
+
 # v2.0.0 (Mon Sep 09 2024)
 
 #### 💥 Breaking Change
