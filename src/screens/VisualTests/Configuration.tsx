@@ -307,11 +307,7 @@ export const Configuration = ({ onClose }: ConfigurationProps) => {
           <PageDescription>
             This is a read-only representation of the Chromatic configuration options found in{" "}
             <Code>{configFile}</Code>. Changes to the config file will be reflected here.{" "}
-            <Link
-              href="https://www.chromatic.com/docs/cli/#configuration-options"
-              target="_blank"
-              withArrow
-            >
+            <Link href="https://www.chromatic.com/docs/configure/" target="_blank" withArrow>
               Learn more
             </Link>
           </PageDescription>
@@ -320,7 +316,7 @@ export const Configuration = ({ onClose }: ConfigurationProps) => {
             To configure this addon, create <Code>chromatic.config.json</Code> in your project's
             root directory.{" "}
             <Link
-              href="https://www.chromatic.com/docs/cli/#configuration-options"
+              href="https://www.chromatic.com/docs/cli#chromatic-config-file"
               target="_blank"
               withArrow
             >

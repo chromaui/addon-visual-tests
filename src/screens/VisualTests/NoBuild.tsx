@@ -150,7 +150,7 @@ export const NoBuild = ({
 
             <ButtonStackLink
               withArrow
-              href="https://www.chromatic.com/docs/ignoring-elements/#ignore-stories"
+              href="https://www.chromatic.com/docs/ignoring-elements#with-storybook"
               target="_blank"
             >
               Read more
