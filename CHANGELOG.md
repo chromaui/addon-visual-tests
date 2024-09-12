@@ -1,3 +1,15 @@
+# v2.0.2 (Thu Sep 12 2024)
+
+#### 🐛 Bug Fix
+
+- Chore: Adjust Chromatic documentation links [#336](https://github.com/chromaui/addon-visual-tests/pull/336) ([@jonniebigodes](https://github.com/jonniebigodes))
+
+#### Authors: 1
+
+- [@jonniebigodes](https://github.com/jonniebigodes)
+
+---
+
 # v2.0.1 (Wed Sep 11 2024)
 
 #### 🐛 Bug Fix
