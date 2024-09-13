@@ -3,8 +3,10 @@ import { styled } from "@storybook/theming";
 import React, { useEffect } from "react";
 
 import { Link } from "../../components/design-system";
+import { Slider, SliderProvider } from "../../components/Slider";
 import { SnapshotImage } from "../../components/SnapshotImage";
 import { Text } from "../../components/Text";
+import { ZoomContainer, ZoomProvider } from "../../components/ZoomContainer";
 import { ComparisonResult, TestResult, TestStatus } from "../../gql/graphql";
 import { summarizeTests } from "../../utils/summarizeTests";
 import { useSelectedBuildState, useSelectedStoryState } from "./BuildContext";
@@ -129,7 +131,7 @@ export const SnapshotComparison = ({
   hidden,
   storyId,
 }: SnapshotComparisonProps) => {
-  const { baselineImageVisible, diffVisible, focusVisible } = useControlsState();
+  const { baselineImageVisible, diffVisible, focusVisible, sliderVisible } = useControlsState();
   const { toggleBaselineImage, toggleSettings, toggleWarnings } = useControlsDispatch();
 
   const selectedBuild = useSelectedBuildState();
@@ -282,20 +284,53 @@ export const SnapshotComparison = ({
           </Warning>
         )}
         {!isInProgress && selectedComparison && (
-          <SnapshotImage
-            key={selectedComparison.id}
-            componentName={selectedTest?.story?.component?.name}
-            storyName={selectedTest?.story?.name}
-            testUrl={selectedTest?.webUrl}
-            comparisonResult={selectedComparison.result ?? undefined}
-            latestImage={selectedComparison.headCapture?.captureImage ?? undefined}
-            baselineImage={selectedComparison.baseCapture?.captureImage ?? undefined}
-            baselineImageVisible={baselineImageVisible}
-            diffImage={selectedComparison.captureDiff?.diffImage ?? undefined}
-            focusImage={selectedComparison.captureDiff?.focusImage ?? undefined}
-            diffVisible={diffVisible}
-            focusVisible={focusVisible}
-          />
+          <SliderProvider>
+            <ZoomProvider>
+              <Slider
+                baseline={
+                  <ZoomContainer
+                    render={(zoomProps) => (
+                      <SnapshotImage
+                        key={selectedComparison.id}
+                        componentName={selectedTest?.story?.component?.name}
+                        storyName={selectedTest?.story?.name}
+                        comparisonResult={selectedComparison.result ?? undefined}
+                        latestImage={selectedComparison.headCapture?.captureImage ?? undefined}
+                        baselineImage={selectedComparison.baseCapture?.captureImage ?? undefined}
+                        baselineImageVisible={baselineImageVisible && !sliderVisible}
+                        diffImage={selectedComparison.captureDiff?.diffImage ?? undefined}
+                        focusImage={selectedComparison.captureDiff?.focusImage ?? undefined}
+                        diffVisible={diffVisible}
+                        focusVisible={focusVisible}
+                        {...zoomProps}
+                      />
+                    )}
+                  />
+                }
+                latest={
+                  <ZoomContainer
+                    render={(zoomProps) => (
+                      <SnapshotImage
+                        key={selectedComparison.id}
+                        componentName={selectedTest?.story?.component?.name}
+                        storyName={selectedTest?.story?.name}
+                        comparisonResult={selectedComparison.result ?? undefined}
+                        latestImage={selectedComparison.headCapture?.captureImage ?? undefined}
+                        baselineImage={selectedComparison.baseCapture?.captureImage ?? undefined}
+                        baselineImageVisible={!baselineImageVisible || sliderVisible}
+                        diffImage={selectedComparison.captureDiff?.diffImage ?? undefined}
+                        focusImage={selectedComparison.captureDiff?.focusImage ?? undefined}
+                        diffVisible={diffVisible}
+                        focusVisible={focusVisible}
+                        {...zoomProps}
+                      />
+                    )}
+                  />
+                }
+                visible={sliderVisible}
+              />
+            </ZoomProvider>
+          </SliderProvider>
         )}
 
         {!isInProgress && captureErrorData && (
