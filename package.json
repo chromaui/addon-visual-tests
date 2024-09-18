@@ -60,6 +60,7 @@
     "strip-ansi": "^7.1.0"
   },
   "devDependencies": {
+    "@auto-it/slack": "^11.2.1",
     "@emotion/weak-memoize": "^0.3.1",
     "@graphql-codegen/cli": "^4.0.1",
     "@graphql-codegen/client-preset": "^4.0.1",
@@ -138,6 +139,20 @@
     "registry": "https://registry.npmjs.org/"
   },
   "packageManager": "yarn@4.1.1",
+  "auto": {
+    "baseBranch": "main",
+    "plugins": [
+      "npm",
+      "released",
+      [
+        "slack",
+        {
+          "atTarget": "support-team",
+          "iconEmoji": ":package:"
+        }
+      ]
+    ]
+  },
   "bundler": {
     "exportEntries": [
       "./src/index.ts"
