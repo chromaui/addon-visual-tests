@@ -246,7 +246,6 @@ export const VisualTestsWithoutSelectedBuildId = ({
             subHeadline: err.message,
           },
           icon: <FailedIcon color={color.negative} />,
-          // @ts-expect-error `duration` and `onClick` require a newer version of Storybook
           duration: 8_000,
           onClick: clickNotification,
         });

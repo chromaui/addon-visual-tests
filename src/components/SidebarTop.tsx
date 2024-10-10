@@ -67,7 +67,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
   );
 
   const clickNotification = useCallback(
-    ({ onDismiss }) => {
+    ({ onDismiss }: { onDismiss: () => void }) => {
       onDismiss();
       openVisualTestsPanel();
     },
