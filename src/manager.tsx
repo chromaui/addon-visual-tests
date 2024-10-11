@@ -185,10 +185,6 @@ const Description = ({ api, running }: DescriptionProps) => {
 };
 
 addons.register(ADDON_ID, (api) => {
-  if (globalThis.CONFIG_TYPE !== "DEVELOPMENT") {
-    return;
-  }
-
   addons.add(PANEL_ID, {
     type: Addon_TypesEnum.PANEL,
     title: "Visual tests",
@@ -196,6 +192,10 @@ addons.register(ADDON_ID, (api) => {
     match: ({ viewMode }) => viewMode === "story",
     render: ({ active }) => <Panel active={!!active} api={api} />,
   });
+
+  if (globalThis.CONFIG_TYPE !== "DEVELOPMENT") {
+    return;
+  }
 
   if (Addon_TypesEnum.experimental_TEST_PROVIDER) {
     addons.add(TEST_PROVIDER_ID, {
