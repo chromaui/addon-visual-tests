@@ -204,7 +204,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
     [openVisualTestsPanel, warning]
   );
 
-  if (global.CONFIG_TYPE !== "DEVELOPMENT") {
+  if (globalThis.CONFIG_TYPE !== "DEVELOPMENT") {
     return null;
   }
 

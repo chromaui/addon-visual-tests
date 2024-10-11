@@ -185,7 +185,7 @@ const Description = ({ api, running }: DescriptionProps) => {
 };
 
 addons.register(ADDON_ID, (api) => {
-  if (global.CONFIG_TYPE !== "DEVELOPMENT") {
+  if (globalThis.CONFIG_TYPE !== "DEVELOPMENT") {
     return;
   }
 
