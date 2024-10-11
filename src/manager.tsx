@@ -197,7 +197,7 @@ addons.register(ADDON_ID, (api) => {
     render: ({ active }) => <Panel active={!!active} api={api} />,
   });
 
-  if ("experimental_TEST_PROVIDER" in Addon_TypesEnum) {
+  if (Addon_TypesEnum.experimental_TEST_PROVIDER) {
     addons.add(TEST_PROVIDER_ID, {
       type: Addon_TypesEnum.experimental_TEST_PROVIDER,
       runnable: true,
