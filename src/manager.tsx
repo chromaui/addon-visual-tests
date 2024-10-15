@@ -42,7 +42,7 @@ const expectHeartbeat = (api: API) => {
 type DescriptionProps = Addon_TestProviderState & { api: API };
 
 const Description = ({ api, running }: DescriptionProps) => {
-  const { addNotification, clearNotification, selectStory, setOptions, togglePanel } = api;
+  const { addNotification, selectStory, setOptions, togglePanel } = api;
 
   const trackEvent = useContext(TelemetryContext);
   const { projectId } = useProjectId();
@@ -148,10 +148,13 @@ const Description = ({ api, running }: DescriptionProps) => {
     [openVisualTestsPanel, warning]
   );
 
-  useChannel({
-    [TESTING_MODULE_RUN_ALL_REQUEST]: startBuild,
-    [TESTING_MODULE_CANCEL_TEST_RUN_REQUEST]: stopBuild,
-  });
+  useChannel(
+    {
+      [TESTING_MODULE_RUN_ALL_REQUEST]: startBuild,
+      [TESTING_MODULE_CANCEL_TEST_RUN_REQUEST]: stopBuild,
+    },
+    [startBuild, stopBuild]
+  );
 
   if (warning) {
     // eslint-disable-next-line jsx-a11y/anchor-is-valid
