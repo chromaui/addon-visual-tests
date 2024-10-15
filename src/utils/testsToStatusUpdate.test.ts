@@ -44,7 +44,7 @@ it("handles single test with changes", () => {
         "description": "Chromatic Visual Tests",
         "onClick": [Function],
         "status": "warn",
-        "title": "Visual Tests",
+        "title": "Visual tests",
       },
     }
   `);
@@ -74,13 +74,13 @@ it("handles multiple tests", () => {
         "description": "Chromatic Visual Tests",
         "onClick": [Function],
         "status": "warn",
-        "title": "Visual Tests",
+        "title": "Visual tests",
       },
       "story2--id": {
         "description": "Chromatic Visual Tests",
         "onClick": [Function],
         "status": "error",
-        "title": "Visual Tests",
+        "title": "Visual tests",
       },
     }
   `);
@@ -110,7 +110,7 @@ it("handles multiple viewports", () => {
         "description": "Chromatic Visual Tests",
         "onClick": [Function],
         "status": "error",
-        "title": "Visual Tests",
+        "title": "Visual tests",
       },
     }
   `);
@@ -140,7 +140,7 @@ it("handles multiple viewports, reverse order", () => {
         "description": "Chromatic Visual Tests",
         "onClick": [Function],
         "status": "error",
-        "title": "Visual Tests",
+        "title": "Visual tests",
       },
     }
   `);

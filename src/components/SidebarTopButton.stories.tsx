@@ -41,7 +41,7 @@ export const DisabledWarning: Story = {
   },
   play: playAll(async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const button = await canvas.findByRole("button", { name: "Visual Tests locked" });
+    const button = await canvas.findByRole("button", { name: "Visual tests locked" });
     await userEvent.hover(button);
   }),
 };

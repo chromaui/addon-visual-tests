@@ -113,7 +113,7 @@ export const SidebarTopButton = ({
       <WithTooltip tooltip={<TooltipNote note={warning} />} trigger="hover" hasChrome={false}>
         <SidebarIconButton
           id="button-run-tests"
-          aria-label="Visual Tests locked"
+          aria-label="Visual tests locked"
           disabled={!clickWarning}
           onClick={clickWarning}
         >
@@ -123,7 +123,7 @@ export const SidebarTopButton = ({
         </SidebarIconButton>
       </WithTooltip>
     ) : (
-      <SidebarIconButton id="button-run-tests" aria-label="Visual Tests locked" disabled>
+      <SidebarIconButton id="button-run-tests" aria-label="Visual tests locked" disabled>
         <PlayIcon />
       </SidebarIconButton>
     );

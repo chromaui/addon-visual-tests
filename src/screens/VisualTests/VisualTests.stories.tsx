@@ -705,7 +705,7 @@ export const Pending = {
         "button--primary": {
           status: "warn",
           onClick: expect.anything(),
-          title: "Visual Tests",
+          title: "Visual tests",
           description: "Chromatic Visual Tests",
         },
       });
