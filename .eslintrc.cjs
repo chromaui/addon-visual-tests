@@ -6,6 +6,7 @@ module.exports = {
     "eslint-comments/disable-enable-pair": "off",
     "simple-import-sort/imports": "error",
     "simple-import-sort/exports": "error",
+    "import/named": "off", // TODO reenable when we update to CPC (revert PR #338)
     "import/order": "off",
     "import/no-extraneous-dependencies": ["error", { devDependencies: true }],
     "@typescript-eslint/ban-ts-comment": [

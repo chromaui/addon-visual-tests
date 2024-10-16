@@ -32,7 +32,7 @@ export const AuthHeader = ({ onBack }: AuthHeaderProps) => (
         as="div"
         hasChrome={false}
         trigger="hover"
-        tooltip={<TooltipNote note="Learn about Visual Tests" />}
+        tooltip={<TooltipNote note="Learn about visual tests" />}
       >
         <HeaderButton
           as="a"

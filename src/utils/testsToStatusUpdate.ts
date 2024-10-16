@@ -46,7 +46,7 @@ export function testsToStatusUpdate<T extends StatusTestFieldsFragment>(
       storyId,
       status && {
         status,
-        title: "Visual Tests",
+        title: "Visual tests",
         description: "Chromatic Visual Tests",
         onClick: openAddonPanel,
       },

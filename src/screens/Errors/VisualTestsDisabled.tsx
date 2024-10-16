@@ -22,7 +22,7 @@ export const VisualTestsDisabled = ({
       <Container>
         <Stack>
           <div>
-            <Heading>Visual Tests disabled for your project</Heading>
+            <Heading>Visual tests disabled for your project</Heading>
             <Text center muted>
               Update your project settings to enable visual testing.
             </Text>

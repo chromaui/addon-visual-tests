@@ -1,8 +1,9 @@
 import { useChannel } from "@storybook/manager-api";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 import { START_BUILD, STOP_BUILD } from "../constants";
 import { LocalBuildProgress } from "../types";
+import { debounce } from "./debounce";
 import { TelemetryContext } from "./TelemetryContext";
 
 export const useBuildEvents = ({
@@ -25,22 +26,40 @@ export const useBuildEvents = ({
     ? !["aborted", "complete", "error", "limited"].includes(localBuildProgress.currentStep)
     : isStarting;
 
-  const startBuild = useCallback(() => {
-    setDisallowed(false);
-    setStarting(true);
-    emit(START_BUILD, { accessToken });
-    trackEvent?.({ action: "startBuild" });
-  }, [accessToken, emit, trackEvent]);
+  const startBuild = useMemo(
+    () =>
+      debounce(
+        "startBuild",
+        () => {
+          setDisallowed(false);
+          setStarting(true);
+          emit(START_BUILD, { accessToken });
+          trackEvent?.({ action: "startBuild" });
+        },
+        1000,
+        false
+      ),
+    [accessToken, emit, trackEvent]
+  );
 
-  const stopBuild = useCallback(() => {
-    if (!isCancelable) {
-      setDisallowed(true);
-    } else {
-      setStarting(false);
-      emit(STOP_BUILD);
-      trackEvent?.({ action: "stopBuild" });
-    }
-  }, [isCancelable, emit, trackEvent]);
+  const stopBuild = useMemo(
+    () =>
+      debounce(
+        "startBuild",
+        () => {
+          if (!isCancelable) {
+            setDisallowed(true);
+          } else {
+            setStarting(false);
+            emit(STOP_BUILD);
+            trackEvent?.({ action: "stopBuild" });
+          }
+        },
+        1000,
+        false
+      ),
+    [isCancelable, emit, trackEvent]
+  );
 
   useEffect(() => {
     const timeout = isStarting && setTimeout(() => setStarting(false), 5000);
