@@ -144,7 +144,7 @@ export const Screen = ({
   const { configVisible } = useControlsState();
   const { toggleConfig } = useControlsDispatch();
   const openConfig = useCallback(
-    (scrollTo) => {
+    (scrollTo?: keyof ConfigInfoPayload["configuration"]) => {
       toggleConfig(true);
       if (scrollTo)
         setTimeout(() => {

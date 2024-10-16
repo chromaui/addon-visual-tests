@@ -223,7 +223,7 @@ export const VisualTestsWithoutSelectedBuildId = ({
   } = buildInfo;
 
   const clickNotification = useCallback(
-    ({ onDismiss }) => {
+    ({ onDismiss }: { onDismiss: () => void }) => {
       onDismiss();
       setOptions({ selectedPanel: PANEL_ID });
       togglePanel(true);
