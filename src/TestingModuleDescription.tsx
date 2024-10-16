@@ -154,26 +154,28 @@ export const TestingModuleDescription = ({ api, running }: TestingModuleDescript
   if (running) {
     if (localBuildProgress) {
       const { renderProgress } = BUILD_STEP_CONFIG[localBuildProgress.currentStep];
-      return renderProgress(localBuildProgress);
+      return <>{renderProgress(localBuildProgress)}</>;
     }
-    return "Starting...";
+    return <>Starting...</>;
   }
   if (isOutdated) {
-    return "Test results outdated";
+    return <>Test results outdated</>;
   }
   if (localBuildProgress?.currentStep === "aborted") {
-    return "Aborted by user";
+    return <>Aborted by user</>;
   }
   if (localBuildProgress?.currentStep === "complete") {
     if (localBuildProgress.errorCount) {
-      return `Encountered ${pluralize("component error", localBuildProgress.errorCount, true)}`;
+      return <>Encountered {pluralize("component error", localBuildProgress.errorCount, true)}</>;
     }
-    return changedStoryCount.length
-      ? `Found ${pluralize("story", changedStoryCount.length, true)} with ${pluralize(
-          "change",
-          changedStoryCount.length
-        )}`
-      : "No visual changes detected";
+    return changedStoryCount.length ? (
+      <>
+        Found {pluralize("story", changedStoryCount.length, true)} with
+        {pluralize("change", changedStoryCount.length)}
+      </>
+    ) : (
+      <>No visual changes detected</>
+    );
   }
-  return "Not run";
+  return <>Not run</>;
 };
