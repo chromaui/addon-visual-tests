@@ -4,14 +4,14 @@ import { readFile } from "node:fs/promises";
 import { normalize, relative } from "node:path";
 
 import type { Channel } from "@storybook/channels";
+import {
+  TESTING_MODULE_PROGRESS_REPORT,
+  TestingModuleProgressReportProgress,
+} from "@storybook/core-events";
 import { telemetry } from "@storybook/telemetry";
 import type { Options } from "@storybook/types";
 // eslint-disable-next-line import/no-unresolved
 import { type Configuration, getConfiguration, getGitInfo, type GitInfo } from "chromatic/node";
-import {
-  TESTING_MODULE_PROGRESS_REPORT,
-  TestingModuleProgressReportProgress,
-} from "storybook/internal/core-events";
 
 import {
   ADDON_ID,
