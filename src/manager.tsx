@@ -148,8 +148,12 @@ const Description = ({ api, running }: DescriptionProps) => {
 
   useChannel(
     {
-      [TESTING_MODULE_RUN_ALL_REQUEST]: startBuild,
-      [TESTING_MODULE_CANCEL_TEST_RUN_REQUEST]: stopBuild,
+      [TESTING_MODULE_RUN_ALL_REQUEST]: ({ providerId }) => {
+        if (providerId === TEST_PROVIDER_ID) startBuild();
+      },
+      [TESTING_MODULE_CANCEL_TEST_RUN_REQUEST]: ({ providerId }) => {
+        if (providerId === TEST_PROVIDER_ID) stopBuild();
+      },
     },
     [startBuild, stopBuild]
   );
