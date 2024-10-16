@@ -1,3 +1,5 @@
+import * as coreEvents from "@storybook/core-events";
+
 export const {
   CHROMATIC_INDEX_URL,
   CHROMATIC_BASE_URL = CHROMATIC_INDEX_URL || "https://www.chromatic.com",
@@ -33,6 +35,17 @@ export const PARAM_KEY = "chromatic";
 export const FETCH_ABORTED = `${ADDON_ID}/ChannelFetch/aborted`;
 export const FETCH_REQUEST = `${ADDON_ID}ChannelFetch/request`;
 export const FETCH_RESPONSE = `${ADDON_ID}ChannelFetch/response`;
+
+// Not available in older versions of @storybook/core-events
+export const {
+  TESTING_MODULE_CRASH_REPORT = "testingModuleCrashReport",
+  TESTING_MODULE_PROGRESS_REPORT = "testingModuleProgressReport",
+  TESTING_MODULE_RUN_REQUEST = "testingModuleRunRequest",
+  TESTING_MODULE_RUN_ALL_REQUEST = "testingModuleRunAllRequest",
+  TESTING_MODULE_CANCEL_TEST_RUN_REQUEST = "testingModuleCancelTestRunRequest",
+  TESTING_MODULE_CANCEL_TEST_RUN_RESPONSE = "testingModuleCancelTestRunResponse",
+  TESTING_MODULE_WATCH_MODE_REQUEST = "testingModuleWatchModeRequest",
+} = coreEvents as any;
 
 export const CONFIG_OVERRIDES = {
   // Local changes should never be auto-accepted

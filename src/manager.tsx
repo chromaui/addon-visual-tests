@@ -1,8 +1,4 @@
 import { Link } from "@storybook/components";
-import {
-  TESTING_MODULE_CANCEL_TEST_RUN_REQUEST,
-  TESTING_MODULE_RUN_ALL_REQUEST,
-} from "@storybook/core-events";
 import { FailedIcon } from "@storybook/icons";
 import { addons, type API, useChannel, useStorybookState } from "@storybook/manager-api";
 import { color } from "@storybook/theming";
@@ -25,6 +21,8 @@ import {
   SIDEBAR_BOTTOM_ID,
   SIDEBAR_TOP_ID,
   TEST_PROVIDER_ID,
+  TESTING_MODULE_CANCEL_TEST_RUN_REQUEST,
+  TESTING_MODULE_RUN_ALL_REQUEST,
 } from "./constants";
 import { Panel } from "./Panel";
 import { ConfigInfoPayload, LocalBuildProgress } from "./types";
