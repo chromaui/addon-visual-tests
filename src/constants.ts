@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/namespace
 import * as coreEvents from "@storybook/core-events";
 
 export const {
