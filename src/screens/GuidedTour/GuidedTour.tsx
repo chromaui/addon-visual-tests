@@ -113,7 +113,7 @@ export const GuidedTour = ({
           them before opening a pull request.
           <br />
           <br />
-          Click this button to see the changes in the sidebar.
+          Click the number at the bottom-right to only show stories with visual changes.
         </>
       ),
       floaterProps: {
