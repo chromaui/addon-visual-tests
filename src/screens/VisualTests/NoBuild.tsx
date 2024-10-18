@@ -142,7 +142,7 @@ export const NoBuild = ({
         <Container>
           <Stack>
             <div>
-              <Heading>Visual Tests disabled for this story</Heading>
+              <Heading>Visual tests disabled for this story</Heading>
               <Text center muted>
                 Update <code>parameters.chromatic.{param}</code> to enable snapshots for this story.
               </Text>

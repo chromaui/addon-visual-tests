@@ -1,31 +1,13 @@
-import { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from "react";
 
 import { ADDON_ID } from "../constants";
+import { debounce } from "./debounce";
 
 declare global {
   interface WindowEventMap {
     "session-storage": CustomEvent;
   }
 }
-
-const timeoutIds = new Map<string, number>();
-const debounce = (key: string, callback: (...args: any[]) => unknown, wait: number) => {
-  const cancel = () => {
-    window.clearTimeout(timeoutIds.get(key));
-    timeoutIds.delete(key);
-  };
-  const debounced = (...args: any[]) => {
-    if (timeoutIds.has(key)) cancel();
-    else callback(...args); // Leading edge call
-
-    timeoutIds.set(
-      key,
-      window.setTimeout(() => timeoutIds.delete(key) && callback(...args), wait) // Trailing edge call
-    );
-  };
-  debounced.cancel = cancel;
-  return debounced;
-};
 
 export function useSessionState<S>(
   key: string,
