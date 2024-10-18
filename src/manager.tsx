@@ -39,6 +39,7 @@ addons.register(ADDON_ID, (api) => {
     addons.add(TEST_PROVIDER_ID, {
       type: Addon_TypesEnum.experimental_TEST_PROVIDER,
       runnable: true,
+      name: "Visual tests",
       title: ({ failed }) => (failed ? "Visual tests didn't complete" : "Visual tests"),
       description: (state) => <TestingModuleDescription {...state} api={api} />,
     } as Addon_TestProviderType);
