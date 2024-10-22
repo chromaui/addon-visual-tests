@@ -56,7 +56,7 @@
     "@storybook/channels": "^8.3.0",
     "@storybook/telemetry": "^8.3.0",
     "@storybook/types": "^8.3.0",
-    "chromatic": "^11.4.0",
+    "chromatic": "11.15.0--canary.1107.11457848907.0",
     "filesize": "^10.0.12",
     "jsonfile": "^6.1.0",
     "react-confetti": "^6.1.0",
