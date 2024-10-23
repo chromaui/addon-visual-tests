@@ -66,6 +66,7 @@
     "@emotion/weak-memoize": "^0.3.1",
     "@graphql-codegen/cli": "^5.0.3",
     "@graphql-typed-document-node/core": "^3.2.0",
+    "@parcel/watcher": "^2.4.1",
     "@storybook/addon-actions": "0.0.0-pr-29241-sha-786ddd72",
     "@storybook/addon-designs": "^8.0.0",
     "@storybook/addon-essentials": "0.0.0-pr-29241-sha-786ddd72",
