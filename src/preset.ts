@@ -4,6 +4,10 @@ import { readFile } from "node:fs/promises";
 import { normalize, relative } from "node:path";
 
 import type { Channel } from "@storybook/channels";
+import {
+  TESTING_MODULE_PROGRESS_REPORT,
+  TestingModuleProgressReportProgress,
+} from "@storybook/core-events";
 import { telemetry } from "@storybook/telemetry";
 import type { Options } from "@storybook/types";
 // eslint-disable-next-line import/no-unresolved
@@ -22,6 +26,7 @@ import {
   START_BUILD,
   STOP_BUILD,
   TELEMETRY,
+  TEST_PROVIDER_ID,
 } from "./constants";
 import { runChromaticBuild, stopChromaticBuild } from "./runChromaticBuild";
 import {
@@ -214,6 +219,46 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
     LOCAL_BUILD_PROGRESS,
     channel
   );
+
+  const stepStatus = {
+    initialize: "pending",
+    build: "pending",
+    upload: "pending",
+    verify: "pending",
+    snapshot: "pending",
+    complete: "success",
+    error: "failed",
+    limited: "failed",
+    aborted: "success",
+  };
+
+  localBuildProgress.on("change", (progress) => {
+    if (!progress) return;
+    const { currentStep, stepProgress, errorCount = 0, changeCount = 0 } = progress;
+    const numTotalTests = stepProgress.snapshot?.denominator;
+    const numFailedTests = errorCount + changeCount;
+    const finishedAt = stepProgress.snapshot?.completedAt
+      ? new Date(stepProgress.snapshot.completedAt)
+      : new Date();
+
+    channel.emit(TESTING_MODULE_PROGRESS_REPORT, {
+      providerId: TEST_PROVIDER_ID,
+      status: stepStatus[currentStep],
+      cancellable: ["initialize", "build", "upload"].includes(currentStep),
+      progress: {
+        numFailedTests,
+        numPassedTests: numTotalTests && numTotalTests - numFailedTests,
+        numPendingTests: numTotalTests && numTotalTests - (stepProgress.snapshot.numerator || 0),
+        numTotalTests,
+        startedAt:
+          stepProgress.initialize?.startedAt && new Date(stepProgress.initialize.startedAt),
+        finishedAt: ["aborted", "complete", "error", "limited"].includes(currentStep)
+          ? finishedAt
+          : undefined,
+      } as TestingModuleProgressReportProgress,
+      details: progress,
+    });
+  });
 
   channel.on(START_BUILD, async ({ accessToken: userToken }) => {
     const { projectId } = projectInfoState.value || {};

@@ -126,6 +126,6 @@ export const EventListener = {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     sessionStorage.setItem(`${ADDON_ID}/state/${context.args.id}`, JSON.stringify({ bar: "baz" }));
     window.dispatchEvent(new StorageEvent("session-storage", { key: context.args.id }));
-    await expectState(context, { bar: "baz" });
+    await waitFor(() => expectState(context, { bar: "baz" }));
   }),
 };
