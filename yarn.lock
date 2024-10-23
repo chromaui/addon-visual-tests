@@ -935,7 +935,7 @@ __metadata:
     "@vitejs/plugin-react": "npm:^3.1.0"
     auto: "npm:^11.0.5"
     boxen: "npm:^5.0.1"
-    chromatic: "npm:11.15.0--canary.1107.11457848907.0"
+    chromatic: "npm:^11.15.0"
     date-fns: "npm:^2.30.0"
     dedent: "npm:^0.7.0"
     eslint: "npm:^8.42.0"
@@ -5353,9 +5353,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chromatic@npm:11.15.0--canary.1107.11457848907.0":
-  version: 11.15.0--canary.1107.11457848907.0
-  resolution: "chromatic@npm:11.15.0--canary.1107.11457848907.0"
+"chromatic@npm:^11.15.0":
+  version: 11.15.0
+  resolution: "chromatic@npm:11.15.0"
   peerDependencies:
     "@chromatic-com/cypress": ^0.*.* || ^1.0.0
     "@chromatic-com/playwright": ^0.*.* || ^1.0.0
@@ -5368,7 +5368,7 @@ __metadata:
     chroma: dist/bin.js
     chromatic: dist/bin.js
     chromatic-cli: dist/bin.js
-  checksum: 10c0/ed0989bc07d36ad7c0dba743121fe74df05a72bf4aa566b68c629ba561cb13551cf458f6ccdda302be4d56a5e01952147c5d7d34042196abb246c2d60c81e2bb
+  checksum: 10c0/8add464ff39417c402b77d973300806a50bd5e3b8f95eeccd965787536b4273e6bfa6b6e0716417bf342cd5106e82e8f1e0dec4a290a89c00e7862f3833fff10
   languageName: node
   linkType: hard
 
