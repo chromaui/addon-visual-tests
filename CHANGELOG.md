@@ -1,3 +1,15 @@
+# v3.0.0 (Wed Oct 23 2024)
+
+#### 💥 Breaking Change
+
+- Use new Test Provider API instead of SidebarTop and SidebarBottom [#342](https://github.com/chromaui/addon-visual-tests/pull/342) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v2.0.2 (Thu Sep 12 2024)
 
 #### 🐛 Bug Fix
