@@ -1,3 +1,19 @@
+# v3.1.0 (Thu Oct 24 2024)
+
+#### 🚀 Enhancement
+
+- Add a prefix to log messages [#343](https://github.com/chromaui/addon-visual-tests/pull/343) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### 🐛 Bug Fix
+
+- Send Slack notification when new version is released on npm [#339](https://github.com/chromaui/addon-visual-tests/pull/339) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v3.0.0 (Wed Oct 23 2024)
 
 #### 💥 Breaking Change
