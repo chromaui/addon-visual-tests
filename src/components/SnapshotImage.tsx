@@ -1,4 +1,4 @@
-import { PhotoIcon, ShareAltIcon } from "@storybook/icons";
+import { PhotoIcon } from "@storybook/icons";
 import { styled, useTheme } from "@storybook/theming";
 import React, { ComponentProps } from "react";
 
@@ -7,55 +7,50 @@ import { Spinner } from "./design-system";
 import { Stack } from "./Stack";
 import { Text } from "./Text";
 
-export const Container = styled.div<{ href?: string; target?: string }>(
-  ({ theme }) => ({
-    position: "relative",
-    display: "flex",
-    background: "transparent",
-    overflow: "hidden",
-    margin: 2,
-    maxWidth: "calc(100% - 4px)",
+export const Container = styled.div(({ theme }) => ({
+  position: "relative",
+  display: "flex",
+  width: "max-content",
+  maxWidth: "calc(100% - 4px)",
+  background: "transparent",
+  overflow: "hidden",
+  margin: 2,
 
-    "& > div": {
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      width: "100%",
-      p: {
-        maxWidth: 380,
-        textAlign: "center",
-      },
-      svg: {
-        width: 24,
-        height: 24,
-      },
+  img: {
+    maxWidth: "100%",
+    transition: "filter 0.1s ease-in-out",
+  },
+  "img[data-overlay]": {
+    position: "absolute",
+    opacity: 0.7,
+    pointerEvents: "none",
+  },
+  "& > div": {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    width: "100%",
+    p: {
+      maxWidth: 380,
+      textAlign: "center",
     },
-    "& > svg": {
-      position: "absolute",
-      left: "calc(50% - 14px)",
-      top: "calc(50% - 14px)",
-      width: 20,
-      height: 20,
-      color: theme.color.lightest,
-      opacity: 0,
-      transition: "opacity 0.1s ease-in-out",
-      pointerEvents: "none",
+    svg: {
+      width: 24,
+      height: 24,
     },
-  }),
-  ({ href }) =>
-    href && {
-      display: "inline-flex",
-      cursor: "pointer",
-      "&:hover": {
-        "& > svg": {
-          opacity: 1,
-        },
-        img: {
-          filter: "brightness(85%)",
-        },
-      },
-    }
-);
+  },
+  "& > svg": {
+    position: "absolute",
+    left: "calc(50% - 14px)",
+    top: "calc(50% - 14px)",
+    width: 20,
+    height: 20,
+    color: theme.color.lightest,
+    opacity: 0,
+    transition: "opacity 0.1s ease-in-out",
+    pointerEvents: "none",
+  },
+}));
 
 const ImageWrapper = styled.div<{ isVisible?: boolean }>(({ isVisible }) => ({
   position: isVisible ? "static" : "absolute",
@@ -102,7 +97,6 @@ const getOverlayImageLoaded = ({
 interface SnapshotImageProps {
   componentName?: NonNullable<NonNullable<Test["story"]>["component"]>["name"];
   storyName?: NonNullable<Test["story"]>["name"];
-  testUrl: Test["webUrl"];
   comparisonResult?: ComparisonResult;
   latestImage?: Pick<CaptureImage, "imageUrl" | "imageWidth" | "imageHeight">;
   baselineImage?: Pick<CaptureImage, "imageUrl" | "imageWidth" | "imageHeight">;
@@ -116,7 +110,6 @@ interface SnapshotImageProps {
 export const SnapshotImage = ({
   componentName,
   storyName,
-  testUrl,
   comparisonResult,
   latestImage,
   baselineImage,
@@ -131,9 +124,6 @@ export const SnapshotImage = ({
   const hasDiff = !!latestImage && !!diffImage && comparisonResult === ComparisonResult.Changed;
   const hasError = comparisonResult === ComparisonResult.CaptureError;
   const hasFocus = hasDiff && !!focusImage;
-  const containerProps = hasDiff
-    ? { as: "a" as any, href: testUrl, target: "_blank", title: "View on Chromatic.com" }
-    : {};
   const showDiff = hasDiff && diffVisible;
   const showFocus = hasFocus && focusVisible;
 
@@ -150,7 +140,7 @@ export const SnapshotImage = ({
   });
 
   return (
-    <Container {...props} {...containerProps}>
+    <Container {...props}>
       {latestImage && (
         <ImageWrapper
           isVisible={!baselineImage || !baselineImageVisible}
@@ -172,6 +162,9 @@ export const SnapshotImage = ({
         <ImageWrapper
           isVisible={baselineImageVisible}
           style={{
+            maxWidth: latestImage
+              ? `${(baselineImage.imageWidth / latestImage.imageWidth) * 100}%`
+              : "100%",
             aspectRatio: `${baselineImage.imageWidth} / ${baselineImage.imageHeight}`,
             width: baselineImage.imageWidth,
           }}
@@ -212,7 +205,6 @@ export const SnapshotImage = ({
           onLoad={() => setFocusImageLoaded(true)}
         />
       )}
-      {hasDiff && <ShareAltIcon />}
       {hasError && !latestImage && (
         <StyledStack>
           <PhotoIcon color={theme.base === "light" ? "currentColor" : theme.color.medium} />
