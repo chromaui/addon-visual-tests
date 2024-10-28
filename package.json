@@ -131,7 +131,7 @@
     "zx": "^1.14.1"
   },
   "peerDependencies": {
-    "storybook": "^8.3.0"
+    "storybook": "*"
   },
   "engines": {
     "node": ">=16.0.0",
