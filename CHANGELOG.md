@@ -1,3 +1,15 @@
+# v3.2.0 (Mon Oct 28 2024)
+
+#### 🚀 Enhancement
+
+- Allow any version of Storybook in `peerDependencies` [#344](https://github.com/chromaui/addon-visual-tests/pull/344) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v3.1.0 (Thu Oct 24 2024)
 
 #### 🚀 Enhancement
