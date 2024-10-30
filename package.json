@@ -53,7 +53,6 @@
     "jackspeak": "2.1.1"
   },
   "dependencies": {
-    "@storybook/channels": "^8.3.0",
     "@storybook/telemetry": "^8.3.0",
     "@storybook/types": "^8.3.0",
     "chromatic": "^11.15.0",
@@ -74,6 +73,7 @@
     "@storybook/addon-interactions": "0.0.0-pr-29241-sha-4da1ec12",
     "@storybook/addon-mdx-gfm": "0.0.0-pr-29241-sha-4da1ec12",
     "@storybook/blocks": "0.0.0-pr-29241-sha-4da1ec12",
+    "@storybook/channels": "^8.3.0",
     "@storybook/client-logger": "0.0.0-pr-29241-sha-4da1ec12",
     "@storybook/components": "0.0.0-pr-29241-sha-4da1ec12",
     "@storybook/core-events": "0.0.0-pr-29241-sha-4da1ec12",
