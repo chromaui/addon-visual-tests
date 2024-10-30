@@ -1,3 +1,15 @@
+# v3.2.1 (Wed Oct 30 2024)
+
+#### 🐛 Bug Fix
+
+- Prevent running tests from Testing Module while there's a warning [#345](https://github.com/chromaui/addon-visual-tests/pull/345) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v3.2.0 (Mon Oct 28 2024)
 
 #### 🚀 Enhancement
