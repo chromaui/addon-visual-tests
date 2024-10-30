@@ -133,6 +133,7 @@
   "peerDependencies": {
     "storybook": "*"
   },
+  "packageManager": "yarn@4.1.1",
   "engines": {
     "node": ">=16.0.0",
     "yarn": ">=1.22.18"
@@ -141,7 +142,6 @@
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
-  "packageManager": "yarn@4.1.1",
   "auto": {
     "baseBranch": "main",
     "plugins": [
