@@ -17,6 +17,7 @@ import {
   PANEL_ID,
   TEST_PROVIDER_ID,
   TESTING_MODULE_CANCEL_TEST_RUN_REQUEST,
+  TESTING_MODULE_PROGRESS_REPORT,
   TESTING_MODULE_RUN_ALL_REQUEST,
 } from "./constants";
 import { ConfigInfoPayload, LocalBuildProgress } from "./types";
@@ -135,7 +136,7 @@ export const TestingModuleDescription = ({ api, running }: TestingModuleDescript
     [openVisualTestsPanel, warning]
   );
 
-  useChannel(
+  const emit = useChannel(
     {
       [TESTING_MODULE_RUN_ALL_REQUEST]: ({ providerId }) => {
         if (providerId === TEST_PROVIDER_ID) startBuild();
@@ -146,6 +147,10 @@ export const TestingModuleDescription = ({ api, running }: TestingModuleDescript
     },
     [startBuild, stopBuild]
   );
+
+  useEffect(() => {
+    emit(TESTING_MODULE_PROGRESS_REPORT, { providerId: TEST_PROVIDER_ID, runnable: !warning });
+  }, [emit, warning]);
 
   if (warning) {
     // eslint-disable-next-line jsx-a11y/anchor-is-valid
