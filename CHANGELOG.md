@@ -42,6 +42,7 @@
 
 #### 💥 Breaking Change
 
+- **Require Storybook 8.2.0 or newer**
 - Use new Test Provider API instead of SidebarTop and SidebarBottom [#342](https://github.com/chromaui/addon-visual-tests/pull/342) ([@ghengeveld](https://github.com/ghengeveld))
 
 #### Authors: 1
@@ -899,7 +900,6 @@
 - Tom Coleman ([@tmeasday](https://github.com/tmeasday))
 
 ---
-
 
 # v0.0.124 (Mon Dec 11 2023)
 
@@ -1869,7 +1869,7 @@
 
 #### 🐛 Bug Fix
 
-- Fix: Updates the the link to the Visual Testing addon  documentation [#61](https://github.com/chromaui/addon-visual-tests/pull/61) ([@jonniebigodes](https://github.com/jonniebigodes))
+- Fix: Updates the the link to the Visual Testing addon documentation [#61](https://github.com/chromaui/addon-visual-tests/pull/61) ([@jonniebigodes](https://github.com/jonniebigodes))
 
 #### 📝 Documentation
 
