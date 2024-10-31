@@ -53,7 +53,6 @@
     "jackspeak": "2.1.1"
   },
   "dependencies": {
-    "@storybook/telemetry": "^8.3.0",
     "chromatic": "^11.15.0",
     "filesize": "^10.0.12",
     "jsonfile": "^6.1.0",
@@ -83,6 +82,7 @@
     "@storybook/preview": "0.0.0-pr-29241-sha-4da1ec12",
     "@storybook/react": "0.0.0-pr-29241-sha-4da1ec12",
     "@storybook/react-vite": "0.0.0-pr-29241-sha-4da1ec12",
+    "@storybook/telemetry": "^8.3.0",
     "@storybook/test": "0.0.0-pr-29241-sha-4da1ec12",
     "@storybook/testing-library": "^0.2.2",
     "@storybook/theming": "0.0.0-pr-29241-sha-4da1ec12",
