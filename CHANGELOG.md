@@ -1,3 +1,15 @@
+# v3.2.2 (Thu Oct 31 2024)
+
+#### 🐛 Bug Fix
+
+- Fix dependencies to support Storybook >=`8.2.0` explicitly [#346](https://github.com/chromaui/addon-visual-tests/pull/346) ([@JReinhold](https://github.com/JReinhold))
+
+#### Authors: 1
+
+- Jeppe Reinhold ([@JReinhold](https://github.com/JReinhold))
+
+---
+
 # v3.2.1 (Wed Oct 30 2024)
 
 #### 🐛 Bug Fix
