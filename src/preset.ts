@@ -4,10 +4,7 @@ import { readFile } from "node:fs/promises";
 import { normalize, relative } from "node:path";
 
 import type { Channel } from "@storybook/channels";
-import {
-  TESTING_MODULE_PROGRESS_REPORT,
-  TestingModuleProgressReportProgress,
-} from "@storybook/core-events";
+import type { TestingModuleProgressReportProgress } from "@storybook/core-events";
 import { telemetry } from "@storybook/telemetry";
 import type { Options } from "@storybook/types";
 // eslint-disable-next-line import/no-unresolved
@@ -27,6 +24,7 @@ import {
   STOP_BUILD,
   TELEMETRY,
   TEST_PROVIDER_ID,
+  TESTING_MODULE_PROGRESS_REPORT,
 } from "./constants";
 import { runChromaticBuild, stopChromaticBuild } from "./runChromaticBuild";
 import {

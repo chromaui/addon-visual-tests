@@ -1,7 +1,7 @@
 import { FailedIcon } from "@storybook/icons";
 import { addons, type API } from "@storybook/manager-api";
 import { color } from "@storybook/theming";
-import { Addon_TestProviderType, Addon_TypesEnum } from "@storybook/types";
+import { type Addon_TestProviderType, Addon_TypesEnum } from "@storybook/types";
 import React from "react";
 
 import { SidebarBottom } from "./components/SidebarBottom";

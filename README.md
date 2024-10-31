@@ -56,6 +56,10 @@ This is a [known issue](https://github.com/storybookjs/storybook/issues/22431#is
 
 Alternatively, you could use a different package manager ([npm](https://www.npmjs.com/), [pnpm](https://pnpm.io/installation)).
 
+## Version compatibility
+
+Version `3.0.0` and up of this addon requires _at least_ Storybook `8.2.0`. If you need support for Storybook `8.0` or `8.1`, you need to use version `2.0.2` of this addon.
+
 ### License
 
 [MIT](https://github.com/storybookjs/addon-coverage/blob/main/LICENSE)

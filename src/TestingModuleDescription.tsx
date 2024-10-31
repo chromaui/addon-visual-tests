@@ -2,7 +2,7 @@ import { Link } from "@storybook/components";
 import { FailedIcon } from "@storybook/icons";
 import { type API, useChannel, useStorybookState } from "@storybook/manager-api";
 import { color } from "@storybook/theming";
-import { Addon_TestProviderState } from "@storybook/types";
+import type { Addon_TestProviderState } from "@storybook/types";
 import pluralize from "pluralize";
 import React, { useCallback, useContext, useEffect, useRef } from "react";
 
