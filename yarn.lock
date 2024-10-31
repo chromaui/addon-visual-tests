@@ -1056,7 +1056,7 @@ __metadata:
     zod: "npm:^3.22.2"
     zx: "npm:^1.14.1"
   peerDependencies:
-    storybook: ^8.0.0 || ^8.1.0-0 || ^8.2.0-0 || ^8.3.0-0 || ^8.4.0-0 || ^8.5.0-0 || ^8.6.0-0
+    storybook: ^8.2.0 || ^8.3.0-0 || ^8.4.0-0 || ^8.5.0-0 || ^8.6.0-0
   languageName: unknown
   linkType: soft
 
