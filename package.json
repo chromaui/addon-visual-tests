@@ -56,7 +56,6 @@
     "chromatic": "^11.15.0",
     "filesize": "^10.0.12",
     "jsonfile": "^6.1.0",
-    "react-confetti": "^6.1.0",
     "strip-ansi": "^7.1.0"
   },
   "devDependencies": {
@@ -114,6 +113,7 @@
     "prompts": "^2.4.2",
     "prop-types": "^15.8.1",
     "react": "^18.3.1",
+    "react-confetti": "^6.1.0",
     "react-dom": "^18.3.1",
     "react-joyride": "^2.7.2",
     "rimraf": "^3.0.2",
