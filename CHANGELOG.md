@@ -1,3 +1,17 @@
+# v3.2.3 (Thu Dec 19 2024)
+
+#### 🐛 Bug Fix
+
+- Fix reading `status` of `undefined` in urql's `didAuthError` handler [#349](https://github.com/chromaui/addon-visual-tests/pull/349) ([@ghengeveld](https://github.com/ghengeveld))
+- Add steps to link for local testing [#347](https://github.com/chromaui/addon-visual-tests/pull/347) ([@codykaup](https://github.com/codykaup))
+
+#### Authors: 2
+
+- Cody Kaup ([@codykaup](https://github.com/codykaup))
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v3.2.2 (Thu Oct 31 2024)
 
 #### 🐛 Bug Fix
