@@ -75,7 +75,7 @@ export const createClient = (options?: Partial<ClientOptions>) =>
 
           // Determine if the current error is an authentication error.
           didAuthError: (error) =>
-            error.response.status === 401 ||
+            error.response?.status === 401 ||
             error.graphQLErrors.some((e) => e.message.includes("Must login")),
 
           // If didAuthError returns true, clear the token. Ideally we should refresh the token here.
