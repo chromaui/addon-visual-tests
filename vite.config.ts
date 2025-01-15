@@ -8,4 +8,7 @@ const CHROMATIC_BASE_URL = process.env.CHROMATIC_BASE_URL || "https://www.chroma
 export default defineConfig({
   define: { "process.env": { CHROMATIC_BASE_URL } },
   plugins: [react(), EnvironmentPlugin({ CHROMATIC_BASE_URL })],
+  coverage: {
+    provider: "v8",
+  },
 });
