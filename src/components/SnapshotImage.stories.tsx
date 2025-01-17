@@ -51,6 +51,7 @@ export const BothVisible = {
 
 export const Wider = {
   args: {
+    baselineImage: { imageUrl: "/shapes-taller.png", imageWidth: 588, imageHeight: 684 },
     latestImage: { imageUrl: "/shapes-wider.png", imageWidth: 768, imageHeight: 472 },
     diffImage: { imageUrl: "/shapes-comparison.png", imageWidth: 768 },
     focusImage: { imageUrl: "/shapes-focus.png", imageWidth: 768 },
@@ -68,6 +69,7 @@ export const WiderConstrained = {
 
 export const Taller = {
   args: {
+    baselineImage: { imageUrl: "/shapes-wider.png", imageWidth: 768, imageHeight: 472 },
     latestImage: { imageUrl: "/shapes-taller.png", imageWidth: 588, imageHeight: 684 },
     diffImage: { imageUrl: "/shapes-comparison.png", imageWidth: 768 },
     focusImage: { imageUrl: "/shapes-focus.png", imageWidth: 768 },
@@ -83,8 +85,22 @@ export const TallerConstrained = {
   },
 } satisfies Story;
 
+export const NoBaseline = {
+  args: {
+    baselineImage: undefined,
+  },
+} satisfies Story;
+
+export const NoLatest = {
+  args: {
+    latestImage: undefined,
+    baselineImageVisible: true,
+  },
+} satisfies Story;
+
 export const CaptureError = {
   args: {
+    baselineImage: undefined,
     latestImage: undefined,
     comparisonResult: ComparisonResult.CaptureError,
   },
