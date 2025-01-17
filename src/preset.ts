@@ -294,8 +294,6 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
     configInfoState.value = await getConfigInfo(configuration, options);
   });
 
-  setInterval(() => channel.emit(`${ADDON_ID}/heartbeat`), 1000);
-
   channel.on(REMOVE_ADDON, () => {
     apiPromise.then((api) => api.removeAddon(PACKAGE_NAME)).catch((e) => console.error(e));
     gitInfoObserver.cancel();

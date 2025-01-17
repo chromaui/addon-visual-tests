@@ -1,6 +1,4 @@
-import { FailedIcon } from "@storybook/icons";
 import { addons, type API } from "@storybook/manager-api";
-import { color } from "@storybook/theming";
 import { type Addon_TestProviderType, Addon_TypesEnum } from "@storybook/types";
 import React from "react";
 
@@ -16,11 +14,6 @@ import {
 } from "./constants";
 import { Panel } from "./Panel";
 import { TestingModuleDescription } from "./TestingModuleDescription";
-
-let heartbeatTimeout: NodeJS.Timeout;
-const expectHeartbeat = (api: API) => {
-  heartbeatTimeout = setTimeout(() => expectHeartbeat(api), 30000);
-};
 
 addons.register(ADDON_ID, (api) => {
   addons.add(PANEL_ID, {
@@ -54,28 +47,4 @@ addons.register(ADDON_ID, (api) => {
       render: () => <SidebarBottom api={api} />,
     });
   }
-
-  const channel = api.getChannel();
-  if (!channel) return;
-
-  let notificationId: string | undefined;
-  channel.on(`${ADDON_ID}/heartbeat`, () => {
-    clearTimeout(heartbeatTimeout);
-    if (notificationId) {
-      api.clearNotification(notificationId);
-      notificationId = undefined;
-    }
-    heartbeatTimeout = setTimeout(() => {
-      notificationId = `${ADDON_ID}/connection-lost/${Date.now()}`;
-      api.addNotification({
-        id: notificationId,
-        content: {
-          headline: "Connection lost",
-          subHeadline: "Lost connection to the Storybook server. Try refreshing the page.",
-        },
-        icon: <FailedIcon color={color.negative} />,
-        link: undefined,
-      });
-    }, 3000);
-  });
 });
