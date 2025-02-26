@@ -18,7 +18,7 @@ interface TooltipMenuProps
   note?: ComponentProps<typeof TooltipNote>['note'];
 }
 
-function mapLinks(onClick: Function) {
+function mapLinks(onClick: () => void) {
   return (
     link: ComponentProps<typeof TooltipLinkList>['links'][number]
   ): ComponentProps<typeof TooltipLinkList>['links'][number] => {
@@ -31,7 +31,7 @@ function mapLinks(onClick: Function) {
         ...link,
         onClick: (...args: unknown[]) => {
           onClick();
-          // @ts-ignore
+          // @ts-ignore (too complex to type, due to multiple types of links and it being in an array of arrays)
           link.onClick?.(...args);
         },
       };
