@@ -1,17 +1,17 @@
-import { ChevronDownIcon } from "@storybook/icons";
-import React, { ComponentProps } from "react";
-import { WithTooltip } from "storybook/internal/components";
-import { styled, useTheme } from "storybook/internal/theming";
+import { ChevronDownIcon } from '@storybook/icons';
+import React, { ComponentProps } from 'react';
+import { WithTooltip } from 'storybook/internal/components';
+import { styled, useTheme } from 'storybook/internal/theming';
 
-import { Browser, BrowserInfo, ComparisonResult } from "../gql/graphql";
-import { aggregateResult } from "../utils/aggregateResult";
-import { ChromeIcon } from "./icons/ChromeIcon";
-import { EdgeIcon } from "./icons/EdgeIcon";
-import { FirefoxIcon } from "./icons/FirefoxIcon";
-import { SafariIcon } from "./icons/SafariIcon";
-import { StatusDot, StatusDotWrapper } from "./StatusDot";
-import { TooltipMenu } from "./TooltipMenu";
-import { TooltipNote } from "./TooltipNote";
+import { Browser, BrowserInfo, ComparisonResult } from '../gql/graphql';
+import { aggregateResult } from '../utils/aggregateResult';
+import { ChromeIcon } from './icons/ChromeIcon';
+import { EdgeIcon } from './icons/EdgeIcon';
+import { FirefoxIcon } from './icons/FirefoxIcon';
+import { SafariIcon } from './icons/SafariIcon';
+import { StatusDot, StatusDotWrapper } from './StatusDot';
+import { TooltipMenu } from './TooltipMenu';
+import { TooltipNote } from './TooltipNote';
 
 const browserIcons = {
   [Browser.Chrome]: <ChromeIcon alt="Chrome" />,
@@ -21,38 +21,38 @@ const browserIcons = {
 } as const;
 
 const IconWrapper = styled.div(({ theme }) => ({
-  alignItems: "center",
-  color: theme.base === "light" ? theme.color.dark : theme.color.light,
-  display: "inline-flex",
+  alignItems: 'center',
+  color: theme.base === 'light' ? theme.color.dark : theme.color.light,
+  display: 'inline-flex',
   gap: 6,
   height: 16,
-  margin: "6px 7px",
+  margin: '6px 7px',
 
   svg: {
-    verticalAlign: "top",
+    verticalAlign: 'top',
   },
 }));
 
 const Label = styled.span(({ theme }) => ({
-  color: theme.base === "light" ? theme.color.dark : theme.color.light,
-  display: "none",
+  color: theme.base === 'light' ? theme.color.dark : theme.color.light,
+  display: 'none',
   fontSize: theme.typography.size.s1,
   fontWeight: theme.typography.weight.bold,
 
-  "@container (min-width: 300px)": {
-    display: "inline-block",
+  '@container (min-width: 300px)': {
+    display: 'inline-block',
   },
 
-  "+ svg": {
-    color: theme.base === "light" ? theme.color.dark : theme.color.light,
+  '+ svg': {
+    color: theme.base === 'light' ? theme.color.dark : theme.color.light,
   },
 
-  "button:hover > &, button:hover > & + svg": {
+  'button:hover > &, button:hover > & + svg': {
     color: theme.color.secondary,
   },
 }));
 
-type BrowserData = Pick<BrowserInfo, "id" | "key" | "name">;
+type BrowserData = Pick<BrowserInfo, 'id' | 'key' | 'name'>;
 
 interface BrowserSelectorProps {
   isAccepted: boolean;
@@ -76,7 +76,7 @@ export const BrowserSelector = ({
     icon = <StatusDotWrapper status={aggregate}>{icon}</StatusDotWrapper>;
   }
 
-  type Link = ComponentProps<typeof TooltipMenu>["links"][0];
+  type Link = ComponentProps<typeof TooltipMenu>['links'][0];
 
   const links =
     browserResults.length > 1 &&
@@ -88,7 +88,7 @@ export const BrowserSelector = ({
         right: !isAccepted && result !== ComparisonResult.Equal && <StatusDot status={result} />,
         icon: browserIcons[browser.key],
         title: browser.name,
-      }),
+      })
     );
   return (
     <WithTooltip
@@ -98,7 +98,7 @@ export const BrowserSelector = ({
       trigger="hover"
       tooltip={
         <TooltipNote
-          note={links ? "Switch browser" : `Tested in ${browserResults[0].browser.name}`}
+          note={links ? 'Switch browser' : `Tested in ${browserResults[0].browser.name}`}
         />
       }
     >

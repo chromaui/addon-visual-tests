@@ -1,16 +1,16 @@
-import React from "react";
-import { styled } from "storybook/internal/theming";
+import React from 'react';
+import { styled } from 'storybook/internal/theming';
 
-import { Button } from "../../components/Button";
-import { ButtonStack } from "../../components/ButtonStack";
-import { Container } from "../../components/Container";
-import { Heading } from "../../components/Heading";
-import { Screen } from "../../components/Screen";
-import { SnapshotImageThumb } from "../../components/SnapshotImageThumb";
-import { Stack } from "../../components/Stack";
-import { Text } from "../../components/Text";
-import { useTelemetry } from "../../utils/TelemetryContext";
-import { useSelectedStoryState } from "../VisualTests/BuildContext";
+import { Button } from '../../components/Button';
+import { ButtonStack } from '../../components/ButtonStack';
+import { Container } from '../../components/Container';
+import { Heading } from '../../components/Heading';
+import { Screen } from '../../components/Screen';
+import { SnapshotImageThumb } from '../../components/SnapshotImageThumb';
+import { Stack } from '../../components/Stack';
+import { Text } from '../../components/Text';
+import { useTelemetry } from '../../utils/TelemetryContext';
+import { useSelectedStoryState } from '../VisualTests/BuildContext';
 
 const ButtonStackText = styled(Text)({ marginBottom: 5 });
 
@@ -25,11 +25,11 @@ export const CatchAChangeComplete = ({
   onSkip,
   ranSecondBuild = false,
 }: CatchAChangeCompleteProps) => {
-  useTelemetry("Onboarding", "CatchAChangeComplete");
+  useTelemetry('Onboarding', 'CatchAChangeComplete');
   const selectedStory = useSelectedStoryState();
   return (
     <Screen footer={null}>
-      <Container style={{ overflowY: "auto" }}>
+      <Container style={{ overflowY: 'auto' }}>
         {ranSecondBuild ? (
           <Stack>
             <div>

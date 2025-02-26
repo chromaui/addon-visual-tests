@@ -13,7 +13,7 @@ export function updateSelectedBuildInfo(
     shouldSwitchToLastBuildOnBranch: boolean;
     lastBuildOnBranchId?: string;
     storyId: string;
-  },
+  }
 ) {
   if (!shouldSwitchToLastBuildOnBranch) {
     if (!oldSelectedBuildInfo) return undefined;
@@ -21,7 +21,7 @@ export function updateSelectedBuildInfo(
     return { ...oldSelectedBuildInfo, storyId };
   }
 
-  if (!lastBuildOnBranchId) throw new Error("Impossible state");
+  if (!lastBuildOnBranchId) throw new Error('Impossible state');
   return {
     buildId: lastBuildOnBranchId,
     storyId,

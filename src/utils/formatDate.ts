@@ -1,23 +1,23 @@
-import { formatDistanceToNowStrict } from "date-fns";
-import locale from "date-fns/locale/en-US";
+import { formatDistanceToNowStrict } from 'date-fns';
+import locale from 'date-fns/locale/en-US';
 
 const formatDistanceLocale: Record<string, string> = {
-  lessThanXSeconds: "just now",
-  xSeconds: "just now",
-  halfAMinute: "just now",
-  lessThanXMinutes: "{{count}}m",
-  xMinutes: "{{count}}m",
-  aboutXHours: "{{count}}h",
-  xHours: "{{count}}h",
-  xDays: "{{count}}d",
-  aboutXWeeks: "{{count}}w",
-  xWeeks: "{{count}}w",
-  aboutXMonths: "{{count}}mo",
-  xMonths: "{{count}}mo",
-  aboutXYears: "{{count}}y",
-  xYears: "{{count}}y",
-  overXYears: "{{count}}y",
-  almostXYears: "{{count}}y",
+  lessThanXSeconds: 'just now',
+  xSeconds: 'just now',
+  halfAMinute: 'just now',
+  lessThanXMinutes: '{{count}}m',
+  xMinutes: '{{count}}m',
+  aboutXHours: '{{count}}h',
+  xHours: '{{count}}h',
+  xDays: '{{count}}d',
+  aboutXWeeks: '{{count}}w',
+  xWeeks: '{{count}}w',
+  aboutXMonths: '{{count}}mo',
+  xMonths: '{{count}}mo',
+  aboutXYears: '{{count}}y',
+  xYears: '{{count}}y',
+  overXYears: '{{count}}y',
+  almostXYears: '{{count}}y',
 };
 
 function formatDistance(
@@ -26,11 +26,11 @@ function formatDistance(
   options: { addSuffix: boolean; comparison: number } = {
     addSuffix: false,
     comparison: 0,
-  },
+  }
 ) {
-  const result = formatDistanceLocale[token].replace("{{count}}", count);
+  const result = formatDistanceLocale[token].replace('{{count}}', count);
 
-  if (["lessThanXSeconds", "xSeconds", "halfAMinute"].includes(token)) {
+  if (['lessThanXSeconds', 'xSeconds', 'halfAMinute'].includes(token)) {
     return `${result}`;
   }
 

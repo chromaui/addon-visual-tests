@@ -1,9 +1,9 @@
-import type { Channel } from "storybook/internal/channels";
+import type { Channel } from 'storybook/internal/channels';
 
 export const GET_VALUE = `experimental_useSharedState_getValue`;
 export const SET_VALUE = `experimental_useSharedState_setValue`;
 
-type ChannelLike = Pick<Channel, "emit" | "on" | "off">;
+type ChannelLike = Pick<Channel, 'emit' | 'on' | 'off'>;
 
 const instances = new Map<string, SharedState>();
 
@@ -62,13 +62,13 @@ export class SharedState<T = any> {
         sharedState.set(key, newValue);
       },
 
-      on(event: "change", callback: (value: T | undefined) => void) {
-        if (event !== "change") throw new Error("unsupported event");
+      on(event: 'change', callback: (value: T | undefined) => void) {
+        if (event !== 'change') throw new Error('unsupported event');
         sharedState.listeners.push(callback);
       },
 
-      off(event: "change", callback: (value: T | undefined) => void) {
-        if (event !== "change") throw new Error("unsupported event");
+      off(event: 'change', callback: (value: T | undefined) => void) {
+        if (event !== 'change') throw new Error('unsupported event');
         const index = sharedState.listeners.indexOf(callback);
         if (index >= 0) sharedState.listeners.splice(index, 1);
       },

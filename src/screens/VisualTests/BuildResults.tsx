@@ -1,28 +1,28 @@
-import { DocumentIcon } from "@storybook/icons";
-import React from "react";
-import { Link } from "storybook/internal/components";
-import { styled } from "storybook/internal/theming";
+import { DocumentIcon } from '@storybook/icons';
+import React from 'react';
+import { Link } from 'storybook/internal/components';
+import { styled } from 'storybook/internal/theming';
 
-import { BuildProgressInline } from "../../components/BuildProgressBarInline";
-import { Button } from "../../components/Button";
-import { Code } from "../../components/Code";
-import { Container } from "../../components/Container";
-import { Eyebrow } from "../../components/Eyebrow";
-import { Heading } from "../../components/Heading";
-import { Section, Sections } from "../../components/layout";
-import { Screen } from "../../components/Screen";
-import { Stack } from "../../components/Stack";
-import { Text } from "../../components/Text";
-import { BuildStatus, TestResult } from "../../gql/graphql";
-import { LocalBuildProgress } from "../../types";
-import { useBuildState, useSelectedBuildState, useSelectedStoryState } from "./BuildContext";
-import { BuildEyebrow } from "./BuildEyebrow";
-import { useControlsDispatch, useControlsState } from "./ControlsContext";
-import { RenderSettings } from "./RenderSettings";
-import { useReviewTestState } from "./ReviewTestContext";
-import { useRunBuildState } from "./RunBuildContext";
-import { SnapshotComparison } from "./SnapshotComparison";
-import { Warnings } from "./Warnings";
+import { BuildProgressInline } from '../../components/BuildProgressBarInline';
+import { Button } from '../../components/Button';
+import { Code } from '../../components/Code';
+import { Container } from '../../components/Container';
+import { Eyebrow } from '../../components/Eyebrow';
+import { Heading } from '../../components/Heading';
+import { Section, Sections } from '../../components/layout';
+import { Screen } from '../../components/Screen';
+import { Stack } from '../../components/Stack';
+import { Text } from '../../components/Text';
+import { BuildStatus, TestResult } from '../../gql/graphql';
+import { LocalBuildProgress } from '../../types';
+import { useBuildState, useSelectedBuildState, useSelectedStoryState } from './BuildContext';
+import { BuildEyebrow } from './BuildEyebrow';
+import { useControlsDispatch, useControlsState } from './ControlsContext';
+import { RenderSettings } from './RenderSettings';
+import { useReviewTestState } from './ReviewTestContext';
+import { useRunBuildState } from './RunBuildContext';
+import { SnapshotComparison } from './SnapshotComparison';
+import { Warnings } from './Warnings';
 
 interface BuildResultsProps {
   branch: string;
@@ -37,8 +37,8 @@ export const Warning = styled.div(({ theme }) => ({
   color: theme.color.warning,
   background: theme.background.warning,
   padding: 10,
-  lineHeight: "18px",
-  position: "relative",
+  lineHeight: '18px',
+  position: 'relative',
 }));
 
 export const BuildResults = ({
@@ -129,7 +129,7 @@ export const BuildResults = ({
                 variant="solid"
                 onClick={isRunning ? stopBuild : startBuild}
               >
-                {isRunning ? "Cancel build" : "Create visual test"}
+                {isRunning ? 'Cancel build' : 'Create visual test'}
               </Button>
             </Stack>
           )}
@@ -190,7 +190,7 @@ export const BuildResults = ({
               </>
             ) : (
               <>
-                You don&apos;t have permission to accept changes.{" "}
+                You don&apos;t have permission to accept changes.{' '}
                 <Link
                   href="https://www.chromatic.com/docs/collaborators#roles"
                   target="_blank"

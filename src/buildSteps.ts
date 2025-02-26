@@ -1,27 +1,27 @@
-import { TaskName } from "chromatic/node";
-import { filesize } from "filesize";
+import { TaskName } from 'chromatic/node';
+import { filesize } from 'filesize';
 
-import { KnownStep, LocalBuildProgress, StepProgressPayload } from "./types";
+import { KnownStep, LocalBuildProgress, StepProgressPayload } from './types';
 
 export const isKnownStep = (
-  taskOrStep: TaskName | LocalBuildProgress["currentStep"],
+  taskOrStep: TaskName | LocalBuildProgress['currentStep']
 ): taskOrStep is KnownStep => BUILD_STEP_ORDER.includes(taskOrStep as KnownStep);
 
-export const hasProgressEvent = (task: TaskName) => ["upload", "snapshot"].includes(task);
+export const hasProgressEvent = (task: TaskName) => ['upload', 'snapshot'].includes(task);
 
 // Note this does not include the "aborted", "complete" and "error" steps
 export const BUILD_STEP_ORDER: KnownStep[] = [
-  "initialize",
-  "build",
-  "upload",
-  "verify",
-  "snapshot",
+  'initialize',
+  'build',
+  'upload',
+  'verify',
+  'snapshot',
 ];
 
 export const BUILD_STEP_CONFIG: Record<
-  LocalBuildProgress["currentStep"],
+  LocalBuildProgress['currentStep'],
   {
-    key: LocalBuildProgress["currentStep"];
+    key: LocalBuildProgress['currentStep'];
     emoji: string;
     renderName: () => string;
     renderProgress: (payload: LocalBuildProgress) => string;
@@ -30,35 +30,35 @@ export const BUILD_STEP_CONFIG: Record<
   }
 > = {
   initialize: {
-    key: "initialize",
-    emoji: "🚀",
+    key: 'initialize',
+    emoji: '🚀',
     renderName: () => `Initialize build`,
     renderProgress: () => `Initializing build...`,
     renderComplete: () => `Initialized`,
     estimateDuration: 2000,
   },
   build: {
-    key: "build",
-    emoji: "🏗",
+    key: 'build',
+    emoji: '🏗',
     renderName: () => `Build Storybook`,
     renderProgress: () => `Building your Storybook...`,
     renderComplete: () => `Storybook built`,
     estimateDuration: 20_000,
   },
   upload: {
-    key: "upload",
-    emoji: "📡",
+    key: 'upload',
+    emoji: '📡',
     renderName: () => `Publish your Storybook`,
     renderProgress: ({ stepProgress }) => {
       const { numerator, denominator } = stepProgress.upload;
       if (!denominator || !numerator) return `Uploading files...`;
       const { value: total, exponent } = filesize(denominator, {
-        output: "object",
+        output: 'object',
         round: 1,
       });
       const { value: progress, symbol } = filesize(numerator, {
         exponent,
-        output: "object",
+        output: 'object',
         round: 1,
       });
       return `Uploading files... ${progress}/${total} ${symbol}`;
@@ -67,16 +67,16 @@ export const BUILD_STEP_CONFIG: Record<
     estimateDuration: 20_000,
   },
   verify: {
-    key: "verify",
-    emoji: "🔍",
+    key: 'verify',
+    emoji: '🔍',
     renderName: () => `Verify your Storybook`,
     renderProgress: () => `Verifying contents...`,
     renderComplete: () => `Storybook verified`,
     estimateDuration: 20_000,
   },
   snapshot: {
-    key: "snapshot",
-    emoji: "📸",
+    key: 'snapshot',
+    emoji: '📸',
     renderName: () => `Run visual tests`,
     renderProgress: ({ stepProgress }) => {
       const { numerator, denominator } = stepProgress.snapshot;
@@ -90,32 +90,32 @@ export const BUILD_STEP_CONFIG: Record<
 
   // These are special steps that are not part of the build process
   aborted: {
-    key: "aborted",
-    emoji: "✋",
+    key: 'aborted',
+    emoji: '✋',
     renderName: () => `Build canceled`,
     renderProgress: () => `Build canceled`,
     renderComplete: () => `Build canceled`,
     estimateDuration: 0,
   },
   complete: {
-    key: "complete",
-    emoji: "🎉",
+    key: 'complete',
+    emoji: '🎉',
     renderName: () => `Visual tests completed!`,
     renderProgress: () => `Visual tests completed!`,
     renderComplete: () => `Visual tests completed!`,
     estimateDuration: 0,
   },
   error: {
-    key: "error",
-    emoji: "🚨",
+    key: 'error',
+    emoji: '🚨',
     renderName: () => `Build failed`,
     renderProgress: () => `Build failed`,
     renderComplete: () => `Build failed`,
     estimateDuration: 0,
   },
   limited: {
-    key: "error",
-    emoji: "🚨",
+    key: 'error',
+    emoji: '🚨',
     renderName: () => `Build limited`,
     renderProgress: () => `Build limited`,
     renderComplete: () => `Build limited`,

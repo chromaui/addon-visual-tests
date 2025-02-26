@@ -1,85 +1,85 @@
-import { PhotoIcon, ShareAltIcon } from "@storybook/icons";
-import React, { ComponentProps } from "react";
-import { styled, useTheme } from "storybook/internal/theming";
+import { PhotoIcon, ShareAltIcon } from '@storybook/icons';
+import React, { ComponentProps } from 'react';
+import { styled, useTheme } from 'storybook/internal/theming';
 
-import { CaptureImage, CaptureOverlayImage, ComparisonResult, Test } from "../gql/graphql";
-import { Spinner } from "./design-system";
-import { Stack } from "./Stack";
-import { Text } from "./Text";
+import { CaptureImage, CaptureOverlayImage, ComparisonResult, Test } from '../gql/graphql';
+import { Spinner } from './design-system';
+import { Stack } from './Stack';
+import { Text } from './Text';
 
 export const Container = styled.div<{ href?: string; target?: string }>(
   ({ theme }) => ({
-    position: "relative",
-    display: "flex",
-    background: "transparent",
-    overflow: "hidden",
+    position: 'relative',
+    display: 'flex',
+    background: 'transparent',
+    overflow: 'hidden',
     margin: 2,
-    maxWidth: "calc(100% - 4px)",
+    maxWidth: 'calc(100% - 4px)',
 
-    "& > div": {
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      width: "100%",
+    '& > div': {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      width: '100%',
       p: {
         maxWidth: 380,
-        textAlign: "center",
+        textAlign: 'center',
       },
       svg: {
         width: 24,
         height: 24,
       },
     },
-    "& > svg": {
-      position: "absolute",
-      left: "calc(50% - 14px)",
-      top: "calc(50% - 14px)",
+    '& > svg': {
+      position: 'absolute',
+      left: 'calc(50% - 14px)',
+      top: 'calc(50% - 14px)',
       width: 20,
       height: 20,
       color: theme.color.lightest,
       opacity: 0,
-      transition: "opacity 0.1s ease-in-out",
-      pointerEvents: "none",
+      transition: 'opacity 0.1s ease-in-out',
+      pointerEvents: 'none',
     },
   }),
   ({ href }) =>
     href && {
-      display: "inline-flex",
-      cursor: "pointer",
-      "&:hover": {
-        "& > svg": {
+      display: 'inline-flex',
+      cursor: 'pointer',
+      '&:hover': {
+        '& > svg': {
           opacity: 1,
         },
         img: {
-          filter: "brightness(85%)",
+          filter: 'brightness(85%)',
         },
       },
-    },
+    }
 );
 
 const ImageWrapper = styled.div<{ isVisible?: boolean }>(({ isVisible }) => ({
-  position: isVisible ? "static" : "absolute",
-  visibility: isVisible ? "visible" : "hidden",
-  maxWidth: "100%",
+  position: isVisible ? 'static' : 'absolute',
+  visibility: isVisible ? 'visible' : 'hidden',
+  maxWidth: '100%',
   minHeight: 100,
 }));
 
 const Image = styled.img({
-  display: "block",
-  width: "100%",
-  height: "auto",
-  transition: "filter 0.1s ease-in-out, opacity 0.1s ease-in-out",
+  display: 'block',
+  width: '100%',
+  height: 'auto',
+  transition: 'filter 0.1s ease-in-out, opacity 0.1s ease-in-out',
 
-  "&[data-overlay]": {
-    position: "absolute",
+  '&[data-overlay]': {
+    position: 'absolute',
     opacity: 0.7,
-    pointerEvents: "none",
-    transition: "opacity 0.1s ease-in-out",
+    pointerEvents: 'none',
+    transition: 'opacity 0.1s ease-in-out',
   },
 });
 
 const StyledStack = styled(Stack)({
-  margin: "30px 15px",
+  margin: '30px 15px',
 });
 
 const getOverlayImageLoaded = ({
@@ -100,15 +100,15 @@ const getOverlayImageLoaded = ({
 };
 
 interface SnapshotImageProps {
-  componentName?: NonNullable<NonNullable<Test["story"]>["component"]>["name"];
-  storyName?: NonNullable<Test["story"]>["name"];
-  testUrl: Test["webUrl"];
+  componentName?: NonNullable<NonNullable<Test['story']>['component']>['name'];
+  storyName?: NonNullable<Test['story']>['name'];
+  testUrl: Test['webUrl'];
   comparisonResult?: ComparisonResult;
-  latestImage?: Pick<CaptureImage, "imageUrl" | "imageWidth" | "imageHeight">;
-  baselineImage?: Pick<CaptureImage, "imageUrl" | "imageWidth" | "imageHeight">;
+  latestImage?: Pick<CaptureImage, 'imageUrl' | 'imageWidth' | 'imageHeight'>;
+  baselineImage?: Pick<CaptureImage, 'imageUrl' | 'imageWidth' | 'imageHeight'>;
   baselineImageVisible?: boolean;
-  diffImage?: Pick<CaptureOverlayImage, "imageUrl" | "imageWidth">;
-  focusImage?: Pick<CaptureOverlayImage, "imageUrl" | "imageWidth">;
+  diffImage?: Pick<CaptureOverlayImage, 'imageUrl' | 'imageWidth'>;
+  focusImage?: Pick<CaptureOverlayImage, 'imageUrl' | 'imageWidth'>;
   diffVisible: boolean;
   focusVisible: boolean;
 }
@@ -132,7 +132,7 @@ export const SnapshotImage = ({
   const hasError = comparisonResult === ComparisonResult.CaptureError;
   const hasFocus = hasDiff && !!focusImage;
   const containerProps = hasDiff
-    ? { as: "a" as any, href: testUrl, target: "_blank", title: "View on Chromatic.com" }
+    ? { as: 'a' as any, href: testUrl, target: '_blank', title: 'View on Chromatic.com' }
     : {};
   const showDiff = hasDiff && diffVisible;
   const showFocus = hasFocus && focusVisible;
@@ -207,7 +207,7 @@ export const SnapshotImage = ({
             width: focusImage.imageWidth,
             maxWidth: `${(focusImage.imageWidth / latestImage.imageWidth) * 100}%`,
             opacity: showFocus && focusImageLoaded ? 0.7 : 0,
-            filter: showFocus ? "blur(2px)" : "none",
+            filter: showFocus ? 'blur(2px)' : 'none',
           }}
           onLoad={() => setFocusImageLoaded(true)}
         />
@@ -215,7 +215,7 @@ export const SnapshotImage = ({
       {hasDiff && <ShareAltIcon />}
       {hasError && !latestImage && (
         <StyledStack>
-          <PhotoIcon color={theme.base === "light" ? "currentColor" : theme.color.medium} />
+          <PhotoIcon color={theme.base === 'light' ? 'currentColor' : theme.color.medium} />
           <Text center muted>
             A snapshot couldn&apos;t be captured. This often occurs when a story has a code error.
             Confirm that this story successfully renders in your local Storybook and run the build

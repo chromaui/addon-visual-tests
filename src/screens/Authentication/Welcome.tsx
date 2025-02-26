@@ -1,14 +1,14 @@
-import React from "react";
+import React from 'react';
 
-import { Button } from "../../components/Button";
-import { ButtonStack } from "../../components/ButtonStack";
-import { Container } from "../../components/Container";
-import { Heading } from "../../components/Heading";
-import { VisualTestsIcon } from "../../components/icons/VisualTestsIcon";
-import { Screen } from "../../components/Screen";
-import { Stack } from "../../components/Stack";
-import { Text } from "../../components/Text";
-import { AuthHeader } from "./AuthHeader";
+import { Button } from '../../components/Button';
+import { ButtonStack } from '../../components/ButtonStack';
+import { Container } from '../../components/Container';
+import { Heading } from '../../components/Heading';
+import { VisualTestsIcon } from '../../components/icons/VisualTestsIcon';
+import { Screen } from '../../components/Screen';
+import { Stack } from '../../components/Stack';
+import { Text } from '../../components/Text';
+import { AuthHeader } from './AuthHeader';
 
 interface WelcomeProps {
   onNext: () => void;

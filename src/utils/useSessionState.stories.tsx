@@ -1,10 +1,10 @@
-import { expect, userEvent, waitFor } from "@storybook/test";
-import { within } from "@storybook/testing-library";
-import React, { useEffect } from "react";
+import { expect, userEvent, waitFor } from '@storybook/test';
+import { within } from '@storybook/testing-library';
+import React, { useEffect } from 'react';
 
-import { ADDON_ID } from "../constants";
-import { playAll } from "./playAll";
-import { useSessionState } from "./useSessionState";
+import { ADDON_ID } from '../constants';
+import { playAll } from './playAll';
+import { useSessionState } from './useSessionState';
 
 type Props = { id: string; initialState: any };
 
@@ -26,8 +26,8 @@ const Component = (props: Props) => {
 
   useEffect(() => {
     if (initialized) return;
-    sessionStorage.setItem(`${ADDON_ID}/state/PredefinedState`, JSON.stringify({ foo: "bar" }));
-    sessionStorage.setItem(`${ADDON_ID}/state`, "PredefinedState");
+    sessionStorage.setItem(`${ADDON_ID}/state/PredefinedState`, JSON.stringify({ foo: 'bar' }));
+    sessionStorage.setItem(`${ADDON_ID}/state`, 'PredefinedState');
     setInitialized(true);
   }, [initialized]);
 
@@ -43,12 +43,12 @@ const Component = (props: Props) => {
 };
 
 const expectState = async (context: any, expected: any) => {
-  const elements = context.canvasElement.getElementsByTagName("pre");
+  const elements = context.canvasElement.getElementsByTagName('pre');
   await Promise.all(
     Array.from(elements).map(async (element: any) => {
       const data = await waitFor(() => JSON.parse(element.textContent as any));
       await expect(data).toEqual(expected);
-    }),
+    })
   );
 };
 
@@ -60,7 +60,7 @@ export default {
   parameters: {
     chromatic: {
       modes: {
-        Light: { theme: "light", viewport: "default" },
+        Light: { theme: 'light', viewport: 'default' },
       },
     },
   },
@@ -69,24 +69,24 @@ export default {
 export const InitialState = {
   args: {
     id: Math.random().toString(16),
-    initialState: { initial: "initial" },
+    initialState: { initial: 'initial' },
   },
-  play: playAll((context) => expectState(context, { initial: "initial" })),
+  play: playAll((context) => expectState(context, { initial: 'initial' })),
 };
 
 export const LazyInitialState = {
   args: {
     id: Math.random().toString(16),
-    initialState: () => ({ initial: "lazy" }),
+    initialState: () => ({ initial: 'lazy' }),
   },
-  play: playAll((context) => expectState(context, { initial: "lazy" })),
+  play: playAll((context) => expectState(context, { initial: 'lazy' })),
 };
 
 export const PredefinedState = {
   args: {
-    id: "PredefinedState",
+    id: 'PredefinedState',
   },
-  play: playAll((context) => expectState(context, { foo: "bar" })),
+  play: playAll((context) => expectState(context, { foo: 'bar' })),
 };
 
 export const SynchronizedState = {
@@ -95,8 +95,8 @@ export const SynchronizedState = {
   },
   play: playAll(async (context) => {
     const canvas = within(context.canvasElement);
-    await userEvent.click(await canvas.findByRole("button", { name: /one/ }));
-    await expectState(context, { update: "one" });
+    await userEvent.click(await canvas.findByRole('button', { name: /one/ }));
+    await expectState(context, { update: 'one' });
   }),
 };
 
@@ -106,15 +106,15 @@ export const EventuallyConsistent = {
   },
   play: playAll(async (context) => {
     const canvas = within(context.canvasElement);
-    await userEvent.click(await canvas.findByRole("button", { name: /one/ }));
-    await expectState(context, { update: "one" });
+    await userEvent.click(await canvas.findByRole('button', { name: /one/ }));
+    await expectState(context, { update: 'one' });
 
-    await userEvent.click(await canvas.findByRole("button", { name: /two/ }));
-    await userEvent.click(await canvas.findByRole("button", { name: /one/ }));
-    await userEvent.click(await canvas.findByRole("button", { name: /three/ }));
+    await userEvent.click(await canvas.findByRole('button', { name: /two/ }));
+    await userEvent.click(await canvas.findByRole('button', { name: /one/ }));
+    await userEvent.click(await canvas.findByRole('button', { name: /three/ }));
 
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    await expectState(context, { update: "three" });
+    await expectState(context, { update: 'three' });
   }),
 };
 
@@ -124,8 +124,8 @@ export const EventListener = {
   },
   play: playAll(async (context) => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    sessionStorage.setItem(`${ADDON_ID}/state/${context.args.id}`, JSON.stringify({ bar: "baz" }));
-    window.dispatchEvent(new StorageEvent("session-storage", { key: context.args.id }));
-    await waitFor(() => expectState(context, { bar: "baz" }));
+    sessionStorage.setItem(`${ADDON_ID}/state/${context.args.id}`, JSON.stringify({ bar: 'baz' }));
+    window.dispatchEvent(new StorageEvent('session-storage', { key: context.args.id }));
+    await waitFor(() => expectState(context, { bar: 'baz' }));
   }),
 };

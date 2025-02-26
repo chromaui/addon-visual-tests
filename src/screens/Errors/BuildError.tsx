@@ -1,16 +1,16 @@
-import React, { ReactNode } from "react";
-import stripAnsi from "strip-ansi";
+import React, { ReactNode } from 'react';
+import stripAnsi from 'strip-ansi';
 
-import { Box } from "../../components/Box";
-import { Container } from "../../components/Container";
-import { Link } from "../../components/design-system";
-import { Heading } from "../../components/Heading";
-import { Screen } from "../../components/Screen";
-import { Stack } from "../../components/Stack";
-import { Text } from "../../components/Text";
-import { DOCS_URL } from "../../constants";
-import { LocalBuildProgress } from "../../types";
-import { useTelemetry } from "../../utils/TelemetryContext";
+import { Box } from '../../components/Box';
+import { Container } from '../../components/Container';
+import { Link } from '../../components/design-system';
+import { Heading } from '../../components/Heading';
+import { Screen } from '../../components/Screen';
+import { Stack } from '../../components/Stack';
+import { Text } from '../../components/Text';
+import { DOCS_URL } from '../../constants';
+import { LocalBuildProgress } from '../../types';
+import { useTelemetry } from '../../utils/TelemetryContext';
 
 const NewlinesAsBreaks = ({ content }: { content: string }) => {
   const lines = content.split(/\r?\n/);
@@ -18,7 +18,7 @@ const NewlinesAsBreaks = ({ content }: { content: string }) => {
     <>
       {lines.reduce<ReactNode[]>(
         (acc, line, index) => acc.concat([index && <br />, line].filter(Boolean)),
-        [],
+        []
       )}
     </>
   );
@@ -39,16 +39,16 @@ export const ErrorBox = ({
           content={stripAnsi(
             Array.isArray(localBuildProgress.originalError)
               ? localBuildProgress.originalError[0]?.message
-              : localBuildProgress.originalError?.message || "Unknown error",
+              : localBuildProgress.originalError?.message || 'Unknown error'
           )}
         />
-      </span>{" "}
+      </span>{' '}
       <Link
         target="_blank"
         href={localBuildProgress.errorDetailsUrl || `${DOCS_URL}#troubleshooting`}
         withArrow
       >
-        {localBuildProgress.errorDetailsUrl ? "Details" : "Troubleshoot"}
+        {localBuildProgress.errorDetailsUrl ? 'Details' : 'Troubleshoot'}
       </Link>
     </Text>
   </Box>
@@ -61,7 +61,7 @@ export const BuildError = ({
   children?: React.ReactNode;
   localBuildProgress: LocalBuildProgress;
 }) => {
-  useTelemetry("Errors", "BuildError");
+  useTelemetry('Errors', 'BuildError');
   return (
     <Screen footer={null}>
       <Container>

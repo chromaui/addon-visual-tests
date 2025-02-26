@@ -1,5 +1,5 @@
-import { ComparisonResult, StoryTestFieldsFragment, TestResult, TestStatus } from "../gql/graphql";
-import { aggregateResult } from "./aggregateResult";
+import { ComparisonResult, StoryTestFieldsFragment, TestResult, TestStatus } from '../gql/graphql';
+import { aggregateResult } from './aggregateResult';
 
 function pickStatus(statusCounts: { [K in TestStatus]?: number }) {
   if ((statusCounts[TestStatus.Failed] ?? 0) > 0) return TestStatus.Failed;
@@ -31,7 +31,7 @@ export function summarizeTests(tests: StoryTestFieldsFragment[]) {
     brokenCount: number;
     resultsByBrowser: Record<string, ComparisonResult | undefined>;
     resultsByMode: Record<string, ComparisonResult | undefined>;
-    modesByName: Record<string, StoryTestFieldsFragment["mode"]>;
+    modesByName: Record<string, StoryTestFieldsFragment['mode']>;
   }>(
     (acc, test) => {
       acc.statusCounts[test.status] = (acc.statusCounts[test.status] || 0) + 1;
@@ -68,7 +68,7 @@ export function summarizeTests(tests: StoryTestFieldsFragment[]) {
       resultsByBrowser: {},
       resultsByMode: {},
       modesByName: {},
-    },
+    }
   );
 
   // All tests have the same browsers so we can just look at the first

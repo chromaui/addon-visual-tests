@@ -1,9 +1,9 @@
-import { FailedIcon } from "@storybook/icons";
-import React, { useCallback } from "react";
-import { useStorybookApi } from "storybook/internal/manager-api";
-import { color } from "storybook/internal/theming";
+import { FailedIcon } from '@storybook/icons';
+import React, { useCallback } from 'react';
+import { useStorybookApi } from 'storybook/internal/manager-api';
+import { color } from 'storybook/internal/theming';
 
-import { ADDON_ID, PANEL_ID } from "../constants";
+import { ADDON_ID, PANEL_ID } from '../constants';
 
 export function useErrorNotification() {
   const api = useStorybookApi();
@@ -15,7 +15,7 @@ export function useErrorNotification() {
       setOptions({ selectedPanel: PANEL_ID });
       togglePanel(true);
     },
-    [setOptions, togglePanel],
+    [setOptions, togglePanel]
   );
 
   return useCallback(
@@ -30,6 +30,6 @@ export function useErrorNotification() {
         onClick: clickNotification,
       });
     },
-    [addNotification, clickNotification],
+    [addNotification, clickNotification]
   );
 }

@@ -1,6 +1,6 @@
-import config from "./preset";
+import config from './preset';
 
 export default {
   ...config,
-  managerEntries: [require.resolve("./manager.tsx")],
+  managerEntries: [require.resolve('./manager.tsx')],
 };

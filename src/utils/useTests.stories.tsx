@@ -1,11 +1,11 @@
-import { expect, waitFor } from "@storybook/test";
-import React, { useEffect } from "react";
+import { expect, waitFor } from '@storybook/test';
+import React, { useEffect } from 'react';
 
-import { SELECTED_BROWSER_ID, SELECTED_MODE_NAME } from "../constants";
-import { ComparisonResult, StoryTestFieldsFragment } from "../gql/graphql";
-import { playAll } from "./playAll";
-import { useSharedState } from "./useSharedState";
-import { useTests } from "./useTests";
+import { SELECTED_BROWSER_ID, SELECTED_MODE_NAME } from '../constants';
+import { ComparisonResult, StoryTestFieldsFragment } from '../gql/graphql';
+import { playAll } from './playAll';
+import { useSharedState } from './useSharedState';
+import { useTests } from './useTests';
 
 const UseTests = ({ tests }: { tests: StoryTestFieldsFragment[] }) => {
   const data = useTests(tests);
@@ -44,15 +44,15 @@ const expectData = (expected: any) =>
     await expect(data).toEqual(expected);
   });
 
-const chrome = { browser: { id: "chrome" }, result: ComparisonResult.Equal };
-const safari = { browser: { id: "safari" }, result: ComparisonResult.Equal };
-const chromeChanged = { browser: { id: "chrome" }, result: ComparisonResult.Changed };
-const safariChanged = { browser: { id: "safari" }, result: ComparisonResult.Changed };
+const chrome = { browser: { id: 'chrome' }, result: ComparisonResult.Equal };
+const safari = { browser: { id: 'safari' }, result: ComparisonResult.Equal };
+const chromeChanged = { browser: { id: 'chrome' }, result: ComparisonResult.Changed };
+const safariChanged = { browser: { id: 'safari' }, result: ComparisonResult.Changed };
 
-const alpha = { mode: { name: "A" }, comparisons: [chrome] };
-const bravo = { mode: { name: "B" }, comparisons: [chrome, safari] };
-const charlie = { mode: { name: "C" }, comparisons: [chromeChanged] };
-const delta = { mode: { name: "D" }, comparisons: [chrome, safariChanged] };
+const alpha = { mode: { name: 'A' }, comparisons: [chrome] };
+const bravo = { mode: { name: 'B' }, comparisons: [chrome, safari] };
+const charlie = { mode: { name: 'C' }, comparisons: [chromeChanged] };
+const delta = { mode: { name: 'D' }, comparisons: [chrome, safariChanged] };
 
 export default {
   component: Component,
@@ -62,7 +62,7 @@ export default {
   parameters: {
     chromatic: {
       modes: {
-        Light: { theme: "light", viewport: "default" },
+        Light: { theme: 'light', viewport: 'default' },
       },
     },
   },
@@ -80,8 +80,8 @@ export const SelectsFirstTest = {
     tests: [alpha, bravo], // Only unchanged tests
   },
   play: expectData({
-    globalMode: "A",
-    globalBrowser: "chrome",
+    globalMode: 'A',
+    globalBrowser: 'chrome',
     selectedTest: alpha,
     selectedComparison: chrome,
   }),
@@ -90,11 +90,11 @@ export const SelectsFirstTest = {
 export const SelectsFirstTestMatchingMode = {
   args: {
     tests: [alpha, bravo], // Only unchanged tests
-    selectedMode: "B",
+    selectedMode: 'B',
   },
   play: expectData({
-    globalMode: "B",
-    globalBrowser: "chrome",
+    globalMode: 'B',
+    globalBrowser: 'chrome',
     selectedTest: bravo,
     selectedComparison: chrome,
   }),
@@ -102,8 +102,8 @@ export const SelectsFirstTestMatchingMode = {
 
 export const SelectsFirstChangedTest = {
   play: expectData({
-    globalMode: "C",
-    globalBrowser: "chrome",
+    globalMode: 'C',
+    globalBrowser: 'chrome',
     selectedTest: charlie,
     selectedComparison: chromeChanged,
   }),
@@ -111,11 +111,11 @@ export const SelectsFirstChangedTest = {
 
 export const SelectsFirstChangedComparisonMatchingMode = {
   args: {
-    selectedMode: "D",
+    selectedMode: 'D',
   },
   play: expectData({
-    globalMode: "D",
-    globalBrowser: "safari",
+    globalMode: 'D',
+    globalBrowser: 'safari',
     selectedTest: delta,
     selectedComparison: safariChanged,
   }),
@@ -123,11 +123,11 @@ export const SelectsFirstChangedComparisonMatchingMode = {
 
 export const SelectsFirstChangedTestIgnoringBrowser = {
   args: {
-    selectedBrowser: "safari",
+    selectedBrowser: 'safari',
   },
   play: expectData({
-    globalMode: "C",
-    globalBrowser: "chrome",
+    globalMode: 'C',
+    globalBrowser: 'chrome',
     selectedTest: charlie,
     selectedComparison: chromeChanged,
   }),
@@ -138,8 +138,8 @@ export const SelectsFirstChangedTestMatchingBrowser = {
     tests: [alpha, bravo, delta, charlie],
   },
   play: expectData({
-    globalMode: "D",
-    globalBrowser: "safari",
+    globalMode: 'D',
+    globalBrowser: 'safari',
     selectedTest: delta,
     selectedComparison: safariChanged,
   }),

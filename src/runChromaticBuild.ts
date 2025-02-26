@@ -1,4 +1,4 @@
-import { Context, InitialContext, Options, run, TaskName } from "chromatic/node";
+import { Context, InitialContext, Options, run, TaskName } from 'chromatic/node';
 
 import {
   BUILD_STEP_CONFIG,
@@ -6,10 +6,10 @@ import {
   hasProgressEvent,
   INITIAL_BUILD_PAYLOAD_JSON,
   isKnownStep,
-} from "./buildSteps";
-import { CONFIG_OVERRIDES } from "./constants";
-import { LocalBuildProgress } from "./types";
-import { SharedState } from "./utils/SharedState";
+} from './buildSteps';
+import { CONFIG_OVERRIDES } from './constants';
+import { LocalBuildProgress } from './types';
+import { SharedState } from './utils/SharedState';
 
 const ESTIMATED_PROGRESS_INTERVAL = 2000;
 
@@ -17,7 +17,7 @@ let abortController: AbortController | undefined;
 
 const getBuildStepData = (
   task: TaskName,
-  previousBuildProgress?: LocalBuildProgress["previousBuildProgress"],
+  previousBuildProgress?: LocalBuildProgress['previousBuildProgress']
 ) => {
   if (!isKnownStep(task)) throw new Error(`Unknown step: ${task}`);
 
@@ -46,7 +46,7 @@ const getBuildStepData = (
 export const onStartOrProgress =
   (
     localBuildProgress: ReturnType<typeof SharedState.subscribe<LocalBuildProgress>>,
-    timeout?: ReturnType<typeof setTimeout>,
+    timeout?: ReturnType<typeof setTimeout>
   ) =>
   (ctx: Context, { progress, total }: { progress?: number; total?: number } = {}) => {
     clearTimeout(timeout);
@@ -55,7 +55,7 @@ export const onStartOrProgress =
 
     // We should set this right before starting so it should never be unset during a build.
     if (!localBuildProgress.value) {
-      throw new Error("Unexpected missing value for localBuildProgress");
+      throw new Error('Unexpected missing value for localBuildProgress');
     }
 
     const { buildProgressPercentage, stepProgress, previousBuildProgress } =
@@ -66,7 +66,7 @@ export const onStartOrProgress =
 
     const { startPercentage, endPercentage, stepPercentage } = getBuildStepData(
       ctx.task,
-      previousBuildProgress,
+      previousBuildProgress
     );
 
     let newPercentage = startPercentage;
@@ -85,7 +85,7 @@ export const onStartOrProgress =
       timeout = setTimeout(() => {
         // We should set this right before starting so it should never be unset during a build.
         if (!localBuildProgress.value) {
-          throw new Error("Unexpected missing value for localBuildProgress");
+          throw new Error('Unexpected missing value for localBuildProgress');
         }
 
         // Intentionally reference the present value here (after timeout)
@@ -115,17 +115,17 @@ export const onStartOrProgress =
 export const onCompleteOrError =
   (
     localBuildProgress: ReturnType<typeof SharedState.subscribe<LocalBuildProgress>>,
-    timeout?: ReturnType<typeof setTimeout>,
+    timeout?: ReturnType<typeof setTimeout>
   ) =>
   (
     ctx: Context | InitialContext,
-    error?: { formattedError: string; originalError: Error | Error[] },
+    error?: { formattedError: string; originalError: Error | Error[] }
   ) => {
     clearTimeout(timeout);
 
     // We should set this right before starting so it should never be unset during a build.
     if (!localBuildProgress.value) {
-      throw new Error("Unexpected missing value for localBuildProgress");
+      throw new Error('Unexpected missing value for localBuildProgress');
     }
 
     const { buildProgressPercentage, stepProgress } = localBuildProgress.value;
@@ -140,7 +140,7 @@ export const onCompleteOrError =
     if (error) {
       localBuildProgress.value = {
         ...update,
-        currentStep: abortController?.signal.aborted ? "aborted" : "error",
+        currentStep: abortController?.signal.aborted ? 'aborted' : 'error',
         formattedError: error.formattedError,
         originalError: error.originalError,
       };
@@ -154,20 +154,20 @@ export const onCompleteOrError =
       };
     }
 
-    if (ctx.task === "verify" && ctx.build?.wasLimited) {
+    if (ctx.task === 'verify' && ctx.build?.wasLimited) {
       localBuildProgress.value = {
         ...update,
-        currentStep: "limited",
+        currentStep: 'limited',
         stepProgress,
         errorDetailsUrl: ctx.build?.app.account?.billingUrl,
       };
     }
 
-    if (ctx.build && ctx.task === "snapshot") {
+    if (ctx.build && ctx.task === 'snapshot') {
       localBuildProgress.value = {
         ...update,
         buildProgressPercentage: 100,
-        currentStep: "complete",
+        currentStep: 'complete',
         stepProgress,
         changeCount: ctx.build.changeCount,
         errorCount: ctx.build.errorCount,
@@ -177,10 +177,10 @@ export const onCompleteOrError =
 
 export const runChromaticBuild = async (
   localBuildProgress: ReturnType<typeof SharedState.subscribe<LocalBuildProgress>>,
-  options: Partial<Options>,
+  options: Partial<Options>
 ) => {
-  if (!options.projectId) throw new Error("Missing projectId");
-  if (!options.userToken) throw new Error("Missing userToken");
+  if (!options.projectId) throw new Error('Missing projectId');
+  if (!options.userToken) throw new Error('Missing userToken');
 
   // Set initial progress state. JSON.parse avoids mutating the constant.
   localBuildProgress.value = JSON.parse(INITIAL_BUILD_PAYLOAD_JSON);
@@ -191,7 +191,7 @@ export const runChromaticBuild = async (
   abortController?.abort();
   abortController = new AbortController();
 
-  process.env.SB_TESTBUILD = "true";
+  process.env.SB_TESTBUILD = 'true';
 
   await run({
     flags: {
@@ -200,7 +200,7 @@ export const runChromaticBuild = async (
     options: {
       ...options,
       ...CONFIG_OVERRIDES,
-      logPrefix: "\x1b[38;5;202mChromatic\x1B[0m:",
+      logPrefix: '\x1b[38;5;202mChromatic\x1B[0m:',
       experimental_onTaskStart: onStartOrProgress(localBuildProgress, timeout),
       experimental_onTaskProgress: onStartOrProgress(localBuildProgress, timeout),
       experimental_onTaskComplete: onCompleteOrError(localBuildProgress, timeout),
@@ -211,5 +211,5 @@ export const runChromaticBuild = async (
 };
 
 export const stopChromaticBuild = () => {
-  abortController?.abort(new Error("Build canceled from Storybook"));
+  abortController?.abort(new Error('Build canceled from Storybook'));
 };

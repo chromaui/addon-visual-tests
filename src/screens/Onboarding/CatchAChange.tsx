@@ -1,38 +1,38 @@
-import { PlayIcon } from "@storybook/icons";
-import { lighten } from "polished";
-import React from "react";
-import { styled } from "storybook/internal/theming";
+import { PlayIcon } from '@storybook/icons';
+import { lighten } from 'polished';
+import React from 'react';
+import { styled } from 'storybook/internal/theming';
 
-import { BuildProgressInline } from "../../components/BuildProgressBarInline";
-import { Button } from "../../components/Button";
-import { ButtonStack } from "../../components/ButtonStack";
-import { Container } from "../../components/Container";
-import { Heading } from "../../components/Heading";
-import { Row } from "../../components/layout";
-import { Screen } from "../../components/Screen";
-import { Stack } from "../../components/Stack";
-import { Text } from "../../components/Text";
-import { LocalBuildProgress } from "../../types";
-import { useTelemetry } from "../../utils/TelemetryContext";
-import onboardingAdjustSizeImage from "./onboarding-adjust-size.png";
-import onboardingColorPaletteImage from "./onboarding-color-palette.png";
-import onboardingEmbiggenImage from "./onboarding-embiggen.png";
-import onboardingLayoutImage from "./onboarding-layout.png";
+import { BuildProgressInline } from '../../components/BuildProgressBarInline';
+import { Button } from '../../components/Button';
+import { ButtonStack } from '../../components/ButtonStack';
+import { Container } from '../../components/Container';
+import { Heading } from '../../components/Heading';
+import { Row } from '../../components/layout';
+import { Screen } from '../../components/Screen';
+import { Stack } from '../../components/Stack';
+import { Text } from '../../components/Text';
+import { LocalBuildProgress } from '../../types';
+import { useTelemetry } from '../../utils/TelemetryContext';
+import onboardingAdjustSizeImage from './onboarding-adjust-size.png';
+import onboardingColorPaletteImage from './onboarding-color-palette.png';
+import onboardingEmbiggenImage from './onboarding-embiggen.png';
+import onboardingLayoutImage from './onboarding-layout.png';
 
 const Box = styled.div(({ theme }) => ({
   border: `1px solid ${theme.appBorderColor}`,
   borderRadius: theme.appBorderRadius,
-  padding: "6px 10px",
+  padding: '6px 10px',
   fontSize: 13,
-  lineHeight: "18px",
+  lineHeight: '18px',
 }));
 
 const Warning = styled.div(({ theme }) => ({
-  lineHeight: "18px",
-  position: "relative",
+  lineHeight: '18px',
+  position: 'relative',
   borderRadius: 5,
-  display: "block",
-  minWidth: "80%",
+  display: 'block',
+  minWidth: '80%',
   color: theme.color.warningText,
   background: theme.background.warning,
   border: `1px solid ${lighten(0.5, theme.color.warningText)}`,
@@ -60,8 +60,8 @@ const MakeAChange = ({ onSkip, runningSecondBuild }: MakeAChangeProps) => (
             Don&apos;t worry, you can undo it later. Here are a few ideas to get you started.
           </Text>
         </div>
-        <Stack style={{ display: "flex", alignItems: "flex-start", gap: "8px", margin: "10px 0" }}>
-          <Row style={{ margin: 0, alignItems: "center", gap: "10px" }}>
+        <Stack style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', margin: '10px 0' }}>
+          <Row style={{ margin: 0, alignItems: 'center', gap: '10px' }}>
             <img
               src={onboardingColorPaletteImage}
               alt="Color Palette"
@@ -69,15 +69,15 @@ const MakeAChange = ({ onSkip, runningSecondBuild }: MakeAChangeProps) => (
             />
             Shift the color palette
           </Row>
-          <Row style={{ margin: 0, alignItems: "center", gap: "10px" }}>
-            <img src={onboardingEmbiggenImage} alt="Embiggen" style={{ width: 32, height: 32 }} />{" "}
+          <Row style={{ margin: 0, alignItems: 'center', gap: '10px' }}>
+            <img src={onboardingEmbiggenImage} alt="Embiggen" style={{ width: 32, height: 32 }} />{' '}
             Embiggen the type
           </Row>
-          <Row style={{ margin: 0, alignItems: "center", gap: "10px" }}>
+          <Row style={{ margin: 0, alignItems: 'center', gap: '10px' }}>
             <img src={onboardingLayoutImage} alt="Layout" style={{ width: 32, height: 32 }} />
             Change the layout
           </Row>
-          <Row style={{ margin: 0, alignItems: "center", gap: "10px" }}>
+          <Row style={{ margin: 0, alignItems: 'center', gap: '10px' }}>
             <img src={onboardingAdjustSizeImage} alt="Adjust" style={{ width: 32, height: 32 }} />
             Adjust the size or scale
           </Row>
@@ -179,7 +179,7 @@ interface CatchAChangeProps extends MakeAChangeProps, ChangesDetectedProps {
 }
 
 export const CatchAChange = ({ isUnchanged, localBuildProgress, ...props }: CatchAChangeProps) => {
-  useTelemetry("Onboarding", "CatchAChange");
+  useTelemetry('Onboarding', 'CatchAChange');
   if (props.isRunning && localBuildProgress) return <RunningTests {...{ localBuildProgress }} />;
   return isUnchanged ? <MakeAChange {...props} /> : <ChangesDetected {...props} />;
 };

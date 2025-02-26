@@ -1,8 +1,8 @@
-import React, { createContext, ReactNode } from "react";
-import { useStorybookApi } from "storybook/internal/manager-api";
+import React, { createContext, ReactNode } from 'react';
+import { useStorybookApi } from 'storybook/internal/manager-api';
 
-import { REMOVE_ADDON } from "../../constants";
-import { useRequiredContext } from "../../utils/useRequiredContext";
+import { REMOVE_ADDON } from '../../constants';
+import { useRequiredContext } from '../../utils/useRequiredContext';
 
 const UninstallContext = createContext<
   { addonUninstalled: boolean | undefined; uninstallAddon: () => void } | undefined
@@ -18,7 +18,7 @@ export const UninstallProvider = ({
   setAddonUninstalled: (value: boolean) => void;
 }) => {
   const channel = useStorybookApi().getChannel();
-  if (!channel) throw new Error("Channel not available");
+  if (!channel) throw new Error('Channel not available');
   const uninstallAddon = () => {
     channel.emit(REMOVE_ADDON);
     setAddonUninstalled(true);
@@ -31,4 +31,4 @@ export const UninstallProvider = ({
   );
 };
 
-export const useUninstallAddon = () => useRequiredContext(UninstallContext, "Uninstall Addon");
+export const useUninstallAddon = () => useRequiredContext(UninstallContext, 'Uninstall Addon');

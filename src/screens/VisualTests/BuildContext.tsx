@@ -1,22 +1,22 @@
-import React, { createContext, useEffect, useMemo } from "react";
-import { useQuery } from "urql";
+import React, { createContext, useEffect, useMemo } from 'react';
+import { useQuery } from 'urql';
 
-import { getFragment } from "../../gql";
-import { StoryTestFieldsFragment, TestStatus } from "../../gql/graphql";
-import { GitInfoPayload } from "../../types";
-import { summarizeTests } from "../../utils/summarizeTests";
-import { statusMap } from "../../utils/testsToStatusUpdate";
-import { SelectedBuildInfo } from "../../utils/updateSelectedBuildInfo";
-import { useRequiredContext } from "../../utils/useRequiredContext";
-import { useTests } from "../../utils/useTests";
-import { useControlsDispatch } from "./ControlsContext";
+import { getFragment } from '../../gql';
+import { StoryTestFieldsFragment, TestStatus } from '../../gql/graphql';
+import { GitInfoPayload } from '../../types';
+import { summarizeTests } from '../../utils/summarizeTests';
+import { statusMap } from '../../utils/testsToStatusUpdate';
+import { SelectedBuildInfo } from '../../utils/updateSelectedBuildInfo';
+import { useRequiredContext } from '../../utils/useRequiredContext';
+import { useTests } from '../../utils/useTests';
+import { useControlsDispatch } from './ControlsContext';
 import {
   FragmentLastBuildOnBranchBuildFields,
   FragmentLastBuildOnBranchTestFields,
   FragmentSelectedBuildFields,
   FragmentStoryTestFields,
   QueryBuild,
-} from "./graphql";
+} from './graphql';
 
 export const useBuild = ({
   projectId,
@@ -28,7 +28,7 @@ export const useBuild = ({
   storyId: string;
   gitInfo: Pick<
     GitInfoPayload,
-    "branch" | "slug" | "userEmailHash" | "commit" | "committedAt" | "uncommittedHash"
+    'branch' | 'slug' | 'userEmailHash' | 'commit' | 'committedAt' | 'uncommittedHash'
   >;
   selectedBuildInfo?: SelectedBuildInfo;
 }) => {
@@ -38,10 +38,10 @@ export const useBuild = ({
       projectId,
       storyId,
       testStatuses: Object.keys(statusMap) as any as TestStatus[],
-      branch: gitInfo.branch || "",
-      ...(gitInfo.slug ? { repositoryOwnerName: gitInfo.slug.split("/", 1)[0] } : {}),
+      branch: gitInfo.branch || '',
+      ...(gitInfo.slug ? { repositoryOwnerName: gitInfo.slug.split('/', 1)[0] } : {}),
       gitUserEmailHash: gitInfo.userEmailHash,
-      selectedBuildId: selectedBuildInfo?.buildId || "",
+      selectedBuildId: selectedBuildInfo?.buildId || '',
       hasSelectedBuildId: !!selectedBuildInfo,
     },
   });
@@ -58,15 +58,15 @@ export const useBuild = ({
 
   const lastBuildOnBranch = getFragment(
     FragmentLastBuildOnBranchBuildFields,
-    data?.project?.lastBuildOnBranch,
+    data?.project?.lastBuildOnBranch
   );
 
   const lastBuildOnBranchStoryTests = [
     ...getFragment(
       FragmentLastBuildOnBranchTestFields,
-      lastBuildOnBranch && "testsForStory" in lastBuildOnBranch && lastBuildOnBranch.testsForStory
+      lastBuildOnBranch && 'testsForStory' in lastBuildOnBranch && lastBuildOnBranch.testsForStory
         ? lastBuildOnBranch.testsForStory.nodes
-        : [],
+        : []
     ),
   ];
 
@@ -83,8 +83,7 @@ export const useBuild = ({
   // If we didn't explicitly select a build, select the last build on the branch (if any)
   const selectedBuild = getFragment(
     FragmentSelectedBuildFields,
-    data?.selectedBuild ??
-      (lastBuildOnBranchIsReady ? data?.project?.lastBuildOnBranch : undefined),
+    data?.selectedBuild ?? (lastBuildOnBranchIsReady ? data?.project?.lastBuildOnBranch : undefined)
   );
 
   return {
@@ -93,14 +92,14 @@ export const useBuild = ({
     manageUrl: data?.project?.manageUrl,
     hasData: !!data && !storyDataIsStale,
     hasProject: !!data?.project,
-    hasSelectedBuild: selectedBuild?.branch.split(":").at(-1) === gitInfo.branch,
+    hasSelectedBuild: selectedBuild?.branch.split(':').at(-1) === gitInfo.branch,
     lastBuildOnBranch,
     lastBuildOnBranchIsNewer,
     lastBuildOnBranchIsReady,
     lastBuildOnBranchIsSelectable,
     selectedBuild,
     selectedBuildMatchesGit:
-      selectedBuild?.branch.split(":").at(-1) === gitInfo.branch &&
+      selectedBuild?.branch.split(':').at(-1) === gitInfo.branch &&
       selectedBuild?.commit === gitInfo.commit &&
       selectedBuild?.uncommittedHash === gitInfo.uncommittedHash,
     rerunQuery,
@@ -123,13 +122,13 @@ type SelectedStory =
 export const BuildContext = createContext<Partial<BuildInfo> | undefined>(null);
 export const StoryContext = createContext<SelectedStory>(null);
 
-export const useBuildState = () => useRequiredContext(BuildContext, "Build");
+export const useBuildState = () => useRequiredContext(BuildContext, 'Build');
 export const useSelectedBuildState = () => {
-  const { selectedBuild } = useRequiredContext(BuildContext, "Build");
-  if (!selectedBuild) throw new Error("No selectedBuild on Build context");
+  const { selectedBuild } = useRequiredContext(BuildContext, 'Build');
+  if (!selectedBuild) throw new Error('No selectedBuild on Build context');
   return selectedBuild;
 };
-export const useSelectedStoryState = () => useRequiredContext(StoryContext, "Story");
+export const useSelectedStoryState = () => useRequiredContext(StoryContext, 'Story');
 
 export const BuildProvider = ({
   children,
@@ -138,10 +137,10 @@ export const BuildProvider = ({
   children: React.ReactNode;
   watchState?: Partial<BuildInfo>;
 }) => {
-  const hasTests = !!watchState?.selectedBuild && "testsForStory" in watchState.selectedBuild;
+  const hasTests = !!watchState?.selectedBuild && 'testsForStory' in watchState.selectedBuild;
   const testsForStory =
     watchState?.selectedBuild &&
-    "testsForStory" in watchState.selectedBuild &&
+    'testsForStory' in watchState.selectedBuild &&
     watchState.selectedBuild.testsForStory?.nodes;
   const tests = [...getFragment(FragmentStoryTestFields, testsForStory || [])];
   const summary = summarizeTests(tests);
@@ -162,7 +161,7 @@ export const BuildProvider = ({
 };
 
 export const StoryProvider = ({ children }: { children: React.ReactNode }) => {
-  const { tests, summary, ...rest } = useRequiredContext(StoryContext, "Story");
+  const { tests, summary, ...rest } = useRequiredContext(StoryContext, 'Story');
   return (
     <StoryContext.Provider value={{ tests, summary, ...rest }}>{children}</StoryContext.Provider>
   );

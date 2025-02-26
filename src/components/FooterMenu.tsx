@@ -1,12 +1,12 @@
-import { CogIcon, EllipsisIcon, QuestionIcon, ShareAltIcon, UserIcon } from "@storybook/icons";
-import React from "react";
+import { CogIcon, EllipsisIcon, QuestionIcon, ShareAltIcon, UserIcon } from '@storybook/icons';
+import React from 'react';
 
-import { useAuthState } from "../AuthContext";
-import { PROJECT_INFO } from "../constants";
-import { useControlsDispatch } from "../screens/VisualTests/ControlsContext";
-import { ProjectInfoPayload } from "../types";
-import { useSharedState } from "../utils/useSharedState";
-import { TooltipMenu } from "./TooltipMenu";
+import { useAuthState } from '../AuthContext';
+import { PROJECT_INFO } from '../constants';
+import { useControlsDispatch } from '../screens/VisualTests/ControlsContext';
+import { ProjectInfoPayload } from '../types';
+import { useSharedState } from '../utils/useSharedState';
+import { TooltipMenu } from './TooltipMenu';
 
 export const FooterMenu = () => {
   const { accessToken, setAccessToken } = useAuthState();
@@ -15,15 +15,15 @@ export const FooterMenu = () => {
   const { projectId } = projectInfo || {};
   const links = [
     {
-      id: "learn",
-      title: "About this addon",
+      id: 'learn',
+      title: 'About this addon',
       icon: <QuestionIcon aria-hidden />,
-      href: "https://www.chromatic.com/docs/visual-testing-addon",
-      target: "_blank",
+      href: 'https://www.chromatic.com/docs/visual-testing-addon',
+      target: '_blank',
     },
     {
-      id: "configuration",
-      title: "Configuration",
+      id: 'configuration',
+      title: 'Configuration',
       icon: <CogIcon aria-hidden />,
       onClick: () => toggleConfig(),
     },
@@ -31,21 +31,21 @@ export const FooterMenu = () => {
     ...(projectId
       ? [
           {
-            id: "visit",
-            title: "View project on Chromatic",
+            id: 'visit',
+            title: 'View project on Chromatic',
             icon: <ShareAltIcon aria-hidden />,
             href: projectId
-              ? `https://www.chromatic.com/builds?appId=${projectId?.split(":")[1]}`
-              : "https://www.chromatic.com/start",
-            target: "_blank",
+              ? `https://www.chromatic.com/builds?appId=${projectId?.split(':')[1]}`
+              : 'https://www.chromatic.com/start',
+            target: '_blank',
           },
         ]
       : []),
     ...(accessToken
       ? [
           {
-            id: "logout",
-            title: "Log out",
+            id: 'logout',
+            title: 'Log out',
             icon: <UserIcon aria-hidden />,
             onClick: () => setAccessToken(null),
           },

@@ -1,26 +1,26 @@
-import { PlayIcon } from "@storybook/icons";
-import React from "react";
-import { Loader } from "storybook/internal/components";
-import { useParameter } from "storybook/internal/manager-api";
-import { styled } from "storybook/internal/theming";
-import { CombinedError } from "urql";
+import { PlayIcon } from '@storybook/icons';
+import React from 'react';
+import { Loader } from 'storybook/internal/components';
+import { useParameter } from 'storybook/internal/manager-api';
+import { styled } from 'storybook/internal/theming';
+import { CombinedError } from 'urql';
 
-import { useAuthState } from "../../AuthContext";
-import { BuildProgressInline } from "../../components/BuildProgressBarInline";
-import { Button } from "../../components/Button";
-import { ButtonStack } from "../../components/ButtonStack";
-import { Container } from "../../components/Container";
-import { Link } from "../../components/design-system";
-import { FooterMenu } from "../../components/FooterMenu";
-import { Heading } from "../../components/Heading";
-import { Col } from "../../components/layout";
-import { Footer, Screen } from "../../components/Screen";
-import { Stack } from "../../components/Stack";
-import { Text } from "../../components/Text";
-import { DOCS_URL } from "../../constants";
-import { LocalBuildProgress } from "../../types";
-import { ErrorBox } from "../Errors/BuildError";
-import { useRunBuildState } from "./RunBuildContext";
+import { useAuthState } from '../../AuthContext';
+import { BuildProgressInline } from '../../components/BuildProgressBarInline';
+import { Button } from '../../components/Button';
+import { ButtonStack } from '../../components/ButtonStack';
+import { Container } from '../../components/Container';
+import { Link } from '../../components/design-system';
+import { FooterMenu } from '../../components/FooterMenu';
+import { Heading } from '../../components/Heading';
+import { Col } from '../../components/layout';
+import { Footer, Screen } from '../../components/Screen';
+import { Stack } from '../../components/Stack';
+import { Text } from '../../components/Text';
+import { DOCS_URL } from '../../constants';
+import { LocalBuildProgress } from '../../types';
+import { ErrorBox } from '../Errors/BuildError';
+import { useRunBuildState } from './RunBuildContext';
 
 const ButtonStackLink = styled(Link)(() => ({
   marginTop: 5,
@@ -45,7 +45,7 @@ export const NoBuild = ({
 }: NoBuildProps) => {
   const { setAccessToken } = useAuthState();
   const { isRunning, startBuild } = useRunBuildState();
-  const { disable, disableSnapshot, docsOnly } = useParameter("chromatic", {} as any);
+  const { disable, disableSnapshot, docsOnly } = useParameter('chromatic', {} as any);
 
   const getDetails = () => {
     const button = (
@@ -58,7 +58,7 @@ export const NoBuild = ({
     if (!localBuildProgress) {
       return button;
     }
-    if (localBuildProgress.currentStep === "error") {
+    if (localBuildProgress.currentStep === 'error') {
       return (
         <>
           <ErrorBox localBuildProgress={localBuildProgress} title="Build failed" />
@@ -94,8 +94,8 @@ export const NoBuild = ({
             <div>
               <Heading>{queryError.graphQLErrors[0].message}</Heading>
               <Text center muted>
-                {queryError.graphQLErrors[0].extensions.code === "FORBIDDEN"
-                  ? "You may have insufficient permissions. Try logging out and back in again."
+                {queryError.graphQLErrors[0].extensions.code === 'FORBIDDEN'
+                  ? 'You may have insufficient permissions. Try logging out and back in again.'
                   : "Try logging out or clear your browser's local storage."}
               </Text>
             </div>
@@ -136,7 +136,7 @@ export const NoBuild = ({
     }
 
     if (disable || disableSnapshot || docsOnly) {
-      const param = disable ? "disable" : disableSnapshot ? "disableSnapshot" : "docsOnly";
+      const param = disable ? 'disable' : disableSnapshot ? 'disableSnapshot' : 'docsOnly';
       return (
         <Container>
           <Stack>

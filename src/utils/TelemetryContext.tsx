@@ -1,6 +1,6 @@
-import React, { createContext, useEffect } from "react";
+import React, { createContext, useEffect } from 'react';
 
-import { useRequiredContext } from "./useRequiredContext";
+import { useRequiredContext } from './useRequiredContext';
 
 export type TrackEvent = (event: { [key: string]: any }) => void;
 
@@ -17,6 +17,6 @@ export const TelemetryProvider = ({
 };
 
 export const useTelemetry = (location: string, screen: string) => {
-  const trackEvent = useRequiredContext(TelemetryContext, "Telemetry");
+  const trackEvent = useRequiredContext(TelemetryContext, 'Telemetry');
   useEffect(() => trackEvent({ location, screen }), [location, screen, trackEvent]);
 };
