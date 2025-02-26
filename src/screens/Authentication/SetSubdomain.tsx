@@ -1,27 +1,27 @@
-import React, { useCallback, useState } from "react";
-import { Button } from "storybook/internal/components";
-import { styled } from "storybook/internal/theming";
+import React, { useCallback, useState } from 'react';
+import { Button } from 'storybook/internal/components';
+import { styled } from 'storybook/internal/theming';
 
-import { Container } from "../../components/Container";
-import { Heading } from "../../components/Heading";
-import { LinkIcon } from "../../components/icons/LinkIcon";
-import { VisualTestsIcon } from "../../components/icons/VisualTestsIcon";
-import { Screen } from "../../components/Screen";
-import { SuffixInput } from "../../components/SuffixInput";
-import { Text } from "../../components/Text";
-import { AuthHeader } from "./AuthHeader";
+import { Container } from '../../components/Container';
+import { Heading } from '../../components/Heading';
+import { LinkIcon } from '../../components/icons/LinkIcon';
+import { VisualTestsIcon } from '../../components/icons/VisualTestsIcon';
+import { Screen } from '../../components/Screen';
+import { SuffixInput } from '../../components/SuffixInput';
+import { Text } from '../../components/Text';
+import { AuthHeader } from './AuthHeader';
 
 const Form = styled.form({
-  position: "relative",
-  display: "flex",
-  flexDirection: "column",
-  width: "100%",
+  position: 'relative',
+  display: 'flex',
+  flexDirection: 'column',
+  width: '100%',
   maxWidth: 300,
   margin: 10,
 });
 
 const SubmitButton = styled(Button)({
-  "&&": {
+  '&&': {
     fontSize: 13,
     borderTopLeftRadius: 0,
     borderTopRightRadius: 0,
@@ -36,11 +36,11 @@ interface SetSubdomainProps {
 }
 
 export const SetSubdomain = ({ onBack, onSignIn }: SetSubdomainProps) => {
-  const [subdomain, setSubdomain] = useState("");
+  const [subdomain, setSubdomain] = useState('');
   const [inputError, setInputError] = useState<string | null>(null);
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/[^a-z0-9-]/g, "");
+    const value = e.target.value.replace(/[^a-z0-9-]/g, '');
     setSubdomain(value);
     setInputError(null);
   }, []);
@@ -49,9 +49,9 @@ export const SetSubdomain = ({ onBack, onSignIn }: SetSubdomainProps) => {
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       if (subdomain) onSignIn(subdomain);
-      else setInputError("Please enter a subdomain");
+      else setInputError('Please enter a subdomain');
     },
-    [subdomain, onSignIn],
+    [subdomain, onSignIn]
   );
 
   return (

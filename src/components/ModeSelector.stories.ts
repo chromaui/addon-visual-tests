@@ -1,21 +1,21 @@
-import { action } from "@storybook/addon-actions";
-import type { Meta, StoryObj } from "@storybook/react";
+import { action } from '@storybook/addon-actions';
+import type { Meta, StoryObj } from '@storybook/react';
 
-import { ComparisonResult } from "../gql/graphql";
-import { ModeSelector } from "./ModeSelector";
+import { ComparisonResult } from '../gql/graphql';
+import { ModeSelector } from './ModeSelector';
 
 const viewport800Px = {
-  name: "800px",
+  name: '800px',
 };
 const viewport1200Px = {
-  name: "1200px",
+  name: '1200px',
 };
 
 const meta = {
   component: ModeSelector,
   args: {
     isAccepted: false,
-    onSelectMode: action("onSelectMode"),
+    onSelectMode: action('onSelectMode'),
   },
 } satisfies Meta<typeof ModeSelector>;
 

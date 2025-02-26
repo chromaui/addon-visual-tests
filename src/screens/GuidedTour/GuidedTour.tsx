@@ -1,17 +1,17 @@
-import React, { useEffect, useRef } from "react";
-import Joyride from "react-joyride";
-import { type API, useStorybookState } from "storybook/internal/manager-api";
-import { useTheme } from "storybook/internal/theming";
+import React, { useEffect, useRef } from 'react';
+import Joyride from 'react-joyride';
+import { type API, useStorybookState } from 'storybook/internal/manager-api';
+import { useTheme } from 'storybook/internal/theming';
 
-import { ENABLE_FILTER, PANEL_ID } from "../../constants";
-import { useSessionState } from "../../utils/useSessionState";
-import { useSelectedStoryState } from "../VisualTests/BuildContext";
-import { Confetti } from "./Confetti";
-import { Tooltip, TooltipProps } from "./Tooltip";
+import { ENABLE_FILTER, PANEL_ID } from '../../constants';
+import { useSessionState } from '../../utils/useSessionState';
+import { useSelectedStoryState } from '../VisualTests/BuildContext';
+import { Confetti } from './Confetti';
+import { Tooltip, TooltipProps } from './Tooltip';
 
-const SET_FILTER = "setFilter"; // TODO: Import from @storybook/core-events once available
+const SET_FILTER = 'setFilter'; // TODO: Import from @storybook/core-events once available
 
-type GuidedTourStep = TooltipProps["step"];
+type GuidedTourStep = TooltipProps['step'];
 
 interface TourProps {
   skipWalkthrough: () => void;
@@ -29,14 +29,14 @@ export const GuidedTour = ({
   const theme = useTheme();
 
   const selectedStory = useSelectedStoryState();
-  const selectedTestHasChanges = selectedStory?.selectedTest?.result === "CHANGED";
-  const selectedTestHasNotBeenAcceptedYet = selectedStory?.selectedTest?.status !== "ACCEPTED";
+  const selectedTestHasChanges = selectedStory?.selectedTest?.result === 'CHANGED';
+  const selectedTestHasNotBeenAcceptedYet = selectedStory?.selectedTest?.status !== 'ACCEPTED';
 
   const layoutState = JSON.stringify(useStorybookState().layout);
   const stateRef = useRef(layoutState);
   if (stateRef.current !== layoutState) {
     // Trigger Joyride to rerender
-    window.dispatchEvent(new Event("resize"));
+    window.dispatchEvent(new Event('resize'));
     stateRef.current = layoutState;
   }
 
@@ -48,30 +48,30 @@ export const GuidedTour = ({
   // Make sure the addon panel is open
   useEffect(() => {
     // Automatically jump to the first story if the current story is not a story (docs). So that the addon panel is visible.
-    if (managerApi.getCurrentStoryData()?.type !== "story") {
+    if (managerApi.getCurrentStoryData()?.type !== 'story') {
       managerApi.jumpToStory(1);
     }
 
     // Make sure the addon panel is open, and on the visual tests tab.
     managerApi.togglePanel(true);
-    managerApi.togglePanelPosition("right");
+    managerApi.togglePanelPosition('right');
     managerApi.setSelectedPanel(PANEL_ID);
   }, [managerApi]);
 
-  const [showConfetti, setShowConfetti] = useSessionState("showConfetti", false);
-  const [stepIndex, setStepIndex] = useSessionState("stepIndex", 0);
+  const [showConfetti, setShowConfetti] = useSessionState('showConfetti', false);
+  const [stepIndex, setStepIndex] = useSessionState('stepIndex', 0);
   const nextStep = () => setStepIndex((prev = 0) => prev + 1);
 
   useEffect(() => {
     // Hide composed Storybooks (refs) in the sidebar while the guided tour is active.
-    const explorer = document.getElementById("storybook-explorer-tree");
+    const explorer = document.getElementById('storybook-explorer-tree');
     const refElements = Array.from(explorer instanceof HTMLElement ? explorer.children : [])
       .filter((el): el is HTMLElement => el instanceof HTMLElement)
       .slice(1);
 
-    refElements.forEach((el) => (el.style.display = "none"));
+    refElements.forEach((el) => (el.style.display = 'none'));
 
-    return () => refElements.forEach((el) => (el.style.display = ""));
+    return () => refElements.forEach((el) => (el.style.display = ''));
   }, []);
 
   useEffect(() => {
@@ -79,7 +79,7 @@ export const GuidedTour = ({
       setStepIndex(1);
       // Force a resize to make sure the react-joyride centers on the sidebar properly. Timeout is needed to make sure the filter takes place.
       setTimeout(() => {
-        window.dispatchEvent(new Event("resize"));
+        window.dispatchEvent(new Event('resize'));
       }, 100);
     };
 
@@ -95,7 +95,7 @@ export const GuidedTour = ({
 
   useEffect(() => {
     // Listen for the test status to change to ACCEPTED and move to the completed step.
-    if (selectedStory?.selectedTest?.status === "ACCEPTED" && stepIndex === 5) {
+    if (selectedStory?.selectedTest?.status === 'ACCEPTED' && stepIndex === 5) {
       setShowConfetti(true);
       setStepIndex(6);
     }
@@ -103,8 +103,8 @@ export const GuidedTour = ({
 
   const steps: Partial<GuidedTourStep>[] = [
     {
-      target: "#sidebar-bottom-wrapper",
-      title: "Changes found",
+      target: '#sidebar-bottom-wrapper',
+      title: 'Changes found',
       content: (
         <>
           The visual tests addon will detect changes in all of your stories and allow you to review
@@ -115,14 +115,14 @@ export const GuidedTour = ({
         </>
       ),
       floaterProps: {
-        target: "#warnings-found-filter",
+        target: '#warnings-found-filter',
         options: {
           preventOverflow: {
-            boundariesElement: "window",
+            boundariesElement: 'window',
           },
         },
       },
-      placement: "top",
+      placement: 'top',
       disableBeacon: true,
       hideNextButton: true,
       spotlightClicks: true,
@@ -130,18 +130,18 @@ export const GuidedTour = ({
     },
     selectedTestHasChanges && selectedTestHasNotBeenAcceptedYet
       ? {
-          target: "#storybook-explorer-tree > div",
-          title: "Stories with changes",
+          target: '#storybook-explorer-tree > div',
+          title: 'Stories with changes',
           content: <>Here you have a filtered list of only stories with changes.</>,
-          placement: "right",
+          placement: 'right',
           disableBeacon: true,
           spotlightClicks: true,
           onNextButtonClick: nextStep,
           onSkipWalkthroughButtonClick,
         }
       : {
-          target: "#storybook-explorer-tree > div",
-          title: "Stories with changes",
+          target: '#storybook-explorer-tree > div',
+          title: 'Stories with changes',
           content: (
             <>
               Here you have a list of all stories in your Storybook.
@@ -150,7 +150,7 @@ export const GuidedTour = ({
               Select a story with changes to see the exact pixels that changed.
             </>
           ),
-          placement: "right",
+          placement: 'right',
           disableBeacon: true,
           spotlightClicks: true,
           hideNextButton: true,
@@ -158,8 +158,8 @@ export const GuidedTour = ({
         },
 
     {
-      target: "#panel-tab-content",
-      title: "Inspect changes",
+      target: '#panel-tab-content',
+      title: 'Inspect changes',
       content: (
         <>
           The results of the changes are shown here. The pixels that changed are highlighted in
@@ -167,13 +167,13 @@ export const GuidedTour = ({
         </>
       ),
       disableBeacon: true,
-      placement: "left",
+      placement: 'left',
       onNextButtonClick: nextStep,
       onSkipWalkthroughButtonClick,
     },
     {
-      target: "#button-diff-visible",
-      title: "Toggle the diff",
+      target: '#button-diff-visible',
+      title: 'Toggle the diff',
       content: (
         <>
           This button shows or hides the visual diff. Use it to make the visual changes in your
@@ -184,12 +184,12 @@ export const GuidedTour = ({
       onSkipWalkthroughButtonClick,
       spotlightClicks: true,
       disableBeacon: true,
-      placement: "bottom",
+      placement: 'bottom',
       disableOverlay: true,
     },
     {
-      target: "#button-toggle-snapshot",
-      title: "This is the Switch button",
+      target: '#button-toggle-snapshot',
+      title: 'This is the Switch button',
       content: (
         <>
           Switch between the baseline snapshot (old) and the latest snapshot. The info bar will let
@@ -200,12 +200,12 @@ export const GuidedTour = ({
       onSkipWalkthroughButtonClick,
       spotlightClicks: true,
       disableBeacon: true,
-      placement: "bottom",
+      placement: 'bottom',
       disableOverlay: true,
     },
     {
-      target: "#button-toggle-accept-story",
-      title: "Accept changes",
+      target: '#button-toggle-accept-story',
+      title: 'Accept changes',
       content: (
         <>
           If the visual changes are intentional, accept them to update the test baselines. The next
@@ -217,14 +217,14 @@ export const GuidedTour = ({
       spotlightClicks: true,
       onNextButtonClick: nextStep,
       hideNextButton: true,
-      placement: "bottom",
+      placement: 'bottom',
       disableOverlay: true,
       onSkipWalkthroughButtonClick,
     },
     {
-      target: "#button-toggle-accept-story",
-      title: "Perfection!",
-      placement: "bottom",
+      target: '#button-toggle-accept-story',
+      title: 'Perfection!',
+      placement: 'bottom',
       disableOverlay: true,
       content: (
         <>
@@ -236,9 +236,9 @@ export const GuidedTour = ({
       onSkipWalkthroughButtonClick,
     },
     {
-      target: "#button-run-tests",
-      title: "You are ready to test",
-      placement: "bottom",
+      target: '#button-run-tests',
+      title: 'You are ready to test',
+      placement: 'bottom',
       disableOverlay: true,
       content: (
         <>
@@ -247,7 +247,7 @@ export const GuidedTour = ({
         </>
       ),
       disableBeacon: true,
-      nextButtonText: "Done",
+      nextButtonText: 'Done',
       onNextButtonClick: onCompleteWalkthroughButtonClick,
     },
   ];
@@ -279,7 +279,7 @@ export const GuidedTour = ({
         floaterProps={{
           options: {
             offset: {
-              offset: "0, 6",
+              offset: '0, 6',
             },
           },
           styles: {
@@ -288,27 +288,27 @@ export const GuidedTour = ({
               paddingLeft: 8,
               paddingTop: 8,
               filter:
-                theme.base === "light"
-                  ? "drop-shadow(0px 5px 5px rgba(0,0,0,0.05)) drop-shadow(0 1px 3px rgba(0,0,0,0.1))"
-                  : "drop-shadow(#fff5 0px 0px 0.5px) drop-shadow(#fff5 0px 0px 0.5px)",
+                theme.base === 'light'
+                  ? 'drop-shadow(0px 5px 5px rgba(0,0,0,0.05)) drop-shadow(0 1px 3px rgba(0,0,0,0.1))'
+                  : 'drop-shadow(#fff5 0px 0px 0.5px) drop-shadow(#fff5 0px 0px 0.5px)',
             },
           },
         }}
         tooltipComponent={Tooltip}
         styles={{
           overlay: {
-            mixBlendMode: "unset",
-            backgroundColor: "none",
+            mixBlendMode: 'unset',
+            backgroundColor: 'none',
           },
           spotlight: {
-            backgroundColor: "none",
+            backgroundColor: 'none',
             border: `solid 2px ${theme.color.secondary}`,
-            boxShadow: "0px 0px 0px 9999px rgba(0,0,0,0.4)",
+            boxShadow: '0px 0px 0px 9999px rgba(0,0,0,0.4)',
           },
           options: {
             zIndex: 10000,
             primaryColor: theme.color.secondary,
-            arrowColor: theme.base === "light" ? theme.color.lightest : "#292A2C",
+            arrowColor: theme.base === 'light' ? theme.color.lightest : '#292A2C',
           },
         }}
       />

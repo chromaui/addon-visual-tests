@@ -1,5 +1,5 @@
-import type { Decorator } from "@storybook/react";
-import React from "react";
+import type { Decorator } from '@storybook/react';
+import React from 'react';
 
 // Wraps a story with a setup function that runs once and tears down when the story is unmounted.
 // This is similar to useEffect but runs _before_ rather than after the first render.

@@ -1,16 +1,16 @@
-import React, { useEffect } from "react";
+import React, { useEffect } from 'react';
 
-import { BuildProgressInline } from "../../components/BuildProgressBarInline";
-import { Button } from "../../components/Button";
-import { ButtonStack } from "../../components/ButtonStack";
-import { Container } from "../../components/Container";
-import { Heading } from "../../components/Heading";
-import { VisualTestsIcon } from "../../components/icons/VisualTestsIcon";
-import { Screen } from "../../components/Screen";
-import { Stack } from "../../components/Stack";
-import { Text } from "../../components/Text";
-import { LocalBuildProgress } from "../../types";
-import { useTelemetry } from "../../utils/TelemetryContext";
+import { BuildProgressInline } from '../../components/BuildProgressBarInline';
+import { Button } from '../../components/Button';
+import { ButtonStack } from '../../components/ButtonStack';
+import { Container } from '../../components/Container';
+import { Heading } from '../../components/Heading';
+import { VisualTestsIcon } from '../../components/icons/VisualTestsIcon';
+import { Screen } from '../../components/Screen';
+import { Stack } from '../../components/Stack';
+import { Text } from '../../components/Text';
+import { LocalBuildProgress } from '../../types';
+import { useTelemetry } from '../../utils/TelemetryContext';
 
 const Intro = () => (
   <div>
@@ -36,7 +36,7 @@ export const InitialBuild = ({
   startBuild,
   onSkip,
 }: InitialBuildProps) => {
-  useTelemetry("Onboarding", "InitialBuild");
+  useTelemetry('Onboarding', 'InitialBuild');
   return (
     <Screen footer={null}>
       <Container>

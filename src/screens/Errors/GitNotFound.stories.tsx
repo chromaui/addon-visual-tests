@@ -1,11 +1,11 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from '@storybook/react';
 
-import { GitNotFound } from "./GitNotFound";
+import { GitNotFound } from './GitNotFound';
 
 const meta = {
   component: GitNotFound,
   args: {
-    gitInfoError: new Error("Git info not found"),
+    gitInfoError: new Error('Git info not found'),
   },
 } satisfies Meta<typeof GitNotFound>;
 

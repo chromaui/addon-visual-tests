@@ -1,12 +1,12 @@
-import { watch } from "node:fs";
-import { readFile } from "node:fs/promises";
-import { normalize, relative } from "node:path";
+import { watch } from 'node:fs';
+import { readFile } from 'node:fs/promises';
+import { normalize, relative } from 'node:path';
 
-import { type Configuration, getConfiguration, getGitInfo, type GitInfo } from "chromatic/node";
-import type { Channel } from "storybook/internal/channels";
-import type { TestingModuleProgressReportProgress } from "storybook/internal/core-events";
-import { telemetry } from "storybook/internal/telemetry";
-import type { Options } from "storybook/internal/types";
+import { type Configuration, getConfiguration, getGitInfo, type GitInfo } from 'chromatic/node';
+import type { Channel } from 'storybook/internal/channels';
+import type { TestingModuleProgressReportProgress } from 'storybook/internal/core-events';
+import { telemetry } from 'storybook/internal/telemetry';
+import type { Options } from 'storybook/internal/types';
 
 import {
   ADDON_ID,
@@ -23,32 +23,32 @@ import {
   TELEMETRY,
   TEST_PROVIDER_ID,
   TESTING_MODULE_PROGRESS_REPORT,
-} from "./constants";
-import { runChromaticBuild, stopChromaticBuild } from "./runChromaticBuild";
+} from './constants';
+import { runChromaticBuild, stopChromaticBuild } from './runChromaticBuild';
 import {
   ConfigInfoPayload,
   ConfigurationUpdate,
   GitInfoPayload,
   LocalBuildProgress,
   ProjectInfoPayload,
-} from "./types";
-import { ChannelFetch } from "./utils/ChannelFetch";
-import { SharedState } from "./utils/SharedState";
-import { updateChromaticConfig } from "./utils/updateChromaticConfig";
+} from './types';
+import { ChannelFetch } from './utils/ChannelFetch';
+import { SharedState } from './utils/SharedState';
+import { updateChromaticConfig } from './utils/updateChromaticConfig';
 
 /**
  * to load the built addon in this test Storybook
  */
 function managerEntries(entry: string[] = []) {
-  return [...entry, require.resolve("./manager.mjs")];
+  return [...entry, require.resolve('./manager.mjs')];
 }
 
 // Load the addon version from the package.json file, once.
 let getAddonVersion = async (): Promise<string | null> => {
   const promise = (async () => {
     try {
-      const packageJsonPath = require.resolve("@chromatic-com/storybook/package.json");
-      const packageJsonData = await readFile(packageJsonPath, "utf-8");
+      const packageJsonPath = require.resolve('@chromatic-com/storybook/package.json');
+      const packageJsonData = await readFile(packageJsonPath, 'utf-8');
       return JSON.parse(packageJsonData).version || null;
     } catch (e) {
       return null;
@@ -63,22 +63,22 @@ let getAddonVersion = async (): Promise<string | null> => {
 const suggestRemovals = (
   config: Configuration,
   defaults: Configuration,
-  update: ConfigurationUpdate,
+  update: ConfigurationUpdate
 ) =>
   Object.fromEntries(
     (Object.entries(update) as [keyof Configuration, Configuration[keyof Configuration]][])
       .map(([key, value]) => [key, value === defaults[key] ? null : value])
-      .filter(([key, value]) => value !== null || config[key as keyof Configuration] !== undefined),
+      .filter(([key, value]) => value !== null || config[key as keyof Configuration] !== undefined)
   );
 
 // Detect problems in the current configuration and suggest updates.
 const getConfigInfo = async (
   configuration: Awaited<ReturnType<typeof getConfiguration>>,
-  options: Options,
+  options: Options
 ) => {
   const defaults: Configuration = {
-    storybookBaseDir: ".",
-    storybookConfigDir: ".storybook",
+    storybookBaseDir: '.',
+    storybookConfigDir: '.storybook',
   } as const;
 
   const problems: ConfigurationUpdate = {};
@@ -86,12 +86,12 @@ const getConfigInfo = async (
 
   const { repositoryRootDir } = await getGitInfo();
   const baseDir = repositoryRootDir && normalize(relative(repositoryRootDir, process.cwd()));
-  if (baseDir !== normalize(configuration.storybookBaseDir ?? "")) {
+  if (baseDir !== normalize(configuration.storybookBaseDir ?? '')) {
     problems.storybookBaseDir = baseDir;
   }
 
   const configDir = normalize(relative(process.cwd(), options.configDir));
-  if (configDir !== normalize(configuration.storybookConfigDir ?? "")) {
+  if (configDir !== normalize(configuration.storybookConfigDir ?? '')) {
     problems.storybookConfigDir = configDir;
   }
 
@@ -116,7 +116,7 @@ const observeGitInfo = (
   interval: number,
   callback: (info: GitInfo, prevInfo?: GitInfo) => void,
   errorCallback: (e: Error) => void,
-  projectId?: string,
+  projectId?: string
 ) => {
   let prev: GitInfo | undefined;
   let prevError: Error | undefined;
@@ -147,7 +147,7 @@ const observeGitInfo = (
 
 const watchConfigFile = async (
   configFile: string | undefined,
-  onChange: (configuration: Awaited<ReturnType<typeof getConfiguration>>) => Promise<void>,
+  onChange: (configuration: Awaited<ReturnType<typeof getConfiguration>>) => Promise<void>
 ) => {
   const configuration = await getConfiguration(configFile);
   await onChange(configuration);
@@ -166,8 +166,8 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
   ChannelFetch.subscribe(ADDON_ID, channel);
 
   // Lazy load these APIs since we don't need them right away
-  const apiPromise = presets.apply<any>("experimental_serverAPI");
-  const corePromise = presets.apply("core");
+  const apiPromise = presets.apply<any>('experimental_serverAPI');
+  const corePromise = presets.apply('core');
 
   // This yields an empty object if the file doesn't exist and no explicit configFile is specified
   const { projectId: initialProjectId } = await getConfiguration(configFile);
@@ -176,7 +176,7 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
   projectInfoState.value = initialProjectId ? { projectId: initialProjectId } : {};
 
   let lastProjectId = initialProjectId;
-  projectInfoState.on("change", async ({ projectId } = {}) => {
+  projectInfoState.on('change', async ({ projectId } = {}) => {
     if (!projectId || projectId === lastProjectId) return;
     lastProjectId = projectId;
 
@@ -184,7 +184,7 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
     try {
       // No config file may be found (file is about to be created)
       const { configFile: foundConfigFile, ...config } = await getConfiguration(writtenConfigFile);
-      const targetConfigFile = foundConfigFile || writtenConfigFile || "chromatic.config.json";
+      const targetConfigFile = foundConfigFile || writtenConfigFile || 'chromatic.config.json';
       const { problems, suggestions } = await getConfigInfo(config, options);
       await updateChromaticConfig(targetConfigFile, {
         ...config,
@@ -213,22 +213,22 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
 
   const localBuildProgress = SharedState.subscribe<LocalBuildProgress>(
     LOCAL_BUILD_PROGRESS,
-    channel,
+    channel
   );
 
   const stepStatus = {
-    initialize: "pending",
-    build: "pending",
-    upload: "pending",
-    verify: "pending",
-    snapshot: "pending",
-    complete: "success",
-    error: "failed",
-    limited: "failed",
-    aborted: "success",
+    initialize: 'pending',
+    build: 'pending',
+    upload: 'pending',
+    verify: 'pending',
+    snapshot: 'pending',
+    complete: 'success',
+    error: 'failed',
+    limited: 'failed',
+    aborted: 'success',
   };
 
-  localBuildProgress.on("change", (progress) => {
+  localBuildProgress.on('change', (progress) => {
     if (!progress) return;
     const { currentStep, stepProgress, errorCount = 0, changeCount = 0 } = progress;
     const numTotalTests = stepProgress.snapshot?.denominator;
@@ -240,7 +240,7 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
     channel.emit(TESTING_MODULE_PROGRESS_REPORT, {
       providerId: TEST_PROVIDER_ID,
       status: stepStatus[currentStep],
-      cancellable: ["initialize", "build", "upload"].includes(currentStep),
+      cancellable: ['initialize', 'build', 'upload'].includes(currentStep),
       progress: {
         numFailedTests,
         numPassedTests: numTotalTests && numTotalTests - numFailedTests,
@@ -248,7 +248,7 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
         numTotalTests,
         startedAt:
           stepProgress.initialize?.startedAt && new Date(stepProgress.initialize.startedAt),
-        finishedAt: ["aborted", "complete", "error", "limited"].includes(currentStep)
+        finishedAt: ['aborted', 'complete', 'error', 'limited'].includes(currentStep)
           ? finishedAt
           : undefined,
       } as TestingModuleProgressReportProgress,
@@ -269,7 +269,7 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
 
   channel.on(TELEMETRY, async (event: Event) => {
     if ((await corePromise).disableTelemetry) return;
-    telemetry("addon-visual-tests" as any, { ...event, addonVersion: await getAddonVersion() });
+    telemetry('addon-visual-tests' as any, { ...event, addonVersion: await getAddonVersion() });
   });
 
   const configInfoState = SharedState.subscribe<ConfigInfoPayload>(CONFIG_INFO, channel);
@@ -284,7 +284,7 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
     },
     (error: Error) => {
       gitInfoError.value = error;
-    },
+    }
   );
 
   watchConfigFile(configFile, async (configuration) => {
@@ -305,9 +305,9 @@ const config = {
   experimental_serverChannel: serverChannel,
   env: async (
     env: Record<string, string>,
-    { configType }: { configType: "DEVELOPMENT" | "PRODUCTION" },
+    { configType }: { configType: 'DEVELOPMENT' | 'PRODUCTION' }
   ) => {
-    if (configType === "PRODUCTION") return env;
+    if (configType === 'PRODUCTION') return env;
 
     return {
       ...env,

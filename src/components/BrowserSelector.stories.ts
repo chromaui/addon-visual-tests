@@ -1,14 +1,14 @@
-import { action } from "@storybook/addon-actions";
-import type { Meta, StoryObj } from "@storybook/react";
+import { action } from '@storybook/addon-actions';
+import type { Meta, StoryObj } from '@storybook/react';
 
-import { Browser, ComparisonResult } from "../gql/graphql";
-import { BrowserSelector } from "./BrowserSelector";
+import { Browser, ComparisonResult } from '../gql/graphql';
+import { BrowserSelector } from './BrowserSelector';
 
 const meta = {
   component: BrowserSelector,
   args: {
     isAccepted: false,
-    onSelectBrowser: action("onSelectBrowser"),
+    onSelectBrowser: action('onSelectBrowser'),
   },
 } satisfies Meta<typeof BrowserSelector>;
 
@@ -16,14 +16,14 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const browserChrome = {
-  id: "_chrome",
+  id: '_chrome',
   key: Browser.Chrome,
-  name: "Chrome",
+  name: 'Chrome',
 };
 const browserSafari = {
-  id: "_safari",
+  id: '_safari',
   key: Browser.Safari,
-  name: "Safari",
+  name: 'Safari',
 };
 
 export const WithSingleBrowserChanged: Story = {

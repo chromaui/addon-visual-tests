@@ -1,8 +1,8 @@
-import { useCallback } from "react";
+import { useCallback } from 'react';
 
-import { PROJECT_INFO } from "../constants";
-import { ProjectInfoPayload } from "../types";
-import { useSharedState } from "./useSharedState";
+import { PROJECT_INFO } from '../constants';
+import { ProjectInfoPayload } from '../types';
+import { useSharedState } from './useSharedState';
 
 export const useProjectId = () => {
   const [projectInfo, setProjectInfo] = useSharedState<ProjectInfoPayload>(PROJECT_INFO);
@@ -14,13 +14,13 @@ export const useProjectId = () => {
     configFile,
     updateProject: useCallback(
       (id: string) => setProjectInfo({ ...projectInfo, projectId: id, dismissed: false }),
-      [projectInfo, setProjectInfo],
+      [projectInfo, setProjectInfo]
     ),
     projectUpdatingFailed: !dismissed && written === false,
     projectIdUpdated: !dismissed && written === true,
     clearProjectIdUpdated: useCallback(
       () => setProjectInfo({ ...projectInfo, dismissed: true }),
-      [projectInfo, setProjectInfo],
+      [projectInfo, setProjectInfo]
     ),
   };
 };

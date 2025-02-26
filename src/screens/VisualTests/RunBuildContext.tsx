@@ -1,6 +1,6 @@
-import React, { createContext } from "react";
+import React, { createContext } from 'react';
 
-import { useRequiredContext } from "../../utils/useRequiredContext";
+import { useRequiredContext } from '../../utils/useRequiredContext';
 
 const initialState = {
   isRunning: false,
@@ -12,7 +12,7 @@ type State = typeof initialState;
 
 export const RunBuildContext = createContext(initialState);
 
-export const useRunBuildState = () => useRequiredContext(RunBuildContext, "RunBuild");
+export const useRunBuildState = () => useRequiredContext(RunBuildContext, 'RunBuild');
 
 export const RunBuildProvider = ({
   children,

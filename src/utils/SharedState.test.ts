@@ -1,11 +1,11 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from 'vitest';
 
-import { MockChannel } from "./MockChannel";
-import { SharedState } from "./SharedState";
+import { MockChannel } from './MockChannel';
+import { SharedState } from './SharedState';
 
 const tick = () => new Promise((resolve) => setTimeout(resolve, 0));
 
-describe("SharedState", () => {
+describe('SharedState', () => {
   let channel: MockChannel;
   let a: SharedState;
   let b: SharedState;
@@ -16,54 +16,54 @@ describe("SharedState", () => {
     b = new SharedState(channel);
   });
 
-  it("should initialize with an empty object", () => {
+  it('should initialize with an empty object', () => {
     expect(a.state).toEqual({});
   });
 
-  it("should set and get values correctly", () => {
-    a.set("foo", "bar");
-    a.set("baz", 123);
+  it('should set and get values correctly', () => {
+    a.set('foo', 'bar');
+    a.set('baz', 123);
 
-    expect(a.get("foo")).toBe("bar");
-    expect(a.get("baz")).toBe(123);
-    expect(a.get("qux")).toBeUndefined();
+    expect(a.get('foo')).toBe('bar');
+    expect(a.get('baz')).toBe(123);
+    expect(a.get('qux')).toBeUndefined();
   });
 
-  it("should remove values correctly", () => {
-    a.set("foo", "bar");
-    a.set("foo", undefined);
+  it('should remove values correctly', () => {
+    a.set('foo', 'bar');
+    a.set('foo', undefined);
 
-    expect(a.get("foo")).toBeUndefined();
+    expect(a.get('foo')).toBeUndefined();
   });
 
-  it("should (eventually) share state between instances", async () => {
-    a.set("foo", "bar");
+  it('should (eventually) share state between instances', async () => {
+    a.set('foo', 'bar');
     await tick(); // setState
-    expect(b.get("foo")).toBe("bar");
+    expect(b.get('foo')).toBe('bar');
   });
 
-  it("should (eventually) share state with new instances", async () => {
-    a.set("foo", "bar");
+  it('should (eventually) share state with new instances', async () => {
+    a.set('foo', 'bar');
     const c = new SharedState(channel);
 
-    expect(c.get("foo")).toBeUndefined();
+    expect(c.get('foo')).toBeUndefined();
     await tick(); // getState
     await tick(); // setState
-    expect(c.get("foo")).toBe("bar");
+    expect(c.get('foo')).toBe('bar');
   });
 
-  it("should not overwrite newer values", async () => {
-    a.set("foo", "bar");
-    b.set("foo", "baz"); // conflict: "bar" was not yet synced
+  it('should not overwrite newer values', async () => {
+    a.set('foo', 'bar');
+    b.set('foo', 'baz'); // conflict: "bar" was not yet synced
     await tick(); // setState (one side)
     await tick(); // setState (other side)
 
     // Neither accepts the other's value
-    expect(a.get("foo")).toBe("bar");
-    expect(b.get("foo")).toBe("baz");
+    expect(a.get('foo')).toBe('bar');
+    expect(b.get('foo')).toBe('baz');
 
-    b.set("foo", "baz"); // try again
+    b.set('foo', 'baz'); // try again
     await tick(); // setState
-    expect(a.get("foo")).toBe("baz");
+    expect(a.get('foo')).toBe('baz');
   });
 });

@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from '@storybook/react';
 
-import { Uninstalled } from "./Uninstalled";
+import { Uninstalled } from './Uninstalled';
 
 const meta = {
   component: Uninstalled,

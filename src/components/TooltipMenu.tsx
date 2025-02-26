@@ -1,21 +1,21 @@
-import React, { ComponentProps } from "react";
-import { TooltipLinkList, WithTooltip } from "storybook/internal/components";
-import { styled } from "storybook/internal/theming";
+import React, { ComponentProps } from 'react';
+import { TooltipLinkList, WithTooltip } from 'storybook/internal/components';
+import { styled } from 'storybook/internal/theming';
 
-import { IconButton } from "./IconButton";
-import { TooltipNote } from "./TooltipNote";
+import { IconButton } from './IconButton';
+import { TooltipNote } from './TooltipNote';
 
 const TooltipWrapper = styled.div({
-  "& > div": {
+  '& > div': {
     minWidth: 120,
   },
 });
 
 interface TooltipMenuProps
-  extends Omit<ComponentProps<typeof WithTooltip>, "children" | "tooltip" | "onVisibleChange"> {
+  extends Omit<ComponentProps<typeof WithTooltip>, 'children' | 'tooltip' | 'onVisibleChange'> {
   children: React.ReactNode | ((active: boolean) => React.ReactNode);
-  links: ComponentProps<typeof TooltipLinkList>["links"];
-  note?: ComponentProps<typeof TooltipNote>["note"];
+  links: ComponentProps<typeof TooltipLinkList>['links'];
+  note?: ComponentProps<typeof TooltipNote>['note'];
 }
 
 export const TooltipMenu = ({ children, links, note, ...props }: TooltipMenuProps) => {
@@ -42,7 +42,7 @@ export const TooltipMenu = ({ children, links, note, ...props }: TooltipMenuProp
       trigger="click"
       {...props}
     >
-      {typeof children === "function" ? (
+      {typeof children === 'function' ? (
         children(active)
       ) : (
         <IconButton active={active}>{children}</IconButton>

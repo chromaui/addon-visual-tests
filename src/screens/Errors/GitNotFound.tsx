@@ -1,20 +1,20 @@
-import { LockIcon } from "@storybook/icons";
-import React from "react";
+import { LockIcon } from '@storybook/icons';
+import React from 'react';
 
-import { Box, BoxTitle } from "../../components/Box";
-import { Code } from "../../components/Code";
-import { Container } from "../../components/Container";
-import { Link } from "../../components/design-system";
-import { Heading } from "../../components/Heading";
-import { VisualTestsIcon } from "../../components/icons/VisualTestsIcon";
-import { Screen } from "../../components/Screen";
-import { Stack } from "../../components/Stack";
-import { Text } from "../../components/Text";
-import { useTelemetry } from "../../utils/TelemetryContext";
-import { useUninstallAddon } from "../Uninstalled/UninstallContext";
+import { Box, BoxTitle } from '../../components/Box';
+import { Code } from '../../components/Code';
+import { Container } from '../../components/Container';
+import { Link } from '../../components/design-system';
+import { Heading } from '../../components/Heading';
+import { VisualTestsIcon } from '../../components/icons/VisualTestsIcon';
+import { Screen } from '../../components/Screen';
+import { Stack } from '../../components/Stack';
+import { Text } from '../../components/Text';
+import { useTelemetry } from '../../utils/TelemetryContext';
+import { useUninstallAddon } from '../Uninstalled/UninstallContext';
 
 export const GitNotFound = () => {
-  useTelemetry("Errors", "GitNotFound");
+  useTelemetry('Errors', 'GitNotFound');
   const { uninstallAddon } = useUninstallAddon();
   return (
     <Screen footer={null}>
@@ -32,7 +32,7 @@ export const GitNotFound = () => {
             <LockIcon style={{ flexShrink: 0 }} />
             <Text>
               <BoxTitle>Git not detected</BoxTitle>
-              This addon requires Git to associate test results with commits and branches. Run{" "}
+              This addon requires Git to associate test results with commits and branches. Run{' '}
               <Code>git init</Code> and make your first commit
               <Code>git commit -m</Code> to get started!
             </Text>

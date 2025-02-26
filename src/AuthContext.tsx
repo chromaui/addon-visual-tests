@@ -1,6 +1,6 @@
-import React, { createContext } from "react";
+import React, { createContext } from 'react';
 
-import { useRequiredContext } from "./utils/useRequiredContext";
+import { useRequiredContext } from './utils/useRequiredContext';
 
 interface AuthState {
   accessToken: string | null;
@@ -19,4 +19,4 @@ export const AuthProvider = ({
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-export const useAuthState = () => useRequiredContext(AuthContext, "AuthState");
+export const useAuthState = () => useRequiredContext(AuthContext, 'AuthState');

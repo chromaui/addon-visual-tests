@@ -5,40 +5,40 @@ import {
   StoryTestFieldsFragment,
   TestResult,
   TestStatus,
-} from "../gql/graphql";
+} from '../gql/graphql';
 
 export const makeBrowserInfo = (key: Browser): BrowserInfo => ({
   id: key,
   key,
   name: key.slice(0, 1) + key.slice(1).toLowerCase(),
-  version: "<unknown>",
+  version: '<unknown>',
 });
 
-export const baseCapture: StoryTestFieldsFragment["comparisons"][number]["baseCapture"] = {
+export const baseCapture: StoryTestFieldsFragment['comparisons'][number]['baseCapture'] = {
   captureImage: {
-    imageUrl: "/A.png",
+    imageUrl: '/A.png',
     imageWidth: 880,
     imageHeight: 280,
   },
 };
 
-export const headCapture: StoryTestFieldsFragment["comparisons"][number]["headCapture"] = {
+export const headCapture: StoryTestFieldsFragment['comparisons'][number]['headCapture'] = {
   captureImage: {
-    backgroundColor: "rgba(255, 255, 255, 1)",
-    imageUrl: "/B.png",
+    backgroundColor: 'rgba(255, 255, 255, 1)',
+    imageUrl: '/B.png',
     imageWidth: 880,
     imageHeight: 280,
-    thumbnailUrl: "/B.png",
+    thumbnailUrl: '/B.png',
   },
 };
 
-export const captureDiff: StoryTestFieldsFragment["comparisons"][number]["captureDiff"] = {
+export const captureDiff: StoryTestFieldsFragment['comparisons'][number]['captureDiff'] = {
   diffImage: {
-    imageUrl: "/B-comparison.png",
+    imageUrl: '/B-comparison.png',
     imageWidth: 880,
   },
   focusImage: {
-    imageUrl: "/B-focus.png",
+    imageUrl: '/B-focus.png',
     imageWidth: 880,
   },
 };
@@ -48,22 +48,22 @@ export function makeComparison(options: {
   browser?: Browser;
   result?: ComparisonResult;
   captureError?: NonNullable<
-    StoryTestFieldsFragment["comparisons"][number]["headCapture"]
-  >["captureError"];
-  baseCapture?: StoryTestFieldsFragment["comparisons"][number]["baseCapture"];
-}): StoryTestFieldsFragment["comparisons"][number] {
+    StoryTestFieldsFragment['comparisons'][number]['headCapture']
+  >['captureError'];
+  baseCapture?: StoryTestFieldsFragment['comparisons'][number]['baseCapture'];
+}): StoryTestFieldsFragment['comparisons'][number] {
   const {
     captureError,
     result = ComparisonResult.Equal,
     baseCapture: baseCaptureOverride,
   } = options;
   return {
-    id: options.id || "111",
+    id: options.id || '111',
     browser: makeBrowserInfo(options.browser || Browser.Chrome),
     result,
     baseCapture: baseCaptureOverride !== undefined ? baseCaptureOverride : baseCapture,
     headCapture: captureError ? { ...headCapture, captureError } : headCapture,
-    ...((result === ComparisonResult.Changed || captureError?.kind === "INTERACTION_FAILURE") && {
+    ...((result === ComparisonResult.Changed || captureError?.kind === 'INTERACTION_FAILURE') && {
       captureDiff,
     }),
   };
@@ -97,16 +97,16 @@ export function makeTest(options: {
   id?: string;
   status?: TestStatus;
   result?: TestResult;
-  comparisons?: StoryTestFieldsFragment["comparisons"];
+  comparisons?: StoryTestFieldsFragment['comparisons'];
   comparisonResults?: ComparisonResult[];
   browsers?: Browser[];
   viewport?: number;
   storyId?: string;
   captureError?: NonNullable<
-    StoryTestFieldsFragment["comparisons"][number]["headCapture"]
-  >["captureError"];
+    StoryTestFieldsFragment['comparisons'][number]['headCapture']
+  >['captureError'];
 }): StoryTestFieldsFragment {
-  const id = options.id || "11";
+  const id = options.id || '11';
   const status = options.status || TestStatus.Passed;
   const result = options.result || testStatusToTestResult[status];
 
@@ -129,12 +129,12 @@ export function makeTest(options: {
         result:
           options.comparisonResults?.[index] ?? (result && testResultToComparisonResult[result]),
         captureError: options.captureError,
-      }),
+      })
     );
   }
 
   function generateStory(storyId: string) {
-    const [rawComponentName, rawStoryName] = storyId.split("--");
+    const [rawComponentName, rawStoryName] = storyId.split('--');
     return {
       storyId,
       name: rawStoryName[0].toUpperCase() + rawStoryName.slice(1),
@@ -153,7 +153,7 @@ export function makeTest(options: {
     webUrl: `https://www.chromatic.com/test?appId=123&id=${id}`,
     comparisons,
     mode: { name: `${viewportWidth}px`, globals: {} },
-    story: generateStory(options.storyId || "button--primary"),
+    story: generateStory(options.storyId || 'button--primary'),
   };
 }
 
@@ -168,16 +168,16 @@ export function makeTests(options: {
     viewport?: number;
     status?: TestStatus;
     result?: TestResult;
-    comparisons?: StoryTestFieldsFragment["comparisons"];
+    comparisons?: StoryTestFieldsFragment['comparisons'];
     comparisonResults?: ComparisonResult[];
   }[];
 }) {
   return options.viewports.map((viewportOptions, index) =>
     makeTest({
-      id: `${options.id || "1"}${index}`,
-      storyId: options.storyId || "button--primary",
+      id: `${options.id || '1'}${index}`,
+      storyId: options.storyId || 'button--primary',
       browsers: options.browsers || [Browser.Chrome],
       ...viewportOptions,
-    }),
+    })
   );
 }

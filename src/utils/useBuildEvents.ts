@@ -1,10 +1,10 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { useChannel } from "storybook/internal/manager-api";
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { useChannel } from 'storybook/internal/manager-api';
 
-import { START_BUILD, STOP_BUILD } from "../constants";
-import { LocalBuildProgress } from "../types";
-import { debounce } from "./debounce";
-import { TelemetryContext } from "./TelemetryContext";
+import { START_BUILD, STOP_BUILD } from '../constants';
+import { LocalBuildProgress } from '../types';
+import { debounce } from './debounce';
+import { TelemetryContext } from './TelemetryContext';
 
 export const useBuildEvents = ({
   localBuildProgress,
@@ -19,46 +19,46 @@ export const useBuildEvents = ({
   const [isDisallowed, setDisallowed] = useState(false);
 
   const isCancelable = localBuildProgress
-    ? ["initialize", "build", "upload"].includes(localBuildProgress?.currentStep)
+    ? ['initialize', 'build', 'upload'].includes(localBuildProgress?.currentStep)
     : false;
 
   const isRunning = localBuildProgress
-    ? !["aborted", "complete", "error", "limited"].includes(localBuildProgress.currentStep)
+    ? !['aborted', 'complete', 'error', 'limited'].includes(localBuildProgress.currentStep)
     : isStarting;
 
   const startBuild = useMemo(
     () =>
       debounce(
-        "startBuild",
+        'startBuild',
         () => {
           setDisallowed(false);
           setStarting(true);
           emit(START_BUILD, { accessToken });
-          trackEvent?.({ action: "startBuild" });
+          trackEvent?.({ action: 'startBuild' });
         },
         1000,
-        false,
+        false
       ),
-    [accessToken, emit, trackEvent],
+    [accessToken, emit, trackEvent]
   );
 
   const stopBuild = useMemo(
     () =>
       debounce(
-        "startBuild",
+        'startBuild',
         () => {
           if (!isCancelable) {
             setDisallowed(true);
           } else {
             setStarting(false);
             emit(STOP_BUILD);
-            trackEvent?.({ action: "stopBuild" });
+            trackEvent?.({ action: 'stopBuild' });
           }
         },
         1000,
-        false,
+        false
       ),
-    [isCancelable, emit, trackEvent],
+    [isCancelable, emit, trackEvent]
   );
 
   useEffect(() => {

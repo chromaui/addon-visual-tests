@@ -1,4 +1,4 @@
-import { ComparisonResult } from "../gql/graphql";
+import { ComparisonResult } from '../gql/graphql';
 
 export const resultOrder = [
   undefined,

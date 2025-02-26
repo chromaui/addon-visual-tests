@@ -1,12 +1,12 @@
-import { FailedIcon } from "@storybook/icons";
-import pluralize from "pluralize";
-import React, { useCallback, useContext, useEffect, useRef } from "react";
-import { Link } from "storybook/internal/components";
-import { type API, useChannel, useStorybookState } from "storybook/internal/manager-api";
-import { color } from "storybook/internal/theming";
-import type { Addon_TestProviderState } from "storybook/internal/types";
+import { FailedIcon } from '@storybook/icons';
+import pluralize from 'pluralize';
+import React, { useCallback, useContext, useEffect, useRef } from 'react';
+import { Link } from 'storybook/internal/components';
+import { type API, useChannel, useStorybookState } from 'storybook/internal/manager-api';
+import { color } from 'storybook/internal/theming';
+import type { Addon_TestProviderState } from 'storybook/internal/types';
 
-import { BUILD_STEP_CONFIG } from "./buildSteps";
+import { BUILD_STEP_CONFIG } from './buildSteps';
 import {
   ADDON_ID,
   CONFIG_INFO,
@@ -19,13 +19,13 @@ import {
   TESTING_MODULE_CANCEL_TEST_RUN_REQUEST,
   TESTING_MODULE_PROGRESS_REPORT,
   TESTING_MODULE_RUN_ALL_REQUEST,
-} from "./constants";
-import { ConfigInfoPayload, LocalBuildProgress } from "./types";
-import { useAccessToken } from "./utils/graphQLClient";
-import { TelemetryContext } from "./utils/TelemetryContext";
-import { useBuildEvents } from "./utils/useBuildEvents";
-import { useProjectId } from "./utils/useProjectId";
-import { useSharedState } from "./utils/useSharedState";
+} from './constants';
+import { ConfigInfoPayload, LocalBuildProgress } from './types';
+import { useAccessToken } from './utils/graphQLClient';
+import { TelemetryContext } from './utils/TelemetryContext';
+import { useBuildEvents } from './utils/useBuildEvents';
+import { useProjectId } from './utils/useProjectId';
+import { useSharedState } from './utils/useSharedState';
 
 type TestingModuleDescriptionProps = Addon_TestProviderState & { api: API };
 
@@ -49,25 +49,25 @@ export const TestingModuleDescription = ({ api, running }: TestingModuleDescript
   const lastStep = useRef(localBuildProgress?.currentStep);
   const { index, status, storyId, viewMode } = useStorybookState();
   const changedStoryCount = Object.values(status).filter(
-    (value) => value[ADDON_ID]?.status === "warn",
+    (value) => value[ADDON_ID]?.status === 'warn'
   );
 
   const openVisualTestsPanel = useCallback(
     (warning?: string) => {
       setOptions({ selectedPanel: PANEL_ID });
       togglePanel(true);
-      if (index && viewMode !== "story") {
+      if (index && viewMode !== 'story') {
         // Select the next story in the index, because docs mode doesn't show addon panels
         const currentIndex = Object.keys(index).indexOf(storyId);
         const entries = Object.entries(index).slice(currentIndex > 0 ? currentIndex : 0);
-        const [nextStoryId] = entries.find(([, { type }]) => type === "story") || [];
+        const [nextStoryId] = entries.find(([, { type }]) => type === 'story') || [];
         if (nextStoryId) selectStory(nextStoryId);
       }
       if (warning) {
-        trackEvent?.({ action: "openWarning", warning });
+        trackEvent?.({ action: 'openWarning', warning });
       }
     },
-    [setOptions, togglePanel, trackEvent, index, selectStory, storyId, viewMode],
+    [setOptions, togglePanel, trackEvent, index, selectStory, storyId, viewMode]
   );
 
   const clickNotification = useCallback(
@@ -75,17 +75,17 @@ export const TestingModuleDescription = ({ api, running }: TestingModuleDescript
       onDismiss();
       openVisualTestsPanel();
     },
-    [openVisualTestsPanel],
+    [openVisualTestsPanel]
   );
 
   useEffect(() => {
     const offline = () => setOffline(true);
     const online = () => setOffline(false);
-    window.addEventListener("offline", offline);
-    window.addEventListener("online", online);
+    window.addEventListener('offline', offline);
+    window.addEventListener('online', online);
     return () => {
-      window.removeEventListener("offline", offline);
-      window.removeEventListener("online", online);
+      window.removeEventListener('offline', offline);
+      window.removeEventListener('online', online);
     };
   }, [setOffline]);
 
@@ -93,25 +93,25 @@ export const TestingModuleDescription = ({ api, running }: TestingModuleDescript
     if (localBuildProgress?.currentStep === lastStep.current) return;
     lastStep.current = localBuildProgress?.currentStep;
 
-    if (localBuildProgress?.currentStep === "error") {
+    if (localBuildProgress?.currentStep === 'error') {
       addNotification({
         id: `${ADDON_ID}/build-error/${Date.now()}`,
         content: {
-          headline: "Build error",
-          subHeadline: "Check the Storybook process on the command line for more details.",
+          headline: 'Build error',
+          subHeadline: 'Check the Storybook process on the command line for more details.',
         },
         icon: <FailedIcon color={color.negative} />,
         onClick: clickNotification,
       });
     }
 
-    if (localBuildProgress?.currentStep === "limited") {
+    if (localBuildProgress?.currentStep === 'limited') {
       addNotification({
         id: `${ADDON_ID}/build-limited/${Date.now()}`,
         content: {
-          headline: "Build limited",
+          headline: 'Build limited',
           subHeadline:
-            "Your account has insufficient snapshots remaining to run this build. Visit your billing page to find out more.",
+            'Your account has insufficient snapshots remaining to run this build. Visit your billing page to find out more.',
         },
         icon: <FailedIcon color={color.negative} />,
         onClick: clickNotification,
@@ -125,15 +125,15 @@ export const TestingModuleDescription = ({ api, running }: TestingModuleDescript
   });
 
   let warning: string | undefined;
-  if (!projectId) warning = "Select a project";
-  if (!isLoggedIn) warning = "Login required";
-  if (gitInfoError) warning = "Git synchronization problem";
-  if (hasConfigProblem) warning = "Configuration problem";
-  if (isOffline) warning = "Not available while offline";
+  if (!projectId) warning = 'Select a project';
+  if (!isLoggedIn) warning = 'Login required';
+  if (gitInfoError) warning = 'Git synchronization problem';
+  if (hasConfigProblem) warning = 'Configuration problem';
+  if (isOffline) warning = 'Not available while offline';
 
   const clickWarning = useCallback(
     () => openVisualTestsPanel(warning),
-    [openVisualTestsPanel, warning],
+    [openVisualTestsPanel, warning]
   );
 
   const emit = useChannel(
@@ -145,7 +145,7 @@ export const TestingModuleDescription = ({ api, running }: TestingModuleDescript
         if (providerId === TEST_PROVIDER_ID) stopBuild();
       },
     },
-    [startBuild, stopBuild],
+    [startBuild, stopBuild]
   );
 
   useEffect(() => {
@@ -165,17 +165,17 @@ export const TestingModuleDescription = ({ api, running }: TestingModuleDescript
   if (isOutdated) {
     return <>Test results outdated</>;
   }
-  if (localBuildProgress?.currentStep === "aborted") {
+  if (localBuildProgress?.currentStep === 'aborted') {
     return <>Aborted by user</>;
   }
-  if (localBuildProgress?.currentStep === "complete") {
+  if (localBuildProgress?.currentStep === 'complete') {
     if (localBuildProgress.errorCount) {
-      return <>Encountered {pluralize("component error", localBuildProgress.errorCount, true)}</>;
+      return <>Encountered {pluralize('component error', localBuildProgress.errorCount, true)}</>;
     }
     return changedStoryCount.length ? (
       <>
-        Found {pluralize("story", changedStoryCount.length, true)} with
-        {pluralize("change", changedStoryCount.length)}
+        Found {pluralize('story', changedStoryCount.length, true)} with
+        {pluralize('change', changedStoryCount.length)}
       </>
     ) : (
       <>No visual changes detected</>

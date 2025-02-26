@@ -1,48 +1,48 @@
-import { expect, it, vi } from "vitest";
+import { expect, it, vi } from 'vitest';
 
-import { Browser, ComparisonResult, TestResult, TestStatus } from "../gql/graphql";
-import { makeComparison, makeTest } from "./storyData";
-import { summarizeTests } from "./summarizeTests";
+import { Browser, ComparisonResult, TestResult, TestStatus } from '../gql/graphql';
+import { makeComparison, makeTest } from './storyData';
+import { summarizeTests } from './summarizeTests';
 
-vi.mock("react", () => ({
+vi.mock('react', () => ({
   useState: vi.fn((x: any) => [x, vi.fn()]),
   useCallback: vi.fn((f: any) => f),
 }));
 
 const tests = [
   makeTest({
-    id: "11",
+    id: '11',
     status: TestStatus.Passed,
     result: TestResult.Equal,
     browsers: [Browser.Chrome, Browser.Safari],
   }),
   makeTest({
-    id: "12",
+    id: '12',
     status: TestStatus.Broken,
     result: TestResult.CaptureError,
     viewport: 800,
     browsers: [Browser.Chrome, Browser.Safari],
   }),
   makeTest({
-    id: "13",
+    id: '13',
     status: TestStatus.Pending,
     result: TestResult.Changed,
     viewport: 480,
     browsers: [Browser.Chrome, Browser.Safari],
   }),
   makeTest({
-    id: "14",
+    id: '14',
     status: TestStatus.InProgress,
     result: undefined,
     viewport: 1600,
     comparisons: [
       makeComparison({
-        id: "141",
+        id: '141',
         browser: Browser.Chrome,
         result: undefined,
       }),
       makeComparison({
-        id: "142",
+        id: '142',
         browser: Browser.Safari,
         result: ComparisonResult.Added,
       }),
@@ -50,7 +50,7 @@ const tests = [
   }),
 ];
 
-it("Calculates static information correctly", () => {
+it('Calculates static information correctly', () => {
   const { status, isInProgress, changeCount, brokenCount, browserResults, modeResults } =
     summarizeTests(tests);
 

@@ -1,16 +1,16 @@
-import React, { useCallback, useEffect } from "react";
-import { type API, type State, useStorybookState } from "storybook/internal/manager-api";
-import { styled } from "storybook/internal/theming";
-import type { API_FilterFunction } from "storybook/internal/types";
+import React, { useCallback, useEffect } from 'react';
+import { type API, type State, useStorybookState } from 'storybook/internal/manager-api';
+import { styled } from 'storybook/internal/theming';
+import type { API_FilterFunction } from 'storybook/internal/types';
 
-import { ADDON_ID, ENABLE_FILTER } from "../constants";
-import { SidebarToggleButton } from "./SidebarToggleButton";
+import { ADDON_ID, ENABLE_FILTER } from '../constants';
+import { SidebarToggleButton } from './SidebarToggleButton';
 
 const filterNone: API_FilterFunction = () => true;
-const filterWarn: API_FilterFunction = ({ status }) => status?.[ADDON_ID]?.status === "warn";
-const filterError: API_FilterFunction = ({ status }) => status?.[ADDON_ID]?.status === "error";
+const filterWarn: API_FilterFunction = ({ status }) => status?.[ADDON_ID]?.status === 'warn';
+const filterError: API_FilterFunction = ({ status }) => status?.[ADDON_ID]?.status === 'error';
 const filterBoth: API_FilterFunction = ({ status }) =>
-  status?.[ADDON_ID]?.status === "warn" || status?.[ADDON_ID]?.status === "error";
+  status?.[ADDON_ID]?.status === 'warn' || status?.[ADDON_ID]?.status === 'error';
 
 const getFilter = (showWarnings = false, showErrors = false) => {
   if (showWarnings && showErrors) return filterBoth;
@@ -20,21 +20,21 @@ const getFilter = (showWarnings = false, showErrors = false) => {
 };
 
 const Wrapper = styled.div({
-  display: "flex",
+  display: 'flex',
   gap: 5,
 });
 
 interface SidebarBottomProps {
   api: API;
-  status: State["status"];
+  status: State['status'];
 }
 
 export const SidebarBottomBase = ({ api, status }: SidebarBottomProps) => {
   const [showWarnings, setShowWarnings] = React.useState(false);
   const [showErrors, setShowErrors] = React.useState(false);
 
-  const warnings = Object.values(status).filter((value) => value[ADDON_ID]?.status === "warn");
-  const errors = Object.values(status).filter((value) => value[ADDON_ID]?.status === "error");
+  const warnings = Object.values(status).filter((value) => value[ADDON_ID]?.status === 'warn');
+  const errors = Object.values(status).filter((value) => value[ADDON_ID]?.status === 'error');
   const hasWarnings = warnings.length > 0;
   const hasErrors = errors.length > 0;
 
@@ -75,7 +75,7 @@ export const SidebarBottomBase = ({ api, status }: SidebarBottomProps) => {
   );
 };
 
-export const SidebarBottom = (props: Omit<SidebarBottomProps, "status">) => {
+export const SidebarBottom = (props: Omit<SidebarBottomProps, 'status'>) => {
   const { status } = useStorybookState();
   return <SidebarBottomBase {...props} status={status} />;
 };

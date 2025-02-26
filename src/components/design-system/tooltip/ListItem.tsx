@@ -1,55 +1,55 @@
-import weakMemoize from "@emotion/weak-memoize";
-import React, { ComponentProps, ReactNode } from "react";
-import { styled, type Theme, useTheme } from "storybook/internal/theming";
+import weakMemoize from '@emotion/weak-memoize';
+import React, { ComponentProps, ReactNode } from 'react';
+import { styled, type Theme, useTheme } from 'storybook/internal/theming';
 
-import { inlineGlow } from "../shared/animation";
+import { inlineGlow } from '../shared/animation';
 
 const Left = styled.span({});
 const Title = styled.span(({ theme }) => ({
   fontWeight: theme.typography.weight.bold,
-  whiteSpace: "nowrap",
-  overflow: "hidden",
-  textOverflow: "ellipsis",
+  whiteSpace: 'nowrap',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
 }));
 const Center = styled.span({});
 const Right = styled.span({});
 
 const ItemWrapper = styled.li(({ theme }) => ({
-  listStyle: "none",
+  listStyle: 'none',
 
-  "&:not(:first-of-type)": {
+  '&:not(:first-of-type)': {
     borderTop: `1px solid ${theme.appBorderColor}`,
   },
 }));
 
 const ItemInner = styled.span({
-  lineHeight: "18px",
-  padding: "7px 15px",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
+  lineHeight: '18px',
+  padding: '7px 15px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
 
-  ".sbds-list-item-title": {
-    display: "block",
-    flex: "0 1 auto",
-    marginRight: "auto",
+  '.sbds-list-item-title': {
+    display: 'block',
+    flex: '0 1 auto',
+    marginRight: 'auto',
   },
 
-  ".sbds-list-item-left, .sbds-list-item-center, .sbds-list-item-right": {
-    display: "inline-flex",
+  '.sbds-list-item-left, .sbds-list-item-center, .sbds-list-item-right': {
+    display: 'inline-flex',
   },
 
-  ".sbds-list-item-center": {
-    flex: "0 1 auto",
-    marginLeft: "auto",
-    marginRight: "auto",
+  '.sbds-list-item-center': {
+    flex: '0 1 auto',
+    marginLeft: 'auto',
+    marginRight: 'auto',
   },
 
-  ".sbds-list-item-left, .sbds-list-item-right": { flex: "0 1 auto" },
+  '.sbds-list-item-left, .sbds-list-item-right': { flex: '0 1 auto' },
 
-  ".sbds-list-item-right": {
-    flex: "none",
-    textAlign: "right",
+  '.sbds-list-item-right': {
+    flex: 'none',
+    textAlign: 'right',
     marginLeft: 10,
   },
 });
@@ -69,46 +69,46 @@ const linkStyles = ({
   theme,
 }: LinkStyleProps & { theme: Theme }) => ({
   fontSize: `${theme.typography.size.s1}px`,
-  transition: "all 150ms ease-out",
+  transition: 'all 150ms ease-out',
   color: theme.color.mediumdark,
-  textDecoration: "none",
-  display: "block",
+  textDecoration: 'none',
+  display: 'block',
 
   /* Styling */
-  ".sbds-list-item-title": {
-    color: theme.base === "light" ? theme.color.darker : theme.color.lighter,
+  '.sbds-list-item-title': {
+    color: theme.base === 'light' ? theme.color.darker : theme.color.lighter,
   },
 
-  ".sbds-list-item-right svg": {
-    transition: "all 200ms ease-out",
+  '.sbds-list-item-right svg': {
+    transition: 'all 200ms ease-out',
     opacity: 0,
     height: 12,
     width: 12,
-    margin: "3px 0",
-    verticalAlign: "top",
+    margin: '3px 0',
+    verticalAlign: 'top',
 
     path: {
       fill: theme.color.mediumdark,
     },
   },
 
-  "&:hover": {
+  '&:hover': {
     background: theme.background.hoverable,
-    cursor: "pointer",
+    cursor: 'pointer',
 
-    ".sbds-list-item-right svg": {
+    '.sbds-list-item-right svg': {
       opacity: 1,
     },
   },
 
   ...(active && {
-    ".sbds-list-item-title": {
+    '.sbds-list-item-title': {
       fontWeight: theme.typography.weight.bold,
     },
-    ".sbds-list-item-title, .sbds-list-item-center": {
+    '.sbds-list-item-title, .sbds-list-item-center': {
       color: activeColor,
     },
-    ".sbds-list-item-right svg": {
+    '.sbds-list-item-right svg': {
       opacity: 1,
       path: {
         fill: activeColor,
@@ -117,16 +117,16 @@ const linkStyles = ({
   }),
 
   ...(isLoading && {
-    ".sbds-list-item-title": {
+    '.sbds-list-item-title': {
       ...inlineGlow,
-      flex: "0 1 auto",
-      display: "inline-block",
+      flex: '0 1 auto',
+      display: 'inline-block',
     },
   }),
 
   ...(disabled && {
-    cursor: "not-allowed !important",
-    ".sbds-list-item-title, .sbds-list-item-center": {
+    cursor: 'not-allowed !important',
+    '.sbds-list-item-title, .sbds-list-item-center': {
       color: theme.color.mediumdark,
     },
   }),
@@ -140,7 +140,7 @@ const LinkItem = styled(
     ...rest
   }: React.AnchorHTMLAttributes<HTMLAnchorElement> & LinkStyleProps) => {
     return <a {...rest} />;
-  },
+  }
 )(linkStyles);
 
 const NormalItem = styled.span(linkStyles);
@@ -156,14 +156,14 @@ const buildStyledLinkWrapper = weakMemoize((LinkWrapper: LinkWrapperType) =>
       isLoading,
       activeColor,
       ...linkWrapperRest
-    }: ComponentProps<LinkWrapperType> & LinkStyleProps) => <LinkWrapper {...linkWrapperRest} />,
-  )(linkStyles),
+    }: ComponentProps<LinkWrapperType> & LinkStyleProps) => <LinkWrapper {...linkWrapperRest} />
+  )(linkStyles)
 );
 
 type StyledLinkWrapperProps = ComponentProps<ReturnType<typeof buildStyledLinkWrapper>>;
 
 interface ListItemProps {
-  appearance?: "primary" | "secondary";
+  appearance?: 'primary' | 'secondary';
   isLoading?: boolean;
   left?: ReactNode;
   title?: ReactNode;
@@ -172,12 +172,12 @@ interface ListItemProps {
   active?: boolean;
   disabled?: boolean;
   LinkWrapper?: LinkWrapperType | null;
-  onClick?: ComponentProps<typeof ItemInner>["onClick"];
+  onClick?: ComponentProps<typeof ItemInner>['onClick'];
   isLink?: boolean;
 }
 
 export const ListItem = ({
-  appearance = "primary",
+  appearance = 'primary',
   left,
   title = <span>Loading</span>,
   center,
@@ -186,7 +186,7 @@ export const ListItem = ({
   LinkWrapper,
   isLink = true,
   ...rest
-}: ListItemProps & Omit<StyledLinkWrapperProps, "activeColor">) => {
+}: ListItemProps & Omit<StyledLinkWrapperProps, 'activeColor'>) => {
   const theme = useTheme();
   const listItemActiveColor = theme.color[appearance];
   const linkInner = (

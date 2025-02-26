@@ -1,12 +1,12 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from '@storybook/react';
 
-import { AccountSuspensionReason } from "../../gql/graphql";
-import { AccountSuspended } from "./AccountSuspended";
+import { AccountSuspensionReason } from '../../gql/graphql';
+import { AccountSuspended } from './AccountSuspended';
 
 const meta = {
   component: AccountSuspended,
   args: {
-    billingUrl: "https://www.chromatic.com/billing?accountId=5af25af03c9f2c4bdccc0fcb",
+    billingUrl: 'https://www.chromatic.com/billing?accountId=5af25af03c9f2c4bdccc0fcb',
   },
 } satisfies Meta<typeof AccountSuspended>;
 

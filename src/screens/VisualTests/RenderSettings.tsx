@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 import {
   Accordion,
@@ -11,7 +11,7 @@ import {
   ParagraphIcon,
   StopIcon,
   TimerIcon,
-} from "../../components/Accordions";
+} from '../../components/Accordions';
 
 interface RenderSettingsProps {
   onClose: () => void;

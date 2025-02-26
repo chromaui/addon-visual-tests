@@ -1,8 +1,8 @@
-import type { Channel } from "storybook/internal/channels";
+import type { Channel } from 'storybook/internal/channels';
 
-import { FETCH_ABORTED, FETCH_REQUEST, FETCH_RESPONSE } from "../constants";
+import { FETCH_ABORTED, FETCH_REQUEST, FETCH_RESPONSE } from '../constants';
 
-type ChannelLike = Pick<Channel, "emit" | "on" | "off">;
+type ChannelLike = Pick<Channel, 'emit' | 'on' | 'off'>;
 
 const instances = new Map<string, ChannelFetch>();
 

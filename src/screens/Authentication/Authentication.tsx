@@ -1,23 +1,23 @@
-import React, { useCallback } from "react";
+import React, { useCallback } from 'react';
 
-import { Project } from "../../gql/graphql";
-import { initiateSignin, TokenExchangeParameters } from "../../utils/requestAccessToken";
-import { useTelemetry } from "../../utils/TelemetryContext";
-import { useErrorNotification } from "../../utils/useErrorNotification";
-import { useSessionState } from "../../utils/useSessionState";
-import { useUninstallAddon } from "../Uninstalled/UninstallContext";
-import { SetSubdomain } from "./SetSubdomain";
-import { SignIn } from "./SignIn";
-import { Verify } from "./Verify";
-import { Welcome } from "./Welcome";
+import { Project } from '../../gql/graphql';
+import { initiateSignin, TokenExchangeParameters } from '../../utils/requestAccessToken';
+import { useTelemetry } from '../../utils/TelemetryContext';
+import { useErrorNotification } from '../../utils/useErrorNotification';
+import { useSessionState } from '../../utils/useSessionState';
+import { useUninstallAddon } from '../Uninstalled/UninstallContext';
+import { SetSubdomain } from './SetSubdomain';
+import { SignIn } from './SignIn';
+import { Verify } from './Verify';
+import { Welcome } from './Welcome';
 
 interface AuthenticationProps {
   setAccessToken: (token: string | null) => void;
-  setCreatedProjectId: (projectId: Project["id"]) => void;
+  setCreatedProjectId: (projectId: Project['id']) => void;
   hasProjectId: boolean;
 }
 
-type AuthenticationScreen = "welcome" | "signin" | "subdomain" | "verify";
+type AuthenticationScreen = 'welcome' | 'signin' | 'subdomain' | 'verify';
 
 export const Authentication = ({
   setAccessToken,
@@ -25,55 +25,55 @@ export const Authentication = ({
   hasProjectId,
 }: AuthenticationProps) => {
   const [screen, setScreen] = useSessionState<AuthenticationScreen>(
-    "authenticationScreen",
-    hasProjectId ? "signin" : "welcome",
+    'authenticationScreen',
+    hasProjectId ? 'signin' : 'welcome'
   );
   const [exchangeParameters, setExchangeParameters] =
-    useSessionState<TokenExchangeParameters>("exchangeParameters");
+    useSessionState<TokenExchangeParameters>('exchangeParameters');
   const onError = useErrorNotification();
   const { uninstallAddon } = useUninstallAddon();
 
-  useTelemetry("Authentication", screen.charAt(0).toUpperCase() + screen.slice(1));
+  useTelemetry('Authentication', screen.charAt(0).toUpperCase() + screen.slice(1));
 
   const initiateSignInAndMoveToVerify = useCallback(
     async (subdomain?: string) => {
       try {
         setExchangeParameters(await initiateSignin(subdomain));
-        setScreen("verify");
+        setScreen('verify');
       } catch (err: any) {
-        onError("Sign in Error", err);
+        onError('Sign in Error', err);
       }
     },
-    [onError, setExchangeParameters, setScreen],
+    [onError, setExchangeParameters, setScreen]
   );
 
-  if (screen === "welcome" && !hasProjectId) {
-    return <Welcome onNext={() => setScreen("signin")} onUninstall={uninstallAddon} />;
+  if (screen === 'welcome' && !hasProjectId) {
+    return <Welcome onNext={() => setScreen('signin')} onUninstall={uninstallAddon} />;
   }
 
-  if (screen === "signin" || (screen === "welcome" && hasProjectId)) {
+  if (screen === 'signin' || (screen === 'welcome' && hasProjectId)) {
     return (
       <SignIn
-        {...(!hasProjectId ? { onBack: () => setScreen("welcome") } : {})}
+        {...(!hasProjectId ? { onBack: () => setScreen('welcome') } : {})}
         onSignIn={initiateSignInAndMoveToVerify}
-        onSignInWithSSO={() => setScreen("subdomain")}
+        onSignInWithSSO={() => setScreen('subdomain')}
       />
     );
   }
 
-  if (screen === "subdomain") {
+  if (screen === 'subdomain') {
     return (
-      <SetSubdomain onBack={() => setScreen("signin")} onSignIn={initiateSignInAndMoveToVerify} />
+      <SetSubdomain onBack={() => setScreen('signin')} onSignIn={initiateSignInAndMoveToVerify} />
     );
   }
 
-  if (screen === "verify") {
+  if (screen === 'verify') {
     if (!exchangeParameters) {
-      throw new Error("Expected to have a `exchangeParameters` if at `verify` step");
+      throw new Error('Expected to have a `exchangeParameters` if at `verify` step');
     }
     return (
       <Verify
-        onBack={() => setScreen("signin")}
+        onBack={() => setScreen('signin')}
         hasProjectId={hasProjectId}
         setAccessToken={setAccessToken}
         setCreatedProjectId={setCreatedProjectId}

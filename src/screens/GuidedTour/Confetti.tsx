@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
-import ReactConfetti from "react-confetti";
-import { createPortal } from "react-dom";
-import { styled } from "storybook/internal/theming";
+import React, { useEffect, useState } from 'react';
+import ReactConfetti from 'react-confetti';
+import { createPortal } from 'react-dom';
+import { styled } from 'storybook/internal/theming';
 
-interface ConfettiProps extends Omit<React.ComponentProps<typeof ReactConfetti>, "drawShape"> {
+interface ConfettiProps extends Omit<React.ComponentProps<typeof ReactConfetti>, 'drawShape'> {
   top?: number;
   left?: number;
   width?: number;
@@ -23,8 +23,8 @@ const Wrapper = styled.div<{
   height: `${height}px`,
   left: `${left}px`,
   top: `${top}px`,
-  position: "relative",
-  overflow: "hidden",
+  position: 'relative',
+  overflow: 'hidden',
 }));
 
 export function Confetti({
@@ -32,15 +32,15 @@ export function Confetti({
   left = 0,
   width = window.innerWidth,
   height = window.innerHeight,
-  colors = ["#CA90FF", "#FC521F", "#66BF3C", "#FF4785", "#FFAE00", "#1EA7FD"],
+  colors = ['#CA90FF', '#FC521F', '#66BF3C', '#FF4785', '#FFAE00', '#1EA7FD'],
   ...confettiProps
 }: ConfettiProps): React.ReactPortal {
   const [confettiContainer] = useState(() => {
-    const container = document.createElement("div");
-    container.setAttribute("id", "confetti-container");
+    const container = document.createElement('div');
+    container.setAttribute('id', 'confetti-container');
     container.setAttribute(
-      "style",
-      "position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999;",
+      'style',
+      'position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999;'
     );
 
     return container;
@@ -58,7 +58,7 @@ export function Confetti({
     <Wrapper top={top} left={left} width={width} height={height}>
       <ReactConfetti colors={colors} drawShape={draw} {...confettiProps} />
     </Wrapper>,
-    confettiContainer,
+    confettiContainer
   );
 }
 
