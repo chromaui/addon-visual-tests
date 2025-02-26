@@ -18,6 +18,28 @@ interface TooltipMenuProps
   note?: ComponentProps<typeof TooltipNote>['note'];
 }
 
+function mapLinks(onClick: Function) {
+  return (
+    link: ComponentProps<typeof TooltipLinkList>['links'][number]
+  ): ComponentProps<typeof TooltipLinkList>['links'][number] => {
+    if (Array.isArray(link)) {
+      return link.map(mapLinks(onClick)) as ComponentProps<typeof TooltipLinkList>['links'][number];
+    }
+
+    if ('onClick' in link && typeof link.onClick === 'function') {
+      return {
+        ...link,
+        onClick: (...args: unknown[]) => {
+          onClick();
+          // @ts-ignore
+          link.onClick?.(...args);
+        },
+      };
+    }
+    return link;
+  };
+}
+
 export const TooltipMenu = ({ children, links, note, ...props }: TooltipMenuProps) => {
   const [active, setActive] = React.useState(false);
 
@@ -29,13 +51,7 @@ export const TooltipMenu = ({ children, links, note, ...props }: TooltipMenuProp
       tooltip={({ onHide }) => (
         <TooltipWrapper>
           <TooltipLinkList
-            links={links.map((link) => ({
-              ...link,
-              onClick: (...args) => {
-                onHide();
-                return link.onClick?.(...args);
-              },
-            }))}
+            links={links.map(mapLinks(onHide)) as ComponentProps<typeof TooltipLinkList>['links']}
           />
         </TooltipWrapper>
       )}
