@@ -248,7 +248,7 @@ export const BuildEyebrow = ({
     }
     return (
       <Label>
-        There's a newer snapshot with changes.
+        There's a newer snapshot with changes.{' '}
         <Link withArrow onClick={switchToLastBuildOnBranch}>
           Switch to newer snapshot
         </Link>
