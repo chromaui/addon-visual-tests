@@ -1,4 +1,4 @@
-import { css, styled } from "@storybook/theming";
+import { css, styled } from "storybook/internal/theming";
 import React from "react";
 
 import { ComparisonResult, TestStatus } from "../gql/graphql";

@@ -1,5 +1,5 @@
 import { CloseIcon } from "@storybook/icons";
-import { styled } from "@storybook/theming";
+import { styled } from "storybook/internal/theming";
 import pluralize from "pluralize";
 import React, { ReactNode, useCallback, useState } from "react";
 

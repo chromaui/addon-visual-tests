@@ -1,6 +1,6 @@
-import { WithTooltip } from "@storybook/components";
+import { WithTooltip } from "storybook/internal/components";
 import { ChevronLeftIcon, QuestionIcon } from "@storybook/icons";
-import { styled } from "@storybook/theming";
+import { styled } from "storybook/internal/theming";
 import React from "react";
 
 import { IconButton } from "../../components/IconButton";

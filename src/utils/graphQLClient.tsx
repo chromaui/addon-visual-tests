@@ -1,4 +1,4 @@
-import { useAddonState } from "@storybook/manager-api";
+import { useAddonState } from "storybook/internal/manager-api";
 import { authExchange } from "@urql/exchange-auth";
 import React from "react";
 import { Client, ClientOptions, fetchExchange, mapExchange, Provider } from "urql";

@@ -1,5 +1,5 @@
 import { PhotoIcon, ShareAltIcon } from "@storybook/icons";
-import { styled, useTheme } from "@storybook/theming";
+import { styled, useTheme } from "storybook/internal/theming";
 import React, { ComponentProps } from "react";
 
 import { CaptureImage, CaptureOverlayImage, ComparisonResult, Test } from "../gql/graphql";

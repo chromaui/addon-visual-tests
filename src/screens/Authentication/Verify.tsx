@@ -1,4 +1,4 @@
-import { styled } from "@storybook/theming";
+import { styled } from "storybook/internal/theming";
 import React, { useCallback, useRef } from "react";
 import { useClient } from "urql";
 

@@ -1,6 +1,6 @@
-import { Link } from "@storybook/components";
+import { Link } from "storybook/internal/components";
 import { DocumentIcon } from "@storybook/icons";
-import { styled } from "@storybook/theming";
+import { styled } from "storybook/internal/theming";
 import React from "react";
 
 import { BuildProgressInline } from "../../components/BuildProgressBarInline";

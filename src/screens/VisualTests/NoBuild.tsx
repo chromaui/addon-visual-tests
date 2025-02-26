@@ -1,7 +1,7 @@
-import { Loader } from "@storybook/components";
+import { Loader } from "storybook/internal/components";
 import { PlayIcon } from "@storybook/icons";
-import { useParameter } from "@storybook/manager-api";
-import { styled } from "@storybook/theming";
+import { useParameter } from "storybook/internal/manager-api";
+import { styled } from "storybook/internal/theming";
 import React from "react";
 import { CombinedError } from "urql";
 

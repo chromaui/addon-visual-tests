@@ -1,7 +1,7 @@
 import { FailedIcon } from "@storybook/icons";
-import { useStorybookApi, useStorybookState } from "@storybook/manager-api";
-import { color } from "@storybook/theming";
-import type { API_StatusState } from "@storybook/types";
+import { useStorybookApi, useStorybookState } from "storybook/internal/manager-api";
+import { color } from "storybook/internal/theming";
+import type { API_StatusState } from "storybook/internal/types";
 import React, { useCallback, useEffect } from "react";
 import { useMutation } from "urql";
 

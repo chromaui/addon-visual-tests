@@ -42,7 +42,7 @@ const config: StorybookConfig = {
   staticDirs: ["../public"],
   stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|ts|tsx)"],
   refs: {
-    "@storybook/components": {
+    "storybook/internal/components": {
       title: "Storybook Components",
       url: "https://next--635781f3500dd2c49e189caf.chromatic.com/",
       expanded: false,

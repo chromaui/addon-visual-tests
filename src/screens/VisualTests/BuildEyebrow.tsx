@@ -1,4 +1,4 @@
-import { Link } from "@storybook/components";
+import { Link } from "storybook/internal/components";
 import {
   CheckIcon,
   ChevronRightIcon,
@@ -8,7 +8,7 @@ import {
   FailedIcon,
   SyncIcon,
 } from "@storybook/icons";
-import { keyframes, styled } from "@storybook/theming";
+import { keyframes, styled } from "storybook/internal/theming";
 import React, { useEffect, useRef } from "react";
 
 import { BUILD_STEP_CONFIG, BUILD_STEP_ORDER } from "../../buildSteps";

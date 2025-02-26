@@ -1,5 +1,5 @@
-import { Button } from "@storybook/components";
-import { styled } from "@storybook/theming";
+import { Button } from "storybook/internal/components";
+import { styled } from "storybook/internal/theming";
 import React, { useCallback, useState } from "react";
 
 import { Container } from "../../components/Container";

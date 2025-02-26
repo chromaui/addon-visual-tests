@@ -1,5 +1,5 @@
 import { AddIcon } from "@storybook/icons";
-import { styled } from "@storybook/theming";
+import { styled } from "storybook/internal/theming";
 import React, { useCallback, useEffect } from "react";
 import { useQuery } from "urql";
 

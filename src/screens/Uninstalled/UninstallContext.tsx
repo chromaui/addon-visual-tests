@@ -1,4 +1,4 @@
-import { useStorybookApi } from "@storybook/manager-api";
+import { useStorybookApi } from "storybook/internal/manager-api";
 import React, { createContext, ReactNode } from "react";
 
 import { REMOVE_ADDON } from "../../constants";

@@ -1,4 +1,4 @@
-import { styled } from "@storybook/theming";
+import { styled } from "storybook/internal/theming";
 import { darken } from "polished";
 import React, { ComponentProps, forwardRef } from "react";
 

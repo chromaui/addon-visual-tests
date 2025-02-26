@@ -1,4 +1,4 @@
-import { styled, type Theme } from "@storybook/theming";
+import { styled, type Theme } from "storybook/internal/theming";
 import { darken, lighten } from "polished";
 import { ComponentProps } from "react";
 

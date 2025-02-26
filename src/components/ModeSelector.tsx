@@ -1,6 +1,6 @@
-import { WithTooltip } from "@storybook/components";
+import { WithTooltip } from "storybook/internal/components";
 import { ChevronDownIcon, DiamondIcon } from "@storybook/icons";
-import { styled, useTheme } from "@storybook/theming";
+import { styled, useTheme } from "storybook/internal/theming";
 import React from "react";
 
 import { ComparisonResult, TestMode } from "../gql/graphql";

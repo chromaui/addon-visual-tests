@@ -1,5 +1,5 @@
-import { Badge as BaseBadge } from "@storybook/components";
-import { styled } from "@storybook/theming";
+import { Badge as BaseBadge } from "storybook/internal/components";
+import { styled } from "storybook/internal/theming";
 import { ReactNode } from "react";
 
 type BadgeProps = React.ComponentProps<typeof BaseBadge>;

@@ -1,5 +1,5 @@
-import type { API } from "@storybook/manager-api";
-import { useChannel, useStorybookState } from "@storybook/manager-api";
+import type { API } from "storybook/internal/manager-api";
+import { useChannel, useStorybookState } from "storybook/internal/manager-api";
 import React, { useCallback, useEffect, useState } from "react";
 
 import { AuthProvider } from "./AuthContext";

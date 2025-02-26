@@ -1,4 +1,4 @@
-import { css } from "@storybook/theming";
+import { css } from "storybook/internal/theming";
 import { rgba } from "polished";
 
 // Global style variables
