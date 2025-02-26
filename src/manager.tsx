@@ -1,5 +1,5 @@
-import { addons, type API } from "@storybook/manager-api";
-import { type Addon_TestProviderType, Addon_TypesEnum } from "@storybook/types";
+import { addons, type API } from "storybook/internal/manager-api";
+import { type Addon_TestProviderType, Addon_TypesEnum } from "storybook/internal/types";
 import React from "react";
 
 import { SidebarBottom } from "./components/SidebarBottom";

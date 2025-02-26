@@ -1,6 +1,6 @@
 import { defineConfig, type Options } from "tsup";
 import { readFile } from "fs/promises";
-import { globalPackages as globalManagerPackages } from "@storybook/manager/globals";
+import { globalPackages as globalManagerPackages } from "storybook/internal/manager/globals";
 import type { PackageJson } from "type-fest";
 
 type Formats = "esm" | "cjs";

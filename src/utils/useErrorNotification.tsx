@@ -1,6 +1,6 @@
 import { FailedIcon } from "@storybook/icons";
-import { useStorybookApi } from "@storybook/manager-api";
-import { color } from "@storybook/theming";
+import { useStorybookApi } from "storybook/internal/manager-api";
+import { color } from "storybook/internal/theming";
 import React, { useCallback } from "react";
 
 import { ADDON_ID, PANEL_ID } from "../constants";

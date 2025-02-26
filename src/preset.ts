@@ -3,10 +3,10 @@ import { watch } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { normalize, relative } from "node:path";
 
-import type { Channel } from "@storybook/channels";
-import type { TestingModuleProgressReportProgress } from "@storybook/core-events";
-import { telemetry } from "@storybook/telemetry";
-import type { Options } from "@storybook/types";
+import type { Channel } from "storybook/internal/channels";
+import type { TestingModuleProgressReportProgress } from "storybook/internal/core-events";
+import { telemetry } from "storybook/internal/telemetry";
+import type { Options } from "storybook/internal/types";
 // eslint-disable-next-line import/no-unresolved
 import { type Configuration, getConfiguration, getGitInfo, type GitInfo } from "chromatic/node";
 

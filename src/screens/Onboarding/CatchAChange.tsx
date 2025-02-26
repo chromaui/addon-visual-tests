@@ -1,5 +1,5 @@
 import { PlayIcon } from "@storybook/icons";
-import { styled } from "@storybook/theming";
+import { styled } from "storybook/internal/theming";
 import { lighten } from "polished";
 import React from "react";
 

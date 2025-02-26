@@ -1,4 +1,4 @@
-import { mockChannel } from "@storybook/manager-api";
+import { mockChannel } from "storybook/internal/manager-api";
 import type { Decorator } from "@storybook/react";
 import React from "react";
 

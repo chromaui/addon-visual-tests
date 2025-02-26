@@ -1,5 +1,5 @@
-import { Badge as BaseBadge } from "@storybook/components";
-import { css, styled } from "@storybook/theming";
+import { Badge as BaseBadge } from "storybook/internal/components";
+import { css, styled } from "storybook/internal/theming";
 import pluralize from "pluralize";
 import React, { ComponentProps } from "react";
 

@@ -1,10 +1,10 @@
-import { Link } from "@storybook/components";
 import { FailedIcon } from "@storybook/icons";
-import { type API, useChannel, useStorybookState } from "@storybook/manager-api";
-import { color } from "@storybook/theming";
-import type { Addon_TestProviderState } from "@storybook/types";
 import pluralize from "pluralize";
 import React, { useCallback, useContext, useEffect, useRef } from "react";
+import { Link } from "storybook/internal/components";
+import { type API, useChannel, useStorybookState } from "storybook/internal/manager-api";
+import { color } from "storybook/internal/theming";
+import type { Addon_TestProviderState } from "storybook/internal/types";
 
 import { BUILD_STEP_CONFIG } from "./buildSteps";
 import {

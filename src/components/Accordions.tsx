@@ -6,7 +6,7 @@ import {
   StopIcon as Stop,
   TimerIcon as Timer,
 } from "@storybook/icons";
-import { styled } from "@storybook/theming";
+import { styled } from "storybook/internal/theming";
 
 import { IconButton } from "./IconButton";
 

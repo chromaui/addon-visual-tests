@@ -1,4 +1,4 @@
-import { styled } from "@storybook/theming";
+import { styled } from "storybook/internal/theming";
 import React, { useEffect, useState } from "react";
 import ReactConfetti from "react-confetti";
 import { createPortal } from "react-dom";

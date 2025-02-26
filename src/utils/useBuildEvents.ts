@@ -1,4 +1,4 @@
-import { useChannel } from "@storybook/manager-api";
+import { useChannel } from "storybook/internal/manager-api";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 import { START_BUILD, STOP_BUILD } from "../constants";

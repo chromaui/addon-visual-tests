@@ -1,5 +1,5 @@
-import { type API, useStorybookState } from "@storybook/manager-api";
-import { useTheme } from "@storybook/theming";
+import { type API, useStorybookState } from "storybook/internal/manager-api";
+import { useTheme } from "storybook/internal/theming";
 import React, { useEffect, useRef } from "react";
 import Joyride from "react-joyride";
 

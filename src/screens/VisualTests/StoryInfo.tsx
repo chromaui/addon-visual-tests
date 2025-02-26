@@ -1,6 +1,6 @@
-import { Link } from "@storybook/components";
+import { Link } from "storybook/internal/components";
 import { PlayIcon } from "@storybook/icons";
-import { styled } from "@storybook/theming";
+import { styled } from "storybook/internal/theming";
 import pluralize from "pluralize";
 import React from "react";
 

@@ -1,4 +1,4 @@
-import { useGlobals, useGlobalTypes } from "@storybook/manager-api";
+import { useGlobals, useGlobalTypes } from "storybook/internal/manager-api";
 import { useCallback, useState } from "react";
 
 import { SELECTED_BROWSER_ID, SELECTED_MODE_NAME } from "../constants";

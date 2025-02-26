@@ -1,4 +1,4 @@
-import { useStorybookApi } from "@storybook/manager-api";
+import { useStorybookApi } from "storybook/internal/manager-api";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { SharedState } from "./SharedState";

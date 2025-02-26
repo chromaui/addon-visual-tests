@@ -1,5 +1,5 @@
-import { Loader } from "@storybook/components";
-import { styled } from "@storybook/theming";
+import { Loader } from "storybook/internal/components";
+import { styled } from "storybook/internal/theming";
 import React, { useEffect } from "react";
 
 import { Link } from "../../components/design-system";

@@ -1,5 +1,5 @@
 import { CheckIcon } from "@storybook/icons";
-import { styled } from "@storybook/theming";
+import { styled } from "storybook/internal/theming";
 import React from "react";
 
 const Wrapper = styled.div<{ status?: "positive" }>(({ status, theme }) => ({
