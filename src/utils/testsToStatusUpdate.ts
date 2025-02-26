@@ -25,7 +25,7 @@ function chooseWorseStatus(status: API_StatusValue | null, oldStatus: API_Status
 
 export function testsToStatusUpdate<T extends StatusTestFieldsFragment>(
   api: API,
-  tests: readonly T[]
+  tests: readonly T[],
 ): API_StatusUpdate {
   const storyIdToStatus: Record<StoryId, API_StatusValue | null> = {};
   tests.forEach((test) => {
@@ -34,7 +34,7 @@ export function testsToStatusUpdate<T extends StatusTestFieldsFragment>(
     }
     storyIdToStatus[test.story.storyId] = chooseWorseStatus(
       statusMap[test.status] || null,
-      storyIdToStatus[test.story.storyId]
+      storyIdToStatus[test.story.storyId],
     );
   });
   const openAddonPanel = () => {
@@ -50,7 +50,7 @@ export function testsToStatusUpdate<T extends StatusTestFieldsFragment>(
         description: "Chromatic Visual Tests",
         onClick: openAddonPanel,
       },
-    ])
+    ]),
   );
 
   return update;

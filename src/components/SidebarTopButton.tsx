@@ -1,7 +1,7 @@
-import { WithTooltip } from "storybook/internal/components";
 import { PlayIcon, StopAltIcon } from "@storybook/icons";
-import { keyframes, styled } from "storybook/internal/theming";
 import React, { ComponentProps } from "react";
+import { WithTooltip } from "storybook/internal/components";
+import { keyframes, styled } from "storybook/internal/theming";
 
 import { LocalBuildProgress } from "../types";
 import { BuildProgressLabel } from "./BuildProgressLabel";
@@ -65,7 +65,7 @@ export const ProgressCircle = styled.svg<{ progress?: boolean; spinner?: boolean
       circle: {
         stroke: `${theme.color.secondary}33`,
       },
-    }
+    },
 );
 
 const WarningText = styled.div(({ theme }) => ({

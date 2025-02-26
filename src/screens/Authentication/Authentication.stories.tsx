@@ -35,13 +35,13 @@ const meta = {
               "https://www.chromatic.com/connect/chromaui:addon-visual-tests?code=123123",
             expires_in: 300,
             interval: 5,
-          })
+          }),
         ),
         http.post("*/token", () =>
           HttpResponse.json({
             error: "authorization_pending",
             error_description: "Authorization is pending approval",
-          })
+          }),
         ),
       ],
     },
@@ -53,13 +53,13 @@ type Story = StoryObj<typeof meta>;
 
 export const Welcome = {
   parameters: withFigmaDesign(
-    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-317931&t=3EAIRe8423CpOQWY-4"
+    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-317931&t=3EAIRe8423CpOQWY-4",
   ),
 } satisfies Story;
 
 export const HasProjectId = {
   parameters: withFigmaDesign(
-    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-317931&t=3EAIRe8423CpOQWY-4"
+    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-317931&t=3EAIRe8423CpOQWY-4",
   ),
   args: {
     hasProjectId: true,
@@ -68,7 +68,7 @@ export const HasProjectId = {
 
 export const SignIn = {
   parameters: withFigmaDesign(
-    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-317993&t=3EAIRe8423CpOQWY-4"
+    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-317993&t=3EAIRe8423CpOQWY-4",
   ),
   play: playAll(async ({ canvasElement }) => {
     const button = await findByRole(canvasElement, "button", {
@@ -80,7 +80,7 @@ export const SignIn = {
 
 export const SSO = {
   parameters: withFigmaDesign(
-    "https://www.figma.com/file/p4ZIW7diUWC2l2DAf5xpYI/Storybook-Connect-plugin-(EXTERNAL-USE)?type=design&node-id=1-1734&t=ysgtc5qR40kqRKtI-4"
+    "https://www.figma.com/file/p4ZIW7diUWC2l2DAf5xpYI/Storybook-Connect-plugin-(EXTERNAL-USE)?type=design&node-id=1-1734&t=ysgtc5qR40kqRKtI-4",
   ),
   play: playAll(SignIn, async (context) => {
     const button = await findByRole(context.canvasElement, "button", {
@@ -92,7 +92,7 @@ export const SSO = {
 
 export const Verify = {
   parameters: withFigmaDesign(
-    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318063&t=3EAIRe8423CpOQWY-4"
+    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318063&t=3EAIRe8423CpOQWY-4",
   ),
   play: playAll(SignIn, async (context) => {
     const button = await findByRole(context.canvasElement, "button", {

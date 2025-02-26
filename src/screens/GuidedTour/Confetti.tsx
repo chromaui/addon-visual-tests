@@ -1,7 +1,7 @@
-import { styled } from "storybook/internal/theming";
 import React, { useEffect, useState } from "react";
 import ReactConfetti from "react-confetti";
 import { createPortal } from "react-dom";
+import { styled } from "storybook/internal/theming";
 
 interface ConfettiProps extends Omit<React.ComponentProps<typeof ReactConfetti>, "drawShape"> {
   top?: number;
@@ -40,7 +40,7 @@ export function Confetti({
     container.setAttribute("id", "confetti-container");
     container.setAttribute(
       "style",
-      "position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999;"
+      "position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999;",
     );
 
     return container;
@@ -58,7 +58,7 @@ export function Confetti({
     <Wrapper top={top} left={left} width={width} height={height}>
       <ReactConfetti colors={colors} drawShape={draw} {...confettiProps} />
     </Wrapper>,
-    confettiContainer
+    confettiContainer,
   );
 }
 

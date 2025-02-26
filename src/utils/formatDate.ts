@@ -26,7 +26,7 @@ function formatDistance(
   options: { addSuffix: boolean; comparison: number } = {
     addSuffix: false,
     comparison: 0,
-  }
+  },
 ) {
   const result = formatDistanceLocale[token].replace("{{count}}", count);
 

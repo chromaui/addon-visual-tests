@@ -1,5 +1,3 @@
-import { TooltipMessage, WithTooltip } from "storybook/internal/components";
-import { css, styled } from "storybook/internal/theming";
 import React, {
   ComponentProps,
   forwardRef,
@@ -11,6 +9,8 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { TooltipMessage, WithTooltip } from "storybook/internal/components";
+import { css, styled } from "storybook/internal/theming";
 
 import { Icon } from "./Icon";
 import { Link } from "./Link";
@@ -244,7 +244,7 @@ const InputContainer = styled.div<Pick<PureInputProps, "orientation">>(
       ".sbds-input-input-wrapper": {
         width: "auto",
       },
-    }
+    },
 );
 
 const ErrorTooltip = styled(WithTooltip)({
@@ -324,10 +324,10 @@ export const PureInput = forwardRef<
       value = "",
       ...props
     },
-    ref
+    ref,
   ) => {
     const [errorMessage, setErrorMessage] = useState(
-      getErrorMessage({ error, value, lastErrorValue })
+      getErrorMessage({ error, value, lastErrorValue }),
     );
     const errorId = `${id}-error`;
 
@@ -389,7 +389,6 @@ export const PureInput = forwardRef<
 
           {startingType === "password" && (
             <Action>
-              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
               <Link isButton tertiary onClick={onActionClick} type="button">
                 {type === "password" ? "Show" : "Hide"}
               </Link>
@@ -398,7 +397,7 @@ export const PureInput = forwardRef<
         </InputWrapper>
       </InputContainer>
     );
-  }
+  },
 );
 PureInput.displayName = "PureInput";
 
@@ -416,7 +415,7 @@ export const Input = forwardRef<HTMLInputElement, ComponentProps<typeof PureInpu
         }
         setType("password");
       },
-      [type, setType]
+      [type, setType],
     );
 
     // Outside refs take precedence
@@ -440,6 +439,6 @@ export const Input = forwardRef<HTMLInputElement, ComponentProps<typeof PureInpu
         {...rest}
       />
     );
-  }
+  },
 );
 Input.displayName = "Input";

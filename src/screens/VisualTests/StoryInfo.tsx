@@ -1,8 +1,8 @@
-import { Link } from "storybook/internal/components";
 import { PlayIcon } from "@storybook/icons";
-import { styled } from "storybook/internal/theming";
 import pluralize from "pluralize";
 import React from "react";
+import { Link } from "storybook/internal/components";
+import { styled } from "storybook/internal/theming";
 
 import { ActionButton } from "../../components/ActionButton";
 import { AlertIcon } from "../../components/icons/AlertIcon";
@@ -148,7 +148,6 @@ export const StoryInfo = ({
       <Info>
         <span>
           <b>
-            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
             <Link isButton onClick={switchToLastBuildOnBranch}>
               View latest snapshot
             </Link>
@@ -162,23 +161,17 @@ export const StoryInfo = ({
       <Info>
         <span>
           <b>
-            {
-              // eslint-disable-next-line no-nested-ternary
-              brokenCount
-                ? null
-                : changeCount
+            {brokenCount
+              ? null
+              : changeCount
                 ? `${pluralize("change", changeCount, true)}${
                     status === TestStatus.Accepted ? " accepted" : ""
                   }`
-                : "No changes"
-            }
+                : "No changes"}
             {brokenCount ? pluralize("error", brokenCount, true) : null}
           </b>
           <StatusIcon
-            icon={
-              // eslint-disable-next-line no-nested-ternary
-              brokenCount ? "failed" : status === TestStatus.Pending ? "changed" : "passed"
-            }
+            icon={brokenCount ? "failed" : status === TestStatus.Pending ? "changed" : "passed"}
           />
         </span>
         <small>

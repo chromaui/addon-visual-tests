@@ -1,5 +1,5 @@
-import { useGlobals, useGlobalTypes } from "storybook/internal/manager-api";
 import { useCallback, useState } from "react";
+import { useGlobals, useGlobalTypes } from "storybook/internal/manager-api";
 
 import { SELECTED_BROWSER_ID, SELECTED_MODE_NAME } from "../constants";
 import { BrowserInfo, ComparisonResult, StoryTestFieldsFragment, TestMode } from "../gql/graphql";
@@ -29,7 +29,7 @@ const hasChanges = ({ result }: StoryTestFieldsFragment["comparisons"][number]) 
  */
 export const getMostUsefulTest = (
   tests: StoryTestFieldsFragment[],
-  modeName?: ModeData["name"]
+  modeName?: ModeData["name"],
 ): StoryTestFieldsFragment => {
   const changedTests = tests.filter((test) => test.comparisons.some(hasChanges));
   const candidateTests = changedTests.length ? changedTests : tests;
@@ -46,7 +46,7 @@ export const getMostUsefulTest = (
  */
 export const getMostUsefulComparison = (
   comparisons: StoryTestFieldsFragment["comparisons"],
-  browserId?: BrowserData["id"]
+  browserId?: BrowserData["id"],
 ): StoryTestFieldsFragment["comparisons"][number] => {
   const changedComparisons = comparisons.filter(hasChanges);
   const candidateComparisons = changedComparisons.length ? changedComparisons : comparisons;
@@ -94,11 +94,11 @@ export function useTests(tests: StoryTestFieldsFragment[]) {
     selectedComparison,
     onSelectBrowser: useCallback(
       (browser: BrowserData) => setSelectedBrowserId(browser.id),
-      [setSelectedBrowserId]
+      [setSelectedBrowserId],
     ),
     onSelectMode: useCallback(
       (mode: ModeData) => setSelectedModeName(mode.name),
-      [setSelectedModeName]
+      [setSelectedModeName],
     ),
   };
 }

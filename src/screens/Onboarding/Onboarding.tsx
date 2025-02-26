@@ -39,7 +39,7 @@ export const Onboarding = ({
   // Removing instead of fixing to avoid additional work as this project is past due. We need to revisit this later.
   const [showInitialBuild, setShowInitialBuild] = useSessionState(
     "showInitialBuild",
-    showInitialBuildScreen
+    showInitialBuildScreen,
   );
   useEffect(() => {
     // Watch the value of showInitialBuildScreen, and if it becomes true, set the state to true. This is necessary because Onboarding may render before there is data to determine if there are any builds.
@@ -48,11 +48,11 @@ export const Onboarding = ({
 
   const [showCatchAChange, setShowCatchAChange] = useSessionState(
     "showCatchAChange",
-    !showInitialBuild
+    !showInitialBuild,
   );
   const [initialGitHash, setInitialGitHash] = useSessionState(
     "initialGitHash",
-    gitInfo.uncommittedHash
+    gitInfo.uncommittedHash,
   );
 
   const onCatchAChange = () => {

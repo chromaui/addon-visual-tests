@@ -1,7 +1,7 @@
-import { type API, useStorybookState } from "storybook/internal/manager-api";
-import { useTheme } from "storybook/internal/theming";
 import React, { useEffect, useRef } from "react";
 import Joyride from "react-joyride";
+import { type API, useStorybookState } from "storybook/internal/manager-api";
+import { useTheme } from "storybook/internal/theming";
 
 import { ENABLE_FILTER, PANEL_ID } from "../../constants";
 import { useSessionState } from "../../utils/useSessionState";
@@ -69,10 +69,8 @@ export const GuidedTour = ({
       .filter((el): el is HTMLElement => el instanceof HTMLElement)
       .slice(1);
 
-    // eslint-disable-next-line no-param-reassign, no-return-assign
     refElements.forEach((el) => (el.style.display = "none"));
 
-    // eslint-disable-next-line no-param-reassign, no-return-assign
     return () => refElements.forEach((el) => (el.style.display = ""));
   }, []);
 

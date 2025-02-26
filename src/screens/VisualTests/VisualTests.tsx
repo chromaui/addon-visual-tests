@@ -1,8 +1,8 @@
 import { FailedIcon } from "@storybook/icons";
+import React, { useCallback, useEffect } from "react";
 import { useStorybookApi, useStorybookState } from "storybook/internal/manager-api";
 import { color } from "storybook/internal/theming";
 import type { API_StatusState } from "storybook/internal/types";
-import React, { useCallback, useEffect } from "react";
 import { useMutation } from "urql";
 
 import { ADDON_ID, PANEL_ID } from "../../constants";
@@ -79,19 +79,19 @@ const useReview = ({
         onReviewError?.(err, input);
       }
     },
-    [onReviewSuccess, onReviewError, runMutation, buildIsReviewable, userCanReview]
+    [onReviewSuccess, onReviewError, runMutation, buildIsReviewable, userCanReview],
   );
 
   const acceptTest = useCallback(
     (testId: string, batch: ReviewTestBatch = ReviewTestBatch.Spec) =>
       reviewTest({ status: ReviewTestInputStatus.Accepted, testId, batch }),
-    [reviewTest]
+    [reviewTest],
   );
 
   const unacceptTest = useCallback(
     (testId: string, batch: ReviewTestBatch = ReviewTestBatch.Spec) =>
       reviewTest({ status: ReviewTestInputStatus.Pending, testId, batch }),
-    [reviewTest]
+    [reviewTest],
   );
 
   return { isReviewing, acceptTest, unacceptTest, buildIsReviewable, userCanReview };
@@ -130,7 +130,7 @@ const useOnboarding = ({ lastBuildOnBranch, vtaOnboarding }: ReturnType<typeof u
     if (vtaOnboarding) {
       setHasCompletedWalkthrough(
         vtaOnboarding === VtaOnboardingPreference.Completed ||
-          vtaOnboarding === VtaOnboardingPreference.Dismissed
+          vtaOnboarding === VtaOnboardingPreference.Dismissed,
       );
     }
   }, [managerApi, vtaOnboarding]);
@@ -153,7 +153,7 @@ const useOnboarding = ({ lastBuildOnBranch, vtaOnboarding }: ReturnType<typeof u
         window.history.replaceState({}, "", url.href);
       }
     },
-    [runMutation]
+    [runMutation],
   );
 
   const lastBuildHasChangesForStory = React.useMemo(() => {
@@ -169,7 +169,7 @@ const useOnboarding = ({ lastBuildOnBranch, vtaOnboarding }: ReturnType<typeof u
       (t) =>
         t?.status === TestStatus.Pending &&
         t?.result === TestResult.Changed &&
-        t?.story?.storyId === storyId
+        t?.story?.storyId === storyId,
     );
   }, [lastBuildOnBranch, storyId]);
 
@@ -228,7 +228,7 @@ export const VisualTestsWithoutSelectedBuildId = ({
       setOptions({ selectedPanel: PANEL_ID });
       togglePanel(true);
     },
-    [setOptions, togglePanel]
+    [setOptions, togglePanel],
   );
 
   const reviewState = useReview({
@@ -280,7 +280,7 @@ export const VisualTestsWithoutSelectedBuildId = ({
         shouldSwitchToLastBuildOnBranch: lastBuildOnBranchIsSelectable && lastBuildOnBranchIsReady,
         lastBuildOnBranchId: lastBuildOnBranch?.id,
         storyId,
-      })
+      }),
     );
   }, [
     lastBuildOnBranchIsSelectable,
@@ -295,7 +295,7 @@ export const VisualTestsWithoutSelectedBuildId = ({
       lastBuildOnBranch?.id &&
       lastBuildOnBranchIsSelectable &&
       setSelectedBuildInfo({ buildId: lastBuildOnBranch.id, storyId }),
-    [setSelectedBuildInfo, lastBuildOnBranchIsSelectable, lastBuildOnBranch?.id, storyId]
+    [setSelectedBuildInfo, lastBuildOnBranchIsSelectable, lastBuildOnBranch?.id, storyId],
   );
 
   const {
@@ -404,10 +404,10 @@ export const VisualTestsWithoutSelectedBuildId = ({
 // If the selectedBuildInfo is internal state of the component it is harder to do this,
 // as we need to change the query results over time.
 export const VisualTests = (
-  props: Omit<VisualTestsProps, "selectedBuildInfo" | "setSelectedBuildInfo">
+  props: Omit<VisualTestsProps, "selectedBuildInfo" | "setSelectedBuildInfo">,
 ) => {
   const [selectedBuildInfo, setSelectedBuildInfo] = useSessionState<SelectedBuildInfo | undefined>(
-    "selectedBuildInfo"
+    "selectedBuildInfo",
   );
 
   return (

@@ -4,7 +4,7 @@ export const debounce = (
   key: string,
   callback: (...args: any[]) => unknown,
   wait: number,
-  leading = true
+  leading = true,
 ) => {
   const cancel = () => {
     window.clearTimeout(timeoutIds.get(key));
@@ -16,7 +16,7 @@ export const debounce = (
 
     timeoutIds.set(
       key,
-      window.setTimeout(() => timeoutIds.delete(key) && callback(...args), wait) // Trailing edge call
+      window.setTimeout(() => timeoutIds.delete(key) && callback(...args), wait), // Trailing edge call
     );
   };
   debounced.cancel = cancel;

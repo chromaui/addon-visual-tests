@@ -1,11 +1,10 @@
-// eslint-disable-next-line import/no-unresolved
 import { TaskName } from "chromatic/node";
 import { filesize } from "filesize";
 
 import { KnownStep, LocalBuildProgress, StepProgressPayload } from "./types";
 
 export const isKnownStep = (
-  taskOrStep: TaskName | LocalBuildProgress["currentStep"]
+  taskOrStep: TaskName | LocalBuildProgress["currentStep"],
 ): taskOrStep is KnownStep => BUILD_STEP_ORDER.includes(taskOrStep as KnownStep);
 
 export const hasProgressEvent = (task: TaskName) => ["upload", "snapshot"].includes(task);

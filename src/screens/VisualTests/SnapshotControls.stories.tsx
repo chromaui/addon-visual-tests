@@ -111,7 +111,7 @@ export const BatchAcceptedBuild = {
     await userEvent.click(items[canvasIndex]);
     await expect(parameters.reviewTest.acceptTest).toHaveBeenCalledWith(
       parameters.selectedBuild.testsForStory.nodes[0].id,
-      "BUILD"
+      "BUILD",
     );
   }),
 } satisfies Story;

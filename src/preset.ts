@@ -1,14 +1,12 @@
-/* eslint-disable no-console */
 import { watch } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { normalize, relative } from "node:path";
 
+import { type Configuration, getConfiguration, getGitInfo, type GitInfo } from "chromatic/node";
 import type { Channel } from "storybook/internal/channels";
 import type { TestingModuleProgressReportProgress } from "storybook/internal/core-events";
 import { telemetry } from "storybook/internal/telemetry";
 import type { Options } from "storybook/internal/types";
-// eslint-disable-next-line import/no-unresolved
-import { type Configuration, getConfiguration, getGitInfo, type GitInfo } from "chromatic/node";
 
 import {
   ADDON_ID,
@@ -65,18 +63,18 @@ let getAddonVersion = async (): Promise<string | null> => {
 const suggestRemovals = (
   config: Configuration,
   defaults: Configuration,
-  update: ConfigurationUpdate
+  update: ConfigurationUpdate,
 ) =>
   Object.fromEntries(
     (Object.entries(update) as [keyof Configuration, Configuration[keyof Configuration]][])
       .map(([key, value]) => [key, value === defaults[key] ? null : value])
-      .filter(([key, value]) => value !== null || config[key as keyof Configuration] !== undefined)
+      .filter(([key, value]) => value !== null || config[key as keyof Configuration] !== undefined),
   );
 
 // Detect problems in the current configuration and suggest updates.
 const getConfigInfo = async (
   configuration: Awaited<ReturnType<typeof getConfiguration>>,
-  options: Options
+  options: Options,
 ) => {
   const defaults: Configuration = {
     storybookBaseDir: ".",
@@ -118,7 +116,7 @@ const observeGitInfo = (
   interval: number,
   callback: (info: GitInfo, prevInfo?: GitInfo) => void,
   errorCallback: (e: Error) => void,
-  projectId?: string
+  projectId?: string,
 ) => {
   let prev: GitInfo | undefined;
   let prevError: Error | undefined;
@@ -149,7 +147,7 @@ const observeGitInfo = (
 
 const watchConfigFile = async (
   configFile: string | undefined,
-  onChange: (configuration: Awaited<ReturnType<typeof getConfiguration>>) => Promise<void>
+  onChange: (configuration: Awaited<ReturnType<typeof getConfiguration>>) => Promise<void>,
 ) => {
   const configuration = await getConfiguration(configFile);
   await onChange(configuration);
@@ -215,7 +213,7 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
 
   const localBuildProgress = SharedState.subscribe<LocalBuildProgress>(
     LOCAL_BUILD_PROGRESS,
-    channel
+    channel,
   );
 
   const stepStatus = {
@@ -286,7 +284,7 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
     },
     (error: Error) => {
       gitInfoError.value = error;
-    }
+    },
   );
 
   watchConfigFile(configFile, async (configuration) => {
@@ -307,7 +305,7 @@ const config = {
   experimental_serverChannel: serverChannel,
   env: async (
     env: Record<string, string>,
-    { configType }: { configType: "DEVELOPMENT" | "PRODUCTION" }
+    { configType }: { configType: "DEVELOPMENT" | "PRODUCTION" },
   ) => {
     if (configType === "PRODUCTION") return env;
 

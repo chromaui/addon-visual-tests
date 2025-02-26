@@ -13,14 +13,14 @@ export const withGraphQLQueryParameters = <TQuery extends TypedDocumentNode<any,
 
 export function withGraphQLQueryResultParameters<TQuery extends TypedDocumentNode<any, any>>(
   query: TQuery,
-  result: (variables: VariablesOf<TQuery>) => ResultOf<TQuery>
+  result: (variables: VariablesOf<TQuery>) => ResultOf<TQuery>,
 ) {
   const queryName = getOperationAST(query)?.name?.value;
   if (!queryName) {
     throw new Error(`Couldn't determine query name from query`);
   }
   return withGraphQLQueryParameters(queryName, ({ variables }) =>
-    HttpResponse.json({ data: result(variables) })
+    HttpResponse.json({ data: result(variables) }),
   );
 }
 

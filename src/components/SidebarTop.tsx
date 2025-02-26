@@ -1,8 +1,8 @@
 import { FailedIcon, PassedIcon } from "@storybook/icons";
-import { type API, useStorybookState } from "storybook/internal/manager-api";
-import { color } from "storybook/internal/theming";
 import pluralize from "pluralize";
 import React, { useCallback, useContext, useEffect, useRef } from "react";
+import { type API, useStorybookState } from "storybook/internal/manager-api";
+import { color } from "storybook/internal/theming";
 
 import {
   ADDON_ID,
@@ -45,7 +45,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
   const lastStep = useRef(localBuildProgress?.currentStep);
   const { index, status, storyId, viewMode } = useStorybookState();
   const changedStoryCount = Object.values(status).filter(
-    (value) => value[ADDON_ID]?.status === "warn"
+    (value) => value[ADDON_ID]?.status === "warn",
   );
 
   const openVisualTestsPanel = useCallback(
@@ -63,7 +63,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
         trackEvent?.({ action: "openWarning", warning });
       }
     },
-    [setOptions, togglePanel, trackEvent, index, selectStory, storyId, viewMode]
+    [setOptions, togglePanel, trackEvent, index, selectStory, storyId, viewMode],
   );
 
   const clickNotification = useCallback(
@@ -71,7 +71,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
       onDismiss();
       openVisualTestsPanel();
     },
-    [openVisualTestsPanel]
+    [openVisualTestsPanel],
   );
 
   useEffect(() => {
@@ -129,15 +129,15 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
         id: notificationId,
         content: {
           headline: "Build complete",
-          // eslint-disable-next-line no-nested-ternary
+
           subHeadline: localBuildProgress.errorCount
             ? `Encountered ${pluralize("component error", localBuildProgress.errorCount, true)}`
             : changedStoryCount.length
-            ? `Found ${pluralize("story", changedStoryCount.length, true)} with ${pluralize(
-                "change",
-                changedStoryCount.length
-              )}`
-            : "No visual changes detected",
+              ? `Found ${pluralize("story", changedStoryCount.length, true)} with ${pluralize(
+                  "change",
+                  changedStoryCount.length,
+                )}`
+              : "No visual changes detected",
         },
         icon: <PassedIcon color={color.positive} />,
         duration: 8_000,
@@ -196,7 +196,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
 
   const clickWarning = useCallback(
     () => openVisualTestsPanel(warning),
-    [openVisualTestsPanel, warning]
+    [openVisualTestsPanel, warning],
   );
 
   if (globalThis.CONFIG_TYPE !== "DEVELOPMENT") {

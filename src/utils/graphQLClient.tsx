@@ -1,6 +1,6 @@
-import { useAddonState } from "storybook/internal/manager-api";
 import { authExchange } from "@urql/exchange-auth";
 import React from "react";
+import { useAddonState } from "storybook/internal/manager-api";
 import { Client, ClientOptions, fetchExchange, mapExchange, Provider } from "urql";
 import { v4 as uuid } from "uuid";
 
@@ -30,7 +30,7 @@ export const useAccessToken = () => {
   // We use an object rather than a straight boolean here due to https://github.com/storybookjs/storybook/pull/23991
   const [{ token }, setTokenState] = useAddonState<{ token: string | null }>(
     `${ADDON_ID}/accessToken`,
-    { token: currentToken }
+    { token: currentToken },
   );
 
   const updateToken = React.useCallback(
@@ -38,7 +38,7 @@ export const useAccessToken = () => {
       setCurrentToken(newToken);
       setTokenState({ token: currentToken });
     },
-    [setTokenState]
+    [setTokenState],
   );
 
   return [token, updateToken] as const;

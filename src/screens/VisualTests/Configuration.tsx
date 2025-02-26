@@ -1,7 +1,7 @@
-import { Link } from "storybook/internal/components";
 import { AlertIcon as Alert, WandIcon as Wand } from "@storybook/icons";
-import { styled } from "storybook/internal/theming";
 import React from "react";
+import { Link } from "storybook/internal/components";
+import { styled } from "storybook/internal/theming";
 
 import { CloseButton, CloseIcon, Heading as StyledHeading } from "../../components/Accordions";
 import { Button } from "../../components/Button";
@@ -230,7 +230,7 @@ const SettingDescription = styled.div(({ theme }) => ({
 const Suggestion = styled.div<{ warning?: boolean }>(({ warning, theme }) => ({
   alignItems: "center",
   display: "flex",
-  // eslint-disable-next-line no-nested-ternary
+
   backgroundColor: warning
     ? theme.base === "dark"
       ? "#342E1A"
@@ -247,7 +247,6 @@ const Suggestion = styled.div<{ warning?: boolean }>(({ warning, theme }) => ({
   padding: 5,
 
   svg: {
-    // eslint-disable-next-line no-nested-ternary
     color: warning
       ? theme.base === "dark"
         ? theme.color.warning

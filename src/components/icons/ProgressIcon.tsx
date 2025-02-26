@@ -26,5 +26,5 @@ export const ProgressIcon = styled.div<{ parentComponent?: "Button" | "IconButto
       borderLeftColor: "currentcolor",
       borderBottomColor: "currentcolor",
       borderRightColor: "currentcolor",
-    })
+    }),
 );

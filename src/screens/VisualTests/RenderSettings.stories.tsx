@@ -31,7 +31,7 @@ const meta = {
                 },
               },
             } satisfies ProjectQueryQuery,
-          })
+          }),
         ),
       ],
     },
@@ -46,6 +46,6 @@ export const Default: Story = {
     // build: passedBuild,
   },
   parameters: withFigmaDesign(
-    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-525764&t=18c1zI1SMe76dWYk-4"
+    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-525764&t=18c1zI1SMe76dWYk-4",
   ),
 };

@@ -98,6 +98,6 @@ export const NewerBuildOnBranch: Story = {
     switchToLastBuildOnBranch: undefined,
   },
   parameters: withFigmaDesign(
-    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2127-448761&mode=design&t=70EtYCn1H7hB8PAk-0"
+    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2127-448761&mode=design&t=70EtYCn1H7hB8PAk-0",
   ),
 };

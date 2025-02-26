@@ -11,7 +11,7 @@ declare global {
 
 export function useSessionState<S>(
   key: string,
-  initialState?: S | (() => S)
+  initialState?: S | (() => S),
 ): readonly [S, Dispatch<SetStateAction<S>>] {
   const readValue = useCallback(() => {
     try {
@@ -41,9 +41,9 @@ export function useSessionState<S>(
           sessionStorage.setItem(`${ADDON_ID}/state`, Array.from(stateKeys).join(";"));
           window.dispatchEvent(new StorageEvent("session-storage", { key }));
         },
-        1000
+        1000,
       ),
-    [key]
+    [key],
   );
 
   useEffect(() => persist.cancel, [persist]);
@@ -53,7 +53,7 @@ export function useSessionState<S>(
       const storageEvent = event as StorageEvent;
       if (!storageEvent.key || storageEvent.key === key) setState(readValue());
     },
-    [key, readValue]
+    [key, readValue],
   );
 
   useEffect(() => {
@@ -74,7 +74,7 @@ export function useSessionState<S>(
           persist(newValue);
           return newValue;
         }),
-      [persist]
+      [persist],
     ),
   ] as const;
 }

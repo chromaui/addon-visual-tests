@@ -45,7 +45,7 @@ export const GitNotFound = () => {
           >
             Visual tests requirements
           </Link>
-          {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+
           <Link withArrow onClick={() => uninstallAddon()}>
             Uninstall
           </Link>

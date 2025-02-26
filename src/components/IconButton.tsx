@@ -1,6 +1,6 @@
+import { ComponentProps } from "react";
 import { IconButton as BaseIconButton } from "storybook/internal/components";
 import { styled, type Theme } from "storybook/internal/theming";
-import { ComponentProps } from "react";
 
 const getStatusStyles = (theme: Theme, status?: IconButtonProps["status"]) =>
   (status &&
@@ -41,5 +41,5 @@ export const IconButton: React.FC<IconButtonProps> = styled(BaseIconButton)<Icon
         color: theme.color.secondary,
       },
     };
-  }
+  },
 );

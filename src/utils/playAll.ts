@@ -12,10 +12,10 @@ export function playAll<Story extends StoryAnnotations<ReactRenderer>>(
       sequence.flatMap((storyOrPlay) =>
         typeof storyOrPlay === "function"
           ? canvasElements.map((canvasElement, canvasIndex) =>
-              storyOrPlay({ ...context, canvasElement, canvasIndex })
+              storyOrPlay({ ...context, canvasElement, canvasIndex }),
             )
-          : storyOrPlay?.play?.(context)
-      )
+          : storyOrPlay?.play?.(context),
+      ),
     );
   };
 }

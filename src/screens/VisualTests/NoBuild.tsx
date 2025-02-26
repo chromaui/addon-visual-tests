@@ -1,8 +1,8 @@
-import { Loader } from "storybook/internal/components";
 import { PlayIcon } from "@storybook/icons";
+import React from "react";
+import { Loader } from "storybook/internal/components";
 import { useParameter } from "storybook/internal/manager-api";
 import { styled } from "storybook/internal/theming";
-import React from "react";
 import { CombinedError } from "urql";
 
 import { useAuthState } from "../../AuthContext";
@@ -136,7 +136,6 @@ export const NoBuild = ({
     }
 
     if (disable || disableSnapshot || docsOnly) {
-      // eslint-disable-next-line no-nested-ternary
       const param = disable ? "disable" : disableSnapshot ? "disableSnapshot" : "docsOnly";
       return (
         <Container>

@@ -8,7 +8,7 @@ it("does nothing if there is no next build", () => {
       shouldSwitchToLastBuildOnBranch: false,
       lastBuildOnBranchId: undefined,
       storyId: "storyId",
-    })
+    }),
   ).toEqual(undefined);
 });
 
@@ -18,7 +18,7 @@ it("sets the story build from the next build, simple", () => {
       shouldSwitchToLastBuildOnBranch: true,
       lastBuildOnBranchId: "lastBuildOnBranchId",
       storyId: "storyId",
-    })
+    }),
   ).toEqual({
     buildId: "lastBuildOnBranchId",
     storyId: "storyId",
@@ -32,7 +32,7 @@ it("does not set the story build from the next build, if the next build should n
       shouldSwitchToLastBuildOnBranch: false,
       lastBuildOnBranchId: "lastBuildOnBranchId",
       storyId: "storyId",
-    })
+    }),
   ).toEqual(undefined);
 });
 
@@ -44,8 +44,8 @@ it("updates the story build from the next build, simple", () => {
         shouldSwitchToLastBuildOnBranch: true,
         lastBuildOnBranchId: "lastBuildOnBranchId",
         storyId: "storyId",
-      }
-    )
+      },
+    ),
   ).toEqual({
     buildId: "lastBuildOnBranchId",
     storyId: "storyId",
@@ -60,8 +60,8 @@ it("does not update the story build from the next build, if the next build shoul
         shouldSwitchToLastBuildOnBranch: false,
         lastBuildOnBranchId: "lastBuildOnBranchId",
         storyId: "storyId",
-      }
-    )
+      },
+    ),
   ).toEqual({ buildId: "oldBuildId", storyId: "storyId" });
 });
 
@@ -76,8 +76,8 @@ it("updates the storyId, simple", () => {
         shouldSwitchToLastBuildOnBranch: true,
         lastBuildOnBranchId: "lastBuildOnBranchId",
         storyId: "newStoryId",
-      }
-    )
+      },
+    ),
   ).toEqual({
     buildId: "lastBuildOnBranchId",
     storyId: "newStoryId",
@@ -95,8 +95,8 @@ it("updates the storyId, keeping the old build if the next build should not be s
         shouldSwitchToLastBuildOnBranch: false,
         lastBuildOnBranchId: "lastBuildOnBranchId",
         storyId: "newStoryId",
-      }
-    )
+      },
+    ),
   ).toEqual({
     buildId: "oldBuildId",
     storyId: "newStoryId",

@@ -1,5 +1,5 @@
-import { css, styled } from "storybook/internal/theming";
 import React, { ComponentProps, FunctionComponent } from "react";
+import { css, styled } from "storybook/internal/theming";
 
 import { Icon } from "./Icon";
 import { glow } from "./shared/animation";
@@ -47,7 +47,7 @@ const Image = styled.div<Partial<Props>>(
       !props.isLoading && {
         background: "#37D5D3",
       }),
-  })
+  }),
 );
 
 interface LoadingIconProps {
@@ -71,7 +71,7 @@ const LoadingIcon = styled(Icon)<LoadingIconProps & ComponentProps<typeof Icon>>
     bottom: `${props.type === AvatarType.USER ? -2 : -4}px`,
     height: `${props.type === AvatarType.USER ? 100 : 70}%`,
     width: `${props.type === AvatarType.USER ? 100 : 70}%`,
-  })
+  }),
 );
 
 const Initial = styled.div<Partial<Props>>(
@@ -97,7 +97,7 @@ const Initial = styled.div<Partial<Props>>(
         fontSize: `${typography.size.s3}px`,
         lineHeight: `${sizes.large}px`,
       },
-    }[props.size || "medium"])
+    })[props.size || "medium"],
 );
 
 /**

@@ -24,7 +24,7 @@ describe("runChromaticBuild", () => {
   it("requires projectId and userToken", async () => {
     await expect(runChromaticBuild(store, {} as any)).rejects.toThrow("Missing projectId");
     await expect(runChromaticBuild(store, { projectId: "project-id" } as any)).rejects.toThrow(
-      "Missing userToken"
+      "Missing userToken",
     );
   });
 
