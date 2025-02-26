@@ -13,7 +13,7 @@ export function updateSelectedBuildInfo(
     shouldSwitchToLastBuildOnBranch: boolean;
     lastBuildOnBranchId?: string;
     storyId: string;
-  }
+  },
 ) {
   if (!shouldSwitchToLastBuildOnBranch) {
     if (!oldSelectedBuildInfo) return undefined;

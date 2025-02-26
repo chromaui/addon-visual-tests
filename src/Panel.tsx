@@ -1,6 +1,6 @@
+import React, { useCallback, useEffect, useState } from "react";
 import type { API } from "storybook/internal/manager-api";
 import { useChannel, useStorybookState } from "storybook/internal/manager-api";
-import React, { useCallback, useEffect, useState } from "react";
 
 import { AuthProvider } from "./AuthContext";
 import { Spinner } from "./components/design-system";
@@ -47,7 +47,7 @@ export const Panel = ({ active, api }: PanelProps) => {
       updateAccessToken(token);
       if (!token) clearSessionState("authenticationScreen", "exchangeParameters");
     },
-    [updateAccessToken]
+    [updateAccessToken],
   );
   const { storyId } = useStorybookState();
 
@@ -74,7 +74,7 @@ export const Panel = ({ active, api }: PanelProps) => {
 
   const updateBuildStatus = useCallback<UpdateStatusFunction>(
     (update) => api.experimental_updateStatus(ADDON_ID, update),
-    [api]
+    [api],
   );
   const {
     loading: projectInfoLoading,
@@ -138,7 +138,7 @@ export const Panel = ({ active, api }: PanelProps) => {
         setAccessToken={setAccessToken}
         setCreatedProjectId={setCreatedProjectId}
         hasProjectId={!!projectId}
-      />
+      />,
     );
   }
 
@@ -153,11 +153,10 @@ export const Panel = ({ active, api }: PanelProps) => {
         createdProjectId={createdProjectId}
         setCreatedProjectId={setCreatedProjectId}
         onUpdateProject={updateProject}
-      />
+      />,
     );
 
   if (gitInfoError || !gitInfo) {
-    // eslint-disable-next-line no-console
     console.error(gitInfoError);
     return withProviders(<GitNotFound />);
   }
@@ -177,7 +176,7 @@ export const Panel = ({ active, api }: PanelProps) => {
         projectId={projectId}
         configFile={configFile}
         goToNext={clearProjectIdUpdated}
-      />
+      />,
     );
   }
 
@@ -192,6 +191,6 @@ export const Panel = ({ active, api }: PanelProps) => {
       projectId={projectId}
       gitInfo={gitInfo}
       storyId={storyId}
-    />
+    />,
   );
 };

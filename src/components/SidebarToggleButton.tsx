@@ -1,7 +1,7 @@
-import { Badge as BaseBadge } from "storybook/internal/components";
-import { css, styled } from "storybook/internal/theming";
 import pluralize from "pluralize";
 import React, { ComponentProps } from "react";
+import { Badge as BaseBadge } from "storybook/internal/components";
+import { css, styled } from "storybook/internal/theming";
 
 import { IconButton } from "./IconButton";
 
@@ -30,7 +30,7 @@ const Button = styled(IconButton)(
       "&:hover": {
         color: theme.base === "light" ? theme.color.defaultText : theme.color.light,
       },
-    })
+    }),
 );
 
 const Label = styled.span(({ theme }) => ({

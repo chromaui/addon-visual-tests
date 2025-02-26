@@ -1,6 +1,6 @@
-import { styled, type Theme } from "storybook/internal/theming";
 import { darken, lighten } from "polished";
 import { ComponentProps } from "react";
+import { styled, type Theme } from "storybook/internal/theming";
 
 import { IconButton } from "./IconButton";
 
@@ -91,7 +91,7 @@ export const ActionButton: React.FC<ActionButtonProps> = styled(IconButton)<Acti
       borderTopLeftRadius: 0,
       borderBottomLeftRadius: 0,
     }),
-  })
+  }),
 );
 
 export const ButtonGroup = styled.div({

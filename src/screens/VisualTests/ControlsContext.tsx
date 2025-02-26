@@ -50,7 +50,7 @@ export const useControlsDispatch = () => {
       toggleBaselineImage: (visible?: boolean) =>
         dispatch({ type: "toggleBaselineImage", payload: visible }),
     }),
-    [dispatch]
+    [dispatch],
   );
 };
 

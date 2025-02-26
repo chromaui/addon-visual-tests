@@ -37,10 +37,10 @@ const meta = {
             },
           },
         } satisfies ProjectQueryQuery,
-      })
+      }),
     ),
     ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-317094&t=435fylbu7gUQNEgq-4"
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-317094&t=435fylbu7gUQNEgq-4",
     ),
   },
 } satisfies Meta<typeof LinkedProject>;

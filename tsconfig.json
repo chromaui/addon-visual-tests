@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
+    "moduleResolution": "bundler",
     "baseUrl": ".",
     "esModuleInterop": true,
     "experimentalDecorators": true,
@@ -9,7 +10,7 @@
     "isolatedModules": true,
     "jsx": "react",
     "lib": ["es2020", "dom"],
-    "module": "commonjs",
+    "module": "Preserve",
     "noImplicitAny": true,
     "strict": true,
     "rootDir": "./src",

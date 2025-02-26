@@ -68,7 +68,7 @@ export function summarizeTests(tests: StoryTestFieldsFragment[]) {
       resultsByBrowser: {},
       resultsByMode: {},
       modesByName: {},
-    }
+    },
   );
 
   // All tests have the same browsers so we can just look at the first

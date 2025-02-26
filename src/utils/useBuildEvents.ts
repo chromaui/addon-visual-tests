@@ -1,5 +1,5 @@
-import { useChannel } from "storybook/internal/manager-api";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useChannel } from "storybook/internal/manager-api";
 
 import { START_BUILD, STOP_BUILD } from "../constants";
 import { LocalBuildProgress } from "../types";
@@ -37,9 +37,9 @@ export const useBuildEvents = ({
           trackEvent?.({ action: "startBuild" });
         },
         1000,
-        false
+        false,
       ),
-    [accessToken, emit, trackEvent]
+    [accessToken, emit, trackEvent],
   );
 
   const stopBuild = useMemo(
@@ -56,9 +56,9 @@ export const useBuildEvents = ({
           }
         },
         1000,
-        false
+        false,
       ),
-    [isCancelable, emit, trackEvent]
+    [isCancelable, emit, trackEvent],
   );
 
   useEffect(() => {

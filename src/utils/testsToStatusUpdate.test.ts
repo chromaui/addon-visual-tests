@@ -19,7 +19,7 @@ it("handles single test with no changes", () => {
           storyId: "story--id",
         },
       },
-    ])
+    ]),
   ).toMatchInlineSnapshot(`
     {
       "story--id": null,
@@ -37,7 +37,7 @@ it("handles single test with changes", () => {
           storyId: "story--id",
         },
       },
-    ])
+    ]),
   ).toMatchInlineSnapshot(`
     {
       "story--id": {
@@ -67,7 +67,7 @@ it("handles multiple tests", () => {
           storyId: "story2--id",
         },
       },
-    ])
+    ]),
   ).toMatchInlineSnapshot(`
     {
       "story--id": {
@@ -103,7 +103,7 @@ it("handles multiple viewports", () => {
           storyId: "story--id",
         },
       },
-    ])
+    ]),
   ).toMatchInlineSnapshot(`
     {
       "story--id": {
@@ -133,7 +133,7 @@ it("handles multiple viewports, reverse order", () => {
           storyId: "story--id",
         },
       },
-    ])
+    ]),
   ).toMatchInlineSnapshot(`
     {
       "story--id": {

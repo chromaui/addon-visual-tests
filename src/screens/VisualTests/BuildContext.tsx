@@ -58,7 +58,7 @@ export const useBuild = ({
 
   const lastBuildOnBranch = getFragment(
     FragmentLastBuildOnBranchBuildFields,
-    data?.project?.lastBuildOnBranch
+    data?.project?.lastBuildOnBranch,
   );
 
   const lastBuildOnBranchStoryTests = [
@@ -66,7 +66,7 @@ export const useBuild = ({
       FragmentLastBuildOnBranchTestFields,
       lastBuildOnBranch && "testsForStory" in lastBuildOnBranch && lastBuildOnBranch.testsForStory
         ? lastBuildOnBranch.testsForStory.nodes
-        : []
+        : [],
     ),
   ];
 
@@ -83,7 +83,8 @@ export const useBuild = ({
   // If we didn't explicitly select a build, select the last build on the branch (if any)
   const selectedBuild = getFragment(
     FragmentSelectedBuildFields,
-    data?.selectedBuild ?? (lastBuildOnBranchIsReady ? data?.project?.lastBuildOnBranch : undefined)
+    data?.selectedBuild ??
+      (lastBuildOnBranchIsReady ? data?.project?.lastBuildOnBranch : undefined),
   );
 
   return {

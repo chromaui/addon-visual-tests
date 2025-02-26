@@ -2,9 +2,9 @@
 import { action } from "@storybook/addon-actions";
 import type { Meta, StoryObj } from "@storybook/react";
 import { findByRole, fireEvent, screen, userEvent, within } from "@storybook/testing-library";
-import type { StoryContext } from "storybook/internal/types";
 import { delay, http } from "msw";
 import React, { ComponentProps } from "react";
+import type { StoryContext } from "storybook/internal/types";
 
 import { Browser, ComparisonResult, TestResult, TestStatus } from "../../gql/graphql";
 import { panelModes } from "../../modes";
@@ -69,7 +69,7 @@ export const InProgress = {
           { status: TestStatus.Passed, viewport: 800 },
           { status: TestStatus.InProgress, viewport: 1200 },
         ],
-      })
+      }),
     ),
   },
 } satisfies Story;
@@ -117,7 +117,7 @@ export const PrefersChanged: Story = {
             comparisonResults: [ComparisonResult.Equal, ComparisonResult.Changed],
           },
         ],
-      })
+      }),
     ),
   },
 } satisfies Story;
@@ -139,7 +139,7 @@ export const StoryAdded: Story = {
             ],
           },
         ],
-      })
+      }),
     ),
   },
 };
@@ -191,7 +191,7 @@ export const SwitchingMode = {
         comparisons: test.comparisons.map((comparison) => {
           const imageUrl = `/ProjectItem-${comparison.browser.name}-${parseInt(
             test.mode.name,
-            10
+            10,
           )}.png`;
           return {
             ...comparison,
@@ -206,7 +206,7 @@ export const SwitchingMode = {
             },
           };
         }),
-      }))
+      })),
     ),
   },
   play: playAll(async ({ canvasElement, canvasIndex }) => {
@@ -233,7 +233,7 @@ export const SwitchingTests = {
   parameters: SwitchingMode.parameters,
   render: function RenderSwitchingTests(
     { ...props }: ComponentProps<typeof SnapshotComparison>,
-    { parameters }: StoryContext<any>
+    { parameters }: StoryContext<any>,
   ) {
     const [activeBuild, setBuild] = React.useState<any>();
     if (!activeBuild) setTimeout(() => setBuild(withTests(build, [makeTest({})])), 0);
@@ -269,7 +269,7 @@ export const NewBaseline = {
             ],
           },
         ],
-      })
+      }),
     ),
   },
 } satisfies Story;

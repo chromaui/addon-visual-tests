@@ -1,5 +1,5 @@
-import { styled } from "storybook/internal/theming";
 import React from "react";
+import { styled } from "storybook/internal/theming";
 
 import { Button } from "../../components/Button";
 import { ButtonStack } from "../../components/ButtonStack";

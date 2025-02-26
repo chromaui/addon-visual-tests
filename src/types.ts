@@ -1,10 +1,10 @@
-import type { API } from "storybook/internal/manager-api";
 import type { Configuration, getConfiguration, GitInfo, TaskName } from "chromatic/node";
+import type { API } from "storybook/internal/manager-api";
 
 import { SelectedBuildFieldsFragment } from "./gql/graphql";
 
 declare global {
-  // eslint-disable-next-line no-var, vars-on-top
+  // eslint-disable-next-line no-var
   var CONFIG_TYPE: string;
 }
 
@@ -18,7 +18,7 @@ export type SelectedBuildWithTests = StartedBuild | CompletedBuild;
 export type StoryStatusUpdater = Parameters<API["experimental_updateStatus"]>[1];
 
 export type UpdateStatusFunction = (
-  update: StoryStatusUpdater
+  update: StoryStatusUpdater,
 ) => ReturnType<API["experimental_updateStatus"]>;
 
 export type ConfigurationUpdate = {

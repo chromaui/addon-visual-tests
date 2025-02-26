@@ -27,7 +27,7 @@ export const Initialize: Story = {
     },
   },
   parameters: withFigmaDesign(
-    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2892-73423&mode=design&t=gIM40WT0324ynPQD-4"
+    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2892-73423&mode=design&t=gIM40WT0324ynPQD-4",
   ),
 };
 
@@ -41,7 +41,7 @@ export const Build: Story = {
     },
   },
   parameters: withFigmaDesign(
-    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2892-73453&mode=design&t=gIM40WT0324ynPQD-4"
+    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2892-73453&mode=design&t=gIM40WT0324ynPQD-4",
   ),
 };
 
@@ -55,7 +55,7 @@ export const Upload: Story = {
     },
   },
   parameters: withFigmaDesign(
-    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2935-71430&mode=design&t=gIM40WT0324ynPQD-4"
+    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2935-71430&mode=design&t=gIM40WT0324ynPQD-4",
   ),
 };
 
@@ -69,7 +69,7 @@ export const Verify: Story = {
     },
   },
   parameters: withFigmaDesign(
-    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2935-72020&mode=design&t=gIM40WT0324ynPQD-4"
+    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2935-72020&mode=design&t=gIM40WT0324ynPQD-4",
   ),
 };
 
@@ -83,7 +83,7 @@ export const Snapshot: Story = {
     },
   },
   parameters: withFigmaDesign(
-    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2892-74603&mode=design&t=gIM40WT0324ynPQD-4"
+    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2892-74603&mode=design&t=gIM40WT0324ynPQD-4",
   ),
 };
 
@@ -97,7 +97,7 @@ export const Complete: Story = {
     },
   },
   parameters: withFigmaDesign(
-    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2892-74801&mode=design&t=gIM40WT0324ynPQD-4"
+    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2892-74801&mode=design&t=gIM40WT0324ynPQD-4",
   ),
 };
 

@@ -1,6 +1,6 @@
+import React, { useCallback, useState } from "react";
 import { Button } from "storybook/internal/components";
 import { styled } from "storybook/internal/theming";
-import React, { useCallback, useState } from "react";
 
 import { Container } from "../../components/Container";
 import { Heading } from "../../components/Heading";
@@ -51,7 +51,7 @@ export const SetSubdomain = ({ onBack, onSignIn }: SetSubdomainProps) => {
       if (subdomain) onSignIn(subdomain);
       else setInputError("Please enter a subdomain");
     },
-    [subdomain, onSignIn]
+    [subdomain, onSignIn],
   );
 
   return (

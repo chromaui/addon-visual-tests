@@ -1,6 +1,6 @@
 import { PhotoIcon, ShareAltIcon } from "@storybook/icons";
-import { styled, useTheme } from "storybook/internal/theming";
 import React, { ComponentProps } from "react";
+import { styled, useTheme } from "storybook/internal/theming";
 
 import { CaptureImage, CaptureOverlayImage, ComparisonResult, Test } from "../gql/graphql";
 import { Spinner } from "./design-system";
@@ -54,7 +54,7 @@ export const Container = styled.div<{ href?: string; target?: string }>(
           filter: "brightness(85%)",
         },
       },
-    }
+    },
 );
 
 const ImageWrapper = styled.div<{ isVisible?: boolean }>(({ isVisible }) => ({

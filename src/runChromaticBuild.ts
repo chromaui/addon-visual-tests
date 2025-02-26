@@ -1,5 +1,3 @@
-/* eslint-disable no-param-reassign */
-// eslint-disable-next-line import/no-unresolved
 import { Context, InitialContext, Options, run, TaskName } from "chromatic/node";
 
 import {
@@ -19,7 +17,7 @@ let abortController: AbortController | undefined;
 
 const getBuildStepData = (
   task: TaskName,
-  previousBuildProgress?: LocalBuildProgress["previousBuildProgress"]
+  previousBuildProgress?: LocalBuildProgress["previousBuildProgress"],
 ) => {
   if (!isKnownStep(task)) throw new Error(`Unknown step: ${task}`);
 
@@ -48,7 +46,7 @@ const getBuildStepData = (
 export const onStartOrProgress =
   (
     localBuildProgress: ReturnType<typeof SharedState.subscribe<LocalBuildProgress>>,
-    timeout?: ReturnType<typeof setTimeout>
+    timeout?: ReturnType<typeof setTimeout>,
   ) =>
   (ctx: Context, { progress, total }: { progress?: number; total?: number } = {}) => {
     clearTimeout(timeout);
@@ -68,7 +66,7 @@ export const onStartOrProgress =
 
     const { startPercentage, endPercentage, stepPercentage } = getBuildStepData(
       ctx.task,
-      previousBuildProgress
+      previousBuildProgress,
     );
 
     let newPercentage = startPercentage;
@@ -117,11 +115,11 @@ export const onStartOrProgress =
 export const onCompleteOrError =
   (
     localBuildProgress: ReturnType<typeof SharedState.subscribe<LocalBuildProgress>>,
-    timeout?: ReturnType<typeof setTimeout>
+    timeout?: ReturnType<typeof setTimeout>,
   ) =>
   (
     ctx: Context | InitialContext,
-    error?: { formattedError: string; originalError: Error | Error[] }
+    error?: { formattedError: string; originalError: Error | Error[] },
   ) => {
     clearTimeout(timeout);
 
@@ -179,7 +177,7 @@ export const onCompleteOrError =
 
 export const runChromaticBuild = async (
   localBuildProgress: ReturnType<typeof SharedState.subscribe<LocalBuildProgress>>,
-  options: Partial<Options>
+  options: Partial<Options>,
 ) => {
   if (!options.projectId) throw new Error("Missing projectId");
   if (!options.userToken) throw new Error("Missing userToken");

@@ -78,7 +78,7 @@ const meta = {
                 },
               },
             },
-          })
+          }),
         ),
       ],
     },
@@ -90,7 +90,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default = {
   parameters: withFigmaDesign(
-    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318140&t=3EAIRe8423CpOQWY-4"
+    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318140&t=3EAIRe8423CpOQWY-4",
   ),
   args: {
     showInitialBuildScreen: true,
@@ -107,7 +107,7 @@ export const InProgress = {
     lastBuildHasChangesForStory: false,
   },
   parameters: withFigmaDesign(
-    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318374&t=3EAIRe8423CpOQWY-4"
+    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318374&t=3EAIRe8423CpOQWY-4",
   ),
 } satisfies Story;
 
@@ -124,7 +124,7 @@ export const BaselineSaved = {
   parameters: {
     selectedBuild: withTests(acceptedBuild, acceptedTests),
     ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318539&t=3EAIRe8423CpOQWY-4"
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318539&t=3EAIRe8423CpOQWY-4",
     ),
   },
 } satisfies Story;
@@ -140,7 +140,6 @@ export const MakeAChange = {
     await userEvent.click(button);
   }),
   render: (args) => {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [gitInfo, setGitInfo] = React.useState(args.gitInfo);
     return (
       <>
@@ -158,7 +157,7 @@ export const MakeAChange = {
   parameters: {
     ...BaselineSaved.parameters,
     ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318908&t=3EAIRe8423CpOQWY-4"
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318908&t=3EAIRe8423CpOQWY-4",
     ),
   },
 } satisfies Story;
@@ -179,9 +178,8 @@ export const ChangesDetected = {
     await userEvent.click(gitButton);
   }),
   render: (args) => {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [gitInfo, setGitInfo] = React.useState(args.gitInfo);
-    // eslint-disable-next-line react-hooks/rules-of-hooks
+
     const [localBuildProgress, setLocalBuildProgress] = React.useState(args.localBuildProgress);
     return (
       <>
@@ -204,7 +202,7 @@ export const ChangesDetected = {
   parameters: {
     ...BaselineSaved.parameters,
     ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-319115&t=3EAIRe8423CpOQWY-4"
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-319115&t=3EAIRe8423CpOQWY-4",
     ),
   },
 } satisfies Story;
@@ -231,9 +229,8 @@ export const RunningFirstTest = {
     await userEvent.click(runTestsButton);
   }),
   render: (args) => {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [gitInfo, setGitInfo] = React.useState(args.gitInfo);
-    // eslint-disable-next-line react-hooks/rules-of-hooks
+
     const [localBuildProgress, setLocalBuildProgress] = React.useState(args.localBuildProgress);
     return (
       <>
@@ -262,7 +259,7 @@ export const RunningFirstTest = {
   parameters: {
     ...BaselineSaved.parameters,
     ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318481&t=3EAIRe8423CpOQWY-4"
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318481&t=3EAIRe8423CpOQWY-4",
     ),
   },
 } satisfies Story;
@@ -284,9 +281,8 @@ export const RanFirstTestNoChanges = {
     },
   },
   render: (args) => {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [gitInfo, setGitInfo] = React.useState(args.gitInfo);
-    // eslint-disable-next-line react-hooks/rules-of-hooks
+
     const [localBuildProgress, setLocalBuildProgress] = React.useState(args.localBuildProgress);
     return (
       <>
@@ -317,11 +313,10 @@ export const RanFirstTestNoChanges = {
 export const ChangesFound = {
   ...RunningFirstTest,
   render: (args) => {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [gitInfo, setGitInfo] = React.useState(args.gitInfo);
-    // eslint-disable-next-line react-hooks/rules-of-hooks
+
     const [localBuildProgress, setLocalBuildProgress] = React.useState(args.localBuildProgress);
-    // eslint-disable-next-line react-hooks/rules-of-hooks
+
     const [lastBuildHasChanges, setLastBuildHasChanges] = React.useState(false);
     return (
       <>
@@ -356,7 +351,7 @@ export const ChangesFound = {
   parameters: {
     ...BaselineSaved.parameters,
     ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=352-258984&t=3EAIRe8423CpOQWY-4"
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=352-258984&t=3EAIRe8423CpOQWY-4",
     ),
   },
 } satisfies Story;
@@ -370,7 +365,7 @@ export const ChangesFoundOnFirstBuild = {
   parameters: {
     ...BaselineSaved.parameters,
     ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=352-258984&t=3EAIRe8423CpOQWY-4"
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=352-258984&t=3EAIRe8423CpOQWY-4",
     ),
   },
 } satisfies Story;
@@ -392,7 +387,7 @@ export const Error = {
   parameters: {
     ...BaselineSaved.parameters,
     ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318693&t=3EAIRe8423CpOQWY-4"
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318693&t=3EAIRe8423CpOQWY-4",
     ),
   },
 } satisfies Story;
@@ -410,7 +405,7 @@ export const Limited = {
   parameters: {
     ...BaselineSaved.parameters,
     ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318693&t=3EAIRe8423CpOQWY-4"
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318693&t=3EAIRe8423CpOQWY-4",
     ),
   },
 } satisfies Story;

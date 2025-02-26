@@ -49,7 +49,7 @@ export const TestingModuleDescription = ({ api, running }: TestingModuleDescript
   const lastStep = useRef(localBuildProgress?.currentStep);
   const { index, status, storyId, viewMode } = useStorybookState();
   const changedStoryCount = Object.values(status).filter(
-    (value) => value[ADDON_ID]?.status === "warn"
+    (value) => value[ADDON_ID]?.status === "warn",
   );
 
   const openVisualTestsPanel = useCallback(
@@ -67,7 +67,7 @@ export const TestingModuleDescription = ({ api, running }: TestingModuleDescript
         trackEvent?.({ action: "openWarning", warning });
       }
     },
-    [setOptions, togglePanel, trackEvent, index, selectStory, storyId, viewMode]
+    [setOptions, togglePanel, trackEvent, index, selectStory, storyId, viewMode],
   );
 
   const clickNotification = useCallback(
@@ -75,7 +75,7 @@ export const TestingModuleDescription = ({ api, running }: TestingModuleDescript
       onDismiss();
       openVisualTestsPanel();
     },
-    [openVisualTestsPanel]
+    [openVisualTestsPanel],
   );
 
   useEffect(() => {
@@ -133,7 +133,7 @@ export const TestingModuleDescription = ({ api, running }: TestingModuleDescript
 
   const clickWarning = useCallback(
     () => openVisualTestsPanel(warning),
-    [openVisualTestsPanel, warning]
+    [openVisualTestsPanel, warning],
   );
 
   const emit = useChannel(
@@ -145,7 +145,7 @@ export const TestingModuleDescription = ({ api, running }: TestingModuleDescript
         if (providerId === TEST_PROVIDER_ID) stopBuild();
       },
     },
-    [startBuild, stopBuild]
+    [startBuild, stopBuild],
   );
 
   useEffect(() => {
@@ -153,7 +153,6 @@ export const TestingModuleDescription = ({ api, running }: TestingModuleDescript
   }, [emit, warning]);
 
   if (warning) {
-    // eslint-disable-next-line jsx-a11y/anchor-is-valid
     return <Link onClick={clickWarning}>{warning}</Link>;
   }
   if (running) {

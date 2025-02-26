@@ -15,7 +15,7 @@ export const Box = styled.div<{ warning?: boolean }>(
     width: "100%",
   }),
   ({ theme, warning }) =>
-    warning && { background: theme.base === "dark" ? "#342e1a" : theme.background.warning }
+    warning && { background: theme.base === "dark" ? "#342e1a" : theme.background.warning },
 );
 
 export const BoxTitle = styled.b(() => ({

@@ -1,6 +1,6 @@
 import { AddIcon } from "@storybook/icons";
-import { styled } from "storybook/internal/theming";
 import React, { useCallback, useEffect } from "react";
+import { styled } from "storybook/internal/theming";
 import { useQuery } from "urql";
 
 import { Container } from "../../components/Container";
@@ -50,7 +50,7 @@ export const LinkProject = ({
     async (selectedProjectId: string) => {
       await onUpdateProject(selectedProjectId);
     },
-    [onUpdateProject]
+    [onUpdateProject],
   );
 
   return (
@@ -138,7 +138,7 @@ function SelectProject({
   const onSelectAccount = useCallback(
     (account: NonNullable<SelectProjectsQueryQuery["viewer"]>["accounts"][number]) =>
       setSelectedAccountId(account.id),
-    [setSelectedAccountId]
+    [setSelectedAccountId],
   );
 
   useEffect(() => {
@@ -155,7 +155,7 @@ function SelectProject({
         NonNullable<
           NonNullable<SelectProjectsQueryQuery["viewer"]>["accounts"][number]["projects"]
         >[number]
-      >
+      >,
     ) => {
       setSelectingProject(true);
       onSelectProjectId(project.id);
@@ -164,7 +164,7 @@ function SelectProject({
       }, 1000);
       return () => clearTimeout(timer);
     },
-    [onSelectProjectId, setSelectingProject]
+    [onSelectProjectId, setSelectingProject],
   );
 
   const handler = useCallback<DialogHandler>(
@@ -177,7 +177,7 @@ function SelectProject({
         setCreatedProjectId(event.projectId);
       }
     },
-    [rerunProjectsQuery, setCreatedProjectId]
+    [rerunProjectsQuery, setCreatedProjectId],
   );
 
   const [openDialog, closeDialog] = useChromaticDialog(handler);
@@ -257,7 +257,6 @@ function SelectProject({
                         openDialog(selectedAccount.newProjectUrl);
                       }}
                       title={
-                        // eslint-disable-next-line jsx-a11y/anchor-is-valid
                         <Link isButton withArrow>
                           Create new project
                         </Link>
@@ -275,7 +274,7 @@ function SelectProject({
                           onClick={() => handleSelectProject(project)}
                           disabled={isSelectingProject}
                         />
-                      )
+                      ),
                   )}
                 </List>
               </Right>

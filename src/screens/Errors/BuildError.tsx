@@ -18,7 +18,7 @@ const NewlinesAsBreaks = ({ content }: { content: string }) => {
     <>
       {lines.reduce<ReactNode[]>(
         (acc, line, index) => acc.concat([index && <br />, line].filter(Boolean)),
-        []
+        [],
       )}
     </>
   );
@@ -39,7 +39,7 @@ export const ErrorBox = ({
           content={stripAnsi(
             Array.isArray(localBuildProgress.originalError)
               ? localBuildProgress.originalError[0]?.message
-              : localBuildProgress.originalError?.message || "Unknown error"
+              : localBuildProgress.originalError?.message || "Unknown error",
           )}
         />
       </span>{" "}

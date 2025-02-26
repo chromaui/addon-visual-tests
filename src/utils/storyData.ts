@@ -129,7 +129,7 @@ export function makeTest(options: {
         result:
           options.comparisonResults?.[index] ?? (result && testResultToComparisonResult[result]),
         captureError: options.captureError,
-      })
+      }),
     );
   }
 
@@ -178,6 +178,6 @@ export function makeTests(options: {
       storyId: options.storyId || "button--primary",
       browsers: options.browsers || [Browser.Chrome],
       ...viewportOptions,
-    })
+    }),
   );
 }

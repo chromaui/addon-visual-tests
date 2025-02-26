@@ -26,7 +26,7 @@ export const Authentication = ({
 }: AuthenticationProps) => {
   const [screen, setScreen] = useSessionState<AuthenticationScreen>(
     "authenticationScreen",
-    hasProjectId ? "signin" : "welcome"
+    hasProjectId ? "signin" : "welcome",
   );
   const [exchangeParameters, setExchangeParameters] =
     useSessionState<TokenExchangeParameters>("exchangeParameters");
@@ -44,7 +44,7 @@ export const Authentication = ({
         onError("Sign in Error", err);
       }
     },
-    [onError, setExchangeParameters, setScreen]
+    [onError, setExchangeParameters, setScreen],
   );
 
   if (screen === "welcome" && !hasProjectId) {

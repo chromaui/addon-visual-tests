@@ -10,11 +10,11 @@ export const Base = styled.div<{ hidden?: boolean }>(({ hidden, theme }) => ({
 
 export const Sections = styled.div<{ hidden?: boolean }>(
   { display: "flex", flexDirection: "column", flexGrow: 1 },
-  ({ hidden }) => hidden && { display: "none" }
+  ({ hidden }) => hidden && { display: "none" },
 );
 
 export const Section = styled.div<{ grow?: boolean }>(
-  ({ grow }) => grow && { flexGrow: grow ? 1 : "auto" }
+  ({ grow }) => grow && { flexGrow: grow ? 1 : "auto" },
 );
 
 export const Row = styled.div<{ header?: boolean }>(
@@ -35,7 +35,7 @@ export const Row = styled.div<{ header?: boolean }>(
         justifyContent: "space-between",
         padding: "5px 15px",
       },
-    }
+    },
 );
 
 export const Bar = styled(Row)({
@@ -50,5 +50,5 @@ export const Col = styled.div<{ push?: boolean }>(
     flexDirection: "column",
     alignItems: "center",
   },
-  ({ push }) => push && { marginLeft: "auto" }
+  ({ push }) => push && { marginLeft: "auto" },
 );

@@ -1,5 +1,5 @@
-import { styled } from "storybook/internal/theming";
 import React, { FunctionComponent } from "react";
+import { styled } from "storybook/internal/theming";
 
 import { icons } from "./shared/icons";
 

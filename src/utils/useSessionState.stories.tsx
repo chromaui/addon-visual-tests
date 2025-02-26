@@ -48,7 +48,7 @@ const expectState = async (context: any, expected: any) => {
     Array.from(elements).map(async (element: any) => {
       const data = await waitFor(() => JSON.parse(element.textContent as any));
       await expect(data).toEqual(expected);
-    })
+    }),
   );
 };
 

@@ -1,7 +1,7 @@
 import { CloseIcon } from "@storybook/icons";
-import { styled } from "storybook/internal/theming";
 import pluralize from "pluralize";
 import React, { ReactNode, useCallback, useState } from "react";
+import { styled } from "storybook/internal/theming";
 
 import { CONFIG_INFO, CONFIG_INFO_DISMISSED } from "../constants";
 import { Configuration } from "../screens/VisualTests/Configuration";
@@ -56,7 +56,6 @@ export const ConfigSection = ({
   }, []);
 
   const configLink = (
-    // eslint-disable-next-line jsx-a11y/anchor-is-valid
     <Link isButton onClick={() => onOpen((problems[0] || suggestions[0]) as any)} withArrow>
       Show details
     </Link>
@@ -153,7 +152,7 @@ export const Screen = ({
             ?.scrollIntoView({ behavior: "smooth", inline: "nearest" });
         }, 200);
     },
-    [toggleConfig]
+    [toggleConfig],
   );
 
   return (

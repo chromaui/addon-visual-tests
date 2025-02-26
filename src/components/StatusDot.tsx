@@ -1,5 +1,5 @@
-import { css, styled } from "storybook/internal/theming";
 import React from "react";
+import { css, styled } from "storybook/internal/theming";
 
 import { ComparisonResult, TestStatus } from "../gql/graphql";
 
@@ -47,7 +47,7 @@ const Dot = styled.div<StatusDotProps & { overlay?: boolean }>(
       border: `1px solid rgba(0, 0, 0, 0.1)`,
       boxShadow: `0 0 0 2px var(--bg-color, ${theme.background.bar})`,
       boxSizing: "border-box",
-    })
+    }),
 );
 
 export const StatusDot = ({ status }: StatusDotProps) => <Dot status={status} />;

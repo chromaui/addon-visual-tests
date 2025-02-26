@@ -1,5 +1,5 @@
-import { styled } from "storybook/internal/theming";
 import React, { ComponentProps, FunctionComponent } from "react";
+import { styled } from "storybook/internal/theming";
 
 import { rotate360 } from "./shared/animation";
 import { color } from "./shared/styles";
@@ -90,11 +90,11 @@ const SpinnerWrapper = styled.div<Props>(
         borderRightColor: color.lightest,
       }),
     }),
-  })
+  }),
 );
 
 export const Spinner: FunctionComponent<Props & ComponentProps<typeof SpinnerWrapper>> = (
-  props
+  props,
 ) => {
   return (
     <SpinnerWrapper

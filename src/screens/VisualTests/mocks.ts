@@ -36,7 +36,7 @@ export const buildInfo = (selectedBuild?: SelectedBuildFieldsFragment) => ({
 
 export const withTests = <T extends SelectedBuildWithTests>(
   build: T,
-  fullTests: StoryTestFieldsFragment[]
+  fullTests: StoryTestFieldsFragment[],
 ) => ({
   ...build,
   testsForStatus: { nodes: fullTests },
@@ -277,7 +277,7 @@ const startTimes = mapObject(
     verify: durations.initialize + durations.build + durations.upload,
     snapshot: durations.initialize + durations.build + durations.upload + durations.verify,
   },
-  (startTime) => Date.now() - totalDuration + startTime
+  (startTime) => Date.now() - totalDuration + startTime,
 );
 
 export const initializeStep = {

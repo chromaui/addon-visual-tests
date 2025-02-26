@@ -1,4 +1,3 @@
-import { Link } from "storybook/internal/components";
 import {
   CheckIcon,
   ChevronRightIcon,
@@ -8,8 +7,9 @@ import {
   FailedIcon,
   SyncIcon,
 } from "@storybook/icons";
-import { keyframes, styled } from "storybook/internal/theming";
 import React, { useEffect, useRef } from "react";
+import { Link } from "storybook/internal/components";
+import { keyframes, styled } from "storybook/internal/theming";
 
 import { BUILD_STEP_CONFIG, BUILD_STEP_ORDER } from "../../buildSteps";
 import { BuildProgressLabel } from "../../components/BuildProgressLabel";
@@ -71,7 +71,7 @@ const Bar = styled.div<{ isWarning?: boolean; percentage: number }>(
       pointerEvents: "none",
       zIndex: 0,
     };
-  }
+  },
 );
 
 const Label = styled.div({
@@ -114,7 +114,7 @@ const StepDetail = styled.div<{ isCurrent: boolean; isFailed: boolean; isPending
       display: "flex",
       alignItems: "center",
     },
-  })
+  }),
 );
 
 type BuildProgressProps = {
@@ -249,7 +249,6 @@ export const BuildEyebrow = ({
     return (
       <Label>
         There's a newer snapshot with changes.
-        {" " /* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
         <Link withArrow onClick={switchToLastBuildOnBranch}>
           Switch to newer snapshot
         </Link>

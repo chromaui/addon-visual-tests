@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-// eslint-disable-next-line import/no-unresolved
 import { VariablesOf } from "@graphql-typed-document-node/core";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, fn } from "@storybook/test";
@@ -70,7 +68,7 @@ function mapQuery(
     uiTests = true,
     userCanReview = true,
   }: QueryInput,
-  { selectedBuildId }: VariablesOf<typeof QueryBuild>
+  { selectedBuildId }: VariablesOf<typeof QueryBuild>,
 ) {
   if (selectedBuildInput && selectedBuildInput?.id !== selectedBuildId) {
     throw new Error("Invalid story, selectedBuild does not match selectedBuildId");
@@ -177,7 +175,7 @@ export const Loading = {
   parameters: {
     ...withGraphQLQueryParameters("AddonVisualTestsBuild", () => delay("infinite")),
     ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304933&t=0rxMQnkxsVpVj1qy-4"
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304933&t=0rxMQnkxsVpVj1qy-4",
     ),
   },
 } satisfies Story;
@@ -186,7 +184,7 @@ export const NotFound = {
   args: { $graphql: {} },
   parameters: {
     ...withGraphQLQueryParameters("AddonVisualTestsBuild", () =>
-      HttpResponse.json({ data: { project: null } } as any)
+      HttpResponse.json({ data: { project: null } } as any),
     ),
   },
 } satisfies Story;
@@ -204,7 +202,7 @@ export const NoAccess = {
             path: ["selectedBuild"],
           },
         ],
-      } as any)
+      } as any),
     ),
   },
 } satisfies Story;
@@ -213,7 +211,7 @@ export const ServerError = {
   args: { $graphql: {} },
   parameters: {
     ...withGraphQLQueryParameters("AddonVisualTestsBuild", () =>
-      HttpResponse.json({ errors: [{ message: "Something went wrong on the server" }] })
+      HttpResponse.json({ errors: [{ message: "Something went wrong on the server" }] }),
     ),
   },
 } satisfies Story;
@@ -285,7 +283,7 @@ export const NoStoryBuildRunningBuildFailed = {
   },
   parameters: {
     ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=3305-114569&mode=design&t=OKHjqJzqTsOx3IXJ-0"
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=3305-114569&mode=design&t=OKHjqJzqTsOx3IXJ-0",
     ),
   },
 } satisfies Story;
@@ -373,7 +371,7 @@ export const StoryAddedNotInBuild = {
   },
   parameters: {
     ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=1898-562751&mode=design&t=ciag0nGKx2OGmoSR-4"
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=1898-562751&mode=design&t=ciag0nGKx2OGmoSR-4",
     ),
   },
 } satisfies Story;
@@ -392,7 +390,7 @@ export const StoryAddedNotInBuildStarting = {
   },
   parameters: {
     ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=1898-562751&mode=design&t=ciag0nGKx2OGmoSR-4"
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=1898-562751&mode=design&t=ciag0nGKx2OGmoSR-4",
     ),
   },
 } satisfies Story;
@@ -426,7 +424,7 @@ export const StoryAddedInSelectedBuild = {
   },
   parameters: {
     ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=1898-562751&mode=design&t=ciag0nGKx2OGmoSR-4"
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=1898-562751&mode=design&t=ciag0nGKx2OGmoSR-4",
     ),
   },
 } satisfies Story;
@@ -527,7 +525,7 @@ export const BrowserAddedAndAccepted: Story = {
                 ],
               },
             ],
-          })
+          }),
         ),
       },
     },
@@ -545,7 +543,7 @@ export const NoChanges = {
   },
   parameters: {
     ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304933&t=0rxMQnkxsVpVj1qy-4"
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304933&t=0rxMQnkxsVpVj1qy-4",
     ),
   },
 } satisfies Story;
@@ -563,7 +561,7 @@ export const NoChangesOnWrongBranch = {
   },
   parameters: {
     ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304933&t=0rxMQnkxsVpVj1qy-4"
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304933&t=0rxMQnkxsVpVj1qy-4",
     ),
   },
 } satisfies Story;
@@ -615,7 +613,7 @@ export const PendingLocalBuildCapturedStory = {
   },
   parameters: {
     ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2303-374529&t=qjmuGHxoALrVuhvX-0"
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2303-374529&t=qjmuGHxoALrVuhvX-0",
     ),
   },
   // NOTE: this does not current work, the story is auto-selected
@@ -664,7 +662,7 @@ export const PendingCIBuildCapturedStory = {
   },
   parameters: {
     ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2303-374529&t=qjmuGHxoALrVuhvX-0"
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2303-374529&t=qjmuGHxoALrVuhvX-0",
     ),
   },
   // NOTE: this does not current work, the story is auto-selected
@@ -683,7 +681,7 @@ export const Pending = {
   },
   parameters: {
     ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304718&t=0rxMQnkxsVpVj1qy-4"
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304718&t=0rxMQnkxsVpVj1qy-4",
     ),
   },
   // @ts-expect-error Type conflict due to us explicitly defining `StoryArgs` above,
@@ -725,7 +723,7 @@ export const NoPermission = {
   },
   parameters: {
     ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2127-449276&mode=design&t=gIM40WT0324ynPQD-4"
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2127-449276&mode=design&t=gIM40WT0324ynPQD-4",
     ),
   },
 } satisfies Story;
@@ -742,7 +740,7 @@ export const NoPermissionRunning = {
   },
   parameters: {
     ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2127-449276&mode=design&t=gIM40WT0324ynPQD-4"
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2127-449276&mode=design&t=gIM40WT0324ynPQD-4",
     ),
   },
 } satisfies Story;
@@ -759,7 +757,7 @@ export const NoPermissionNoChanges = {
   },
   parameters: {
     ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2127-449276&mode=design&t=gIM40WT0324ynPQD-4"
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2127-449276&mode=design&t=gIM40WT0324ynPQD-4",
     ),
   },
 } satisfies Story;
@@ -768,7 +766,7 @@ export const ToggleSnapshot: Story = {
   args: { ...Pending.args },
   parameters: {
     ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=1782%3A446732&mode=design&t=krpUfPW0tIoADqu5-1"
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=1782%3A446732&mode=design&t=krpUfPW0tIoADqu5-1",
     ),
   },
   play: playAll(async ({ canvasElement }) => {
@@ -782,7 +780,7 @@ export const Accepting = {
   parameters: {
     ...withGraphQLMutationParameters("ReviewTest", () => delay("infinite")),
     ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304718&t=0rxMQnkxsVpVj1qy-4"
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304718&t=0rxMQnkxsVpVj1qy-4",
     ),
   },
   play: playAll(async ({ canvasElement }) => {
@@ -795,14 +793,14 @@ export const AcceptingFailed = {
   args: { ...Accepting.args },
   parameters: {
     ...withGraphQLMutationParameters("ReviewTest", () =>
-      HttpResponse.json({ errors: [{ message: "Accepting failed" }] })
+      HttpResponse.json({ errors: [{ message: "Accepting failed" }] }),
     ),
   },
   play: playAll(async ({ canvasElement, argsByTarget }) => {
     const button = await findByRole(canvasElement, "button", { name: "Accept this story" });
     await fireEvent.click(button);
     await waitFor(async () =>
-      expect(argsByTarget["manager-api"].addNotification).toHaveBeenCalled()
+      expect(argsByTarget["manager-api"].addNotification).toHaveBeenCalled(),
     );
   }),
 } satisfies Story;
@@ -818,7 +816,7 @@ export const Accepted = {
   },
   parameters: {
     ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-305053&t=0rxMQnkxsVpVj1qy-4"
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-305053&t=0rxMQnkxsVpVj1qy-4",
     ),
   },
 } satisfies Story;
@@ -843,7 +841,7 @@ export const ParameterDisabled = {
   },
   parameters: {
     ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2255-42087&t=a8NRPgQk3kXMyxqZ-0"
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2255-42087&t=a8NRPgQk3kXMyxqZ-0",
     ),
   },
 } satisfies Story;
@@ -869,7 +867,7 @@ export const Skipped = {
   },
   parameters: {
     ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2255-42087&t=a8NRPgQk3kXMyxqZ-0"
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2255-42087&t=a8NRPgQk3kXMyxqZ-0",
     ),
   },
 } satisfies Story;
@@ -885,7 +883,7 @@ export const CaptureError = {
   },
   parameters: {
     ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-305053&t=0rxMQnkxsVpVj1qy-4"
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-305053&t=0rxMQnkxsVpVj1qy-4",
     ),
   },
 } satisfies Story;
@@ -901,7 +899,7 @@ export const InteractionFailure = {
   },
   parameters: {
     ...withFigmaDesign(
-      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-305053&t=0rxMQnkxsVpVj1qy-4"
+      "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-305053&t=0rxMQnkxsVpVj1qy-4",
     ),
   },
 } satisfies Story;

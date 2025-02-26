@@ -55,7 +55,6 @@ export const initiateSignin = async (subdomain?: string): Promise<TokenExchangeP
     }),
   });
 
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   const { device_code, user_code, verification_uri_complete, expires_in, interval } =
     await res.json();
 
@@ -98,18 +97,16 @@ export const fetchAccessToken = async ({
     const data = await res.json();
     if (authorizationPending(data)) {
       throw new Error(
-        `You have not authorized the Visual Tests addon for Chromatic, please try again`
+        `You have not authorized the Visual Tests addon for Chromatic, please try again`,
       );
     } else if (data.access_token) {
       return data.access_token as string;
     } else if (betaUserAccessDenied(data)) {
-      // eslint-disable-next-line no-alert
       alert("You must be a beta user to use this addon at this time.");
       return null;
     }
     throw new Error();
   } catch (err: any) {
-    // eslint-disable-next-line no-console
     console.warn(err);
     throw err;
   }

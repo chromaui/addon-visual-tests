@@ -1,6 +1,6 @@
+import React, { useEffect } from "react";
 import { Loader } from "storybook/internal/components";
 import { styled } from "storybook/internal/theming";
-import React, { useEffect } from "react";
 
 import { Link } from "../../components/design-system";
 import { SnapshotImage } from "../../components/SnapshotImage";
@@ -146,7 +146,7 @@ export const SnapshotComparison = ({
 
   // isNewStory is when the story itself is added and all tests should also be added
   const isNewStory = tests.every(
-    ({ result, status }) => result === TestResult.Added && status !== TestStatus.Accepted
+    ({ result, status }) => result === TestResult.Added && status !== TestStatus.Accepted,
   );
 
   // This checks if the specific comparison is new, but the story itself is not. This indicates it was probably a new mode being added.

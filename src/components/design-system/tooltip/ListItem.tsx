@@ -1,6 +1,6 @@
 import weakMemoize from "@emotion/weak-memoize";
-import { styled, type Theme, useTheme } from "storybook/internal/theming";
 import React, { ComponentProps, ReactNode } from "react";
+import { styled, type Theme, useTheme } from "storybook/internal/theming";
 
 import { inlineGlow } from "../shared/animation";
 
@@ -139,9 +139,8 @@ const LinkItem = styled(
     isLoading,
     ...rest
   }: React.AnchorHTMLAttributes<HTMLAnchorElement> & LinkStyleProps) => {
-    // eslint-disable-next-line jsx-a11y/anchor-has-content
     return <a {...rest} />;
-  }
+  },
 )(linkStyles);
 
 const NormalItem = styled.span(linkStyles);
@@ -157,8 +156,8 @@ const buildStyledLinkWrapper = weakMemoize((LinkWrapper: LinkWrapperType) =>
       isLoading,
       activeColor,
       ...linkWrapperRest
-    }: ComponentProps<LinkWrapperType> & LinkStyleProps) => <LinkWrapper {...linkWrapperRest} />
-  )(linkStyles)
+    }: ComponentProps<LinkWrapperType> & LinkStyleProps) => <LinkWrapper {...linkWrapperRest} />,
+  )(linkStyles),
 );
 
 type StyledLinkWrapperProps = ComponentProps<ReturnType<typeof buildStyledLinkWrapper>>;

@@ -19,7 +19,7 @@ export const useChannelFetch: () => typeof fetch = () => {
     [FETCH_RESPONSE]: (
       data:
         | { requestId: string; response: SerializedResponse }
-        | { requestId: string; error: string }
+        | { requestId: string; error: string },
     ) => {
       const request = pendingRequests.get(data.requestId);
       if (!request) return;

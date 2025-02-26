@@ -34,5 +34,5 @@ export const Text = styled.div<{
     svg: {
       verticalAlign: "top",
     },
-  })
+  }),
 );
