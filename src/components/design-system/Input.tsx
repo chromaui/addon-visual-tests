@@ -1,5 +1,6 @@
 import React, {
   ComponentProps,
+  FC,
   forwardRef,
   MutableRefObject,
   ReactNode,
@@ -10,7 +11,7 @@ import React, {
   useState,
 } from 'react';
 import { TooltipMessage, WithTooltip } from 'storybook/internal/components';
-import { css, styled } from 'storybook/internal/theming';
+import { styled } from 'storybook/internal/theming';
 
 import { Icon } from './Icon';
 import { Link } from './Link';
@@ -51,7 +52,11 @@ const LabelWrapper = styled.div<Pick<PureInputProps, 'hideLabel'>>([
       whiteSpace: 'nowrap !important',
       width: '1px !important',
     },
-]);
+]) as FC<
+  Pick<PureInputProps, 'hideLabel'> &
+    React.ClassAttributes<HTMLDivElement> &
+    React.HTMLAttributes<HTMLDivElement>
+>;
 
 const InputEl = styled.input({
   '&::placeholder': {
@@ -120,7 +125,9 @@ const getStackLevelStyling = (props: Pick<PureInputProps, 'error' | 'stackLevel'
 type InputWrapperProps = Pick<
   PureInputProps,
   'error' | 'stackLevel' | 'appearance' | 'startingType' | 'icon'
->;
+> &
+  React.ClassAttributes<HTMLDivElement> &
+  React.HTMLAttributes<HTMLDivElement>;
 
 // @ts-expect-error — Emotion is doing something weird with `position` (at least)
 const InputWrapper = styled.div<InputWrapperProps>((props) => ({
@@ -224,7 +231,7 @@ const InputWrapper = styled.div<InputWrapperProps>((props) => ({
       },
     }),
   },
-}));
+})) as FC<InputWrapperProps>;
 
 const InputContainer = styled.div<Pick<PureInputProps, 'orientation'>>(
   (props) =>
