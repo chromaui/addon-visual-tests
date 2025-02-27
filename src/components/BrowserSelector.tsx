@@ -103,7 +103,7 @@ export const BrowserSelector = ({
       }
     >
       {links ? (
-        <TooltipMenu placement="bottom" links={links}>
+        <TooltipMenu placement="bottom" links={links as any}>
           {icon}
           <Label>{selectedBrowser.name}</Label>
           <ChevronDownIcon size={10} />
