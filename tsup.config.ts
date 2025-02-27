@@ -19,14 +19,6 @@ type PackageJsonWithBundlerConfig = PackageJson & {
 };
 
 export default defineConfig(async (options) => {
-  // reading the three types of entries from package.json, which has the following structure:
-  // {
-  //  ...
-  //   "bundler": {
-  //     "nodeEntries": ["./src/index.ts"],
-  //     "managerEntries": ["./src/manager.tsx"],
-  //   }
-  // }
   const packageJson = (await readFile("./package.json", "utf8").then(
     JSON.parse
   )) as PackageJsonWithBundlerConfig;
@@ -79,9 +71,6 @@ export default defineConfig(async (options) => {
     });
   }
 
-  // manager entries are entries meant to be loaded into the manager UI
-  // they'll have manager-specific packages externalized and they won't be usable in node
-  // they won't have types generated for them as they're usually loaded automatically by Storybook
   if (managerEntries.length) {
     configs.push({
       ...commonConfig,
@@ -114,20 +103,6 @@ export default defineConfig(async (options) => {
     });
   }
 
-  // This addon doesn't use preview entries but this is the recommended way to do it if we ever do
-
-  // preview entries are entries meant to be loaded into the preview iframe
-  // they'll have preview-specific packages externalized and they won't be usable in node
-  // they won't have types generated for them as they're usually loaded automatically by Storybook
-  // if (previewEntries.length) {
-  //   configs.push({
-  //     ...commonConfig,
-  //     entry: previewEntries,
-  //     format: ["esm"],
-  //     platform: "browser",
-  //     external: globalPreviewPackages,
-  //   });
-  // }
 
   return configs;
 });
