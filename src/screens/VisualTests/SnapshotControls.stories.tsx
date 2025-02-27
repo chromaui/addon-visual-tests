@@ -1,13 +1,13 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import { expect } from "@storybook/test";
-import { fireEvent, screen, userEvent, within } from "@storybook/testing-library";
+import type { Meta, StoryObj } from '@storybook/react';
+import { expect } from '@storybook/test';
+import { fireEvent, screen, userEvent, within } from '@storybook/testing-library';
 
-import { panelModes } from "../../modes";
-import { action } from "../../utils/action";
-import { playAll } from "../../utils/playAll";
-import { storyWrapper } from "../../utils/storyWrapper";
-import { BuildProvider } from "./BuildContext";
-import { ControlsProvider } from "./ControlsContext";
+import { panelModes } from '../../modes';
+import { action } from '../../utils/action';
+import { playAll } from '../../utils/playAll';
+import { storyWrapper } from '../../utils/storyWrapper';
+import { BuildProvider } from './BuildContext';
+import { ControlsProvider } from './ControlsContext';
 import {
   acceptedTests,
   buildInfo,
@@ -15,10 +15,10 @@ import {
   pendingBuild,
   pendingTests,
   withTests,
-} from "./mocks";
-import { ReviewTestProvider } from "./ReviewTestContext";
-import { Grid } from "./SnapshotComparison";
-import { SnapshotControls } from "./SnapshotControls";
+} from './mocks';
+import { ReviewTestProvider } from './ReviewTestContext';
+import { Grid } from './SnapshotComparison';
+import { SnapshotControls } from './SnapshotControls';
 
 const meta = {
   component: SnapshotControls,
@@ -39,8 +39,8 @@ const meta = {
       isReviewing: false,
       userCanReview: true,
       buildIsReviewable: true,
-      acceptTest: action("acceptTest"),
-      unacceptTest: action("unacceptTest"),
+      acceptTest: action('acceptTest'),
+      unacceptTest: action('unacceptTest'),
     },
     selectedBuild: withTests(pendingBuild, pendingTests),
   },
@@ -84,7 +84,7 @@ export const Unreviewable = {
 export const ToggleDiff = {
   play: playAll(async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const button = await canvas.findByRole("button", { name: "Hide diff" });
+    const button = await canvas.findByRole('button', { name: 'Hide diff' });
     fireEvent.click(button);
   }),
 } satisfies Story;
@@ -92,7 +92,7 @@ export const ToggleDiff = {
 export const ToggleBaseline = {
   play: playAll(async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const button = await canvas.findByRole("button", { name: "Show baseline snapshot" });
+    const button = await canvas.findByRole('button', { name: 'Show baseline snapshot' });
     fireEvent.click(button);
   }),
 } satisfies Story;
@@ -100,18 +100,18 @@ export const ToggleBaseline = {
 export const BatchAcceptOptions = {
   play: playAll(async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const menu = await canvas.findByRole("button", { name: "Batch accept options" });
+    const menu = await canvas.findByRole('button', { name: 'Batch accept options' });
     await userEvent.click(menu);
   }),
 } satisfies Story;
 
 export const BatchAcceptedBuild = {
   play: playAll(BatchAcceptOptions, async ({ canvasIndex, parameters }) => {
-    const items = await screen.findAllByText("Accept entire build");
+    const items = await screen.findAllByText('Accept entire build');
     await userEvent.click(items[canvasIndex]);
     await expect(parameters.reviewTest.acceptTest).toHaveBeenCalledWith(
       parameters.selectedBuild.testsForStory.nodes[0].id,
-      "BUILD"
+      'BUILD'
     );
   }),
 } satisfies Story;

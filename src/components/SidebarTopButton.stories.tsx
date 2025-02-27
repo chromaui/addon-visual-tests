@@ -1,18 +1,18 @@
-import { action } from "@storybook/addon-actions";
-import type { Meta, StoryObj } from "@storybook/react";
-import { screen, userEvent, within } from "@storybook/testing-library";
-import isChromatic from "chromatic/isChromatic";
-import React, { ComponentProps, useEffect, useState } from "react";
+import { action } from '@storybook/addon-actions';
+import type { Meta, StoryObj } from '@storybook/react';
+import { screen, userEvent, within } from '@storybook/testing-library';
+import isChromatic from 'chromatic/isChromatic';
+import React, { ComponentProps, useEffect, useState } from 'react';
 
-import { INITIAL_BUILD_PAYLOAD } from "../buildSteps";
-import { playAll } from "../utils/playAll";
-import { SidebarTopButton } from "./SidebarTopButton";
+import { INITIAL_BUILD_PAYLOAD } from '../buildSteps';
+import { playAll } from '../utils/playAll';
+import { SidebarTopButton } from './SidebarTopButton';
 
 const meta = {
   component: SidebarTopButton,
   args: {
-    startBuild: action("startBuild"),
-    stopBuild: action("stopBuild"),
+    startBuild: action('startBuild'),
+    stopBuild: action('stopBuild'),
   },
 } satisfies Meta<typeof SidebarTopButton>;
 
@@ -22,7 +22,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   play: playAll(async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const button = await canvas.findByRole("button", { name: "Run tests" });
+    const button = await canvas.findByRole('button', { name: 'Run tests' });
     await userEvent.click(button);
   }),
 };
@@ -36,12 +36,12 @@ export const Disabled: Story = {
 export const DisabledWarning: Story = {
   args: {
     isDisabled: true,
-    warning: "You must be logged in to run tests",
-    clickWarning: action("clickWarning"),
+    warning: 'You must be logged in to run tests',
+    clickWarning: action('clickWarning'),
   },
   play: playAll(async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const button = await canvas.findByRole("button", { name: "Visual tests locked" });
+    const button = await canvas.findByRole('button', { name: 'Visual tests locked' });
     await userEvent.hover(button);
   }),
 };
@@ -68,7 +68,7 @@ const WithProgress = (props: ComponentProps<typeof SidebarTopButton>) => {
       localBuildProgress={{
         ...INITIAL_BUILD_PAYLOAD,
         buildProgressPercentage,
-        currentStep: "build",
+        currentStep: 'build',
       }}
     />
   );
@@ -78,11 +78,11 @@ export const Running: Story = {
   render: WithProgress,
   play: playAll(async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const button = await canvas.findByRole("button", { name: "Stop tests" });
+    const button = await canvas.findByRole('button', { name: 'Stop tests' });
     // Wait one second just to ensure the screen has proper focus
     await new Promise((r) => setTimeout(r, 1000));
     await userEvent.hover(button);
-    await screen.findAllByText("🏗 Building your Storybook...");
+    await screen.findAllByText('🏗 Building your Storybook...');
   }),
 };
 

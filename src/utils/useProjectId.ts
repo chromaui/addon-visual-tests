@@ -1,8 +1,8 @@
-import { useCallback } from "react";
+import { useCallback } from 'react';
 
-import { PROJECT_INFO } from "../constants";
-import { ProjectInfoPayload } from "../types";
-import { useSharedState } from "./useSharedState";
+import { PROJECT_INFO } from '../constants';
+import { ProjectInfoPayload } from '../types';
+import { useSharedState } from './useSharedState';
 
 export const useProjectId = () => {
   const [projectInfo, setProjectInfo] = useSharedState<ProjectInfoPayload>(PROJECT_INFO);

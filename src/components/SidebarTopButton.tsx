@@ -1,21 +1,21 @@
-import { WithTooltip } from "@storybook/components";
-import { PlayIcon, StopAltIcon } from "@storybook/icons";
-import { keyframes, styled } from "@storybook/theming";
-import React, { ComponentProps } from "react";
+import { PlayIcon, StopAltIcon } from '@storybook/icons';
+import React, { ComponentProps } from 'react';
+import { WithTooltip } from 'storybook/internal/components';
+import { keyframes, styled } from 'storybook/internal/theming';
 
-import { LocalBuildProgress } from "../types";
-import { BuildProgressLabel } from "./BuildProgressLabel";
-import { jiggle } from "./design-system/shared/animation";
-import { IconButton } from "./IconButton";
-import { StatusDotWrapper } from "./StatusDot";
-import { TooltipNote } from "./TooltipNote";
+import { LocalBuildProgress } from '../types';
+import { BuildProgressLabel } from './BuildProgressLabel';
+import { jiggle } from './design-system/shared/animation';
+import { IconButton } from './IconButton';
+import { StatusDotWrapper } from './StatusDot';
+import { TooltipNote } from './TooltipNote';
 
 export const TooltipContent = styled.div(({ theme }) => ({
   width: 220,
   padding: 3,
-  color: theme.base === "light" ? theme.color.defaultText : theme.color.light,
+  color: theme.base === 'light' ? theme.color.defaultText : theme.color.light,
 
-  "& > div": {
+  '& > div': {
     margin: 7,
   },
 }));
@@ -24,38 +24,38 @@ export const ProgressTrack = styled.div(({ theme }) => ({
   height: 5,
   background: theme.background.hoverable,
   borderRadius: 5,
-  overflow: "hidden",
+  overflow: 'hidden',
 }));
 
 export const ProgressBar = styled(ProgressTrack)(({ theme }) => ({
   background: theme.color.secondary,
-  transition: "width 3s ease-out",
+  transition: 'width 3s ease-out',
 }));
 
 const rotate = keyframes({
-  "0%": {
-    transform: "rotate(0deg)",
+  '0%': {
+    transform: 'rotate(0deg)',
   },
-  "100%": {
-    transform: "rotate(360deg)",
+  '100%': {
+    transform: 'rotate(360deg)',
   },
 });
 
 export const ProgressCircle = styled.svg<{ progress?: boolean; spinner?: boolean }>(
   ({ progress, theme }) => ({
-    position: "absolute",
+    position: 'absolute',
     width: `24px!important`,
     height: `24px!important`,
-    transform: "rotate(-90deg)",
+    transform: 'rotate(-90deg)',
     color: theme.color.secondary,
     circle: {
-      r: "10",
-      cx: "12",
-      cy: "12",
-      fill: "transparent",
-      stroke: progress ? "currentColor" : theme.background.hoverable,
-      strokeWidth: "2",
-      strokeLinecap: "round",
+      r: '10',
+      cx: '12',
+      cy: '12',
+      fill: 'transparent',
+      stroke: progress ? 'currentColor' : theme.background.hoverable,
+      strokeWidth: '2',
+      strokeLinecap: 'round',
       strokeDasharray: Math.PI * 20,
     },
   }),
@@ -70,14 +70,14 @@ export const ProgressCircle = styled.svg<{ progress?: boolean; spinner?: boolean
 
 const WarningText = styled.div(({ theme }) => ({
   color: theme.color.warningText,
-  "&&": { marginTop: 10 },
+  '&&': { marginTop: 10 },
 }));
 
 export const SidebarIconButton = styled(IconButton)<
   ComponentProps<typeof IconButton> & { isDisallowed?: boolean }
 >(({ isDisallowed, theme }) => ({
-  position: "relative",
-  overflow: "visible",
+  position: 'relative',
+  overflow: 'visible',
   color: theme.textMutedColor,
   marginTop: 0,
   zIndex: 1,
@@ -140,7 +140,7 @@ export const SidebarTopButton = ({
               <BuildProgressLabel localBuildProgress={localBuildProgress} small withEmoji />
             </div>
             <ProgressTrack>
-              {typeof buildProgressPercentage === "number" && (
+              {typeof buildProgressPercentage === 'number' && (
                 <ProgressBar style={{ width: `${buildProgressPercentage}%` }} />
               )}
             </ProgressTrack>
@@ -164,7 +164,7 @@ export const SidebarTopButton = ({
           <ProgressCircle xmlns="http://www.w3.org/2000/svg" spinner>
             <circle strokeDashoffset={Math.PI * 20 * (1 - buildProgressPercentage / 100)} />
           </ProgressCircle>
-          {typeof buildProgressPercentage === "number" && (
+          {typeof buildProgressPercentage === 'number' && (
             <ProgressCircle xmlns="http://www.w3.org/2000/svg" progress>
               <circle strokeDashoffset={Math.PI * 20 * (1 - buildProgressPercentage / 100)} />
             </ProgressCircle>

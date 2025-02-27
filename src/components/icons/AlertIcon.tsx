@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 export const AlertIcon = (props: any) => (
   <svg
@@ -7,7 +7,7 @@ export const AlertIcon = (props: any) => (
     viewBox="0 0 12 12"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
-    style={{ margin: "3px 6px", verticalAlign: "top" }}
+    style={{ margin: '3px 6px', verticalAlign: 'top' }}
     {...props}
   >
     <path

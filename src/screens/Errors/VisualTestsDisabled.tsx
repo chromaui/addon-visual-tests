@@ -1,12 +1,12 @@
-import React from "react";
+import React from 'react';
 
-import { Button } from "../../components/Button";
-import { Container } from "../../components/Container";
-import { Heading } from "../../components/Heading";
-import { Screen } from "../../components/Screen";
-import { Stack } from "../../components/Stack";
-import { Text } from "../../components/Text";
-import { useTelemetry } from "../../utils/TelemetryContext";
+import { Button } from '../../components/Button';
+import { Container } from '../../components/Container';
+import { Heading } from '../../components/Heading';
+import { Screen } from '../../components/Screen';
+import { Stack } from '../../components/Stack';
+import { Text } from '../../components/Text';
+import { useTelemetry } from '../../utils/TelemetryContext';
 
 export const VisualTestsDisabled = ({
   children,
@@ -15,7 +15,7 @@ export const VisualTestsDisabled = ({
   children?: React.ReactNode;
   manageUrl: string;
 }) => {
-  useTelemetry("Errors", "VisualTestsDisabled");
+  useTelemetry('Errors', 'VisualTestsDisabled');
 
   return (
     <Screen footer={null}>

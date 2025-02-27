@@ -1,47 +1,47 @@
-import { styled } from "@storybook/theming";
-import React, { SyntheticEvent } from "react";
-import { TooltipRenderProps } from "react-joyride";
+import React, { SyntheticEvent } from 'react';
+import { TooltipRenderProps } from 'react-joyride';
+import { styled } from 'storybook/internal/theming';
 
-import { Button } from "../../components/Button";
+import { Button } from '../../components/Button';
 
 const TooltipBody = styled.div(({ theme }) => ({
-  background: theme.base === "light" ? theme.color.lightest : "#292A2C",
+  background: theme.base === 'light' ? theme.color.lightest : '#292A2C',
   width: 260,
   padding: 15,
   borderRadius: 5,
-  boxShadow: "0px 0px 32px 0px #00000029",
+  boxShadow: '0px 0px 32px 0px #00000029',
 }));
 
 const Wrapper = styled.div({
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "flex-start",
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'flex-start',
 });
 
 const TooltipTitle = styled.div(({ theme }) => ({
   fontSize: 13,
-  lineHeight: "18px",
+  lineHeight: '18px',
   fontWeight: 700,
   color: theme.color.defaultText,
 }));
 
 const TooltipContent = styled.div(({ theme }) => ({
   fontSize: 13,
-  lineHeight: "18px",
-  textAlign: "start",
+  lineHeight: '18px',
+  textAlign: 'start',
   color: theme.color.defaultText,
   margin: 0,
   marginTop: 5,
 }));
 
 const TooltipFooter = styled.div({
-  display: "flex",
-  justifyContent: "flex-end",
+  display: 'flex',
+  justifyContent: 'flex-end',
   marginTop: 15,
 });
 
 export type TooltipProps = TooltipRenderProps & {
-  step: TooltipRenderProps["step"] & {
+  step: TooltipRenderProps['step'] & {
     hideSkipButton?: boolean;
     hideNextButton?: boolean;
     nextButtonText?: string;
@@ -75,11 +75,11 @@ export const Tooltip = ({ isLastStep, step, primaryProps, tooltipProps }: Toolti
                 ...primaryProps,
                 // @tmeasday - I'm not sure if we ever use this, but this makes the types work
                 onClick: primaryProps.onClick as (event: SyntheticEvent) => void,
-                variant: "solid",
+                variant: 'solid',
                 ...(step.onNextButtonClick ? { onClick: step.onNextButtonClick } : {}),
               }}
             >
-              {step.nextButtonText || "Next"}
+              {step.nextButtonText || 'Next'}
             </Button>
           )}
         </TooltipFooter>

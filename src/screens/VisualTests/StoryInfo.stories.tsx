@@ -1,12 +1,12 @@
-import { action } from "@storybook/addon-actions";
-import type { Meta, StoryObj } from "@storybook/react";
-import React from "react";
+import { action } from '@storybook/addon-actions';
+import type { Meta, StoryObj } from '@storybook/react';
+import React from 'react';
 
-import { Browser, TestStatus } from "../../gql/graphql";
-import { panelModes } from "../../modes";
-import { makeTest, makeTests } from "../../utils/storyData";
-import { Grid } from "./SnapshotComparison";
-import { StoryInfo } from "./StoryInfo";
+import { Browser, TestStatus } from '../../gql/graphql';
+import { panelModes } from '../../modes';
+import { makeTest, makeTests } from '../../utils/storyData';
+import { Grid } from './SnapshotComparison';
+import { StoryInfo } from './StoryInfo';
 
 const meta = {
   component: StoryInfo,
@@ -49,7 +49,7 @@ export const AnnouncedSuperseded: Story = {
   args: {
     ...Announced.args,
     shouldSwitchToLastBuildOnBranch: true,
-    switchToLastBuildOnBranch: action("switchToLastBuildOnBranch"),
+    switchToLastBuildOnBranch: action('switchToLastBuildOnBranch'),
   },
 };
 
@@ -69,7 +69,7 @@ export const InProgressSuperseded: Story = {
   args: {
     tests: [makeTest({ status: TestStatus.InProgress })],
     shouldSwitchToLastBuildOnBranch: true,
-    switchToLastBuildOnBranch: action("switchToLastBuildOnBranch"),
+    switchToLastBuildOnBranch: action('switchToLastBuildOnBranch'),
   },
 };
 
@@ -84,7 +84,7 @@ export const PendingSuperseded: Story = {
   args: {
     ...Pending.args,
     shouldSwitchToLastBuildOnBranch: true,
-    switchToLastBuildOnBranch: action("switchToLastBuildOnBranch"),
+    switchToLastBuildOnBranch: action('switchToLastBuildOnBranch'),
   },
 };
 

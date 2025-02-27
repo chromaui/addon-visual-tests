@@ -1,4 +1,4 @@
-import { styled } from "@storybook/theming";
+import { styled } from 'storybook/internal/theming';
 
 export const Placeholder = styled.div<{
   width?: number;
@@ -6,7 +6,7 @@ export const Placeholder = styled.div<{
   marginLeft?: number;
   marginRight?: number;
 }>(({ theme, width = 14, height = 14, marginLeft = 7, marginRight = 8 }) => ({
-  display: "inline-block",
+  display: 'inline-block',
   backgroundColor: theme.appBorderColor,
   borderRadius: 3,
   animation: `${theme.animation.glow} 1.5s ease-in-out infinite`,

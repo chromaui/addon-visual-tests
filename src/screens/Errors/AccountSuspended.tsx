@@ -1,31 +1,31 @@
-import React from "react";
+import React from 'react';
 
-import { Button } from "../../components/Button";
-import { Container } from "../../components/Container";
-import { Heading } from "../../components/Heading";
-import { Screen } from "../../components/Screen";
-import { Stack } from "../../components/Stack";
-import { Text } from "../../components/Text";
-import { AccountSuspensionReason } from "../../gql/graphql";
-import { useTelemetry } from "../../utils/TelemetryContext";
+import { Button } from '../../components/Button';
+import { Container } from '../../components/Container';
+import { Heading } from '../../components/Heading';
+import { Screen } from '../../components/Screen';
+import { Stack } from '../../components/Stack';
+import { Text } from '../../components/Text';
+import { AccountSuspensionReason } from '../../gql/graphql';
+import { useTelemetry } from '../../utils/TelemetryContext';
 
 const reasons = {
   [AccountSuspensionReason.ExceededThreshold]: {
-    heading: "Snapshot limit reached",
+    heading: 'Snapshot limit reached',
     message:
-      "Your account has reached its monthly snapshot limit. Visual testing is disabled. Upgrade your plan to increase your quota.",
-    action: "Upgrade plan",
+      'Your account has reached its monthly snapshot limit. Visual testing is disabled. Upgrade your plan to increase your quota.',
+    action: 'Upgrade plan',
   },
   [AccountSuspensionReason.PaymentRequired]: {
-    heading: "Payment required",
+    heading: 'Payment required',
     message:
-      "Your subscription payment is past due. Review or replace your payment method to continue using Chromatic.",
-    action: "Review billing details",
+      'Your subscription payment is past due. Review or replace your payment method to continue using Chromatic.',
+    action: 'Review billing details',
   },
   [AccountSuspensionReason.Other]: {
-    heading: "Account suspended",
-    message: "Your account has been suspended. Contact customer support for details.",
-    action: "Billing details",
+    heading: 'Account suspended',
+    message: 'Your account has been suspended. Contact customer support for details.',
+    action: 'Billing details',
   },
 };
 
@@ -38,7 +38,7 @@ export const AccountSuspended = ({
   billingUrl?: string | null;
   suspensionReason?: AccountSuspensionReason;
 }) => {
-  useTelemetry("Errors", "AccountSuspended");
+  useTelemetry('Errors', 'AccountSuspended');
   const { heading, message, action } =
     reasons[suspensionReason] || reasons[AccountSuspensionReason.Other];
 

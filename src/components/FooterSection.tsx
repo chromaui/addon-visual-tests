@@ -1,7 +1,7 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode } from 'react';
 
-import { FooterMenu } from "./FooterMenu";
-import { Bar, Col, Section } from "./layout";
+import { FooterMenu } from './FooterMenu';
+import { Bar, Col, Section } from './layout';
 
 export const FooterSection = ({
   setAccessToken,

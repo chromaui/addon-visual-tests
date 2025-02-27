@@ -1,4 +1,3 @@
-import { Link } from "@storybook/components";
 import {
   CheckIcon,
   ChevronRightIcon,
@@ -7,19 +6,20 @@ import {
   ExpandAltIcon,
   FailedIcon,
   SyncIcon,
-} from "@storybook/icons";
-import { keyframes, styled } from "@storybook/theming";
-import React, { useEffect, useRef } from "react";
+} from '@storybook/icons';
+import React, { useEffect, useRef } from 'react';
+import { Link } from 'storybook/internal/components';
+import { keyframes, styled } from 'storybook/internal/theming';
 
-import { BUILD_STEP_CONFIG, BUILD_STEP_ORDER } from "../../buildSteps";
-import { BuildProgressLabel } from "../../components/BuildProgressLabel";
-import { Code } from "../../components/Code";
-import { IconButton } from "../../components/IconButton";
-import { LocalBuildProgress } from "../../types";
+import { BUILD_STEP_CONFIG, BUILD_STEP_ORDER } from '../../buildSteps';
+import { BuildProgressLabel } from '../../components/BuildProgressLabel';
+import { Code } from '../../components/Code';
+import { IconButton } from '../../components/IconButton';
+import { LocalBuildProgress } from '../../types';
 
 const spin = keyframes({
-  from: { transform: "rotate(0deg)" },
-  to: { transform: "rotate(359deg)" },
+  from: { transform: 'rotate(0deg)' },
+  to: { transform: 'rotate(359deg)' },
 });
 
 const SpinIcon = styled(SyncIcon)({
@@ -29,90 +29,90 @@ const SpinIcon = styled(SyncIcon)({
 const stepIconStyle = { width: 10, marginRight: 8 };
 
 const Header = styled.button<{ isWarning?: boolean }>(({ isWarning, onClick, theme }) => {
-  const warningColor = theme.base === "light" ? theme.background.warning : "#2e271a";
+  const warningColor = theme.base === 'light' ? theme.background.warning : '#2e271a';
   return {
-    position: "relative",
-    display: "flex",
-    width: "100%",
-    lineHeight: "20px",
-    padding: "5px 7px 5px 15px",
-    justifyContent: "space-between",
-    alignItems: "center",
+    position: 'relative',
+    display: 'flex',
+    width: '100%',
+    lineHeight: '20px',
+    padding: '5px 7px 5px 15px',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     background: isWarning ? warningColor : theme.background.app,
-    border: "none",
+    border: 'none',
     borderBottom: `1px solid ${theme.appBorderColor}`,
     color: theme.color.defaultText,
-    cursor: onClick ? "pointer" : "default",
-    textAlign: "left",
+    cursor: onClick ? 'pointer' : 'default',
+    textAlign: 'left',
 
-    "& > *": {
+    '& > *': {
       zIndex: 1,
     },
 
     code: {
       fontFamily: theme.typography.fonts.mono,
-      fontSize: "12px",
+      fontSize: '12px',
     },
   };
 });
 
 const Bar = styled.div<{ isWarning?: boolean; percentage: number }>(
   ({ isWarning, percentage, theme }) => {
-    const warningColor = theme.base === "light" ? "#FFE6B1" : "#43361f";
+    const warningColor = theme.base === 'light' ? '#FFE6B1' : '#43361f';
     return {
-      display: "block",
-      position: "absolute",
-      top: "0",
-      height: "100%",
-      left: "0",
+      display: 'block',
+      position: 'absolute',
+      top: '0',
+      height: '100%',
+      left: '0',
       width: `${percentage}%`,
-      transition: "width 3s ease-out",
+      transition: 'width 3s ease-out',
       backgroundColor: isWarning ? warningColor : theme.background.hoverable,
-      pointerEvents: "none",
+      pointerEvents: 'none',
       zIndex: 0,
     };
   }
 );
 
 const Label = styled.div({
-  padding: "5px 0",
+  padding: '5px 0',
 });
 
 const ExpandableDiv = styled.div<{ expanded: boolean }>(({ expanded, theme }) => ({
-  display: "grid",
-  gridTemplateRows: expanded ? "1fr" : "0fr",
+  display: 'grid',
+  gridTemplateRows: expanded ? '1fr' : '0fr',
   background: theme.background.app,
-  borderBottom: expanded ? `1px solid ${theme.appBorderColor}` : "none",
-  transition: "grid-template-rows 150ms ease-out",
+  borderBottom: expanded ? `1px solid ${theme.appBorderColor}` : 'none',
+  transition: 'grid-template-rows 150ms ease-out',
 }));
 
 const StepDetails = styled.div(({ theme }) => ({
-  whiteSpace: "nowrap",
-  overflow: "hidden",
-  color: theme.base === "light" ? theme.color.dark : theme.color.lightest,
+  whiteSpace: 'nowrap',
+  overflow: 'hidden',
+  color: theme.base === 'light' ? theme.color.dark : theme.color.lightest,
 }));
 
 const StepDetail = styled.div<{ isCurrent: boolean; isFailed: boolean; isPending: boolean }>(
   ({ isCurrent, isFailed, isPending, theme }) => ({
-    display: "flex",
-    flexDirection: "row",
+    display: 'flex',
+    flexDirection: 'row',
     gap: 8,
     opacity: isPending ? 0.7 : 1,
-    color: isFailed ? theme.color.negativeText : "inherit",
-    fontWeight: isCurrent || isFailed ? "bold" : "normal",
-    fontFamily: "Menlo, monospace",
+    color: isFailed ? theme.color.negativeText : 'inherit',
+    fontWeight: isCurrent || isFailed ? 'bold' : 'normal',
+    fontFamily: 'Menlo, monospace',
     fontSize: 12,
-    lineHeight: "24px",
-    margin: "0 15px",
-    "&:first-of-type": {
+    lineHeight: '24px',
+    margin: '0 15px',
+    '&:first-of-type': {
       marginTop: 10,
     },
-    "&:last-of-type": {
+    '&:last-of-type': {
       marginBottom: 10,
     },
-    "& > div": {
-      display: "flex",
-      alignItems: "center",
+    '& > div': {
+      display: 'flex',
+      alignItems: 'center',
     },
   })
 );
@@ -124,14 +124,14 @@ type BuildProgressProps = {
 
 const BuildProgress = ({ localBuildProgress, expanded = false }: BuildProgressProps) => {
   const stepHistory = useRef<
-    Partial<Record<LocalBuildProgress["currentStep"], LocalBuildProgress>>
+    Partial<Record<LocalBuildProgress['currentStep'], LocalBuildProgress>>
   >({});
 
   useEffect(() => {
     stepHistory.current[localBuildProgress.currentStep] = { ...localBuildProgress };
   }, [localBuildProgress]);
 
-  const buildFailed = ["aborted", "error"].includes(localBuildProgress.currentStep);
+  const buildFailed = ['aborted', 'error'].includes(localBuildProgress.currentStep);
   const steps = BUILD_STEP_ORDER.map((step) => {
     const { startedAt, completedAt } = localBuildProgress.stepProgress[step];
     const isCurrent = !!startedAt && !completedAt;
@@ -203,13 +203,13 @@ export const BuildEyebrow = ({
   };
 
   if (localBuildProgress) {
-    const aborted = localBuildProgress.currentStep === "aborted";
-    const errored = localBuildProgress.currentStep === "error";
+    const aborted = localBuildProgress.currentStep === 'aborted';
+    const errored = localBuildProgress.currentStep === 'error';
     const isWarning = aborted || errored;
     return (
       <>
         <Header
-          as={errored ? "div" : "button"}
+          as={errored ? 'div' : 'button'}
           onClick={errored ? undefined : toggleExpanded}
           isWarning={isWarning}
         >
@@ -241,15 +241,14 @@ export const BuildEyebrow = ({
     if (lastBuildOnBranchInProgress) {
       return (
         <Label>
-          Reviewing is disabled because there&apos;s a newer build in progress on{" "}
+          Reviewing is disabled because there&apos;s a newer build in progress on{' '}
           <Code>{branch}</Code>. This can happen when a build runs in CI.
         </Label>
       );
     }
     return (
       <Label>
-        There's a newer snapshot with changes.
-        {" " /* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+        There's a newer snapshot with changes.{' '}
         <Link withArrow onClick={switchToLastBuildOnBranch}>
           Switch to newer snapshot
         </Link>

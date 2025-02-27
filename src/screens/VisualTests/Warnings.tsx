@@ -1,5 +1,5 @@
-import { DocumentIcon, SupportIcon } from "@storybook/icons";
-import React from "react";
+import { DocumentIcon, SupportIcon } from '@storybook/icons';
+import React from 'react';
 
 import {
   Accordion,
@@ -7,9 +7,9 @@ import {
   CloseButton,
   CloseIcon,
   Heading,
-} from "../../components/Accordions";
-import { Badge } from "../../components/Badge";
-import { Button } from "../../components/Button";
+} from '../../components/Accordions';
+import { Badge } from '../../components/Badge';
+import { Button } from '../../components/Button';
 
 interface WarningsProps {
   onClose: () => void;

@@ -1,7 +1,7 @@
-import React, { createContext } from "react";
+import React, { createContext } from 'react';
 
-import { ReviewTestBatch } from "../../gql/graphql";
-import { useRequiredContext } from "../../utils/useRequiredContext";
+import { ReviewTestBatch } from '../../gql/graphql';
+import { useRequiredContext } from '../../utils/useRequiredContext';
 
 const initialState = {
   isReviewing: false,
@@ -16,7 +16,7 @@ type State = typeof initialState;
 
 export const ReviewTestContext = createContext(initialState);
 
-export const useReviewTestState = () => useRequiredContext(ReviewTestContext, "ReviewTest");
+export const useReviewTestState = () => useRequiredContext(ReviewTestContext, 'ReviewTest');
 
 export const ReviewTestProvider = ({
   children,

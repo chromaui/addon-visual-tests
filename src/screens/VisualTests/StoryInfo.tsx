@@ -1,51 +1,51 @@
-import { Link } from "@storybook/components";
-import { PlayIcon } from "@storybook/icons";
-import { styled } from "@storybook/theming";
-import pluralize from "pluralize";
-import React from "react";
+import { PlayIcon } from '@storybook/icons';
+import pluralize from 'pluralize';
+import React from 'react';
+import { Link } from 'storybook/internal/components';
+import { styled } from 'storybook/internal/theming';
 
-import { ActionButton } from "../../components/ActionButton";
-import { AlertIcon } from "../../components/icons/AlertIcon";
-import { ProgressIcon } from "../../components/icons/ProgressIcon";
-import { StatusIcon } from "../../components/icons/StatusIcon";
-import { StoryTestFieldsFragment, TestStatus } from "../../gql/graphql";
-import { formatDate } from "../../utils/formatDate";
-import { summarizeTests } from "../../utils/summarizeTests";
-import { useRunBuildState } from "./RunBuildContext";
+import { ActionButton } from '../../components/ActionButton';
+import { AlertIcon } from '../../components/icons/AlertIcon';
+import { ProgressIcon } from '../../components/icons/ProgressIcon';
+import { StatusIcon } from '../../components/icons/StatusIcon';
+import { StoryTestFieldsFragment, TestStatus } from '../../gql/graphql';
+import { formatDate } from '../../utils/formatDate';
+import { summarizeTests } from '../../utils/summarizeTests';
+import { useRunBuildState } from './RunBuildContext';
 
 const Info = styled.div(({ theme }) => ({
-  gridArea: "info",
-  display: "flex",
-  justifySelf: "start",
-  justifyContent: "center",
-  flexDirection: "column",
+  gridArea: 'info',
+  display: 'flex',
+  justifySelf: 'start',
+  justifyContent: 'center',
+  flexDirection: 'column',
   margin: 15,
-  lineHeight: "18px",
-  color: theme.base === "light" ? `${theme.color.defaultText}99` : `${theme.color.light}99`,
+  lineHeight: '18px',
+  color: theme.base === 'light' ? `${theme.color.defaultText}99` : `${theme.color.light}99`,
 
   b: {
-    color: theme.base === "light" ? `${theme.color.defaultText}` : `${theme.color.light}`,
+    color: theme.base === 'light' ? `${theme.color.defaultText}` : `${theme.color.light}`,
   },
   small: {
     fontSize: theme.typography.size.s1,
   },
 
-  "@container (min-width: 800px)": {
-    margin: "6px 10px 6px 15px",
-    alignItems: "center",
-    flexDirection: "row",
+  '@container (min-width: 800px)': {
+    margin: '6px 10px 6px 15px',
+    alignItems: 'center',
+    flexDirection: 'row',
 
     small: {
-      fontSize: "inherit",
+      fontSize: 'inherit',
     },
 
-    "[data-hidden-large]": {
-      display: "none",
+    '[data-hidden-large]': {
+      display: 'none',
     },
 
-    "& > span:first-of-type": {
-      display: "inline-flex",
-      alignItems: "center",
+    '& > span:first-of-type': {
+      display: 'inline-flex',
+      alignItems: 'center',
       height: 24,
       marginRight: 6,
     },
@@ -53,15 +53,15 @@ const Info = styled.div(({ theme }) => ({
 }));
 
 const Actions = styled.div({
-  gridArea: "actions",
-  display: "flex",
-  justifySelf: "end",
-  justifyContent: "center",
-  alignItems: "start",
+  gridArea: 'actions',
+  display: 'flex',
+  justifySelf: 'end',
+  justifyContent: 'center',
+  alignItems: 'start',
   margin: 15,
 
-  "@container (min-width: 800px)": {
-    margin: "6px 15px 0 0",
+  '@container (min-width: 800px)': {
+    margin: '6px 15px 0 0',
   },
 });
 
@@ -148,7 +148,6 @@ export const StoryInfo = ({
       <Info>
         <span>
           <b>
-            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
             <Link isButton onClick={switchToLastBuildOnBranch}>
               View latest snapshot
             </Link>
@@ -162,31 +161,25 @@ export const StoryInfo = ({
       <Info>
         <span>
           <b>
-            {
-              // eslint-disable-next-line no-nested-ternary
-              brokenCount
-                ? null
-                : changeCount
-                ? `${pluralize("change", changeCount, true)}${
-                    status === TestStatus.Accepted ? " accepted" : ""
+            {brokenCount
+              ? null
+              : changeCount
+                ? `${pluralize('change', changeCount, true)}${
+                    status === TestStatus.Accepted ? ' accepted' : ''
                   }`
-                : "No changes"
-            }
-            {brokenCount ? pluralize("error", brokenCount, true) : null}
+                : 'No changes'}
+            {brokenCount ? pluralize('error', brokenCount, true) : null}
           </b>
           <StatusIcon
-            icon={
-              // eslint-disable-next-line no-nested-ternary
-              brokenCount ? "failed" : status === TestStatus.Pending ? "changed" : "passed"
-            }
+            icon={brokenCount ? 'failed' : status === TestStatus.Pending ? 'changed' : 'passed'}
           />
         </span>
         <small>
           {modeResults.length > 0 && (
             <span data-hidden-large>
-              {pluralize("mode", modeResults.length, true)}
-              {", "}
-              {pluralize("browser", browserResults.length, true)}
+              {pluralize('mode', modeResults.length, true)}
+              {', '}
+              {pluralize('browser', browserResults.length, true)}
             </span>
           )}
           {modeResults.length > 0 && <span data-hidden-large> • </span>}
@@ -207,7 +200,7 @@ export const StoryInfo = ({
         <Actions>
           <ActionButton onClick={startBuild} disabled={isRunning}>
             {isRunning ? <ProgressIcon parentComponent="Button" /> : <PlayIcon />}
-            {isErrored ? "Rerun tests" : "Run tests"}
+            {isErrored ? 'Rerun tests' : 'Run tests'}
           </ActionButton>
         </Actions>
       )}

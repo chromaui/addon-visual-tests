@@ -1,9 +1,9 @@
-import type { API } from "@storybook/manager-api";
-import { useChannel, useStorybookState } from "@storybook/manager-api";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from 'react';
+import type { API } from 'storybook/internal/manager-api';
+import { useChannel, useStorybookState } from 'storybook/internal/manager-api';
 
-import { AuthProvider } from "./AuthContext";
-import { Spinner } from "./components/design-system";
+import { AuthProvider } from './AuthContext';
+import { Spinner } from './components/design-system';
 import {
   ADDON_ID,
   GIT_INFO,
@@ -13,27 +13,27 @@ import {
   LOCAL_BUILD_PROGRESS,
   REMOVE_ADDON,
   TELEMETRY,
-} from "./constants";
-import { Authentication } from "./screens/Authentication/Authentication";
-import { GitNotFound } from "./screens/Errors/GitNotFound";
-import { LinkedProject } from "./screens/LinkProject/LinkedProject";
-import { LinkingProjectFailed } from "./screens/LinkProject/LinkingProjectFailed";
-import { LinkProject } from "./screens/LinkProject/LinkProject";
-import { NoDevServer } from "./screens/NoDevServer/NoDevServer";
-import { NoNetwork } from "./screens/NoNetwork/NoNetwork";
-import { UninstallProvider } from "./screens/Uninstalled/UninstallContext";
-import { Uninstalled } from "./screens/Uninstalled/Uninstalled";
-import { ControlsProvider } from "./screens/VisualTests/ControlsContext";
-import { RunBuildProvider } from "./screens/VisualTests/RunBuildContext";
-import { VisualTests } from "./screens/VisualTests/VisualTests";
-import { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from "./types";
-import { createClient, GraphQLClientProvider, useAccessToken } from "./utils/graphQLClient";
-import { TelemetryProvider } from "./utils/TelemetryContext";
-import { useBuildEvents } from "./utils/useBuildEvents";
-import { useChannelFetch } from "./utils/useChannelFetch";
-import { useProjectId } from "./utils/useProjectId";
-import { clearSessionState, useSessionState } from "./utils/useSessionState";
-import { useSharedState } from "./utils/useSharedState";
+} from './constants';
+import { Authentication } from './screens/Authentication/Authentication';
+import { GitNotFound } from './screens/Errors/GitNotFound';
+import { LinkedProject } from './screens/LinkProject/LinkedProject';
+import { LinkingProjectFailed } from './screens/LinkProject/LinkingProjectFailed';
+import { LinkProject } from './screens/LinkProject/LinkProject';
+import { NoDevServer } from './screens/NoDevServer/NoDevServer';
+import { NoNetwork } from './screens/NoNetwork/NoNetwork';
+import { UninstallProvider } from './screens/Uninstalled/UninstallContext';
+import { Uninstalled } from './screens/Uninstalled/Uninstalled';
+import { ControlsProvider } from './screens/VisualTests/ControlsContext';
+import { RunBuildProvider } from './screens/VisualTests/RunBuildContext';
+import { VisualTests } from './screens/VisualTests/VisualTests';
+import { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from './types';
+import { createClient, GraphQLClientProvider, useAccessToken } from './utils/graphQLClient';
+import { TelemetryProvider } from './utils/TelemetryContext';
+import { useBuildEvents } from './utils/useBuildEvents';
+import { useChannelFetch } from './utils/useChannelFetch';
+import { useProjectId } from './utils/useProjectId';
+import { clearSessionState, useSessionState } from './utils/useSessionState';
+import { useSharedState } from './utils/useSharedState';
 
 interface PanelProps {
   active: boolean;
@@ -45,7 +45,7 @@ export const Panel = ({ active, api }: PanelProps) => {
   const setAccessToken = useCallback(
     (token: string | null) => {
       updateAccessToken(token);
-      if (!token) clearSessionState("authenticationScreen", "exchangeParameters");
+      if (!token) clearSessionState('authenticationScreen', 'exchangeParameters');
     },
     [updateAccessToken]
   );
@@ -55,11 +55,11 @@ export const Panel = ({ active, api }: PanelProps) => {
   useEffect(() => {
     const online = () => setOnline(true);
     const offline = () => setOnline(false);
-    window.addEventListener("online", online);
-    window.addEventListener("offline", offline);
+    window.addEventListener('online', online);
+    window.addEventListener('offline', offline);
     return () => {
-      window.removeEventListener("online", online);
-      window.removeEventListener("offline", offline);
+      window.removeEventListener('online', online);
+      window.removeEventListener('offline', offline);
     };
   }, []);
 
@@ -87,7 +87,7 @@ export const Panel = ({ active, api }: PanelProps) => {
   } = useProjectId();
 
   // If the user creates a project in a dialog (either during login or later, it get set here)
-  const [createdProjectId, setCreatedProjectId] = useSessionState<string>("createdProjectId");
+  const [createdProjectId, setCreatedProjectId] = useSessionState<string>('createdProjectId');
   const [addonUninstalled, setAddonUninstalled] = useSharedState<boolean>(REMOVE_ADDON);
 
   const trackEvent = useCallback((data: any) => emit(TELEMETRY, data), [emit]);
@@ -104,7 +104,7 @@ export const Panel = ({ active, api }: PanelProps) => {
           >
             <ControlsProvider>
               <RunBuildProvider watchState={{ isRunning, startBuild, stopBuild }}>
-                <div hidden={!active} style={{ containerType: "size", height: "100%" }}>
+                <div hidden={!active} style={{ containerType: 'size', height: '100%' }}>
                   {children}
                 </div>
               </RunBuildProvider>
@@ -119,7 +119,7 @@ export const Panel = ({ active, api }: PanelProps) => {
     return withProviders(null);
   }
 
-  if (globalThis.CONFIG_TYPE !== "DEVELOPMENT") {
+  if (globalThis.CONFIG_TYPE !== 'DEVELOPMENT') {
     return withProviders(<NoDevServer />);
   }
 
@@ -157,7 +157,6 @@ export const Panel = ({ active, api }: PanelProps) => {
     );
 
   if (gitInfoError || !gitInfo) {
-    // eslint-disable-next-line no-console
     console.error(gitInfoError);
     return withProviders(<GitNotFound />);
   }

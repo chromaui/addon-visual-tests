@@ -1,5 +1,5 @@
 import { action } from "@storybook/addon-actions";
-import { ManagerContext } from "@storybook/manager-api";
+import { ManagerContext } from "storybook/internal/manager-api";
 import type { Decorator, Loader, Preview } from "@storybook/react";
 import { fn } from "@storybook/test";
 import {
@@ -10,7 +10,7 @@ import {
   styled,
   themes,
   useTheme,
-} from "@storybook/theming";
+} from "storybook/internal/theming";
 import { HttpResponse, graphql } from "msw";
 import { initialize, mswLoader } from "msw-storybook-addon";
 import React from "react";

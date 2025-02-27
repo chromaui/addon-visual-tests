@@ -1,6 +1,6 @@
-import React, { createContext, useMemo, useReducer } from "react";
+import React, { createContext, useMemo, useReducer } from 'react';
 
-import { useRequiredContext } from "../../utils/useRequiredContext";
+import { useRequiredContext } from '../../utils/useRequiredContext';
 
 const initialControls = {
   configVisible: false,
@@ -17,16 +17,16 @@ const toggle =
   (key: keyof State) =>
   (state: State, visible?: boolean): State => ({
     ...state,
-    [key]: typeof visible === "boolean" ? visible : !state[key],
+    [key]: typeof visible === 'boolean' ? visible : !state[key],
   });
 
 const handlers = {
-  toggleDiff: toggle("diffVisible"),
-  toggleFocus: toggle("focusVisible"),
-  toggleConfig: toggle("configVisible"),
-  toggleSettings: toggle("settingsVisible"),
-  toggleWarnings: toggle("warningsVisible"),
-  toggleBaselineImage: toggle("baselineImageVisible"),
+  toggleDiff: toggle('diffVisible'),
+  toggleFocus: toggle('focusVisible'),
+  toggleConfig: toggle('configVisible'),
+  toggleSettings: toggle('settingsVisible'),
+  toggleWarnings: toggle('warningsVisible'),
+  toggleBaselineImage: toggle('baselineImageVisible'),
 } as const;
 
 type Action = { type: keyof typeof handlers; payload?: any };
@@ -37,18 +37,18 @@ const controlsReducer = (state: State, action: Action) =>
 export const ControlsContext = createContext(initialControls);
 export const ControlsDispatchContext = createContext<React.Dispatch<Action>>(() => {});
 
-export const useControlsState = () => useRequiredContext(ControlsContext, "Controls");
+export const useControlsState = () => useRequiredContext(ControlsContext, 'Controls');
 export const useControlsDispatch = () => {
-  const dispatch = useRequiredContext(ControlsDispatchContext, "ControlsDispatch");
+  const dispatch = useRequiredContext(ControlsDispatchContext, 'ControlsDispatch');
   return useMemo(
     () => ({
-      toggleDiff: (visible?: boolean) => dispatch({ type: "toggleDiff", payload: visible }),
-      toggleFocus: (visible?: boolean) => dispatch({ type: "toggleFocus", payload: visible }),
-      toggleConfig: (visible?: boolean) => dispatch({ type: "toggleConfig", payload: visible }),
-      toggleSettings: (visible?: boolean) => dispatch({ type: "toggleSettings", payload: visible }),
-      toggleWarnings: (visible?: boolean) => dispatch({ type: "toggleWarnings", payload: visible }),
+      toggleDiff: (visible?: boolean) => dispatch({ type: 'toggleDiff', payload: visible }),
+      toggleFocus: (visible?: boolean) => dispatch({ type: 'toggleFocus', payload: visible }),
+      toggleConfig: (visible?: boolean) => dispatch({ type: 'toggleConfig', payload: visible }),
+      toggleSettings: (visible?: boolean) => dispatch({ type: 'toggleSettings', payload: visible }),
+      toggleWarnings: (visible?: boolean) => dispatch({ type: 'toggleWarnings', payload: visible }),
       toggleBaselineImage: (visible?: boolean) =>
-        dispatch({ type: "toggleBaselineImage", payload: visible }),
+        dispatch({ type: 'toggleBaselineImage', payload: visible }),
     }),
     [dispatch]
   );

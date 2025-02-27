@@ -1,6 +1,6 @@
-import type { Decorator } from "@storybook/react";
-import type { StoryContext } from "@storybook/types";
-import React from "react";
+import type { Decorator } from '@storybook/react';
+import React from 'react';
+import type { StoryContext } from 'storybook/internal/types';
 
 export const storyWrapper = (
   Wrapper: React.FunctionComponent<any>,

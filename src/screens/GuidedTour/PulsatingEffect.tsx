@@ -1,13 +1,13 @@
-import React, { useEffect } from "react";
+import React, { useEffect } from 'react';
 
 export function PulsatingEffect({ targetSelector }: { targetSelector: string }): JSX.Element {
   useEffect(() => {
     const element = document.querySelector<HTMLElement>(targetSelector);
 
     if (element) {
-      element.style.animation = "pulsate 3s infinite";
-      element.style.transformOrigin = "center";
-      element.style.animationTimingFunction = "ease-in-out";
+      element.style.animation = 'pulsate 3s infinite';
+      element.style.transformOrigin = 'center';
+      element.style.animationTimingFunction = 'ease-in-out';
 
       const keyframes = `
         @keyframes pulsate {
@@ -22,21 +22,21 @@ export function PulsatingEffect({ targetSelector }: { targetSelector: string }):
           }
         }
       `;
-      const style = document.createElement("style");
-      style.id = "sb-onboarding-pulsating-effect";
+      const style = document.createElement('style');
+      style.id = 'sb-onboarding-pulsating-effect';
       style.innerHTML = keyframes;
       document.head.appendChild(style);
     }
 
     return () => {
-      const styleElement = document.querySelector("#sb-onboarding-pulsating-effect");
+      const styleElement = document.querySelector('#sb-onboarding-pulsating-effect');
 
       if (styleElement) {
         styleElement.remove();
       }
 
       if (element) {
-        element.style.animation = "auto";
+        element.style.animation = 'auto';
       }
     };
   }, [targetSelector]);

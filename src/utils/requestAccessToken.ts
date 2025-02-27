@@ -1,6 +1,6 @@
-import { CHROMATIC_BASE_URL } from "../constants";
+import { CHROMATIC_BASE_URL } from '../constants';
 // @ts-expect-error File is in plain JS
-import { sha256 } from "./sha256";
+import { sha256 } from './sha256';
 
 // Details we exchange with the Chromatic OAuth server
 export type TokenExchangeParameters = {
@@ -13,12 +13,12 @@ export type TokenExchangeParameters = {
 };
 
 const bytes = (buf: number[]) =>
-  new Uint8Array(buf).reduce((acc, val) => acc + String.fromCharCode(val), "");
+  new Uint8Array(buf).reduce((acc, val) => acc + String.fromCharCode(val), '');
 
 const base64 = (val: any) => window.btoa(Array.isArray(val) ? bytes(val) : val);
 
 const base64URLEncode = (val: any) =>
-  base64(val).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
+  base64(val).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
 
 const hexStringToBytes = (str: string) =>
   Array.from(str.match(/.{1,2}/g) ?? [], (byte) => parseInt(byte, 16));
@@ -32,12 +32,12 @@ const seed = () =>
 const encodeParams = (params: { [key: string]: any }) =>
   Object.entries(params)
     .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
-    .join("&");
+    .join('&');
 
-const authorizationPending = ({ error }: { error: string }) => error === "authorization_pending";
+const authorizationPending = ({ error }: { error: string }) => error === 'authorization_pending';
 
 const betaUserAccessDenied = ({ error_description }: { error_description: string }) => {
-  return error_description === "Not OAuth beta user";
+  return error_description === 'Not OAuth beta user';
 };
 
 export const initiateSignin = async (subdomain?: string): Promise<TokenExchangeParameters> => {
@@ -45,22 +45,21 @@ export const initiateSignin = async (subdomain?: string): Promise<TokenExchangeP
   const challenge = base64URLEncode(hexStringToBytes(sha256(verifier)));
 
   const res = await fetch(`${CHROMATIC_BASE_URL}/authorize`, {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+      'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
     },
     body: encodeParams({
-      client_id: "chromaui:addon-visual-tests",
+      client_id: 'chromaui:addon-visual-tests',
       code_challenge: challenge,
     }),
   });
 
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   const { device_code, user_code, verification_uri_complete, expires_in, interval } =
     await res.json();
 
   const verificationUrl = subdomain
-    ? verification_uri_complete.replace("https://www", `https://${subdomain}`)
+    ? verification_uri_complete.replace('https://www', `https://${subdomain}`)
     : verification_uri_complete;
 
   return {
@@ -84,14 +83,14 @@ export const fetchAccessToken = async ({
 
   try {
     const res = await fetch(`${CHROMATIC_BASE_URL}/token`, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
       body: encodeParams({
-        client_id: "chromaui:addon-visual-tests",
-        grant_type: "urn:ietf:params:oauth:grant-type:device_code",
+        client_id: 'chromaui:addon-visual-tests',
+        grant_type: 'urn:ietf:params:oauth:grant-type:device_code',
         device_code,
         code_verifier: verifier,
-        scope: "user:read account:read project:read project:write",
+        scope: 'user:read account:read project:read project:write',
       }),
     });
 
@@ -103,13 +102,11 @@ export const fetchAccessToken = async ({
     } else if (data.access_token) {
       return data.access_token as string;
     } else if (betaUserAccessDenied(data)) {
-      // eslint-disable-next-line no-alert
-      alert("You must be a beta user to use this addon at this time.");
+      alert('You must be a beta user to use this addon at this time.');
       return null;
     }
     throw new Error();
   } catch (err: any) {
-    // eslint-disable-next-line no-console
     console.warn(err);
     throw err;
   }

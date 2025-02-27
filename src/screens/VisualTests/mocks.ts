@@ -1,4 +1,4 @@
-import { BUILD_STEP_CONFIG, INITIAL_BUILD_PAYLOAD } from "../../buildSteps";
+import { BUILD_STEP_CONFIG, INITIAL_BUILD_PAYLOAD } from '../../buildSteps';
 import {
   AnnouncedBuild,
   Browser,
@@ -13,13 +13,13 @@ import {
   StoryTestFieldsFragment,
   TestResult,
   TestStatus,
-} from "../../gql/graphql";
-import { SelectedBuildWithTests } from "../../types";
-import { makeBrowserInfo, makeComparison, makeTest, makeTests } from "../../utils/storyData";
+} from '../../gql/graphql';
+import { SelectedBuildWithTests } from '../../types';
+import { makeBrowserInfo, makeComparison, makeTest, makeTests } from '../../utils/storyData';
 
 export const buildInfo = (selectedBuild?: SelectedBuildFieldsFragment) => ({
   features: { uiTests: true },
-  manageUrl: "https://www.chromatic.com/manage?appId=123",
+  manageUrl: 'https://www.chromatic.com/manage?appId=123',
   hasData: true,
   hasProject: true,
   hasSelectedBuild: !!selectedBuild,
@@ -66,7 +66,7 @@ export const pendingTests = makeTests({
 });
 
 export const pendingTestsNewStory = makeTests({
-  storyId: "button--new-story",
+  storyId: 'button--new-story',
   browsers: [Browser.Chrome, Browser.Safari],
   viewports: [
     {
@@ -158,7 +158,7 @@ export const interactionFailureTests = [
     captureError: {
       kind: CaptureErrorKind.InteractionFailure,
       error: {
-        name: "Error",
+        name: 'Error',
         message: `Unable to find an element by: [data-testid="button-toggle-snapshot"]`,
         stack: `Error: Unable to find an element by: [data-testid="button-toggles-snapshot"]
 
@@ -198,14 +198,14 @@ Ignored nodes: comments, script, style
 ];
 
 export const announcedBuild = {
-  __typename: "AnnouncedBuild",
-  id: "1",
+  __typename: 'AnnouncedBuild',
+  id: '1',
   number: 1,
-  branch: "feature-branch",
-  commit: "abc123",
+  branch: 'feature-branch',
+  commit: 'abc123',
   committedAt: Date.now() - 2000,
   parentCommits: [],
-  uncommittedHash: "",
+  uncommittedHash: '',
   status: BuildStatus.Announced,
   browsers: [makeBrowserInfo(Browser.Chrome), makeBrowserInfo(Browser.Safari)],
   isLimited: false,
@@ -216,29 +216,29 @@ export const announcedBuild = {
 
 export const publishedBuild = {
   ...announcedBuild,
-  __typename: "PublishedBuild",
+  __typename: 'PublishedBuild',
   status: BuildStatus.Published,
-  isolatorUrl: "https://appid-hash.chromatic.com/iframe.html",
-  storybookUrl: "https://appid-hash.chromatic.com/",
+  isolatorUrl: 'https://appid-hash.chromatic.com/iframe.html',
+  storybookUrl: 'https://appid-hash.chromatic.com/',
   publishedAt: new Date(Date.now() - 1000 * 60 * 60), // 1 hour ago
 } satisfies PublishedBuild;
 
 export const startedBuild = {
   ...publishedBuild,
-  __typename: "StartedBuild",
+  __typename: 'StartedBuild',
   status: BuildStatus.InProgress,
   componentCount: 1,
   specCount: 3,
   testCount: 3,
   docsCount: 0,
-  webUrl: "https://www.chromatic.com/build?appId=123&id=1",
+  webUrl: 'https://www.chromatic.com/build?appId=123&id=1',
   startedAt: new Date(Date.now() - 1000 * 60 * 2), // 2 minutes ago
   preparedAt: new Date(Date.now() - 1000 * 60 * 2), // 2 minutes ago
 } satisfies StartedBuild;
 
 export const passedBuild = {
   ...startedBuild,
-  __typename: "CompletedBuild",
+  __typename: 'CompletedBuild',
   status: BuildStatus.Passed,
   result: BuildResult.Success,
   completedAt: new Date(Date.now() - 1000 * 60), // 1 minute ago

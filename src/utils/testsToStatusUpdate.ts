@@ -1,23 +1,23 @@
-import type { API } from "@storybook/manager-api";
-import type { API_StatusUpdate, API_StatusValue, StoryId } from "@storybook/types";
+import type { API } from 'storybook/internal/manager-api';
+import type { API_StatusUpdate, API_StatusValue, StoryId } from 'storybook/internal/types';
 
-import { PANEL_ID } from "../constants";
-import { StatusTestFieldsFragment, TestStatus } from "../gql/graphql";
+import { PANEL_ID } from '../constants';
+import { StatusTestFieldsFragment, TestStatus } from '../gql/graphql';
 
 export const statusMap: Partial<Record<TestStatus, API_StatusValue>> = {
-  [TestStatus.Pending]: "warn",
-  [TestStatus.Failed]: "error",
-  [TestStatus.Denied]: "error",
-  [TestStatus.Broken]: "error",
+  [TestStatus.Pending]: 'warn',
+  [TestStatus.Failed]: 'error',
+  [TestStatus.Denied]: 'error',
+  [TestStatus.Broken]: 'error',
 };
 
 const statusOrder: (API_StatusValue | null)[] = [
   null,
-  "unknown",
-  "pending",
-  "success",
-  "warn",
-  "error",
+  'unknown',
+  'pending',
+  'success',
+  'warn',
+  'error',
 ];
 function chooseWorseStatus(status: API_StatusValue | null, oldStatus: API_StatusValue | null) {
   return statusOrder[Math.max(statusOrder.indexOf(status), statusOrder.indexOf(oldStatus))];
@@ -46,8 +46,8 @@ export function testsToStatusUpdate<T extends StatusTestFieldsFragment>(
       storyId,
       status && {
         status,
-        title: "Visual tests",
-        description: "Chromatic Visual Tests",
+        title: 'Visual tests',
+        description: 'Chromatic Visual Tests',
         onClick: openAddonPanel,
       },
     ])

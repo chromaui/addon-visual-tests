@@ -1,6 +1,6 @@
-import { useChannel } from "@storybook/manager-api";
+import { useChannel } from 'storybook/internal/manager-api';
 
-import { FETCH_ABORTED, FETCH_REQUEST, FETCH_RESPONSE } from "../constants";
+import { FETCH_ABORTED, FETCH_REQUEST, FETCH_RESPONSE } from '../constants';
 
 type SerializedResponse = {
   status: number;
@@ -25,7 +25,7 @@ export const useChannelFetch: () => typeof fetch = () => {
       if (!request) return;
 
       pendingRequests.delete(data.requestId);
-      if ("error" in data) {
+      if ('error' in data) {
         request.reject(new Error(data.error));
       } else {
         const { body, headers, status, statusText } = data.response;
@@ -41,7 +41,7 @@ export const useChannelFetch: () => typeof fetch = () => {
     }
 
     const requestId = Math.random().toString(36).slice(2);
-    signal?.addEventListener("abort", () => {
+    signal?.addEventListener('abort', () => {
       emit(FETCH_ABORTED, { requestId });
       pendingRequests.get(requestId)?.reject(signal.reason);
       pendingRequests.delete(requestId);
@@ -51,7 +51,7 @@ export const useChannelFetch: () => typeof fetch = () => {
     return new Promise((resolve, reject) => {
       pendingRequests.set(requestId, { resolve, reject });
       setTimeout(() => {
-        reject(new Error("Request timed out"));
+        reject(new Error('Request timed out'));
         pendingRequests.delete(requestId);
       }, 30000);
     });

@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from '@storybook/react';
 
-import { NoNetwork } from "./NoNetwork";
+import { NoNetwork } from './NoNetwork';
 
 const meta = {
   component: NoNetwork,

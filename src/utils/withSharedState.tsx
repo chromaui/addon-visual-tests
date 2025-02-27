@@ -1,8 +1,8 @@
-import { mockChannel } from "@storybook/manager-api";
-import type { Decorator } from "@storybook/react";
-import React from "react";
+import type { Decorator } from '@storybook/react';
+import React from 'react';
+import { mockChannel } from 'storybook/internal/manager-api';
 
-import { SharedState } from "./SharedState";
+import { SharedState } from './SharedState';
 
 export function withSharedState(key: string, value: any): Decorator {
   const state = SharedState.subscribe(key, mockChannel());

@@ -1,14 +1,14 @@
-import { WithTooltip } from "@storybook/components";
-import { ChevronLeftIcon, QuestionIcon } from "@storybook/icons";
-import { styled } from "@storybook/theming";
-import React from "react";
+import { ChevronLeftIcon, QuestionIcon } from '@storybook/icons';
+import React from 'react';
+import { WithTooltip } from 'storybook/internal/components';
+import { styled } from 'storybook/internal/theming';
 
-import { IconButton } from "../../components/IconButton";
-import { Bar, Col } from "../../components/layout";
-import { TooltipNote } from "../../components/TooltipNote";
+import { IconButton } from '../../components/IconButton';
+import { Bar, Col } from '../../components/layout';
+import { TooltipNote } from '../../components/TooltipNote';
 
 const HeaderButton = styled(IconButton)(({ theme }) => ({
-  color: theme.base === "light" ? "currentColor" : theme.color.medium,
+  color: theme.base === 'light' ? 'currentColor' : theme.color.medium,
   fontSize: theme.typography.size.s2,
   fontWeight: theme.typography.weight.bold,
 }));
