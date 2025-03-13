@@ -1,5 +1,5 @@
 import React from 'react';
-import { addons, type API } from 'storybook/internal/manager-api';
+import { addons } from 'storybook/internal/manager-api';
 import { type Addon_TestProviderType, Addon_TypesEnum } from 'storybook/internal/types';
 
 import { SidebarBottom } from './components/SidebarBottom';
@@ -10,6 +10,7 @@ import {
   PARAM_KEY,
   SIDEBAR_BOTTOM_ID,
   SIDEBAR_TOP_ID,
+  statusStore,
   TEST_PROVIDER_ID,
 } from './constants';
 import { Panel } from './Panel';
@@ -27,6 +28,11 @@ addons.register(ADDON_ID, (api) => {
   if (globalThis.CONFIG_TYPE !== 'DEVELOPMENT') {
     return;
   }
+
+  statusStore.onSelect(() => {
+    api.setSelectedPanel(PANEL_ID);
+    api.togglePanel(true);
+  });
 
   if (Addon_TypesEnum.experimental_TEST_PROVIDER) {
     addons.add(TEST_PROVIDER_ID, {

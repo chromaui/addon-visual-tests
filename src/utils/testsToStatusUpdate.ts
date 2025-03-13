@@ -50,11 +50,6 @@ export function testsToStatusUpdate<T extends StatusTestFieldsFragment>(
       statusMap[test.status]
     );
   });
-  // TODO: migrate this to the new statusStore API
-  // const openAddonPanel = () => {
-  //   api.setSelectedPanel(PANEL_ID);
-  //   api.togglePanel(true);
-  // };
 
   return Object.entries(storyIdToStatusValue).map(([storyId, value]) => ({
     value,
