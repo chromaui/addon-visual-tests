@@ -1,7 +1,11 @@
 import { FailedIcon, PassedIcon } from '@storybook/icons';
 import pluralize from 'pluralize';
 import React, { useCallback, useContext, useEffect, useRef } from 'react';
-import { type API, useStorybookState } from 'storybook/internal/manager-api';
+import {
+  type API,
+  experimental_useStatusStore,
+  useStorybookState,
+} from 'storybook/internal/manager-api';
 import { color } from 'storybook/internal/theming';
 
 import {
@@ -20,6 +24,7 @@ import { useBuildEvents } from '../utils/useBuildEvents';
 import { useProjectId } from '../utils/useProjectId';
 import { useSharedState } from '../utils/useSharedState';
 import { SidebarTopButton } from './SidebarTopButton';
+import { StatusValue } from 'storybook/internal/types';
 
 interface SidebarTopProps {
   api: API;
@@ -43,9 +48,12 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
   const [gitInfoError] = useSharedState<Error>(GIT_INFO_ERROR);
 
   const lastStep = useRef(localBuildProgress?.currentStep);
-  const { index, status, storyId, viewMode } = useStorybookState();
-  const changedStoryCount = Object.values(status).filter(
-    (value) => value[ADDON_ID]?.status === 'warn'
+  const { index, storyId, viewMode } = useStorybookState();
+  const warningStatusCount = experimental_useStatusStore(
+    (allStatuses) =>
+      Object.values(allStatuses)
+        .map((storyStatus) => storyStatus[ADDON_ID]?.value)
+        .filter((val) => val === StatusValue.WARN).length
   );
 
   const openVisualTestsPanel = useCallback(
@@ -132,10 +140,10 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
 
           subHeadline: localBuildProgress.errorCount
             ? `Encountered ${pluralize('component error', localBuildProgress.errorCount, true)}`
-            : changedStoryCount.length
-              ? `Found ${pluralize('story', changedStoryCount.length, true)} with ${pluralize(
+            : warningStatusCount
+              ? `Found ${pluralize('story', warningStatusCount, true)} with ${pluralize(
                   'change',
-                  changedStoryCount.length
+                  warningStatusCount
                 )}`
               : 'No visual changes detected',
         },
@@ -179,7 +187,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
     localBuildProgress?.currentStep,
     localBuildProgress?.errorCount,
     localBuildProgress?.changeCount,
-    changedStoryCount.length,
+    warningStatusCount,
   ]);
 
   const { isDisallowed, isRunning, startBuild, stopBuild } = useBuildEvents({
