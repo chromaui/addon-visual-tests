@@ -5,13 +5,13 @@ import { useChannel, useStorybookState } from 'storybook/internal/manager-api';
 import { AuthProvider } from './AuthContext';
 import { Spinner } from './components/design-system';
 import {
-  ADDON_ID,
   GIT_INFO,
   GIT_INFO_ERROR,
   IS_OFFLINE,
   IS_OUTDATED,
   LOCAL_BUILD_PROGRESS,
   REMOVE_ADDON,
+  statusStore,
   TELEMETRY,
 } from './constants';
 import { Authentication } from './screens/Authentication/Authentication';
@@ -73,9 +73,13 @@ export const Panel = ({ active, api }: PanelProps) => {
   const emit = useChannel({});
 
   const updateBuildStatus = useCallback<UpdateStatusFunction>(
-    (update) => api.experimental_updateStatus(ADDON_ID, update),
-    [api]
+    (statuses) => {
+      statusStore.unset();
+      statusStore.set(statuses);
+    },
+    [statusStore]
   );
+
   const {
     loading: projectInfoLoading,
     projectId,
