@@ -1,7 +1,5 @@
-import { action } from '@storybook/addon-actions';
 import type { Meta, StoryObj } from '@storybook/react';
-import { expect, fn } from 'storybook/test';
-import { fireEvent, within } from 'storybook/test';
+import { expect, fn, fireEvent, within } from 'storybook/test';
 
 import * as buildProgressStories from '../../components/BuildProgressLabel.stories';
 import { panelModes } from '../../modes';
@@ -13,7 +11,7 @@ const meta = {
   args: {
     branch: 'feature',
     dismissBuildError: fn(),
-    switchToLastBuildOnBranch: action('switchToLastBuildOnBranch'),
+    switchToLastBuildOnBranch: fn().mockName('switchToLastBuildOnBranch'),
   },
   component: BuildEyebrow,
   parameters: {

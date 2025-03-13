@@ -1,4 +1,4 @@
-import { action } from '@storybook/addon-actions';
+import { fn } from 'storybook/test';
 import type { Meta, StoryObj } from '@storybook/react';
 
 import { ComparisonResult } from '../gql/graphql';
@@ -15,7 +15,7 @@ const meta = {
   component: ModeSelector,
   args: {
     isAccepted: false,
-    onSelectMode: action('onSelectMode'),
+    onSelectMode: fn().mockName('onSelectMode'),
   },
 } satisfies Meta<typeof ModeSelector>;
 

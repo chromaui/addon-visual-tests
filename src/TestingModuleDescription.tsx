@@ -7,9 +7,9 @@ import {
   experimental_useStatusStore,
   useChannel,
   useStorybookState,
-} from 'storybook/internal/manager-api';
-import { color } from 'storybook/internal/theming';
-import { StatusValue, type Addon_TestProviderState } from 'storybook/internal/types';
+} from 'storybook/manager-api';
+import { color } from 'storybook/theming';
+import { type Addon_TestProviderState } from 'storybook/internal/types';
 
 import { BUILD_STEP_CONFIG } from './buildSteps';
 import {
@@ -40,7 +40,7 @@ export const TestingModuleDescription = ({ api, running }: TestingModuleDescript
     (allStatuses) =>
       Object.values(allStatuses)
         .map((storyStatus) => storyStatus[ADDON_ID]?.value)
-        .filter((val) => val === StatusValue.WARN).length
+        .filter((value) => value === 'status-value:warning').length
   );
 
   const trackEvent = useContext(TelemetryContext);

@@ -1,41 +1,34 @@
-import type { API } from 'storybook/internal/manager-api';
-import {
-  StatusValue,
-  type Status,
-  type StatusValueType,
-  type StoryId,
-} from 'storybook/internal/types';
+import { type Status, type StatusValue, type StoryId } from 'storybook/internal/types';
 
 import { ADDON_ID } from '../constants';
 import { StatusTestFieldsFragment, TestStatus } from '../gql/graphql';
 
-export const statusMap: Record<TestStatus, StatusValueType> = {
-  [TestStatus.Pending]: StatusValue.WARN,
-  [TestStatus.Failed]: StatusValue.ERROR,
-  [TestStatus.Denied]: StatusValue.ERROR,
-  [TestStatus.Broken]: StatusValue.ERROR,
-  // TODO: which order, and which value?
-  [TestStatus.Accepted]: StatusValue.SUCCESS,
-  [TestStatus.InProgress]: StatusValue.PENDING,
-  [TestStatus.Passed]: StatusValue.SUCCESS,
+export const statusMap: Record<TestStatus, StatusValue> = {
+  [TestStatus.Pending]: 'status-value:warning',
+  [TestStatus.Failed]: 'status-value:error',
+  [TestStatus.Denied]: 'status-value:error',
+  [TestStatus.Broken]: 'status-value:error',
+  [TestStatus.InProgress]: 'status-value:pending',
+  [TestStatus.Accepted]: 'status-value:success',
+  [TestStatus.Passed]: 'status-value:success',
 };
 
-const statusValueOrder: StatusValueType[] = [
-  StatusValue.UNKNOWN,
-  StatusValue.PENDING,
-  StatusValue.SUCCESS,
-  StatusValue.WARN,
-  StatusValue.ERROR,
+const statusValueOrder: StatusValue[] = [
+  'status-value:unknown',
+  'status-value:pending',
+  'status-value:success',
+  'status-value:warning',
+  'status-value:error',
 ];
 
-function chooseWorseStatusValue(a: StatusValueType, b: StatusValueType) {
+function chooseWorseStatusValue(a: StatusValue, b: StatusValue) {
   return statusValueOrder[Math.max(statusValueOrder.indexOf(a), statusValueOrder.indexOf(b))];
 }
 
 export function testsToStatusUpdate<T extends StatusTestFieldsFragment>(
   tests: readonly T[]
 ): Status[] {
-  const storyIdToStatusValue: Record<StoryId, StatusValueType> = {};
+  const storyIdToStatusValue: Record<StoryId, StatusValue> = {};
   tests?.forEach((test) => {
     if (!test.story || !test.status) {
       return;

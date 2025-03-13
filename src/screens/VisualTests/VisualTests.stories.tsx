@@ -42,7 +42,6 @@ import {
   withTests,
 } from './mocks';
 import { VisualTests, VisualTestsWithoutSelectedBuildId } from './VisualTests';
-import { StatusValue } from 'storybook/internal/types';
 import { ADDON_ID } from '../../constants';
 
 const browsers = [Browser.Chrome, Browser.Safari];
@@ -219,19 +218,6 @@ export const ServerError = {
 } satisfies Story;
 
 export const EmptyBranch = {
-  // @ts-expect-error Type conflict due to us explicitly defining `StoryArgs` above,
-  // as it cannot be auto-inferred from meta
-  render: (args: typeof meta.args) => {
-    // custom render for mapping `updateBuildStatus` to a function which is mocked, but returns data instead of a function
-    return (
-      <VisualTests
-        {...args}
-        updateBuildStatus={(fnn) =>
-          args.updateBuildStatus(typeof fnn === 'function' ? fnn({}) : fnn)
-        }
-      />
-    );
-  },
   play: async ({ args }) => {
     await waitFor(() => {
       expect(args.updateBuildStatus).toHaveBeenCalledWith([]);
@@ -251,7 +237,6 @@ export const EmptyBranchStartedLocalBuild = {
       },
     },
   },
-  // @ts-expect-error as above
 } satisfies Story;
 
 export const EmptyBranchLocalBuildUploading = {
@@ -271,7 +256,6 @@ export const EmptyBranchLocalBuildUploading = {
       },
     },
   },
-  // @ts-expect-error as above
 } satisfies Story;
 
 export const NoStoryBuildRunningBuildFailed = {
@@ -692,7 +676,7 @@ export const Pending = {
         {
           storyId: 'button--primary',
           typeId: ADDON_ID,
-          value: StatusValue.WARN,
+          value: 'status-value:warning',
           title: 'Visual tests',
           description: 'Chromatic Visual Tests',
         },

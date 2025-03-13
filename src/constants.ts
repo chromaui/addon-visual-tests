@@ -1,5 +1,5 @@
 import * as coreEvents from 'storybook/internal/core-events';
-import { experimental_getStatusStore } from 'storybook/internal/manager-api';
+import { experimental_getStatusStore } from 'storybook/manager-api';
 
 export const {
   CHROMATIC_INDEX_URL,

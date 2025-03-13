@@ -1,5 +1,5 @@
 import { Button as BaseButton } from 'storybook/internal/components';
-import { css, styled } from 'storybook/internal/theming';
+import { css, styled } from 'storybook/theming';
 
 export const Button = styled(BaseButton)<{
   link?: boolean;

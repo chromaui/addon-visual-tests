@@ -1,4 +1,4 @@
-import { css, styled } from 'storybook/internal/theming';
+import { css, styled } from 'storybook/theming';
 
 import { rotate360 } from '../design-system/shared/animation';
 

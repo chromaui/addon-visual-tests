@@ -1,6 +1,5 @@
-import { action } from '@storybook/addon-actions';
 import type { Meta, StoryObj } from '@storybook/react';
-
+import { fn } from 'storybook/test';
 import { Browser, ComparisonResult } from '../gql/graphql';
 import { BrowserSelector } from './BrowserSelector';
 
@@ -8,7 +7,7 @@ const meta = {
   component: BrowserSelector,
   args: {
     isAccepted: false,
-    onSelectBrowser: action('onSelectBrowser'),
+    onSelectBrowser: fn().mockName('onSelectBrowser'),
   },
 } satisfies Meta<typeof BrowserSelector>;
 

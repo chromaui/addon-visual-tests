@@ -1,7 +1,7 @@
 import { PlayIcon } from '@storybook/icons';
 import { lighten } from 'polished';
 import React from 'react';
-import { styled } from 'storybook/internal/theming';
+import { styled } from 'storybook/theming';
 
 import { BuildProgressInline } from '../../components/BuildProgressBarInline';
 import { Button } from '../../components/Button';

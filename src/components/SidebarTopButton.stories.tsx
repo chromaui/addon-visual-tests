@@ -1,6 +1,5 @@
-import { action } from '@storybook/addon-actions';
+import { fn, screen, userEvent, within } from 'storybook/test';
 import type { Meta, StoryObj } from '@storybook/react';
-import { screen, userEvent, within } from 'storybook/test';
 import isChromatic from 'chromatic/isChromatic';
 import React, { ComponentProps, useEffect, useState } from 'react';
 
@@ -11,8 +10,8 @@ import { SidebarTopButton } from './SidebarTopButton';
 const meta = {
   component: SidebarTopButton,
   args: {
-    startBuild: action('startBuild'),
-    stopBuild: action('stopBuild'),
+    startBuild: fn().mockName('startBuild'),
+    stopBuild: fn().mockName('stopBuild'),
   },
 } satisfies Meta<typeof SidebarTopButton>;
 
@@ -37,7 +36,7 @@ export const DisabledWarning: Story = {
   args: {
     isDisabled: true,
     warning: 'You must be logged in to run tests',
-    clickWarning: action('clickWarning'),
+    clickWarning: fn().mockName('clickWarning'),
   },
   play: playAll(async ({ canvasElement }) => {
     const canvas = within(canvasElement);

@@ -1,12 +1,8 @@
 import { FailedIcon, PassedIcon } from '@storybook/icons';
 import pluralize from 'pluralize';
 import React, { useCallback, useContext, useEffect, useRef } from 'react';
-import {
-  type API,
-  experimental_useStatusStore,
-  useStorybookState,
-} from 'storybook/internal/manager-api';
-import { color } from 'storybook/internal/theming';
+import { type API, experimental_useStatusStore, useStorybookState } from 'storybook/manager-api';
+import { color } from 'storybook/theming';
 
 import {
   ADDON_ID,
@@ -24,7 +20,6 @@ import { useBuildEvents } from '../utils/useBuildEvents';
 import { useProjectId } from '../utils/useProjectId';
 import { useSharedState } from '../utils/useSharedState';
 import { SidebarTopButton } from './SidebarTopButton';
-import { StatusValue } from 'storybook/internal/types';
 
 interface SidebarTopProps {
   api: API;
@@ -53,7 +48,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
     (allStatuses) =>
       Object.values(allStatuses)
         .map((storyStatus) => storyStatus[ADDON_ID]?.value)
-        .filter((val) => val === StatusValue.WARN).length
+        .filter((value) => value === 'status-value:warning').length
   );
 
   const openVisualTestsPanel = useCallback(

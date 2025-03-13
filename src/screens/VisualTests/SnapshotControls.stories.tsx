@@ -1,9 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { expect } from 'storybook/test';
+import { expect, fn } from 'storybook/test';
 import { fireEvent, screen, userEvent, within } from 'storybook/test';
 
 import { panelModes } from '../../modes';
-import { action } from '../../utils/action';
 import { playAll } from '../../utils/playAll';
 import { storyWrapper } from '../../utils/storyWrapper';
 import { BuildProvider } from './BuildContext';
@@ -39,8 +38,8 @@ const meta = {
       isReviewing: false,
       userCanReview: true,
       buildIsReviewable: true,
-      acceptTest: action('acceptTest'),
-      unacceptTest: action('unacceptTest'),
+      acceptTest: fn().mockName('acceptTest'),
+      unacceptTest: fn().mockName('unacceptTest'),
     },
     selectedBuild: withTests(pendingBuild, pendingTests),
   },

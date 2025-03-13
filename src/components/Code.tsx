@@ -1,5 +1,5 @@
 import { Code as SBCode } from 'storybook/internal/components';
-import { styled } from 'storybook/internal/theming';
+import { styled } from 'storybook/theming';
 
 export const Code = styled(SBCode)(({ theme }) => ({
   color: theme.base === 'light' ? theme.color.darker : theme.color.lighter,

@@ -1,4 +1,4 @@
-import { action } from '@storybook/addon-actions';
+import { fn } from 'storybook/test';
 import type { Meta, StoryObj } from '@storybook/react';
 import React from 'react';
 
@@ -49,7 +49,7 @@ export const AnnouncedSuperseded: Story = {
   args: {
     ...Announced.args,
     shouldSwitchToLastBuildOnBranch: true,
-    switchToLastBuildOnBranch: action('switchToLastBuildOnBranch'),
+    switchToLastBuildOnBranch: fn().mockName('switchToLastBuildOnBranch'),
   },
 };
 
@@ -69,7 +69,7 @@ export const InProgressSuperseded: Story = {
   args: {
     tests: [makeTest({ status: TestStatus.InProgress })],
     shouldSwitchToLastBuildOnBranch: true,
-    switchToLastBuildOnBranch: action('switchToLastBuildOnBranch'),
+    switchToLastBuildOnBranch: fn().mockName('switchToLastBuildOnBranch'),
   },
 };
 
@@ -84,7 +84,7 @@ export const PendingSuperseded: Story = {
   args: {
     ...Pending.args,
     shouldSwitchToLastBuildOnBranch: true,
-    switchToLastBuildOnBranch: action('switchToLastBuildOnBranch'),
+    switchToLastBuildOnBranch: fn().mockName('switchToLastBuildOnBranch'),
   },
 };
 
