@@ -1,7 +1,7 @@
 // @ts-nocheck TODO: Address SB 8 type errors
 import { action } from '@storybook/addon-actions';
 import type { Meta, StoryObj } from '@storybook/react';
-import { findByRole, userEvent } from '@storybook/testing-library';
+import { findByRole, userEvent } from 'storybook/test';
 import { http, HttpResponse } from 'msw';
 
 import { panelModes } from '../../modes';

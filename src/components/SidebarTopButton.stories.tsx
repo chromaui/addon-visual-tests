@@ -1,6 +1,6 @@
 import { action } from '@storybook/addon-actions';
 import type { Meta, StoryObj } from '@storybook/react';
-import { screen, userEvent, within } from '@storybook/testing-library';
+import { screen, userEvent, within } from 'storybook/test';
 import isChromatic from 'chromatic/isChromatic';
 import React, { ComponentProps, useEffect, useState } from 'react';
 

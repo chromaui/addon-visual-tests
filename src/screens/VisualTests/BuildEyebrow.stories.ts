@@ -1,7 +1,7 @@
 import { action } from '@storybook/addon-actions';
 import type { Meta, StoryObj } from '@storybook/react';
-import { expect, fn } from '@storybook/test';
-import { fireEvent, within } from '@storybook/testing-library';
+import { expect, fn } from 'storybook/test';
+import { fireEvent, within } from 'storybook/test';
 
 import * as buildProgressStories from '../../components/BuildProgressLabel.stories';
 import { panelModes } from '../../modes';

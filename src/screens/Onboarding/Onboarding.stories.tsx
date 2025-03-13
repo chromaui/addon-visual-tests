@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { fn } from '@storybook/test';
-import { findByRole, userEvent } from '@storybook/testing-library';
+import { fn } from 'storybook/test';
+import { findByRole, userEvent } from 'storybook/test';
 import { graphql, HttpResponse } from 'msw';
 import React from 'react';
 
