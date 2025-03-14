@@ -1,6 +1,6 @@
-import { action } from '@storybook/addon-actions';
 import type { Meta, StoryObj } from '@storybook/react';
 import { graphql, HttpResponse } from 'msw';
+import { fn } from 'storybook/test';
 
 import { ProjectQueryQuery } from '../../gql/graphql';
 import { panelModes } from '../../modes';
@@ -18,7 +18,7 @@ const meta = {
   args: {
     projectId: 'Project:abc123',
     configFile: 'chromatic.config.json',
-    goToNext: action('goToNext'),
+    goToNext: fn().mockName('goToNext'),
   },
   parameters: {
     chromatic: {

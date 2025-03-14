@@ -1,7 +1,7 @@
 import { ChevronLeftIcon, QuestionIcon } from '@storybook/icons';
 import React from 'react';
 import { WithTooltip } from 'storybook/internal/components';
-import { styled } from 'storybook/internal/theming';
+import { styled } from 'storybook/theming';
 
 import { IconButton } from '../../components/IconButton';
 import { Bar, Col } from '../../components/layout';

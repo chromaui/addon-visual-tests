@@ -10,7 +10,7 @@ import {
 } from '@storybook/icons';
 import React from 'react';
 import { WithTooltip } from 'storybook/internal/components';
-import { styled } from 'storybook/internal/theming';
+import { styled } from 'storybook/theming';
 
 import { ActionButton, ButtonGroup } from '../../components/ActionButton';
 import { IconButton } from '../../components/IconButton';

@@ -1,4 +1,4 @@
-import { action } from '@storybook/addon-actions';
+import { fn } from 'storybook/test';
 
 import { SidebarToggleButton } from './SidebarToggleButton';
 
@@ -6,7 +6,7 @@ export default {
   component: SidebarToggleButton,
   args: {
     active: false,
-    onClick: action('onClick'),
+    onClick: fn().mockName('onClick'),
   },
 };
 

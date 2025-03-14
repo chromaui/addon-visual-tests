@@ -1,8 +1,8 @@
 import { FailedIcon, PassedIcon } from '@storybook/icons';
 import pluralize from 'pluralize';
 import React, { useCallback, useContext, useEffect, useRef } from 'react';
-import { type API, useStorybookState } from 'storybook/internal/manager-api';
-import { color } from 'storybook/internal/theming';
+import { type API, useStorybookState } from 'storybook/manager-api';
+import { color } from 'storybook/theming';
 
 import {
   ADDON_ID,

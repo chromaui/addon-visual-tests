@@ -22,7 +22,8 @@ const config: StorybookConfig = {
       },
     },
     '@storybook/addon-interactions',
-    '@storybook/addon-designs',
+    // TODO: re-enable addon-designs when it is compatible with SB 9
+    // '@storybook/addon-designs',
     {
       name: useDistVersion ? '../dist/preset.js' : '../src/dev.ts',
       options: {

@@ -1,8 +1,6 @@
-import { action } from '@storybook/addon-actions';
 import type { Meta, StoryObj } from '@storybook/react';
-import { within } from '@storybook/test';
-import { userEvent } from '@storybook/testing-library';
 import React from 'react';
+import { fn, userEvent, within } from 'storybook/test';
 
 import { Container } from './Container';
 import { StatusDot } from './StatusDot';
@@ -14,9 +12,9 @@ const meta = {
     children: 'Menu',
     note: 'Click to open menu',
     links: [
-      { id: '1', onClick: action('1'), title: 'One' },
-      { id: '2', onClick: action('2'), title: 'Two' },
-      { id: '3', onClick: action('3'), title: 'Three' },
+      { id: '1', onClick: fn().mockName('1'), title: 'One' },
+      { id: '2', onClick: fn().mockName('2'), title: 'Two' },
+      { id: '3', onClick: fn().mockName('3'), title: 'Three' },
     ],
   },
   decorators: [
@@ -50,9 +48,9 @@ export const Open = {
 export const Icons = {
   args: {
     links: [
-      { id: '1', onClick: action('1'), title: 'One', icon: '🍔' },
-      { id: '2', onClick: action('2'), title: 'Two', icon: '🍟' },
-      { id: '3', onClick: action('3'), title: 'Three', icon: '🥤' },
+      { id: '1', onClick: fn().mockName('1'), title: 'One', icon: '🍔' },
+      { id: '2', onClick: fn().mockName('2'), title: 'Two', icon: '🍟' },
+      { id: '3', onClick: fn().mockName('3'), title: 'Three', icon: '🥤' },
     ],
   },
   play: Open.play,
@@ -61,9 +59,19 @@ export const Icons = {
 export const Status = {
   args: {
     links: [
-      { id: '1', onClick: action('1'), title: 'One', right: <StatusDot status="negative" /> },
-      { id: '2', onClick: action('2'), title: 'Two', right: <StatusDot status="warning" /> },
-      { id: '3', onClick: action('3'), title: 'Three', right: <StatusDot status="positive" /> },
+      {
+        id: '1',
+        onClick: fn().mockName('1'),
+        title: 'One',
+        right: <StatusDot status="negative" />,
+      },
+      { id: '2', onClick: fn().mockName('2'), title: 'Two', right: <StatusDot status="warning" /> },
+      {
+        id: '3',
+        onClick: fn().mockName('3'),
+        title: 'Three',
+        right: <StatusDot status="positive" />,
+      },
     ],
   },
   play: Open.play,

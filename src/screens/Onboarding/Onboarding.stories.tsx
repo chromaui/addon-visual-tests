@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { fn } from '@storybook/test';
-import { findByRole, userEvent } from '@storybook/testing-library';
 import { graphql, HttpResponse } from 'msw';
 import React from 'react';
+import { fn } from 'storybook/test';
+import { findByRole, userEvent } from 'storybook/test';
 
 import { INITIAL_BUILD_PAYLOAD } from '../../buildSteps';
 import { panelModes } from '../../modes';

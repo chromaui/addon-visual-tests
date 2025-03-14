@@ -1,6 +1,6 @@
 import React, { SyntheticEvent } from 'react';
 import { TooltipRenderProps } from 'react-joyride';
-import { styled } from 'storybook/internal/theming';
+import { styled } from 'storybook/theming';
 
 import { Button } from '../../components/Button';
 
