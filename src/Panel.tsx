@@ -89,6 +89,7 @@ export const Panel = ({ active, api }: PanelProps) => {
   // If the user creates a project in a dialog (either during login or later, it get set here)
   const [createdProjectId, setCreatedProjectId] = useSessionState<string>("createdProjectId");
   const [addonUninstalled, setAddonUninstalled] = useSharedState<boolean>(REMOVE_ADDON);
+  const [subdomain, setSubdomain] = useSessionState<string>("subdomain", "www");
 
   const trackEvent = useCallback((data: any) => emit(TELEMETRY, data), [emit]);
   const { isRunning, startBuild, stopBuild } = useBuildEvents({ localBuildProgress, accessToken });
@@ -97,7 +98,7 @@ export const Panel = ({ active, api }: PanelProps) => {
   const withProviders = (children: React.ReactNode) => (
     <GraphQLClientProvider value={createClient({ fetch })}>
       <TelemetryProvider value={trackEvent}>
-        <AuthProvider value={{ accessToken, setAccessToken }}>
+        <AuthProvider value={{ accessToken, setAccessToken, subdomain, setSubdomain }}>
           <UninstallProvider
             addonUninstalled={addonUninstalled}
             setAddonUninstalled={setAddonUninstalled}

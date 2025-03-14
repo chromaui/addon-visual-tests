@@ -5,6 +5,8 @@ import { useRequiredContext } from "./utils/useRequiredContext";
 interface AuthState {
   accessToken: string | null;
   setAccessToken: (accessToken: string | null) => void;
+  subdomain: string;
+  setSubdomain: (subdomain: string) => void;
 }
 
 export const AuthContext = createContext<AuthState | null>(null);
