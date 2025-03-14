@@ -2,8 +2,13 @@ import { FailedIcon } from '@storybook/icons';
 import pluralize from 'pluralize';
 import React, { useCallback, useContext, useEffect, useRef } from 'react';
 import { Link } from 'storybook/internal/components';
-import type { Addon_TestProviderState } from 'storybook/internal/types';
-import { type API, useChannel, useStorybookState } from 'storybook/manager-api';
+import { type Addon_TestProviderState } from 'storybook/internal/types';
+import {
+  type API,
+  experimental_useStatusStore,
+  useChannel,
+  useStorybookState,
+} from 'storybook/manager-api';
 import { color } from 'storybook/theming';
 
 import { BUILD_STEP_CONFIG } from './buildSteps';
@@ -31,6 +36,12 @@ type TestingModuleDescriptionProps = Addon_TestProviderState & { api: API };
 
 export const TestingModuleDescription = ({ api, running }: TestingModuleDescriptionProps) => {
   const { addNotification, selectStory, setOptions, togglePanel } = api;
+  const warningStatusCount = experimental_useStatusStore(
+    (allStatuses) =>
+      Object.values(allStatuses)
+        .map((storyStatus) => storyStatus[ADDON_ID]?.value)
+        .filter((value) => value === 'status-value:warning').length
+  );
 
   const trackEvent = useContext(TelemetryContext);
   const { projectId } = useProjectId();
@@ -47,10 +58,7 @@ export const TestingModuleDescription = ({ api, running }: TestingModuleDescript
   const [gitInfoError] = useSharedState<Error>(GIT_INFO_ERROR);
 
   const lastStep = useRef(localBuildProgress?.currentStep);
-  const { index, status, storyId, viewMode } = useStorybookState();
-  const changedStoryCount = Object.values(status).filter(
-    (value) => value[ADDON_ID]?.status === 'warn'
-  );
+  const { index, storyId, viewMode } = useStorybookState();
 
   const openVisualTestsPanel = useCallback(
     (warning?: string) => {
@@ -172,10 +180,10 @@ export const TestingModuleDescription = ({ api, running }: TestingModuleDescript
     if (localBuildProgress.errorCount) {
       return <>Encountered {pluralize('component error', localBuildProgress.errorCount, true)}</>;
     }
-    return changedStoryCount.length ? (
+    return warningStatusCount ? (
       <>
-        Found {pluralize('story', changedStoryCount.length, true)} with
-        {pluralize('change', changedStoryCount.length)}
+        Found {pluralize('story', warningStatusCount, true)} with
+        {pluralize('change', warningStatusCount)}
       </>
     ) : (
       <>No visual changes detected</>

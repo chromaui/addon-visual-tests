@@ -1,7 +1,7 @@
 import { FailedIcon, PassedIcon } from '@storybook/icons';
 import pluralize from 'pluralize';
 import React, { useCallback, useContext, useEffect, useRef } from 'react';
-import { type API, useStorybookState } from 'storybook/manager-api';
+import { type API, experimental_useStatusStore, useStorybookState } from 'storybook/manager-api';
 import { color } from 'storybook/theming';
 
 import {
@@ -43,9 +43,12 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
   const [gitInfoError] = useSharedState<Error>(GIT_INFO_ERROR);
 
   const lastStep = useRef(localBuildProgress?.currentStep);
-  const { index, status, storyId, viewMode } = useStorybookState();
-  const changedStoryCount = Object.values(status).filter(
-    (value) => value[ADDON_ID]?.status === 'warn'
+  const { index, storyId, viewMode } = useStorybookState();
+  const warningStatusCount = experimental_useStatusStore(
+    (allStatuses) =>
+      Object.values(allStatuses)
+        .map((storyStatus) => storyStatus[ADDON_ID]?.value)
+        .filter((value) => value === 'status-value:warning').length
   );
 
   const openVisualTestsPanel = useCallback(
@@ -132,10 +135,10 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
 
           subHeadline: localBuildProgress.errorCount
             ? `Encountered ${pluralize('component error', localBuildProgress.errorCount, true)}`
-            : changedStoryCount.length
-              ? `Found ${pluralize('story', changedStoryCount.length, true)} with ${pluralize(
+            : warningStatusCount
+              ? `Found ${pluralize('story', warningStatusCount, true)} with ${pluralize(
                   'change',
-                  changedStoryCount.length
+                  warningStatusCount
                 )}`
               : 'No visual changes detected',
         },
@@ -179,7 +182,7 @@ export const SidebarTop = ({ api }: SidebarTopProps) => {
     localBuildProgress?.currentStep,
     localBuildProgress?.errorCount,
     localBuildProgress?.changeCount,
-    changedStoryCount.length,
+    warningStatusCount,
   ]);
 
   const { isDisallowed, isRunning, startBuild, stopBuild } = useBuildEvents({
