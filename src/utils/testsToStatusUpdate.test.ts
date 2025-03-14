@@ -21,9 +21,15 @@ it('handles single test with no changes', () => {
       },
     ])
   ).toMatchInlineSnapshot(`
-    {
-      "story--id": null,
-    }
+    [
+      {
+        "description": "Chromatic Visual Tests",
+        "storyId": "story--id",
+        "title": "Visual tests",
+        "typeId": "chromaui/addon-visual-tests",
+        "value": "status-value:success",
+      },
+    ]
   `);
 });
 
@@ -39,14 +45,15 @@ it('handles single test with changes', () => {
       },
     ])
   ).toMatchInlineSnapshot(`
-    {
-      "story--id": {
+    [
+      {
         "description": "Chromatic Visual Tests",
-        "onClick": [Function],
-        "status": "warn",
+        "storyId": "story--id",
         "title": "Visual tests",
+        "typeId": "chromaui/addon-visual-tests",
+        "value": "status-value:warning",
       },
-    }
+    ]
   `);
 });
 
@@ -69,20 +76,22 @@ it('handles multiple tests', () => {
       },
     ])
   ).toMatchInlineSnapshot(`
-    {
-      "story--id": {
+    [
+      {
         "description": "Chromatic Visual Tests",
-        "onClick": [Function],
-        "status": "warn",
+        "storyId": "story--id",
         "title": "Visual tests",
+        "typeId": "chromaui/addon-visual-tests",
+        "value": "status-value:warning",
       },
-      "story2--id": {
+      {
         "description": "Chromatic Visual Tests",
-        "onClick": [Function],
-        "status": "error",
+        "storyId": "story2--id",
         "title": "Visual tests",
+        "typeId": "chromaui/addon-visual-tests",
+        "value": "status-value:error",
       },
-    }
+    ]
   `);
 });
 
@@ -105,14 +114,15 @@ it('handles multiple viewports', () => {
       },
     ])
   ).toMatchInlineSnapshot(`
-    {
-      "story--id": {
+    [
+      {
         "description": "Chromatic Visual Tests",
-        "onClick": [Function],
-        "status": "error",
+        "storyId": "story--id",
         "title": "Visual tests",
+        "typeId": "chromaui/addon-visual-tests",
+        "value": "status-value:error",
       },
-    }
+    ]
   `);
 });
 
@@ -135,13 +145,14 @@ it('handles multiple viewports, reverse order', () => {
       },
     ])
   ).toMatchInlineSnapshot(`
-    {
-      "story--id": {
+    [
+      {
         "description": "Chromatic Visual Tests",
-        "onClick": [Function],
-        "status": "error",
+        "storyId": "story--id",
         "title": "Visual tests",
+        "typeId": "chromaui/addon-visual-tests",
+        "value": "status-value:error",
       },
-    }
+    ]
   `);
 });
