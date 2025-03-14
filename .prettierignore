@@ -1,2 +1,3 @@
 dist
 src/gql
+src/utils/sha256.js
