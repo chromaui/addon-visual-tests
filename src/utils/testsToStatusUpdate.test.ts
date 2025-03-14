@@ -11,7 +11,7 @@ const api: API = {
 
 it('handles single test with no changes', () => {
   expect(
-    testsToStatusUpdate(api, [
+    testsToStatusUpdate([
       {
         id: '1',
         status: TestStatus.Passed,
@@ -29,7 +29,7 @@ it('handles single test with no changes', () => {
 
 it('handles single test with changes', () => {
   expect(
-    testsToStatusUpdate(api, [
+    testsToStatusUpdate([
       {
         id: '1',
         status: TestStatus.Pending,
@@ -52,7 +52,7 @@ it('handles single test with changes', () => {
 
 it('handles multiple tests', () => {
   expect(
-    testsToStatusUpdate(api, [
+    testsToStatusUpdate([
       {
         id: '1',
         status: TestStatus.Pending,
@@ -88,7 +88,7 @@ it('handles multiple tests', () => {
 
 it('handles multiple viewports', () => {
   expect(
-    testsToStatusUpdate(api, [
+    testsToStatusUpdate([
       {
         id: '1',
         status: TestStatus.Broken,
@@ -118,7 +118,7 @@ it('handles multiple viewports', () => {
 
 it('handles multiple viewports, reverse order', () => {
   expect(
-    testsToStatusUpdate(api, [
+    testsToStatusUpdate([
       {
         id: '1',
         status: TestStatus.Pending,

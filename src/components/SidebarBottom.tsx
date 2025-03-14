@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from 'react';
-import type { API_FilterFunction } from 'storybook/internal/types';
+import type { API_FilterFunction, StatusesByStoryIdAndTypeId } from 'storybook/internal/types';
 import { type API, type State, useStorybookState } from 'storybook/manager-api';
 import { styled } from 'storybook/theming';
 
@@ -7,10 +7,13 @@ import { ADDON_ID, ENABLE_FILTER } from '../constants';
 import { SidebarToggleButton } from './SidebarToggleButton';
 
 const filterNone: API_FilterFunction = () => true;
-const filterWarn: API_FilterFunction = ({ status }) => status?.[ADDON_ID]?.status === 'warn';
-const filterError: API_FilterFunction = ({ status }) => status?.[ADDON_ID]?.status === 'error';
-const filterBoth: API_FilterFunction = ({ status }) =>
-  status?.[ADDON_ID]?.status === 'warn' || status?.[ADDON_ID]?.status === 'error';
+const filterWarn: API_FilterFunction = ({ statuses }) =>
+  statuses?.[ADDON_ID]?.value === 'status-value:warning';
+const filterError: API_FilterFunction = ({ statuses }) =>
+  statuses?.[ADDON_ID]?.value === 'status-value:error';
+const filterBoth: API_FilterFunction = ({ statuses }) =>
+  statuses?.[ADDON_ID]?.value === 'status-value:warning' ||
+  statuses?.[ADDON_ID]?.value === 'status-value:error';
 
 const getFilter = (showWarnings = false, showErrors = false) => {
   if (showWarnings && showErrors) return filterBoth;
@@ -26,15 +29,19 @@ const Wrapper = styled.div({
 
 interface SidebarBottomProps {
   api: API;
-  status: State['status'];
+  status: StatusesByStoryIdAndTypeId;
 }
 
 export const SidebarBottomBase = ({ api, status }: SidebarBottomProps) => {
   const [showWarnings, setShowWarnings] = React.useState(false);
   const [showErrors, setShowErrors] = React.useState(false);
 
-  const warnings = Object.values(status).filter((value) => value[ADDON_ID]?.status === 'warn');
-  const errors = Object.values(status).filter((value) => value[ADDON_ID]?.status === 'error');
+  const warnings = Object.values(status).filter(
+    (status) => status[ADDON_ID]?.value === 'status-value:warning'
+  );
+  const errors = Object.values(status).filter(
+    (status) => status[ADDON_ID]?.value === 'status-value:error'
+  );
   const hasWarnings = warnings.length > 0;
   const hasErrors = errors.length > 0;
 
