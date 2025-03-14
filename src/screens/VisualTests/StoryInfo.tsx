@@ -2,7 +2,7 @@ import { PlayIcon } from '@storybook/icons';
 import pluralize from 'pluralize';
 import React from 'react';
 import { Link } from 'storybook/internal/components';
-import { styled } from 'storybook/internal/theming';
+import { styled } from 'storybook/theming';
 
 import { ActionButton } from '../../components/ActionButton';
 import { AlertIcon } from '../../components/icons/AlertIcon';

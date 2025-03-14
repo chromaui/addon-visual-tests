@@ -1,5 +1,5 @@
 import React from 'react';
-import { css, styled } from 'storybook/internal/theming';
+import { css, styled } from 'storybook/theming';
 
 import { ComparisonResult, TestStatus } from '../gql/graphql';
 
