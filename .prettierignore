@@ -1,4 +1,5 @@
-dist
-src/gql
 .yarn
-public/mockServiceWorker.js
+dist
+public
+src/gql
+src/utils/sha256.js
