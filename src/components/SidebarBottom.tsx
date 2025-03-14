@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from 'react';
 import type { API_FilterFunction, StatusesByStoryIdAndTypeId } from 'storybook/internal/types';
-import { type API, type State, useStorybookState } from 'storybook/manager-api';
+import { type API, useStorybookState } from 'storybook/manager-api';
 import { styled } from 'storybook/theming';
 
 import { ADDON_ID, ENABLE_FILTER } from '../constants';
