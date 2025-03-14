@@ -41,6 +41,7 @@
     "chromatic": "chromatic --config-file production.config.json",
     "codegen": "graphql-codegen",
     "lint": "eslint src --report-unused-disable-directives",
+    "format": "prettier --write .",
     "prerelease": "zx scripts/prepublish-checks.mjs",
     "release": "yarn run build && auto shipit",
     "start": "run-p build:watch 'storybook --quiet'",

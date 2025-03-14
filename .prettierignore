@@ -1,1 +1,4 @@
 dist
+src/gql
+.yarn
+public/mockServiceWorker.js
