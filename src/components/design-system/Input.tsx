@@ -11,7 +11,7 @@ import React, {
   useState,
 } from 'react';
 import { TooltipMessage, WithTooltip } from 'storybook/internal/components';
-import { styled } from 'storybook/internal/theming';
+import { styled } from 'storybook/theming';
 
 import { Icon } from './Icon';
 import { Link } from './Link';

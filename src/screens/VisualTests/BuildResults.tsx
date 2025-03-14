@@ -1,7 +1,7 @@
 import { DocumentIcon } from '@storybook/icons';
 import React from 'react';
 import { Link } from 'storybook/internal/components';
-import { styled } from 'storybook/internal/theming';
+import { styled } from 'storybook/theming';
 
 import { BuildProgressInline } from '../../components/BuildProgressBarInline';
 import { Button } from '../../components/Button';

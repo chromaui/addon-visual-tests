@@ -1,7 +1,6 @@
-import { action } from '@storybook/addon-actions';
-import { ManagerContext } from 'storybook/internal/manager-api';
+import { ManagerContext } from 'storybook/manager-api';
 import type { Decorator, Loader, Preview } from '@storybook/react';
-import { fn } from '@storybook/test';
+import { fn } from 'storybook/test';
 import {
   Global,
   ThemeProvider,
@@ -10,7 +9,7 @@ import {
   styled,
   themes,
   useTheme,
-} from 'storybook/internal/theming';
+} from 'storybook/theming';
 import { HttpResponse, graphql } from 'msw';
 import { initialize, mswLoader } from 'msw-storybook-addon';
 import React from 'react';
@@ -125,7 +124,7 @@ const withTheme = (StoryFn, { globals, parameters }) => {
 const withGraphQLClient = storyWrapper(GraphQLClientProvider);
 
 const withTelemetry = storyWrapper(TelemetryProvider, () => ({
-  value: action('telemetry'),
+  value: fn().mockName('telemetry'),
 }));
 
 const withAuth = storyWrapper(AuthProvider, () => ({
@@ -159,8 +158,8 @@ const withRunBuild = storyWrapper(RunBuildProvider, ({ args }) => ({
     isRunning:
       !!args.localBuildProgress &&
       !['aborted', 'complete', 'error'].includes(args.localBuildProgress.currentStep),
-    startBuild: action('startBuild'),
-    stopBuild: action('stopBuild'),
+    startBuild: fn().mockName('startBuild'),
+    stopBuild: fn().mockName('stopBuild'),
   },
 }));
 
@@ -246,7 +245,7 @@ const preview: Preview = {
     getChannel: { type: 'function', target: 'manager-api' },
   },
   args: {
-    getChannel: () => ({ on: fn(), off: fn(), emit: action('channel.emit') }),
+    getChannel: () => ({ on: fn(), off: fn(), emit: fn().mockName('channel.emit') }),
   },
   globalTypes: {
     theme: {

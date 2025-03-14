@@ -1,7 +1,7 @@
 import { CloseIcon } from '@storybook/icons';
 import pluralize from 'pluralize';
 import React, { ReactNode, useCallback, useState } from 'react';
-import { styled } from 'storybook/internal/theming';
+import { styled } from 'storybook/theming';
 
 import { CONFIG_INFO, CONFIG_INFO_DISMISSED } from '../constants';
 import { Configuration } from '../screens/VisualTests/Configuration';

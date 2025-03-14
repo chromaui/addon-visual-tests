@@ -1,5 +1,5 @@
 import { rgba } from 'polished';
-import { css } from 'storybook/internal/theming';
+import { css } from 'storybook/theming';
 
 // Global style variables
 export const background = {

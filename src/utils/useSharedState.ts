@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useStorybookApi } from 'storybook/internal/manager-api';
+import { useStorybookApi } from 'storybook/manager-api';
 
 import { SharedState } from './SharedState';
 

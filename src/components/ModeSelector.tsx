@@ -1,7 +1,7 @@
 import { ChevronDownIcon, DiamondIcon } from '@storybook/icons';
 import React from 'react';
 import { WithTooltip } from 'storybook/internal/components';
-import { styled, useTheme } from 'storybook/internal/theming';
+import { styled, useTheme } from 'storybook/theming';
 
 import { ComparisonResult, TestMode } from '../gql/graphql';
 import { aggregateResult } from '../utils/aggregateResult';

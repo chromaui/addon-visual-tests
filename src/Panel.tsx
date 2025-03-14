@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import type { API } from 'storybook/internal/manager-api';
-import { useChannel, useStorybookState } from 'storybook/internal/manager-api';
+import type { API } from 'storybook/manager-api';
+import { useChannel, useStorybookState } from 'storybook/manager-api';
 
 import { AuthProvider } from './AuthContext';
 import { Spinner } from './components/design-system';

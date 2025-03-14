@@ -1,10 +1,10 @@
 // @ts-nocheck TODO: Address SB 8 type errors
-import { action } from '@storybook/addon-actions';
 import type { Meta, StoryObj } from '@storybook/react';
-import { findByRole, fireEvent, screen, userEvent, within } from '@storybook/testing-library';
 import { delay, http } from 'msw';
 import React, { ComponentProps } from 'react';
 import type { StoryContext } from 'storybook/internal/types';
+import { fn } from 'storybook/test';
+import { findByRole, fireEvent, screen, userEvent, within } from 'storybook/test';
 
 import { Browser, ComparisonResult, TestResult, TestStatus } from '../../gql/graphql';
 import { panelModes } from '../../modes';
@@ -27,8 +27,8 @@ const meta = {
         isReviewing: false,
         userCanReview: true,
         buildIsReviewable: true,
-        acceptTest: action('acceptTest'),
-        unacceptTest: action('unacceptTest'),
+        acceptTest: fn().mockName('acceptTest'),
+        unacceptTest: fn().mockName('unacceptTest'),
         ...ctx.parameters.reviewTest,
       },
     })),
@@ -41,7 +41,7 @@ const meta = {
     isStarting: false,
     isBuildFailed: false,
     shouldSwitchToLastBuildOnBranch: false,
-    setAccessToken: action('setAccessToken'),
+    setAccessToken: fn().mockName('setAccessToken'),
   },
   parameters: {
     chromatic: {

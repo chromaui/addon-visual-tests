@@ -1,6 +1,6 @@
 import { CheckIcon } from '@storybook/icons';
 import React from 'react';
-import { styled } from 'storybook/internal/theming';
+import { styled } from 'storybook/theming';
 import { useQuery } from 'urql';
 
 import { Button } from '../../components/Button';

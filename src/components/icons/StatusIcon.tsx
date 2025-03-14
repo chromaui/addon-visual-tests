@@ -1,6 +1,6 @@
 import { ChangedIcon, FailedIcon, PassedIcon } from '@storybook/icons';
 import React from 'react';
-import { useTheme } from 'storybook/internal/theming';
+import { useTheme } from 'storybook/theming';
 
 const styles = { width: 12, height: 12, margin: '3px 3px 3px 6px', verticalAlign: 'top' };
 
