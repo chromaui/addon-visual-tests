@@ -1,9 +1,9 @@
-import { defineConfig, type Options } from "tsup";
-import { readFile } from "fs/promises";
-import { globalPackages as globalManagerPackages } from "storybook/internal/manager/globals";
-import type { PackageJson } from "type-fest";
+import { defineConfig, type Options } from 'tsup';
+import { readFile } from 'fs/promises';
+import { globalPackages as globalManagerPackages } from 'storybook/internal/manager/globals';
+import type { PackageJson } from 'type-fest';
 
-type Formats = "esm" | "cjs";
+type Formats = 'esm' | 'cjs';
 type BundlerConfig = {
   previewEntries: string[];
   managerEntries: string[];
@@ -19,7 +19,7 @@ type PackageJsonWithBundlerConfig = PackageJson & {
 };
 
 export default defineConfig(async (options) => {
-  const packageJson = (await readFile("./package.json", "utf8").then(
+  const packageJson = (await readFile('./package.json', 'utf8').then(
     JSON.parse
   )) as PackageJsonWithBundlerConfig;
   const {
@@ -42,9 +42,9 @@ export default defineConfig(async (options) => {
   };
 
   const browserOptions: Options = {
-    target: ["chrome100", "safari15", "firefox91"],
-    platform: "browser",
-    format: ["esm"],
+    target: ['chrome100', 'safari15', 'firefox91'],
+    platform: 'browser',
+    format: ['esm'],
   };
 
   const commonExternals = [
@@ -57,16 +57,16 @@ export default defineConfig(async (options) => {
   const configs: Options[] = [];
 
   const globalManagerPackagesNoIcons = globalManagerPackages.filter(
-    (packageJson) => packageJson !== "@storybook/icons"
+    (packageJson) => packageJson !== '@storybook/icons'
   );
 
   if (nodeEntries.length) {
     configs.push({
       ...commonConfig,
       entry: nodeEntries,
-      format: ["cjs"],
-      target: "node18",
-      platform: "node",
+      format: ['cjs'],
+      target: 'node18',
+      platform: 'node',
       external: commonExternals,
     });
   }
@@ -75,13 +75,13 @@ export default defineConfig(async (options) => {
     configs.push({
       ...commonConfig,
       entry: managerEntries,
-      format: ["esm"],
-      platform: "browser",
+      format: ['esm'],
+      platform: 'browser',
       esbuildOptions(options) {
-        options.conditions = ["module"];
+        options.conditions = ['module'];
         options.loader = {
           ...options.loader,
-          ".png": "dataurl",
+          '.png': 'dataurl',
         };
       },
       external: globalManagerPackagesNoIcons,
@@ -97,12 +97,11 @@ export default defineConfig(async (options) => {
     configs.push({
       ...commonConfig,
       entry: exportEntries,
-      format: ["cjs"],
+      format: ['cjs'],
       target: browserOptions.target,
-      platform: "neutral",
+      platform: 'neutral',
     });
   }
-
 
   return configs;
 });
