@@ -1,6 +1,6 @@
 {
   "name": "@chromatic-com/storybook",
-  "version": "3.2.3",
+  "version": "3.2.5",
   "description": "Catch unexpected visual changes & UI bugs in your stories",
   "keywords": [
     "storybook-addons",
@@ -61,9 +61,10 @@
     "strip-ansi": "^7.1.0"
   },
   "devDependencies": {
+    "@0no-co/graphqlsp": "^1.12.16",
     "@auto-it/slack": "^11.2.1",
     "@emotion/weak-memoize": "^0.3.1",
-    "@graphql-codegen/cli": "^5.0.3",
+    "@graphql-codegen/cli": "^5.0.5",
     "@graphql-typed-document-node/core": "^3.2.0",
     "@parcel/watcher": "^2.4.1",
     "@storybook/addon-designs": "^8.2.0",

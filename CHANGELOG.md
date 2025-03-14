@@ -1,3 +1,19 @@
+# v3.2.4 (Wed Feb 26 2025)
+
+#### 🐛 Bug Fix
+
+- Debug release [#357](https://github.com/chromaui/addon-visual-tests/pull/357) ([@kasperpeulen](https://github.com/kasperpeulen))
+- Remove the connection timeout notification [#351](https://github.com/chromaui/addon-visual-tests/pull/351) ([@valentinpalkovic](https://github.com/valentinpalkovic))
+- Set up Codecov [#350](https://github.com/chromaui/addon-visual-tests/pull/350) ([@paulelliott](https://github.com/paulelliott))
+
+#### Authors: 3
+
+- Kasper Peulen ([@kasperpeulen](https://github.com/kasperpeulen))
+- Paul Elliott ([@paulelliott](https://github.com/paulelliott))
+- Valentin Palkovic ([@valentinpalkovic](https://github.com/valentinpalkovic))
+
+---
+
 # v3.2.3 (Thu Dec 19 2024)
 
 #### 🐛 Bug Fix
