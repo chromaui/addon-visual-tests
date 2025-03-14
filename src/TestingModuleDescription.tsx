@@ -2,6 +2,7 @@ import { FailedIcon } from '@storybook/icons';
 import pluralize from 'pluralize';
 import React, { useCallback, useContext, useEffect, useRef } from 'react';
 import { Link } from 'storybook/internal/components';
+import { type Addon_TestProviderState } from 'storybook/internal/types';
 import {
   type API,
   experimental_useStatusStore,
@@ -9,7 +10,6 @@ import {
   useStorybookState,
 } from 'storybook/manager-api';
 import { color } from 'storybook/theming';
-import { type Addon_TestProviderState } from 'storybook/internal/types';
 
 import { BUILD_STEP_CONFIG } from './buildSteps';
 import {

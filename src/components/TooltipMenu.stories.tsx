@@ -1,6 +1,6 @@
-import { fn, within, userEvent } from 'storybook/test';
 import type { Meta, StoryObj } from '@storybook/react';
 import React from 'react';
+import { fn, userEvent, within } from 'storybook/test';
 
 import { Container } from './Container';
 import { StatusDot } from './StatusDot';

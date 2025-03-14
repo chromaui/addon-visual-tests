@@ -94,7 +94,7 @@
     "eslint-plugin-prettier": "^5.2.3",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
-    "eslint-plugin-storybook": "^0.11.3",
+    "eslint-plugin-storybook": "^0.11.4",
     "graphql": "^16.8.1",
     "msw": "^2.0.0",
     "msw-storybook-addon": "2.0.4",

@@ -1,5 +1,5 @@
-import { fn } from 'storybook/test';
 import type { Meta, StoryObj } from '@storybook/react';
+import { fn } from 'storybook/test';
 
 import { ComparisonResult } from '../gql/graphql';
 import { ModeSelector } from './ModeSelector';

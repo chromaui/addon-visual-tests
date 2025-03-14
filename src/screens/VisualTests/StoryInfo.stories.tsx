@@ -1,6 +1,6 @@
-import { fn } from 'storybook/test';
 import type { Meta, StoryObj } from '@storybook/react';
 import React from 'react';
+import { fn } from 'storybook/test';
 
 import { Browser, TestStatus } from '../../gql/graphql';
 import { panelModes } from '../../modes';

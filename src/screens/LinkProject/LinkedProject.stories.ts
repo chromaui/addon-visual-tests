@@ -1,6 +1,6 @@
-import { fn } from 'storybook/test';
 import type { Meta, StoryObj } from '@storybook/react';
 import { graphql, HttpResponse } from 'msw';
+import { fn } from 'storybook/test';
 
 import { ProjectQueryQuery } from '../../gql/graphql';
 import { panelModes } from '../../modes';

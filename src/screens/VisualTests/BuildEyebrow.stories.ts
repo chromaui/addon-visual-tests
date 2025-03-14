@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { expect, fn, fireEvent, within } from 'storybook/test';
+import { expect, fireEvent, fn, within } from 'storybook/test';
 
 import * as buildProgressStories from '../../components/BuildProgressLabel.stories';
 import { panelModes } from '../../modes';

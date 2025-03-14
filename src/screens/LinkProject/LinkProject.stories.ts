@@ -1,7 +1,7 @@
 // @ts-nocheck TODO: Address SB 8 type errors
-import { fn, findByTestId } from 'storybook/test';
 import type { Meta, StoryObj } from '@storybook/react';
 import { delay, graphql, HttpResponse } from 'msw';
+import { findByTestId, fn } from 'storybook/test';
 
 import { SelectProjectsQueryQuery } from '../../gql/graphql';
 import { panelModes } from '../../modes';

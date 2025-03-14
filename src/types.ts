@@ -1,7 +1,7 @@
 import type { Configuration, getConfiguration, GitInfo, TaskName } from 'chromatic/node';
+import { Status } from 'storybook/internal/types';
 
 import { SelectedBuildFieldsFragment } from './gql/graphql';
-import { Status } from 'storybook/internal/types';
 
 declare global {
   // eslint-disable-next-line no-var

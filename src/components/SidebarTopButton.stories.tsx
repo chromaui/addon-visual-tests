@@ -1,7 +1,7 @@
-import { fn, screen, userEvent, within } from 'storybook/test';
 import type { Meta, StoryObj } from '@storybook/react';
 import isChromatic from 'chromatic/isChromatic';
 import React, { ComponentProps, useEffect, useState } from 'react';
+import { fn, screen, userEvent, within } from 'storybook/test';
 
 import { INITIAL_BUILD_PAYLOAD } from '../buildSteps';
 import { playAll } from '../utils/playAll';

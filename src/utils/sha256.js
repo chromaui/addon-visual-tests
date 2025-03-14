@@ -1,4 +1,4 @@
-/* eslint-disable prettier/prettier, @typescript-eslint/no-unused-expressions */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 export function sha256(r) {
   function t(r, t) {
     return (r >>> t) | (r << (32 - t));
