@@ -1,5 +1,5 @@
 import React, { ComponentProps, FunctionComponent } from 'react';
-import { styled } from 'storybook/internal/theming';
+import { styled } from 'storybook/theming';
 
 import { rotate360 } from './shared/animation';
 import { color } from './shared/styles';

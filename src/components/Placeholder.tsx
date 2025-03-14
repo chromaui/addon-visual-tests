@@ -1,4 +1,4 @@
-import { styled } from 'storybook/internal/theming';
+import { styled } from 'storybook/theming';
 
 export const Placeholder = styled.div<{
   width?: number;

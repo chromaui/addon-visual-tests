@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import Joyride from 'react-joyride';
-import { type API, useStorybookState } from 'storybook/internal/manager-api';
-import { useTheme } from 'storybook/internal/theming';
+import { type API, useStorybookState } from 'storybook/manager-api';
+import { useTheme } from 'storybook/theming';
 
 import { ENABLE_FILTER, PANEL_ID } from '../../constants';
 import { useSessionState } from '../../utils/useSessionState';

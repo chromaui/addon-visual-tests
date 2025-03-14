@@ -1,7 +1,7 @@
 import pluralize from 'pluralize';
 import React, { ComponentProps } from 'react';
 import { Badge as BaseBadge } from 'storybook/internal/components';
-import { css, styled } from 'storybook/internal/theming';
+import { css, styled } from 'storybook/theming';
 
 import { IconButton } from './IconButton';
 

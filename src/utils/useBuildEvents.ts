@@ -1,5 +1,5 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { useChannel } from 'storybook/internal/manager-api';
+import { useChannel } from 'storybook/manager-api';
 
 import { START_BUILD, STOP_BUILD } from '../constants';
 import { LocalBuildProgress } from '../types';

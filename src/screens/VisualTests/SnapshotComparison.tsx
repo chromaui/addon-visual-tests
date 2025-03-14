@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Loader } from 'storybook/internal/components';
-import { styled } from 'storybook/internal/theming';
+import { styled } from 'storybook/theming';
 
 import { Link } from '../../components/design-system';
 import { SnapshotImage } from '../../components/SnapshotImage';

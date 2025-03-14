@@ -1,5 +1,5 @@
 import React, { useCallback, useRef } from 'react';
-import { styled } from 'storybook/internal/theming';
+import { styled } from 'storybook/theming';
 import { useClient } from 'urql';
 
 import { Button } from '../../components/Button';
