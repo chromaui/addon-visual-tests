@@ -125,7 +125,7 @@ const withTheme = (StoryFn, { globals, parameters }) => {
 const withGraphQLClient = storyWrapper(GraphQLClientProvider);
 
 const withTelemetry = storyWrapper(TelemetryProvider, () => ({
-  value: action('telemetry'),
+  value: fn().mockName('telemetry'),
 }));
 
 const withAuth = storyWrapper(AuthProvider, () => ({
@@ -159,8 +159,8 @@ const withRunBuild = storyWrapper(RunBuildProvider, ({ args }) => ({
     isRunning:
       !!args.localBuildProgress &&
       !['aborted', 'complete', 'error'].includes(args.localBuildProgress.currentStep),
-    startBuild: action('startBuild'),
-    stopBuild: action('stopBuild'),
+    startBuild: fn().mockName('startBuild'),
+    stopBuild: fn().mockName('stopBuild'),
   },
 }));
 
@@ -246,7 +246,7 @@ const preview: Preview = {
     getChannel: { type: 'function', target: 'manager-api' },
   },
   args: {
-    getChannel: () => ({ on: fn(), off: fn(), emit: action('channel.emit') }),
+    getChannel: () => ({ on: fn(), off: fn(), emit: fn().mockName('channel.emit') }),
   },
   globalTypes: {
     theme: {

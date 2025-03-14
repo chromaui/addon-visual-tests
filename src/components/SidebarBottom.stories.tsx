@@ -1,4 +1,4 @@
-import { action } from 'storybook/actions';
+import { fn } from 'storybook/test';
 
 import { ADDON_ID } from '../constants';
 import { SidebarBottomBase } from './SidebarBottom';
@@ -6,7 +6,10 @@ import { SidebarBottomBase } from './SidebarBottom';
 export default {
   component: SidebarBottomBase,
   args: {
-    api: { experimental_setFilter: action('experimental_setFilter'), emit: action('emit') },
+    api: {
+      experimental_setFilter: fn().mockName('experimental_setFilter'),
+      emit: fn().mockName('emit'),
+    },
   },
 };
 

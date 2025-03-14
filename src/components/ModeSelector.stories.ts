@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { action } from 'storybook/actions';
+import { fn } from 'storybook/test';
 
 import { ComparisonResult } from '../gql/graphql';
 import { ModeSelector } from './ModeSelector';
@@ -15,7 +15,7 @@ const meta = {
   component: ModeSelector,
   args: {
     isAccepted: false,
-    onSelectMode: action('onSelectMode'),
+    onSelectMode: fn().mockName('onSelectMode'),
   },
 } satisfies Meta<typeof ModeSelector>;
 
