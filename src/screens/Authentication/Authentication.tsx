@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
-import { useAuthState } from "../../AuthContext";
 
+import { useAuthState } from "../../AuthContext";
 import { Project } from "../../gql/graphql";
 import { initiateSignin, TokenExchangeParameters } from "../../utils/requestAccessToken";
 import { useTelemetry } from "../../utils/TelemetryContext";
@@ -47,7 +47,7 @@ export const Authentication = ({
         onError("Sign in Error", err);
       }
     },
-    [onError, setExchangeParameters, setScreen]
+    [onError, setExchangeParameters, setScreen, setSubdomain]
   );
 
   if (screen === "welcome" && !hasProjectId) {
