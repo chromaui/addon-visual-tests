@@ -17,6 +17,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@0no-co/graphqlsp@npm:^1.12.16":
+  version: 1.12.16
+  resolution: "@0no-co/graphqlsp@npm:1.12.16"
+  dependencies:
+    "@gql.tada/internal": "npm:^1.0.0"
+    graphql: "npm:^15.5.0 || ^16.0.0 || ^17.0.0"
+  peerDependencies:
+    graphql: ^15.5.0 || ^16.0.0 || ^17.0.0
+    typescript: ^5.0.0
+  checksum: 10c0/e802fe7c719d68e1279f98da161d2b619f93a6768e82dee331af3d35b03b711f1e2b10911d0acae0dbd6fc72a3fea441fbc6c58aae6f75f269d9d4a48a2069bf
+  languageName: node
+  linkType: hard
+
 "@adobe/css-tools@npm:^4.4.0":
   version: 4.4.2
   resolution: "@adobe/css-tools@npm:4.4.2"
@@ -454,9 +467,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@chromatic-com/storybook@workspace:."
   dependencies:
+    "@0no-co/graphqlsp": "npm:^1.12.16"
     "@auto-it/slack": "npm:^11.2.1"
     "@emotion/weak-memoize": "npm:^0.3.1"
-    "@graphql-codegen/cli": "npm:^5.0.3"
+    "@graphql-codegen/cli": "npm:^5.0.5"
     "@graphql-typed-document-node/core": "npm:^3.2.0"
     "@parcel/watcher": "npm:^2.4.1"
     "@storybook/addon-actions": "npm:^9.0.0 || ^9.0.0-0"
@@ -1353,6 +1367,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@gql.tada/internal@npm:^1.0.0":
+  version: 1.0.8
+  resolution: "@gql.tada/internal@npm:1.0.8"
+  dependencies:
+    "@0no-co/graphql.web": "npm:^1.0.5"
+  peerDependencies:
+    graphql: ^15.5.0 || ^16.0.0 || ^17.0.0
+    typescript: ^5.0.0
+  checksum: 10c0/dd9b34296160f7eb4374b1791dd9353fd4147f4d7e2a3a8e2974c2319dc6165a4458c19d9b517a3f7764da4e7a4401c099fdf1936841de02c0e565db95d64a5d
+  languageName: node
+  linkType: hard
+
 "@graphql-codegen/add@npm:^5.0.3":
   version: 5.0.3
   resolution: "@graphql-codegen/add@npm:5.0.3"
@@ -1365,7 +1391,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-codegen/cli@npm:^5.0.3":
+"@graphql-codegen/cli@npm:^5.0.5":
   version: 5.0.5
   resolution: "@graphql-codegen/cli@npm:5.0.5"
   dependencies:
@@ -6590,7 +6616,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql@npm:^16.8.1":
+"graphql@npm:^15.5.0 || ^16.0.0 || ^17.0.0, graphql@npm:^16.8.1":
   version: 16.10.0
   resolution: "graphql@npm:16.10.0"
   checksum: 10c0/303730675538c8bd6c76b447dc6f03e61242e2d2596b408c34759666ec4877409e5593a7a0467d590ac5407b8c663b093b599556a77f24f281abea69ddc53de6

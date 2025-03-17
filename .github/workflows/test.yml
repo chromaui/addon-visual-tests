@@ -1,4 +1,4 @@
-name: "Test"
+name: 'Test'
 on: push
 jobs:
   test:
@@ -12,6 +12,9 @@ jobs:
 
       - name: Lint
         run: yarn lint
+
+      - name: Check formatting
+        run: yarn format --no-write --check
 
       - name: Typecheck
         run: yarn typecheck
