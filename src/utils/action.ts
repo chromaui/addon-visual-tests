@@ -1,4 +1,4 @@
-import { action as act, type ActionOptions, type HandlerFunction } from '@storybook/addon-actions';
+import { action as act, type ActionOptions, type HandlerFunction } from 'storybook/actions';
 import { fn } from 'storybook/test';
 
 export const action = (name: string, options?: ActionOptions): HandlerFunction => {

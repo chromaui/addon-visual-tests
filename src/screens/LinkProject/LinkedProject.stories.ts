@@ -1,6 +1,6 @@
-import { action } from '@storybook/addon-actions';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { graphql, HttpResponse } from 'msw';
+import { action } from 'storybook/actions';
 
 import { ProjectQueryQuery } from '../../gql/graphql';
 import { panelModes } from '../../modes';

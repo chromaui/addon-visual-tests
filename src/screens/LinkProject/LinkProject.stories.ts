@@ -1,7 +1,7 @@
 // @ts-nocheck TODO: Address SB 8 type errors
-import { action } from '@storybook/addon-actions';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { delay, graphql, HttpResponse } from 'msw';
+import { action } from 'storybook/actions';
 import { findByTestId } from 'storybook/test';
 
 import { SelectProjectsQueryQuery } from '../../gql/graphql';

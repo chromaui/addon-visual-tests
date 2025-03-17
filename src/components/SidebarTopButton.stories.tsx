@@ -1,7 +1,7 @@
-import { action } from '@storybook/addon-actions';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import isChromatic from 'chromatic/isChromatic';
 import React, { ComponentProps, useEffect, useState } from 'react';
+import { action } from 'storybook/actions';
 import { userEvent, within } from 'storybook/test';
 
 import { INITIAL_BUILD_PAYLOAD } from '../buildSteps';

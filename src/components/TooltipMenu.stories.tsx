@@ -1,6 +1,6 @@
-import { action } from '@storybook/addon-actions';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import React from 'react';
+import { action } from 'storybook/actions';
 import { within } from 'storybook/test';
 import { userEvent } from 'storybook/test';
 
