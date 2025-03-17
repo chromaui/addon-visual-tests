@@ -2,14 +2,13 @@
 /* tslint:disable */
 
 /**
- * Mock Service Worker.
+ * Mock Service Worker (2.1.5).
  * @see https://github.com/mswjs/msw
  * - Please do NOT modify this file.
  * - Please do NOT serve this file on production.
  */
 
-const PACKAGE_VERSION = '2.7.3'
-const INTEGRITY_CHECKSUM = '00729d72e3b82faf54ca8b9621dbb96f'
+const INTEGRITY_CHECKSUM = '223d191a56023cd36aa88c802961b911'
 const IS_MOCKED_RESPONSE = Symbol('isMockedResponse')
 const activeClientIds = new Set()
 
@@ -49,10 +48,7 @@ self.addEventListener('message', async function (event) {
     case 'INTEGRITY_CHECK_REQUEST': {
       sendToClient(client, {
         type: 'INTEGRITY_CHECK_RESPONSE',
-        payload: {
-          packageVersion: PACKAGE_VERSION,
-          checksum: INTEGRITY_CHECKSUM,
-        },
+        payload: INTEGRITY_CHECKSUM,
       })
       break
     }
@@ -62,12 +58,7 @@ self.addEventListener('message', async function (event) {
 
       sendToClient(client, {
         type: 'MOCKING_ENABLED',
-        payload: {
-          client: {
-            id: client.id,
-            frameType: client.frameType,
-          },
-        },
+        payload: true,
       })
       break
     }
@@ -160,10 +151,6 @@ async function handleRequest(event, requestId) {
 async function resolveMainClient(event) {
   const client = await self.clients.get(event.clientId)
 
-  if (activeClientIds.has(event.clientId)) {
-    return client
-  }
-
   if (client?.frameType === 'top-level') {
     return client
   }
@@ -192,26 +179,12 @@ async function getResponse(event, client, requestId) {
   const requestClone = request.clone()
 
   function passthrough() {
-    // Cast the request headers to a new Headers instance
-    // so the headers can be manipulated with.
-    const headers = new Headers(requestClone.headers)
+    const headers = Object.fromEntries(requestClone.headers.entries())
 
-    // Remove the "accept" header value that marked this request as passthrough.
-    // This prevents request alteration and also keeps it compliant with the
-    // user-defined CORS policies.
-    const acceptHeader = headers.get('accept')
-    if (acceptHeader) {
-      const values = acceptHeader.split(',').map((value) => value.trim())
-      const filteredValues = values.filter(
-        (value) => value !== 'msw/passthrough',
-      )
-
-      if (filteredValues.length > 0) {
-        headers.set('accept', filteredValues.join(', '))
-      } else {
-        headers.delete('accept')
-      }
-    }
+    // Remove internal MSW request header so the passthrough request
+    // complies with any potential CORS preflight checks on the server.
+    // Some servers forbid unknown request headers.
+    delete headers['x-msw-intention']
 
     return fetch(requestClone, { headers })
   }
@@ -226,6 +199,13 @@ async function getResponse(event, client, requestId) {
   // means that MSW hasn't dispatched the "MOCK_ACTIVATE" event yet
   // and is not ready to handle requests.
   if (!activeClientIds.has(client.id)) {
+    return passthrough()
+  }
+
+  // Bypass requests with the explicit bypass header.
+  // Such requests can be issued by "ctx.fetch()".
+  const mswIntention = request.headers.get('x-msw-intention')
+  if (['bypass', 'passthrough'].includes(mswIntention)) {
     return passthrough()
   }
 
@@ -260,7 +240,7 @@ async function getResponse(event, client, requestId) {
       return respondWithMock(clientMessage.data)
     }
 
-    case 'PASSTHROUGH': {
+    case 'MOCK_NOT_FOUND': {
       return passthrough()
     }
   }
