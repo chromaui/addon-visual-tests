@@ -1,5 +1,5 @@
 // @ts-nocheck TODO: Address SB 8 type errors
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { delay, http } from 'msw';
 
 import { ComparisonResult } from '../gql/graphql';

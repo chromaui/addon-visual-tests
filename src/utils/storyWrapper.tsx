@@ -1,4 +1,4 @@
-import type { Decorator } from '@storybook/react';
+import type { Decorator } from '@storybook/react-vite';
 import React from 'react';
 import type { StoryContext } from 'storybook/internal/types';
 

@@ -1,5 +1,5 @@
 import { ManagerContext } from 'storybook/manager-api';
-import type { Decorator, Loader, Preview } from '@storybook/react';
+import type { Decorator, Loader, Preview } from '@storybook/react-vite';
 import { fn } from 'storybook/test';
 import {
   Global,
@@ -22,6 +22,7 @@ import { GraphQLClientProvider } from '../src/utils/graphQLClient';
 import { storyWrapper } from '../src/utils/storyWrapper';
 import { TelemetryProvider } from '../src/utils/TelemetryContext';
 import { useSessionState } from '../src/utils/useSessionState';
+import { action } from 'storybook/actions';
 
 // Initialize MSW
 initialize({

@@ -1,5 +1,5 @@
 // @ts-nocheck TODO: Address SB 8 type errors
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { http, HttpResponse } from 'msw';
 import { findByRole, fn, userEvent } from 'storybook/test';
 

@@ -1,5 +1,5 @@
 import { VariablesOf } from '@graphql-typed-document-node/core';
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { delay, HttpResponse } from 'msw';
 import React from 'react';
 import { expect, fn } from 'storybook/test';
@@ -185,7 +185,8 @@ export const NotFound = {
   args: { $graphql: {} },
   parameters: {
     ...withGraphQLQueryParameters('AddonVisualTestsBuild', () =>
-      HttpResponse.json({ data: { project: null } } as any)
+      // @ts-ignore: Type mismatch between TypedDocumentNode and GraphQL response
+      HttpResponse.json({ data: null })
     ),
   },
 } satisfies Story;
@@ -194,16 +195,17 @@ export const NoAccess = {
   args: { $graphql: {} },
   parameters: {
     ...withGraphQLQueryParameters('AddonVisualTestsBuild', () =>
+      // @ts-ignore: Type mismatch between TypedDocumentNode and GraphQL response
       HttpResponse.json({
         errors: [
           {
+            message: 'No access',
             extensions: { code: 'FORBIDDEN' },
             locations: [{ line: 13, column: 3 }],
-            message: 'No access',
             path: ['selectedBuild'],
           },
         ],
-      } as any)
+      })
     ),
   },
 } satisfies Story;
@@ -212,7 +214,10 @@ export const ServerError = {
   args: { $graphql: {} },
   parameters: {
     ...withGraphQLQueryParameters('AddonVisualTestsBuild', () =>
-      HttpResponse.json({ errors: [{ message: 'Something went wrong on the server' }] })
+      // @ts-ignore: Type mismatch between TypedDocumentNode and GraphQL response
+      HttpResponse.json({
+        errors: [{ message: 'Something went wrong on the server' }],
+      })
     ),
   },
 } satisfies Story;

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import isChromatic from 'chromatic/isChromatic';
 import React, { ComponentProps, useEffect, useState } from 'react';
-import { fn, screen, userEvent, within } from 'storybook/test';
+import { fn, userEvent, within } from 'storybook/test';
 
 import { INITIAL_BUILD_PAYLOAD } from '../buildSteps';
 import { playAll } from '../utils/playAll';
@@ -81,7 +81,7 @@ export const Running: Story = {
     // Wait one second just to ensure the screen has proper focus
     await new Promise((r) => setTimeout(r, 1000));
     await userEvent.hover(button);
-    await screen.findAllByText('🏗 Building your Storybook...');
+    await within(document.body).findAllByText('🏗 Building your Storybook...');
   }),
 };
 
