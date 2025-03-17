@@ -473,7 +473,6 @@ __metadata:
     "@graphql-codegen/cli": "npm:^5.0.5"
     "@graphql-typed-document-node/core": "npm:^3.2.0"
     "@parcel/watcher": "npm:^2.4.1"
-    "@storybook/addon-actions": "npm:^9.0.0 || ^9.0.0-0"
     "@storybook/addon-designs": "npm:^9.0.0-0"
     "@storybook/addon-essentials": "npm:^9.0.0 || ^9.0.0-0"
     "@storybook/addon-interactions": "npm:^9.0.0 || ^9.0.0-0"
@@ -2441,21 +2440,6 @@ __metadata:
   version: 4.36.0
   resolution: "@rollup/rollup-win32-x64-msvc@npm:4.36.0"
   conditions: os=win32 & cpu=x64
-  languageName: node
-  linkType: hard
-
-"@storybook/addon-actions@npm:^9.0.0 || ^9.0.0-0":
-  version: 9.0.0-alpha.3
-  resolution: "@storybook/addon-actions@npm:9.0.0-alpha.3"
-  dependencies:
-    "@storybook/global": "npm:^5.0.0"
-    "@types/uuid": "npm:^9.0.1"
-    dequal: "npm:^2.0.2"
-    polished: "npm:^4.2.2"
-    uuid: "npm:^9.0.0"
-  peerDependencies:
-    storybook: ^9.0.0-alpha.3
-  checksum: 10c0/bdb785751550a6facb4613a30e082334554979d95ba24503ca3802f13e8f81cd532f82ce7c290d8848ffbb04f0d3445453d6d54961fc0b88f0ca6715d2cb2009
   languageName: node
   linkType: hard
 
