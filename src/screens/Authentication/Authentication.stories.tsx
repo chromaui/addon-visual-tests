@@ -1,8 +1,7 @@
 // @ts-nocheck TODO: Address SB 8 type errors
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { http, HttpResponse } from 'msw';
-import { action } from 'storybook/actions';
-import { findByRole, userEvent } from 'storybook/test';
+import { findByRole, fn, userEvent } from 'storybook/test';
 
 import { panelModes } from '../../modes';
 import { GraphQLClientProvider } from '../../utils/graphQLClient';
@@ -17,7 +16,7 @@ const meta = {
   component: Authentication,
   decorators: [withSetup(clearSessionState), storyWrapper(GraphQLClientProvider)],
   args: {
-    setAccessToken: action('setAccessToken'),
+    setAccessToken: fn().mockName('setAccessToken'),
     hasProjectId: false,
   },
   parameters: {

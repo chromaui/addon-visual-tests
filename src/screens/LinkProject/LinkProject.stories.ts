@@ -1,8 +1,7 @@
 // @ts-nocheck TODO: Address SB 8 type errors
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { delay, graphql, HttpResponse } from 'msw';
-import { action } from 'storybook/actions';
-import { findByTestId } from 'storybook/test';
+import { findByTestId, fn } from 'storybook/test';
 
 import { SelectProjectsQueryQuery } from '../../gql/graphql';
 import { panelModes } from '../../modes';
@@ -14,7 +13,7 @@ const meta = {
   component: LinkProject,
   args: {
     createdProjectId: undefined,
-    onUpdateProject: action('updateProject'),
+    onUpdateProject: fn().mockName('updateProject'),
   },
   parameters: {
     chromatic: {

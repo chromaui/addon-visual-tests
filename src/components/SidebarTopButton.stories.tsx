@@ -1,8 +1,7 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
+import type { Meta, StoryObj } from '@storybook/react';
 import isChromatic from 'chromatic/isChromatic';
 import React, { ComponentProps, useEffect, useState } from 'react';
-import { action } from 'storybook/actions';
-import { userEvent, within } from 'storybook/test';
+import { fn, userEvent, within } from 'storybook/test';
 
 import { INITIAL_BUILD_PAYLOAD } from '../buildSteps';
 import { playAll } from '../utils/playAll';
@@ -11,8 +10,8 @@ import { SidebarTopButton } from './SidebarTopButton';
 const meta = {
   component: SidebarTopButton,
   args: {
-    startBuild: action('startBuild'),
-    stopBuild: action('stopBuild'),
+    startBuild: fn().mockName('startBuild'),
+    stopBuild: fn().mockName('stopBuild'),
   },
 } satisfies Meta<typeof SidebarTopButton>;
 
@@ -37,7 +36,7 @@ export const DisabledWarning: Story = {
   args: {
     isDisabled: true,
     warning: 'You must be logged in to run tests',
-    clickWarning: action('clickWarning'),
+    clickWarning: fn().mockName('clickWarning'),
   },
   play: playAll(async ({ canvasElement }) => {
     const canvas = within(canvasElement);

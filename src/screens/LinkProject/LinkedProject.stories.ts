@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { graphql, HttpResponse } from 'msw';
-import { action } from 'storybook/actions';
+import { fn } from 'storybook/test';
 
 import { ProjectQueryQuery } from '../../gql/graphql';
 import { panelModes } from '../../modes';
@@ -18,7 +18,7 @@ const meta = {
   args: {
     projectId: 'Project:abc123',
     configFile: 'chromatic.config.json',
-    goToNext: action('goToNext'),
+    goToNext: fn().mockName('goToNext'),
   },
   parameters: {
     chromatic: {

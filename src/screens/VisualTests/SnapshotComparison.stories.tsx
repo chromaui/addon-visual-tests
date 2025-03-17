@@ -2,8 +2,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { delay, http } from 'msw';
 import React, { ComponentProps } from 'react';
-import { action } from 'storybook/actions';
 import type { StoryContext } from 'storybook/internal/types';
+import { fn } from 'storybook/test';
 import { findByRole, fireEvent, screen, userEvent, within } from 'storybook/test';
 
 import { Browser, ComparisonResult, TestResult, TestStatus } from '../../gql/graphql';
@@ -27,8 +27,8 @@ const meta = {
         isReviewing: false,
         userCanReview: true,
         buildIsReviewable: true,
-        acceptTest: action('acceptTest'),
-        unacceptTest: action('unacceptTest'),
+        acceptTest: fn().mockName('acceptTest'),
+        unacceptTest: fn().mockName('unacceptTest'),
         ...ctx.parameters.reviewTest,
       },
     })),
@@ -41,7 +41,7 @@ const meta = {
     isStarting: false,
     isBuildFailed: false,
     shouldSwitchToLastBuildOnBranch: false,
-    setAccessToken: action('setAccessToken'),
+    setAccessToken: fn().mockName('setAccessToken'),
   },
   parameters: {
     chromatic: {
