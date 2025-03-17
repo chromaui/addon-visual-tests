@@ -1,4 +1,5 @@
 import * as coreEvents from 'storybook/internal/core-events';
+import { experimental_getStatusStore } from 'storybook/manager-api';
 
 export const {
   CHROMATIC_INDEX_URL,
@@ -71,3 +72,5 @@ export const CONFIG_OVERRIDES = {
 };
 
 export const DOCS_URL = 'https://www.chromatic.com/docs/visual-tests-addon';
+
+export const statusStore = experimental_getStatusStore(ADDON_ID);

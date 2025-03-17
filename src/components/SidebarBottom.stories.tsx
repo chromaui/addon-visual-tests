@@ -16,8 +16,8 @@ export default {
 export const Changes = {
   args: {
     status: {
-      one: { [ADDON_ID]: { status: 'warn' } },
-      two: { [ADDON_ID]: { status: 'warn' } },
+      one: { [ADDON_ID]: { value: 'status-value:warning' } },
+      two: { [ADDON_ID]: { value: 'status-value:warning' } },
     },
   },
 };
@@ -25,8 +25,8 @@ export const Changes = {
 export const Errors = {
   args: {
     status: {
-      one: { [ADDON_ID]: { status: 'error' } },
-      two: { [ADDON_ID]: { status: 'error' } },
+      one: { [ADDON_ID]: { value: 'status-value:error' } },
+      two: { [ADDON_ID]: { value: 'status-value:error' } },
     },
   },
 };
@@ -34,10 +34,10 @@ export const Errors = {
 export const Both = {
   args: {
     status: {
-      one: { [ADDON_ID]: { status: 'warn' } },
-      two: { [ADDON_ID]: { status: 'warn' } },
-      three: { [ADDON_ID]: { status: 'error' } },
-      four: { [ADDON_ID]: { status: 'error' } },
+      one: { [ADDON_ID]: { value: 'status-value:warning' } },
+      two: { [ADDON_ID]: { value: 'status-value:warning' } },
+      three: { [ADDON_ID]: { value: 'status-value:error' } },
+      four: { [ADDON_ID]: { value: 'status-value:error' } },
     },
   },
 };

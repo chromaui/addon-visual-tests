@@ -1,57 +1,54 @@
-import type { API_StatusUpdate, API_StatusValue, StoryId } from 'storybook/internal/types';
-import type { API } from 'storybook/manager-api';
+import { type Status, type StatusValue, type StoryId } from 'storybook/internal/types';
 
-import { PANEL_ID } from '../constants';
+import { ADDON_ID } from '../constants';
 import { StatusTestFieldsFragment, TestStatus } from '../gql/graphql';
 
-export const statusMap: Partial<Record<TestStatus, API_StatusValue>> = {
-  [TestStatus.Pending]: 'warn',
-  [TestStatus.Failed]: 'error',
-  [TestStatus.Denied]: 'error',
-  [TestStatus.Broken]: 'error',
+export const statusMap: Record<TestStatus, StatusValue> = {
+  [TestStatus.Pending]: 'status-value:warning',
+  [TestStatus.Failed]: 'status-value:error',
+  [TestStatus.Denied]: 'status-value:error',
+  [TestStatus.Broken]: 'status-value:error',
+  [TestStatus.InProgress]: 'status-value:pending',
+  [TestStatus.Accepted]: 'status-value:success',
+  [TestStatus.Passed]: 'status-value:success',
 };
 
-const statusOrder: (API_StatusValue | null)[] = [
-  null,
-  'unknown',
-  'pending',
-  'success',
-  'warn',
-  'error',
+const statusValueOrder: StatusValue[] = [
+  'status-value:unknown',
+  'status-value:pending',
+  'status-value:success',
+  'status-value:warning',
+  'status-value:error',
 ];
-function chooseWorseStatus(status: API_StatusValue | null, oldStatus: API_StatusValue | null) {
-  return statusOrder[Math.max(statusOrder.indexOf(status), statusOrder.indexOf(oldStatus))];
+
+function chooseWorseStatusValue(a: StatusValue, b: StatusValue) {
+  return statusValueOrder[Math.max(statusValueOrder.indexOf(a), statusValueOrder.indexOf(b))];
 }
 
 export function testsToStatusUpdate<T extends StatusTestFieldsFragment>(
-  api: API,
   tests: readonly T[]
-): API_StatusUpdate {
-  const storyIdToStatus: Record<StoryId, API_StatusValue | null> = {};
-  tests.forEach((test) => {
+): Status[] {
+  const storyIdToStatusValue: Record<StoryId, StatusValue> = {};
+  tests?.forEach((test) => {
     if (!test.story || !test.status) {
       return;
     }
-    storyIdToStatus[test.story.storyId] = chooseWorseStatus(
-      statusMap[test.status] || null,
-      storyIdToStatus[test.story.storyId]
+    const existingStoryStatusValue = storyIdToStatusValue[test.story.storyId];
+    if (!existingStoryStatusValue) {
+      storyIdToStatusValue[test.story.storyId] = statusMap[test.status];
+      return;
+    }
+    storyIdToStatusValue[test.story.storyId] = chooseWorseStatusValue(
+      existingStoryStatusValue,
+      statusMap[test.status]
     );
   });
-  const openAddonPanel = () => {
-    api.setSelectedPanel(PANEL_ID);
-    api.togglePanel(true);
-  };
-  const update = Object.fromEntries(
-    Object.entries(storyIdToStatus).map(([storyId, status]) => [
-      storyId,
-      status && {
-        status,
-        title: 'Visual tests',
-        description: 'Chromatic Visual Tests',
-        onClick: openAddonPanel,
-      },
-    ])
-  );
 
-  return update;
+  return Object.entries(storyIdToStatusValue).map(([storyId, value]) => ({
+    value,
+    typeId: ADDON_ID,
+    storyId,
+    title: 'Visual tests',
+    description: 'Chromatic Visual Tests',
+  }));
 }

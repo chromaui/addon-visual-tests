@@ -6,6 +6,7 @@ import { expect, fn } from 'storybook/test';
 import { findByLabelText, findByRole, fireEvent, waitFor } from 'storybook/test';
 
 import { INITIAL_BUILD_PAYLOAD } from '../../buildSteps';
+import { ADDON_ID } from '../../constants';
 import type {
   LastBuildOnBranchBuildFieldsFragment,
   MakeOptional,
@@ -222,22 +223,9 @@ export const ServerError = {
 } satisfies Story;
 
 export const EmptyBranch = {
-  // @ts-expect-error Type conflict due to us explicitly defining `StoryArgs` above,
-  // as it cannot be auto-inferred from meta
-  render: (args: typeof meta.args) => {
-    // custom render for mapping `updateBuildStatus` to a function which is mocked, but returns data instead of a function
-    return (
-      <VisualTests
-        {...args}
-        updateBuildStatus={(fnn) =>
-          args.updateBuildStatus(typeof fnn === 'function' ? fnn({}) : fnn)
-        }
-      />
-    );
-  },
   play: async ({ args }) => {
     await waitFor(() => {
-      expect(args.updateBuildStatus).toHaveBeenCalledWith({});
+      expect(args.updateBuildStatus).toHaveBeenCalledWith([]);
     });
   },
 } satisfies Story;
@@ -254,7 +242,6 @@ export const EmptyBranchStartedLocalBuild = {
       },
     },
   },
-  // @ts-expect-error as above
 } satisfies Story;
 
 export const EmptyBranchLocalBuildUploading = {
@@ -274,7 +261,6 @@ export const EmptyBranchLocalBuildUploading = {
       },
     },
   },
-  // @ts-expect-error as above
 } satisfies Story;
 
 export const NoStoryBuildRunningBuildFailed = {
@@ -689,29 +675,17 @@ export const Pending = {
       'https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-304718&t=0rxMQnkxsVpVj1qy-4'
     ),
   },
-  // @ts-expect-error Type conflict due to us explicitly defining `StoryArgs` above,
-  // as it cannot be auto-inferred from meta
-  render: ({ ...args }: typeof meta.args) => {
-    // custom render for mapping `updateBuildStatus` to a function which is mocked, but returns data instead of a function
-    return (
-      <VisualTests
-        {...args}
-        updateBuildStatus={(spyFn) =>
-          args.updateBuildStatus(typeof spyFn === 'function' ? spyFn({}) : spyFn)
-        }
-      />
-    );
-  },
   play: async ({ args }) => {
     await waitFor(() => {
-      expect(args.updateBuildStatus).toHaveBeenCalledWith({
-        'button--primary': {
-          status: 'warn',
-          onClick: expect.anything(),
+      expect(args.updateBuildStatus).toHaveBeenCalledWith([
+        {
+          storyId: 'button--primary',
+          typeId: ADDON_ID,
+          value: 'status-value:warning',
           title: 'Visual tests',
           description: 'Chromatic Visual Tests',
         },
-      });
+      ]);
     });
   },
 } satisfies Story;

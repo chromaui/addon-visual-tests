@@ -1,6 +1,5 @@
 import { FailedIcon } from '@storybook/icons';
 import React, { useCallback, useEffect } from 'react';
-import type { API_StatusState } from 'storybook/internal/types';
 import { useStorybookApi, useStorybookState } from 'storybook/manager-api';
 import { color } from 'storybook/theming';
 import { useMutation } from 'urql';
@@ -27,10 +26,6 @@ import { BuildResults } from './BuildResults';
 import { FragmentStatusTestFields, MutationReviewTest } from './graphql';
 import { NoBuild } from './NoBuild';
 import { ReviewTestProvider } from './ReviewTestContext';
-
-const createEmptyStoryStatusUpdate = (state: API_StatusState) => {
-  return Object.fromEntries(Object.entries(state).map(([id]) => [id, null]));
-};
 
 interface VisualTestsProps {
   isOutdated: boolean;
@@ -263,13 +258,11 @@ export const VisualTestsWithoutSelectedBuildId = ({
     'testsForStatus' in lastBuildOnBranch &&
     lastBuildOnBranch.testsForStatus?.nodes &&
     getFragment(FragmentStatusTestFields, lastBuildOnBranch.testsForStatus.nodes);
-  const statusUpdate =
-    lastBuildOnBranchIsSelectable && testsToStatusUpdate(managerApi, testsForStatus || []);
+  const statusUpdate = lastBuildOnBranchIsSelectable
+    ? testsToStatusUpdate(testsForStatus || [])
+    : [];
   useEffect(() => {
-    updateBuildStatus((state) => ({
-      ...createEmptyStoryStatusUpdate(state),
-      ...statusUpdate,
-    }));
+    updateBuildStatus(statusUpdate);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(statusUpdate), updateBuildStatus]);
 

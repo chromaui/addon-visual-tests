@@ -1,5 +1,5 @@
 import type { Configuration, getConfiguration, GitInfo, TaskName } from 'chromatic/node';
-import type { API } from 'storybook/manager-api';
+import { Status } from 'storybook/internal/types';
 
 import { SelectedBuildFieldsFragment } from './gql/graphql';
 
@@ -15,11 +15,7 @@ export type CompletedBuild = Extract<SelectedBuildFieldsFragment, { __typename: 
 
 export type SelectedBuildWithTests = StartedBuild | CompletedBuild;
 
-export type StoryStatusUpdater = Parameters<API['experimental_updateStatus']>[1];
-
-export type UpdateStatusFunction = (
-  update: StoryStatusUpdater
-) => ReturnType<API['experimental_updateStatus']>;
+export type UpdateStatusFunction = (statuses: Status[]) => void;
 
 export type ConfigurationUpdate = {
   // Suggestions adhere to the Configuration schema, but may be null to suggest removal
