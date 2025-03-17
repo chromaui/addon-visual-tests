@@ -1,5 +1,5 @@
 import React, { ComponentProps, ReactNode } from 'react';
-import { styled } from 'storybook/internal/theming';
+import { styled } from 'storybook/theming';
 
 import { Input } from './design-system';
 

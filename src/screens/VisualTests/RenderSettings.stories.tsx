@@ -1,5 +1,5 @@
 // @ts-nocheck TODO: Address SB 8 type errors
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { graphql, HttpResponse } from 'msw';
 
 import { ProjectQueryQuery } from '../../gql/graphql';

@@ -1,8 +1,8 @@
-import { action } from '@storybook/addon-actions';
-import type { Meta, StoryObj } from '@storybook/react';
-import { within } from '@storybook/test';
-import { userEvent } from '@storybook/testing-library';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import React from 'react';
+import { action } from 'storybook/actions';
+import { within } from 'storybook/test';
+import { userEvent } from 'storybook/test';
 
 import { Container } from './Container';
 import { StatusDot } from './StatusDot';

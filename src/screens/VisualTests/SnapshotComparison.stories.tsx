@@ -1,10 +1,10 @@
 // @ts-nocheck TODO: Address SB 8 type errors
-import { action } from '@storybook/addon-actions';
-import type { Meta, StoryObj } from '@storybook/react';
-import { findByRole, fireEvent, screen, userEvent, within } from '@storybook/testing-library';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { delay, http } from 'msw';
 import React, { ComponentProps } from 'react';
+import { action } from 'storybook/actions';
 import type { StoryContext } from 'storybook/internal/types';
+import { findByRole, fireEvent, screen, userEvent, within } from 'storybook/test';
 
 import { Browser, ComparisonResult, TestResult, TestStatus } from '../../gql/graphql';
 import { panelModes } from '../../modes';

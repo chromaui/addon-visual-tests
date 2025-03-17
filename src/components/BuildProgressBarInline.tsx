@@ -1,5 +1,5 @@
 import React from 'react';
-import { styled } from 'storybook/internal/theming';
+import { styled } from 'storybook/theming';
 
 import { LocalBuildProgress } from '../types';
 import { BuildProgressLabel } from './BuildProgressLabel';

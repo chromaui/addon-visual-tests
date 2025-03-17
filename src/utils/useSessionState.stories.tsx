@@ -1,6 +1,6 @@
-import { expect, userEvent, waitFor } from '@storybook/test';
-import { within } from '@storybook/testing-library';
 import React, { useEffect } from 'react';
+import { expect, userEvent, waitFor } from 'storybook/test';
+import { within } from 'storybook/test';
 
 import { ADDON_ID } from '../constants';
 import { playAll } from './playAll';

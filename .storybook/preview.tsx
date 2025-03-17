@@ -1,7 +1,6 @@
-import { action } from '@storybook/addon-actions';
-import { ManagerContext } from 'storybook/internal/manager-api';
-import type { Decorator, Loader, Preview } from '@storybook/react';
-import { fn } from '@storybook/test';
+import { ManagerContext } from 'storybook/manager-api';
+import type { Decorator, Loader, Preview } from '@storybook/react-vite';
+import { fn } from 'storybook/test';
 import {
   Global,
   ThemeProvider,
@@ -10,7 +9,7 @@ import {
   styled,
   themes,
   useTheme,
-} from 'storybook/internal/theming';
+} from 'storybook/theming';
 import { HttpResponse, graphql } from 'msw';
 import { initialize, mswLoader } from 'msw-storybook-addon';
 import React from 'react';
@@ -23,6 +22,7 @@ import { GraphQLClientProvider } from '../src/utils/graphQLClient';
 import { storyWrapper } from '../src/utils/storyWrapper';
 import { TelemetryProvider } from '../src/utils/TelemetryContext';
 import { useSessionState } from '../src/utils/useSessionState';
+import { action } from 'storybook/actions';
 
 // Initialize MSW
 initialize({

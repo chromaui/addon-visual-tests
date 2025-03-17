@@ -9,7 +9,7 @@ import {
 } from '@storybook/icons';
 import React, { useEffect, useRef } from 'react';
 import { Link } from 'storybook/internal/components';
-import { keyframes, styled } from 'storybook/internal/theming';
+import { keyframes, styled } from 'storybook/theming';
 
 import { BUILD_STEP_CONFIG, BUILD_STEP_ORDER } from '../../buildSteps';
 import { BuildProgressLabel } from '../../components/BuildProgressLabel';

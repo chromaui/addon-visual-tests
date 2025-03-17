@@ -1,4 +1,4 @@
-import { action } from '@storybook/addon-actions';
+import { action } from 'storybook/actions';
 
 import { ADDON_ID } from '../constants';
 import { SidebarBottomBase } from './SidebarBottom';
