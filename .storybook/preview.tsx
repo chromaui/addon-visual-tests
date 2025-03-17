@@ -1,7 +1,7 @@
 import { action } from '@storybook/addon-actions';
 import { ManagerContext } from 'storybook/manager-api';
-import type { Decorator, Loader, Preview } from '@storybook/react';
-import { fn } from '@storybook/test';
+import type { Decorator, Loader, Preview } from '@storybook/react-vite';
+import { fn } from 'storybook/test';
 import {
   Global,
   ThemeProvider,

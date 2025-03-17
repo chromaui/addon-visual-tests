@@ -1,4 +1,4 @@
-import type { Decorator } from '@storybook/react';
+import type { Decorator } from '@storybook/react-vite';
 import React from 'react';
 
 // Wraps a story with a setup function that runs once and tears down when the story is unmounted.

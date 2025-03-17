@@ -1,4 +1,4 @@
-import type { ReactRenderer } from '@storybook/react';
+import type { ReactRenderer } from '@storybook/react-vite';
 import type { StoryAnnotations } from 'storybook/internal/types';
 
 export function playAll<Story extends StoryAnnotations<ReactRenderer>>(

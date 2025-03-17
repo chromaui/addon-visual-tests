@@ -1,4 +1,4 @@
-import { expect, waitFor } from '@storybook/test';
+import { expect, waitFor } from 'storybook/test';
 import React, { useEffect } from 'react';
 
 import { SELECTED_BROWSER_ID, SELECTED_MODE_NAME } from '../constants';

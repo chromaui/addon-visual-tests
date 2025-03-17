@@ -1,10 +1,10 @@
 import { ResultOf, VariablesOf } from '@graphql-typed-document-node/core';
-import type { Meta, StoryObj } from '@storybook/react';
-import { expect, fn } from '@storybook/test';
-import { findByLabelText, findByRole, fireEvent, waitFor } from '@storybook/testing-library';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { delay, HttpResponse } from 'msw';
 import { graphql } from 'msw';
 import React from 'react';
+import { expect, fn } from 'storybook/test';
+import { findByLabelText, findByRole, fireEvent, waitFor } from 'storybook/test';
 
 import { INITIAL_BUILD_PAYLOAD } from '../../buildSteps';
 import type {
