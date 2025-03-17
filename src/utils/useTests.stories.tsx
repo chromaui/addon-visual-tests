@@ -1,5 +1,5 @@
-import { expect, waitFor } from 'storybook/test';
 import React, { useEffect } from 'react';
+import { expect, waitFor } from 'storybook/test';
 
 import { SELECTED_BROWSER_ID, SELECTED_MODE_NAME } from '../constants';
 import { ComparisonResult, StoryTestFieldsFragment } from '../gql/graphql';
