@@ -1158,7 +1158,6 @@ __metadata:
     "@parcel/watcher": "npm:^2.4.1"
     "@storybook/addon-designs": "npm:^9.0.0-0"
     "@storybook/addon-essentials": "npm:^9.0.0 || ^9.0.0-alpha.4"
-    "@storybook/addon-interactions": "npm:^9.0.0 || ^9.0.0-alpha.4"
     "@storybook/addon-mdx-gfm": "npm:^9.0.0 || ^9.0.0-alpha.4"
     "@storybook/blocks": "npm:^9.0.0 || ^9.0.0-alpha.4"
     "@storybook/icons": "npm:^1.4.0"
@@ -3202,19 +3201,6 @@ __metadata:
   peerDependencies:
     storybook: ^9.0.0-alpha.5
   checksum: 10c0/13bb4de9c57915bf1ffda35438922c0927ae8c4144b4a227561be4ad257e09b498def0d15aeab37dc5cad61418bc9fbb9e6ec9e1712f3b5bd19d5bdd28090f2d
-  languageName: node
-  linkType: hard
-
-"@storybook/addon-interactions@npm:^9.0.0 || ^9.0.0-alpha.4":
-  version: 9.0.0-alpha.5
-  resolution: "@storybook/addon-interactions@npm:9.0.0-alpha.5"
-  dependencies:
-    "@storybook/global": "npm:^5.0.0"
-    polished: "npm:^4.2.2"
-    ts-dedent: "npm:^2.2.0"
-  peerDependencies:
-    storybook: ^9.0.0-alpha.5
-  checksum: 10c0/3b01433494b65ea186c2598a5b4c7e37879577a8cab16dd67671ebf51d65ed1e230f5ab62dff5bb2dc01092a6620da029815168ef257032ea714e1d1d497f3d2
   languageName: node
   linkType: hard
 

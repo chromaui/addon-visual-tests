@@ -21,7 +21,6 @@ const config: StorybookConfig = {
         viewport: false,
       },
     },
-    '@storybook/addon-interactions',
     // TODO: re-enable addon-designs when it is compatible with SB 9
     // '@storybook/addon-designs',
     {
