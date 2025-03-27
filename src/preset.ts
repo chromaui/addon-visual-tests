@@ -234,7 +234,6 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
     stopChromaticBuild();
   });
 
-  // TODO: ensure we still have good telemetry
   channel.on(TELEMETRY, async (event: Event) => {
     if ((await corePromise).disableTelemetry) return;
     telemetry('addon-visual-tests' as any, { ...event, addonVersion: await getAddonVersion() });
