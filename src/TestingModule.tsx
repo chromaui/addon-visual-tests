@@ -181,30 +181,31 @@ export const TestingModule = () => {
     [openVisualTestsPanel, warning]
   );
 
-  let description: string | React.ReactNode = 'Not run';
-  if (warning) {
-    description = <Link onClick={clickWarning}>{warning}</Link>;
-  }
-  if (testProviderState === 'test-provider-state:running') {
-    if (localBuildProgress) {
-      const { renderProgress } = BUILD_STEP_CONFIG[localBuildProgress.currentStep];
-      description = renderProgress(localBuildProgress);
-    }
-    description = 'Starting...';
-  }
-  if (isOutdated) {
-    description = 'Test results outdated';
-  }
-  if (localBuildProgress?.currentStep === 'aborted') {
-    description = 'Aborted by user';
-  }
-  if (localBuildProgress?.currentStep === 'complete') {
-    if (localBuildProgress.errorCount) {
-      description = `Encountered ${pluralize('component error', localBuildProgress.errorCount, true)}`;
-    }
-    description = warningStatusCount
-      ? `Found ${pluralize('story', warningStatusCount, true)} with ${pluralize('change', warningStatusCount)}`
-      : 'No visual changes detected';
+  let description: string | React.ReactNode;
+  switch (true) {
+    case !!warning:
+      description = <Link onClick={clickWarning}>{warning}</Link>;
+      break;
+    case testProviderState === 'test-provider-state:running':
+      description = localBuildProgress
+        ? BUILD_STEP_CONFIG[localBuildProgress.currentStep].renderProgress(localBuildProgress)
+        : 'Starting...';
+      break;
+    case !!isOutdated:
+      description = 'Test results outdated';
+      break;
+    case localBuildProgress?.currentStep === 'aborted':
+      description = 'Aborted by user';
+      break;
+    case localBuildProgress?.currentStep === 'complete':
+      description = localBuildProgress.errorCount
+        ? `Encountered ${pluralize('component error', localBuildProgress.errorCount, true)}`
+        : warningStatusCount
+          ? `Found ${pluralize('story', warningStatusCount, true)} with ${pluralize('change', warningStatusCount)}`
+          : 'No visual changes detected';
+      break;
+    default:
+      description = 'Not run';
   }
 
   return (
