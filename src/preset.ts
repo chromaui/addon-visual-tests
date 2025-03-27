@@ -4,7 +4,6 @@ import { normalize, relative } from 'node:path';
 
 import { type Configuration, getConfiguration, getGitInfo, type GitInfo } from 'chromatic/node';
 import type { Channel } from 'storybook/internal/channels';
-import type { TestingModuleProgressReportProgress } from 'storybook/internal/core-events';
 import { experimental_getTestProviderStore } from 'storybook/internal/core-server';
 import { telemetry } from 'storybook/internal/telemetry';
 import type { Options } from 'storybook/internal/types';
@@ -23,7 +22,6 @@ import {
   STOP_BUILD,
   TELEMETRY,
   TEST_PROVIDER_ID,
-  TESTING_MODULE_PROGRESS_REPORT,
 } from './constants';
 import { runChromaticBuild, stopChromaticBuild } from './runChromaticBuild';
 import {
@@ -218,46 +216,6 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
     LOCAL_BUILD_PROGRESS,
     channel
   );
-
-  const stepStatus = {
-    initialize: 'pending',
-    build: 'pending',
-    upload: 'pending',
-    verify: 'pending',
-    snapshot: 'pending',
-    complete: 'success',
-    error: 'failed',
-    limited: 'failed',
-    aborted: 'success',
-  };
-
-  localBuildProgress.on('change', (progress) => {
-    if (!progress) return;
-    const { currentStep, stepProgress, errorCount = 0, changeCount = 0 } = progress;
-    const numTotalTests = stepProgress.snapshot?.denominator;
-    const numFailedTests = errorCount + changeCount;
-    const finishedAt = stepProgress.snapshot?.completedAt
-      ? new Date(stepProgress.snapshot.completedAt)
-      : new Date();
-
-    channel.emit(TESTING_MODULE_PROGRESS_REPORT, {
-      providerId: TEST_PROVIDER_ID,
-      status: stepStatus[currentStep],
-      cancellable: ['initialize', 'build', 'upload'].includes(currentStep),
-      progress: {
-        numFailedTests,
-        numPassedTests: numTotalTests && numTotalTests - numFailedTests,
-        numPendingTests: numTotalTests && numTotalTests - (stepProgress.snapshot.numerator || 0),
-        numTotalTests,
-        startedAt:
-          stepProgress.initialize?.startedAt && new Date(stepProgress.initialize.startedAt),
-        finishedAt: ['aborted', 'complete', 'error', 'limited'].includes(currentStep)
-          ? finishedAt
-          : undefined,
-      } as TestingModuleProgressReportProgress,
-      details: progress,
-    });
-  });
 
   channel.on(START_BUILD, async ({ accessToken: userToken }) => {
     const { projectId } = projectInfoState.value || {};
