@@ -1,17 +1,17 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import type { API } from 'storybook/manager-api';
-import { useChannel, useStorybookState } from 'storybook/manager-api';
+import { experimental_getStatusStore, useChannel, useStorybookState } from 'storybook/manager-api';
 
 import { AuthProvider } from './AuthContext';
 import { Spinner } from './components/design-system';
 import {
+  ADDON_ID,
   GIT_INFO,
   GIT_INFO_ERROR,
   IS_OFFLINE,
   IS_OUTDATED,
   LOCAL_BUILD_PROGRESS,
   REMOVE_ADDON,
-  statusStore,
   TELEMETRY,
 } from './constants';
 import { Authentication } from './screens/Authentication/Authentication';
@@ -39,6 +39,8 @@ interface PanelProps {
   active: boolean;
   api: API;
 }
+
+const statusStore = experimental_getStatusStore(ADDON_ID);
 
 export const Panel = ({ active, api }: PanelProps) => {
   const [accessToken, updateAccessToken] = useAccessToken();
