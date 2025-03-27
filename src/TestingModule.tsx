@@ -5,6 +5,7 @@ import React, { useCallback, useContext, useEffect, useRef } from 'react';
 import { Link } from 'storybook/internal/components';
 import { Button, ProgressSpinner, TooltipNote, WithTooltip } from 'storybook/internal/components';
 import {
+  experimental_getTestProviderStore,
   experimental_useStatusStore,
   experimental_useTestProviderStore,
   useStorybookApi,
@@ -97,6 +98,16 @@ export const TestingModule = () => {
     (state) => state[TEST_PROVIDER_ID] ?? 'test-provider-state:pending'
   );
 
+  const { startBuild, stopBuild } = useBuildEvents({
+    localBuildProgress,
+    accessToken,
+  });
+
+  useEffect(
+    () => experimental_getTestProviderStore(TEST_PROVIDER_ID).onRunAll(startBuild),
+    [startBuild]
+  );
+
   const openVisualTestsPanel = useCallback(
     (warning?: string) => {
       setOptions({ selectedPanel: PANEL_ID });
@@ -163,11 +174,6 @@ export const TestingModule = () => {
       });
     }
   }, [addNotification, clickNotification, localBuildProgress?.currentStep]);
-
-  const { startBuild, stopBuild } = useBuildEvents({
-    localBuildProgress,
-    accessToken,
-  });
 
   let warning: string | undefined;
   if (!projectId) warning = 'Select a project';
