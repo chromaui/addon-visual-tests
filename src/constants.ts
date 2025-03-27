@@ -1,5 +1,3 @@
-import * as coreEvents from 'storybook/internal/core-events';
-
 export const {
   CHROMATIC_INDEX_URL,
   CHROMATIC_BASE_URL = CHROMATIC_INDEX_URL || 'https://www.chromatic.com',
@@ -11,8 +9,6 @@ export const PACKAGE_NAME = '@chromatic-com/storybook';
 export const ADDON_ID = 'chromaui/addon-visual-tests';
 export const PANEL_ID = `${ADDON_ID}/panel`;
 export const TEST_PROVIDER_ID = `${ADDON_ID}/test-provider`;
-export const SIDEBAR_TOP_ID = `${ADDON_ID}/sidebarTop`;
-export const SIDEBAR_BOTTOM_ID = `${ADDON_ID}/sidebarBottom`;
 export const ACCESS_TOKEN_KEY = `${ADDON_ID}/access-token/${CHROMATIC_BASE_URL}`;
 export const DEV_BUILD_ID_KEY = `${ADDON_ID}/dev-build-id`;
 export const CONFIG_INFO = `${ADDON_ID}/configInfo`;

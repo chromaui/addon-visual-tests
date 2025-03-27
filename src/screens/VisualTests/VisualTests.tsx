@@ -353,7 +353,6 @@ export const VisualTestsWithoutSelectedBuildId = ({
             hasSelectedBuild,
             branch: gitInfo.branch,
             dismissBuildError,
-            isOutdated,
             localBuildProgress,
             ...(lastBuildOnBranchIsSelectable && { switchToLastBuildOnBranch }),
           }}
