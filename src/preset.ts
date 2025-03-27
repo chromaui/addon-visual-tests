@@ -5,6 +5,7 @@ import { normalize, relative } from 'node:path';
 import { type Configuration, getConfiguration, getGitInfo, type GitInfo } from 'chromatic/node';
 import type { Channel } from 'storybook/internal/channels';
 import type { TestingModuleProgressReportProgress } from 'storybook/internal/core-events';
+import { experimental_getTestProviderStore } from 'storybook/internal/core-server';
 import { telemetry } from 'storybook/internal/telemetry';
 import type { Options } from 'storybook/internal/types';
 
@@ -175,6 +176,8 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
   const projectInfoState = SharedState.subscribe<ProjectInfoPayload>(PROJECT_INFO, channel);
   projectInfoState.value = initialProjectId ? { projectId: initialProjectId } : {};
 
+  const testProviderStore = experimental_getTestProviderStore(TEST_PROVIDER_ID);
+
   let lastProjectId = initialProjectId;
   projectInfoState.on('change', async ({ projectId } = {}) => {
     if (!projectId || projectId === lastProjectId) return;
@@ -240,6 +243,7 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
     channel.emit(TESTING_MODULE_PROGRESS_REPORT, {
       providerId: TEST_PROVIDER_ID,
       status: stepStatus[currentStep],
+      // TODO: use this in the UI
       cancellable: ['initialize', 'build', 'upload'].includes(currentStep),
       progress: {
         numFailedTests,
@@ -258,14 +262,20 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
 
   channel.on(START_BUILD, async ({ accessToken: userToken }) => {
     const { projectId } = projectInfoState.value || {};
-    try {
-      await runChromaticBuild(localBuildProgress, { configFile, projectId, userToken });
-    } catch (e) {
-      console.error(`Failed to run Chromatic build, with error:\n${e}`);
-    }
+    testProviderStore.runWithState(async () => {
+      try {
+        await runChromaticBuild(localBuildProgress, { configFile, projectId, userToken });
+      } catch (e) {
+        console.error(`Failed to run Chromatic build, with error:\n${e}`);
+        throw e;
+      }
+    });
   });
 
-  channel.on(STOP_BUILD, stopChromaticBuild);
+  channel.on(STOP_BUILD, () => {
+    testProviderStore.setState('test-provider-state:succeeded');
+    stopChromaticBuild();
+  });
 
   channel.on(TELEMETRY, async (event: Event) => {
     if ((await corePromise).disableTelemetry) return;

@@ -5,12 +5,7 @@ import React, { useCallback, useContext, useEffect, useRef } from 'react';
 import { Link } from 'storybook/internal/components';
 import { Button, ProgressSpinner, TooltipNote, WithTooltip } from 'storybook/internal/components';
 import { TestProviderState } from 'storybook/internal/types';
-import {
-  type API,
-  experimental_useStatusStore,
-  useChannel,
-  useStorybookState,
-} from 'storybook/manager-api';
+import { type API, experimental_useStatusStore, useStorybookState } from 'storybook/manager-api';
 import { color } from 'storybook/theming';
 import { styled } from 'storybook/theming';
 
@@ -23,10 +18,6 @@ import {
   IS_OUTDATED,
   LOCAL_BUILD_PROGRESS,
   PANEL_ID,
-  TEST_PROVIDER_ID,
-  TESTING_MODULE_CANCEL_TEST_RUN_REQUEST,
-  TESTING_MODULE_PROGRESS_REPORT,
-  TESTING_MODULE_RUN_ALL_REQUEST,
 } from './constants';
 import { ConfigInfoPayload, LocalBuildProgress } from './types';
 import { useAccessToken } from './utils/graphQLClient';
@@ -73,79 +64,7 @@ const StopIcon = styled(StopAltIcon)({
 
 type TestingModuleProps = { api: API; testProviderState: TestProviderState };
 
-export const TestingModule = ({ api, testProviderState }: TestingModuleProps) => {
-  // TODO: FIXS!
-  const state = {
-    name: 'Visual tests',
-    progress: {
-      percentageCompleted: 0,
-    },
-    details: {
-      buildProgressPercentage: 0,
-    },
-    id: 'visual-tests',
-  };
-  const failed = false;
-
-  return (
-    <Container>
-      <Info>
-        <TitleWrapper crashed={testProviderState === 'test-provider-state:crashed'}>
-          {failed ? "Visual tests didn't complete" : 'Visual tests'}
-        </TitleWrapper>
-        <DescriptionWrapper>
-          <TestingModuleDescription testProviderState={testProviderState} api={api} />
-        </DescriptionWrapper>
-      </Info>
-
-      <Actions>
-        {testProviderState === 'test-provider-state:running' ? (
-          <WithTooltip
-            hasChrome={false}
-            trigger="hover"
-            tooltip={<TooltipNote note={`Stop ${state.name}`} />}
-          >
-            <Button
-              aria-label={`Stop ${state.name}`}
-              size="medium"
-              variant="ghost"
-              padding="none"
-              onClick={() => api.cancelTestProvider(state.id)}
-            >
-              <Progress
-                percentage={
-                  state.progress?.percentageCompleted ??
-                  (state.details as any)?.buildProgressPercentage
-                }
-              >
-                <StopIcon />
-              </Progress>
-            </Button>
-          </WithTooltip>
-        ) : (
-          <WithTooltip
-            hasChrome={false}
-            trigger="hover"
-            tooltip={<TooltipNote note={`Start ${state.name}`} />}
-          >
-            <Button
-              aria-label={`Start ${state.name}`}
-              size="medium"
-              variant="ghost"
-              padding="small"
-              onClick={() => api.runTestProvider(state.id)}
-              disabled={testProviderState === 'test-provider-state:crashed'}
-            >
-              <PlayHollowIcon />
-            </Button>
-          </WithTooltip>
-        )}
-      </Actions>
-    </Container>
-  );
-};
-
-const TestingModuleDescription = ({ testProviderState, api }: TestingModuleProps) => {
+export const TestingModule = ({ testProviderState, api }: TestingModuleProps) => {
   const { addNotification, selectStory, setOptions, togglePanel } = api;
   const warningStatusCount = experimental_useStatusStore(
     (allStatuses) =>
@@ -255,45 +174,85 @@ const TestingModuleDescription = ({ testProviderState, api }: TestingModuleProps
     [openVisualTestsPanel, warning]
   );
 
-  const emit = useChannel(
-    {
-      [TESTING_MODULE_RUN_ALL_REQUEST]: ({ providerId }) => {
-        if (providerId === TEST_PROVIDER_ID) startBuild();
-      },
-      [TESTING_MODULE_CANCEL_TEST_RUN_REQUEST]: ({ providerId }) => {
-        if (providerId === TEST_PROVIDER_ID) stopBuild();
-      },
-    },
-    [startBuild, stopBuild]
-  );
-
-  useEffect(() => {
-    emit(TESTING_MODULE_PROGRESS_REPORT, { providerId: TEST_PROVIDER_ID, runnable: !warning });
-  }, [emit, warning]);
-
+  let description: string | React.ReactNode = 'Not run';
   if (warning) {
-    return <Link onClick={clickWarning}>{warning}</Link>;
+    description = <Link onClick={clickWarning}>{warning}</Link>;
   }
   if (testProviderState === 'test-provider-state:running') {
     if (localBuildProgress) {
       const { renderProgress } = BUILD_STEP_CONFIG[localBuildProgress.currentStep];
-      return renderProgress(localBuildProgress);
+      description = renderProgress(localBuildProgress);
     }
-    return 'Starting...';
+    description = 'Starting...';
   }
   if (isOutdated) {
-    return 'Test results outdated';
+    description = 'Test results outdated';
   }
   if (localBuildProgress?.currentStep === 'aborted') {
-    return 'Aborted by user';
+    description = 'Aborted by user';
   }
   if (localBuildProgress?.currentStep === 'complete') {
     if (localBuildProgress.errorCount) {
-      return `Encountered ${pluralize('component error', localBuildProgress.errorCount, true)}`;
+      description = `Encountered ${pluralize('component error', localBuildProgress.errorCount, true)}`;
     }
-    return warningStatusCount
+    description = warningStatusCount
       ? `Found ${pluralize('story', warningStatusCount, true)} with ${pluralize('change', warningStatusCount)}`
       : 'No visual changes detected';
   }
-  return 'Not run';
+
+  return (
+    <Container>
+      <Info>
+        <TitleWrapper crashed={testProviderState === 'test-provider-state:crashed'}>
+          {localBuildProgress?.currentStep === 'error' ||
+          localBuildProgress?.currentStep === 'limited'
+            ? "Visual tests didn't complete"
+            : 'Visual tests'}
+        </TitleWrapper>
+        <DescriptionWrapper>{description}</DescriptionWrapper>
+      </Info>
+
+      <Actions>
+        {warning ? null : testProviderState === 'test-provider-state:running' ? (
+          <WithTooltip
+            hasChrome={false}
+            trigger="hover"
+            tooltip={<TooltipNote note="Stop Visual tests" />}
+          >
+            <Button
+              aria-label="Stop Visual tests"
+              size="medium"
+              variant="ghost"
+              padding="none"
+              onClick={stopBuild}
+              disabled={
+                !['initialize', 'build', 'upload'].includes(localBuildProgress?.currentStep ?? '')
+              }
+            >
+              <Progress percentage={localBuildProgress?.buildProgressPercentage}>
+                <StopIcon />
+              </Progress>
+            </Button>
+          </WithTooltip>
+        ) : (
+          <WithTooltip
+            hasChrome={false}
+            trigger="hover"
+            tooltip={<TooltipNote note="Start Visual tests" />}
+          >
+            <Button
+              aria-label="Start Visual tests"
+              size="medium"
+              variant="ghost"
+              padding="small"
+              onClick={startBuild}
+              disabled={testProviderState === 'test-provider-state:crashed'}
+            >
+              <PlayHollowIcon />
+            </Button>
+          </WithTooltip>
+        )}
+      </Actions>
+    </Container>
+  );
 };
