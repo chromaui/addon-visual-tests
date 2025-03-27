@@ -1,8 +1,8 @@
 import React from 'react';
 import { type Addon_TestProviderType, Addon_TypesEnum } from 'storybook/internal/types';
-import { addons, experimental_useTestProviderStore } from 'storybook/manager-api';
+import { addons, experimental_getStatusStore } from 'storybook/manager-api';
 
-import { ADDON_ID, PANEL_ID, PARAM_KEY, statusStore, TEST_PROVIDER_ID } from './constants';
+import { ADDON_ID, PANEL_ID, PARAM_KEY, TEST_PROVIDER_ID } from './constants';
 import { Panel } from './Panel';
 import { TestingModule } from './TestingModule';
 
@@ -19,6 +19,8 @@ addons.register(ADDON_ID, (api) => {
     return;
   }
 
+  const statusStore = experimental_getStatusStore(ADDON_ID);
+
   statusStore.onSelect(() => {
     api.setSelectedPanel(PANEL_ID);
     api.togglePanel(true);
@@ -27,12 +29,6 @@ addons.register(ADDON_ID, (api) => {
   addons.add(TEST_PROVIDER_ID, {
     type: Addon_TypesEnum.experimental_TEST_PROVIDER,
     name: 'Visual tests',
-    id: TEST_PROVIDER_ID,
-    render: () => {
-      const testProviderState = experimental_useTestProviderStore(
-        (state) => state[TEST_PROVIDER_ID] ?? 'test-provider-state:pending'
-      );
-      return <TestingModule api={api} testProviderState={testProviderState} />;
-    },
-  } satisfies Addon_TestProviderType);
+    render: () => <TestingModule />,
+  } satisfies Omit<Addon_TestProviderType, 'id'>);
 });

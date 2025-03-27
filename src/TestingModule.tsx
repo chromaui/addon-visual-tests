@@ -4,8 +4,12 @@ import pluralize from 'pluralize';
 import React, { useCallback, useContext, useEffect, useRef } from 'react';
 import { Link } from 'storybook/internal/components';
 import { Button, ProgressSpinner, TooltipNote, WithTooltip } from 'storybook/internal/components';
-import { TestProviderState } from 'storybook/internal/types';
-import { type API, experimental_useStatusStore, useStorybookState } from 'storybook/manager-api';
+import {
+  experimental_useStatusStore,
+  experimental_useTestProviderStore,
+  useStorybookApi,
+  useStorybookState,
+} from 'storybook/manager-api';
 import { color } from 'storybook/theming';
 import { styled } from 'storybook/theming';
 
@@ -18,6 +22,7 @@ import {
   IS_OUTDATED,
   LOCAL_BUILD_PROGRESS,
   PANEL_ID,
+  TEST_PROVIDER_ID,
 } from './constants';
 import { ConfigInfoPayload, LocalBuildProgress } from './types';
 import { useAccessToken } from './utils/graphQLClient';
@@ -62,10 +67,8 @@ const StopIcon = styled(StopAltIcon)({
   width: 10,
 });
 
-type TestingModuleProps = { api: API; testProviderState: TestProviderState };
-
-export const TestingModule = ({ testProviderState, api }: TestingModuleProps) => {
-  const { addNotification, selectStory, setOptions, togglePanel } = api;
+export const TestingModule = () => {
+  const { addNotification, selectStory, setOptions, togglePanel } = useStorybookApi();
   const warningStatusCount = experimental_useStatusStore(
     (allStatuses) =>
       Object.values(allStatuses)
@@ -89,6 +92,10 @@ export const TestingModule = ({ testProviderState, api }: TestingModuleProps) =>
 
   const lastStep = useRef(localBuildProgress?.currentStep);
   const { index, storyId, viewMode } = useStorybookState();
+
+  const testProviderState = experimental_useTestProviderStore(
+    (state) => state[TEST_PROVIDER_ID] ?? 'test-provider-state:pending'
+  );
 
   const openVisualTestsPanel = useCallback(
     (warning?: string) => {

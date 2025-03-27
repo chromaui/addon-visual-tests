@@ -243,7 +243,6 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
     channel.emit(TESTING_MODULE_PROGRESS_REPORT, {
       providerId: TEST_PROVIDER_ID,
       status: stepStatus[currentStep],
-      // TODO: use this in the UI
       cancellable: ['initialize', 'build', 'upload'].includes(currentStep),
       progress: {
         numFailedTests,
@@ -277,6 +276,7 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
     stopChromaticBuild();
   });
 
+  // TODO: ensure we still have good telemetry
   channel.on(TELEMETRY, async (event: Event) => {
     if ((await corePromise).disableTelemetry) return;
     telemetry('addon-visual-tests' as any, { ...event, addonVersion: await getAddonVersion() });
