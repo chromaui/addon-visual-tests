@@ -11,8 +11,7 @@ import {
   useStorybookApi,
   useStorybookState,
 } from 'storybook/manager-api';
-import { color } from 'storybook/theming';
-import { styled } from 'storybook/theming';
+import { color, styled } from 'storybook/theming';
 
 import { BUILD_STEP_CONFIG } from './buildSteps';
 import {
@@ -68,7 +67,7 @@ const StopIcon = styled(StopAltIcon)({
   width: 10,
 });
 
-export const TestingModule = () => {
+export const TestProviderRender = () => {
   const { addNotification, selectStory, setOptions, togglePanel } = useStorybookApi();
   const warningStatusCount = experimental_useStatusStore(
     (allStatuses) =>

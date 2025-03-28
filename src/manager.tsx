@@ -4,7 +4,7 @@ import { addons, experimental_getStatusStore } from 'storybook/manager-api';
 
 import { ADDON_ID, PANEL_ID, PARAM_KEY, TEST_PROVIDER_ID } from './constants';
 import { Panel } from './Panel';
-import { TestingModule } from './TestingModule';
+import { TestProviderRender } from './TestProviderRender';
 
 addons.register(ADDON_ID, (api) => {
   addons.add(PANEL_ID, {
@@ -29,6 +29,6 @@ addons.register(ADDON_ID, (api) => {
   addons.add(TEST_PROVIDER_ID, {
     type: Addon_TypesEnum.experimental_TEST_PROVIDER,
     name: 'Visual tests',
-    render: () => <TestingModule />,
+    render: () => <TestProviderRender />,
   } satisfies Omit<Addon_TestProviderType, 'id'>);
 });
