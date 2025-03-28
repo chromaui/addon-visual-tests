@@ -49,7 +49,7 @@ const Label = styled.div(({ theme }) => ({
 
 const Controls = styled.div({
   gridArea: 'controls',
-  margin: '6px 15px',
+  margin: '6px 10px 6px 15px',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'flex-end',
@@ -75,17 +75,17 @@ const Actions = styled.div<{ showDivider?: boolean }>(({ theme, showDivider }) =
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'flex-end',
-  margin: '0px 15px',
+  margin: '0px 10px 0px 15px',
   gap: 6,
 
   '@container (min-width: 300px)': {
     alignItems: 'flex-start',
-    margin: '15px 15px 15px 0px',
+    margin: '15px 10px 15px 0px',
   },
   '@container (min-width: 800px)': {
     alignItems: 'center',
     borderLeft: showDivider ? `1px solid ${theme.appBorderColor}` : 'none',
-    margin: '8px 15px 8px 0px',
+    margin: '8px 10px 8px 0px',
     paddingLeft: 8,
   },
 }));

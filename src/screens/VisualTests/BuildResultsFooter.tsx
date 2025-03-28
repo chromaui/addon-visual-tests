@@ -5,7 +5,6 @@ import { FooterMenu } from '../../components/FooterMenu';
 import { Col } from '../../components/layout';
 import { ModeSelector } from '../../components/ModeSelector';
 import { Footer } from '../../components/Screen';
-import { TooltipNote } from '../../components/TooltipNote';
 import { TestStatus } from '../../gql/graphql';
 import { useSelectedStoryState } from './BuildContext';
 
@@ -32,43 +31,6 @@ export const BuildResultsFooter = () => {
           onSelectBrowser={storyState.onSelectBrowser}
         />
       )}
-      {/* <Col push>
-        <WithTooltip
-          tooltip={<TooltipNote note="Render settings" />}
-          trigger="hover"
-          hasChrome={false}
-        >
-          <IconButton
-            active={settingsVisible}
-            aria-label={`${settingsVisible ? "Hide" : "Show"} render settings`}
-            onClick={() => {
-              setSettingsVisible(!settingsVisible);
-              setWarningsVisible(false);
-            }}
-          >
-            <ControlsIcon />
-          </IconButton>
-        </WithTooltip>
-      </Col> */}
-      {/* <Col>
-        <WithTooltip
-          tooltip={<TooltipNote note="View warnings" />}
-          trigger="hover"
-          hasChrome={false}
-        >
-          <IconButton
-            active={warningsVisible}
-            aria-label={`${warningsVisible ? "Hide" : "Show"} warnings`}
-            onClick={() => {
-              setWarningsVisible(!warningsVisible);
-              setSettingsVisible(false);
-            }}
-            status="warning"
-          >
-            <AlertIcon />2
-          </IconButton>
-        </WithTooltip>
-      </Col> */}
       <Col push>
         <FooterMenu />
       </Col>

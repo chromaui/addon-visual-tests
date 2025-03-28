@@ -22,12 +22,13 @@ const Info = styled.div(({ theme }) => ({
   margin: 15,
   lineHeight: '18px',
   color: theme.base === 'light' ? `${theme.color.defaultText}99` : `${theme.color.light}99`,
+  fontSize: theme.typography.size.s2,
 
   b: {
     color: theme.base === 'light' ? `${theme.color.defaultText}` : `${theme.color.light}`,
   },
   small: {
-    fontSize: theme.typography.size.s1,
+    fontSize: theme.typography.size.s2 - 1,
   },
 
   '@container (min-width: 800px)': {
@@ -59,9 +60,10 @@ const Actions = styled.div({
   justifyContent: 'center',
   alignItems: 'start',
   margin: 15,
+  marginRight: 10,
 
   '@container (min-width: 800px)': {
-    margin: '6px 15px 0 0',
+    margin: '6px 10px 0 0',
   },
 });
 
