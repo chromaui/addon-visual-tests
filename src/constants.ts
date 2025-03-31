@@ -1,6 +1,3 @@
-import * as coreEvents from 'storybook/internal/core-events';
-import { experimental_getStatusStore } from 'storybook/manager-api';
-
 export const {
   CHROMATIC_INDEX_URL,
   CHROMATIC_BASE_URL = CHROMATIC_INDEX_URL || 'https://www.chromatic.com',
@@ -12,8 +9,6 @@ export const PACKAGE_NAME = '@chromatic-com/storybook';
 export const ADDON_ID = 'chromaui/addon-visual-tests';
 export const PANEL_ID = `${ADDON_ID}/panel`;
 export const TEST_PROVIDER_ID = `${ADDON_ID}/test-provider`;
-export const SIDEBAR_TOP_ID = `${ADDON_ID}/sidebarTop`;
-export const SIDEBAR_BOTTOM_ID = `${ADDON_ID}/sidebarBottom`;
 export const ACCESS_TOKEN_KEY = `${ADDON_ID}/access-token/${CHROMATIC_BASE_URL}`;
 export const DEV_BUILD_ID_KEY = `${ADDON_ID}/dev-build-id`;
 export const CONFIG_INFO = `${ADDON_ID}/configInfo`;
@@ -36,17 +31,6 @@ export const PARAM_KEY = 'chromatic';
 export const FETCH_ABORTED = `${ADDON_ID}/ChannelFetch/aborted`;
 export const FETCH_REQUEST = `${ADDON_ID}ChannelFetch/request`;
 export const FETCH_RESPONSE = `${ADDON_ID}ChannelFetch/response`;
-
-// Not available in older versions of @storybook/core-events
-export const {
-  TESTING_MODULE_CRASH_REPORT = 'testingModuleCrashReport',
-  TESTING_MODULE_PROGRESS_REPORT = 'testingModuleProgressReport',
-  TESTING_MODULE_RUN_REQUEST = 'testingModuleRunRequest',
-  TESTING_MODULE_RUN_ALL_REQUEST = 'testingModuleRunAllRequest',
-  TESTING_MODULE_CANCEL_TEST_RUN_REQUEST = 'testingModuleCancelTestRunRequest',
-  TESTING_MODULE_CANCEL_TEST_RUN_RESPONSE = 'testingModuleCancelTestRunResponse',
-  TESTING_MODULE_WATCH_MODE_REQUEST = 'testingModuleWatchModeRequest',
-} = coreEvents as any;
 
 export const CONFIG_OVERRIDES = {
   // Local changes should never be auto-accepted
@@ -72,5 +56,3 @@ export const CONFIG_OVERRIDES = {
 };
 
 export const DOCS_URL = 'https://www.chromatic.com/docs/visual-tests-addon';
-
-export const statusStore = experimental_getStatusStore(ADDON_ID);

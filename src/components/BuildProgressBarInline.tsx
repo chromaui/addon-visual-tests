@@ -3,7 +3,6 @@ import { styled } from 'storybook/theming';
 
 import { LocalBuildProgress } from '../types';
 import { BuildProgressLabel } from './BuildProgressLabel';
-import { ProgressBar, ProgressTrack } from './SidebarTopButton';
 import { Text } from './Text';
 
 const ProgressTextWrapper = styled(Text)({
@@ -13,6 +12,18 @@ const ProgressTextWrapper = styled(Text)({
   width: 200,
   marginTop: 15,
 });
+
+const ProgressTrack = styled.div(({ theme }) => ({
+  height: 5,
+  background: theme.background.hoverable,
+  borderRadius: 5,
+  overflow: 'hidden',
+}));
+
+const ProgressBar = styled(ProgressTrack)(({ theme }) => ({
+  background: theme.color.secondary,
+  transition: 'width 3s ease-out',
+}));
 
 export function BuildProgressInline({
   localBuildProgress,

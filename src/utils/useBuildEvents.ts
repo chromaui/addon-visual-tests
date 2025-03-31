@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { useChannel } from 'storybook/manager-api';
 
 import { START_BUILD, STOP_BUILD } from '../constants';

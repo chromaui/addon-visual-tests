@@ -1,9 +1,8 @@
 import {
   CheckIcon,
   ChevronRightIcon,
+  ChevronSmallDownIcon,
   CloseIcon,
-  CollapseIcon,
-  ExpandAltIcon,
   FailedIcon,
   SyncIcon,
 } from '@storybook/icons';
@@ -75,7 +74,12 @@ const Bar = styled.div<{ isWarning?: boolean; percentage: number }>(
 );
 
 const Label = styled.div({
-  padding: '5px 0',
+  lineHeight: '21px',
+  padding: '4px 0',
+});
+
+const ToggleIcon = styled(ChevronSmallDownIcon)({
+  transition: 'transform 0.1s ease-in-out',
 });
 
 const ExpandableDiv = styled.div<{ expanded: boolean }>(({ expanded, theme }) => ({
@@ -222,7 +226,9 @@ export const BuildEyebrow = ({
               <CloseIcon aria-label="Dismiss" />
             </IconButton>
           ) : (
-            <IconButton as="div">{expanded ? <CollapseIcon /> : <ExpandAltIcon />}</IconButton>
+            <IconButton as="div">
+              <ToggleIcon style={{ transform: `rotate(${expanded ? -180 : 0}deg)` }} />
+            </IconButton>
           )}
         </Header>
         <BuildProgress localBuildProgress={localBuildProgress} expanded={expanded || errored} />

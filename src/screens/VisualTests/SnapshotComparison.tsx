@@ -36,11 +36,11 @@ export const Grid = styled.div(({ theme }) => ({
   '@container (min-width: 800px)': {
     gridTemplateAreas: `"info label controls actions"`,
     gridTemplateColumns: 'auto 1fr auto auto',
-    gridTemplateRows: 40,
+    gridTemplateRows: '39px',
   },
 }));
 
-const ParentGrid = styled.div(({ theme }) => ({
+const ParentGrid = styled.div({
   display: 'grid',
   gridTemplateAreas: `
     "header"
@@ -54,7 +54,7 @@ const ParentGrid = styled.div(({ theme }) => ({
   '&[hidden]': {
     display: 'none',
   },
-}));
+});
 
 const HeaderSection = styled.div(({ theme }) => ({
   gridArea: 'header',
@@ -75,12 +75,12 @@ const MainSection = styled.div(({ theme }) => ({
   background: theme.background.content,
 }));
 
-const FooterSection = styled.div(({ theme }) => ({
+const FooterSection = styled.div({
   gridArea: 'footer',
   position: 'sticky',
   zIndex: 1,
   bottom: 0,
-}));
+});
 
 const Divider = styled.div(({ children, theme }) => ({
   display: 'flex',

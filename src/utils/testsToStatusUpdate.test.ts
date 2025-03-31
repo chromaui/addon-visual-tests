@@ -1,13 +1,7 @@
-import type { API } from 'storybook/manager-api';
-import { expect, it, vi } from 'vitest';
+import { expect, it } from 'vitest';
 
 import { TestStatus } from '../gql/graphql';
 import { testsToStatusUpdate } from './testsToStatusUpdate';
-
-const api: API = {
-  setSelectedPanel: vi.fn(),
-  togglePanel: vi.fn(),
-} as any;
 
 it('handles single test with no changes', () => {
   expect(

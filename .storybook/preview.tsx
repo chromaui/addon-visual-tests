@@ -226,6 +226,7 @@ const preview: Preview = {
       disable: true,
     },
     viewport: {
+      disable: true,
       viewports: {
         default: { name: 'Default', styles: { width: '960px', height: '720px' } },
       },

@@ -1,15 +1,17 @@
 import { FailedIcon } from '@storybook/icons';
+import { PlayHollowIcon, StopAltIcon } from '@storybook/icons';
 import pluralize from 'pluralize';
 import React, { useCallback, useContext, useEffect, useRef } from 'react';
 import { Link } from 'storybook/internal/components';
-import { type Addon_TestProviderState } from 'storybook/internal/types';
+import { Button, ProgressSpinner, TooltipNote, WithTooltip } from 'storybook/internal/components';
 import {
-  type API,
+  experimental_getTestProviderStore,
   experimental_useStatusStore,
-  useChannel,
+  experimental_useTestProviderStore,
+  useStorybookApi,
   useStorybookState,
 } from 'storybook/manager-api';
-import { color } from 'storybook/theming';
+import { color, styled } from 'storybook/theming';
 
 import { BUILD_STEP_CONFIG } from './buildSteps';
 import {
@@ -21,9 +23,6 @@ import {
   LOCAL_BUILD_PROGRESS,
   PANEL_ID,
   TEST_PROVIDER_ID,
-  TESTING_MODULE_CANCEL_TEST_RUN_REQUEST,
-  TESTING_MODULE_PROGRESS_REPORT,
-  TESTING_MODULE_RUN_ALL_REQUEST,
 } from './constants';
 import { ConfigInfoPayload, LocalBuildProgress } from './types';
 import { useAccessToken } from './utils/graphQLClient';
@@ -32,10 +31,44 @@ import { useBuildEvents } from './utils/useBuildEvents';
 import { useProjectId } from './utils/useProjectId';
 import { useSharedState } from './utils/useSharedState';
 
-type TestingModuleDescriptionProps = Addon_TestProviderState & { api: API };
+const Container = styled.div({
+  display: 'flex',
+  justifyContent: 'space-between',
+  padding: '8px 0',
+});
 
-export const TestingModuleDescription = ({ api, running }: TestingModuleDescriptionProps) => {
-  const { addNotification, selectStory, setOptions, togglePanel } = api;
+const Info = styled.div({
+  display: 'flex',
+  flexDirection: 'column',
+  marginLeft: 8,
+});
+
+const Actions = styled.div({
+  display: 'flex',
+  gap: 4,
+});
+
+const TitleWrapper = styled.div<{ crashed?: boolean }>(({ crashed, theme }) => ({
+  fontSize: theme.typography.size.s1,
+  fontWeight: crashed ? 'bold' : 'normal',
+  color: crashed ? theme.color.negativeText : theme.color.defaultText,
+}));
+
+const DescriptionWrapper = styled.div(({ theme }) => ({
+  fontSize: theme.typography.size.s1,
+  color: theme.textMutedColor,
+}));
+
+const Progress = styled(ProgressSpinner)({
+  margin: 4,
+});
+
+const StopIcon = styled(StopAltIcon)({
+  width: 10,
+});
+
+export const TestProviderRender = () => {
+  const { addNotification, selectStory, setOptions, togglePanel } = useStorybookApi();
   const warningStatusCount = experimental_useStatusStore(
     (allStatuses) =>
       Object.values(allStatuses)
@@ -59,6 +92,20 @@ export const TestingModuleDescription = ({ api, running }: TestingModuleDescript
 
   const lastStep = useRef(localBuildProgress?.currentStep);
   const { index, storyId, viewMode } = useStorybookState();
+
+  const testProviderState = experimental_useTestProviderStore(
+    (state) => state[TEST_PROVIDER_ID] ?? 'test-provider-state:pending'
+  );
+
+  const { startBuild, stopBuild } = useBuildEvents({
+    localBuildProgress,
+    accessToken,
+  });
+
+  useEffect(
+    () => experimental_getTestProviderStore(TEST_PROVIDER_ID).onRunAll(startBuild),
+    [startBuild]
+  );
 
   const openVisualTestsPanel = useCallback(
     (warning?: string) => {
@@ -127,11 +174,6 @@ export const TestingModuleDescription = ({ api, running }: TestingModuleDescript
     }
   }, [addNotification, clickNotification, localBuildProgress?.currentStep]);
 
-  const { startBuild, stopBuild } = useBuildEvents({
-    localBuildProgress,
-    accessToken,
-  });
-
   let warning: string | undefined;
   if (!projectId) warning = 'Select a project';
   if (!isLoggedIn) warning = 'Login required';
@@ -144,50 +186,86 @@ export const TestingModuleDescription = ({ api, running }: TestingModuleDescript
     [openVisualTestsPanel, warning]
   );
 
-  const emit = useChannel(
-    {
-      [TESTING_MODULE_RUN_ALL_REQUEST]: ({ providerId }) => {
-        if (providerId === TEST_PROVIDER_ID) startBuild();
-      },
-      [TESTING_MODULE_CANCEL_TEST_RUN_REQUEST]: ({ providerId }) => {
-        if (providerId === TEST_PROVIDER_ID) stopBuild();
-      },
-    },
-    [startBuild, stopBuild]
+  let description: string | React.ReactNode;
+  switch (true) {
+    case !!warning:
+      description = <Link onClick={clickWarning}>{warning}</Link>;
+      break;
+    case testProviderState === 'test-provider-state:running':
+      description = localBuildProgress
+        ? BUILD_STEP_CONFIG[localBuildProgress.currentStep].renderProgress(localBuildProgress)
+        : 'Starting...';
+      break;
+    case !!isOutdated:
+      description = 'Test results outdated';
+      break;
+    case localBuildProgress?.currentStep === 'aborted':
+      description = 'Aborted by user';
+      break;
+    case localBuildProgress?.currentStep === 'complete':
+      description = localBuildProgress.errorCount
+        ? `Encountered ${pluralize('component error', localBuildProgress.errorCount, true)}`
+        : warningStatusCount
+          ? `Found ${pluralize('story', warningStatusCount, true)} with ${pluralize('change', warningStatusCount)}`
+          : 'No visual changes detected';
+      break;
+    default:
+      description = 'Not run';
+  }
+
+  return (
+    <Container>
+      <Info>
+        <TitleWrapper crashed={testProviderState === 'test-provider-state:crashed'}>
+          {localBuildProgress?.currentStep === 'error' ||
+          localBuildProgress?.currentStep === 'limited'
+            ? "Visual tests didn't complete"
+            : 'Visual tests'}
+        </TitleWrapper>
+        <DescriptionWrapper>{description}</DescriptionWrapper>
+      </Info>
+
+      <Actions>
+        {warning ? null : testProviderState === 'test-provider-state:running' ? (
+          <WithTooltip
+            hasChrome={false}
+            trigger="hover"
+            tooltip={<TooltipNote note="Stop Visual tests" />}
+          >
+            <Button
+              aria-label="Stop Visual tests"
+              size="medium"
+              variant="ghost"
+              padding="none"
+              onClick={stopBuild}
+              disabled={
+                !['initialize', 'build', 'upload'].includes(localBuildProgress?.currentStep ?? '')
+              }
+            >
+              <Progress percentage={localBuildProgress?.buildProgressPercentage}>
+                <StopIcon />
+              </Progress>
+            </Button>
+          </WithTooltip>
+        ) : (
+          <WithTooltip
+            hasChrome={false}
+            trigger="hover"
+            tooltip={<TooltipNote note="Start Visual tests" />}
+          >
+            <Button
+              aria-label="Start Visual tests"
+              size="medium"
+              variant="ghost"
+              padding="small"
+              onClick={startBuild}
+              disabled={testProviderState === 'test-provider-state:crashed'}
+            >
+              <PlayHollowIcon />
+            </Button>
+          </WithTooltip>
+        )}
+      </Actions>
+    </Container>
   );
-
-  useEffect(() => {
-    emit(TESTING_MODULE_PROGRESS_REPORT, { providerId: TEST_PROVIDER_ID, runnable: !warning });
-  }, [emit, warning]);
-
-  if (warning) {
-    return <Link onClick={clickWarning}>{warning}</Link>;
-  }
-  if (running) {
-    if (localBuildProgress) {
-      const { renderProgress } = BUILD_STEP_CONFIG[localBuildProgress.currentStep];
-      return <>{renderProgress(localBuildProgress)}</>;
-    }
-    return <>Starting...</>;
-  }
-  if (isOutdated) {
-    return <>Test results outdated</>;
-  }
-  if (localBuildProgress?.currentStep === 'aborted') {
-    return <>Aborted by user</>;
-  }
-  if (localBuildProgress?.currentStep === 'complete') {
-    if (localBuildProgress.errorCount) {
-      return <>Encountered {pluralize('component error', localBuildProgress.errorCount, true)}</>;
-    }
-    return warningStatusCount ? (
-      <>
-        Found {pluralize('story', warningStatusCount, true)} with
-        {pluralize('change', warningStatusCount)}
-      </>
-    ) : (
-      <>No visual changes detected</>
-    );
-  }
-  return <>Not run</>;
 };

@@ -186,7 +186,7 @@ export const NotFound = {
   parameters: {
     ...withGraphQLQueryParameters('AddonVisualTestsBuild', () =>
       // @ts-ignore: Type mismatch between TypedDocumentNode and GraphQL response
-      HttpResponse.json({ data: null })
+      HttpResponse.json({ data: { project: null } })
     ),
   },
 } satisfies Story;

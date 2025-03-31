@@ -122,9 +122,10 @@ export const Footer = styled.div(({ theme }) => ({
   display: 'flex',
   flexDirection: 'row',
   alignItems: 'center',
-  height: 39,
+  height: 40,
   flexShrink: 0,
   padding: '0 10px',
+  gap: 6,
 }));
 
 export const Screen = ({
