@@ -227,6 +227,9 @@ const preview: Preview = {
     },
     viewport: {
       disable: true,
+      viewports: {
+        default: { name: 'Default', styles: { width: '960px', height: '720px' } },
+      },
     },
     chromatic: {
       modes: baseModes,
