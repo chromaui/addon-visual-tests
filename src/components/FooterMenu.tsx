@@ -32,29 +32,29 @@ export const FooterMenu = () => {
 
     ...(projectId
       ? [
-        {
-          id: 'visit',
-          title: 'View project on Chromatic',
-          icon: <ShareAltIcon aria-hidden />,
-          href: projectId
-            ? `https://www.chromatic.com/builds?appId=${projectId?.split(':')[1]}`
-            : 'https://www.chromatic.com/start',
-          target: '_blank',
-        },
-      ]
+          {
+            id: 'visit',
+            title: 'View project on Chromatic',
+            icon: <ShareAltIcon aria-hidden />,
+            href: projectId
+              ? `https://www.chromatic.com/builds?appId=${projectId?.split(':')[1]}`
+              : 'https://www.chromatic.com/start',
+            target: '_blank',
+          },
+        ]
       : []),
     ...(accessToken
       ? [
-        {
-          id: 'logout',
-          title: 'Log out',
-          icon: <UserIcon aria-hidden />,
-          onClick: () => {
-            statusStore.unset();
-            setAccessToken(null);
+          {
+            id: 'logout',
+            title: 'Log out',
+            icon: <UserIcon aria-hidden />,
+            onClick: () => {
+              statusStore.unset();
+              setAccessToken(null);
+            },
           },
-        },
-      ]
+        ]
       : []),
   ];
   return (
