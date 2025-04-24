@@ -28,7 +28,6 @@ addons.register(ADDON_ID, (api) => {
 
   addons.add(TEST_PROVIDER_ID, {
     type: Addon_TypesEnum.experimental_TEST_PROVIDER,
-    name: 'Visual tests',
     render: () => <TestProviderRender />,
   } satisfies Omit<Addon_TestProviderType, 'id'>);
 });
