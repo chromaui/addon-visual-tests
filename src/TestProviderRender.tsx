@@ -102,9 +102,24 @@ export const TestProviderRender = () => {
     accessToken,
   });
 
+  let warning: string | undefined;
+  if (!projectId) warning = 'Select a project';
+  if (!isLoggedIn) warning = 'Login required';
+  if (gitInfoError) warning = 'Git synchronization problem';
+  if (hasConfigProblem) warning = 'Configuration problem';
+  if (isOffline) warning = 'Not available while offline';
+
+  const isRunnable = !warning && testProviderState !== 'test-provider-state:crashed';
+
+  const startBuildIfPossible = useCallback(() => {
+    if (isRunnable) {
+      startBuild();
+    }
+  }, [isRunnable, startBuild]);
+
   useEffect(
-    () => experimental_getTestProviderStore(TEST_PROVIDER_ID).onRunAll(startBuild),
-    [startBuild]
+    () => experimental_getTestProviderStore(TEST_PROVIDER_ID).onRunAll(startBuildIfPossible),
+    [startBuildIfPossible]
   );
 
   const openVisualTestsPanel = useCallback(
@@ -173,13 +188,6 @@ export const TestProviderRender = () => {
       });
     }
   }, [addNotification, clickNotification, localBuildProgress?.currentStep]);
-
-  let warning: string | undefined;
-  if (!projectId) warning = 'Select a project';
-  if (!isLoggedIn) warning = 'Login required';
-  if (gitInfoError) warning = 'Git synchronization problem';
-  if (hasConfigProblem) warning = 'Configuration problem';
-  if (isOffline) warning = 'Not available while offline';
 
   const clickWarning = useCallback(
     () => openVisualTestsPanel(warning),
@@ -258,8 +266,8 @@ export const TestProviderRender = () => {
               size="medium"
               variant="ghost"
               padding="small"
-              onClick={startBuild}
-              disabled={testProviderState === 'test-provider-state:crashed'}
+              disabled={!isRunnable}
+              onClick={startBuildIfPossible}
             >
               <PlayHollowIcon />
             </Button>
