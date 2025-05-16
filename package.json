@@ -54,10 +54,10 @@
     "jackspeak": "2.1.1"
   },
   "dependencies": {
+    "@neoconfetti/react": "^1.0.0",
     "chromatic": "^11.27.0",
     "filesize": "^10.0.12",
     "jsonfile": "^6.1.0",
-    "react-confetti": "^6.1.0",
     "strip-ansi": "^7.1.0"
   },
   "devDependencies": {
