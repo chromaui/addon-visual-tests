@@ -201,7 +201,7 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
         configFile: targetConfigFile,
       };
     } catch (err) {
-      console.warn(`Failed to update your main configuration:\n\n ${err}`);
+      console.warn(`Failed to update your main configuration:\n\n${err}`);
 
       projectInfoState.value = {
         ...projectInfoState.value,
