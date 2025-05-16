@@ -18,7 +18,8 @@ export const Box = styled.div<{ warning?: boolean }>(
     warning && { background: theme.base === 'dark' ? '#342e1a' : theme.background.warning }
 );
 
-export const BoxTitle = styled.b(() => ({
-  display: 'block',
-  marginBottom: 2,
-}));
+export const BoxList = styled.ul({
+  margin: 0,
+  padding: 4,
+  listStylePosition: 'inside',
+});

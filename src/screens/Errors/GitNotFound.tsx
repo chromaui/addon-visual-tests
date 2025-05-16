@@ -1,7 +1,6 @@
-import { LockIcon } from '@storybook/icons';
 import React from 'react';
 
-import { Box, BoxTitle } from '../../components/Box';
+import { Box, BoxList } from '../../components/Box';
 import { Code } from '../../components/Code';
 import { Container } from '../../components/Container';
 import { Link } from '../../components/design-system';
@@ -22,19 +21,25 @@ export const GitNotFound = () => {
         <Stack>
           <div>
             <VisualTestsIcon />
-            <Heading>Visual tests</Heading>
+            <Heading>Setup a Git repository</Heading>
             <Text center muted>
-              Catch bugs in UI appearance automatically. Compare image snapshots to detect visual
-              changes.
+              Chromatic requires Git to associate test results with commits and branches.
             </Text>
           </div>
           <Box>
-            <LockIcon style={{ flexShrink: 0 }} />
             <Text>
-              <BoxTitle>Git not detected</BoxTitle>
-              This addon requires Git to associate test results with commits and branches. Run{' '}
-              <Code>git init</Code> and make your first commit
-              <Code>git commit -m</Code> to get started!
+              Run these steps to get started:
+              <BoxList>
+                <li>
+                  <Code>git init</Code>
+                </li>
+                <li>
+                  <Code>git add .</Code>
+                </li>
+                <li>
+                  <Code>git commit -m "Initial commit"</Code>
+                </li>
+              </BoxList>
             </Text>
           </Box>
           <Link
