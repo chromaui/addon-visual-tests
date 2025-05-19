@@ -1,8 +1,9 @@
 import { CogIcon, EllipsisIcon, QuestionIcon, ShareAltIcon, UserIcon } from '@storybook/icons';
 import React from 'react';
+import { experimental_getStatusStore } from 'storybook/manager-api';
 
 import { useAuthState } from '../AuthContext';
-import { PROJECT_INFO } from '../constants';
+import { ADDON_ID, PROJECT_INFO } from '../constants';
 import { useControlsDispatch } from '../screens/VisualTests/ControlsContext';
 import { ProjectInfoPayload } from '../types';
 import { useSharedState } from '../utils/useSharedState';
@@ -12,6 +13,7 @@ export const FooterMenu = () => {
   const { accessToken, setAccessToken } = useAuthState();
   const { toggleConfig } = useControlsDispatch();
   const [projectInfo] = useSharedState<ProjectInfoPayload>(PROJECT_INFO);
+  const statusStore = experimental_getStatusStore(ADDON_ID);
   const { projectId } = projectInfo || {};
   const links = [
     {
@@ -47,7 +49,10 @@ export const FooterMenu = () => {
             id: 'logout',
             title: 'Log out',
             icon: <UserIcon aria-hidden />,
-            onClick: () => setAccessToken(null),
+            onClick: () => {
+              statusStore.unset();
+              setAccessToken(null);
+            },
           },
         ]
       : []),

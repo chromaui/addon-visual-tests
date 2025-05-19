@@ -1155,11 +1155,11 @@ __metadata:
     "@emotion/weak-memoize": "npm:^0.3.1"
     "@graphql-codegen/cli": "npm:^5.0.5"
     "@graphql-typed-document-node/core": "npm:^3.2.0"
+    "@neoconfetti/react": "npm:^1.0.0"
     "@parcel/watcher": "npm:^2.4.1"
     "@storybook/addon-designs": "npm:^10.0.0"
     "@storybook/addon-docs": "npm:^9.0.0-0"
     "@storybook/icons": "npm:^1.4.0"
-    "@storybook/react": "npm:^9.0.0-0"
     "@storybook/react-vite": "npm:^9.0.0-0"
     "@types/jsonfile": "npm:^6.1.1"
     "@types/node": "npm:^22.13.5"
@@ -1182,7 +1182,7 @@ __metadata:
     eslint-plugin-prettier: "npm:^5.2.3"
     eslint-plugin-react-hooks: "npm:^5.0.0"
     eslint-plugin-simple-import-sort: "npm:^12.1.1"
-    eslint-plugin-storybook: "npm:^0.11.4"
+    eslint-plugin-storybook: "npm:^9.0.0-beta.1"
     filesize: "npm:^10.0.12"
     graphql: "npm:^16.8.1"
     jsonfile: "npm:^6.1.0"
@@ -1195,7 +1195,6 @@ __metadata:
     prompts: "npm:^2.4.2"
     prop-types: "npm:^15.8.1"
     react: "npm:^18.3.1"
-    react-confetti: "npm:^6.1.0"
     react-dom: "npm:^18.3.1"
     react-joyride: "npm:^2.7.2"
     rimraf: "npm:^3.0.2"
@@ -2569,6 +2568,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@neoconfetti/react@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@neoconfetti/react@npm:1.0.0"
+  checksum: 10c0/dfa487965b69f88b39562ccd910114cd68b00a90c7eb79cfb1a483c7ac717b720f9f095e5aea13cef8a9b9bea05533d380ddff5e44d3bc3f7dc4d5c66716765c
+  languageName: node
+  linkType: hard
+
 "@nodelib/fs.scandir@npm:2.1.5":
   version: 2.1.5
   resolution: "@nodelib/fs.scandir@npm:2.1.5"
@@ -3172,15 +3178,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/csf@npm:^0.1.11":
-  version: 0.1.13
-  resolution: "@storybook/csf@npm:0.1.13"
-  dependencies:
-    type-fest: "npm:^2.19.0"
-  checksum: 10c0/7c57b531ac95ca45239f498d419483d675e58cd8d549e0bac623519cc1ef4f3c9c6b75ec3873aa51cc2872728012db5dd5e1f2c2d8085014241eb4b896480996
-  languageName: node
-  linkType: hard
-
 "@storybook/global@npm:^5.0.0":
   version: 5.0.0
   resolution: "@storybook/global@npm:5.0.0"
@@ -3231,7 +3228,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/react@npm:9.0.0-alpha.19, @storybook/react@npm:^9.0.0-0":
+"@storybook/react@npm:9.0.0-alpha.19":
   version: 9.0.0-alpha.19
   resolution: "@storybook/react@npm:9.0.0-alpha.19"
   dependencies:
@@ -5849,17 +5846,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-storybook@npm:^0.11.4":
-  version: 0.11.4
-  resolution: "eslint-plugin-storybook@npm:0.11.4"
+"eslint-plugin-storybook@npm:^9.0.0-beta.1":
+  version: 9.0.0-beta.1
+  resolution: "eslint-plugin-storybook@npm:9.0.0-beta.1"
   dependencies:
-    "@storybook/csf": "npm:^0.1.11"
     "@typescript-eslint/utils": "npm:^8.8.1"
-    ts-dedent: "npm:^2.2.0"
   peerDependencies:
     eslint: ">=8"
-    typescript: ">=4.8.4 <5.8.0"
-  checksum: 10c0/98c7818f617725a5cee8b5598c0d9ad28f228f20bc1bd32dde523baa646fd2617121d4ca92138306d07829e181bcaf35505694d100f9bb04384955a1ed4ced4d
+    storybook: ^9.0.0-beta.1
+  checksum: 10c0/135f854564bdb6ddc3d0a5eef7382d66d83639f739ed5a2a223fa88585dc9b60cbdf295c11917cc212cca9f44cccc1027e33d06c2014ea3491e51fa75a5b34fd
   languageName: node
   linkType: hard
 
@@ -9058,17 +9053,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-confetti@npm:^6.1.0":
-  version: 6.1.0
-  resolution: "react-confetti@npm:6.1.0"
-  dependencies:
-    tween-functions: "npm:^1.2.0"
-  peerDependencies:
-    react: ^16.3.0 || ^17.0.1 || ^18.0.0
-  checksum: 10c0/5b4eb23eef564695f6db1d25b294ed31d5fa21ff4092c6a38e641f85cd10e3e0b50014366e3ac0f7cf772e73faaecd14614e5b11a5531336fa769dda8068ab59
-  languageName: node
-  linkType: hard
-
 "react-docgen-typescript@npm:^2.2.2":
   version: 2.2.2
   resolution: "react-docgen-typescript@npm:2.2.2"
@@ -10648,13 +10632,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tween-functions@npm:^1.2.0":
-  version: 1.2.0
-  resolution: "tween-functions@npm:1.2.0"
-  checksum: 10c0/7e59295b8b0ee4132ed2fe335f56a9db5c87056dad6b6fd3011be72239fd20398003ddb4403bc98ad9f5c94468890830f64016edbbde35581faf95b32cda8305
-  languageName: node
-  linkType: hard
-
 "type-check@npm:^0.4.0, type-check@npm:~0.4.0":
   version: 0.4.0
   resolution: "type-check@npm:0.4.0"
@@ -10675,13 +10652,6 @@ __metadata:
   version: 0.21.3
   resolution: "type-fest@npm:0.21.3"
   checksum: 10c0/902bd57bfa30d51d4779b641c2bc403cdf1371fb9c91d3c058b0133694fcfdb817aef07a47f40faf79039eecbaa39ee9d3c532deff244f3a19ce68cea71a61e8
-  languageName: node
-  linkType: hard
-
-"type-fest@npm:^2.19.0":
-  version: 2.19.0
-  resolution: "type-fest@npm:2.19.0"
-  checksum: 10c0/a5a7ecf2e654251613218c215c7493574594951c08e52ab9881c9df6a6da0aeca7528c213c622bc374b4e0cb5c443aa3ab758da4e3c959783ce884c3194e12cb
   languageName: node
   linkType: hard
 

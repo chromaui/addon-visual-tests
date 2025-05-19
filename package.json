@@ -54,10 +54,10 @@
     "jackspeak": "2.1.1"
   },
   "dependencies": {
+    "@neoconfetti/react": "^1.0.0",
     "chromatic": "^11.27.0",
     "filesize": "^10.0.12",
     "jsonfile": "^6.1.0",
-    "react-confetti": "^6.1.0",
     "strip-ansi": "^7.1.0"
   },
   "devDependencies": {
@@ -70,7 +70,6 @@
     "@storybook/addon-designs": "^10.0.0",
     "@storybook/addon-docs": "^9.0.0-0",
     "@storybook/icons": "^1.4.0",
-    "@storybook/react": "^9.0.0-0",
     "@storybook/react-vite": "^9.0.0-0",
     "@types/jsonfile": "^6.1.1",
     "@types/node": "^22.13.5",
@@ -92,7 +91,7 @@
     "eslint-plugin-prettier": "^5.2.3",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
-    "eslint-plugin-storybook": "^0.11.4",
+    "eslint-plugin-storybook": "^9.0.0-beta.1",
     "graphql": "^16.8.1",
     "msw": "^2.0.0",
     "msw-storybook-addon": "2.0.4",

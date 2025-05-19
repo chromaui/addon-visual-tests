@@ -148,12 +148,16 @@ export const Panel = ({ active, api }: PanelProps) => {
     );
   }
 
+  if (gitInfoError || !gitInfo) {
+    return withProviders(<GitNotFound />);
+  }
+
   // Momentarily wait on addonState (should be very fast)
   if (projectInfoLoading) {
     return active ? <Spinner /> : null;
   }
 
-  if (!projectId)
+  if (!projectId) {
     return withProviders(
       <LinkProject
         createdProjectId={createdProjectId}
@@ -161,10 +165,6 @@ export const Panel = ({ active, api }: PanelProps) => {
         onUpdateProject={updateProject}
       />
     );
-
-  if (gitInfoError || !gitInfo) {
-    console.error(gitInfoError);
-    return withProviders(<GitNotFound />);
   }
 
   if (projectUpdatingFailed) {
