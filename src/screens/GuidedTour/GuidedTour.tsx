@@ -253,17 +253,7 @@ export const GuidedTour = ({
   ];
   return (
     <>
-      {showConfetti && (
-        <Confetti
-          numberOfPieces={800}
-          recycle={false}
-          tweenDuration={20000}
-          onConfettiComplete={(confetti) => {
-            confetti?.reset();
-            setShowConfetti(false);
-          }}
-        />
-      )}
+      {showConfetti && <Confetti />}
       <Joyride
         // For some reason, the working steps above do not pass the type check. So we have to cast it.
         steps={steps as GuidedTourStep[]}
