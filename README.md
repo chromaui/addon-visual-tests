@@ -58,7 +58,11 @@ Alternatively, you could use a different package manager ([npm](https://www.npmj
 
 ## Version compatibility
 
-Version `3.0.0` and up of this addon requires _at least_ Storybook `8.2.0`. If you need support for Storybook `8.0` or `8.1`, you need to use version `2.0.2` of this addon.
+| Addon Version | Storybook Version |
+| ------------- | ----------------- |
+| `^4.0.0`      | `^9.0.0`          |
+| `^3.0.0`      | `^8.2.0`          |
+| `^2.0.2`      | `8.0.0` - `8.1.x` |
 
 ### License
 
