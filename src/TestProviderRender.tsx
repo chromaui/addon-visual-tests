@@ -103,11 +103,11 @@ export const TestProviderRender = () => {
   });
 
   let warning: string | undefined;
-  if (!projectId) warning = 'Select a project';
-  if (!isLoggedIn) warning = 'Login required';
-  if (gitInfoError) warning = 'Git synchronization problem';
+  if (isOffline) warning = 'Not available offline';
   if (hasConfigProblem) warning = 'Configuration problem';
-  if (isOffline) warning = 'Not available while offline';
+  if (gitInfoError) warning = 'Git synchronization problem';
+  if (!isLoggedIn) warning = 'Login required';
+  if (!projectId) warning = 'Set up visual tests';
 
   const isRunnable = !warning && testProviderState !== 'test-provider-state:crashed';
 
