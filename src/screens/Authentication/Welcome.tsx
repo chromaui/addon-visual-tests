@@ -26,14 +26,16 @@ const Heading = styled(BaseHeading)(({ theme }) => ({
 }));
 
 const Container = styled(BaseContainer)({
-  padding: '30px 30px 0 30px',
-  gap: 30,
   alignItems: 'flex-start',
   justifyContent: 'flex-start',
+  padding: '30px 30px 0 30px',
+  gap: 30,
   '@container (min-width: 800px)': {
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row-reverse',
+    padding: '20px 40px',
+    gap: 40,
   },
 });
 
@@ -132,7 +134,7 @@ export const Welcome = ({ onNext, onUninstall }: WelcomeProps) => {
             <span>Testing 97/248 stories...</span>
             <div>
               <span>
-                Dark mode
+                Light mode
                 <ChevronDownIcon size={10} />
               </span>
               <ChromeIcon alt="" />
