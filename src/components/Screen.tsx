@@ -99,6 +99,7 @@ interface ScreenProps {
   footer?: ReactNode;
   ignoreConfig?: boolean;
   ignoreSuggestions?: boolean;
+  interstitial?: boolean;
 }
 
 const Container = styled.div({
@@ -107,14 +108,16 @@ const Container = styled.div({
   height: '100%',
 });
 
-const Content = styled.div<{ hidden?: boolean }>(({ hidden, theme }) => ({
-  background: theme.background.app,
-  display: hidden ? 'none' : 'flex',
-  flexDirection: 'column',
-  flexGrow: 1,
-  height: '100%',
-  overflowY: 'auto',
-}));
+const Content = styled.div<{ hidden?: boolean; interstitial?: boolean }>(
+  ({ hidden, interstitial, theme }) => ({
+    background: interstitial ? theme.background.content : theme.background.app,
+    display: hidden ? 'none' : 'flex',
+    flexDirection: 'column',
+    flexGrow: 1,
+    height: '100%',
+    overflowY: 'auto',
+  })
+);
 
 export const Footer = styled.div(({ theme }) => ({
   background: theme.background.bar,
@@ -140,6 +143,7 @@ export const Screen = ({
   ),
   ignoreConfig = false,
   ignoreSuggestions = !footer,
+  interstitial = false,
 }: ScreenProps) => {
   const { configVisible } = useControlsState();
   const { toggleConfig } = useControlsDispatch();
@@ -164,7 +168,9 @@ export const Screen = ({
         ignoreConfig={ignoreConfig}
         ignoreSuggestions={ignoreSuggestions}
       />
-      <Content hidden={configVisible}>{children}</Content>
+      <Content hidden={configVisible} interstitial={interstitial}>
+        {children}
+      </Content>
       <Content hidden={!configVisible}>
         <Configuration onClose={() => toggleConfig(false)} />
       </Content>
