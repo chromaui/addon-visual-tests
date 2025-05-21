@@ -74,67 +74,91 @@ export const CheckList = styled.ul({
   },
 });
 
-const Instructions = styled.div(({ theme }) => ({
+const Instructions = styled.div({
   width: '100%',
   display: 'flex',
   flexDirection: 'column',
   gap: 8,
-  pre: {
-    margin: 0,
-    padding: '10px 12px',
-    fontSize: '12px',
-    background: theme.background.content,
-    border: `1px solid ${theme.appBorderColor}`,
-    borderRadius: 4,
-  },
+});
+
+const Pre = styled.pre(({ theme }) => ({
+  margin: 0,
+  padding: '10px 12px',
+  fontSize: '12px',
+  background: theme.background.content,
+  border: `1px solid ${theme.appBorderColor}`,
+  borderRadius: 4,
 }));
 
 export const GitError = ({ gitInfoError }: { gitInfoError?: Error }) => {
-  const hasGitRepo = gitInfoError?.message.includes('one commit');
-  useTelemetry('Errors', hasGitRepo ? 'GitError' : 'GitNotFound');
+  console.log(gitInfoError?.message);
+  const requireInit = gitInfoError?.message.includes('git init');
+  const requireCommit = requireInit || gitInfoError?.message.includes('one commit');
+  const requireEmail = gitInfoError?.message.includes('user.email');
+  useTelemetry('Errors', requireInit ? 'GitNotFound' : 'GitError');
   return (
     <Screen footer={null}>
       <Container>
-        <Stack>
-          <div>
-            <Heading>Set up a Git repository</Heading>
+        {requireEmail ? (
+          <Stack>
+            <div>
+              <Heading>Configure your Git email</Heading>
+              <Text center muted>
+                Chromatic requires Git to be configured with an email address to connect local
+                builds to CI builds.
+              </Text>
+            </div>
             <Text center muted>
-              Chromatic requires Git to associate test results with commits and branches. Run these
-              steps to get started:
+              Run this command to set an email address:
             </Text>
-          </div>
-          <CheckList>
-            <li>
-              {hasGitRepo ? <Check /> : <Step />}
-              <Instructions>
-                <span>Initialize a Git repository</span>
-                {!hasGitRepo && <pre>git init</pre>}
-              </Instructions>
-            </li>
-            <li>
-              <Step />
-              <Instructions>
-                <span>Stage all files</span>
-                <pre>git add .</pre>
-              </Instructions>
-            </li>
-            <li>
-              <Step />
-              <Instructions>
-                <span>Commit the changes</span>
-                <pre>git commit -m "Initial commit"</pre>
-              </Instructions>
-            </li>
-          </CheckList>
-          <Link
-            target="_blank"
-            href="https://www.chromatic.com/docs/visual-tests-addon#git-addon"
-            withArrow
-            secondary
-          >
-            Visual tests requirements
-          </Link>
-        </Stack>
+            <Pre>git config user.email "you@example.com"</Pre>
+            <Text center muted small>
+              Your email address is only used as part of a hashed identifier and not recorded nor
+              transmitted to Chromatic.
+            </Text>
+          </Stack>
+        ) : (
+          <Stack>
+            <div>
+              <Heading>Set up a Git repository</Heading>
+              <Text center muted>
+                Chromatic requires Git to associate test results with commits and branches. Run
+                these steps to get started:
+              </Text>
+              <CheckList>
+                <li>
+                  {requireInit ? <Step /> : <Check />}
+                  <Instructions>
+                    <span>Initialize a Git repository</span>
+                    {requireInit && <Pre>git init</Pre>}
+                  </Instructions>
+                </li>
+                <li>
+                  {requireCommit ? <Step /> : <Check />}
+                  <Instructions>
+                    <span>Stage all files</span>
+                    {requireCommit && <Pre>git add .</Pre>}
+                  </Instructions>
+                </li>
+                <li>
+                  {requireCommit ? <Step /> : <Check />}
+                  <Instructions>
+                    <span>Commit the changes</span>
+                    {requireCommit && <Pre>git commit -m "Initial commit"</Pre>}
+                  </Instructions>
+                </li>
+              </CheckList>
+            </div>
+            <Link
+              target="_blank"
+              href="https://www.chromatic.com/docs/visual-tests-addon#git-addon"
+              withArrow
+              secondary
+            >
+              Visual tests requirements
+            </Link>
+          </Stack>
+        )}
       </Container>
     </Screen>
   );
