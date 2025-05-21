@@ -1,6 +1,6 @@
 import { watch } from 'node:fs';
 import { readFile } from 'node:fs/promises';
-import { normalize, relative } from 'node:path';
+import { dirname, join, normalize, relative } from 'node:path';
 
 import { type Configuration, getConfiguration, getGitInfo, type GitInfo } from 'chromatic/node';
 import type { Channel } from 'storybook/internal/channels';
@@ -270,6 +270,13 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
 const config = {
   managerEntries,
   experimental_serverChannel: serverChannel,
+  staticDirs: async (inputDirs: string[]) => [
+    ...inputDirs,
+    {
+      from: join(dirname(require.resolve('@chromatic-com/storybook/package.json')), 'assets'),
+      to: 'addon-visual-tests-assets',
+    },
+  ],
   env: async (
     env: Record<string, string>,
     { configType }: { configType: 'DEVELOPMENT' | 'PRODUCTION' }

@@ -1,11 +1,11 @@
 import React from 'react';
+import { styled } from 'storybook/theming';
 
 import { Button } from '../../components/Button';
 import { ButtonStack } from '../../components/ButtonStack';
 import { Container } from '../../components/Container';
 import { Heading } from '../../components/Heading';
-import { LinkIcon } from '../../components/icons/LinkIcon';
-import { VisualTestsIcon } from '../../components/icons/VisualTestsIcon';
+import { ChromaticIcon } from '../../components/icons/ChromaticIcon';
 import { Screen } from '../../components/Screen';
 import { Stack } from '../../components/Stack';
 import { Text } from '../../components/Text';
@@ -17,14 +17,20 @@ interface SignInProps {
   onSignInWithSSO: () => void;
 }
 
+const Icon = styled(ChromaticIcon)({
+  width: 40,
+  height: 40,
+  filter: 'drop-shadow(0 2px 5px rgba(0, 0, 0, 0.1))',
+  marginBottom: 10,
+});
+
 export const SignIn = ({ onBack, onSignIn, onSignInWithSSO }: SignInProps) => (
   <Screen footer={null} ignoreConfig>
     <AuthHeader onBack={onBack} />
     <Container>
-      <Stack alignItems="center" textAlign="center">
+      <Stack>
         <div>
-          <LinkIcon />
-          <VisualTestsIcon />
+          <Icon />
           <Heading>Sign in to begin visual testing</Heading>
           <Text center muted>
             Pinpoint bugs instantly by connecting with cloud browsers that run visual tests in

@@ -34,13 +34,10 @@ export const AuthHeader = ({ onBack }: AuthHeaderProps) => (
         trigger="hover"
         tooltip={<TooltipNote note="Learn about visual tests" />}
       >
-        <HeaderButton
-          as="a"
-          // @ts-expect-error href on button
-          href="https://www.chromatic.com/features/visual-test"
-          target="_blank"
-        >
-          <QuestionIcon />
+        <HeaderButton asChild>
+          <a href="https://www.chromatic.com/storybook" target="_blank">
+            <QuestionIcon />
+          </a>
         </HeaderButton>
       </WithTooltip>
     </Col>

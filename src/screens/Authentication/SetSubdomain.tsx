@@ -4,12 +4,23 @@ import { styled } from 'storybook/theming';
 
 import { Container } from '../../components/Container';
 import { Heading } from '../../components/Heading';
-import { LinkIcon } from '../../components/icons/LinkIcon';
-import { VisualTestsIcon } from '../../components/icons/VisualTestsIcon';
+import { ChromaticIcon } from '../../components/icons/ChromaticIcon';
 import { Screen } from '../../components/Screen';
+import { Stack as BaseStack } from '../../components/Stack';
 import { SuffixInput } from '../../components/SuffixInput';
 import { Text } from '../../components/Text';
 import { AuthHeader } from './AuthHeader';
+
+const Stack = styled(BaseStack)({
+  alignSelf: 'stretch',
+});
+
+const Icon = styled(ChromaticIcon)({
+  width: 40,
+  height: 40,
+  filter: 'drop-shadow(0 2px 5px rgba(0, 0, 0, 0.1))',
+  marginBottom: 10,
+});
 
 const Form = styled.form({
   position: 'relative',
@@ -58,29 +69,30 @@ export const SetSubdomain = ({ onBack, onSignIn }: SetSubdomainProps) => {
     <Screen footer={null} ignoreConfig>
       <AuthHeader onBack={onBack} />
       <Container>
-        <div>
-          <LinkIcon />
-          <VisualTestsIcon />
-        </div>
-        <Heading>Sign in with SSO</Heading>
-        <Text muted>Enter your team&apos;s Chromatic URL.</Text>
-        <Form onSubmit={handleSubmit}>
-          <SuffixInput
-            autoFocus
-            icon="users"
-            value={subdomain}
-            placeholder="yourteam"
-            suffix=".chromatic.com"
-            onChange={handleChange}
-            id="subdomain-input"
-            stackLevel="top"
-            error={inputError}
-            errorTooltipPlacement="top"
-          />
-          <SubmitButton type="submit" variant="solid" size="medium">
-            Continue
-          </SubmitButton>
-        </Form>
+        <Stack>
+          <div>
+            <Icon />
+            <Heading>Sign in with SSO</Heading>
+            <Text muted>Enter your team&apos;s Chromatic URL.</Text>
+          </div>
+          <Form onSubmit={handleSubmit}>
+            <SuffixInput
+              autoFocus
+              icon="users"
+              value={subdomain}
+              placeholder="yourteam"
+              suffix=".chromatic.com"
+              onChange={handleChange}
+              id="subdomain-input"
+              stackLevel="top"
+              error={inputError}
+              errorTooltipPlacement="top"
+            />
+            <SubmitButton type="submit" variant="solid" size="medium">
+              Continue
+            </SubmitButton>
+          </Form>
+        </Stack>
       </Container>
     </Screen>
   );

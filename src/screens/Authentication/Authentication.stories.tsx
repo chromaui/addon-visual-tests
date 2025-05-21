@@ -71,7 +71,7 @@ export const SignIn = {
   ),
   play: playAll(async ({ canvasElement }) => {
     const button = await findByRole(canvasElement, 'button', {
-      name: 'Enable',
+      name: /Get started/,
     });
     await userEvent.click(button);
   }),
