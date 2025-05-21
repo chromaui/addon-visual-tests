@@ -99,7 +99,7 @@ export const GitError = ({ gitInfoError }: { gitInfoError?: Error }) => {
       <Container>
         <Stack>
           <div>
-            <Heading>Setup a Git repository</Heading>
+            <Heading>Set up a Git repository</Heading>
             <Text center muted>
               Chromatic requires Git to associate test results with commits and branches. Run these
               steps to get started:
