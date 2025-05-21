@@ -15,7 +15,7 @@ import {
   TELEMETRY,
 } from './constants';
 import { Authentication } from './screens/Authentication/Authentication';
-import { GitNotFound } from './screens/Errors/GitNotFound';
+import { GitError } from './screens/Errors/GitError';
 import { LinkedProject } from './screens/LinkProject/LinkedProject';
 import { LinkingProjectFailed } from './screens/LinkProject/LinkingProjectFailed';
 import { LinkProject } from './screens/LinkProject/LinkProject';
@@ -149,7 +149,7 @@ export const Panel = ({ active, api }: PanelProps) => {
   }
 
   if (gitInfoError || !gitInfo) {
-    return withProviders(<GitNotFound />);
+    return withProviders(<GitError gitInfoError={gitInfoError} />);
   }
 
   // Momentarily wait on addonState (should be very fast)
