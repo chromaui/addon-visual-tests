@@ -5,7 +5,6 @@ import { Code } from '../../components/Code';
 import { Container } from '../../components/Container';
 import { Link } from '../../components/design-system';
 import { Heading } from '../../components/Heading';
-import { VisualTestsIcon } from '../../components/icons/VisualTestsIcon';
 import { Screen } from '../../components/Screen';
 import { Stack } from '../../components/Stack';
 import { Text } from '../../components/Text';
@@ -20,7 +19,6 @@ export const GitNotFound = () => {
       <Container>
         <Stack>
           <div>
-            <VisualTestsIcon />
             <Heading>Setup a Git repository</Heading>
             <Text center muted>
               Chromatic requires Git to associate test results with commits and branches.
