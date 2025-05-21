@@ -10,7 +10,6 @@ import { Screen } from '../../components/Screen';
 import { Stack } from '../../components/Stack';
 import { Text } from '../../components/Text';
 import { useTelemetry } from '../../utils/TelemetryContext';
-import { useUninstallAddon } from '../Uninstalled/UninstallContext';
 
 const horizontalShake = keyframes`
   0% {
@@ -93,7 +92,6 @@ const Instructions = styled.div(({ theme }) => ({
 export const GitError = ({ gitInfoError }: { gitInfoError?: Error }) => {
   const hasGitRepo = gitInfoError?.message.includes('one commit');
   useTelemetry('Errors', hasGitRepo ? 'GitError' : 'GitNotFound');
-  const { uninstallAddon } = useUninstallAddon();
   return (
     <Screen footer={null}>
       <Container>
@@ -135,10 +133,6 @@ export const GitError = ({ gitInfoError }: { gitInfoError?: Error }) => {
             secondary
           >
             Visual tests requirements
-          </Link>
-
-          <Link withArrow onClick={() => uninstallAddon()}>
-            Uninstall
           </Link>
         </Stack>
       </Container>
