@@ -91,7 +91,6 @@ const Pre = styled.pre(({ theme }) => ({
 }));
 
 export const GitError = ({ gitInfoError }: { gitInfoError?: Error }) => {
-  console.log(gitInfoError?.message);
   const requireInit = gitInfoError?.message.includes('git init');
   const requireCommit = requireInit || gitInfoError?.message.includes('one commit');
   const requireEmail = gitInfoError?.message.includes('user.email');
