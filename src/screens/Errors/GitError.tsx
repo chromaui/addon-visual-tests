@@ -104,17 +104,21 @@ export const GitError = ({ gitInfoError }: { gitInfoError?: Error }) => {
               <Heading>Configure your Git email</Heading>
               <Text center muted>
                 Chromatic requires Git to be configured with an email address to connect local
-                builds to CI builds.
+                builds to CI builds and link builds to user accounts.
               </Text>
             </div>
             <Text center muted>
               Run this command to set an email address:
             </Text>
             <Pre>git config user.email "you@example.com"</Pre>
-            <Text center muted small>
-              Your email address is only used as part of a hashed identifier and not recorded nor
-              transmitted to Chromatic.
-            </Text>
+            <Link
+              target="_blank"
+              href="https://www.chromatic.com/docs/privacy-policy/"
+              withArrow
+              secondary
+            >
+              Privacy policy
+            </Link>
           </Stack>
         ) : (
           <Stack>
