@@ -124,30 +124,30 @@ export const GitError = ({ gitInfoError }: { gitInfoError?: Error }) => {
                 Chromatic requires Git to associate test results with commits and branches. Run
                 these steps to get started:
               </Text>
-              <CheckList>
-                <li>
-                  {requireInit ? <Step /> : <Check />}
-                  <Instructions>
-                    <span>Initialize a Git repository</span>
-                    {requireInit && <Pre>git init</Pre>}
-                  </Instructions>
-                </li>
-                <li>
-                  {requireCommit ? <Step /> : <Check />}
-                  <Instructions>
-                    <span>Stage all files</span>
-                    {requireCommit && <Pre>git add .</Pre>}
-                  </Instructions>
-                </li>
-                <li>
-                  {requireCommit ? <Step /> : <Check />}
-                  <Instructions>
-                    <span>Commit the changes</span>
-                    {requireCommit && <Pre>git commit -m "Initial commit"</Pre>}
-                  </Instructions>
-                </li>
-              </CheckList>
             </div>
+            <CheckList>
+              <li>
+                {requireInit ? <Step /> : <Check />}
+                <Instructions>
+                  <span>Initialize a Git repository</span>
+                  {requireInit && <Pre>git init</Pre>}
+                </Instructions>
+              </li>
+              <li>
+                {requireCommit ? <Step /> : <Check />}
+                <Instructions>
+                  <span>Stage all files</span>
+                  {requireCommit && <Pre>git add .</Pre>}
+                </Instructions>
+              </li>
+              <li>
+                {requireCommit ? <Step /> : <Check />}
+                <Instructions>
+                  <span>Commit the changes</span>
+                  {requireCommit && <Pre>git commit -m "Initial commit"</Pre>}
+                </Instructions>
+              </li>
+            </CheckList>
             <Link
               target="_blank"
               href="https://www.chromatic.com/docs/visual-tests-addon#git-addon"
