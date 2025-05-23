@@ -111,14 +111,16 @@ export const GitError = ({ gitInfoError }: { gitInfoError?: Error }) => {
               Run this command to set an email address:
             </Text>
             <Pre>git config user.email "you@example.com"</Pre>
-            <Link
-              target="_blank"
-              href="https://www.chromatic.com/docs/privacy-policy/"
-              withArrow
-              secondary
-            >
-              Privacy policy
-            </Link>
+            <Text muted small>
+              <Link
+                target="_blank"
+                href="https://www.chromatic.com/docs/privacy-policy/"
+                withArrow
+                secondary
+              >
+                Privacy policy
+              </Link>
+            </Text>
           </Stack>
         ) : (
           <Stack>
