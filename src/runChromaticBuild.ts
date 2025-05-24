@@ -200,7 +200,6 @@ export const runChromaticBuild = async (
     options: {
       ...options,
       ...CONFIG_OVERRIDES,
-      logPrefix: '\x1b[38;5;202mChromatic\x1B[0m:',
       experimental_onTaskStart: onStartOrProgress(localBuildProgress, timeout),
       experimental_onTaskProgress: onStartOrProgress(localBuildProgress, timeout),
       experimental_onTaskComplete: onCompleteOrError(localBuildProgress, timeout),

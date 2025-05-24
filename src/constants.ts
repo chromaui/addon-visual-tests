@@ -47,6 +47,8 @@ export const CONFIG_OVERRIDES = {
   interactive: false,
   // Builds initiated from the addon are always considered local
   isLocalBuild: true,
+  // Prefix for Chromatic CLI log messages
+  logPrefix: '\x1b[38;5;202mChromatic\x1B[0m:',
   // Never skip local builds
   skip: false,
   // Don't check for CLI updates
