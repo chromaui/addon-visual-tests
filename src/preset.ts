@@ -131,7 +131,7 @@ const observeGitInfo = (
   let timer: NodeJS.Timeout | undefined;
   const act = async () => {
     try {
-      const gitInfo = await getGitInfo();
+      const gitInfo = await getGitInfo({ log: chromaticLogger });
       if (Object.entries(gitInfo).some(([key, value]) => prev?.[key as keyof GitInfo] !== value)) {
         callback(gitInfo, prev);
       }
