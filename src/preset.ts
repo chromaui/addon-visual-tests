@@ -2,7 +2,13 @@ import { watch } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { dirname, join, normalize, relative } from 'node:path';
 
-import { type Configuration, getConfiguration, getGitInfo, type GitInfo } from 'chromatic/node';
+import {
+  type Configuration,
+  createLogger,
+  getConfiguration,
+  getGitInfo,
+  type GitInfo,
+} from 'chromatic/node';
 import type { Channel } from 'storybook/internal/channels';
 import { experimental_getTestProviderStore } from 'storybook/internal/core-server';
 import { telemetry } from 'storybook/internal/telemetry';
@@ -12,6 +18,7 @@ import {
   ADDON_ID,
   CHROMATIC_BASE_URL,
   CONFIG_INFO,
+  CONFIG_OVERRIDES,
   GIT_INFO,
   GIT_INFO_ERROR,
   LOCAL_BUILD_PROGRESS,
@@ -34,6 +41,8 @@ import {
 import { ChannelFetch } from './utils/ChannelFetch';
 import { SharedState } from './utils/SharedState';
 import { updateChromaticConfig } from './utils/updateChromaticConfig';
+
+const chromaticLogger = createLogger(undefined, CONFIG_OVERRIDES);
 
 /**
  * to load the built addon in this test Storybook
@@ -83,7 +92,7 @@ const getConfigInfo = async (
   const problems: ConfigurationUpdate = {};
   const suggestions: ConfigurationUpdate = {};
 
-  const { repositoryRootDir } = await getGitInfo();
+  const { repositoryRootDir } = await getGitInfo({ log: chromaticLogger });
   const baseDir = repositoryRootDir && normalize(relative(repositoryRootDir, process.cwd()));
   if (baseDir !== normalize(configuration.storybookBaseDir ?? '')) {
     problems.storybookBaseDir = baseDir;
@@ -122,7 +131,7 @@ const observeGitInfo = (
   let timer: NodeJS.Timeout | undefined;
   const act = async () => {
     try {
-      const gitInfo = await getGitInfo();
+      const gitInfo = await getGitInfo({ log: chromaticLogger });
       if (Object.entries(gitInfo).some(([key, value]) => prev?.[key as keyof GitInfo] !== value)) {
         callback(gitInfo, prev);
       }
