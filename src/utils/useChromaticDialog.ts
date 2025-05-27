@@ -21,7 +21,7 @@ export const useChromaticDialog = (handler?: DialogHandler) => {
         let parsed: Schema;
         try {
           parsed = dialogPayloadSchema.parse(data);
-        } catch (err) {
+        } catch (_) {
           // Don't log anything on parsing errors, as we can get messages from things like intercom
           return;
         }

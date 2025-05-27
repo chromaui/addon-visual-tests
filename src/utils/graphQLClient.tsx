@@ -13,7 +13,7 @@ const setCurrentToken = (token: string | null) => {
     const { exp } = token ? JSON.parse(atob(token.split('.')[1])) : { exp: null };
     currentToken = token;
     currentTokenExpiration = exp;
-  } catch (e) {
+  } catch (_) {
     currentToken = null;
     currentTokenExpiration = null;
   }
@@ -94,7 +94,7 @@ export const createClient = (options?: Partial<ClientOptions>) =>
                 currentTokenExpiration = exp;
               }
               return Date.now() / 1000 > (currentTokenExpiration || 0);
-            } catch (e) {
+            } catch (_) {
               return true;
             }
           },

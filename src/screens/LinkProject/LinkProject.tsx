@@ -74,7 +74,7 @@ const ListHeading = styled.div(({ theme }) => ({
   textTransform: 'uppercase',
 }));
 
-const Left = styled.div(({ theme }) => ({}));
+const Left = styled.div({});
 
 const Right = styled.div(({ theme }) => ({
   background: theme.base === 'light' ? theme.color.lighter : theme.color.darker,

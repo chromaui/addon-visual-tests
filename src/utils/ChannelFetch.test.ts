@@ -79,7 +79,7 @@ describe('ChannelFetch', () => {
   });
 
   it('should abort fetch requests', async () => {
-    const fetch = vi.fn((input, init) => new Promise<Response>(() => {}));
+    const fetch = vi.fn((_input, _init) => new Promise<Response>(() => {}));
     const instance = ChannelFetch.subscribe('abort', channel, fetch);
 
     channel.emit(FETCH_REQUEST, { requestId: 'abort', input: 'https://example.com' });

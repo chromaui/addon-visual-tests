@@ -1,7 +1,7 @@
 import { ChevronDownIcon, DiamondIcon } from '@storybook/icons';
 import React from 'react';
 import { WithTooltip } from 'storybook/internal/components';
-import { styled, useTheme } from 'storybook/theming';
+import { styled } from 'storybook/theming';
 
 import { ComparisonResult, TestMode } from '../gql/graphql';
 import { aggregateResult } from '../utils/aggregateResult';
@@ -78,7 +78,6 @@ export const ModeSelector = ({
   onSelectMode,
   selectedMode,
 }: ModeSelectorProps) => {
-  const theme = useTheme();
   const aggregate = aggregateResult(modeResults.map(({ result }) => result));
   if (!aggregate) return null;
 

@@ -1,7 +1,7 @@
 import { ChevronDownIcon } from '@storybook/icons';
 import React, { ComponentProps } from 'react';
 import { WithTooltip } from 'storybook/internal/components';
-import { styled, useTheme } from 'storybook/theming';
+import { styled } from 'storybook/theming';
 
 import { Browser, BrowserInfo, ComparisonResult } from '../gql/graphql';
 import { aggregateResult } from '../utils/aggregateResult';
@@ -67,7 +67,6 @@ export const BrowserSelector = ({
   browserResults,
   onSelectBrowser,
 }: BrowserSelectorProps) => {
-  const theme = useTheme();
   const aggregate = aggregateResult(browserResults.map(({ result }) => result));
   if (!aggregate) return null;
 

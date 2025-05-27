@@ -17,7 +17,7 @@ export function useSessionState<S>(
     try {
       const value = sessionStorage.getItem(`${ADDON_ID}/state/${key}`) as string;
       if (value !== undefined && value !== null) return JSON.parse(value) as S;
-    } catch (e) {
+    } catch (_) {
       // Fall back to initial state
     }
     return typeof initialState === 'function' ? (initialState as () => S)() : (initialState as S);

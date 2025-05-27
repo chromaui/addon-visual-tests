@@ -1,5 +1,5 @@
 import React, { ComponentProps, FunctionComponent } from 'react';
-import { css, styled } from 'storybook/theming';
+import { styled } from 'storybook/theming';
 
 import { Icon } from './Icon';
 import { glow } from './shared/animation';

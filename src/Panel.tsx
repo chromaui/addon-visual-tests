@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback } from 'react';
 import type { API } from 'storybook/manager-api';
 import { experimental_getStatusStore, useChannel, useStorybookState } from 'storybook/manager-api';
 
@@ -42,7 +42,7 @@ interface PanelProps {
 
 const statusStore = experimental_getStatusStore(ADDON_ID);
 
-export const Panel = ({ active, api }: PanelProps) => {
+export const Panel = ({ active }: PanelProps) => {
   const [accessToken, updateAccessToken] = useAccessToken();
   const setAccessToken = useCallback(
     (token: string | null) => {
@@ -53,18 +53,6 @@ export const Panel = ({ active, api }: PanelProps) => {
   );
   const { storyId } = useStorybookState();
 
-  const [isOnline, setOnline] = useState<boolean>(window.navigator.onLine);
-  useEffect(() => {
-    const online = () => setOnline(true);
-    const offline = () => setOnline(false);
-    window.addEventListener('online', online);
-    window.addEventListener('offline', offline);
-    return () => {
-      window.removeEventListener('online', online);
-      window.removeEventListener('offline', offline);
-    };
-  }, []);
-
   const [gitInfo] = useSharedState<GitInfoPayload>(GIT_INFO);
   const [gitInfoError] = useSharedState<Error>(GIT_INFO_ERROR);
   const [isOffline] = useSharedState<boolean>(IS_OFFLINE);
@@ -74,13 +62,10 @@ export const Panel = ({ active, api }: PanelProps) => {
   const [, setOutdated] = useSharedState<boolean>(IS_OUTDATED);
   const emit = useChannel({});
 
-  const updateBuildStatus = useCallback<UpdateStatusFunction>(
-    (statuses) => {
-      statusStore.unset();
-      statusStore.set(statuses);
-    },
-    [statusStore]
-  );
+  const updateBuildStatus = useCallback<UpdateStatusFunction>((statuses) => {
+    statusStore.unset();
+    statusStore.set(statuses);
+  }, []);
 
   const {
     loading: projectInfoLoading,
@@ -95,7 +80,7 @@ export const Panel = ({ active, api }: PanelProps) => {
   // If the user creates a project in a dialog (either during login or later, it get set here)
   const [createdProjectId, setCreatedProjectId] = useSessionState<string>('createdProjectId');
   const [addonUninstalled, setAddonUninstalled] = useSharedState<boolean>(REMOVE_ADDON);
-  const [subdomain, setSubdomain] = useSessionState<string>("subdomain", "www");
+  const [subdomain, setSubdomain] = useSessionState<string>('subdomain', 'www');
 
   const trackEvent = useCallback((data: any) => emit(TELEMETRY, data), [emit]);
   const { isRunning, startBuild, stopBuild } = useBuildEvents({ localBuildProgress, accessToken });

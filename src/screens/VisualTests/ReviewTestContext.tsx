@@ -7,8 +7,9 @@ const initialState = {
   isReviewing: false,
   userCanReview: false,
   buildIsReviewable: false,
-  acceptTest: (testId: string, batch: ReviewTestBatch = ReviewTestBatch.Spec) => Promise.resolve(),
-  unacceptTest: (testId: string, batch: ReviewTestBatch = ReviewTestBatch.Spec) =>
+  acceptTest: (_testId: string, _batch: ReviewTestBatch = ReviewTestBatch.Spec) =>
+    Promise.resolve(),
+  unacceptTest: (_testId: string, _batch: ReviewTestBatch = ReviewTestBatch.Spec) =>
     Promise.resolve(),
 };
 

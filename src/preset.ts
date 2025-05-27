@@ -58,7 +58,7 @@ let getAddonVersion = async (): Promise<string | null> => {
       const packageJsonPath = require.resolve('@chromatic-com/storybook/package.json');
       const packageJsonData = await readFile(packageJsonPath, 'utf-8');
       return JSON.parse(packageJsonData).version || null;
-    } catch (e) {
+    } catch (_) {
       return null;
     }
   })();

@@ -183,12 +183,12 @@ const Setting = styled.div(({ theme }) => ({
   },
 }));
 
-const SettingHeading = styled.div(({ theme }) => ({
+const SettingHeading = styled.div({
   display: 'flex',
   flexGrow: 1,
   flexWrap: 'wrap',
   gap: '5px 10px',
-}));
+});
 
 const SettingLabel = styled.div(({ theme }) => ({
   fontWeight: theme.typography.weight.bold,

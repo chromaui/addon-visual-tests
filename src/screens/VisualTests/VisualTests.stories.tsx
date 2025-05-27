@@ -1,7 +1,6 @@
 import { VariablesOf } from '@graphql-typed-document-node/core';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { delay, HttpResponse } from 'msw';
-import React from 'react';
 import { expect, fn } from 'storybook/test';
 import { findByLabelText, findByRole, fireEvent, waitFor } from 'storybook/test';
 
@@ -42,7 +41,7 @@ import {
   startedBuild,
   withTests,
 } from './mocks';
-import { VisualTests, VisualTestsWithoutSelectedBuildId } from './VisualTests';
+import { VisualTestsWithoutSelectedBuildId } from './VisualTests';
 
 const browsers = [Browser.Chrome, Browser.Safari];
 

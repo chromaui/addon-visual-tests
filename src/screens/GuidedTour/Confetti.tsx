@@ -21,7 +21,7 @@ export const Confetti = React.memo(function Confetti({
       <ReactConfetti
         colors={colors}
         particleCount={200}
-        duration={5000}
+        duration={timeToFade}
         stageHeight={window.innerHeight}
         stageWidth={window.innerWidth}
         destroyAfterDone

@@ -12,7 +12,7 @@ const useGlobalValue = (key: string) => {
   try {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     return [useGlobals()[0][key], useGlobalTypes()[key]];
-  } catch (e) {
+  } catch (_) {
     return [null, null];
   }
 };
