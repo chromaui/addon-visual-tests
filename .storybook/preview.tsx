@@ -132,7 +132,7 @@ const withAuth = storyWrapper(AuthProvider, () => ({
   value: {
     accessToken: 'token',
     setAccessToken: fn(),
-    subdomain: "www",
+    subdomain: 'www',
     setSubdomain: fn(),
   },
 }));
