@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
 
+import { useAuthState } from '../../AuthContext';
 import { Project } from '../../gql/graphql';
 import { initiateSignin, TokenExchangeParameters } from '../../utils/requestAccessToken';
 import { useTelemetry } from '../../utils/TelemetryContext';
@@ -32,19 +33,21 @@ export const Authentication = ({
     useSessionState<TokenExchangeParameters>('exchangeParameters');
   const onError = useErrorNotification();
   const { uninstallAddon } = useUninstallAddon();
+  const { setSubdomain } = useAuthState();
 
   useTelemetry('Authentication', screen.charAt(0).toUpperCase() + screen.slice(1));
 
   const initiateSignInAndMoveToVerify = useCallback(
     async (subdomain?: string) => {
       try {
+        setSubdomain(subdomain ?? 'www');
         setExchangeParameters(await initiateSignin(subdomain));
         setScreen('verify');
       } catch (err: any) {
         onError('Sign in Error', err);
       }
     },
-    [onError, setExchangeParameters, setScreen]
+    [onError, setExchangeParameters, setScreen, setSubdomain]
   );
 
   if (screen === 'welcome' && !hasProjectId) {

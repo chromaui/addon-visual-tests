@@ -1,3 +1,15 @@
+# v3.2.6 (Fri Mar 14 2025)
+
+#### 🐛 Bug Fix
+
+- Fix SSO url [#363](https://github.com/chromaui/addon-visual-tests/pull/363) ([@kasperpeulen](https://github.com/kasperpeulen))
+
+#### Authors: 1
+
+- Kasper Peulen ([@kasperpeulen](https://github.com/kasperpeulen))
+
+---
+
 # v3.2.4 (Wed Feb 26 2025)
 
 #### 🐛 Bug Fix

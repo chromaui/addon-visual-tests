@@ -10,7 +10,7 @@ import { useSharedState } from '../utils/useSharedState';
 import { TooltipMenu } from './TooltipMenu';
 
 export const FooterMenu = () => {
-  const { accessToken, setAccessToken } = useAuthState();
+  const { accessToken, setAccessToken, subdomain } = useAuthState();
   const { toggleConfig } = useControlsDispatch();
   const [projectInfo] = useSharedState<ProjectInfoPayload>(PROJECT_INFO);
   const statusStore = experimental_getStatusStore(ADDON_ID);
@@ -37,8 +37,8 @@ export const FooterMenu = () => {
             title: 'View project on Chromatic',
             icon: <ShareAltIcon aria-hidden />,
             href: projectId
-              ? `https://www.chromatic.com/builds?appId=${projectId?.split(':')[1]}`
-              : 'https://www.chromatic.com/start',
+              ? `https://${subdomain}.chromatic.com/builds?appId=${projectId?.split(':')[1]}`
+              : `https://${subdomain}.chromatic.com/start`,
             target: '_blank',
           },
         ]
