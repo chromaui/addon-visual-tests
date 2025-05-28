@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
-import { NoDevServer } from "./NoDevServer";
+import { NoDevServer } from './NoDevServer';
 
 const meta = {
   component: NoDevServer,

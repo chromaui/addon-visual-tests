@@ -1,23 +1,23 @@
-import { useGlobals, useGlobalTypes } from "@storybook/manager-api";
-import { useCallback, useState } from "react";
+import { useCallback, useState } from 'react';
+import { useGlobals, useGlobalTypes } from 'storybook/manager-api';
 
-import { SELECTED_BROWSER_ID, SELECTED_MODE_NAME } from "../constants";
-import { BrowserInfo, ComparisonResult, StoryTestFieldsFragment, TestMode } from "../gql/graphql";
-import { useSharedState } from "./useSharedState";
+import { SELECTED_BROWSER_ID, SELECTED_MODE_NAME } from '../constants';
+import { BrowserInfo, ComparisonResult, StoryTestFieldsFragment, TestMode } from '../gql/graphql';
+import { useSharedState } from './useSharedState';
 
-type BrowserData = Pick<BrowserInfo, "id" | "key" | "name">;
-type ModeData = Pick<TestMode, "name">;
+type BrowserData = Pick<BrowserInfo, 'id' | 'key' | 'name'>;
+type ModeData = Pick<TestMode, 'name'>;
 
 const useGlobalValue = (key: string) => {
   try {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     return [useGlobals()[0][key], useGlobalTypes()[key]];
-  } catch (e) {
+  } catch (_) {
     return [null, null];
   }
 };
 
-const hasChanges = ({ result }: StoryTestFieldsFragment["comparisons"][number]) =>
+const hasChanges = ({ result }: StoryTestFieldsFragment['comparisons'][number]) =>
   result !== ComparisonResult.Equal && result !== ComparisonResult.Fixed;
 
 /**
@@ -29,7 +29,7 @@ const hasChanges = ({ result }: StoryTestFieldsFragment["comparisons"][number]) 
  */
 export const getMostUsefulTest = (
   tests: StoryTestFieldsFragment[],
-  modeName?: ModeData["name"]
+  modeName?: ModeData['name']
 ): StoryTestFieldsFragment => {
   const changedTests = tests.filter((test) => test.comparisons.some(hasChanges));
   const candidateTests = changedTests.length ? changedTests : tests;
@@ -45,9 +45,9 @@ export const getMostUsefulTest = (
  * 4. The first comparison
  */
 export const getMostUsefulComparison = (
-  comparisons: StoryTestFieldsFragment["comparisons"],
-  browserId?: BrowserData["id"]
-): StoryTestFieldsFragment["comparisons"][number] => {
+  comparisons: StoryTestFieldsFragment['comparisons'],
+  browserId?: BrowserData['id']
+): StoryTestFieldsFragment['comparisons'][number] => {
   const changedComparisons = comparisons.filter(hasChanges);
   const candidateComparisons = changedComparisons.length ? changedComparisons : comparisons;
   const comparison =
@@ -61,7 +61,7 @@ export const getMostUsefulComparison = (
  */
 export function useTests(tests: StoryTestFieldsFragment[]) {
   const [initialRender, setInitialRender] = useState(true);
-  const themeType = useGlobalValue("theme")[1];
+  const themeType = useGlobalValue('theme')[1];
 
   const [selectedModeName, setSelectedModeName] = useSharedState<string>(SELECTED_MODE_NAME);
   const [selectedBrowserId, setSelectedBrowserId] = useSharedState<string>(SELECTED_BROWSER_ID);

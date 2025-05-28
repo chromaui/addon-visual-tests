@@ -1,13 +1,13 @@
 // @ts-nocheck TODO: Address SB 8 type errors
-import type { Meta, StoryObj } from "@storybook/react";
-import { graphql, HttpResponse } from "msw";
+import type { Meta, StoryObj } from '@storybook/react-vite';
+import { graphql, HttpResponse } from 'msw';
 
-import { ProjectQueryQuery } from "../../gql/graphql";
-import { panelModes } from "../../modes";
-import { GraphQLClientProvider } from "../../utils/graphQLClient";
-import { storyWrapper } from "../../utils/storyWrapper";
-import { withFigmaDesign } from "../../utils/withFigmaDesign";
-import { RenderSettings } from "./RenderSettings";
+import { ProjectQueryQuery } from '../../gql/graphql';
+import { panelModes } from '../../modes';
+import { GraphQLClientProvider } from '../../utils/graphQLClient';
+import { storyWrapper } from '../../utils/storyWrapper';
+import { withFigmaDesign } from '../../utils/withFigmaDesign';
+import { RenderSettings } from './RenderSettings';
 
 const meta = {
   component: RenderSettings,
@@ -18,15 +18,15 @@ const meta = {
     },
     msw: {
       handlers: [
-        graphql.query("ProjectQuery", () =>
+        graphql.query('ProjectQuery', () =>
           HttpResponse.json({
             data: {
               project: {
-                id: "123",
-                name: "acme",
-                webUrl: "https://www.chromatic.com/passedBuilds?appId=123",
+                id: '123',
+                name: 'acme',
+                webUrl: 'https://www.chromatic.com/passedBuilds?appId=123',
                 lastBuild: {
-                  branch: "main",
+                  branch: 'main',
                   number: 123,
                 },
               },
@@ -46,6 +46,6 @@ export const Default: Story = {
     // build: passedBuild,
   },
   parameters: withFigmaDesign(
-    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-525764&t=18c1zI1SMe76dWYk-4"
+    'https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-525764&t=18c1zI1SMe76dWYk-4'
   ),
 };

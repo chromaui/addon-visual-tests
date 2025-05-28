@@ -1,50 +1,33 @@
-import { addons, type API } from "@storybook/manager-api";
-import { type Addon_TestProviderType, Addon_TypesEnum } from "@storybook/types";
-import React from "react";
+import React from 'react';
+import { type Addon_TestProviderType, Addon_TypesEnum } from 'storybook/internal/types';
+import { addons, experimental_getStatusStore } from 'storybook/manager-api';
 
-import { SidebarBottom } from "./components/SidebarBottom";
-import { SidebarTop } from "./components/SidebarTop";
-import {
-  ADDON_ID,
-  PANEL_ID,
-  PARAM_KEY,
-  SIDEBAR_BOTTOM_ID,
-  SIDEBAR_TOP_ID,
-  TEST_PROVIDER_ID,
-} from "./constants";
-import { Panel } from "./Panel";
-import { TestingModuleDescription } from "./TestingModuleDescription";
+import { ADDON_ID, PANEL_ID, PARAM_KEY, TEST_PROVIDER_ID } from './constants';
+import { Panel } from './Panel';
+import { TestProviderRender } from './TestProviderRender';
 
 addons.register(ADDON_ID, (api) => {
   addons.add(PANEL_ID, {
     type: Addon_TypesEnum.PANEL,
-    title: "Visual tests",
+    title: 'Visual tests',
     paramKey: PARAM_KEY,
-    match: ({ viewMode }) => viewMode === "story",
+    match: ({ viewMode }) => viewMode === 'story',
     render: ({ active }) => <Panel active={!!active} api={api} />,
   });
 
-  if (globalThis.CONFIG_TYPE !== "DEVELOPMENT") {
+  if (globalThis.CONFIG_TYPE !== 'DEVELOPMENT') {
     return;
   }
 
-  if (Addon_TypesEnum.experimental_TEST_PROVIDER) {
-    addons.add(TEST_PROVIDER_ID, {
-      type: Addon_TypesEnum.experimental_TEST_PROVIDER,
-      runnable: true,
-      name: "Visual tests",
-      title: ({ failed }) => (failed ? "Visual tests didn't complete" : "Visual tests"),
-      description: (state) => <TestingModuleDescription {...state} api={api} />,
-    } as Addon_TestProviderType);
-  } else {
-    addons.add(SIDEBAR_TOP_ID, {
-      type: "sidebar-top" as Addon_TypesEnum.experimental_SIDEBAR_TOP,
-      render: () => <SidebarTop api={api} />,
-    });
+  const statusStore = experimental_getStatusStore(ADDON_ID);
 
-    addons.add(SIDEBAR_BOTTOM_ID, {
-      type: "sidebar-bottom" as Addon_TypesEnum.experimental_SIDEBAR_BOTTOM,
-      render: () => <SidebarBottom api={api} />,
-    });
-  }
+  statusStore.onSelect(() => {
+    api.setSelectedPanel(PANEL_ID);
+    api.togglePanel(true);
+  });
+
+  addons.add(TEST_PROVIDER_ID, {
+    type: Addon_TypesEnum.experimental_TEST_PROVIDER,
+    render: () => <TestProviderRender />,
+  } satisfies Omit<Addon_TestProviderType, 'id'>);
 });

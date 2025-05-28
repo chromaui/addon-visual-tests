@@ -1,20 +1,20 @@
-import { styled } from "@storybook/theming";
-import { darken } from "polished";
-import React, { ComponentProps, forwardRef } from "react";
+import { darken } from 'polished';
+import React, { ComponentProps, forwardRef } from 'react';
+import { styled } from 'storybook/theming';
 
-import { Icon } from "./Icon";
-import { color } from "./shared/styles";
+import { Icon } from './Icon';
+import { color } from './shared/styles';
 
 const LinkInner = styled.span<{ withArrow: boolean }>(
   (props) =>
     props.withArrow && {
-      "> svg:last-of-type": {
-        height: "0.65em",
-        width: "0.65em",
+      '> svg:last-of-type': {
+        height: '0.65em',
+        width: '0.65em',
         marginRight: 0,
-        marginLeft: "0.25em",
-        bottom: "auto",
-        verticalAlign: "inherit",
+        marginLeft: '0.25em',
+        bottom: 'auto',
+        verticalAlign: 'inherit',
       },
     }
 );
@@ -28,74 +28,74 @@ export interface StyledLinkProps {
 
 const StyledLink = styled.a<StyledLinkProps>(
   {
-    display: "inline-block",
-    transition: "transform 150ms ease-out, color 150ms ease-out",
-    textDecoration: "none",
+    display: 'inline-block',
+    transition: 'transform 150ms ease-out, color 150ms ease-out',
+    textDecoration: 'none',
     color: color.secondary,
 
-    "&:hover, &:focus-visible": {
-      cursor: "pointer",
-      transform: "translateY(-1px)",
+    '&:hover, &:focus-visible': {
+      cursor: 'pointer',
+      transform: 'translateY(-1px)',
       color: darken(0.07, color.secondary),
     },
 
-    "&:active": {
-      transform: "translateY(0)",
+    '&:active': {
+      transform: 'translateY(0)',
       color: darken(0.1, color.secondary),
     },
 
     svg: {
-      display: "inline-block",
-      height: "1em",
-      width: "1em",
-      verticalAlign: "text-top",
-      position: "relative",
-      bottom: "-0.125em",
-      marginRight: "0.4em",
+      display: 'inline-block',
+      height: '1em',
+      width: '1em',
+      verticalAlign: 'text-top',
+      position: 'relative',
+      bottom: '-0.125em',
+      marginRight: '0.4em',
     },
   },
   (props) => ({
     ...(props.secondary && {
-      color: props.theme.base === "light" ? color.mediumdark : color.medium,
+      color: props.theme.base === 'light' ? color.mediumdark : color.medium,
 
-      "&:hover": {
-        color: props.theme.base === "light" ? color.dark : color.light,
+      '&:hover': {
+        color: props.theme.base === 'light' ? color.dark : color.light,
       },
 
-      "&:active": {
-        color: props.theme.base === "light" ? color.darker : color.lighter,
+      '&:active': {
+        color: props.theme.base === 'light' ? color.darker : color.lighter,
       },
     }),
 
     ...(props.tertiary && {
       color: color.dark,
 
-      "&:hover": {
+      '&:hover': {
         color: color.darkest,
       },
 
-      "&:active": {
+      '&:active': {
         color: color.mediumdark,
       },
     }),
 
     ...(props.nochrome && {
-      color: "inherit",
+      color: 'inherit',
 
-      "&:hover, &:active": {
-        color: "inherit",
-        textDecoration: "underline",
+      '&:hover, &:active': {
+        color: 'inherit',
+        textDecoration: 'underline',
       },
     }),
 
     ...(props.inverse && {
       color: color.lightest,
 
-      "&:hover": {
+      '&:hover': {
         color: color.lighter,
       },
 
-      "&:active": {
+      '&:active': {
         color: color.light,
       },
     }),
@@ -105,11 +105,11 @@ const StyledLink = styled.a<StyledLinkProps>(
 const UnstyledLink = styled.a({});
 
 const LinkButton = styled.button({
-  background: "none",
-  border: "none",
-  padding: "0",
-  font: "inherit",
-  cursor: "pointer",
+  background: 'none',
+  border: 'none',
+  padding: '0',
+  font: 'inherit',
+  cursor: 'pointer',
 });
 
 /**
@@ -139,7 +139,7 @@ const LinkComponentPicker = forwardRef<HTMLAnchorElement | HTMLButtonElement, Li
     return <UnstyledLink {...rest} ref={ref as React.ForwardedRef<HTMLAnchorElement>} />;
   }
 );
-LinkComponentPicker.displayName = "LinkComponentPicker";
+LinkComponentPicker.displayName = 'LinkComponentPicker';
 
 export const Link = forwardRef<
   HTMLAnchorElement | HTMLButtonElement,
@@ -164,9 +164,8 @@ export const Link = forwardRef<
     </StyledLink>
   );
 });
-Link.displayName = "Link";
+Link.displayName = 'Link';
 
-/* eslint-disable react/default-props-match-prop-types */
 Link.defaultProps = {
   withArrow: false,
   isButton: false,
@@ -175,4 +174,3 @@ Link.defaultProps = {
   nochrome: false,
   inverse: false,
 };
-/* eslint-enable react/default-props-match-prop-types */

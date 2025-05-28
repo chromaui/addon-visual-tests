@@ -1,25 +1,21 @@
-import type { API } from "@storybook/manager-api";
-import type { Configuration, getConfiguration, GitInfo, TaskName } from "chromatic/node";
+import type { Configuration, getConfiguration, GitInfo, TaskName } from 'chromatic/node';
+import { Status } from 'storybook/internal/types';
 
-import { SelectedBuildFieldsFragment } from "./gql/graphql";
+import { SelectedBuildFieldsFragment } from './gql/graphql';
 
 declare global {
-  // eslint-disable-next-line no-var, vars-on-top
+  // eslint-disable-next-line no-var
   var CONFIG_TYPE: string;
 }
 
-export type AnnouncedBuild = Extract<SelectedBuildFieldsFragment, { __typename: "AnnouncedBuild" }>;
-export type PublishedBuild = Extract<SelectedBuildFieldsFragment, { __typename: "PublishedBuild" }>;
-export type StartedBuild = Extract<SelectedBuildFieldsFragment, { __typename: "StartedBuild" }>;
-export type CompletedBuild = Extract<SelectedBuildFieldsFragment, { __typename: "CompletedBuild" }>;
+export type AnnouncedBuild = Extract<SelectedBuildFieldsFragment, { __typename: 'AnnouncedBuild' }>;
+export type PublishedBuild = Extract<SelectedBuildFieldsFragment, { __typename: 'PublishedBuild' }>;
+export type StartedBuild = Extract<SelectedBuildFieldsFragment, { __typename: 'StartedBuild' }>;
+export type CompletedBuild = Extract<SelectedBuildFieldsFragment, { __typename: 'CompletedBuild' }>;
 
 export type SelectedBuildWithTests = StartedBuild | CompletedBuild;
 
-export type StoryStatusUpdater = Parameters<API["experimental_updateStatus"]>[1];
-
-export type UpdateStatusFunction = (
-  update: StoryStatusUpdater
-) => ReturnType<API["experimental_updateStatus"]>;
+export type UpdateStatusFunction = (statuses: Status[]) => void;
 
 export type ConfigurationUpdate = {
   // Suggestions adhere to the Configuration schema, but may be null to suggest removal
@@ -31,7 +27,7 @@ export type ConfigInfoPayload = {
   problems?: ConfigurationUpdate;
   suggestions?: ConfigurationUpdate;
 };
-export type GitInfoPayload = Omit<GitInfo, "committerEmail" | "committerName">;
+export type GitInfoPayload = Omit<GitInfo, 'committerEmail' | 'committerName'>;
 
 export type ProjectInfoPayload = {
   projectId?: string;
@@ -44,7 +40,7 @@ export type ProjectInfoPayload = {
 // to those steps and focus on the ones we know.
 export type KnownStep = Extract<
   TaskName,
-  "initialize" | "build" | "upload" | "verify" | "snapshot"
+  'initialize' | 'build' | 'upload' | 'verify' | 'snapshot'
 >;
 
 export type StepProgressPayload = {
@@ -71,7 +67,7 @@ export type LocalBuildProgress = {
 
   // Possibly this should be a type exported by the CLI -- these correspond to tasks
   /** The step of the build process we have reached */
-  currentStep: KnownStep | "aborted" | "complete" | "error" | "limited";
+  currentStep: KnownStep | 'aborted' | 'complete' | 'error' | 'limited';
 
   /** Number of visual changes detected */
   changeCount?: number;

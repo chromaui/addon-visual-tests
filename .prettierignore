@@ -1,1 +1,5 @@
+.yarn
 dist
+public
+src/gql
+src/utils/sha256.js

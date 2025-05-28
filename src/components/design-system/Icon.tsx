@@ -1,16 +1,16 @@
-import { styled } from "@storybook/theming";
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent } from 'react';
+import { styled } from 'storybook/theming';
 
-import { icons } from "./shared/icons";
+import { icons } from './shared/icons';
 
 const Svg = styled.svg({
-  display: "inline-block",
-  shapeRendering: "inherit",
-  transform: "translate3d(0, 0, 0)",
-  verticalAlign: "middle",
+  display: 'inline-block',
+  shapeRendering: 'inherit',
+  transform: 'translate3d(0, 0, 0)',
+  verticalAlign: 'middle',
 
   path: {
-    fill: "currentColor",
+    fill: 'currentColor',
   },
 });
 

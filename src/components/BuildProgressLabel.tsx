@@ -1,8 +1,8 @@
-import React, { ComponentProps } from "react";
+import React, { ComponentProps } from 'react';
 
-import { BUILD_STEP_CONFIG } from "../buildSteps";
-import { LocalBuildProgress } from "../types";
-import { Text } from "./Text";
+import { BUILD_STEP_CONFIG } from '../buildSteps';
+import { LocalBuildProgress } from '../types';
+import { Text } from './Text';
 
 interface BuildProgressLabelProps {
   localBuildProgress: LocalBuildProgress;

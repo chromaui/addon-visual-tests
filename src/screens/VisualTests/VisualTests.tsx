@@ -1,36 +1,31 @@
-import { FailedIcon } from "@storybook/icons";
-import { useStorybookApi, useStorybookState } from "@storybook/manager-api";
-import { color } from "@storybook/theming";
-import type { API_StatusState } from "@storybook/types";
-import React, { useCallback, useEffect } from "react";
-import { useMutation } from "urql";
+import { FailedIcon } from '@storybook/icons';
+import React, { useCallback, useEffect } from 'react';
+import { useStorybookApi, useStorybookState } from 'storybook/manager-api';
+import { color } from 'storybook/theming';
+import { useMutation } from 'urql';
 
-import { ADDON_ID, PANEL_ID } from "../../constants";
-import { getFragment, graphql } from "../../gql";
+import { ADDON_ID, PANEL_ID } from '../../constants';
+import { getFragment, graphql } from '../../gql';
 import {
   ReviewTestBatch,
   ReviewTestInputStatus,
   TestResult,
   TestStatus,
   VtaOnboardingPreference,
-} from "../../gql/graphql";
-import { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from "../../types";
-import { testsToStatusUpdate } from "../../utils/testsToStatusUpdate";
-import { SelectedBuildInfo, updateSelectedBuildInfo } from "../../utils/updateSelectedBuildInfo";
-import { useSessionState } from "../../utils/useSessionState";
-import { AccountSuspended } from "../Errors/AccountSuspended";
-import { VisualTestsDisabled } from "../Errors/VisualTestsDisabled";
-import { GuidedTour } from "../GuidedTour/GuidedTour";
-import { Onboarding } from "../Onboarding/Onboarding";
-import { BuildProvider, useBuild } from "./BuildContext";
-import { BuildResults } from "./BuildResults";
-import { FragmentStatusTestFields, MutationReviewTest } from "./graphql";
-import { NoBuild } from "./NoBuild";
-import { ReviewTestProvider } from "./ReviewTestContext";
-
-const createEmptyStoryStatusUpdate = (state: API_StatusState) => {
-  return Object.fromEntries(Object.entries(state).map(([id]) => [id, null]));
-};
+} from '../../gql/graphql';
+import { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from '../../types';
+import { testsToStatusUpdate } from '../../utils/testsToStatusUpdate';
+import { SelectedBuildInfo, updateSelectedBuildInfo } from '../../utils/updateSelectedBuildInfo';
+import { useSessionState } from '../../utils/useSessionState';
+import { AccountSuspended } from '../Errors/AccountSuspended';
+import { VisualTestsDisabled } from '../Errors/VisualTestsDisabled';
+import { GuidedTour } from '../GuidedTour/GuidedTour';
+import { Onboarding } from '../Onboarding/Onboarding';
+import { BuildProvider, useBuild } from './BuildContext';
+import { BuildResults } from './BuildResults';
+import { FragmentStatusTestFields, MutationReviewTest } from './graphql';
+import { NoBuild } from './NoBuild';
+import { ReviewTestProvider } from './ReviewTestContext';
 
 interface VisualTestsProps {
   isOutdated: boolean;
@@ -43,7 +38,7 @@ interface VisualTestsProps {
   projectId: string;
   gitInfo: Pick<
     GitInfoPayload,
-    "branch" | "slug" | "userEmailHash" | "commit" | "committedAt" | "uncommittedHash"
+    'branch' | 'slug' | 'userEmailHash' | 'commit' | 'committedAt' | 'uncommittedHash'
   >;
   storyId: string;
 }
@@ -70,8 +65,8 @@ const useReview = ({
   const reviewTest = useCallback(
     async (input: ReviewTestInput) => {
       try {
-        if (!buildIsReviewable) throw new Error("Build is not reviewable");
-        if (!userCanReview) throw new Error("No permission to review tests");
+        if (!buildIsReviewable) throw new Error('Build is not reviewable');
+        if (!userCanReview) throw new Error('No permission to review tests');
         const { error } = await runMutation({ input });
         if (error) throw error;
         onReviewSuccess?.(input);
@@ -123,7 +118,7 @@ const useOnboarding = ({ lastBuildOnBranch, vtaOnboarding }: ReturnType<typeof u
   const [hasCompletedWalkthrough, setHasCompletedWalkthrough] = React.useState(true);
   React.useEffect(() => {
     // Force the onboarding to show by adding ?vtaOnboarding=true to the URL
-    if (managerApi?.getUrlState?.().queryParams.vtaOnboarding === "true") {
+    if (managerApi?.getUrlState?.().queryParams.vtaOnboarding === 'true') {
       setHasCompletedWalkthrough(false);
       return;
     }
@@ -148,9 +143,9 @@ const useOnboarding = ({ lastBuildOnBranch, vtaOnboarding }: ReturnType<typeof u
       setWalkthroughInProgress(false);
 
       const url = new URL(window.location.href);
-      if (url.searchParams.has("vtaOnboarding")) {
-        url.searchParams.delete("vtaOnboarding");
-        window.history.replaceState({}, "", url.href);
+      if (url.searchParams.has('vtaOnboarding')) {
+        url.searchParams.delete('vtaOnboarding');
+        window.history.replaceState({}, '', url.href);
       }
     },
     [runMutation]
@@ -160,7 +155,7 @@ const useOnboarding = ({ lastBuildOnBranch, vtaOnboarding }: ReturnType<typeof u
     // select only testsForStatus (or empty array) and return true if any of them are pending and changed
     const testsForStatus =
       (lastBuildOnBranch &&
-        "testsForStatus" in lastBuildOnBranch &&
+        'testsForStatus' in lastBuildOnBranch &&
         lastBuildOnBranch.testsForStatus?.nodes &&
         getFragment(FragmentStatusTestFields, lastBuildOnBranch.testsForStatus.nodes)) ||
       [];
@@ -241,7 +236,7 @@ export const VisualTestsWithoutSelectedBuildId = ({
           id: `${ADDON_ID}/errorAccepting/${Date.now()}`,
           content: {
             headline: `Failed to ${
-              update.status === ReviewTestInputStatus.Accepted ? "accept" : "unaccept"
+              update.status === ReviewTestInputStatus.Accepted ? 'accept' : 'unaccept'
             } changes`,
             subHeadline: err.message,
           },
@@ -260,16 +255,14 @@ export const VisualTestsWithoutSelectedBuildId = ({
   // next builds. The status update is calculated outside useEffect so it only reruns when changed.
   const testsForStatus =
     lastBuildOnBranch &&
-    "testsForStatus" in lastBuildOnBranch &&
+    'testsForStatus' in lastBuildOnBranch &&
     lastBuildOnBranch.testsForStatus?.nodes &&
     getFragment(FragmentStatusTestFields, lastBuildOnBranch.testsForStatus.nodes);
-  const statusUpdate =
-    lastBuildOnBranchIsSelectable && testsToStatusUpdate(managerApi, testsForStatus || []);
+  const statusUpdate = lastBuildOnBranchIsSelectable
+    ? testsToStatusUpdate(testsForStatus || [])
+    : [];
   useEffect(() => {
-    updateBuildStatus((state) => ({
-      ...createEmptyStoryStatusUpdate(state),
-      ...statusUpdate,
-    }));
+    updateBuildStatus(statusUpdate);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(statusUpdate), updateBuildStatus]);
 
@@ -360,7 +353,6 @@ export const VisualTestsWithoutSelectedBuildId = ({
             hasSelectedBuild,
             branch: gitInfo.branch,
             dismissBuildError,
-            isOutdated,
             localBuildProgress,
             ...(lastBuildOnBranchIsSelectable && { switchToLastBuildOnBranch }),
           }}
@@ -404,10 +396,10 @@ export const VisualTestsWithoutSelectedBuildId = ({
 // If the selectedBuildInfo is internal state of the component it is harder to do this,
 // as we need to change the query results over time.
 export const VisualTests = (
-  props: Omit<VisualTestsProps, "selectedBuildInfo" | "setSelectedBuildInfo">
+  props: Omit<VisualTestsProps, 'selectedBuildInfo' | 'setSelectedBuildInfo'>
 ) => {
   const [selectedBuildInfo, setSelectedBuildInfo] = useSessionState<SelectedBuildInfo | undefined>(
-    "selectedBuildInfo"
+    'selectedBuildInfo'
   );
 
   return (

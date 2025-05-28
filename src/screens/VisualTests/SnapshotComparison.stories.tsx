@@ -1,21 +1,21 @@
 // @ts-nocheck TODO: Address SB 8 type errors
-import { action } from "@storybook/addon-actions";
-import type { Meta, StoryObj } from "@storybook/react";
-import { findByRole, fireEvent, screen, userEvent, within } from "@storybook/testing-library";
-import type { StoryContext } from "@storybook/types";
-import { delay, http } from "msw";
-import React, { ComponentProps } from "react";
+import type { Meta, StoryObj } from '@storybook/react-vite';
+import { delay, http } from 'msw';
+import React, { ComponentProps } from 'react';
+import type { StoryContext } from 'storybook/internal/types';
+import { fn } from 'storybook/test';
+import { findByRole, fireEvent, screen, userEvent, within } from 'storybook/test';
 
-import { Browser, ComparisonResult, TestResult, TestStatus } from "../../gql/graphql";
-import { panelModes } from "../../modes";
-import { playAll } from "../../utils/playAll";
-import { makeComparison, makeTest, makeTests } from "../../utils/storyData";
-import { storyWrapper } from "../../utils/storyWrapper";
-import { BuildProvider } from "./BuildContext";
-import { ControlsProvider } from "./ControlsContext";
-import { buildInfo, interactionFailureTests, pendingBuild, pendingTests, withTests } from "./mocks";
-import { ReviewTestProvider } from "./ReviewTestContext";
-import { SnapshotComparison } from "./SnapshotComparison";
+import { Browser, ComparisonResult, TestResult, TestStatus } from '../../gql/graphql';
+import { panelModes } from '../../modes';
+import { playAll } from '../../utils/playAll';
+import { makeComparison, makeTest, makeTests } from '../../utils/storyData';
+import { storyWrapper } from '../../utils/storyWrapper';
+import { BuildProvider } from './BuildContext';
+import { ControlsProvider } from './ControlsContext';
+import { buildInfo, interactionFailureTests, pendingBuild, pendingTests, withTests } from './mocks';
+import { ReviewTestProvider } from './ReviewTestContext';
+import { SnapshotComparison } from './SnapshotComparison';
 
 const build = { ...pendingBuild, startedAt: new Date() };
 
@@ -27,8 +27,8 @@ const meta = {
         isReviewing: false,
         userCanReview: true,
         buildIsReviewable: true,
-        acceptTest: action("acceptTest"),
-        unacceptTest: action("unacceptTest"),
+        acceptTest: fn().mockName('acceptTest'),
+        unacceptTest: fn().mockName('unacceptTest'),
         ...ctx.parameters.reviewTest,
       },
     })),
@@ -36,12 +36,12 @@ const meta = {
     storyWrapper(ControlsProvider),
   ],
   args: {
-    storyId: "button--primary",
+    storyId: 'button--primary',
     isOutdated: false,
     isStarting: false,
     isBuildFailed: false,
     shouldSwitchToLastBuildOnBranch: false,
-    setAccessToken: action("setAccessToken"),
+    setAccessToken: fn().mockName('setAccessToken'),
   },
   parameters: {
     chromatic: {
@@ -77,7 +77,7 @@ export const InProgress = {
 export const Loading = {
   parameters: {
     msw: {
-      handlers: [http.get("/B.png", () => delay("infinite"))],
+      handlers: [http.get('/B.png', () => delay('infinite'))],
     },
   },
 } satisfies Story;
@@ -87,7 +87,7 @@ export const Default = {} satisfies Story;
 export const Spotlight = {
   play: playAll(async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const button = await canvas.findByRole("button", { name: "Show spotlight" });
+    const button = await canvas.findByRole('button', { name: 'Show spotlight' });
     await userEvent.click(button);
   }),
 } satisfies Story;
@@ -95,7 +95,7 @@ export const Spotlight = {
 export const SpotlightOnly = {
   play: playAll(Spotlight, async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const button = await canvas.findByRole("button", { name: "Hide diff" });
+    const button = await canvas.findByRole('button', { name: 'Hide diff' });
     await userEvent.click(button);
   }),
 } satisfies Story;
@@ -146,7 +146,7 @@ export const StoryAdded: Story = {
 
 export const ShowingBaseline: Story = {
   play: playAll(async ({ canvasElement }) => {
-    fireEvent.click(await findByRole(canvasElement, "button", { name: "Show baseline snapshot" }));
+    fireEvent.click(await findByRole(canvasElement, 'button', { name: 'Show baseline snapshot' }));
   }),
 } satisfies Story;
 
@@ -154,7 +154,7 @@ export const BaselineLoading: Story = {
   ...ShowingBaseline,
   parameters: {
     msw: {
-      handlers: [http.get("/A.png", () => delay("infinite"))],
+      handlers: [http.get('/A.png', () => delay('infinite'))],
     },
   },
 } satisfies Story;
@@ -211,9 +211,9 @@ export const SwitchingMode = {
   },
   play: playAll(async ({ canvasElement, canvasIndex }) => {
     const canvas = within(canvasElement);
-    const menu = await canvas.findByRole("button", { name: "320px" });
+    const menu = await canvas.findByRole('button', { name: '320px' });
     await userEvent.click(menu);
-    const items = await screen.findAllByText("1200px");
+    const items = await screen.findAllByText('1200px');
     await userEvent.click(items[canvasIndex]);
   }),
 } satisfies Story;
@@ -222,9 +222,9 @@ export const SwitchingBrowser = {
   parameters: SwitchingMode.parameters,
   play: playAll(async ({ canvasElement, canvasIndex }) => {
     const canvas = within(canvasElement);
-    const menu = await canvas.findByRole("button", { name: "Chrome" });
+    const menu = await canvas.findByRole('button', { name: 'Chrome' });
     await userEvent.click(menu);
-    const items = await screen.findAllByText("Safari");
+    const items = await screen.findAllByText('Safari');
     await userEvent.click(items[canvasIndex]);
   }),
 } satisfies Story;

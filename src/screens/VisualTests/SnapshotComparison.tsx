@@ -1,112 +1,112 @@
-import { Loader } from "@storybook/components";
-import { styled } from "@storybook/theming";
-import React, { useEffect } from "react";
+import React, { useEffect } from 'react';
+import { Loader } from 'storybook/internal/components';
+import { styled } from 'storybook/theming';
 
-import { Link } from "../../components/design-system";
-import { SnapshotImage } from "../../components/SnapshotImage";
-import { Text } from "../../components/Text";
-import { ComparisonResult, TestResult, TestStatus } from "../../gql/graphql";
-import { summarizeTests } from "../../utils/summarizeTests";
-import { useSelectedBuildState, useSelectedStoryState } from "./BuildContext";
-import { BuildResultsFooter } from "./BuildResultsFooter";
-import { useControlsDispatch, useControlsState } from "./ControlsContext";
-import { SnapshotControls } from "./SnapshotControls";
-import { StoryInfo } from "./StoryInfo";
+import { Link } from '../../components/design-system';
+import { SnapshotImage } from '../../components/SnapshotImage';
+import { Text } from '../../components/Text';
+import { ComparisonResult, TestResult, TestStatus } from '../../gql/graphql';
+import { summarizeTests } from '../../utils/summarizeTests';
+import { useSelectedBuildState, useSelectedStoryState } from './BuildContext';
+import { BuildResultsFooter } from './BuildResultsFooter';
+import { useControlsDispatch, useControlsState } from './ControlsContext';
+import { SnapshotControls } from './SnapshotControls';
+import { StoryInfo } from './StoryInfo';
 
 export const Grid = styled.div(({ theme }) => ({
-  display: "grid",
+  display: 'grid',
   gridTemplateAreas: `
     "info info"
     "actions actions"
     "label controls"
   `,
-  gridTemplateColumns: "1fr fit-content(50%)",
-  gridTemplateRows: "auto auto auto",
+  gridTemplateColumns: '1fr fit-content(50%)',
+  gridTemplateRows: 'auto auto auto',
   borderBottom: `1px solid ${theme.appBorderColor}`,
 
-  "@container (min-width: 300px)": {
+  '@container (min-width: 300px)': {
     gridTemplateAreas: `
       "info actions"
       "label controls"
     `,
-    gridTemplateColumns: "1fr auto",
-    gridTemplateRows: "auto auto",
+    gridTemplateColumns: '1fr auto',
+    gridTemplateRows: 'auto auto',
   },
 
-  "@container (min-width: 800px)": {
+  '@container (min-width: 800px)': {
     gridTemplateAreas: `"info label controls actions"`,
-    gridTemplateColumns: "auto 1fr auto auto",
-    gridTemplateRows: 40,
+    gridTemplateColumns: 'auto 1fr auto auto',
+    gridTemplateRows: '39px',
   },
 }));
 
-const ParentGrid = styled.div(({ theme }) => ({
-  display: "grid",
+const ParentGrid = styled.div({
+  display: 'grid',
   gridTemplateAreas: `
     "header"
     "main"
     "footer"
   `,
-  gridTemplateColumns: "1fr",
-  gridTemplateRows: "auto 1fr auto",
-  height: "100%",
+  gridTemplateColumns: '1fr',
+  gridTemplateRows: 'auto 1fr auto',
+  height: '100%',
 
-  "&[hidden]": {
-    display: "none",
+  '&[hidden]': {
+    display: 'none',
   },
-}));
+});
 
 const HeaderSection = styled.div(({ theme }) => ({
-  gridArea: "header",
-  position: "sticky",
+  gridArea: 'header',
+  position: 'sticky',
   zIndex: 1,
   top: 0,
   background: theme.background.content,
 
-  "@container (min-width: 800px)": {
+  '@container (min-width: 800px)': {
     background: theme.background.app,
   },
 }));
 
 const MainSection = styled.div(({ theme }) => ({
-  gridArea: "main",
-  overflowY: "auto",
-  maxHeight: "100%",
+  gridArea: 'main',
+  overflowY: 'auto',
+  maxHeight: '100%',
   background: theme.background.content,
 }));
 
-const FooterSection = styled.div(({ theme }) => ({
-  gridArea: "footer",
-  position: "sticky",
+const FooterSection = styled.div({
+  gridArea: 'footer',
+  position: 'sticky',
   zIndex: 1,
   bottom: 0,
-}));
+});
 
 const Divider = styled.div(({ children, theme }) => ({
-  display: "flex",
-  alignItems: "center",
+  display: 'flex',
+  alignItems: 'center',
   border: `0px solid ${theme.appBorderColor}`,
   borderTopWidth: 1,
   borderBottomWidth: children ? 1 : 0,
   height: children ? 40 : 0,
-  padding: children ? "0 15px" : 0,
+  padding: children ? '0 15px' : 0,
 }));
 
 const StackTrace = styled.div(({ theme }) => ({
   fontFamily: theme.typography.fonts.mono,
   fontSize: theme.typography.size.s1,
   color: theme.color.defaultText,
-  lineHeight: "18px",
+  lineHeight: '18px',
   padding: 15,
-  whiteSpace: "pre-wrap",
-  wordBreak: "break-word",
+  whiteSpace: 'pre-wrap',
+  wordBreak: 'break-word',
 }));
 
 const Warning = styled.div(({ theme }) => ({
   background: theme.background.hoverable,
-  padding: "10px 15px",
-  lineHeight: "18px",
-  position: "relative",
+  padding: '10px 15px',
+  lineHeight: '18px',
+  position: 'relative',
   borderBottom: `1px solid ${theme.appBorderColor}`,
 }));
 
@@ -133,7 +133,7 @@ export const SnapshotComparison = ({
   const { toggleBaselineImage, toggleSettings, toggleWarnings } = useControlsDispatch();
 
   const selectedBuild = useSelectedBuildState();
-  const startedAt: Date = "startedAt" in selectedBuild && selectedBuild.startedAt;
+  const startedAt: Date = 'startedAt' in selectedBuild && selectedBuild.startedAt;
 
   const selectedStory = useSelectedStoryState();
   const { tests } = selectedStory;
@@ -225,7 +225,7 @@ export const SnapshotComparison = ({
 
   const captureErrorData =
     selectedComparison?.headCapture?.captureError &&
-    "error" in selectedComparison?.headCapture?.captureError &&
+    'error' in selectedComparison?.headCapture?.captureError &&
     selectedComparison?.headCapture?.captureError?.error;
 
   return (
@@ -242,7 +242,7 @@ export const SnapshotComparison = ({
         {!isInProgress && isNewStory && (
           <Warning>
             <Text>
-              New story found. Accept this snapshot as a test baseline.{" "}
+              New story found. Accept this snapshot as a test baseline.{' '}
               <Link
                 withArrow
                 href="https://www.chromatic.com/docs/branching-and-baselines"
@@ -256,7 +256,7 @@ export const SnapshotComparison = ({
         {!isInProgress && isNewMode && (
           <Warning>
             <Text>
-              New mode found. Accept this snapshot as a test baseline.{" "}
+              New mode found. Accept this snapshot as a test baseline.{' '}
               <Link
                 withArrow
                 href="https://www.chromatic.com/docs/branching-and-baselines"
@@ -270,7 +270,7 @@ export const SnapshotComparison = ({
         {!isInProgress && isNewBrowser && (
           <Warning>
             <Text>
-              New browser found. Accept this snapshot as a test baseline.{" "}
+              New browser found. Accept this snapshot as a test baseline.{' '}
               <Link
                 withArrow
                 href="https://www.chromatic.com/docs/branching-and-baselines"

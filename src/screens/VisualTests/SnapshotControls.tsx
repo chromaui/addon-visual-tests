@@ -1,4 +1,3 @@
-import { WithTooltip } from "@storybook/components";
 import {
   BatchAcceptIcon,
   ContrastIcon,
@@ -8,39 +7,40 @@ import {
   SyncIcon,
   TransferIcon,
   UndoIcon,
-} from "@storybook/icons";
-import { styled } from "@storybook/theming";
-import React from "react";
+} from '@storybook/icons';
+import React from 'react';
+import { WithTooltip } from 'storybook/internal/components';
+import { styled } from 'storybook/theming';
 
-import { ActionButton, ButtonGroup } from "../../components/ActionButton";
-import { IconButton } from "../../components/IconButton";
-import { ProgressIcon } from "../../components/icons/ProgressIcon";
-import { Placeholder } from "../../components/Placeholder";
-import { Text } from "../../components/Text";
-import { TooltipMenu } from "../../components/TooltipMenu";
-import { TooltipNote } from "../../components/TooltipNote";
-import { ComparisonResult, ReviewTestBatch, TestStatus } from "../../gql/graphql";
-import { useSelectedStoryState } from "./BuildContext";
-import { useControlsDispatch, useControlsState } from "./ControlsContext";
-import { useReviewTestState } from "./ReviewTestContext";
-import { useRunBuildState } from "./RunBuildContext";
+import { ActionButton, ButtonGroup } from '../../components/ActionButton';
+import { IconButton } from '../../components/IconButton';
+import { ProgressIcon } from '../../components/icons/ProgressIcon';
+import { Placeholder } from '../../components/Placeholder';
+import { Text } from '../../components/Text';
+import { TooltipMenu } from '../../components/TooltipMenu';
+import { TooltipNote } from '../../components/TooltipNote';
+import { ComparisonResult, ReviewTestBatch, TestStatus } from '../../gql/graphql';
+import { useSelectedStoryState } from './BuildContext';
+import { useControlsDispatch, useControlsState } from './ControlsContext';
+import { useReviewTestState } from './ReviewTestContext';
+import { useRunBuildState } from './RunBuildContext';
 
 const Label = styled.div(({ theme }) => ({
-  gridArea: "label",
-  margin: "8px 15px",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "flex-start",
+  gridArea: 'label',
+  margin: '8px 15px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'flex-start',
   gap: 6,
 
   span: {
-    display: "none",
-    "@container (min-width: 300px)": {
-      display: "initial",
+    display: 'none',
+    '@container (min-width: 300px)': {
+      display: 'initial',
     },
   },
 
-  "@container (min-width: 800px)": {
+  '@container (min-width: 800px)': {
     borderLeft: `1px solid ${theme.appBorderColor}`,
     paddingLeft: 10,
     marginLeft: 0,
@@ -48,22 +48,22 @@ const Label = styled.div(({ theme }) => ({
 }));
 
 const Controls = styled.div({
-  gridArea: "controls",
-  margin: "6px 15px",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "flex-end",
+  gridArea: 'controls',
+  margin: '6px 10px 6px 15px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'flex-end',
   gap: 6,
 
-  "@container (min-width: 800px)": {
+  '@container (min-width: 800px)': {
     margin: 8,
   },
 });
 
 const DisabledIconWrapper = styled.div(({ theme }) => ({
   padding: 9,
-  "> svg": {
-    display: "block",
+  '> svg': {
+    display: 'block',
   },
   path: {
     fill: theme.color.mediumdark,
@@ -71,21 +71,21 @@ const DisabledIconWrapper = styled.div(({ theme }) => ({
 }));
 
 const Actions = styled.div<{ showDivider?: boolean }>(({ theme, showDivider }) => ({
-  gridArea: "actions",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "flex-end",
-  margin: "0px 15px",
+  gridArea: 'actions',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'flex-end',
+  margin: '0px 10px 0px 15px',
   gap: 6,
 
-  "@container (min-width: 300px)": {
-    alignItems: "flex-start",
-    margin: "15px 15px 15px 0px",
+  '@container (min-width: 300px)': {
+    alignItems: 'flex-start',
+    margin: '15px 10px 15px 0px',
   },
-  "@container (min-width: 800px)": {
-    alignItems: "center",
-    borderLeft: showDivider ? `1px solid ${theme.appBorderColor}` : "none",
-    margin: "8px 15px 8px 0px",
+  '@container (min-width: 800px)': {
+    alignItems: 'center',
+    borderLeft: showDivider ? `1px solid ${theme.appBorderColor}` : 'none',
+    margin: '8px 10px 8px 0px',
     paddingLeft: 8,
   },
 }));
@@ -120,7 +120,7 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
         <Label>
           <Text>
             <b>
-              {baselineImageVisible ? "Baseline" : "Latest"}
+              {baselineImageVisible ? 'Baseline' : 'Latest'}
               <span> snapshot</span>
             </b>
           </Text>
@@ -132,7 +132,7 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
           <WithTooltip
             tooltip={
               <TooltipNote
-                note={baselineImageVisible ? "Show latest snapshot" : "Show baseline snapshot"}
+                note={baselineImageVisible ? 'Show latest snapshot' : 'Show baseline snapshot'}
               />
             }
             trigger="hover"
@@ -140,35 +140,35 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
           >
             <IconButton
               id="button-toggle-snapshot"
-              aria-label={baselineImageVisible ? "Show latest snapshot" : "Show baseline snapshot"}
+              aria-label={baselineImageVisible ? 'Show latest snapshot' : 'Show baseline snapshot'}
               onClick={() => toggleBaselineImage()}
             >
               <TransferIcon />
             </IconButton>
           </WithTooltip>
           <WithTooltip
-            tooltip={<TooltipNote note={focusVisible ? "Hide spotlight" : "Show spotlight"} />}
+            tooltip={<TooltipNote note={focusVisible ? 'Hide spotlight' : 'Show spotlight'} />}
             trigger="hover"
             hasChrome={false}
           >
             <IconButton
               id="button-toggle-spotlight"
               active={focusVisible}
-              aria-label={focusVisible ? "Hide spotlight" : "Show spotlight"}
+              aria-label={focusVisible ? 'Hide spotlight' : 'Show spotlight'}
               onClick={() => toggleFocus(!focusVisible)}
             >
               <LocationIcon />
             </IconButton>
           </WithTooltip>
           <WithTooltip
-            tooltip={<TooltipNote note={diffVisible ? "Hide diff" : "Show diff"} />}
+            tooltip={<TooltipNote note={diffVisible ? 'Hide diff' : 'Show diff'} />}
             trigger="hover"
             hasChrome={false}
           >
             <IconButton
               id="button-diff-visible"
               active={diffVisible}
-              aria-label={diffVisible ? "Hide diff" : "Show diff"}
+              aria-label={diffVisible ? 'Hide diff' : 'Show diff'}
               onClick={() => toggleDiff(!diffVisible)}
             >
               <ContrastIcon />
@@ -205,17 +205,17 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
                   placement="bottom"
                   links={[
                     {
-                      id: "acceptComponent",
-                      title: "Accept component",
-                      center: "Accept all unreviewed changes for this component",
+                      id: 'acceptComponent',
+                      title: 'Accept component',
+                      center: 'Accept all unreviewed changes for this component',
                       onClick: () => acceptTest(selectedTest.id, ReviewTestBatch.Component),
                       disabled: isReviewing,
                       loading: isReviewing,
                     },
                     {
-                      id: "acceptBuild",
-                      title: "Accept entire build",
-                      center: "Accept all unreviewed changes for every story in the Storybook",
+                      id: 'acceptBuild',
+                      title: 'Accept entire build',
+                      center: 'Accept all unreviewed changes for every story in the Storybook',
                       onClick: () => acceptTest(selectedTest.id, ReviewTestBatch.Build),
                       disabled: isReviewing,
                       loading: isReviewing,
@@ -270,17 +270,17 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
                   placement="bottom"
                   links={[
                     {
-                      id: "unacceptComponent",
-                      title: "Unaccept component",
-                      center: "Unaccept all unreviewed changes for this component",
+                      id: 'unacceptComponent',
+                      title: 'Unaccept component',
+                      center: 'Unaccept all unreviewed changes for this component',
                       onClick: () => unacceptTest(selectedTest.id, ReviewTestBatch.Component),
                       disabled: isReviewing,
                       loading: isReviewing,
                     },
                     {
-                      id: "unacceptBuild",
-                      title: "Unaccept entire build",
-                      center: "Unaccept all unreviewed changes for every story in the Storybook",
+                      id: 'unacceptBuild',
+                      title: 'Unaccept entire build',
+                      center: 'Unaccept all unreviewed changes for every story in the Storybook',
                       onClick: () => unacceptTest(selectedTest.id, ReviewTestBatch.Build),
                       disabled: isReviewing,
                       loading: isReviewing,
@@ -321,13 +321,13 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
           )}
 
           <WithTooltip
-            tooltip={<TooltipNote note={isOutdated ? "Run new tests" : "Rerun tests"} />}
+            tooltip={<TooltipNote note={isOutdated ? 'Run new tests' : 'Rerun tests'} />}
             trigger="hover"
             hasChrome={false}
           >
             <ActionButton
               square
-              aria-label={isOutdated ? "Run new tests" : "Rerun tests"}
+              aria-label={isOutdated ? 'Run new tests' : 'Rerun tests'}
               onClick={startBuild}
               disabled={isRunning}
               variant="outline"

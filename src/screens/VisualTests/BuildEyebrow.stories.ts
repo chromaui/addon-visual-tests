@@ -1,19 +1,17 @@
-import { action } from "@storybook/addon-actions";
-import type { Meta, StoryObj } from "@storybook/react";
-import { expect, fn } from "@storybook/test";
-import { fireEvent, within } from "@storybook/testing-library";
+import type { Meta, StoryObj } from '@storybook/react-vite';
+import { expect, fireEvent, fn, within } from 'storybook/test';
 
-import * as buildProgressStories from "../../components/BuildProgressLabel.stories";
-import { panelModes } from "../../modes";
-import { playAll } from "../../utils/playAll";
-import { withFigmaDesign } from "../../utils/withFigmaDesign";
-import { BuildEyebrow } from "./BuildEyebrow";
+import * as buildProgressStories from '../../components/BuildProgressLabel.stories';
+import { panelModes } from '../../modes';
+import { playAll } from '../../utils/playAll';
+import { withFigmaDesign } from '../../utils/withFigmaDesign';
+import { BuildEyebrow } from './BuildEyebrow';
 
 const meta = {
   args: {
-    branch: "feature",
+    branch: 'feature',
     dismissBuildError: fn(),
-    switchToLastBuildOnBranch: action("switchToLastBuildOnBranch"),
+    switchToLastBuildOnBranch: fn().mockName('switchToLastBuildOnBranch'),
   },
   component: BuildEyebrow,
   parameters: {
@@ -28,13 +26,13 @@ type Story = StoryObj<typeof meta>;
 
 const expandEyebrow = playAll(async ({ canvasElement }) => {
   const canvas = within(canvasElement);
-  const button = await canvas.findByRole("button");
+  const button = await canvas.findByRole('button');
   await fireEvent.click(button);
 });
 
 const dismissEyebrow = playAll(async ({ args, canvasElement }) => {
   const canvas = within(canvasElement);
-  const button = await canvas.findByRole("button");
+  const button = await canvas.findByRole('button');
   await fireEvent.click(button);
   await expect(args.dismissBuildError).toHaveBeenCalled();
 });
@@ -98,6 +96,6 @@ export const NewerBuildOnBranch: Story = {
     switchToLastBuildOnBranch: undefined,
   },
   parameters: withFigmaDesign(
-    "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2127-448761&mode=design&t=70EtYCn1H7hB8PAk-0"
+    'https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=2127-448761&mode=design&t=70EtYCn1H7hB8PAk-0'
   ),
 };

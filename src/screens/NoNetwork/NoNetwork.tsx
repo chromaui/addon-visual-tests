@@ -1,11 +1,11 @@
-import React from "react";
+import React from 'react';
 
-import { Container } from "../../components/Container";
-import { Link } from "../../components/design-system";
-import { Heading } from "../../components/Heading";
-import { Screen } from "../../components/Screen";
-import { Stack } from "../../components/Stack";
-import { Text } from "../../components/Text";
+import { Container } from '../../components/Container';
+import { Link } from '../../components/design-system';
+import { Heading } from '../../components/Heading';
+import { Screen } from '../../components/Screen';
+import { Stack } from '../../components/Stack';
+import { Text } from '../../components/Text';
 
 export const NoNetwork = ({ offline = false }: { offline?: boolean }) => {
   return (

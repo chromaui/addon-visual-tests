@@ -1,9 +1,9 @@
-import { FailedIcon } from "@storybook/icons";
-import { useStorybookApi } from "@storybook/manager-api";
-import { color } from "@storybook/theming";
-import React, { useCallback } from "react";
+import { FailedIcon } from '@storybook/icons';
+import React, { useCallback } from 'react';
+import { useStorybookApi } from 'storybook/manager-api';
+import { color } from 'storybook/theming';
 
-import { ADDON_ID, PANEL_ID } from "../constants";
+import { ADDON_ID, PANEL_ID } from '../constants';
 
 export function useErrorNotification() {
   const api = useStorybookApi();

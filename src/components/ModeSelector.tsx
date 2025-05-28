@@ -1,27 +1,27 @@
-import { WithTooltip } from "@storybook/components";
-import { ChevronDownIcon, DiamondIcon } from "@storybook/icons";
-import { styled, useTheme } from "@storybook/theming";
-import React from "react";
+import { ChevronDownIcon, DiamondIcon } from '@storybook/icons';
+import React from 'react';
+import { WithTooltip } from 'storybook/internal/components';
+import { styled } from 'storybook/theming';
 
-import { ComparisonResult, TestMode } from "../gql/graphql";
-import { aggregateResult } from "../utils/aggregateResult";
-import { StatusDot, StatusDotWrapper } from "./StatusDot";
-import { TooltipMenu } from "./TooltipMenu";
-import { TooltipNote } from "./TooltipNote";
+import { ComparisonResult, TestMode } from '../gql/graphql';
+import { aggregateResult } from '../utils/aggregateResult';
+import { StatusDot, StatusDotWrapper } from './StatusDot';
+import { TooltipMenu } from './TooltipMenu';
+import { TooltipNote } from './TooltipNote';
 
 const IconWrapper = styled.div(({ theme }) => ({
-  alignItems: "center",
-  color: theme.base === "light" ? theme.color.darkest : theme.color.light,
-  display: "inline-flex",
+  alignItems: 'center',
+  color: theme.base === 'light' ? theme.color.darkest : theme.color.light,
+  display: 'inline-flex',
   gap: 6,
   height: 14,
-  margin: "7px 7px",
+  margin: '7px 7px',
 
   svg: {
-    verticalAlign: "top",
+    verticalAlign: 'top',
 
     path: {
-      fill: theme.base === "light" ? theme.color.dark : theme.color.light,
+      fill: theme.base === 'light' ? theme.color.dark : theme.color.light,
     },
   },
 }));
@@ -29,14 +29,14 @@ const IconWrapper = styled.div(({ theme }) => ({
 const StyledTooltipMenu = styled(TooltipMenu)(({ theme }) => ({
   button: {
     svg: {
-      verticalAlign: "top",
+      verticalAlign: 'top',
 
       path: {
-        fill: theme.base === "light" ? theme.color.dark : theme.color.light,
+        fill: theme.base === 'light' ? theme.color.dark : theme.color.light,
       },
     },
 
-    "&:hover": {
+    '&:hover': {
       svg: {
         path: {
           fill: theme.color.secondary,
@@ -47,21 +47,21 @@ const StyledTooltipMenu = styled(TooltipMenu)(({ theme }) => ({
 }));
 
 const Label = styled.span(({ theme }) => ({
-  color: theme.base === "light" ? theme.color.dark : theme.color.light,
-  display: "none",
+  color: theme.base === 'light' ? theme.color.dark : theme.color.light,
+  display: 'none',
   fontSize: theme.typography.size.s1,
   fontWeight: theme.typography.weight.bold,
 
-  "@container (min-width: 300px)": {
-    display: "inline-block",
+  '@container (min-width: 300px)': {
+    display: 'inline-block',
   },
 
-  "button:hover > &": {
+  'button:hover > &': {
     color: theme.color.secondary,
   },
 }));
 
-type ModeData = Pick<TestMode, "name">;
+type ModeData = Pick<TestMode, 'name'>;
 
 interface ModeSelectorProps {
   isAccepted: boolean;
@@ -78,7 +78,6 @@ export const ModeSelector = ({
   onSelectMode,
   selectedMode,
 }: ModeSelectorProps) => {
-  const theme = useTheme();
   const aggregate = aggregateResult(modeResults.map(({ result }) => result));
   if (!aggregate) return null;
 
@@ -111,7 +110,7 @@ export const ModeSelector = ({
       placement="top"
       trigger="hover"
       tooltip={
-        <TooltipNote note={links ? "Switch mode" : `View mode: ${modeResults[0].mode.name}`} />
+        <TooltipNote note={links ? 'Switch mode' : `View mode: ${modeResults[0].mode.name}`} />
       }
     >
       {links ? (

@@ -1,38 +1,38 @@
-import { styled, type Theme } from "@storybook/theming";
-import { darken, lighten } from "polished";
-import { ComponentProps } from "react";
+import { darken, lighten } from 'polished';
+import { ComponentProps } from 'react';
+import { styled, type Theme } from 'storybook/theming';
 
-import { IconButton } from "./IconButton";
+import { IconButton } from './IconButton';
 
 const themeColors = ({ theme, status, variant }: { theme: Theme } & ActionButtonProps) => {
-  if (variant === "outline") {
+  if (variant === 'outline') {
     return {
-      color: theme.base === "light" ? theme.color.dark : theme.color.medium,
+      color: theme.base === 'light' ? theme.color.dark : theme.color.medium,
       backgroundColor: theme.background.app,
-      borderColor: theme.base === "light" ? theme.color.medium : theme.color.darker,
-      "&:hover": {
-        color: theme.base === "light" ? theme.color.darkest : theme.color.lighter,
+      borderColor: theme.base === 'light' ? theme.color.medium : theme.color.darker,
+      '&:hover': {
+        color: theme.base === 'light' ? theme.color.darkest : theme.color.lighter,
         backgroundColor: darken(0.03, theme.background.app),
       },
     };
   }
-  if (status === "positive") {
+  if (status === 'positive') {
     return {
       color: theme.color.positiveText,
       backgroundColor: theme.background.positive,
       borderColor: lighten(0.5, theme.color.positiveText),
-      "&:hover": {
+      '&:hover': {
         color: theme.color.positiveText,
         backgroundColor: darken(0.05, theme.background.positive),
       },
     };
   }
-  if (status === "warning") {
+  if (status === 'warning') {
     return {
       color: theme.color.warningText,
       backgroundColor: theme.background.warning,
       borderColor: lighten(0.5, theme.color.warningText),
-      "&:hover": {
+      '&:hover': {
         color: theme.color.warningText,
         backgroundColor: darken(0.05, theme.background.warning),
       },
@@ -43,10 +43,10 @@ const themeColors = ({ theme, status, variant }: { theme: Theme } & ActionButton
     backgroundColor: theme.color.secondary,
     borderWidth: 0,
     borderColor:
-      theme.base === "light"
+      theme.base === 'light'
         ? lighten(0.2, theme.color.secondary)
         : darken(0.1, theme.color.secondary),
-    "&:hover": {
+    '&:hover': {
       color: theme.color.lightest,
       backgroundColor: darken(0.05, theme.color.secondary),
     },
@@ -55,38 +55,38 @@ const themeColors = ({ theme, status, variant }: { theme: Theme } & ActionButton
 
 interface ActionButtonProps extends ComponentProps<typeof IconButton> {
   square?: boolean;
-  side?: "left" | "right";
+  side?: 'left' | 'right';
 }
 
 export const ActionButton: React.FC<ActionButtonProps> = styled(IconButton)<ActionButtonProps>(
   ({ square }) => ({
     border: `1px solid transparent`,
-    boxShadow: "none",
+    boxShadow: 'none',
     fontSize: 12,
     fontWeight: 700,
     height: 28,
-    padding: square ? "8px 6px" : 8,
-    transition: "background-color 150ms ease-out",
-    "@container (min-width: 300px)": {
+    padding: square ? '8px 6px' : 8,
+    transition: 'background-color 150ms ease-out',
+    '@container (min-width: 300px)': {
       height: 32,
-      width: square ? 32 : "auto",
-      padding: square ? "9px 8px" : 9,
+      width: square ? 32 : 'auto',
+      padding: square ? '9px 8px' : 9,
     },
-    "@container (min-width: 800px)": {
+    '@container (min-width: 800px)': {
       height: 28,
       fontSize: 12,
-      width: square ? 28 : "auto",
-      padding: square ? "8px 6px" : 8,
+      width: square ? 28 : 'auto',
+      padding: square ? '8px 6px' : 8,
     },
   }),
   themeColors,
   ({ side }) => ({
-    ...(side === "left" && {
+    ...(side === 'left' && {
       borderRightWidth: 1,
       borderTopRightRadius: 0,
       borderBottomRightRadius: 0,
     }),
-    ...(side === "right" && {
+    ...(side === 'right' && {
       borderLeftWidth: 0,
       borderTopLeftRadius: 0,
       borderBottomLeftRadius: 0,
@@ -95,6 +95,6 @@ export const ActionButton: React.FC<ActionButtonProps> = styled(IconButton)<Acti
 );
 
 export const ButtonGroup = styled.div({
-  display: "flex",
-  flexDirection: "row",
+  display: 'flex',
+  flexDirection: 'row',
 });

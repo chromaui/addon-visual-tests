@@ -1,17 +1,17 @@
-import React, { useEffect } from "react";
+import React, { useEffect } from 'react';
 
-import { Button } from "../../components/Button";
-import { ButtonStack } from "../../components/ButtonStack";
-import { AccountSuspensionReason } from "../../gql/graphql";
-import { GitInfoPayload, LocalBuildProgress } from "../../types";
-import { useSessionState } from "../../utils/useSessionState";
-import { AccountSuspended } from "../Errors/AccountSuspended";
-import { BuildError } from "../Errors/BuildError";
-import { useRunBuildState } from "../VisualTests/RunBuildContext";
-import { CatchAChange } from "./CatchAChange";
-import { CatchAChangeComplete } from "./CatchAChangeComplete";
-import { InitialBuild } from "./InitialBuild";
-import { InitialBuildComplete } from "./InitialBuildComplete";
+import { Button } from '../../components/Button';
+import { ButtonStack } from '../../components/ButtonStack';
+import { AccountSuspensionReason } from '../../gql/graphql';
+import { GitInfoPayload, LocalBuildProgress } from '../../types';
+import { useSessionState } from '../../utils/useSessionState';
+import { AccountSuspended } from '../Errors/AccountSuspended';
+import { BuildError } from '../Errors/BuildError';
+import { useRunBuildState } from '../VisualTests/RunBuildContext';
+import { CatchAChange } from './CatchAChange';
+import { CatchAChangeComplete } from './CatchAChangeComplete';
+import { InitialBuild } from './InitialBuild';
+import { InitialBuildComplete } from './InitialBuildComplete';
 
 interface OnboardingProps {
   onComplete: () => void;
@@ -20,7 +20,7 @@ interface OnboardingProps {
   localBuildProgress?: LocalBuildProgress;
   showInitialBuildScreen?: boolean;
   lastBuildHasChangesForStory: boolean;
-  gitInfo: Pick<GitInfoPayload, "uncommittedHash" | "branch">;
+  gitInfo: Pick<GitInfoPayload, 'uncommittedHash' | 'branch'>;
 }
 
 export const Onboarding = ({
@@ -38,7 +38,7 @@ export const Onboarding = ({
   // TODO: Removed this entirely to solve for the most common case of an existing user with some builds to use as a baseline.
   // Removing instead of fixing to avoid additional work as this project is past due. We need to revisit this later.
   const [showInitialBuild, setShowInitialBuild] = useSessionState(
-    "showInitialBuild",
+    'showInitialBuild',
     showInitialBuildScreen
   );
   useEffect(() => {
@@ -47,11 +47,11 @@ export const Onboarding = ({
   }, [showInitialBuildScreen, setShowInitialBuild]);
 
   const [showCatchAChange, setShowCatchAChange] = useSessionState(
-    "showCatchAChange",
+    'showCatchAChange',
     !showInitialBuild
   );
   const [initialGitHash, setInitialGitHash] = useSessionState(
-    "initialGitHash",
+    'initialGitHash',
     gitInfo.uncommittedHash
   );
 
@@ -60,9 +60,9 @@ export const Onboarding = ({
     setShowCatchAChange(true);
   };
 
-  const [runningSecondBuild, setRunningSecondBuild] = useSessionState("runningSecondBuild", false);
+  const [runningSecondBuild, setRunningSecondBuild] = useSessionState('runningSecondBuild', false);
 
-  if (localBuildProgress?.currentStep === "error") {
+  if (localBuildProgress?.currentStep === 'error') {
     return (
       <BuildError localBuildProgress={localBuildProgress}>
         <ButtonStack>
@@ -77,7 +77,7 @@ export const Onboarding = ({
     );
   }
 
-  if (localBuildProgress?.currentStep === "limited") {
+  if (localBuildProgress?.currentStep === 'limited') {
     return (
       <AccountSuspended
         billingUrl={localBuildProgress.errorDetailsUrl}
@@ -95,7 +95,7 @@ export const Onboarding = ({
     return <InitialBuild {...{ isRunning, localBuildProgress, startBuild, onSkip }} />;
   }
 
-  if (localBuildProgress?.currentStep === "complete" && !showCatchAChange && !runningSecondBuild) {
+  if (localBuildProgress?.currentStep === 'complete' && !showCatchAChange && !runningSecondBuild) {
     // It's possible the "first" build we just ran actually found a baseline,
     // in this case we skip the "catch a change" part and short-circuit to the "Done" screen.
     return lastBuildHasChangesForStory ? (

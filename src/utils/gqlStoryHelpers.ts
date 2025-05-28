@@ -1,7 +1,7 @@
-import type { ResultOf, VariablesOf } from "@graphql-typed-document-node/core";
-import { getOperationAST } from "graphql";
-import { graphql, HttpResponse } from "msw";
-import { TypedDocumentNode } from "urql";
+import type { ResultOf, VariablesOf } from '@graphql-typed-document-node/core';
+import { getOperationAST } from 'graphql';
+import { graphql, HttpResponse } from 'msw';
+import { TypedDocumentNode } from 'urql';
 
 export const withGraphQLQueryParameters = <TQuery extends TypedDocumentNode<any, any>>(
   ...args: Parameters<typeof graphql.query<TQuery, VariablesOf<TQuery>>>

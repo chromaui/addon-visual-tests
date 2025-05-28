@@ -1,147 +1,152 @@
-import type { API } from "@storybook/manager-api";
-import { expect, it, vi } from "vitest";
+import { expect, it } from 'vitest';
 
-import { TestStatus } from "../gql/graphql";
-import { testsToStatusUpdate } from "./testsToStatusUpdate";
+import { TestStatus } from '../gql/graphql';
+import { testsToStatusUpdate } from './testsToStatusUpdate';
 
-const api: API = {
-  setSelectedPanel: vi.fn(),
-  togglePanel: vi.fn(),
-} as any;
-
-it("handles single test with no changes", () => {
+it('handles single test with no changes', () => {
   expect(
-    testsToStatusUpdate(api, [
+    testsToStatusUpdate([
       {
-        id: "1",
+        id: '1',
         status: TestStatus.Passed,
         story: {
-          storyId: "story--id",
+          storyId: 'story--id',
         },
       },
     ])
   ).toMatchInlineSnapshot(`
-    {
-      "story--id": null,
-    }
-  `);
-});
-
-it("handles single test with changes", () => {
-  expect(
-    testsToStatusUpdate(api, [
+    [
       {
-        id: "1",
-        status: TestStatus.Pending,
-        story: {
-          storyId: "story--id",
-        },
-      },
-    ])
-  ).toMatchInlineSnapshot(`
-    {
-      "story--id": {
         "description": "Chromatic Visual Tests",
-        "onClick": [Function],
-        "status": "warn",
+        "storyId": "story--id",
         "title": "Visual tests",
+        "typeId": "chromaui/addon-visual-tests",
+        "value": "status-value:success",
       },
-    }
+    ]
   `);
 });
 
-it("handles multiple tests", () => {
+it('handles single test with changes', () => {
   expect(
-    testsToStatusUpdate(api, [
+    testsToStatusUpdate([
       {
-        id: "1",
+        id: '1',
         status: TestStatus.Pending,
         story: {
-          storyId: "story--id",
+          storyId: 'story--id',
+        },
+      },
+    ])
+  ).toMatchInlineSnapshot(`
+    [
+      {
+        "description": "Chromatic Visual Tests",
+        "storyId": "story--id",
+        "title": "Visual tests",
+        "typeId": "chromaui/addon-visual-tests",
+        "value": "status-value:warning",
+      },
+    ]
+  `);
+});
+
+it('handles multiple tests', () => {
+  expect(
+    testsToStatusUpdate([
+      {
+        id: '1',
+        status: TestStatus.Pending,
+        story: {
+          storyId: 'story--id',
         },
       },
       {
-        id: "2",
+        id: '2',
         status: TestStatus.Denied,
         story: {
-          storyId: "story2--id",
+          storyId: 'story2--id',
         },
       },
     ])
   ).toMatchInlineSnapshot(`
-    {
-      "story--id": {
+    [
+      {
         "description": "Chromatic Visual Tests",
-        "onClick": [Function],
-        "status": "warn",
+        "storyId": "story--id",
         "title": "Visual tests",
+        "typeId": "chromaui/addon-visual-tests",
+        "value": "status-value:warning",
       },
-      "story2--id": {
+      {
         "description": "Chromatic Visual Tests",
-        "onClick": [Function],
-        "status": "error",
+        "storyId": "story2--id",
         "title": "Visual tests",
+        "typeId": "chromaui/addon-visual-tests",
+        "value": "status-value:error",
       },
-    }
+    ]
   `);
 });
 
-it("handles multiple viewports", () => {
+it('handles multiple viewports', () => {
   expect(
-    testsToStatusUpdate(api, [
+    testsToStatusUpdate([
       {
-        id: "1",
+        id: '1',
         status: TestStatus.Broken,
         story: {
-          storyId: "story--id",
+          storyId: 'story--id',
         },
       },
       {
-        id: "2",
+        id: '2',
         status: TestStatus.Pending,
         story: {
-          storyId: "story--id",
+          storyId: 'story--id',
         },
       },
     ])
   ).toMatchInlineSnapshot(`
-    {
-      "story--id": {
+    [
+      {
         "description": "Chromatic Visual Tests",
-        "onClick": [Function],
-        "status": "error",
+        "storyId": "story--id",
         "title": "Visual tests",
+        "typeId": "chromaui/addon-visual-tests",
+        "value": "status-value:error",
       },
-    }
+    ]
   `);
 });
 
-it("handles multiple viewports, reverse order", () => {
+it('handles multiple viewports, reverse order', () => {
   expect(
-    testsToStatusUpdate(api, [
+    testsToStatusUpdate([
       {
-        id: "1",
+        id: '1',
         status: TestStatus.Pending,
         story: {
-          storyId: "story--id",
+          storyId: 'story--id',
         },
       },
       {
-        id: "2",
+        id: '2',
         status: TestStatus.Broken,
         story: {
-          storyId: "story--id",
+          storyId: 'story--id',
         },
       },
     ])
   ).toMatchInlineSnapshot(`
-    {
-      "story--id": {
+    [
+      {
         "description": "Chromatic Visual Tests",
-        "onClick": [Function],
-        "status": "error",
+        "storyId": "story--id",
         "title": "Visual tests",
+        "typeId": "chromaui/addon-visual-tests",
+        "value": "status-value:error",
       },
-    }
+    ]
   `);
 });

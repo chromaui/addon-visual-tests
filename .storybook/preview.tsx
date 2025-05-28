@@ -1,7 +1,6 @@
-import { action } from "@storybook/addon-actions";
-import { ManagerContext } from "@storybook/manager-api";
-import type { Decorator, Loader, Preview } from "@storybook/react";
-import { fn } from "@storybook/test";
+import { ManagerContext } from 'storybook/manager-api';
+import type { Decorator, Loader, Preview } from '@storybook/react-vite';
+import { fn } from 'storybook/test';
 import {
   Global,
   ThemeProvider,
@@ -10,19 +9,20 @@ import {
   styled,
   themes,
   useTheme,
-} from "@storybook/theming";
-import { HttpResponse, graphql } from "msw";
-import { initialize, mswLoader } from "msw-storybook-addon";
-import React from "react";
+} from 'storybook/theming';
+import { HttpResponse, graphql } from 'msw';
+import { initialize, mswLoader } from 'msw-storybook-addon';
+import React from 'react';
 
-import { AuthProvider } from "../src/AuthContext";
-import { baseModes } from "../src/modes";
-import { UninstallProvider } from "../src/screens/Uninstalled/UninstallContext";
-import { RunBuildProvider } from "../src/screens/VisualTests/RunBuildContext";
-import { GraphQLClientProvider } from "../src/utils/graphQLClient";
-import { storyWrapper } from "../src/utils/storyWrapper";
-import { TelemetryProvider } from "../src/utils/TelemetryContext";
-import { useSessionState } from "../src/utils/useSessionState";
+import { AuthProvider } from '../src/AuthContext';
+import { baseModes } from '../src/modes';
+import { UninstallProvider } from '../src/screens/Uninstalled/UninstallContext';
+import { RunBuildProvider } from '../src/screens/VisualTests/RunBuildContext';
+import { GraphQLClientProvider } from '../src/utils/graphQLClient';
+import { storyWrapper } from '../src/utils/storyWrapper';
+import { TelemetryProvider } from '../src/utils/TelemetryContext';
+import { useSessionState } from '../src/utils/useSessionState';
+import { action } from 'storybook/actions';
 
 // Initialize MSW
 initialize({
@@ -38,34 +38,34 @@ initialize({
   },
 });
 
-const Panels = styled.div<{ orientation: "right" | "bottom" }>(
+const Panels = styled.div<{ orientation: 'right' | 'bottom' }>(
   ({ orientation }) => ({
-    flexDirection: orientation === "right" ? "row" : "column",
+    flexDirection: orientation === 'right' ? 'row' : 'column',
   }),
   {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
     gap: 40,
     padding: 40,
   }
 );
 
-const Panel = styled.div<{ orientation: "right" | "bottom" }>(
+const Panel = styled.div<{ orientation: 'right' | 'bottom' }>(
   ({ orientation }) => ({
-    width: orientation === "right" ? 420 : 880,
-    height: orientation === "right" ? 640 : 300,
-    overflow: "auto",
+    width: orientation === 'right' ? 420 : 880,
+    height: orientation === 'right' ? 640 : 300,
+    overflow: 'auto',
   }),
   ({ theme }) => ({
-    containerType: "size",
-    containerName: "storybookRoot",
-    position: "relative",
+    containerType: 'size',
+    containerName: 'storybookRoot',
+    position: 'relative',
     outline: `1px solid ${theme.appBorderColor}`,
     // Add a backdrop to the outline because appBorderColor is semi-transparent
     boxShadow: `0 0 0 1px ${theme.background.content}`,
     background: theme.background.content,
-    color: theme.base === "light" ? theme.color.dark : theme.color.mediumlight,
+    color: theme.base === 'light' ? theme.color.dark : theme.color.mediumlight,
     fontSize: theme.typography.size.s2,
   })
 );
@@ -83,17 +83,17 @@ const ThemedSetRoot = () => {
 // Render two panels side-by-side or stacked, depending on selected orientation
 // Note this assumes any play functions are equipped to deal with multiple canvases
 const withTheme = (StoryFn, { globals, parameters }) => {
-  const theme = globals.theme || parameters.theme || "right";
-  return theme === "light" || theme === "dark" ? (
+  const theme = globals.theme || parameters.theme || 'right';
+  return theme === 'light' || theme === 'dark' ? (
     <ThemeProvider theme={convert(themes[theme])}>
       <Global styles={createReset} />
       <Global
         styles={{
-          "#storybook-root": {
-            height: "100vh",
+          '#storybook-root': {
+            height: '100vh',
             padding: 0,
-            containerType: "size",
-            containerName: "storybookRoot",
+            containerType: 'size',
+            containerName: 'storybookRoot',
           },
         }}
       ></Global>
@@ -125,27 +125,27 @@ const withTheme = (StoryFn, { globals, parameters }) => {
 const withGraphQLClient = storyWrapper(GraphQLClientProvider);
 
 const withTelemetry = storyWrapper(TelemetryProvider, () => ({
-  value: action("telemetry"),
+  value: fn().mockName('telemetry'),
 }));
 
 const withAuth = storyWrapper(AuthProvider, () => ({
   value: {
-    accessToken: "token",
+    accessToken: 'token',
     setAccessToken: fn(),
-    subdomain: "www",
+    subdomain: 'www',
     setSubdomain: fn(),
   },
 }));
 
 const withManagerApi = storyWrapper(ManagerContext.Provider, ({ argsByTarget }) => ({
   value: {
-    api: { ...argsByTarget["manager-api"] },
+    api: { ...argsByTarget['manager-api'] },
     state: {},
   },
 }));
 
 const withUninstall: Decorator = (Story) => {
-  const [addonUninstalled, setAddonUninstalled] = useSessionState("addonUninstalled", false);
+  const [addonUninstalled, setAddonUninstalled] = useSessionState('addonUninstalled', false);
   return (
     <UninstallProvider
       addonUninstalled={addonUninstalled}
@@ -160,9 +160,9 @@ const withRunBuild = storyWrapper(RunBuildProvider, ({ args }) => ({
   watchState: {
     isRunning:
       !!args.localBuildProgress &&
-      !["aborted", "complete", "error"].includes(args.localBuildProgress.currentStep),
-    startBuild: action("startBuild"),
-    stopBuild: action("stopBuild"),
+      !['aborted', 'complete', 'error'].includes(args.localBuildProgress.currentStep),
+    startBuild: fn().mockName('startBuild'),
+    stopBuild: fn().mockName('stopBuild'),
   },
 }));
 
@@ -222,14 +222,15 @@ const preview: Preview = {
   loaders: [graphQLArgLoader],
   parameters: {
     actions: {
-      argTypesRegex: "^on[A-Z].*",
+      argTypesRegex: '^on[A-Z].*',
     },
     backgrounds: {
       disable: true,
     },
     viewport: {
+      disable: true,
       viewports: {
-        default: { name: "Default", styles: { width: "960px", height: "720px" } },
+        default: { name: 'Default', styles: { width: '960px', height: '720px' } },
       },
     },
     chromatic: {
@@ -241,27 +242,27 @@ const preview: Preview = {
         date: /Date$/,
       },
     },
-    layout: "fullscreen",
+    layout: 'fullscreen',
   },
   argTypes: {
-    $graphql: { target: "graphql" },
-    getChannel: { type: "function", target: "manager-api" },
+    $graphql: { target: 'graphql' },
+    getChannel: { type: 'function', target: 'manager-api' },
   },
   args: {
-    getChannel: () => ({ on: fn(), off: fn(), emit: action("channel.emit") }),
+    getChannel: () => ({ on: fn(), off: fn(), emit: fn().mockName('channel.emit') }),
   },
   globalTypes: {
     theme: {
-      name: "Theme",
-      description: "Panel theme",
+      name: 'Theme',
+      description: 'Panel theme',
       toolbar: {
-        icon: "sidebaralt",
-        title: "Theme",
+        icon: 'sidebaralt',
+        title: 'Theme',
         items: [
-          { value: "light", icon: "circlehollow", title: "Light" },
-          { value: "dark", icon: "circle", title: "Dark" },
-          { value: "right", icon: "sidebaralt", title: "Right 2-up" },
-          { value: "bottom", icon: "bottombar", title: "Bottom 2-up" },
+          { value: 'light', icon: 'circlehollow', title: 'Light' },
+          { value: 'dark', icon: 'circle', title: 'Dark' },
+          { value: 'right', icon: 'sidebaralt', title: 'Right 2-up' },
+          { value: 'bottom', icon: 'bottombar', title: 'Bottom 2-up' },
         ],
       },
     },

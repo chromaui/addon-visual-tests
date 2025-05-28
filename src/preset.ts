@@ -1,19 +1,24 @@
-/* eslint-disable no-console */
-import { watch } from "node:fs";
-import { readFile } from "node:fs/promises";
-import { normalize, relative } from "node:path";
+import { watch } from 'node:fs';
+import { readFile } from 'node:fs/promises';
+import { dirname, join, normalize, relative } from 'node:path';
 
-import type { Channel } from "@storybook/channels";
-import type { TestingModuleProgressReportProgress } from "@storybook/core-events";
-import { telemetry } from "@storybook/telemetry";
-import type { Options } from "@storybook/types";
-// eslint-disable-next-line import/no-unresolved
-import { type Configuration, getConfiguration, getGitInfo, type GitInfo } from "chromatic/node";
+import {
+  type Configuration,
+  createLogger,
+  getConfiguration,
+  getGitInfo,
+  type GitInfo,
+} from 'chromatic/node';
+import type { Channel } from 'storybook/internal/channels';
+import { experimental_getTestProviderStore } from 'storybook/internal/core-server';
+import { telemetry } from 'storybook/internal/telemetry';
+import type { Options } from 'storybook/internal/types';
 
 import {
   ADDON_ID,
   CHROMATIC_BASE_URL,
   CONFIG_INFO,
+  CONFIG_OVERRIDES,
   GIT_INFO,
   GIT_INFO_ERROR,
   LOCAL_BUILD_PROGRESS,
@@ -24,35 +29,36 @@ import {
   STOP_BUILD,
   TELEMETRY,
   TEST_PROVIDER_ID,
-  TESTING_MODULE_PROGRESS_REPORT,
-} from "./constants";
-import { runChromaticBuild, stopChromaticBuild } from "./runChromaticBuild";
+} from './constants';
+import { runChromaticBuild, stopChromaticBuild } from './runChromaticBuild';
 import {
   ConfigInfoPayload,
   ConfigurationUpdate,
   GitInfoPayload,
   LocalBuildProgress,
   ProjectInfoPayload,
-} from "./types";
-import { ChannelFetch } from "./utils/ChannelFetch";
-import { SharedState } from "./utils/SharedState";
-import { updateChromaticConfig } from "./utils/updateChromaticConfig";
+} from './types';
+import { ChannelFetch } from './utils/ChannelFetch';
+import { SharedState } from './utils/SharedState';
+import { updateChromaticConfig } from './utils/updateChromaticConfig';
+
+const chromaticLogger = createLogger(undefined, CONFIG_OVERRIDES);
 
 /**
  * to load the built addon in this test Storybook
  */
 function managerEntries(entry: string[] = []) {
-  return [...entry, require.resolve("./manager.mjs")];
+  return [...entry, require.resolve('./manager.mjs')];
 }
 
 // Load the addon version from the package.json file, once.
 let getAddonVersion = async (): Promise<string | null> => {
   const promise = (async () => {
     try {
-      const packageJsonPath = require.resolve("@chromatic-com/storybook/package.json");
-      const packageJsonData = await readFile(packageJsonPath, "utf-8");
+      const packageJsonPath = require.resolve('@chromatic-com/storybook/package.json');
+      const packageJsonData = await readFile(packageJsonPath, 'utf-8');
       return JSON.parse(packageJsonData).version || null;
-    } catch (e) {
+    } catch (_) {
       return null;
     }
   })();
@@ -79,21 +85,21 @@ const getConfigInfo = async (
   options: Options
 ) => {
   const defaults: Configuration = {
-    storybookBaseDir: ".",
-    storybookConfigDir: ".storybook",
+    storybookBaseDir: '.',
+    storybookConfigDir: '.storybook',
   } as const;
 
   const problems: ConfigurationUpdate = {};
   const suggestions: ConfigurationUpdate = {};
 
-  const { repositoryRootDir } = await getGitInfo();
+  const { repositoryRootDir } = await getGitInfo({ log: chromaticLogger });
   const baseDir = repositoryRootDir && normalize(relative(repositoryRootDir, process.cwd()));
-  if (baseDir !== normalize(configuration.storybookBaseDir ?? "")) {
+  if (baseDir !== normalize(configuration.storybookBaseDir ?? '')) {
     problems.storybookBaseDir = baseDir;
   }
 
   const configDir = normalize(relative(process.cwd(), options.configDir));
-  if (configDir !== normalize(configuration.storybookConfigDir ?? "")) {
+  if (configDir !== normalize(configuration.storybookConfigDir ?? '')) {
     problems.storybookConfigDir = configDir;
   }
 
@@ -125,7 +131,7 @@ const observeGitInfo = (
   let timer: NodeJS.Timeout | undefined;
   const act = async () => {
     try {
-      const gitInfo = await getGitInfo();
+      const gitInfo = await getGitInfo({ log: chromaticLogger });
       if (Object.entries(gitInfo).some(([key, value]) => prev?.[key as keyof GitInfo] !== value)) {
         callback(gitInfo, prev);
       }
@@ -168,8 +174,8 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
   ChannelFetch.subscribe(ADDON_ID, channel);
 
   // Lazy load these APIs since we don't need them right away
-  const apiPromise = presets.apply<any>("experimental_serverAPI");
-  const corePromise = presets.apply("core");
+  const apiPromise = presets.apply<any>('experimental_serverAPI');
+  const corePromise = presets.apply('core');
 
   // This yields an empty object if the file doesn't exist and no explicit configFile is specified
   const { projectId: initialProjectId } = await getConfiguration(configFile);
@@ -177,8 +183,10 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
   const projectInfoState = SharedState.subscribe<ProjectInfoPayload>(PROJECT_INFO, channel);
   projectInfoState.value = initialProjectId ? { projectId: initialProjectId } : {};
 
+  const testProviderStore = experimental_getTestProviderStore(TEST_PROVIDER_ID);
+
   let lastProjectId = initialProjectId;
-  projectInfoState.on("change", async ({ projectId } = {}) => {
+  projectInfoState.on('change', async ({ projectId } = {}) => {
     if (!projectId || projectId === lastProjectId) return;
     lastProjectId = projectId;
 
@@ -186,7 +194,7 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
     try {
       // No config file may be found (file is about to be created)
       const { configFile: foundConfigFile, ...config } = await getConfiguration(writtenConfigFile);
-      const targetConfigFile = foundConfigFile || writtenConfigFile || "chromatic.config.json";
+      const targetConfigFile = foundConfigFile || writtenConfigFile || 'chromatic.config.json';
       const { problems, suggestions } = await getConfigInfo(config, options);
       await updateChromaticConfig(targetConfigFile, {
         ...config,
@@ -202,7 +210,7 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
         configFile: targetConfigFile,
       };
     } catch (err) {
-      console.warn(`Failed to update your main configuration:\n\n ${err}`);
+      console.warn(`Failed to update your main configuration:\n\n${err}`);
 
       projectInfoState.value = {
         ...projectInfoState.value,
@@ -218,60 +226,26 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
     channel
   );
 
-  const stepStatus = {
-    initialize: "pending",
-    build: "pending",
-    upload: "pending",
-    verify: "pending",
-    snapshot: "pending",
-    complete: "success",
-    error: "failed",
-    limited: "failed",
-    aborted: "success",
-  };
-
-  localBuildProgress.on("change", (progress) => {
-    if (!progress) return;
-    const { currentStep, stepProgress, errorCount = 0, changeCount = 0 } = progress;
-    const numTotalTests = stepProgress.snapshot?.denominator;
-    const numFailedTests = errorCount + changeCount;
-    const finishedAt = stepProgress.snapshot?.completedAt
-      ? new Date(stepProgress.snapshot.completedAt)
-      : new Date();
-
-    channel.emit(TESTING_MODULE_PROGRESS_REPORT, {
-      providerId: TEST_PROVIDER_ID,
-      status: stepStatus[currentStep],
-      cancellable: ["initialize", "build", "upload"].includes(currentStep),
-      progress: {
-        numFailedTests,
-        numPassedTests: numTotalTests && numTotalTests - numFailedTests,
-        numPendingTests: numTotalTests && numTotalTests - (stepProgress.snapshot.numerator || 0),
-        numTotalTests,
-        startedAt:
-          stepProgress.initialize?.startedAt && new Date(stepProgress.initialize.startedAt),
-        finishedAt: ["aborted", "complete", "error", "limited"].includes(currentStep)
-          ? finishedAt
-          : undefined,
-      } as TestingModuleProgressReportProgress,
-      details: progress,
+  channel.on(START_BUILD, async ({ accessToken: userToken }) => {
+    const { projectId } = projectInfoState.value || {};
+    testProviderStore.runWithState(async () => {
+      try {
+        await runChromaticBuild(localBuildProgress, { configFile, projectId, userToken });
+      } catch (e) {
+        console.error(`Failed to run Chromatic build, with error:\n${e}`);
+        throw e;
+      }
     });
   });
 
-  channel.on(START_BUILD, async ({ accessToken: userToken }) => {
-    const { projectId } = projectInfoState.value || {};
-    try {
-      await runChromaticBuild(localBuildProgress, { configFile, projectId, userToken });
-    } catch (e) {
-      console.error(`Failed to run Chromatic build, with error:\n${e}`);
-    }
+  channel.on(STOP_BUILD, () => {
+    testProviderStore.setState('test-provider-state:succeeded');
+    stopChromaticBuild();
   });
-
-  channel.on(STOP_BUILD, stopChromaticBuild);
 
   channel.on(TELEMETRY, async (event: Event) => {
     if ((await corePromise).disableTelemetry) return;
-    telemetry("addon-visual-tests" as any, { ...event, addonVersion: await getAddonVersion() });
+    telemetry('addon-visual-tests' as any, { ...event, addonVersion: await getAddonVersion() });
   });
 
   const configInfoState = SharedState.subscribe<ConfigInfoPayload>(CONFIG_INFO, channel);
@@ -305,11 +279,18 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
 const config = {
   managerEntries,
   experimental_serverChannel: serverChannel,
+  staticDirs: async (inputDirs: string[]) => [
+    ...inputDirs,
+    {
+      from: join(dirname(require.resolve('@chromatic-com/storybook/package.json')), 'assets'),
+      to: 'addon-visual-tests-assets',
+    },
+  ],
   env: async (
     env: Record<string, string>,
-    { configType }: { configType: "DEVELOPMENT" | "PRODUCTION" }
+    { configType }: { configType: 'DEVELOPMENT' | 'PRODUCTION' }
   ) => {
-    if (configType === "PRODUCTION") return env;
+    if (configType === 'PRODUCTION') return env;
 
     return {
       ...env,

@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext } from 'react';
 
 export const useRequiredContext = <T>(context: React.Context<T>, name: string) => {
   const value = useContext(context);

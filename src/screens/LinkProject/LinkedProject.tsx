@@ -1,30 +1,30 @@
-import { CheckIcon } from "@storybook/icons";
-import { styled } from "@storybook/theming";
-import React from "react";
-import { useQuery } from "urql";
+import { CheckIcon } from '@storybook/icons';
+import React from 'react';
+import { styled } from 'storybook/theming';
+import { useQuery } from 'urql';
 
-import { Button } from "../../components/Button";
-import { ButtonStack } from "../../components/ButtonStack";
-import { Code } from "../../components/Code";
-import { Container } from "../../components/Container";
-import { Link } from "../../components/design-system";
-import { FooterMenu } from "../../components/FooterMenu";
-import { Heading } from "../../components/Heading";
-import { Col } from "../../components/layout";
-import { Footer, Screen } from "../../components/Screen";
-import { Stack } from "../../components/Stack";
-import { Text } from "../../components/Text";
-import { graphql } from "../../gql";
-import { ProjectQueryQuery } from "../../gql/graphql";
-import { useTelemetry } from "../../utils/TelemetryContext";
+import { Button } from '../../components/Button';
+import { ButtonStack } from '../../components/ButtonStack';
+import { Code } from '../../components/Code';
+import { Container } from '../../components/Container';
+import { Link } from '../../components/design-system';
+import { FooterMenu } from '../../components/FooterMenu';
+import { Heading } from '../../components/Heading';
+import { Col } from '../../components/layout';
+import { Footer, Screen } from '../../components/Screen';
+import { Stack } from '../../components/Stack';
+import { Text } from '../../components/Text';
+import { graphql } from '../../gql';
+import { ProjectQueryQuery } from '../../gql/graphql';
+import { useTelemetry } from '../../utils/TelemetryContext';
 
 const Check = styled(CheckIcon)(({ theme }) => ({
   width: 40,
   height: 40,
   padding: 10,
   background: theme.color.positive,
-  borderRadius: "100%",
-  color: "white",
+  borderRadius: '100%',
+  color: 'white',
 }));
 
 const ButtonStackLink = styled(Link)(() => ({
@@ -54,7 +54,7 @@ export const LinkedProject = ({
   configFile: string;
   goToNext: () => void;
 }) => {
-  useTelemetry("LinkProject", "LinkedProject");
+  useTelemetry('LinkProject', 'LinkedProject');
 
   const [{ data, fetching, error }] = useQuery<ProjectQueryQuery>({
     query: ProjectQuery,
@@ -68,7 +68,7 @@ export const LinkedProject = ({
           <Col>
             {data?.project?.lastBuild && (
               <Text style={{ marginLeft: 5 }}>
-                Last build: {data.project.lastBuild.number} on branch{" "}
+                Last build: {data.project.lastBuild.number} on branch{' '}
                 {data.project.lastBuild.branch}
               </Text>
             )}
@@ -89,7 +89,7 @@ export const LinkedProject = ({
               <div>
                 <Heading>Project linked!</Heading>
                 <Text center muted style={{ maxWidth: 500 }}>
-                  The <Code>projectId</Code> for <strong>{data.project.name}</strong> was added in{" "}
+                  The <Code>projectId</Code> for <strong>{data.project.name}</strong> was added in{' '}
                   <Code>{configFile}</Code> to sync tests with Chromatic. Please commit this change
                   to continue using this addon.
                 </Text>

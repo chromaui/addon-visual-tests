@@ -1,8 +1,8 @@
-import { styled } from "@storybook/theming";
-import React, { ComponentProps, FunctionComponent } from "react";
+import React, { ComponentProps, FunctionComponent } from 'react';
+import { styled } from 'storybook/theming';
 
-import { rotate360 } from "./shared/animation";
-import { color } from "./shared/styles";
+import { rotate360 } from './shared/animation';
+import { color } from './shared/styles';
 
 interface Props {
   inline?: boolean;
@@ -15,15 +15,15 @@ interface Props {
 
 const SpinnerWrapper = styled.div<Props>(
   {
-    borderRadius: "3em",
-    cursor: "progress",
-    display: "inline-block",
-    overflow: "hidden",
-    position: ["relative", "absolute"],
-    transition: "all 200ms ease-out",
-    verticalAlign: "top",
-    top: "50%",
-    left: "50%",
+    borderRadius: '3em',
+    cursor: 'progress',
+    display: 'inline-block',
+    overflow: 'hidden',
+    position: ['relative', 'absolute'],
+    transition: 'all 200ms ease-out',
+    verticalAlign: 'top',
+    top: '50%',
+    left: '50%',
     marginTop: -16,
     marginLeft: -16,
     height: 32,
@@ -32,14 +32,14 @@ const SpinnerWrapper = styled.div<Props>(
     animation: `${rotate360} 0.7s linear infinite`,
 
     borderWidth: 2,
-    borderStyle: "solid",
-    borderColor: "rgba(0, 0, 0, 0.03)",
-    borderTopColor: "rgba(0, 0, 0, 0.15)",
+    borderStyle: 'solid',
+    borderColor: 'rgba(0, 0, 0, 0.03)',
+    borderTopColor: 'rgba(0, 0, 0, 0.15)',
   },
   (props) => ({
     ...(props.inverse && {
-      borderColor: "rgba(255, 255, 255, 0.2)",
-      borderTopColor: "rgba(255, 255, 255, 0.4)",
+      borderColor: 'rgba(255, 255, 255, 0.2)',
+      borderTopColor: 'rgba(255, 255, 255, 0.4)',
     }),
 
     ...(props.inForm && {
@@ -48,23 +48,23 @@ const SpinnerWrapper = styled.div<Props>(
       height: 12,
       width: 12,
       border: `1px solid ${color.secondary}`,
-      borderBottomColor: "transparent",
+      borderBottomColor: 'transparent',
     }),
 
     ...(props.inline && {
-      position: "relative",
-      top: "initial",
-      left: "initial",
-      marginTop: "initial",
-      marginLeft: "initial",
-      verticalAlign: "middle",
+      position: 'relative',
+      top: 'initial',
+      left: 'initial',
+      marginTop: 'initial',
+      marginLeft: 'initial',
+      verticalAlign: 'middle',
       height: 8,
       width: 8,
-      border: "1px solid",
+      border: '1px solid',
       borderTopColor: color.secondary,
       borderLeftColor: color.secondary,
       borderRightColor: color.secondary,
-      borderBottomColor: "transparent",
+      borderBottomColor: 'transparent',
 
       ...(props.positive && {
         borderTopColor: color.positive,

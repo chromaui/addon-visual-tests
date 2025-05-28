@@ -1,9 +1,9 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import React from "react";
+import type { Meta, StoryObj } from '@storybook/react-vite';
+import React from 'react';
 
-import { INITIAL_BUILD_PAYLOAD } from "../buildSteps";
-import { BuildProgressInline } from "./BuildProgressBarInline";
-import { Container } from "./Container";
+import { INITIAL_BUILD_PAYLOAD } from '../buildSteps';
+import { BuildProgressInline } from './BuildProgressBarInline';
+import { Container } from './Container';
 
 const meta = {
   component: BuildProgressInline,
@@ -28,7 +28,7 @@ export const Build: Story = {
     localBuildProgress: {
       ...INITIAL_BUILD_PAYLOAD,
       buildProgressPercentage: 8,
-      currentStep: "build",
+      currentStep: 'build',
     },
   },
 };
@@ -38,7 +38,7 @@ export const Upload: Story = {
     localBuildProgress: {
       ...INITIAL_BUILD_PAYLOAD,
       buildProgressPercentage: 25,
-      currentStep: "upload",
+      currentStep: 'upload',
       stepProgress: {
         ...INITIAL_BUILD_PAYLOAD.stepProgress,
         upload: {
@@ -56,7 +56,7 @@ export const Verify: Story = {
     localBuildProgress: {
       ...INITIAL_BUILD_PAYLOAD,
       buildProgressPercentage: 50,
-      currentStep: "verify",
+      currentStep: 'verify',
     },
   },
 };
@@ -66,7 +66,7 @@ export const Snapshot: Story = {
     localBuildProgress: {
       ...INITIAL_BUILD_PAYLOAD,
       buildProgressPercentage: 75,
-      currentStep: "snapshot",
+      currentStep: 'snapshot',
       stepProgress: {
         ...INITIAL_BUILD_PAYLOAD.stepProgress,
         snapshot: {
@@ -83,7 +83,7 @@ export const Complete: Story = {
   args: {
     localBuildProgress: {
       ...INITIAL_BUILD_PAYLOAD,
-      currentStep: "complete",
+      currentStep: 'complete',
       buildProgressPercentage: 100,
     },
   },

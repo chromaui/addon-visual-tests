@@ -1,33 +1,33 @@
-import { styled } from "@storybook/theming";
-import React, { ComponentProps, ReactNode } from "react";
+import React, { ComponentProps, ReactNode } from 'react';
+import { styled } from 'storybook/theming';
 
-import { Input } from "./design-system";
+import { Input } from './design-system';
 
 const InputWrapper = styled.div(({ theme }) => ({
-  position: "relative",
+  position: 'relative',
 
-  "&& input": {
-    color: theme.input.color || "inherit",
+  '&& input': {
+    color: theme.input.color || 'inherit',
     background: theme.input.background,
     boxShadow: `${theme.input.border} 0 0 0 1px inset`,
     fontSize: theme.typography.size.s2,
-    lineHeight: "20px",
+    lineHeight: '20px',
   },
 }));
 
 const SuffixWrapper = styled.div(({ theme }) => ({
-  pointerEvents: "none",
-  position: "absolute",
+  pointerEvents: 'none',
+  position: 'absolute',
   top: 0,
   left: 40,
   right: 0,
   zIndex: 2,
-  overflow: "hidden",
+  overflow: 'hidden',
   height: 40,
-  display: "flex",
-  alignItems: "center",
-  lineHeight: "20px",
-  color: theme.input.color || "inherit",
+  display: 'flex',
+  alignItems: 'center',
+  lineHeight: '20px',
+  color: theme.input.color || 'inherit',
   fontSize: theme.typography.size.s2,
 
   span: {
@@ -51,7 +51,7 @@ const SuffixOverlay = ({
 );
 
 interface SuffixInputProps
-  extends Omit<ComponentProps<typeof Input>, "label" | "crossOrigin" | "enterKeyHint"> {
+  extends Omit<ComponentProps<typeof Input>, 'label' | 'crossOrigin' | 'enterKeyHint'> {
   suffix: string;
 }
 

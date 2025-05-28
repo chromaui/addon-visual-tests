@@ -1,9 +1,9 @@
-import { styled } from "@storybook/theming";
+import { styled } from 'storybook/theming';
 
-export const ButtonStack = styled.div(() => ({
-  display: "flex",
-  flexDirection: "column",
+export const ButtonStack = styled.div({
+  display: 'flex',
+  flexDirection: 'column',
   gap: 5,
-  alignItems: "center",
-  textAlign: "center",
-}));
+  alignItems: 'center',
+  textAlign: 'center',
+});

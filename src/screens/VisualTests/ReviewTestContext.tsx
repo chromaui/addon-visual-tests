@@ -1,14 +1,15 @@
-import React, { createContext } from "react";
+import React, { createContext } from 'react';
 
-import { ReviewTestBatch } from "../../gql/graphql";
-import { useRequiredContext } from "../../utils/useRequiredContext";
+import { ReviewTestBatch } from '../../gql/graphql';
+import { useRequiredContext } from '../../utils/useRequiredContext';
 
 const initialState = {
   isReviewing: false,
   userCanReview: false,
   buildIsReviewable: false,
-  acceptTest: (testId: string, batch: ReviewTestBatch = ReviewTestBatch.Spec) => Promise.resolve(),
-  unacceptTest: (testId: string, batch: ReviewTestBatch = ReviewTestBatch.Spec) =>
+  acceptTest: (_testId: string, _batch: ReviewTestBatch = ReviewTestBatch.Spec) =>
+    Promise.resolve(),
+  unacceptTest: (_testId: string, _batch: ReviewTestBatch = ReviewTestBatch.Spec) =>
     Promise.resolve(),
 };
 
@@ -16,7 +17,7 @@ type State = typeof initialState;
 
 export const ReviewTestContext = createContext(initialState);
 
-export const useReviewTestState = () => useRequiredContext(ReviewTestContext, "ReviewTest");
+export const useReviewTestState = () => useRequiredContext(ReviewTestContext, 'ReviewTest');
 
 export const ReviewTestProvider = ({
   children,

@@ -1,16 +1,16 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
-import { INITIAL_BUILD_PAYLOAD } from "../../buildSteps";
-import { BuildError } from "./BuildError";
+import { INITIAL_BUILD_PAYLOAD } from '../../buildSteps';
+import { BuildError } from './BuildError';
 
 const meta = {
   component: BuildError,
   args: {
     localBuildProgress: {
       buildProgressPercentage: 50,
-      currentStep: "error",
+      currentStep: 'error',
       stepProgress: INITIAL_BUILD_PAYLOAD.stepProgress,
-      originalError: new Error("Caught exception in play function"),
+      originalError: new Error('Caught exception in play function'),
     },
   },
 } satisfies Meta<typeof BuildError>;

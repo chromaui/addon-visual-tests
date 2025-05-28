@@ -1,11 +1,11 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
-import { VisualTestsDisabled } from "./VisualTestsDisabled";
+import { VisualTestsDisabled } from './VisualTestsDisabled';
 
 const meta = {
   component: VisualTestsDisabled,
   args: {
-    manageUrl: "https://www.chromatic.com/manage?appId=123",
+    manageUrl: 'https://www.chromatic.com/manage?appId=123',
   },
 } satisfies Meta<typeof VisualTestsDisabled>;
 
