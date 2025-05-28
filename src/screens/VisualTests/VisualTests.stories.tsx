@@ -115,6 +115,8 @@ type StoryArgs = Parameters<typeof VisualTestsWithoutSelectedBuildId>[0] & {
   getCurrentStoryData: () => any;
   getCurrentParameter: () => any;
   once: () => void;
+  on: () => void;
+  off: () => void;
   $graphql?: { AddonVisualTestsBuild?: QueryInput };
 };
 const meta = {
@@ -133,6 +135,8 @@ const meta = {
     getCurrentStoryData: { type: 'function', target: 'manager-api' },
     getCurrentParameter: { type: 'function', target: 'manager-api' },
     once: { type: 'function', target: 'manager-api' },
+    on: { type: 'function', target: 'manager-api' },
+    off: { type: 'function', target: 'manager-api' },
     $graphql: {
       AddonVisualTestsBuild: { map: mapQuery },
     },
@@ -163,6 +167,8 @@ const meta = {
     getCurrentStoryData: () => ({ type: 'story' }),
     getCurrentParameter: () => ({}),
     once: fn(),
+    on: fn(),
+    off: fn(),
     $graphql: { AddonVisualTestsBuild: {} },
   },
 } satisfies Meta<StoryArgs>;
