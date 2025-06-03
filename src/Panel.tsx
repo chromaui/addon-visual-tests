@@ -85,7 +85,8 @@ export const Panel = ({ active }: PanelProps) => {
   const trackEvent = useCallback((data: any) => emit(TELEMETRY, data), [emit]);
   const { isRunning, startBuild, stopBuild } = useBuildEvents({ localBuildProgress, accessToken });
 
-  const fetch = useChannelFetch();
+  const channelFetch = useChannelFetch();
+  const fetch = globalThis.LOGLEVEL === 'debug' ? globalThis.fetch : channelFetch;
   const withProviders = (children: React.ReactNode) => (
     <GraphQLClientProvider value={createClient({ fetch })}>
       <TelemetryProvider value={trackEvent}>
