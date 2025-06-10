@@ -18,7 +18,8 @@ const useGlobalValue = (key: string) => {
 };
 
 const hasChanges = ({ result }: StoryTestFieldsFragment["comparisons"][number]) =>
-  result !== ComparisonResult.Equal && result !== ComparisonResult.Fixed;
+  result &&
+  ![ComparisonResult.Equal, ComparisonResult.Fixed, ComparisonResult.Skipped].includes(result);
 
 /**
  * Select the initial test based on the following criteria (in order of priority):
@@ -29,7 +30,7 @@ const hasChanges = ({ result }: StoryTestFieldsFragment["comparisons"][number]) 
  */
 export const getMostUsefulTest = (
   tests: StoryTestFieldsFragment[],
-  modeName?: ModeData["name"]
+  modeName?: ModeData["name"],
 ): StoryTestFieldsFragment => {
   const changedTests = tests.filter((test) => test.comparisons.some(hasChanges));
   const candidateTests = changedTests.length ? changedTests : tests;
@@ -46,7 +47,7 @@ export const getMostUsefulTest = (
  */
 export const getMostUsefulComparison = (
   comparisons: StoryTestFieldsFragment["comparisons"],
-  browserId?: BrowserData["id"]
+  browserId?: BrowserData["id"],
 ): StoryTestFieldsFragment["comparisons"][number] => {
   const changedComparisons = comparisons.filter(hasChanges);
   const candidateComparisons = changedComparisons.length ? changedComparisons : comparisons;
@@ -94,11 +95,11 @@ export function useTests(tests: StoryTestFieldsFragment[]) {
     selectedComparison,
     onSelectBrowser: useCallback(
       (browser: BrowserData) => setSelectedBrowserId(browser.id),
-      [setSelectedBrowserId]
+      [setSelectedBrowserId],
     ),
     onSelectMode: useCallback(
       (mode: ModeData) => setSelectedModeName(mode.name),
-      [setSelectedModeName]
+      [setSelectedModeName],
     ),
   };
 }
