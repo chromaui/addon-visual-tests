@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
@@ -321,6 +322,16 @@ export type CaptureErrorInteractionFailure = CaptureError & {
   kind: CaptureErrorKind;
 };
 
+export type CaptureErrorInteractionTestTimeout = CaptureError & {
+  __typename?: 'CaptureErrorInteractionTestTimeout';
+  /** The ID of the capture error. */
+  id: Scalars['ID']['output'];
+  /** The kind of capture error. */
+  kind: CaptureErrorKind;
+  /** The maximum number of milliseconds allowed for interaction tests to run. */
+  timeoutMs: Scalars['Int']['output'];
+};
+
 export type CaptureErrorJsError = CaptureError & {
   __typename?: 'CaptureErrorJSError';
   /** The original error that caused the capture to fail. Typically contains a name and message. */
@@ -340,12 +351,16 @@ export enum CaptureErrorKind {
   ImageTooLarge = 'IMAGE_TOO_LARGE',
   /** An interaction failed to complete, or encountered an assertion error. */
   InteractionFailure = 'INTERACTION_FAILURE',
+  /** The interaction test took too long to complete. */
+  InteractionTestTimeout = 'INTERACTION_TEST_TIMEOUT',
   /** A JavaScript error occurred during capture. */
   JsError = 'JS_ERROR',
   /** The page took too long to load. */
   NavigationTimeout = 'NAVIGATION_TIMEOUT',
   /** The page does not contain (valid) JavaScript. */
   NoJs = 'NO_JS',
+  /** The Storybook render took too long to complete. */
+  RenderTimeout = 'RENDER_TIMEOUT',
   /** The screenshot took too long to capture. */
   ScreenshotTimeout = 'SCREENSHOT_TIMEOUT',
   /** The story was not found. */
@@ -370,6 +385,16 @@ export type CaptureErrorNoJs = CaptureError & {
   kind: CaptureErrorKind;
 };
 
+export type CaptureErrorRenderTimeout = CaptureError & {
+  __typename?: 'CaptureErrorRenderTimeout';
+  /** The ID of the capture error. */
+  id: Scalars['ID']['output'];
+  /** The kind of capture error. */
+  kind: CaptureErrorKind;
+  /** The maximum number of milliseconds allowed for a story to render. */
+  timeoutMs: Scalars['Int']['output'];
+};
+
 export type CaptureErrorScreenshotTimeout = CaptureError & {
   __typename?: 'CaptureErrorScreenshotTimeout';
   /** The ID of the capture error. */
@@ -382,6 +407,14 @@ export type CaptureErrorScreenshotTimeout = CaptureError & {
 
 export type CaptureErrorStoryMissing = CaptureError & {
   __typename?: 'CaptureErrorStoryMissing';
+  /** The ID of the capture error. */
+  id: Scalars['ID']['output'];
+  /** The kind of capture error. */
+  kind: CaptureErrorKind;
+};
+
+export type CaptureErrorTimeoutType = CaptureError & {
+  __typename?: 'CaptureErrorTimeoutType';
   /** The ID of the capture error. */
   id: Scalars['ID']['output'];
   /** The kind of capture error. */
@@ -452,6 +485,8 @@ export enum ComparisonResult {
   Fixed = 'FIXED',
   /** There was a base capture, but no head capture. */
   Removed = 'REMOVED',
+  /** We didn't capture the story as it was skipped */
+  Skipped = 'SKIPPED',
   /** Either the head capture or the diff failed due to a system error. */
   SystemError = 'SYSTEM_ERROR'
 }
@@ -1313,7 +1348,7 @@ export type Test = Node & Temporal & {
   id: Scalars['ID']['output'];
   /** What test kinds is this test associated with. */
   kinds: Array<TestKind>;
-  /** The mode applied to this test. If this test was not using modes, the viewport is set as the mode name (e.g. "[viewport]px")  */
+  /** The mode applied to this test. If this test was not using modes, the viewport is set as the mode name (e.g. "[viewport]px") */
   mode: TestMode;
   /** Chromatic parameters configured on the story or automatically determined based on context. */
   parameters: TestParameters;
@@ -1613,7 +1648,7 @@ export type StatusTestFieldsFragment = { __typename?: 'Test', id: string, status
 
 export type LastBuildOnBranchTestFieldsFragment = { __typename?: 'Test', status: TestStatus, result?: TestResult | null } & { ' $fragmentName'?: 'LastBuildOnBranchTestFieldsFragment' };
 
-export type StoryTestFieldsFragment = { __typename?: 'Test', id: string, status: TestStatus, result?: TestResult | null, webUrl: any, comparisons: Array<{ __typename?: 'TestComparison', id: string, result?: ComparisonResult | null, browser: { __typename?: 'BrowserInfo', id: string, key: Browser, name: string, version: string }, captureDiff?: { __typename?: 'CaptureDiff', diffImage?: { __typename?: 'CaptureOverlayImage', imageUrl: any, imageWidth: number } | null, focusImage?: { __typename?: 'CaptureOverlayImage', imageUrl: any, imageWidth: number } | null } | null, headCapture?: { __typename?: 'Capture', captureImage?: { __typename?: 'CaptureImage', backgroundColor?: string | null, imageUrl: any, imageWidth: number, imageHeight: number, thumbnailUrl: any } | null, captureError?: { __typename?: 'CaptureErrorComponentOffPage', kind: CaptureErrorKind } | { __typename?: 'CaptureErrorFailedJS', error: any, kind: CaptureErrorKind } | { __typename?: 'CaptureErrorImageTooLarge', kind: CaptureErrorKind } | { __typename?: 'CaptureErrorInteractionFailure', error: any, kind: CaptureErrorKind } | { __typename?: 'CaptureErrorJSError', error: any, kind: CaptureErrorKind } | { __typename?: 'CaptureErrorNavigationTimeout', kind: CaptureErrorKind } | { __typename?: 'CaptureErrorNoJS', kind: CaptureErrorKind } | { __typename?: 'CaptureErrorScreenshotTimeout', kind: CaptureErrorKind } | { __typename?: 'CaptureErrorStoryMissing', kind: CaptureErrorKind } | null } | null, baseCapture?: { __typename?: 'Capture', captureImage?: { __typename?: 'CaptureImage', imageUrl: any, imageWidth: number, imageHeight: number } | null } | null }>, mode: { __typename?: 'TestMode', name: string, globals: any }, story?: { __typename?: 'Story', storyId: string, name: string, component?: { __typename?: 'Component', name: string } | null } | null } & { ' $fragmentName'?: 'StoryTestFieldsFragment' };
+export type StoryTestFieldsFragment = { __typename?: 'Test', id: string, status: TestStatus, result?: TestResult | null, webUrl: any, comparisons: Array<{ __typename?: 'TestComparison', id: string, result?: ComparisonResult | null, browser: { __typename?: 'BrowserInfo', id: string, key: Browser, name: string, version: string }, captureDiff?: { __typename?: 'CaptureDiff', diffImage?: { __typename?: 'CaptureOverlayImage', imageUrl: any, imageWidth: number } | null, focusImage?: { __typename?: 'CaptureOverlayImage', imageUrl: any, imageWidth: number } | null } | null, headCapture?: { __typename?: 'Capture', captureImage?: { __typename?: 'CaptureImage', backgroundColor?: string | null, imageUrl: any, imageWidth: number, imageHeight: number, thumbnailUrl: any } | null, captureError?: { __typename?: 'CaptureErrorComponentOffPage', kind: CaptureErrorKind } | { __typename?: 'CaptureErrorFailedJS', error: any, kind: CaptureErrorKind } | { __typename?: 'CaptureErrorImageTooLarge', kind: CaptureErrorKind } | { __typename?: 'CaptureErrorInteractionFailure', error: any, kind: CaptureErrorKind } | { __typename?: 'CaptureErrorInteractionTestTimeout', kind: CaptureErrorKind } | { __typename?: 'CaptureErrorJSError', error: any, kind: CaptureErrorKind } | { __typename?: 'CaptureErrorNavigationTimeout', kind: CaptureErrorKind } | { __typename?: 'CaptureErrorNoJS', kind: CaptureErrorKind } | { __typename?: 'CaptureErrorRenderTimeout', kind: CaptureErrorKind } | { __typename?: 'CaptureErrorScreenshotTimeout', kind: CaptureErrorKind } | { __typename?: 'CaptureErrorStoryMissing', kind: CaptureErrorKind } | { __typename?: 'CaptureErrorTimeoutType', kind: CaptureErrorKind } | null } | null, baseCapture?: { __typename?: 'Capture', captureImage?: { __typename?: 'CaptureImage', imageUrl: any, imageWidth: number, imageHeight: number } | null } | null }>, mode: { __typename?: 'TestMode', name: string, globals: any }, story?: { __typename?: 'Story', storyId: string, name: string, component?: { __typename?: 'Component', name: string } | null } | null } & { ' $fragmentName'?: 'StoryTestFieldsFragment' };
 
 export type ReviewTestMutationVariables = Exact<{
   input: ReviewTestInput;
