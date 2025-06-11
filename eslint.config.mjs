@@ -22,6 +22,7 @@ export default [
   ),
   {
     files: ['**/*.ts', '**/*.tsx'],
+    ignores: ['**/node_modules/**', '**/coverage/**', '**/dist/**', '**/src/gql/**'],
     plugins: {
       'simple-import-sort': simpleImportSort,
     },
