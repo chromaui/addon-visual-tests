@@ -1,3 +1,16 @@
+# v4.0.1 (Fri Jun 20 2025)
+
+#### ⚠️ Pushed to `main`
+
+- Merge branch '3.2.7' ([@ghengeveld](https://github.com/ghengeveld))
+- Update GraphQL schema and handle ComparisonResult.SKIPPED value ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v3.2.7 (Fri Jun 20 2025)
 
 #### 🐛 Bug Fix
