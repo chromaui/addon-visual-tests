@@ -1,3 +1,66 @@
+# v4.0.1 (Fri Jun 20 2025)
+
+#### ⚠️ Pushed to `main`
+
+- Merge branch '3.2.7' ([@ghengeveld](https://github.com/ghengeveld))
+- Update GraphQL schema and handle ComparisonResult.SKIPPED value ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v3.2.7 (Fri Jun 20 2025)
+
+#### 🐛 Bug Fix
+
+- Update GraphQL schema and handle `ComparisonResult.SKIPPED` value ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v4.0.0 (Wed May 28 2025)
+
+#### 💥 Breaking Change
+
+- Remove @storybook/addon-blocks [#368](https://github.com/chromaui/addon-visual-tests/pull/368) ([@valentinpalkovic](https://github.com/valentinpalkovic) [@ghengeveld](https://github.com/ghengeveld))
+- Migrate to new test provider API [#367](https://github.com/chromaui/addon-visual-tests/pull/367) ([@JReinhold](https://github.com/JReinhold) [@ghengeveld](https://github.com/ghengeveld))
+- Change to Storybook 9.0.0 (+alpha) compatibility [#355](https://github.com/chromaui/addon-visual-tests/pull/355) ([@ndelangen](https://github.com/ndelangen))
+
+#### 🚀 Enhancement
+
+- Handle missing git user.email config [#375](https://github.com/chromaui/addon-visual-tests/pull/375) ([@ghengeveld](https://github.com/ghengeveld))
+- Update onboarding flow with animation and better error handling [#374](https://github.com/chromaui/addon-visual-tests/pull/374) ([@ghengeveld](https://github.com/ghengeveld))
+- Upgrade to Storybook 9 alpha [#358](https://github.com/chromaui/addon-visual-tests/pull/358) ([@ndelangen](https://github.com/ndelangen))
+
+#### 🐛 Bug Fix
+
+- Upgrade `chromatic` to v12.0.0 [#376](https://github.com/chromaui/addon-visual-tests/pull/376) ([@ghengeveld](https://github.com/ghengeveld))
+- Onboarding: Fix Git initialization problem [#371](https://github.com/chromaui/addon-visual-tests/pull/371) ([@ghengeveld](https://github.com/ghengeveld))
+- Onboarding: Replace `react-confetti` with `@neoconfetti/react` [#372](https://github.com/chromaui/addon-visual-tests/pull/372) ([@ghengeveld](https://github.com/ghengeveld))
+- Only run tests when possible [#370](https://github.com/chromaui/addon-visual-tests/pull/370) ([@yannbf](https://github.com/yannbf))
+- Fix: Clear testing status on logout [#369](https://github.com/chromaui/addon-visual-tests/pull/369) ([@yannbf](https://github.com/yannbf))
+- Use new Status API from SB 9 [#359](https://github.com/chromaui/addon-visual-tests/pull/359) ([@ndelangen](https://github.com/ndelangen) [@JReinhold](https://github.com/JReinhold) [@ghengeveld](https://github.com/ghengeveld))
+- Update usages to match Storybook 9.0.0-alpha.4 [#364](https://github.com/chromaui/addon-visual-tests/pull/364) ([@JReinhold](https://github.com/JReinhold))
+- Refactor imports to use storybook public API [#361](https://github.com/chromaui/addon-visual-tests/pull/361) ([@ndelangen](https://github.com/ndelangen))
+- Formatting [#362](https://github.com/chromaui/addon-visual-tests/pull/362) ([@ghengeveld](https://github.com/ghengeveld) [@JReinhold](https://github.com/JReinhold))
+- Fix GraphQL codegen setup [#360](https://github.com/chromaui/addon-visual-tests/pull/360) ([@ghengeveld](https://github.com/ghengeveld))
+- Add Storybook prerelease version compatibility [#356](https://github.com/chromaui/addon-visual-tests/pull/356) ([@ndelangen](https://github.com/ndelangen))
+
+#### Authors: 5
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Jeppe Reinhold ([@JReinhold](https://github.com/JReinhold))
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+- Valentin Palkovic ([@valentinpalkovic](https://github.com/valentinpalkovic))
+- Yann Braga ([@yannbf](https://github.com/yannbf))
+
+---
+
 # v3.2.6 (Fri Mar 14 2025)
 
 #### 🐛 Bug Fix
