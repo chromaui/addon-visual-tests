@@ -1,3 +1,15 @@
+# v3.2.7 (Fri Jun 20 2025)
+
+#### 🐛 Bug Fix
+
+- Update GraphQL schema and handle `ComparisonResult.SKIPPED` value ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v4.0.0 (Wed May 28 2025)
 
 #### 💥 Breaking Change
