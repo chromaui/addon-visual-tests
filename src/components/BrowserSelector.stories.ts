@@ -63,6 +63,18 @@ export const WithSingleBrowserEqual: Story = {
   },
 };
 
+export const WithSingleBrowserSkipped: Story = {
+  args: {
+    selectedBrowser: browserChrome,
+    browserResults: [
+      {
+        browser: browserChrome,
+        result: ComparisonResult.Skipped,
+      },
+    ],
+  },
+};
+
 export const WithSingleBrowserError: Story = {
   args: {
     selectedBrowser: browserChrome,

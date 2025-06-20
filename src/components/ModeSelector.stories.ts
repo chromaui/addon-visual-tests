@@ -59,6 +59,18 @@ export const WithSingleViewportEqual: Story = {
   },
 };
 
+export const WithSingleViewportSkipped: Story = {
+  args: {
+    selectedMode: viewport1200Px,
+    modeResults: [
+      {
+        mode: viewport1200Px,
+        result: ComparisonResult.Skipped,
+      },
+    ],
+  },
+};
+
 export const WithSingleViewportError: Story = {
   args: {
     selectedMode: viewport1200Px,

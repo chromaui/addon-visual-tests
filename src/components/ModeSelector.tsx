@@ -82,7 +82,11 @@ export const ModeSelector = ({
   if (!aggregate) return null;
 
   let icon = <DiamondIcon />;
-  if (!isAccepted && aggregate !== ComparisonResult.Equal && modeResults.length >= 2) {
+  if (
+    !isAccepted &&
+    ![ComparisonResult.Equal, ComparisonResult.Skipped].includes(aggregate) &&
+    modeResults.length >= 2
+  ) {
     icon = <StatusDotWrapper status={aggregate}>{icon}</StatusDotWrapper>;
   }
 
@@ -92,7 +96,10 @@ export const ModeSelector = ({
       .map(({ mode, result }) => ({
         id: mode.name,
         title: mode.name,
-        right: !isAccepted && result !== ComparisonResult.Equal && <StatusDot status={result} />,
+        right: !isAccepted &&
+          ![ComparisonResult.Equal, ComparisonResult.Skipped].includes(aggregate) && (
+            <StatusDot status={result} />
+          ),
         onClick: () => onSelectMode(mode),
         active: selectedMode.name === mode.name,
       }))

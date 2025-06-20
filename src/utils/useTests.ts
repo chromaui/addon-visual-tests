@@ -18,7 +18,8 @@ const useGlobalValue = (key: string) => {
 };
 
 const hasChanges = ({ result }: StoryTestFieldsFragment['comparisons'][number]) =>
-  result !== ComparisonResult.Equal && result !== ComparisonResult.Fixed;
+  result &&
+  ![ComparisonResult.Equal, ComparisonResult.Fixed, ComparisonResult.Skipped].includes(result);
 
 /**
  * Select the initial test based on the following criteria (in order of priority):

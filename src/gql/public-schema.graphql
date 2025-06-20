@@ -490,7 +490,7 @@ type Test implements Node & Temporal {
   parameters: TestParameters!
 
   """
-  The mode applied to this test. If this test was not using modes, the viewport is set as the mode name (e.g. "[viewport]px") 
+  The mode applied to this test. If this test was not using modes, the viewport is set as the mode name (e.g. "[viewport]px")
   """
   mode: TestMode!
 
@@ -559,6 +559,9 @@ enum ComparisonResult {
 
   """Either the head capture or the diff failed due to a system error."""
   SYSTEM_ERROR
+
+  """We didn't capture the story as it was skipped"""
+  SKIPPED
 }
 
 type ViewportInfo {
@@ -656,6 +659,12 @@ enum CaptureErrorKind {
 
   """The page took too long to load."""
   NAVIGATION_TIMEOUT
+
+  """The Storybook render took too long to complete."""
+  RENDER_TIMEOUT
+
+  """The interaction test took too long to complete."""
+  INTERACTION_TEST_TIMEOUT
 
   """The page does not contain (valid) JavaScript."""
   NO_JS
@@ -1459,6 +1468,38 @@ type CaptureErrorScreenshotTimeout implements CaptureError {
   The maximum number of milliseconds allowed for a screenshot to be taken.
   """
   screenshotTimeoutMs: Int!
+}
+
+type CaptureErrorTimeoutType implements CaptureError {
+  """The ID of the capture error."""
+  id: ID!
+
+  """The kind of capture error."""
+  kind: CaptureErrorKind!
+}
+
+type CaptureErrorRenderTimeout implements CaptureError {
+  """The ID of the capture error."""
+  id: ID!
+
+  """The kind of capture error."""
+  kind: CaptureErrorKind!
+
+  """The maximum number of milliseconds allowed for a story to render."""
+  timeoutMs: Int!
+}
+
+type CaptureErrorInteractionTestTimeout implements CaptureError {
+  """The ID of the capture error."""
+  id: ID!
+
+  """The kind of capture error."""
+  kind: CaptureErrorKind!
+
+  """
+  The maximum number of milliseconds allowed for interaction tests to run.
+  """
+  timeoutMs: Int!
 }
 
 type Query {
