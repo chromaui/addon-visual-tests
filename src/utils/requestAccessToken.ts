@@ -41,13 +41,13 @@ const betaUserAccessDenied = ({ error_description }: { error_description: string
 };
 
 const withSubdomain = (url: string, subdomain?: string) =>
-  subdomain ? url.replace('https://www', `https://${subdomain}`) : url;
+  subdomain ? url.replace(/^https:\/\/www\./, `https://${subdomain}.`) : url;
 
 export const initiateSignin = async (subdomain?: string): Promise<TokenExchangeParameters> => {
   const verifier = base64URLEncode(seed());
   const challenge = base64URLEncode(hexStringToBytes(sha256(verifier)));
 
-  const res = await fetch(`${withSubdomain(CHROMATIC_BASE_URL, subdomain)}/authorize`, {
+  const res = await fetch(withSubdomain(`${CHROMATIC_BASE_URL}/authorize`, subdomain), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
