@@ -1,4 +1,4 @@
-# Visual Tests Addon for Storybook
+# Visual Tests Addon for Storybook!
 
 Run visual tests on your stories and compare changes with the latest baselines to catch UI regressions early in development. Supports multiple viewports, themes, and browsers.
 
