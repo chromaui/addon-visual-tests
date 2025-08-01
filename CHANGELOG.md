@@ -1,3 +1,22 @@
+# v4.1.0 (Fri Aug 01 2025)
+
+#### 🚀 Enhancement
+
+- Support disabling ChannelFetch using `--debug` flag [#378](https://github.com/chromaui/addon-visual-tests/pull/378) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### 🐛 Bug Fix
+
+- Chore: Fix package.json [#385](https://github.com/chromaui/addon-visual-tests/pull/385) ([@yannbf](https://github.com/yannbf))
+- Add support for Storybook 9.2 [#384](https://github.com/chromaui/addon-visual-tests/pull/384) ([@yannbf](https://github.com/yannbf))
+- Update GraphQL schema and handle `ComparisonResult.SKIPPED` value [#379](https://github.com/chromaui/addon-visual-tests/pull/379) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 2
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Yann Braga ([@yannbf](https://github.com/yannbf))
+
+---
+
 # v4.0.1 (Fri Jun 20 2025)
 
 #### ⚠️ Pushed to `main`
