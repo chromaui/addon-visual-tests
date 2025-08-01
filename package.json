@@ -43,7 +43,6 @@
     "codegen": "graphql-codegen",
     "lint": "eslint src --report-unused-disable-directives",
     "format": "prettier . --write",
-    "prerelease": "zx scripts/prepublish-checks.mjs",
     "release": "yarn run build && auto shipit",
     "start": "run-p build:watch 'storybook --quiet'",
     "storybook": "CHROMATIC_ADDON_NAME='../src/dev.ts' storybook dev -p 6004",
