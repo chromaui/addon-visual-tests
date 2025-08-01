@@ -71,7 +71,11 @@ export const BrowserSelector = ({
   if (!aggregate) return null;
 
   let icon = browserIcons[selectedBrowser.key];
-  if (!isAccepted && aggregate !== ComparisonResult.Equal && browserResults.length >= 2) {
+  if (
+    !isAccepted &&
+    ![ComparisonResult.Equal, ComparisonResult.Skipped].includes(aggregate) &&
+    browserResults.length >= 2
+  ) {
     icon = <StatusDotWrapper status={aggregate}>{icon}</StatusDotWrapper>;
   }
 
@@ -84,7 +88,10 @@ export const BrowserSelector = ({
         active: selectedBrowser === browser,
         id: browser.id,
         onClick: () => onSelectBrowser(browser),
-        right: !isAccepted && result !== ComparisonResult.Equal && <StatusDot status={result} />,
+        right: !isAccepted &&
+          ![ComparisonResult.Equal, ComparisonResult.Skipped].includes(aggregate) && (
+            <StatusDot status={result} />
+          ),
         icon: browserIcons[browser.key],
         title: browser.name,
       })
