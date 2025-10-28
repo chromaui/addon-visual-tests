@@ -1,3 +1,15 @@
+# v4.1.1 (Wed Aug 20 2025)
+
+#### 🐛 Bug Fix
+
+- Broaden version-range for storybook peerDependency [#389](https://github.com/chromaui/addon-visual-tests/pull/389) ([@ndelangen](https://github.com/ndelangen))
+
+#### Authors: 1
+
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+
+---
+
 # v4.1.0 (Fri Aug 01 2025)
 
 #### 🚀 Enhancement
