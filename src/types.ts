@@ -4,9 +4,8 @@ import { Status } from 'storybook/internal/types';
 import { SelectedBuildFieldsFragment } from './gql/graphql';
 
 declare global {
-  // eslint-disable-next-line no-var
   var CONFIG_TYPE: string;
-  // eslint-disable-next-line no-var
+
   var LOGLEVEL: string;
 }
 
