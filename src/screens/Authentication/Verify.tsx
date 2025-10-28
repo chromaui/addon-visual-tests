@@ -149,11 +149,9 @@ export const Verify = ({
               </Text>
             </div>
             <Digits>
-              {userCode
-                ?.split('')
-                .map((char: string, index: number) => (
-                  <li key={`${index}-${char}`}>{char.replace(/[^A-Z0-9]/, '')}</li>
-                ))}
+              {userCode?.split('').map((char: string, index: number) => (
+                <li key={`${index}-${char}`}>{char.replace(/[^A-Z0-9]/, '')}</li>
+              ))}
             </Digits>
           </div>
           <Button variant="solid" size="medium" onClick={() => openDialog(verificationUrl)}>
