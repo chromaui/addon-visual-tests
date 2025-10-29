@@ -1,3 +1,17 @@
+# v4.1.2 (Wed Oct 29 2025)
+
+#### 🐛 Bug Fix
+
+- Broaden version-range for storybook peerDependency to include 10.1.0-0 [#392](https://github.com/chromaui/addon-visual-tests/pull/392) ([@ndelangen](https://github.com/ndelangen))
+- Main [#391](https://github.com/chromaui/addon-visual-tests/pull/391) ([@ndelangen](https://github.com/ndelangen) [@chromatic-support](https://github.com/chromatic-support))
+
+#### Authors: 2
+
+- [@chromatic-support](https://github.com/chromatic-support)
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+
+---
+
 # v4.1.1 (Wed Aug 20 2025)
 
 #### 🐛 Bug Fix
