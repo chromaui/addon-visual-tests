@@ -11,10 +11,9 @@ jobs:
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GH_TOKEN }}
-
-      - name: Prepare repository
-        #  Fetch full git history and tags
-        run: git fetch --unshallow --tags
+          fetch-depth: 0
+          fetch-tags: true
+          clean: true
 
       - name: Install dependencies
         run: yarn install --immutable
