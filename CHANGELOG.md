@@ -1,3 +1,15 @@
+# v4.1.3 (Mon Nov 17 2025)
+
+#### 🐛 Bug Fix
+
+- Upgrade `chromatic` to v13.3.3 [#394](https://github.com/chromaui/addon-visual-tests/pull/394) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v4.1.2 (Wed Oct 29 2025)
 
 #### 🐛 Bug Fix
