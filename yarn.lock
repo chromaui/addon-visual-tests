@@ -467,7 +467,7 @@ __metadata:
     "@vitest/coverage-v8": "npm:^3.0.8"
     auto: "npm:^11.0.5"
     boxen: "npm:^5.0.1"
-    chromatic: "npm:^12.0.0"
+    chromatic: "npm:^13.3.3"
     date-fns: "npm:^2.30.0"
     dedent: "npm:^0.7.0"
     eslint: "npm:^9.21.0"
@@ -3972,9 +3972,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chromatic@npm:^12.0.0":
-  version: 12.2.0
-  resolution: "chromatic@npm:12.2.0"
+"chromatic@npm:^13.3.3":
+  version: 13.3.3
+  resolution: "chromatic@npm:13.3.3"
   peerDependencies:
     "@chromatic-com/cypress": ^0.*.* || ^1.0.0
     "@chromatic-com/playwright": ^0.*.* || ^1.0.0
@@ -3987,7 +3987,7 @@ __metadata:
     chroma: dist/bin.js
     chromatic: dist/bin.js
     chromatic-cli: dist/bin.js
-  checksum: 10c0/c40c977c589fe03d788103281c3e000224049c65932f67293e9825faadccc654931f1b68ec442beb516d87449d00420d73e3984103b49faca42ead1c12867932
+  checksum: 10c0/6fc54df030113d91ef00a2050f5cb13ca182b355dae2c29cdd326fac6cf21d8ddc2cd93dc3f5db04379b7769d4df8e3ea5f18c3642e9e3a48545565f992a838c
   languageName: node
   linkType: hard
 
