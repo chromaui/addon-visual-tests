@@ -1,6 +1,6 @@
 {
   "name": "@chromatic-com/storybook",
-  "version": "4.1.2",
+  "version": "4.1.3",
   "description": "Catch unexpected visual changes & UI bugs in your stories",
   "keywords": [
     "storybook-addons",
