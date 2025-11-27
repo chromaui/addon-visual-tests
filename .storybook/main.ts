@@ -2,7 +2,7 @@ import type { StorybookConfig } from '@storybook/react-vite';
 import { mergeConfig } from 'vite';
 import turbosnap from 'vite-plugin-turbosnap';
 
-import { CHROMATIC_BASE_URL } from '../src/constants';
+import { CHROMATIC_BASE_URL } from '../src/constants.ts';
 
 const useDistVersion = process.env.CHROMATIC_USE_DIST_VERSION === 'true';
 
