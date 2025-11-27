@@ -38,10 +38,10 @@ export const SignIn = ({ onBack, onSignIn, onSignInWithSSO }: SignInProps) => (
           </Text>
         </div>
         <ButtonStack>
-          <Button variant="solid" size="medium" onClick={() => onSignIn()}>
+          <Button ariaLabel={false} variant="solid" size="medium" onClick={() => onSignIn()}>
             Sign in with Chromatic
           </Button>
-          <Button link onClick={() => onSignInWithSSO()}>
+          <Button ariaLabel={false} link onClick={() => onSignInWithSSO()}>
             Sign in with SSO
           </Button>
         </ButtonStack>

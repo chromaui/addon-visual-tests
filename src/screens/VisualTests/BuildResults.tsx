@@ -119,6 +119,7 @@ export const BuildResults = ({
                 </Text>
               </div>
               <Button
+                ariaLabel={false}
                 belowText
                 size="medium"
                 variant="solid"
@@ -148,7 +149,7 @@ export const BuildResults = ({
                 <Code>disableSnapshot = true</Code> from the CSF file.
               </Text>
             </div>
-            <Button asChild size="medium" variant="outline">
+            <Button ariaLabel={false} asChild size="medium" variant="outline">
               <a
                 href="https://www.chromatic.com/docs/disable-snapshots#with-storybook"
                 target="_new"

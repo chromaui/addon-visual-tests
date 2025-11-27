@@ -28,7 +28,7 @@ export const VisualTestsDisabled = ({
             </Text>
           </div>
 
-          <Button asChild size="medium" variant="solid">
+          <Button ariaLabel={false} asChild size="medium" variant="solid">
             <a href={manageUrl} target="_new">
               Manage project settings
             </a>

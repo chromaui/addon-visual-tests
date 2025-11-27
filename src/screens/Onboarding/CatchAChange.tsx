@@ -94,7 +94,7 @@ const MakeAChange = ({ onSkip, runningSecondBuild }: MakeAChangeProps) => (
             <Box>Awaiting changes...</Box>
           )}
 
-          <Button link onClick={onSkip}>
+          <Button ariaLabel={false} link onClick={onSkip}>
             Skip walkthrough
           </Button>
         </ButtonStack>
@@ -129,6 +129,7 @@ const ChangesDetected = ({
             </Text>
           </div>
           <Button
+            ariaLabel={false}
             variant="solid"
             size="medium"
             disabled={isRunning}

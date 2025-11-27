@@ -88,7 +88,7 @@ export const SetSubdomain = ({ onBack, onSignIn }: SetSubdomainProps) => {
               error={inputError}
               errorTooltipPlacement="top"
             />
-            <SubmitButton type="submit" variant="solid" size="medium">
+            <SubmitButton ariaLabel={false} type="submit" variant="solid" size="medium">
               Continue
             </SubmitButton>
           </Form>
