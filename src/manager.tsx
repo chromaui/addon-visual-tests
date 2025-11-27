@@ -2,7 +2,7 @@ import React from 'react';
 import { type Addon_TestProviderType, Addon_TypesEnum } from 'storybook/internal/types';
 import { addons, experimental_getStatusStore } from 'storybook/manager-api';
 
-import { ADDON_ID, PANEL_ID, PARAM_KEY, TEST_PROVIDER_ID } from './constants';
+import { ADDON_ID, PANEL_ID, PARAM_KEY, TEST_PROVIDER_ID } from './constants.ts';
 import { Panel } from './Panel';
 import { TestProviderRender } from './TestProviderRender';
 
