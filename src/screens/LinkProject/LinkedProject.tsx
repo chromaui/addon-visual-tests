@@ -95,7 +95,12 @@ export const LinkedProject = ({
                 </Text>
               </div>
               <ButtonStack>
-                <Button variant="solid" size="medium" onClick={() => goToNext()}>
+                <Button
+                  ariaLabel="Continue"
+                  variant="solid"
+                  size="medium"
+                  onClick={() => goToNext()}
+                >
                   Catch a UI change
                 </Button>
                 <ButtonStackLink

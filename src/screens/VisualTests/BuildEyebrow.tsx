@@ -7,13 +7,12 @@ import {
   SyncIcon,
 } from '@storybook/icons';
 import React, { useEffect, useRef } from 'react';
-import { Link } from 'storybook/internal/components';
+import { ActionList, Link } from 'storybook/internal/components';
 import { keyframes, styled } from 'storybook/theming';
 
 import { BUILD_STEP_CONFIG, BUILD_STEP_ORDER } from '../../buildSteps';
 import { BuildProgressLabel } from '../../components/BuildProgressLabel';
 import { Code } from '../../components/Code';
-import { IconButton } from '../../components/IconButton';
 import { LocalBuildProgress } from '../../types';
 
 const spin = keyframes({
@@ -27,7 +26,7 @@ const SpinIcon = styled(SyncIcon)({
 
 const stepIconStyle = { width: 10, marginRight: 8 };
 
-const Header = styled.button<{ isWarning?: boolean }>(({ isWarning, onClick, theme }) => {
+const Header = styled.div<{ isWarning?: boolean }>(({ isWarning, onClick, theme }) => {
   const warningColor = theme.base === 'light' ? theme.background.warning : '#2e271a';
   return {
     position: 'relative',
@@ -212,23 +211,23 @@ export const BuildEyebrow = ({
     const isWarning = aborted || errored;
     return (
       <>
-        <Header
-          as={errored ? 'div' : 'button'}
-          onClick={errored ? undefined : toggleExpanded}
-          isWarning={isWarning}
-        >
+        <Header onClick={errored ? undefined : toggleExpanded} isWarning={isWarning}>
           <Bar percentage={localBuildProgress.buildProgressPercentage} isWarning={isWarning} />
           <Label>
             <BuildProgressLabel localBuildProgress={localBuildProgress} withEmoji />
           </Label>
           {errored ? (
-            <IconButton onClick={dismissBuildError}>
-              <CloseIcon aria-label="Dismiss" />
-            </IconButton>
+            <ActionList.Button ariaLabel="Dismiss" onClick={dismissBuildError} size="small">
+              <CloseIcon />
+            </ActionList.Button>
           ) : (
-            <IconButton as="div">
+            <ActionList.Button
+              ariaLabel={`${expanded ? 'Collapse' : 'Expand'} build progress`}
+              onClick={errored ? undefined : toggleExpanded}
+              size="small"
+            >
               <ToggleIcon style={{ transform: `rotate(${expanded ? -180 : 0}deg)` }} />
-            </IconButton>
+            </ActionList.Button>
           )}
         </Header>
         <BuildProgress localBuildProgress={localBuildProgress} expanded={expanded || errored} />

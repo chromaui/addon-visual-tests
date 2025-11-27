@@ -3,7 +3,7 @@ import { PlayHollowIcon, StopAltIcon } from '@storybook/icons';
 import pluralize from 'pluralize';
 import React, { useCallback, useContext, useEffect, useRef } from 'react';
 import { Link } from 'storybook/internal/components';
-import { Button, ProgressSpinner, TooltipNote, WithTooltip } from 'storybook/internal/components';
+import { Button, ProgressSpinner } from 'storybook/internal/components';
 import {
   experimental_getTestProviderStore,
   experimental_useStatusStore,
@@ -235,43 +235,31 @@ export const TestProviderRender = () => {
 
       <Actions>
         {warning ? null : testProviderState === 'test-provider-state:running' ? (
-          <WithTooltip
-            hasChrome={false}
-            trigger="hover"
-            tooltip={<TooltipNote note="Stop Visual tests" />}
+          <Button
+            ariaLabel="Stop visual tests"
+            size="medium"
+            variant="ghost"
+            padding="none"
+            onClick={stopBuild}
+            disabled={
+              !['initialize', 'build', 'upload'].includes(localBuildProgress?.currentStep ?? '')
+            }
           >
-            <Button
-              aria-label="Stop Visual tests"
-              size="medium"
-              variant="ghost"
-              padding="none"
-              onClick={stopBuild}
-              disabled={
-                !['initialize', 'build', 'upload'].includes(localBuildProgress?.currentStep ?? '')
-              }
-            >
-              <Progress percentage={localBuildProgress?.buildProgressPercentage}>
-                <StopIcon />
-              </Progress>
-            </Button>
-          </WithTooltip>
+            <Progress percentage={localBuildProgress?.buildProgressPercentage}>
+              <StopIcon />
+            </Progress>
+          </Button>
         ) : (
-          <WithTooltip
-            hasChrome={false}
-            trigger="hover"
-            tooltip={<TooltipNote note="Start Visual tests" />}
+          <Button
+            ariaLabel="Start visual tests"
+            size="medium"
+            variant="ghost"
+            padding="small"
+            disabled={!isRunnable}
+            onClick={startBuildIfPossible}
           >
-            <Button
-              aria-label="Start Visual tests"
-              size="medium"
-              variant="ghost"
-              padding="small"
-              disabled={!isRunnable}
-              onClick={startBuildIfPossible}
-            >
-              <PlayHollowIcon />
-            </Button>
-          </WithTooltip>
+            <PlayHollowIcon />
+          </Button>
         )}
       </Actions>
     </Container>

@@ -154,7 +154,12 @@ export const Verify = ({
               ))}
             </Digits>
           </div>
-          <Button variant="solid" size="medium" onClick={() => openDialog(verificationUrl)}>
+          <Button
+            ariaLabel={false}
+            variant="solid"
+            size="medium"
+            onClick={() => openDialog(verificationUrl)}
+          >
             Go to Chromatic
           </Button>
         </Stack>
