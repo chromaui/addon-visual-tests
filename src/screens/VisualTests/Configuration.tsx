@@ -144,6 +144,7 @@ const Page = styled.div(({ theme }) => ({
   overflowY: 'auto',
   padding: 20,
   position: 'relative',
+  fontSize: theme.typography.size.s2,
 }));
 
 const PageWrapper = styled.div({
