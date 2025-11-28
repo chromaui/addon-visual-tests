@@ -212,7 +212,7 @@ export const SwitchingMode = {
   play: playSequentially(async ({ canvas }) => {
     const menu = await canvas.findByRole('button', { name: 'Switch mode' });
     await userEvent.click(menu);
-    const mode = await screen.findByText('1200px');
+    const mode = await screen.findByRole('button', { name: '1200px' });
     await userEvent.click(mode);
   }),
 } satisfies Story;
@@ -222,7 +222,7 @@ export const SwitchingBrowser = {
   play: playSequentially(async ({ canvas }) => {
     const menu = await canvas.findByRole('button', { name: 'Switch browser' });
     await userEvent.click(menu);
-    const browser = await screen.findByText('Safari');
+    const browser = await screen.findByRole('button', { name: 'Safari' });
     await userEvent.click(browser);
   }),
 } satisfies Story;
