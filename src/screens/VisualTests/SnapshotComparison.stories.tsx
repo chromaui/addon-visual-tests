@@ -8,7 +8,7 @@ import { findByRole, fireEvent, screen, userEvent, within } from 'storybook/test
 
 import { Browser, ComparisonResult, TestResult, TestStatus } from '../../gql/graphql';
 import { panelModes } from '../../modes';
-import { playAll } from '../../utils/playAll';
+import { playAll, playSequentially } from '../../utils/playAll';
 import { makeComparison, makeTest, makeTests } from '../../utils/storyData';
 import { storyWrapper } from '../../utils/storyWrapper';
 import { BuildProvider } from './BuildContext';
@@ -87,7 +87,7 @@ export const Default = {} satisfies Story;
 export const Spotlight = {
   play: playAll(async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const button = await canvas.findByRole('button', { name: 'Show spotlight' });
+    const button = await canvas.findByRole('switch', { name: 'Show spotlight' });
     await userEvent.click(button);
   }),
 } satisfies Story;
@@ -95,7 +95,7 @@ export const Spotlight = {
 export const SpotlightOnly = {
   play: playAll(Spotlight, async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const button = await canvas.findByRole('button', { name: 'Hide diff' });
+    const button = await canvas.findByRole('switch', { name: 'Hide diff' });
     await userEvent.click(button);
   }),
 } satisfies Story;
@@ -209,23 +209,21 @@ export const SwitchingMode = {
       }))
     ),
   },
-  play: playAll(async ({ canvasElement, canvasIndex }) => {
-    const canvas = within(canvasElement);
-    const menu = await canvas.findByRole('button', { name: '320px' });
+  play: playSequentially(async ({ canvas }) => {
+    const menu = await canvas.findByRole('button', { name: 'Switch mode' });
     await userEvent.click(menu);
-    const items = await screen.findAllByText('1200px');
-    await userEvent.click(items[canvasIndex]);
+    const mode = await screen.findByText('1200px');
+    await userEvent.click(mode);
   }),
 } satisfies Story;
 
 export const SwitchingBrowser = {
   parameters: SwitchingMode.parameters,
-  play: playAll(async ({ canvasElement, canvasIndex }) => {
-    const canvas = within(canvasElement);
-    const menu = await canvas.findByRole('button', { name: 'Chrome' });
+  play: playSequentially(async ({ canvas }) => {
+    const menu = await canvas.findByRole('button', { name: 'Switch browser' });
     await userEvent.click(menu);
-    const items = await screen.findAllByText('Safari');
-    await userEvent.click(items[canvasIndex]);
+    const browser = await screen.findByText('Safari');
+    await userEvent.click(browser);
   }),
 } satisfies Story;
 
