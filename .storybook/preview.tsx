@@ -22,7 +22,6 @@ import { GraphQLClientProvider } from '../src/utils/graphQLClient';
 import { storyWrapper } from '../src/utils/storyWrapper';
 import { TelemetryProvider } from '../src/utils/TelemetryContext';
 import { useSessionState } from '../src/utils/useSessionState';
-import { action } from 'storybook/actions';
 
 // Initialize MSW
 initialize({
@@ -225,11 +224,11 @@ const preview: Preview = {
       argTypesRegex: '^on[A-Z].*',
     },
     backgrounds: {
-      disable: true,
+      disabled: true,
     },
     viewport: {
       disable: true,
-      viewports: {
+      options: {
         default: { name: 'Default', styles: { width: '960px', height: '720px' } },
       },
     },

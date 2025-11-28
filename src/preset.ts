@@ -1,5 +1,6 @@
 import { watch } from 'node:fs';
 import { readFile } from 'node:fs/promises';
+import { createRequire } from 'node:module';
 import { dirname, join, normalize, relative } from 'node:path';
 
 import {
@@ -29,18 +30,20 @@ import {
   STOP_BUILD,
   TELEMETRY,
   TEST_PROVIDER_ID,
-} from './constants';
-import { runChromaticBuild, stopChromaticBuild } from './runChromaticBuild';
+} from './constants.ts';
+import { runChromaticBuild, stopChromaticBuild } from './runChromaticBuild.ts';
 import {
   ConfigInfoPayload,
   ConfigurationUpdate,
   GitInfoPayload,
   LocalBuildProgress,
   ProjectInfoPayload,
-} from './types';
-import { ChannelFetch } from './utils/ChannelFetch';
-import { SharedState } from './utils/SharedState';
-import { updateChromaticConfig } from './utils/updateChromaticConfig';
+} from './types.ts';
+import { ChannelFetch } from './utils/ChannelFetch.ts';
+import { SharedState } from './utils/SharedState.ts';
+import { updateChromaticConfig } from './utils/updateChromaticConfig.ts';
+
+const require = createRequire(import.meta.url);
 
 const chromaticLogger = createLogger(undefined, CONFIG_OVERRIDES);
 

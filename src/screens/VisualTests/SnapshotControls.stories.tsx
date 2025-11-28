@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, fn } from 'storybook/test';
-import { fireEvent, screen, userEvent, within } from 'storybook/test';
+import { screen, userEvent } from 'storybook/test';
 
 import { panelModes } from '../../modes';
-import { playAll } from '../../utils/playAll';
+import { playAll, playSequentially } from '../../utils/playAll';
 import { storyWrapper } from '../../utils/storyWrapper';
 import { BuildProvider } from './BuildContext';
 import { ControlsProvider } from './ControlsContext';
@@ -81,33 +81,31 @@ export const Unreviewable = {
 } satisfies Story;
 
 export const ToggleDiff = {
-  play: playAll(async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const button = await canvas.findByRole('button', { name: 'Hide diff' });
-    fireEvent.click(button);
+  play: playAll(async ({ canvas }) => {
+    const button = await canvas.findByRole('switch', { name: 'Hide diff' });
+    await userEvent.click(button);
   }),
 } satisfies Story;
 
 export const ToggleBaseline = {
-  play: playAll(async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
+  play: playAll(async ({ canvas }) => {
     const button = await canvas.findByRole('button', { name: 'Show baseline snapshot' });
-    fireEvent.click(button);
+    await userEvent.click(button);
   }),
 } satisfies Story;
 
 export const BatchAcceptOptions = {
-  play: playAll(async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
+  play: playSequentially(async ({ canvas }) => {
+    await userEvent.keyboard('[Escape]');
     const menu = await canvas.findByRole('button', { name: 'Batch accept options' });
     await userEvent.click(menu);
   }),
 } satisfies Story;
 
 export const BatchAcceptedBuild = {
-  play: playAll(BatchAcceptOptions, async ({ canvasIndex, parameters }) => {
-    const items = await screen.findAllByText('Accept entire build');
-    await userEvent.click(items[canvasIndex]);
+  play: playSequentially(BatchAcceptOptions, async ({ parameters }) => {
+    const action = await screen.findByText('Accept entire build');
+    await userEvent.click(action);
     await expect(parameters.reviewTest.acceptTest).toHaveBeenCalledWith(
       parameters.selectedBuild.testsForStory.nodes[0].id,
       'BUILD'
