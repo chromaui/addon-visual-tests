@@ -55,7 +55,7 @@
   },
   "dependencies": {
     "@neoconfetti/react": "^1.0.0",
-    "chromatic": "^13.3.3",
+    "chromatic": "^13.3.4",
     "filesize": "^10.0.12",
     "jsonfile": "^6.1.0",
     "strip-ansi": "^7.1.0"
