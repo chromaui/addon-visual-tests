@@ -155,7 +155,7 @@ export const BuildResults = ({
             </div>
             <Button asChild size="medium" variant="outline">
               <a
-                href="https://www.chromatic.com/docs/ignoring-elements#with-storybook"
+                href="https://www.chromatic.com/docs/disable-snapshots#with-storybook"
                 target="_new"
               >
                 <DocumentIcon />

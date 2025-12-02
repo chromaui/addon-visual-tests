@@ -149,7 +149,7 @@ export const NoBuild = ({
 
             <ButtonStackLink
               withArrow
-              href="https://www.chromatic.com/docs/ignoring-elements#with-storybook"
+              href="https://www.chromatic.com/docs/disable-snapshots#with-storybook"
               target="_blank"
             >
               Read more
