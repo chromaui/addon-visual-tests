@@ -30,7 +30,8 @@ const CodeWrapper = styled.div(({ theme }) => ({
   },
 }));
 
-const configureDocsLink = 'https://www.chromatic.com/docs/visual-tests-addon/#configure';
+const configureDocsLink =
+  'https://www.chromatic.com/docs/visual-tests-addon#addon-configuration-options';
 
 export function LinkingProjectFailed({ projectId, configFile }: LinkingProjectFailedProps) {
   useTelemetry('LinkProject', 'LinkingProjectFailed');

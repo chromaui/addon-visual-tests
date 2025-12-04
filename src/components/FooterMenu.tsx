@@ -20,7 +20,7 @@ export const FooterMenu = () => {
       id: 'learn',
       title: 'About this addon',
       icon: <QuestionIcon aria-hidden />,
-      href: 'https://www.chromatic.com/docs/visual-testing-addon',
+      href: 'https://www.chromatic.com/docs/visual-tests-addon/',
       target: '_blank',
     },
     {
