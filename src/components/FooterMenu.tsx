@@ -24,11 +24,7 @@ export const FooterMenu = () => {
           <ActionList.Item>
             <ActionList.Link
               ariaLabel={false}
-<<<<<<< HEAD
               href="https://www.chromatic.com/docs/visual-tests-addon/"
-=======
-              href="https://www.chromatic.com/docs/visual-testing-addon"
->>>>>>> 1574453 (Rework all the buttons to use new ActionList.Button component and ensure ariaLabel prop is present)
               target="_blank"
               onClick={onHide}
             >
