@@ -1,8 +1,6 @@
-export const {
-  CHROMATIC_INDEX_URL,
-  CHROMATIC_BASE_URL = CHROMATIC_INDEX_URL || 'https://www.chromatic.com',
-  CHROMATIC_API_URL = `${CHROMATIC_BASE_URL}/api`,
-} = process.env;
+export const CHROMATIC_INDEX_URL = process.env.CHROMATIC_INDEX_URL;
+export const CHROMATIC_BASE_URL = process.env.CHROMATIC_BASE_URL || CHROMATIC_INDEX_URL || 'https://www.chromatic.com';
+export const CHROMATIC_API_URL = process.env.CHROMATIC_API_URL || `${CHROMATIC_BASE_URL}/api`;
 
 export const PACKAGE_NAME = '@chromatic-com/storybook';
 
