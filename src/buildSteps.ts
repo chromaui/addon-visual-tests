@@ -1,5 +1,5 @@
 import { TaskName } from 'chromatic/node';
-import { filesize } from 'filesize';
+import { formatBytesObject } from './utils/formatBytes';
 
 import { KnownStep, LocalBuildProgress, StepProgressPayload } from './types';
 
@@ -52,13 +52,9 @@ export const BUILD_STEP_CONFIG: Record<
     renderProgress: ({ stepProgress }) => {
       const { numerator, denominator } = stepProgress.upload;
       if (!denominator || !numerator) return `Uploading files...`;
-      const { value: total, exponent } = filesize(denominator, {
-        output: 'object',
-        round: 1,
-      });
-      const { value: progress, symbol } = filesize(numerator, {
-        exponent,
-        output: 'object',
+      const { value: total, exponent } = formatBytesObject(denominator, { round: 1 });
+      const { value: progress, symbol } = formatBytesObject(numerator, {
+        exponent: exponent,
         round: 1,
       });
       return `Uploading files... ${progress}/${total} ${symbol}`;
