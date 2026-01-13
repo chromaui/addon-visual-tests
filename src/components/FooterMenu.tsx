@@ -1,5 +1,6 @@
-import { CogIcon, EllipsisIcon, QuestionIcon, ShareAltIcon, UserIcon } from '@storybook/icons';
+import { ChromaticIcon, CogIcon, EllipsisIcon, QuestionIcon, UserIcon } from '@storybook/icons';
 import React from 'react';
+import { ActionList, PopoverProvider } from 'storybook/internal/components';
 import { experimental_getStatusStore } from 'storybook/manager-api';
 
 import { useAuthState } from '../AuthContext';
@@ -7,7 +8,6 @@ import { ADDON_ID, PROJECT_INFO } from '../constants';
 import { useControlsDispatch } from '../screens/VisualTests/ControlsContext';
 import { ProjectInfoPayload } from '../types';
 import { useSharedState } from '../utils/useSharedState';
-import { TooltipMenu } from './TooltipMenu';
 
 export const FooterMenu = () => {
   const { accessToken, setAccessToken, subdomain } = useAuthState();
@@ -15,51 +15,80 @@ export const FooterMenu = () => {
   const [projectInfo] = useSharedState<ProjectInfoPayload>(PROJECT_INFO);
   const statusStore = experimental_getStatusStore(ADDON_ID);
   const { projectId } = projectInfo || {};
-  const links = [
-    {
-      id: 'learn',
-      title: 'About this addon',
-      icon: <QuestionIcon aria-hidden />,
-      href: 'https://www.chromatic.com/docs/visual-tests-addon/',
-      target: '_blank',
-    },
-    {
-      id: 'configuration',
-      title: 'Configuration',
-      icon: <CogIcon aria-hidden />,
-      onClick: () => toggleConfig(),
-    },
 
-    ...(projectId
-      ? [
-          {
-            id: 'visit',
-            title: 'View project on Chromatic',
-            icon: <ShareAltIcon aria-hidden />,
-            href: projectId
-              ? `https://${subdomain}.chromatic.com/builds?appId=${projectId?.split(':')[1]}`
-              : `https://${subdomain}.chromatic.com/start`,
-            target: '_blank',
-          },
-        ]
-      : []),
-    ...(accessToken
-      ? [
-          {
-            id: 'logout',
-            title: 'Log out',
-            icon: <UserIcon aria-hidden />,
-            onClick: () => {
-              statusStore.unset();
-              setAccessToken(null);
-            },
-          },
-        ]
-      : []),
-  ];
   return (
-    <TooltipMenu placement="top" links={links}>
-      <EllipsisIcon />
-    </TooltipMenu>
+    <PopoverProvider
+      padding={0}
+      popover={({ onHide }) => (
+        <ActionList>
+          <ActionList.Item>
+            <ActionList.Link
+              ariaLabel={false}
+              href="https://www.chromatic.com/docs/visual-tests-addon/"
+              target="_blank"
+              onClick={onHide}
+            >
+              <ActionList.Icon>
+                <QuestionIcon />
+              </ActionList.Icon>
+              <ActionList.Text>About this addon</ActionList.Text>
+            </ActionList.Link>
+          </ActionList.Item>
+
+          <ActionList.Item>
+            <ActionList.Action
+              ariaLabel={false}
+              onClick={() => {
+                toggleConfig();
+                onHide();
+              }}
+            >
+              <ActionList.Icon>
+                <CogIcon />
+              </ActionList.Icon>
+              <ActionList.Text>Configuration</ActionList.Text>
+            </ActionList.Action>
+          </ActionList.Item>
+
+          {projectId && (
+            <ActionList.Item>
+              <ActionList.Link
+                ariaLabel={false}
+                href={`https://${subdomain}.chromatic.com/builds?appId=${projectId?.split(':')[1]}`}
+                target="_blank"
+                onClick={onHide}
+              >
+                <ActionList.Icon>
+                  <ChromaticIcon />
+                </ActionList.Icon>
+                <ActionList.Text>View project on Chromatic</ActionList.Text>
+              </ActionList.Link>
+            </ActionList.Item>
+          )}
+
+          {accessToken && (
+            <ActionList.Item>
+              <ActionList.Action
+                ariaLabel={false}
+                onClick={() => {
+                  statusStore.unset();
+                  setAccessToken(null);
+                  onHide();
+                }}
+              >
+                <ActionList.Icon>
+                  <UserIcon />
+                </ActionList.Icon>
+                <ActionList.Text>Log out</ActionList.Text>
+              </ActionList.Action>
+            </ActionList.Item>
+          )}
+        </ActionList>
+      )}
+    >
+      <ActionList.Button size="small" ariaLabel="Open menu">
+        <EllipsisIcon />
+      </ActionList.Button>
+    </PopoverProvider>
   );
 };

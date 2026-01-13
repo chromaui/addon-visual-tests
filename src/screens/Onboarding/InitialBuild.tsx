@@ -47,10 +47,16 @@ export const InitialBuild = ({
           <Stack>
             <Intro />
             <ButtonStack>
-              <Button disabled={isRunning} size="medium" variant="solid" onClick={startBuild}>
+              <Button
+                ariaLabel={false}
+                disabled={isRunning}
+                size="medium"
+                variant="solid"
+                onClick={startBuild}
+              >
                 Take snapshots
               </Button>
-              <Button onClick={onSkip} link>
+              <Button ariaLabel={false} link onClick={onSkip}>
                 Skip walkthrough
               </Button>
             </ButtonStack>

@@ -17,12 +17,9 @@ import { BuildStatus, TestResult } from '../../gql/graphql';
 import { LocalBuildProgress } from '../../types';
 import { useBuildState, useSelectedBuildState, useSelectedStoryState } from './BuildContext';
 import { BuildEyebrow } from './BuildEyebrow';
-import { useControlsDispatch, useControlsState } from './ControlsContext';
-import { RenderSettings } from './RenderSettings';
 import { useReviewTestState } from './ReviewTestContext';
 import { useRunBuildState } from './RunBuildContext';
 import { SnapshotComparison } from './SnapshotComparison';
-import { Warnings } from './Warnings';
 
 interface BuildResultsProps {
   branch: string;
@@ -49,8 +46,6 @@ export const BuildResults = ({
   switchToLastBuildOnBranch,
   storyId,
 }: BuildResultsProps) => {
-  const { settingsVisible, warningsVisible } = useControlsState();
-  const { toggleSettings, toggleWarnings } = useControlsDispatch();
   const { isRunning, startBuild, stopBuild } = useRunBuildState();
 
   const { lastBuildOnBranch, lastBuildOnBranchIsReady, lastBuildOnBranchIsSelectable } =
@@ -124,6 +119,7 @@ export const BuildResults = ({
                 </Text>
               </div>
               <Button
+                ariaLabel={false}
                 belowText
                 size="medium"
                 variant="solid"
@@ -153,7 +149,7 @@ export const BuildResults = ({
                 <Code>disableSnapshot = true</Code> from the CSF file.
               </Text>
             </div>
-            <Button asChild size="medium" variant="outline">
+            <Button ariaLabel={false} asChild size="medium" variant="outline">
               <a
                 href="https://www.chromatic.com/docs/disable-snapshots#with-storybook"
                 target="_new"
@@ -203,9 +199,8 @@ export const BuildResults = ({
           </Eyebrow>
         )}
 
-        <Section grow hidden={settingsVisible || warningsVisible}>
+        <Section grow>
           <SnapshotComparison
-            hidden={settingsVisible || warningsVisible}
             {...{
               isOutdated,
               isStarting: isSelectedBuildStarting,
@@ -216,13 +211,6 @@ export const BuildResults = ({
               storyId,
             }}
           />
-        </Section>
-
-        <Section grow hidden={!settingsVisible}>
-          <RenderSettings onClose={() => toggleSettings(false)} />
-        </Section>
-        <Section grow hidden={!warningsVisible}>
-          <Warnings onClose={() => toggleWarnings(false)} />
         </Section>
       </Sections>
     </Screen>

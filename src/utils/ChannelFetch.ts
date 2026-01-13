@@ -1,6 +1,6 @@
 import type { Channel } from 'storybook/internal/channels';
 
-import { FETCH_ABORTED, FETCH_REQUEST, FETCH_RESPONSE } from '../constants';
+import { FETCH_ABORTED, FETCH_REQUEST, FETCH_RESPONSE } from '../constants.ts';
 
 type ChannelLike = Pick<Channel, 'emit' | 'on' | 'off'>;
 
