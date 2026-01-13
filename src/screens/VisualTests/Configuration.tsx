@@ -144,6 +144,7 @@ const Page = styled.div(({ theme }) => ({
   overflowY: 'auto',
   padding: 20,
   position: 'relative',
+  fontSize: theme.typography.size.s2,
 }));
 
 const PageWrapper = styled.div({
@@ -297,8 +298,8 @@ export const Configuration = ({ onClose }: ConfigurationProps) => {
 
   return (
     <Page>
-      <StyledCloseButton onClick={onClose} style={{ marginRight: -8 }}>
-        <CloseIcon aria-label="Close" />
+      <StyledCloseButton ariaLabel="Close" onClick={onClose} style={{ marginRight: -8 }}>
+        <CloseIcon />
       </StyledCloseButton>
       <PageWrapper>
         <Heading>Configuration</Heading>
@@ -379,7 +380,9 @@ export const Configuration = ({ onClose }: ConfigurationProps) => {
                   dependency.
                 </SettingDescription>
                 <SettingContent>
-                  <Button onClick={uninstallAddon}>Uninstall</Button>
+                  <Button ariaLabel={false} onClick={uninstallAddon}>
+                    Uninstall
+                  </Button>
                 </SettingContent>
               </Setting>
             </div>

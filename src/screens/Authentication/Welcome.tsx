@@ -109,10 +109,10 @@ export const Welcome = ({ onNext, onUninstall }: WelcomeProps) => {
           </div>
           <CTA>
             <ButtonRow>
-              <Button variant="solid" size="medium" onClick={onNext}>
+              <Button ariaLabel={false} variant="solid" size="medium" onClick={onNext}>
                 Get started for free
               </Button>
-              <Button asChild variant="outline" size="medium">
+              <Button ariaLabel={false} asChild variant="outline" size="medium">
                 <a href="https://www.chromatic.com/storybook" target="_blank">
                   See all the features
                 </a>

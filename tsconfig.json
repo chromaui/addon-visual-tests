@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "allowImportingTsExtensions": true,
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "bundler",
     "baseUrl": ".",
@@ -10,7 +11,7 @@
     "isolatedModules": true,
     "jsx": "react",
     "lib": ["es2020", "dom"],
-    "module": "Preserve",
+    "module": "esnext",
     "noImplicitAny": true,
     "strict": true,
     "rootDir": "./src",

@@ -8,17 +8,15 @@ import {
   TransferIcon,
   UndoIcon,
 } from '@storybook/icons';
+import { darken, lighten } from 'polished';
 import React from 'react';
-import { WithTooltip } from 'storybook/internal/components';
+import { ActionList, PopoverProvider } from 'storybook/internal/components';
 import { styled } from 'storybook/theming';
 
-import { ActionButton, ButtonGroup } from '../../components/ActionButton';
-import { IconButton } from '../../components/IconButton';
+import { ActionButton } from '../../components/ActionButton';
 import { ProgressIcon } from '../../components/icons/ProgressIcon';
 import { Placeholder } from '../../components/Placeholder';
 import { Text } from '../../components/Text';
-import { TooltipMenu } from '../../components/TooltipMenu';
-import { TooltipNote } from '../../components/TooltipNote';
 import { ComparisonResult, ReviewTestBatch, TestStatus } from '../../gql/graphql';
 import { useSelectedStoryState } from './BuildContext';
 import { useControlsDispatch, useControlsState } from './ControlsContext';
@@ -60,16 +58,6 @@ const Controls = styled.div({
   },
 });
 
-const DisabledIconWrapper = styled.div(({ theme }) => ({
-  padding: 9,
-  '> svg': {
-    display: 'block',
-  },
-  path: {
-    fill: theme.color.mediumdark,
-  },
-}));
-
 const Actions = styled.div<{ showDivider?: boolean }>(({ theme, showDivider }) => ({
   gridArea: 'actions',
   display: 'flex',
@@ -88,6 +76,47 @@ const Actions = styled.div<{ showDivider?: boolean }>(({ theme, showDivider }) =
     margin: '8px 10px 8px 0px',
     paddingLeft: 8,
   },
+}));
+
+const Action = styled(ActionList.Action)({
+  height: 'auto',
+  flex: '0 1 100%',
+});
+
+const ActionContent = styled(ActionList.Text)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'flex-start',
+  flex: '0 1 100%',
+  padding: '8px 0',
+  gap: 2,
+  span: {
+    color: theme.textMutedColor,
+  },
+}));
+
+const ReviewButton = styled(ActionButton)<{
+  side: 'left' | 'right';
+  status?: 'positive';
+}>(({ theme, side, status }) => ({
+  ...(status === 'positive' && {
+    backgroundColor: theme.background.positive,
+    border: `1px solid ${lighten(0.35, theme.color.positive)}`,
+    color: theme.color.positiveText,
+    '&:hover': {
+      backgroundColor: darken(0.05, theme.background.positive),
+    },
+  }),
+  ...(side === 'left' && {
+    borderTopRightRadius: 0,
+    borderBottomRightRadius: 0,
+  }),
+  ...(side === 'right' && {
+    borderTopLeftRadius: 0,
+    borderBottomLeftRadius: 0,
+    borderLeft:
+      status === 'positive' ? 'none' : `1px solid ${theme.base === 'dark' ? '#0006' : '#fff6'}`,
+  }),
 }));
 
 export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
@@ -129,212 +158,190 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
 
       {hasControls && (
         <Controls>
-          <WithTooltip
-            tooltip={
-              <TooltipNote
-                note={baselineImageVisible ? 'Show latest snapshot' : 'Show baseline snapshot'}
-              />
-            }
-            trigger="hover"
-            hasChrome={false}
+          <ActionList.Button
+            id="button-toggle-snapshot"
+            size="small"
+            ariaLabel={baselineImageVisible ? 'Show latest snapshot' : 'Show baseline snapshot'}
+            onClick={() => toggleBaselineImage()}
           >
-            <IconButton
-              id="button-toggle-snapshot"
-              aria-label={baselineImageVisible ? 'Show latest snapshot' : 'Show baseline snapshot'}
-              onClick={() => toggleBaselineImage()}
-            >
-              <TransferIcon />
-            </IconButton>
-          </WithTooltip>
-          <WithTooltip
-            tooltip={<TooltipNote note={focusVisible ? 'Hide spotlight' : 'Show spotlight'} />}
-            trigger="hover"
-            hasChrome={false}
+            <TransferIcon />
+          </ActionList.Button>
+          <ActionList.Toggle
+            id="button-toggle-spotlight"
+            size="small"
+            pressed={focusVisible}
+            ariaLabel={focusVisible ? 'Hide spotlight' : 'Show spotlight'}
+            onClick={() => toggleFocus(!focusVisible)}
           >
-            <IconButton
-              id="button-toggle-spotlight"
-              active={focusVisible}
-              aria-label={focusVisible ? 'Hide spotlight' : 'Show spotlight'}
-              onClick={() => toggleFocus(!focusVisible)}
-            >
-              <LocationIcon />
-            </IconButton>
-          </WithTooltip>
-          <WithTooltip
-            tooltip={<TooltipNote note={diffVisible ? 'Hide diff' : 'Show diff'} />}
-            trigger="hover"
-            hasChrome={false}
+            <LocationIcon />
+          </ActionList.Toggle>
+          <ActionList.Toggle
+            id="button-diff-visible"
+            size="small"
+            pressed={diffVisible}
+            ariaLabel={diffVisible ? 'Hide diff' : 'Show diff'}
+            onClick={() => toggleDiff(!diffVisible)}
           >
-            <IconButton
-              id="button-diff-visible"
-              active={diffVisible}
-              aria-label={diffVisible ? 'Hide diff' : 'Show diff'}
-              onClick={() => toggleDiff(!diffVisible)}
-            >
-              <ContrastIcon />
-            </IconButton>
-          </WithTooltip>
+            <ContrastIcon />
+          </ActionList.Toggle>
         </Controls>
       )}
 
       {(isAcceptable || isUnacceptable) && (
         <Actions showDivider={hasControls}>
           {userCanReview && buildIsReviewable && isAcceptable && selectedTest && (
-            <ButtonGroup>
-              <WithTooltip
-                tooltip={<TooltipNote note="Accept this story" />}
-                trigger="hover"
-                hasChrome={false}
+            <div>
+              <ReviewButton
+                id="button-toggle-accept-story"
+                disabled={isReviewing}
+                ariaLabel="Accept this story"
+                onClick={() => acceptTest(selectedTest.id, ReviewTestBatch.Spec)}
+                side="left"
+                variant="solid"
               >
-                <ActionButton
-                  id="button-toggle-accept-story"
+                Accept
+              </ReviewButton>
+
+              <PopoverProvider
+                padding={0}
+                popover={({ onHide }) => (
+                  <ActionList>
+                    <ActionList.Item>
+                      <Action
+                        ariaLabel="Accept component"
+                        disabled={isReviewing}
+                        onClick={() => {
+                          acceptTest(selectedTest.id, ReviewTestBatch.Component);
+                          onHide();
+                        }}
+                      >
+                        <ActionContent>
+                          <strong>Accept component</strong>
+                          <span>Accept all unreviewed changes for this component</span>
+                        </ActionContent>
+                      </Action>
+                    </ActionList.Item>
+                    <ActionList.Item>
+                      <Action
+                        ariaLabel="Accept entire build"
+                        disabled={isReviewing}
+                        onClick={() => {
+                          acceptTest(selectedTest.id, ReviewTestBatch.Build);
+                          onHide();
+                        }}
+                      >
+                        <ActionContent>
+                          <strong>Accept entire build</strong>
+                          <span>
+                            Accept all unreviewed changes for every story in the Storybook
+                          </span>
+                        </ActionContent>
+                      </Action>
+                    </ActionList.Item>
+                  </ActionList>
+                )}
+              >
+                <ReviewButton
                   disabled={isReviewing}
-                  aria-label="Accept this story"
-                  onClick={() => acceptTest(selectedTest.id, ReviewTestBatch.Spec)}
-                  side="left"
+                  ariaLabel="Batch accept options"
+                  side="right"
+                  variant="solid"
                 >
-                  Accept
-                </ActionButton>
-              </WithTooltip>
-              <WithTooltip
-                tooltip={<TooltipNote note="Batch accept options" />}
-                trigger="hover"
-                hasChrome={false}
-              >
-                <TooltipMenu
-                  placement="bottom"
-                  links={[
-                    {
-                      id: 'acceptComponent',
-                      title: 'Accept component',
-                      center: 'Accept all unreviewed changes for this component',
-                      onClick: () => acceptTest(selectedTest.id, ReviewTestBatch.Component),
-                      disabled: isReviewing,
-                      loading: isReviewing,
-                    },
-                    {
-                      id: 'acceptBuild',
-                      title: 'Accept entire build',
-                      center: 'Accept all unreviewed changes for every story in the Storybook',
-                      onClick: () => acceptTest(selectedTest.id, ReviewTestBatch.Build),
-                      disabled: isReviewing,
-                      loading: isReviewing,
-                    },
-                  ]}
-                >
-                  {(active) => (
-                    <ActionButton
-                      square
-                      active={active}
-                      disabled={isReviewing}
-                      aria-label="Batch accept options"
-                      side="right"
-                    >
-                      {isReviewing ? (
-                        <ProgressIcon parentComponent="IconButton" />
-                      ) : (
-                        <BatchAcceptIcon />
-                      )}
-                    </ActionButton>
+                  {isReviewing ? (
+                    <ProgressIcon parentComponent="IconButton" />
+                  ) : (
+                    <BatchAcceptIcon />
                   )}
-                </TooltipMenu>
-              </WithTooltip>
-            </ButtonGroup>
+                </ReviewButton>
+              </PopoverProvider>
+            </div>
           )}
 
           {userCanReview && buildIsReviewable && isUnacceptable && (
-            <ButtonGroup>
-              <WithTooltip
-                tooltip={<TooltipNote note="Unaccept this story" />}
-                trigger="hover"
-                hasChrome={false}
+            <div>
+              <ReviewButton
+                id="button-toggle-accept-story"
+                disabled={isReviewing}
+                ariaLabel="Unaccept this story"
+                onClick={() => unacceptTest(selectedTest.id, ReviewTestBatch.Spec)}
+                side="left"
+                variant="solid"
+                status="positive"
               >
-                <ActionButton
-                  id="button-toggle-accept-story"
+                <UndoIcon />
+                Unaccept
+              </ReviewButton>
+
+              <PopoverProvider
+                padding={0}
+                popover={({ onHide }) => (
+                  <ActionList>
+                    <ActionList.Item>
+                      <Action
+                        ariaLabel="Unaccept component"
+                        disabled={isReviewing}
+                        onClick={() => {
+                          unacceptTest(selectedTest.id, ReviewTestBatch.Component);
+                          onHide();
+                        }}
+                      >
+                        <ActionContent>
+                          <strong>Unaccept component</strong>
+                          <span>Unaccept all unreviewed changes for this component</span>
+                        </ActionContent>
+                      </Action>
+                    </ActionList.Item>
+                    <ActionList.Item>
+                      <Action
+                        ariaLabel="Unaccept entire build"
+                        disabled={isReviewing}
+                        onClick={() => {
+                          unacceptTest(selectedTest.id, ReviewTestBatch.Build);
+                          onHide();
+                        }}
+                      >
+                        <ActionContent>
+                          <strong>Unaccept entire build</strong>
+                          <span>
+                            Unaccept all unreviewed changes for every story in the Storybook
+                          </span>
+                        </ActionContent>
+                      </Action>
+                    </ActionList.Item>
+                  </ActionList>
+                )}
+              >
+                <ReviewButton
                   disabled={isReviewing}
-                  aria-label="Unaccept this story"
-                  onClick={() => unacceptTest(selectedTest.id, ReviewTestBatch.Spec)}
-                  side="left"
+                  ariaLabel="Batch accept options"
+                  side="right"
+                  variant="solid"
                   status="positive"
                 >
-                  <UndoIcon />
-                  Unaccept
-                </ActionButton>
-              </WithTooltip>
-              <WithTooltip
-                tooltip={<TooltipNote note="Batch unaccept options" />}
-                trigger="hover"
-                hasChrome={false}
-              >
-                <TooltipMenu
-                  placement="bottom"
-                  links={[
-                    {
-                      id: 'unacceptComponent',
-                      title: 'Unaccept component',
-                      center: 'Unaccept all unreviewed changes for this component',
-                      onClick: () => unacceptTest(selectedTest.id, ReviewTestBatch.Component),
-                      disabled: isReviewing,
-                      loading: isReviewing,
-                    },
-                    {
-                      id: 'unacceptBuild',
-                      title: 'Unaccept entire build',
-                      center: 'Unaccept all unreviewed changes for every story in the Storybook',
-                      onClick: () => unacceptTest(selectedTest.id, ReviewTestBatch.Build),
-                      disabled: isReviewing,
-                      loading: isReviewing,
-                    },
-                  ]}
-                >
-                  {(active) => (
-                    <ActionButton
-                      square
-                      active={active}
-                      disabled={isReviewing}
-                      aria-label="Batch unaccept options"
-                      side="right"
-                      status="positive"
-                    >
-                      {isReviewing ? (
-                        <ProgressIcon parentComponent="IconButton" />
-                      ) : (
-                        <BatchAcceptIcon />
-                      )}
-                    </ActionButton>
+                  {isReviewing ? (
+                    <ProgressIcon parentComponent="IconButton" />
+                  ) : (
+                    <BatchAcceptIcon />
                   )}
-                </TooltipMenu>
-              </WithTooltip>
-            </ButtonGroup>
+                </ReviewButton>
+              </PopoverProvider>
+            </div>
           )}
 
           {!(userCanReview && buildIsReviewable) && (
-            <WithTooltip
-              tooltip={<TooltipNote note="Reviewing disabled" />}
-              trigger="hover"
-              hasChrome={false}
-            >
-              <DisabledIconWrapper>
-                <LockIcon />
-              </DisabledIconWrapper>
-            </WithTooltip>
+            <ActionButton readOnly tooltip="Reviewing disabled">
+              <LockIcon />
+            </ActionButton>
           )}
 
-          <WithTooltip
-            tooltip={<TooltipNote note={isOutdated ? 'Run new tests' : 'Rerun tests'} />}
-            trigger="hover"
-            hasChrome={false}
+          <ActionButton
+            ariaLabel={isOutdated ? 'Run new tests' : 'Rerun tests'}
+            onClick={startBuild}
+            disabled={isRunning}
+            variant="outline"
           >
-            <ActionButton
-              square
-              aria-label={isOutdated ? 'Run new tests' : 'Rerun tests'}
-              onClick={startBuild}
-              disabled={isRunning}
-              variant="outline"
-            >
-              {isOutdated ? <PlayIcon /> : <SyncIcon />}
-            </ActionButton>
-          </WithTooltip>
+            {isOutdated ? <PlayIcon /> : <SyncIcon />}
+          </ActionButton>
         </Actions>
       )}
     </>

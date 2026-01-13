@@ -6,10 +6,10 @@ import {
   hasProgressEvent,
   INITIAL_BUILD_PAYLOAD_JSON,
   isKnownStep,
-} from './buildSteps';
-import { CONFIG_OVERRIDES } from './constants';
-import { LocalBuildProgress } from './types';
-import { SharedState } from './utils/SharedState';
+} from './buildSteps.ts';
+import { CONFIG_OVERRIDES } from './constants.ts';
+import { LocalBuildProgress } from './types.ts';
+import { SharedState } from './utils/SharedState.ts';
 
 const ESTIMATED_PROGRESS_INTERVAL = 2000;
 
