@@ -2,6 +2,10 @@ name: Release
 
 on: [push]
 
+permissions:
+  id-token: write  # Required for OIDC
+  contents: write  # Required for auto shipit
+
 jobs:
   release:
     runs-on: ubuntu-latest
