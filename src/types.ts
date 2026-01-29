@@ -63,6 +63,9 @@ export type LocalBuildProgress = {
    */
   branch?: string;
 
+  /** Whether the build is a publish-only build (i.e. no visual tests) */
+  isPublishOnly?: boolean;
+
   /** Overall percentage of build progress */
   buildProgressPercentage: number;
 
