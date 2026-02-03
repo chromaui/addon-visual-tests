@@ -1,3 +1,48 @@
+# v5.0.0 (Tue Jan 13 2026)
+
+#### 💥 Breaking Change
+
+- Upgrade to Storybook 10.1 [#396](https://github.com/chromaui/addon-visual-tests/pull/396) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### 🐛 Bug Fix
+
+- Update npm version and add pull-requests permission for trusted publishing [#403](https://github.com/chromaui/addon-visual-tests/pull/403) ([@ghengeveld](https://github.com/ghengeveld))
+- Update release workflow to use npm trusted publishing [#402](https://github.com/chromaui/addon-visual-tests/pull/402) ([@ghengeveld](https://github.com/ghengeveld))
+- Fix: Update broken and outdated links in the addon [#397](https://github.com/chromaui/addon-visual-tests/pull/397) ([@jonniebigodes](https://github.com/jonniebigodes))
+
+#### Authors: 2
+
+- [@jonniebigodes](https://github.com/jonniebigodes)
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v4.1.3 (Mon Nov 17 2025)
+
+#### 🐛 Bug Fix
+
+- Upgrade `chromatic` to v13.3.3 [#394](https://github.com/chromaui/addon-visual-tests/pull/394) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v4.1.2 (Wed Oct 29 2025)
+
+#### 🐛 Bug Fix
+
+- Broaden version-range for storybook peerDependency to include 10.1.0-0 [#392](https://github.com/chromaui/addon-visual-tests/pull/392) ([@ndelangen](https://github.com/ndelangen))
+- Main [#391](https://github.com/chromaui/addon-visual-tests/pull/391) ([@ndelangen](https://github.com/ndelangen) [@chromatic-support](https://github.com/chromatic-support))
+
+#### Authors: 2
+
+- [@chromatic-support](https://github.com/chromatic-support)
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+
+---
+
 # v4.1.1 (Wed Aug 20 2025)
 
 #### 🐛 Bug Fix

@@ -1,6 +1,6 @@
 {
   "name": "@chromatic-com/storybook",
-  "version": "4.1.1",
+  "version": "5.0.0",
   "description": "Catch unexpected visual changes & UI bugs in your stories",
   "keywords": [
     "storybook-addons",
@@ -121,7 +121,7 @@
   "peerDependencies": {
     "storybook": "^0.0.0-0 || ^10.1.0 || ^10.1.0-0 || ^10.2.0-0 || ^10.3.0-0"
   },
-  "packageManager": "yarn@4.10.3",
+  "packageManager": "yarn@4.12.0",
   "engines": {
     "node": ">=20.0.0",
     "yarn": ">=1.22.18"
