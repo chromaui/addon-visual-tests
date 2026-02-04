@@ -120,6 +120,7 @@ export const onStartOrProgress =
       buildProgressPercentage: Math.min(newPercentage, endPercentage),
       currentStep: ctx.task,
       stepProgress,
+      storybookUrl: ctx.build?.storybookUrl,
     };
   };
 
@@ -147,6 +148,7 @@ export const onCompleteOrError =
       buildProgressPercentage,
       stepProgress,
       previousBuildProgress: stepProgress,
+      storybookUrl: ctx.build?.storybookUrl,
     };
 
     if (error) {
@@ -198,7 +200,7 @@ export const runChromaticBuild = async (
 
   // Set initial progress state. JSON.parse avoids mutating the constant.
   localBuildProgress.value = JSON.parse(INITIAL_BUILD_PAYLOAD_JSON) as LocalBuildProgress;
-  localBuildProgress.value.isPublishOnly = chromaticOptions.isPublishOnly;
+  localBuildProgress.value.isPublishOnly = publishOnly;
 
   // Timeout is defined here so it's shared between all handlers
   let timeout: ReturnType<typeof setTimeout> | undefined;

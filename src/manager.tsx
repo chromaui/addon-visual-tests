@@ -33,9 +33,13 @@ addons.register(ADDON_ID, (api) => {
 
   addons.add(SHARE_PROVIDER_ID, {
     type: Addon_TypesEnum.experimental_SHARE_PROVIDER,
-    title: 'Upload & share',
+    title: 'Share',
     order: -1,
-    render: () => <ShareProviderRender api={api} />,
+    render: () => (
+      <div style={{ containerType: 'size', height: 300 }}>
+        <ShareProviderRender api={api} />
+      </div>
+    ),
   } satisfies Omit<Addon_ShareProviderType, 'id'>);
 
   addons.add(TEST_PROVIDER_ID, {

@@ -2,7 +2,13 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { API } from 'storybook/manager-api';
 import { fn, mocked } from 'storybook/test';
 
-import { IS_OFFLINE, LOCAL_BUILD_PROGRESS, PROJECT_INFO, TEST_PROVIDER_ID } from './constants';
+import {
+  GIT_INFO,
+  IS_OFFLINE,
+  LOCAL_BUILD_PROGRESS,
+  PROJECT_INFO,
+  TEST_PROVIDER_ID,
+} from './constants';
 import { ShareProviderRender } from './ShareProviderRender';
 import { GraphQLClientProvider } from './utils/graphQLClient';
 import { MockChannel } from './utils/MockChannel';
@@ -35,6 +41,7 @@ const meta = {
       exchangeParameters: null,
     } as AuthValue,
     [PROJECT_INFO]: undefined,
+    [GIT_INFO]: undefined,
     [LOCAL_BUILD_PROGRESS]: undefined,
     [IS_OFFLINE]: false,
   },
@@ -52,6 +59,7 @@ const meta = {
     },
     [LOCAL_BUILD_PROGRESS]: { type: 'object', target: 'shared-state' },
     [PROJECT_INFO]: { type: 'object', target: 'shared-state' },
+    [GIT_INFO]: { type: 'object', target: 'shared-state' },
     [IS_OFFLINE]: { type: 'boolean', target: 'shared-state' },
     getAddonState: { type: 'function', target: 'manager-api' },
     setAddonState: { type: 'function', target: 'manager-api' },
@@ -95,7 +103,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Setup: Story = {};
+export const Welcome: Story = {};
 
 export const Login: Story = {
   args: {
@@ -103,10 +111,26 @@ export const Login: Story = {
   },
 };
 
-export const Ready: Story = {
+export const SetupGit: Story = {
   args: {
     ...Login.args,
     auth: { token: 'test-token' },
+  },
+};
+
+export const Ready: Story = {
+  args: {
+    ...SetupGit.args,
+    [GIT_INFO]: {
+      slug: 'test-slug',
+      branch: 'test-branch',
+      commit: 'test-commit',
+      committedAt: 1717334400,
+      uncommittedHash: '',
+      userEmail: '',
+      userEmailHash: '',
+      repositoryRootDir: 'root',
+    },
   },
 };
 

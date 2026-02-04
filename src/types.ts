@@ -93,4 +93,7 @@ export type LocalBuildProgress = {
 
   /** Progress tracking data from the previous build (if any) */
   previousBuildProgress?: Record<KnownStep, StepProgressPayload>;
+
+  /** The URL of the published Storybook instance */
+  storybookUrl?: string;
 };
