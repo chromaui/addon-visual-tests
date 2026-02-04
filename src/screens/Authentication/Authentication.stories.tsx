@@ -6,7 +6,7 @@ import { fn, mocked } from 'storybook/test';
 import { panelModes } from '../../modes';
 import { GraphQLClientProvider } from '../../utils/graphQLClient';
 import { storyWrapper } from '../../utils/storyWrapper';
-import { AuthValue, useAuth } from '../../utils/useAuth';
+import { type AuthValue, useAuth } from '../../utils/useAuth';
 import { clearSessionState } from '../../utils/useSessionState';
 import { withFigmaDesign } from '../../utils/withFigmaDesign';
 import { withSetup } from '../../utils/withSetup';
