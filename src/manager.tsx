@@ -34,6 +34,7 @@ addons.register(ADDON_ID, (api) => {
   addons.add(SHARE_PROVIDER_ID, {
     type: Addon_TypesEnum.experimental_SHARE_PROVIDER,
     title: 'Upload & share',
+    order: -1,
     render: () => <ShareProviderRender api={api} />,
   } satisfies Omit<Addon_ShareProviderType, 'id'>);
 
