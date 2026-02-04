@@ -8,6 +8,7 @@ import { GraphQLClientProvider } from '../../utils/graphQLClient';
 import { storyWrapper } from '../../utils/storyWrapper';
 import { type AuthValue, useAuth } from '../../utils/useAuth';
 import { clearSessionState } from '../../utils/useSessionState';
+import { useSharedState } from '../../utils/useSharedState';
 import { withFigmaDesign } from '../../utils/withFigmaDesign';
 import { withSetup } from '../../utils/withSetup';
 import { Authentication } from './Authentication';
@@ -35,6 +36,7 @@ const meta = {
       ...argsByTarget['auth']?.auth,
     };
     mocked(useAuth).mockImplementation(() => [auth, fn().mockName('setAuth')]);
+    mocked(useSharedState).mockImplementation((key: string) => [null, fn().mockName(`set:${key}`)]);
   },
   parameters: {
     chromatic: {
