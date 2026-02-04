@@ -172,6 +172,7 @@ const watchConfigFile = async (
 
 async function serverChannel(channel: Channel, options: Options & { configFile?: string }) {
   const { configFile, presets } = options;
+  const addonVersion = await getAddonVersion().catch(() => null);
 
   // Handle relayed fetch requests from the client
   ChannelFetch.subscribe(ADDON_ID, channel);
@@ -249,7 +250,7 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
 
   channel.on(TELEMETRY, async (event: Event) => {
     if ((await corePromise).disableTelemetry) return;
-    telemetry('addon-visual-tests' as any, { ...event, addonVersion: await getAddonVersion() });
+    telemetry('addon-visual-tests' as any, { ...event, addonVersion });
   });
 
   const configInfoState = SharedState.subscribe<ConfigInfoPayload>(CONFIG_INFO, channel);
