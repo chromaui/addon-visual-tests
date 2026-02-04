@@ -15,7 +15,7 @@
     "module": "esnext",
     "noImplicitAny": true,
     "strict": true,
-    "rootDir": "./src",
+    "rootDir": ".",
     "skipLibCheck": true,
     "target": "ES2020",
     "plugins": [
@@ -25,5 +25,5 @@
       }
     ]
   },
-  "include": ["src/**/*", "types.d.ts"]
+  "include": ["src/**/*", "types.d.ts", ".storybook/**/*"]
 }

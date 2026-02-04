@@ -1,18 +1,18 @@
-import { ManagerContext } from 'storybook/manager-api';
 import type { Decorator, Loader, Preview } from '@storybook/react-vite';
+import { graphql, HttpResponse } from 'msw';
+import { initialize, mswLoader } from 'msw-storybook-addon';
+import React from 'react';
+import { ManagerContext } from 'storybook/manager-api';
 import { fn, sb } from 'storybook/test';
 import {
-  Global,
-  ThemeProvider,
   convert,
   createReset,
+  Global,
   styled,
+  ThemeProvider,
   themes,
   useTheme,
 } from 'storybook/theming';
-import { HttpResponse, graphql } from 'msw';
-import { initialize, mswLoader } from 'msw-storybook-addon';
-import React from 'react';
 
 import { baseModes } from '../src/modes';
 import { UninstallProvider } from '../src/screens/Uninstalled/UninstallContext';
@@ -22,9 +22,9 @@ import { storyWrapper } from '../src/utils/storyWrapper';
 import { TelemetryProvider } from '../src/utils/TelemetryContext';
 import { useSessionState } from '../src/utils/useSessionState';
 
-sb.mock(import('../src/utils/useAuth.ts'))
-sb.mock(import('../src/utils/useSharedState.ts'))
-sb.mock(import('../src/utils/useTestProviderStore.ts'))
+sb.mock(import('../src/utils/useAuth.ts'));
+sb.mock(import('../src/utils/useSharedState.ts'));
+sb.mock(import('../src/utils/useTestProviderStore.ts'));
 
 // Initialize MSW
 initialize({
