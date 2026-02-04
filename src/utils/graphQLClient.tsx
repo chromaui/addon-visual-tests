@@ -1,14 +1,16 @@
 import { authExchange } from '@urql/exchange-auth';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAddonState } from 'storybook/manager-api';
 import { Client, ClientOptions, fetchExchange, mapExchange, Provider } from 'urql';
 import { v4 as uuid } from 'uuid';
 
 import { ACCESS_TOKEN_KEY, ADDON_ID, CHROMATIC_API_URL } from '../constants';
+import { TokenExchangeParameters } from './requestAccessToken';
+import { clearSessionState, useSessionState } from './useSessionState';
 
 let currentToken: string | null;
 let currentTokenExpiration: number | null;
-const setCurrentToken = (token: string | null) => {
+const persistCurrentToken = (token: string | null) => {
   try {
     const { exp } = token ? JSON.parse(atob(token.split('.')[1])) : { exp: null };
     currentToken = token;
@@ -24,24 +26,46 @@ const setCurrentToken = (token: string | null) => {
   }
 };
 
-setCurrentToken(localStorage.getItem(ACCESS_TOKEN_KEY));
+persistCurrentToken(localStorage.getItem(ACCESS_TOKEN_KEY));
+interface AuthValue {
+  token: string | null;
+  isOpen: boolean;
+  subdomain: string;
+  screen: 'welcome' | 'signin' | 'subdomain' | 'verify';
+  exchangeParameters: TokenExchangeParameters | null;
+}
 
-export const useAccessToken = () => {
+export const useAuth = () => {
+  const [subdomain, setSubdomain] = useSessionState<string>('subdomain', 'www');
+  const [exchangeParameters, setExchangeParameters] =
+    useSessionState<TokenExchangeParameters | null>('exchangeParameters', null);
+
   // We use an object rather than a straight boolean here due to https://github.com/storybookjs/storybook/pull/23991
-  const [{ token }, setTokenState] = useAddonState<{ token: string | null }>(
-    `${ADDON_ID}/accessToken`,
-    { token: currentToken }
-  );
+  const [auth, setAuth] = useAddonState<AuthValue>(`${ADDON_ID}/auth`, {
+    token: currentToken,
+    isOpen: false,
+    subdomain: subdomain,
+    screen: 'welcome',
+    exchangeParameters,
+  });
 
-  const updateToken = React.useCallback(
-    (newToken: string | null) => {
-      setCurrentToken(newToken);
-      setTokenState({ token: currentToken });
-    },
-    [setTokenState]
-  );
+  useEffect(() => {
+    if (!auth.token) {
+      clearSessionState('authenticationScreen', 'exchangeParameters');
+    } else {
+      persistCurrentToken(auth.token);
+    }
+  }, [auth.token]);
 
-  return [token, updateToken] as const;
+  useEffect(() => {
+    setSubdomain(auth.subdomain);
+  }, [auth.subdomain, setSubdomain]);
+
+  useEffect(() => {
+    setExchangeParameters(auth.exchangeParameters);
+  }, [auth.exchangeParameters, setExchangeParameters]);
+
+  return [auth, setAuth] as const;
 };
 
 const sessionId = uuid();
@@ -63,7 +87,7 @@ export const createClient = (options?: Partial<ClientOptions>) =>
         onResult(result) {
           // Not all queries contain the `viewer` field, in which case it will be `undefined`.
           // When we do retrieve the field but the token is invalid, it will be `null`.
-          if (result.data?.viewer === null) setCurrentToken(null);
+          if (result.data?.viewer === null) persistCurrentToken(null);
         },
       }),
       authExchange(async (utils) => {
@@ -81,7 +105,7 @@ export const createClient = (options?: Partial<ClientOptions>) =>
           // If didAuthError returns true, clear the token. Ideally we should refresh the token here.
           // The operation will be retried automatically.
           async refreshAuth() {
-            setCurrentToken(null);
+            persistCurrentToken(null);
           },
 
           // Prevent making a request if we know the token is missing, invalid or expired.

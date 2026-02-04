@@ -3,14 +3,14 @@ import React from 'react';
 import { ActionList, PopoverProvider } from 'storybook/internal/components';
 import { experimental_getStatusStore } from 'storybook/manager-api';
 
-import { useAuthState } from '../AuthContext';
 import { ADDON_ID, PROJECT_INFO } from '../constants';
 import { useControlsDispatch } from '../screens/VisualTests/ControlsContext';
 import { ProjectInfoPayload } from '../types';
+import { useAuth } from '../utils/graphQLClient';
 import { useSharedState } from '../utils/useSharedState';
 
 export const FooterMenu = () => {
-  const { accessToken, setAccessToken, subdomain } = useAuthState();
+  const [auth, setAuth] = useAuth();
   const { toggleConfig } = useControlsDispatch();
   const [projectInfo] = useSharedState<ProjectInfoPayload>(PROJECT_INFO);
   const statusStore = experimental_getStatusStore(ADDON_ID);
@@ -54,7 +54,7 @@ export const FooterMenu = () => {
             <ActionList.Item>
               <ActionList.Link
                 ariaLabel={false}
-                href={`https://${subdomain}.chromatic.com/builds?appId=${projectId?.split(':')[1]}`}
+                href={`https://${auth.subdomain}.chromatic.com/builds?appId=${projectId?.split(':')[1]}`}
                 target="_blank"
                 onClick={onHide}
               >
@@ -66,13 +66,13 @@ export const FooterMenu = () => {
             </ActionList.Item>
           )}
 
-          {accessToken && (
+          {auth.token && (
             <ActionList.Item>
               <ActionList.Action
                 ariaLabel={false}
                 onClick={() => {
                   statusStore.unset();
-                  setAccessToken(null);
+                  setAuth((s) => ({ ...s, token: null }));
                   onHide();
                 }}
               >

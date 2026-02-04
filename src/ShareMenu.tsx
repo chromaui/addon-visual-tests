@@ -5,6 +5,7 @@ import React, { useCallback, useContext, useEffect, useRef } from 'react';
 import { Link } from 'storybook/internal/components';
 import { Button, ProgressSpinner } from 'storybook/internal/components';
 import {
+  API,
   experimental_getTestProviderStore,
   experimental_useStatusStore,
   experimental_useTestProviderStore,
@@ -26,7 +27,7 @@ import {
   TEST_PROVIDER_ID,
 } from './constants';
 import { ConfigInfoPayload, LocalBuildProgress } from './types';
-import { useAccessToken } from './utils/graphQLClient';
+import { useAuth } from './utils/graphQLClient';
 import { TelemetryContext } from './utils/TelemetryContext';
 import { useBuildEvents } from './utils/useBuildEvents';
 import { useProjectId } from './utils/useProjectId';
@@ -68,13 +69,17 @@ const StopIcon = styled(StopAltIcon)({
   width: 10,
 });
 
-export const ShareMenu = () => {
-  const { addNotification } = useStorybookApi();
+interface Props {
+  api: API;
+}
+
+export const ShareMenu = ({ api }: Props) => {
+  const { addNotification } = api;
 
   const trackEvent = useContext(TelemetryContext);
   const { projectId } = useProjectId();
-  const [accessToken] = useAccessToken();
-  const isLoggedIn = !!accessToken;
+  const [auth] = useAuth();
+  const isLoggedIn = !!auth.token;
 
   const [isOffline, setOffline] = useSharedState<boolean>(IS_OFFLINE);
   const [localBuildProgress] = useSharedState<LocalBuildProgress>(LOCAL_BUILD_PROGRESS);
@@ -92,7 +97,7 @@ export const ShareMenu = () => {
 
   const { startBuild, stopBuild } = useBuildEvents({
     localBuildProgress,
-    accessToken,
+    accessToken: auth.token,
   });
 
   let warning: string | undefined;

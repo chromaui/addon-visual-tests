@@ -6,6 +6,7 @@ import { ShareMenu } from './ShareMenu';
 const meta = {
   component: ShareMenu,
   args: {
+    api: {},
     getAddonState: fn(),
     setAddonState: fn(),
     on: fn(),

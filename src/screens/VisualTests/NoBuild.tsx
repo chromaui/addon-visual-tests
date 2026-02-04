@@ -5,7 +5,6 @@ import { useParameter } from 'storybook/manager-api';
 import { styled } from 'storybook/theming';
 import { CombinedError } from 'urql';
 
-import { useAuthState } from '../../AuthContext';
 import { BuildProgressInline } from '../../components/BuildProgressBarInline';
 import { Button } from '../../components/Button';
 import { ButtonStack } from '../../components/ButtonStack';
@@ -19,6 +18,7 @@ import { Stack } from '../../components/Stack';
 import { Text } from '../../components/Text';
 import { DOCS_URL } from '../../constants';
 import { LocalBuildProgress } from '../../types';
+import { useAuth } from '../../utils/graphQLClient';
 import { ErrorBox } from '../Errors/BuildError';
 import { useRunBuildState } from './RunBuildContext';
 
@@ -43,7 +43,7 @@ export const NoBuild = ({
   localBuildProgress,
   branch,
 }: NoBuildProps) => {
-  const { setAccessToken } = useAuthState();
+  const [, setAuth] = useAuth();
   const { isRunning, startBuild } = useRunBuildState();
   const { disable, disableSnapshot, docsOnly } = useParameter('chromatic', {} as any);
 
@@ -89,7 +89,7 @@ export const NoBuild = ({
               ariaLabel={false}
               size="medium"
               variant="solid"
-              onClick={() => setAccessToken(null)}
+              onClick={() => setAuth((s) => ({ ...s, token: null }))}
             >
               Log out
             </Button>
@@ -115,7 +115,7 @@ export const NoBuild = ({
                 ariaLabel={false}
                 size="medium"
                 variant="solid"
-                onClick={() => setAccessToken(null)}
+                onClick={() => setAuth((s) => ({ ...s, token: null }))}
               >
                 Log out
               </Button>
@@ -143,7 +143,11 @@ export const NoBuild = ({
               </Text>
             </div>
 
-            <ButtonStackLink isButton onClick={() => setAccessToken(null)} withArrow>
+            <ButtonStackLink
+              isButton
+              onClick={() => setAuth((s) => ({ ...s, token: null }))}
+              withArrow
+            >
               Switch account
             </ButtonStackLink>
           </Stack>

@@ -33,11 +33,11 @@ addons.register(ADDON_ID, (api) => {
 
   addons.add(SHARE_PROVIDER_ID, {
     type: Addon_TypesEnum.experimental_SHARE_PROVIDER,
-    shareMenu: () => <ShareMenu />,
+    shareMenu: () => <ShareMenu api={api} />,
   } satisfies Omit<Addon_ShareProviderType, 'id'>);
 
   addons.add(TEST_PROVIDER_ID, {
     type: Addon_TypesEnum.experimental_TEST_PROVIDER,
-    render: () => <TestProviderRender />,
+    render: () => <TestProviderRender api={api} />,
   } satisfies Omit<Addon_TestProviderType, 'id'>);
 });

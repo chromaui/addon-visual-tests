@@ -1,8 +1,7 @@
 import React, { useCallback } from 'react';
 import type { API } from 'storybook/manager-api';
-import { experimental_getStatusStore, useChannel, useStorybookState } from 'storybook/manager-api';
+import { experimental_getStatusStore, useStorybookState } from 'storybook/manager-api';
 
-import { AuthProvider } from './AuthContext';
 import { Spinner } from './components/design-system';
 import {
   ADDON_ID,
@@ -27,12 +26,12 @@ import { ControlsProvider } from './screens/VisualTests/ControlsContext';
 import { RunBuildProvider } from './screens/VisualTests/RunBuildContext';
 import { VisualTests } from './screens/VisualTests/VisualTests';
 import { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from './types';
-import { createClient, GraphQLClientProvider, useAccessToken } from './utils/graphQLClient';
+import { createClient, GraphQLClientProvider, useAuth } from './utils/graphQLClient';
 import { TelemetryProvider } from './utils/TelemetryContext';
 import { useBuildEvents } from './utils/useBuildEvents';
 import { useChannelFetch } from './utils/useChannelFetch';
 import { useProjectId } from './utils/useProjectId';
-import { clearSessionState, useSessionState } from './utils/useSessionState';
+import { useSessionState } from './utils/useSessionState';
 import { useSharedState } from './utils/useSharedState';
 
 interface PanelProps {
@@ -42,15 +41,8 @@ interface PanelProps {
 
 const statusStore = experimental_getStatusStore(ADDON_ID);
 
-export const Panel = ({ active }: PanelProps) => {
-  const [accessToken, updateAccessToken] = useAccessToken();
-  const setAccessToken = useCallback(
-    (token: string | null) => {
-      updateAccessToken(token);
-      if (!token) clearSessionState('authenticationScreen', 'exchangeParameters');
-    },
-    [updateAccessToken]
-  );
+export const Panel = ({ active, api }: PanelProps) => {
+  const [auth] = useAuth();
   const { storyId } = useStorybookState();
 
   const [gitInfo] = useSharedState<GitInfoPayload>(GIT_INFO);
@@ -60,7 +52,7 @@ export const Panel = ({ active }: PanelProps) => {
   const [localBuildProgress, setLocalBuildProgress] =
     useSharedState<LocalBuildProgress>(LOCAL_BUILD_PROGRESS);
   const [, setOutdated] = useSharedState<boolean>(IS_OUTDATED);
-  const emit = useChannel({});
+  const { emit } = api;
 
   const updateBuildStatus = useCallback<UpdateStatusFunction>((statuses) => {
     statusStore.unset();
@@ -80,30 +72,30 @@ export const Panel = ({ active }: PanelProps) => {
   // If the user creates a project in a dialog (either during login or later, it get set here)
   const [createdProjectId, setCreatedProjectId] = useSessionState<string>('createdProjectId');
   const [addonUninstalled, setAddonUninstalled] = useSharedState<boolean>(REMOVE_ADDON);
-  const [subdomain, setSubdomain] = useSessionState<string>('subdomain', 'www');
 
   const trackEvent = useCallback((data: any) => emit(TELEMETRY, data), [emit]);
-  const { isRunning, startBuild, stopBuild } = useBuildEvents({ localBuildProgress, accessToken });
+  const { isRunning, startBuild, stopBuild } = useBuildEvents({
+    localBuildProgress,
+    accessToken: auth.token,
+  });
 
   const channelFetch = useChannelFetch();
   const fetch = globalThis.LOGLEVEL === 'debug' ? globalThis.fetch : channelFetch;
   const withProviders = (children: React.ReactNode) => (
     <GraphQLClientProvider value={createClient({ fetch })}>
       <TelemetryProvider value={trackEvent}>
-        <AuthProvider value={{ accessToken, setAccessToken, subdomain, setSubdomain }}>
-          <UninstallProvider
-            addonUninstalled={addonUninstalled}
-            setAddonUninstalled={setAddonUninstalled}
-          >
-            <ControlsProvider>
-              <RunBuildProvider watchState={{ isRunning, startBuild, stopBuild }}>
-                <div hidden={!active} style={{ containerType: 'size', height: '100%' }}>
-                  {children}
-                </div>
-              </RunBuildProvider>
-            </ControlsProvider>
-          </UninstallProvider>
-        </AuthProvider>
+        <UninstallProvider
+          addonUninstalled={addonUninstalled}
+          setAddonUninstalled={setAddonUninstalled}
+        >
+          <ControlsProvider>
+            <RunBuildProvider watchState={{ isRunning, startBuild, stopBuild }}>
+              <div hidden={!active} style={{ containerType: 'size', height: '100%' }}>
+                {children}
+              </div>
+            </RunBuildProvider>
+          </ControlsProvider>
+        </UninstallProvider>
       </TelemetryProvider>
     </GraphQLClientProvider>
   );
@@ -125,13 +117,9 @@ export const Panel = ({ active }: PanelProps) => {
   }
 
   // Render the Authentication flow if the user is not signed in.
-  if (!accessToken) {
+  if (!auth.token) {
     return withProviders(
-      <Authentication
-        setAccessToken={setAccessToken}
-        setCreatedProjectId={setCreatedProjectId}
-        hasProjectId={!!projectId}
-      />
+      <Authentication setCreatedProjectId={setCreatedProjectId} hasProjectId={!!projectId} />
     );
   }
 
