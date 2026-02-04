@@ -25,8 +25,8 @@ import {
   TEST_PROVIDER_ID,
 } from './constants';
 import { ConfigInfoPayload, LocalBuildProgress } from './types';
-import { useAuth } from './utils/graphQLClient';
 import { TelemetryContext } from './utils/TelemetryContext';
+import { useAuth } from './utils/useAuth';
 import { useBuildEvents } from './utils/useBuildEvents';
 import { useProjectId } from './utils/useProjectId';
 import { useSharedState } from './utils/useSharedState';

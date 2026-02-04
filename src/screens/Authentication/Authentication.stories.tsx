@@ -1,12 +1,12 @@
 // @ts-nocheck TODO: Address SB 8 type errors
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { http, HttpResponse } from 'msw';
-import { findByRole, fn, userEvent } from 'storybook/test';
+import { fn, mocked } from 'storybook/test';
 
 import { panelModes } from '../../modes';
 import { GraphQLClientProvider } from '../../utils/graphQLClient';
-import { playAll } from '../../utils/playAll';
 import { storyWrapper } from '../../utils/storyWrapper';
+import { AuthValue, useAuth } from '../../utils/useAuth';
 import { clearSessionState } from '../../utils/useSessionState';
 import { withFigmaDesign } from '../../utils/withFigmaDesign';
 import { withSetup } from '../../utils/withSetup';
@@ -18,6 +18,23 @@ const meta = {
   args: {
     setAccessToken: fn().mockName('setAccessToken'),
     hasProjectId: false,
+  },
+  argTypes: {
+    auth: {
+      control: 'object',
+      target: 'auth',
+    },
+  },
+  beforeEach: ({ argsByTarget }) => {
+    const auth: AuthValue = {
+      token: 'token',
+      isOpen: false,
+      subdomain: 'www',
+      screen: 'welcome',
+      exchangeParameters: null,
+      ...argsByTarget['auth']?.auth,
+    };
+    mocked(useAuth).mockImplementation(() => [auth, fn().mockName('setAuth')]);
   },
   parameters: {
     chromatic: {
@@ -66,37 +83,35 @@ export const HasProjectId = {
 } satisfies Story;
 
 export const SignIn = {
+  args: {
+    auth: { screen: 'signin' },
+  },
   parameters: withFigmaDesign(
     'https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-317993&t=3EAIRe8423CpOQWY-4'
   ),
-  play: playAll(async ({ canvasElement }) => {
-    const button = await findByRole(canvasElement, 'button', {
-      name: /Get started/,
-    });
-    await userEvent.click(button);
-  }),
 } satisfies Story;
 
 export const SSO = {
+  args: {
+    auth: { screen: 'subdomain' },
+  },
   parameters: withFigmaDesign(
     'https://www.figma.com/file/p4ZIW7diUWC2l2DAf5xpYI/Storybook-Connect-plugin-(EXTERNAL-USE)?type=design&node-id=1-1734&t=ysgtc5qR40kqRKtI-4'
   ),
-  play: playAll(SignIn, async (context) => {
-    const button = await findByRole(context.canvasElement, 'button', {
-      name: 'Sign in with SSO',
-    });
-    await userEvent.click(button);
-  }),
 } satisfies Story;
 
 export const Verify = {
+  args: {
+    auth: {
+      screen: 'verify',
+      exchangeParameters: {
+        user_code: '123123',
+        verificationUrl:
+          'https://www.chromatic.com/connect/chromaui:addon-visual-tests?code=123123',
+      },
+    },
+  },
   parameters: withFigmaDesign(
     'https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318063&t=3EAIRe8423CpOQWY-4'
   ),
-  play: playAll(SignIn, async (context) => {
-    const button = await findByRole(context.canvasElement, 'button', {
-      name: 'Sign in with Chromatic',
-    });
-    await userEvent.click(button);
-  }),
 } satisfies Story;

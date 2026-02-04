@@ -1,9 +1,9 @@
 import React, { useCallback } from 'react';
 
 import { Project } from '../../gql/graphql';
-import { useAuth } from '../../utils/graphQLClient';
 import { initiateSignin } from '../../utils/requestAccessToken';
 import { useTelemetry } from '../../utils/TelemetryContext';
+import { useAuth } from '../../utils/useAuth';
 import { useErrorNotification } from '../../utils/useErrorNotification';
 import { useUninstallAddon } from '../Uninstalled/UninstallContext';
 import { SetSubdomain } from './SetSubdomain';

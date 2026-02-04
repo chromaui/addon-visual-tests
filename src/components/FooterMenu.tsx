@@ -6,7 +6,7 @@ import { experimental_getStatusStore } from 'storybook/manager-api';
 import { ADDON_ID, PROJECT_INFO } from '../constants';
 import { useControlsDispatch } from '../screens/VisualTests/ControlsContext';
 import { ProjectInfoPayload } from '../types';
-import { useAuth } from '../utils/graphQLClient';
+import { useAuth } from '../utils/useAuth';
 import { useSharedState } from '../utils/useSharedState';
 
 export const FooterMenu = () => {

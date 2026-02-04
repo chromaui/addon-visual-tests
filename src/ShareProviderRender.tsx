@@ -1,80 +1,57 @@
 import { FailedIcon } from '@storybook/icons';
-import { PlayHollowIcon, StopAltIcon } from '@storybook/icons';
 import pluralize from 'pluralize';
-import React, { useCallback, useContext, useEffect, useRef } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { Link } from 'storybook/internal/components';
-import { Button, ProgressSpinner } from 'storybook/internal/components';
-import {
-  API,
-  experimental_getTestProviderStore,
-  experimental_useStatusStore,
-  experimental_useTestProviderStore,
-  useStorybookApi,
-  useStorybookState,
-} from 'storybook/manager-api';
+import { Button } from 'storybook/internal/components';
+import { API, useStorybookApi, useStorybookState } from 'storybook/manager-api';
 import { color, styled } from 'storybook/theming';
 
 import { BUILD_STEP_CONFIG } from './buildSteps';
-import { BuildProgressInline } from './components/BuildProgressBarInline';
 import {
   ADDON_ID,
   CONFIG_INFO,
   GIT_INFO_ERROR,
   IS_OFFLINE,
-  IS_OUTDATED,
   LOCAL_BUILD_PROGRESS,
-  PANEL_ID,
   TEST_PROVIDER_ID,
 } from './constants';
 import { ConfigInfoPayload, LocalBuildProgress } from './types';
-import { useAuth } from './utils/graphQLClient';
 import { TelemetryContext } from './utils/TelemetryContext';
+import { useAuth } from './utils/useAuth';
 import { useBuildEvents } from './utils/useBuildEvents';
 import { useProjectId } from './utils/useProjectId';
 import { useSharedState } from './utils/useSharedState';
+import { getTestProviderStore, useTestProviderStore } from './utils/useTestProviderStore';
 
-const Container = styled.div({
+const Container = styled.div(() => ({
   display: 'flex',
   justifyContent: 'space-between',
-  padding: '8px 0',
-});
-
-const Info = styled.div({
-  display: 'flex',
-  flexDirection: 'column',
-  marginLeft: 8,
-});
-
-const Actions = styled.div({
-  display: 'flex',
-  gap: 4,
-});
-
-const TitleWrapper = styled.div<{ crashed?: boolean }>(({ crashed, theme }) => ({
-  fontSize: theme.typography.size.s1,
-  fontWeight: crashed ? 'bold' : 'normal',
-  color: crashed ? theme.color.negativeText : theme.color.defaultText,
+  padding: 24,
+  maxWidth: 500,
+  gap: 16,
 }));
 
-const DescriptionWrapper = styled.div(({ theme }) => ({
+const Content = styled.div(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'flex-start',
+  gap: 8,
   fontSize: theme.typography.size.s1,
+  color: theme.color.defaultText,
+}));
+
+const Title = styled.div(({ theme }) => ({
+  fontWeight: theme.typography.weight.bold,
+  lineHeight: '20px',
+}));
+
+const Description = styled.div(({ theme }) => ({
   color: theme.textMutedColor,
 }));
 
-const Progress = styled(ProgressSpinner)({
-  margin: 4,
-});
-
-const StopIcon = styled(StopAltIcon)({
-  width: 10,
-});
-
-interface Props {
-  api: API;
-}
-
-export const ShareMenu = ({ api }: Props) => {
-  const { addNotification } = api;
+export const ShareProviderRender = ({ api }: { api: API }) => {
+  const { addNotification, getStoryHrefs } = api;
+  const { storyId } = useStorybookState();
 
   const trackEvent = useContext(TelemetryContext);
   const { projectId } = useProjectId();
@@ -89,9 +66,11 @@ export const ShareMenu = ({ api }: Props) => {
 
   const [gitInfoError] = useSharedState<Error>(GIT_INFO_ERROR);
 
+  const [copied, setCopied] = useState(false);
+
   const lastStep = useRef(localBuildProgress?.currentStep);
 
-  const testProviderState = experimental_useTestProviderStore(
+  const testProviderState = useTestProviderStore(
     (state) => state[TEST_PROVIDER_ID] ?? 'test-provider-state:pending'
   );
 
@@ -116,7 +95,7 @@ export const ShareMenu = ({ api }: Props) => {
   }, [isRunnable, startBuild]);
 
   useEffect(
-    () => experimental_getTestProviderStore(TEST_PROVIDER_ID).onRunAll(startBuildIfPossible),
+    () => getTestProviderStore(TEST_PROVIDER_ID).onRunAll(startBuildIfPossible),
     [startBuildIfPossible]
   );
 
@@ -173,9 +152,11 @@ export const ShareMenu = ({ api }: Props) => {
       description = <Link onClick={clickWarning}>{warning}</Link>;
       break;
     case testProviderState === 'test-provider-state:running':
-      description = localBuildProgress
-        ? BUILD_STEP_CONFIG[localBuildProgress.currentStep].renderProgress(localBuildProgress)
-        : 'Starting...';
+      description = localBuildProgress?.storybookUrl
+        ? `Succesfully published`
+        : localBuildProgress
+          ? BUILD_STEP_CONFIG[localBuildProgress.currentStep].renderProgress(localBuildProgress)
+          : 'Starting...';
       break;
     case localBuildProgress?.currentStep === 'aborted':
       description = 'Aborted by user';
@@ -183,55 +164,65 @@ export const ShareMenu = ({ api }: Props) => {
     case localBuildProgress?.currentStep === 'complete':
       description = localBuildProgress.errorCount
         ? `Encountered ${pluralize('component error', localBuildProgress.errorCount, true)}`
-        : `Published`;
+        : `Succesfully published`;
       break;
     default:
-      description = 'Not run';
+      description = 'No snapshots will be taken';
   }
 
-  if (localBuildProgress?.isPublishOnly === false) {
-    description = 'Visual tests in progress';
-  }
+  const copyLink = () => {
+    const networkAddress = (globalThis as any).STORYBOOK_NETWORK_ADDRESS;
+    (globalThis as any).STORYBOOK_NETWORK_ADDRESS = localBuildProgress!.storybookUrl!;
+    const { managerHref } = getStoryHrefs(storyId, { base: 'network' });
+    navigator.clipboard.writeText(managerHref);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+    (globalThis as any).STORYBOOK_NETWORK_ADDRESS = networkAddress;
+  };
 
   return (
     <Container>
-      <Info>
-        {localBuildProgress?.isPublishOnly ? (
-          <BuildProgressInline localBuildProgress={localBuildProgress} />
-        ) : (
-          <DescriptionWrapper>{description}</DescriptionWrapper>
-        )}
-      </Info>
-
-      <Actions>
-        {warning ? null : testProviderState === 'test-provider-state:running' ? (
+      <Content>
+        <div>
+          <Title>Upload a build to share</Title>
+          <Description>{description}</Description>
+        </div>
+        {localBuildProgress?.storybookUrl ? (
           <Button
-            ariaLabel="Cancel"
+            ariaLabel={false}
+            padding="small"
             size="medium"
-            variant="ghost"
-            padding="none"
+            variant="solid"
+            onClick={copyLink}
+          >
+            {copied ? 'Copied!' : 'Copy link'}
+          </Button>
+        ) : warning ? null : testProviderState === 'test-provider-state:running' ? (
+          <Button
+            ariaLabel={false}
+            padding="small"
+            size="medium"
+            variant="solid"
             onClick={stopBuild}
             disabled={
               !['initialize', 'build', 'upload'].includes(localBuildProgress?.currentStep ?? '')
             }
           >
-            <Progress percentage={localBuildProgress?.buildProgressPercentage}>
-              <StopIcon />
-            </Progress>
+            Cancel
           </Button>
         ) : (
           <Button
-            ariaLabel="Publish"
-            size="medium"
-            variant="ghost"
+            ariaLabel={false}
             padding="small"
+            size="medium"
+            variant="solid"
             disabled={!isRunnable}
             onClick={startBuildIfPossible}
           >
-            Publish
+            Upload & copy link
           </Button>
         )}
-      </Actions>
+      </Content>
     </Container>
   );
 };

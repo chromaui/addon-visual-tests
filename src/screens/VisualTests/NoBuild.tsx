@@ -18,7 +18,7 @@ import { Stack } from '../../components/Stack';
 import { Text } from '../../components/Text';
 import { DOCS_URL } from '../../constants';
 import { LocalBuildProgress } from '../../types';
-import { useAuth } from '../../utils/graphQLClient';
+import { useAuth } from '../../utils/useAuth';
 import { ErrorBox } from '../Errors/BuildError';
 import { useRunBuildState } from './RunBuildContext';
 

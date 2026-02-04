@@ -8,7 +8,7 @@ import { addons, experimental_getStatusStore } from 'storybook/manager-api';
 
 import { ADDON_ID, PANEL_ID, PARAM_KEY, SHARE_PROVIDER_ID, TEST_PROVIDER_ID } from './constants.ts';
 import { Panel } from './Panel';
-import { ShareMenu } from './ShareMenu.tsx';
+import { ShareProviderRender } from './ShareProviderRender';
 import { TestProviderRender } from './TestProviderRender';
 
 addons.register(ADDON_ID, (api) => {
@@ -33,7 +33,8 @@ addons.register(ADDON_ID, (api) => {
 
   addons.add(SHARE_PROVIDER_ID, {
     type: Addon_TypesEnum.experimental_SHARE_PROVIDER,
-    shareMenu: () => <ShareMenu api={api} />,
+    title: 'Upload & share',
+    render: () => <ShareProviderRender api={api} />,
   } satisfies Omit<Addon_ShareProviderType, 'id'>);
 
   addons.add(TEST_PROVIDER_ID, {

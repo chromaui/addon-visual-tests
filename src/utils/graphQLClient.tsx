@@ -1,16 +1,15 @@
 import { authExchange } from '@urql/exchange-auth';
-import React, { useEffect } from 'react';
-import { useAddonState } from 'storybook/manager-api';
+import React from 'react';
 import { Client, ClientOptions, fetchExchange, mapExchange, Provider } from 'urql';
 import { v4 as uuid } from 'uuid';
 
-import { ACCESS_TOKEN_KEY, ADDON_ID, CHROMATIC_API_URL } from '../constants';
-import { TokenExchangeParameters } from './requestAccessToken';
-import { clearSessionState, useSessionState } from './useSessionState';
+import { ACCESS_TOKEN_KEY, CHROMATIC_API_URL } from '../constants';
 
 let currentToken: string | null;
 let currentTokenExpiration: number | null;
-const persistCurrentToken = (token: string | null) => {
+
+export const getCurrentToken = () => currentToken;
+export const persistCurrentToken = (token: string | null) => {
   try {
     const { exp } = token ? JSON.parse(atob(token.split('.')[1])) : { exp: null };
     currentToken = token;
@@ -27,46 +26,6 @@ const persistCurrentToken = (token: string | null) => {
 };
 
 persistCurrentToken(localStorage.getItem(ACCESS_TOKEN_KEY));
-interface AuthValue {
-  token: string | null;
-  isOpen: boolean;
-  subdomain: string;
-  screen: 'welcome' | 'signin' | 'subdomain' | 'verify';
-  exchangeParameters: TokenExchangeParameters | null;
-}
-
-export const useAuth = () => {
-  const [subdomain, setSubdomain] = useSessionState<string>('subdomain', 'www');
-  const [exchangeParameters, setExchangeParameters] =
-    useSessionState<TokenExchangeParameters | null>('exchangeParameters', null);
-
-  // We use an object rather than a straight boolean here due to https://github.com/storybookjs/storybook/pull/23991
-  const [auth, setAuth] = useAddonState<AuthValue>(`${ADDON_ID}/auth`, {
-    token: currentToken,
-    isOpen: false,
-    subdomain: subdomain,
-    screen: 'welcome',
-    exchangeParameters,
-  });
-
-  useEffect(() => {
-    if (!auth.token) {
-      clearSessionState('authenticationScreen', 'exchangeParameters');
-    } else {
-      persistCurrentToken(auth.token);
-    }
-  }, [auth.token]);
-
-  useEffect(() => {
-    setSubdomain(auth.subdomain);
-  }, [auth.subdomain, setSubdomain]);
-
-  useEffect(() => {
-    setExchangeParameters(auth.exchangeParameters);
-  }, [auth.exchangeParameters, setExchangeParameters]);
-
-  return [auth, setAuth] as const;
-};
 
 const sessionId = uuid();
 

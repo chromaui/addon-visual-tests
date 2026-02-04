@@ -1,6 +1,6 @@
 import { ManagerContext } from 'storybook/manager-api';
 import type { Decorator, Loader, Preview } from '@storybook/react-vite';
-import { fn } from 'storybook/test';
+import { fn, sb } from 'storybook/test';
 import {
   Global,
   ThemeProvider,
@@ -14,7 +14,6 @@ import { HttpResponse, graphql } from 'msw';
 import { initialize, mswLoader } from 'msw-storybook-addon';
 import React from 'react';
 
-import { AuthProvider } from '../src/AuthContext';
 import { baseModes } from '../src/modes';
 import { UninstallProvider } from '../src/screens/Uninstalled/UninstallContext';
 import { RunBuildProvider } from '../src/screens/VisualTests/RunBuildContext';
@@ -22,6 +21,10 @@ import { GraphQLClientProvider } from '../src/utils/graphQLClient';
 import { storyWrapper } from '../src/utils/storyWrapper';
 import { TelemetryProvider } from '../src/utils/TelemetryContext';
 import { useSessionState } from '../src/utils/useSessionState';
+
+sb.mock(import('../src/utils/useAuth.ts'))
+sb.mock(import('../src/utils/useSharedState.ts'))
+sb.mock(import('../src/utils/useTestProviderStore.ts'))
 
 // Initialize MSW
 initialize({
@@ -127,15 +130,6 @@ const withTelemetry = storyWrapper(TelemetryProvider, () => ({
   value: fn().mockName('telemetry'),
 }));
 
-const withAuth = storyWrapper(AuthProvider, () => ({
-  value: {
-    accessToken: 'token',
-    setAccessToken: fn(),
-    subdomain: 'www',
-    setSubdomain: fn(),
-  },
-}));
-
 const withManagerApi = storyWrapper(ManagerContext.Provider, ({ argsByTarget }) => ({
   value: {
     api: { ...argsByTarget['manager-api'] },
@@ -213,7 +207,6 @@ const preview: Preview = {
     withTheme,
     withGraphQLClient,
     withTelemetry,
-    withAuth,
     withUninstall,
     withManagerApi,
     withRunBuild,
