@@ -5,10 +5,10 @@ import React, { useCallback, useContext, useEffect, useRef } from 'react';
 import { Link } from 'storybook/internal/components';
 import { Button, ProgressSpinner } from 'storybook/internal/components';
 import {
+  type API,
   experimental_getTestProviderStore,
   experimental_useStatusStore,
   experimental_useTestProviderStore,
-  useStorybookApi,
   useStorybookState,
 } from 'storybook/manager-api';
 import { color, styled } from 'storybook/theming';
@@ -25,8 +25,8 @@ import {
   TEST_PROVIDER_ID,
 } from './constants';
 import { ConfigInfoPayload, LocalBuildProgress } from './types';
-import { useAccessToken } from './utils/graphQLClient';
 import { TelemetryContext } from './utils/TelemetryContext';
+import { useAuth } from './utils/useAuth';
 import { useBuildEvents } from './utils/useBuildEvents';
 import { useProjectId } from './utils/useProjectId';
 import { useSharedState } from './utils/useSharedState';
@@ -67,8 +67,12 @@ const StopIcon = styled(StopAltIcon)({
   width: 10,
 });
 
-export const TestProviderRender = () => {
-  const { addNotification, selectStory, setOptions, togglePanel } = useStorybookApi();
+interface Props {
+  api: API;
+}
+
+export const TestProviderRender = ({ api }: Props) => {
+  const { addNotification, selectStory, setOptions, togglePanel } = api;
   const warningStatusCount = experimental_useStatusStore(
     (allStatuses) =>
       Object.values(allStatuses)
@@ -78,8 +82,8 @@ export const TestProviderRender = () => {
 
   const trackEvent = useContext(TelemetryContext);
   const { projectId } = useProjectId();
-  const [accessToken] = useAccessToken();
-  const isLoggedIn = !!accessToken;
+  const [auth] = useAuth();
+  const isLoggedIn = !!auth.token;
 
   const [isOffline, setOffline] = useSharedState<boolean>(IS_OFFLINE);
   const [isOutdated] = useSharedState<boolean>(IS_OUTDATED);
@@ -99,7 +103,7 @@ export const TestProviderRender = () => {
 
   const { startBuild, stopBuild } = useBuildEvents({
     localBuildProgress,
-    accessToken,
+    accessToken: auth.token,
   });
 
   let warning: string | undefined;

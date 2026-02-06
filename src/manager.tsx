@@ -1,9 +1,14 @@
 import React from 'react';
-import { type Addon_TestProviderType, Addon_TypesEnum } from 'storybook/internal/types';
+import {
+  type Addon_ShareProviderType,
+  type Addon_TestProviderType,
+  Addon_TypesEnum,
+} from 'storybook/internal/types';
 import { addons, experimental_getStatusStore } from 'storybook/manager-api';
 
-import { ADDON_ID, PANEL_ID, PARAM_KEY, TEST_PROVIDER_ID } from './constants.ts';
+import { ADDON_ID, PANEL_ID, PARAM_KEY, SHARE_PROVIDER_ID, TEST_PROVIDER_ID } from './constants.ts';
 import { Panel } from './Panel';
+import { ShareProviderRender } from './ShareProviderRender';
 import { TestProviderRender } from './TestProviderRender';
 
 addons.register(ADDON_ID, (api) => {
@@ -26,8 +31,19 @@ addons.register(ADDON_ID, (api) => {
     api.togglePanel(true);
   });
 
+  addons.add(SHARE_PROVIDER_ID, {
+    type: Addon_TypesEnum.experimental_SHARE_PROVIDER,
+    title: 'Share',
+    order: -1,
+    render: () => (
+      <div style={{ containerType: 'size', height: 300 }}>
+        <ShareProviderRender api={api} />
+      </div>
+    ),
+  } satisfies Omit<Addon_ShareProviderType, 'id'>);
+
   addons.add(TEST_PROVIDER_ID, {
     type: Addon_TypesEnum.experimental_TEST_PROVIDER,
-    render: () => <TestProviderRender />,
+    render: () => <TestProviderRender api={api} />,
   } satisfies Omit<Addon_TestProviderType, 'id'>);
 });

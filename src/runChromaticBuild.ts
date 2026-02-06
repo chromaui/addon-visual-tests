@@ -1,4 +1,14 @@
-import { Context, InitialContext, Options, run, TaskName } from 'chromatic/node';
+import { join } from 'node:path';
+
+import {
+  Context,
+  InitialContext,
+  Options as ChromaticOptions,
+  run,
+  TaskName,
+} from 'chromatic/node';
+import { buildStaticStandalone } from 'storybook/internal/core-server';
+import type { Options as StorybookOptions } from 'storybook/internal/types';
 
 import {
   BUILD_STEP_CONFIG,
@@ -58,7 +68,7 @@ export const onStartOrProgress =
       throw new Error('Unexpected missing value for localBuildProgress');
     }
 
-    const { buildProgressPercentage, stepProgress, previousBuildProgress } =
+    const { buildProgressPercentage, stepProgress, previousBuildProgress, isPublishOnly } =
       localBuildProgress.value;
 
     // Ignore progress events for steps that have already completed
@@ -106,9 +116,11 @@ export const onStartOrProgress =
     localBuildProgress.value = {
       buildId: ctx.announcedBuild?.id,
       branch: ctx.git?.branch,
+      isPublishOnly,
       buildProgressPercentage: Math.min(newPercentage, endPercentage),
       currentStep: ctx.task,
       stepProgress,
+      storybookUrl: ctx.build?.storybookUrl,
     };
   };
 
@@ -128,13 +140,15 @@ export const onCompleteOrError =
       throw new Error('Unexpected missing value for localBuildProgress');
     }
 
-    const { buildProgressPercentage, stepProgress } = localBuildProgress.value;
+    const { buildProgressPercentage, stepProgress, isPublishOnly } = localBuildProgress.value;
     const update = {
       buildId: ctx.announcedBuild?.id,
       branch: ctx.git?.branch,
+      isPublishOnly,
       buildProgressPercentage,
       stepProgress,
       previousBuildProgress: stepProgress,
+      storybookUrl: ctx.build?.storybookUrl,
     };
 
     if (error) {
@@ -177,13 +191,16 @@ export const onCompleteOrError =
 
 export const runChromaticBuild = async (
   localBuildProgress: ReturnType<typeof SharedState.subscribe<LocalBuildProgress>>,
-  options: Partial<Options>
+  chromaticOptions: Partial<ChromaticOptions>,
+  storybookOptions: StorybookOptions,
+  publishOnly: boolean
 ) => {
-  if (!options.projectId) throw new Error('Missing projectId');
-  if (!options.userToken) throw new Error('Missing userToken');
+  if (!chromaticOptions.projectId) throw new Error('Missing projectId');
+  if (!chromaticOptions.userToken) throw new Error('Missing userToken');
 
   // Set initial progress state. JSON.parse avoids mutating the constant.
-  localBuildProgress.value = JSON.parse(INITIAL_BUILD_PAYLOAD_JSON);
+  localBuildProgress.value = JSON.parse(INITIAL_BUILD_PAYLOAD_JSON) as LocalBuildProgress;
+  localBuildProgress.value.isPublishOnly = publishOnly;
 
   // Timeout is defined here so it's shared between all handlers
   let timeout: ReturnType<typeof setTimeout> | undefined;
@@ -193,13 +210,25 @@ export const runChromaticBuild = async (
 
   process.env.SB_TESTBUILD = 'true';
 
+  const publishOnlyConfig: Partial<ChromaticOptions> = {};
+
+  if (publishOnly) {
+    process.env.SB_PUBLISH_ONLY = 'true';
+    publishOnlyConfig.storybookBuildDir = join(process.cwd(), 'storybook-build-standalone');
+    await buildStaticStandalone({
+      ...storybookOptions,
+      outputDir: publishOnlyConfig.storybookBuildDir,
+    });
+  }
+
   await run({
     flags: {
       interactive: false,
     },
     options: {
-      ...options,
+      ...chromaticOptions,
       ...CONFIG_OVERRIDES,
+      ...publishOnlyConfig,
       experimental_onTaskStart: onStartOrProgress(localBuildProgress, timeout),
       experimental_onTaskProgress: onStartOrProgress(localBuildProgress, timeout),
       experimental_onTaskComplete: onCompleteOrError(localBuildProgress, timeout),

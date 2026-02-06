@@ -12,6 +12,7 @@ import { graphql } from '../../gql';
 import { Project } from '../../gql/graphql';
 import { getFetchOptions } from '../../utils/graphQLClient';
 import { fetchAccessToken, TokenExchangeParameters } from '../../utils/requestAccessToken';
+import { useAuth } from '../../utils/useAuth';
 import { DialogHandler, useChromaticDialog } from '../../utils/useChromaticDialog';
 import { useErrorNotification } from '../../utils/useErrorNotification';
 import { AuthHeader } from './AuthHeader';
@@ -49,26 +50,25 @@ const ProjectCountQuery = graphql(/* GraphQL */ `
 interface VerifyProps {
   onBack: () => void;
   hasProjectId: boolean;
-  setAccessToken: (token: string) => void;
   setCreatedProjectId: (projectId: Project['id']) => void;
   exchangeParameters: TokenExchangeParameters;
+  setAuth: ReturnType<typeof useAuth>[1];
 }
 
 export const Verify = ({
   onBack,
   hasProjectId,
-  setAccessToken,
+  setAuth,
   setCreatedProjectId,
   exchangeParameters,
 }: VerifyProps) => {
   const client = useClient();
   const onError = useErrorNotification();
-
   const { user_code: userCode, verificationUrl } = exchangeParameters;
 
   // Store the access token until we are ready to pass it to `setAccessToken` (at which point
   // the Panel will close the Authentication screen)
-  const accessToken = useRef<string>();
+  const accessToken = useRef<string | null>(null);
 
   const openDialogRef = useRef<(url: string) => void>();
   const closeDialogRef = useRef<() => void>();
@@ -95,7 +95,7 @@ export const Verify = ({
           // The user has projects to choose from (or the project is already selected),
           // so send them to pick one
           if (data.viewer.projectCount > 0 || hasProjectId) {
-            setAccessToken(accessToken.current);
+            setAuth((s) => ({ ...s, token: accessToken.current }));
             closeDialogRef.current?.();
           } else {
             // The user has no projects, so we need to get them to create one, then close the dialog
@@ -115,7 +115,7 @@ export const Verify = ({
         if (!accessToken.current) {
           onError('Unexpected missing access token', new Error());
         } else {
-          setAccessToken(accessToken.current);
+          setAuth((s) => ({ ...s, token: accessToken.current }));
           setCreatedProjectId(`Project:${event.projectId}`);
           closeDialogRef.current?.();
         }
@@ -126,7 +126,7 @@ export const Verify = ({
       exchangeParameters,
       client,
       hasProjectId,
-      setAccessToken,
+      setAuth,
       onError,
       setCreatedProjectId,
     ]

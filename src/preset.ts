@@ -13,7 +13,7 @@ import {
 import type { Channel } from 'storybook/internal/channels';
 import { experimental_getTestProviderStore } from 'storybook/internal/core-server';
 import { telemetry } from 'storybook/internal/telemetry';
-import type { Options } from 'storybook/internal/types';
+import type { Options, StorybookConfig } from 'storybook/internal/types';
 
 import {
   ADDON_ID,
@@ -172,6 +172,7 @@ const watchConfigFile = async (
 
 async function serverChannel(channel: Channel, options: Options & { configFile?: string }) {
   const { configFile, presets } = options;
+  const addonVersion = await getAddonVersion().catch(() => null);
 
   // Handle relayed fetch requests from the client
   ChannelFetch.subscribe(ADDON_ID, channel);
@@ -229,11 +230,12 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
     channel
   );
 
-  channel.on(START_BUILD, async ({ accessToken: userToken }) => {
+  channel.on(START_BUILD, async ({ accessToken: userToken, isPublishOnly = false }) => {
     const { projectId } = projectInfoState.value || {};
     testProviderStore.runWithState(async () => {
       try {
-        await runChromaticBuild(localBuildProgress, { configFile, projectId, userToken });
+        const chromaticOptions = { configFile, projectId, userToken };
+        await runChromaticBuild(localBuildProgress, chromaticOptions, options, isPublishOnly);
       } catch (e) {
         console.error(`Failed to run Chromatic build, with error:\n${e}`);
         throw e;
@@ -248,7 +250,7 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
 
   channel.on(TELEMETRY, async (event: Event) => {
     if ((await corePromise).disableTelemetry) return;
-    telemetry('addon-visual-tests' as any, { ...event, addonVersion: await getAddonVersion() });
+    telemetry('addon-visual-tests' as any, { ...event, addonVersion });
   });
 
   const configInfoState = SharedState.subscribe<ConfigInfoPayload>(CONFIG_INFO, channel);
@@ -280,19 +282,23 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
 }
 
 const config = {
+  previewAnnotations: async (input = []) => {
+    const disableSnapshotsPreset = join(
+      dirname(require.resolve('@chromatic-com/storybook/package.json')),
+      'dist/disableSnapshots.mjs'
+    );
+    return process.env.SB_PUBLISH_ONLY === 'true' ? [...input, disableSnapshotsPreset] : input;
+  },
   managerEntries,
   experimental_serverChannel: serverChannel,
-  staticDirs: async (inputDirs: string[]) => [
-    ...inputDirs,
+  staticDirs: async (inputDirs) => [
+    ...(inputDirs || []),
     {
       from: join(dirname(require.resolve('@chromatic-com/storybook/package.json')), 'assets'),
       to: 'addon-visual-tests-assets',
     },
   ],
-  env: async (
-    env: Record<string, string>,
-    { configType }: { configType: 'DEVELOPMENT' | 'PRODUCTION' }
-  ) => {
+  env: async (env, { configType }) => {
     if (configType === 'PRODUCTION') return env;
 
     return {
@@ -300,6 +306,12 @@ const config = {
       CHROMATIC_BASE_URL,
     };
   },
+} satisfies Partial<StorybookConfig> & {
+  managerEntries: (entry: string[]) => string[];
+  experimental_serverChannel: (
+    channel: Channel,
+    options: Options & { configFile?: string }
+  ) => Promise<Channel>;
 };
 
 export default config;

@@ -8,6 +8,7 @@ export const PACKAGE_NAME = '@chromatic-com/storybook';
 
 export const ADDON_ID = 'chromaui/addon-visual-tests';
 export const PANEL_ID = `${ADDON_ID}/panel`;
+export const SHARE_PROVIDER_ID = `${ADDON_ID}/share-provider`;
 export const TEST_PROVIDER_ID = `${ADDON_ID}/test-provider`;
 export const ACCESS_TOKEN_KEY = `${ADDON_ID}/access-token/${CHROMATIC_BASE_URL}`;
 export const DEV_BUILD_ID_KEY = `${ADDON_ID}/dev-build-id`;

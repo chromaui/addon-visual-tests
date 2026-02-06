@@ -30,11 +30,11 @@ export const useBuildEvents = ({
     () =>
       debounce(
         'startBuild',
-        () => {
+        (isPublishOnly = false) => {
           setDisallowed(false);
           setStarting(true);
-          emit(START_BUILD, { accessToken });
-          trackEvent?.({ action: 'startBuild' });
+          emit(START_BUILD, { accessToken, isPublishOnly });
+          trackEvent?.({ action: 'startBuild', isPublishOnly });
         },
         1000,
         false

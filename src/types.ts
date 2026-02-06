@@ -182,6 +182,9 @@ export type LocalBuildProgress = {
    */
   branch?: string;
 
+  /** Whether the build is a publish-only build (i.e. no visual tests) */
+  isPublishOnly?: boolean;
+
   /** Overall percentage of build progress */
   buildProgressPercentage: number;
 
@@ -209,4 +212,7 @@ export type LocalBuildProgress = {
 
   /** Progress tracking data from the previous build (if any) */
   previousBuildProgress?: Record<KnownStep, StepProgressPayload>;
+
+  /** The URL of the published Storybook instance */
+  storybookUrl?: string;
 };
