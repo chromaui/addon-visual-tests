@@ -1,3 +1,5 @@
 import { definePreviewAddon } from 'storybook/internal/csf';
 
-export default () => definePreviewAddon({});
+import type { ChromaticTypes } from './types';
+
+export default () => definePreviewAddon<ChromaticTypes>({});
