@@ -93,6 +93,7 @@ export default defineConfig(async (options) => {
       ...commonConfig,
       ...browserOptions,
       entry: exportEntries,
+      dts: true,
     });
     configs.push({
       ...commonConfig,
