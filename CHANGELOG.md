@@ -1,3 +1,21 @@
+# v5.0.1 (Mon Feb 09 2026)
+
+#### 🐛 Bug Fix
+
+- feat: Add CSF Next compatibility for definePreview addons pattern [#404](https://github.com/chromaui/addon-visual-tests/pull/404) ([@jthrilly](https://github.com/jthrilly) [@valentinpalkovic](https://github.com/valentinpalkovic))
+- upgrade storybook to latest [#406](https://github.com/chromaui/addon-visual-tests/pull/406) ([@ndelangen](https://github.com/ndelangen))
+- Main > Next sync [#407](https://github.com/chromaui/addon-visual-tests/pull/407) ([@ndelangen](https://github.com/ndelangen) [@chromatic-support](https://github.com/chromatic-support) [@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 5
+
+- [@chromatic-support](https://github.com/chromatic-support)
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Joshua Melville ([@jthrilly](https://github.com/jthrilly))
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+- Valentin Palkovic ([@valentinpalkovic](https://github.com/valentinpalkovic))
+
+---
+
 # v5.0.0 (Tue Jan 13 2026)
 
 #### 💥 Breaking Change
