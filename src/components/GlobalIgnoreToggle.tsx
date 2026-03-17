@@ -6,9 +6,10 @@ import { useChannel, useGlobals } from 'storybook/manager-api';
 import { IGNORE_HIGHLIGHT_COUNT, IGNORE_HIGHLIGHT_KEY } from '../constants';
 
 export const GlobalIgnoreToggle = () => {
-  const [, updateGlobals, , userGlobals] = useGlobals();
+  const [globals, updateGlobals, storyGlobals] = useGlobals();
   const [ignoreCount, setIgnoreCount] = useState(0);
-  const enabled = !!userGlobals[IGNORE_HIGHLIGHT_KEY];
+  const enabled = !!globals[IGNORE_HIGHLIGHT_KEY];
+  const locked = IGNORE_HIGHLIGHT_KEY in storyGlobals;
 
   useChannel({ [IGNORE_HIGHLIGHT_COUNT]: setIgnoreCount }, []);
 
@@ -16,10 +17,15 @@ export const GlobalIgnoreToggle = () => {
     <IconButton
       key={IGNORE_HIGHLIGHT_KEY}
       active={enabled}
-      ariaLabel={enabled ? 'Hide ignored areas' : 'Show ignored areas'}
+      ariaLabel={
+        locked
+          ? `Highlights ${enabled ? 'enabled' : 'disabled'} by story globals`
+          : `${enabled ? 'Hide' : 'Show'} ignored areas`
+      }
       padding="small"
       variant="ghost"
-      onClick={() => updateGlobals({ [IGNORE_HIGHLIGHT_KEY]: !userGlobals[IGNORE_HIGHLIGHT_KEY] })}
+      disabled={locked}
+      onClick={() => updateGlobals({ [IGNORE_HIGHLIGHT_KEY]: !globals[IGNORE_HIGHLIGHT_KEY] })}
     >
       <ContrastIgnoredIcon />
       {ignoreCount}
