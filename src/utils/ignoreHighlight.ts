@@ -10,15 +10,19 @@ import type { ChromaticParameters } from '../types';
 type ChromaticConfig = ChromaticParameters['chromatic'];
 
 const defaultHighlightStyles = {
-  backgroundColor: 'rgba(255, 173, 51, 0.4)',
+  backgroundColor: 'rgba(255, 173, 51, 0.2)',
   outline: '1px solid rgba(255, 173, 51, 0.7)',
-  outlineOffset: '1px',
+  outlineOffset: '-1px',
 };
 
 const defaultHoverStyles = {
+  backgroundColor: 'rgba(255, 173, 51, 0.1)',
+  outlineWidth: '2px',
+};
+
+const defaultFocusStyles = {
   backgroundColor: 'transparent',
-  outline: '2px solid rgba(255, 173, 51, 0.7)',
-  outlineOffset: '2px',
+  outlineWidth: '2px',
 };
 
 const isSupportedSelector = (selector: string) => {
@@ -45,6 +49,7 @@ export const getIgnoreHighlightOptions = (config: ChromaticConfig): HighlightOpt
     selectors,
     styles: defaultHighlightStyles,
     hoverStyles: defaultHoverStyles,
+    focusStyles: defaultFocusStyles,
     menu: selectors.map<HighlightMenuItem[]>((selector) => {
       const isDefaultSelector = DEFAULT_IGNORE_SELECTORS.includes(selector);
       return [
