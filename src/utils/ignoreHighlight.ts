@@ -10,14 +10,14 @@ import type { ChromaticParameters } from '../types';
 type ChromaticConfig = ChromaticParameters['chromatic'];
 
 const defaultHighlightStyles = {
-  backgroundColor: 'rgba(255, 255, 0, 0.4)',
-  outline: '1px solid rgba(230, 157, 0, 0.7)',
+  backgroundColor: 'rgba(255, 173, 51, 0.4)',
+  outline: '1px solid rgba(255, 173, 51, 0.7)',
   outlineOffset: '1px',
 };
 
 const defaultHoverStyles = {
   backgroundColor: 'transparent',
-  outline: '2px solid rgba(230, 157, 0, 0.7)',
+  outline: '2px solid rgba(255, 173, 51, 0.7)',
   outlineOffset: '2px',
 };
 
