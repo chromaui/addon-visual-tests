@@ -53,6 +53,9 @@ const chromaticLogger = createLogger(undefined, CONFIG_OVERRIDES);
 function managerEntries(entry: string[] = []) {
   return [...entry, require.resolve('./manager.mjs')];
 }
+function previewAnnotations(entry: string[] = []) {
+  return [...entry, require.resolve('./preview.mjs')];
+}
 
 // Load the addon version from the package.json file, once.
 let getAddonVersion = async (): Promise<string | null> => {
@@ -281,6 +284,7 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
 
 const config = {
   managerEntries,
+  previewAnnotations,
   experimental_serverChannel: serverChannel,
   staticDirs: async (inputDirs: string[]) => [
     ...inputDirs,

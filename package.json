@@ -23,8 +23,13 @@
       "import": "./dist/index.mjs"
     },
     "./manager": "./dist/manager.js",
+    "./package.json": "./package.json",
     "./preset": "./dist/preset.js",
-    "./package.json": "./package.json"
+    "./preview": {
+      "types": "./dist/preview.d.ts",
+      "code": "./src/preview.ts",
+      "default": "./dist/preview.js"
+    }
   },
   "main": "dist/index.js",
   "files": [
@@ -153,6 +158,9 @@
     ],
     "nodeEntries": [
       "./src/preset.ts"
+    ],
+    "previewEntries": [
+      "./src/preview.ts"
     ]
   },
   "msw": {

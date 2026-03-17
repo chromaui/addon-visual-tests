@@ -27,6 +27,14 @@ export const TELEMETRY = `${ADDON_ID}/telemetry`;
 export const ENABLE_FILTER = `${ADDON_ID}/enableFilter`;
 export const REMOVE_ADDON = `${ADDON_ID}/removeAddon`;
 export const PARAM_KEY = 'chromatic';
+export const IGNORE_HIGHLIGHT_KEY = 'ignoredRegions';
+export const IGNORE_HIGHLIGHT_ID = `${ADDON_ID}/ignoreHighlight`;
+export const IGNORE_HIGHLIGHT_COUNT = `${ADDON_ID}/ignoreHighlight/count`;
+export const IGNORE_HIGHLIGHT_SELECT = `${ADDON_ID}/ignoreHighlight/select`;
+export const DEFAULT_IGNORE_SELECTORS = [
+  '[data-chromatic="ignore"]',
+  '[class~="chromatic-ignore"]',
+];
 
 export const FETCH_ABORTED = `${ADDON_ID}/ChannelFetch/aborted`;
 export const FETCH_REQUEST = `${ADDON_ID}ChannelFetch/request`;
