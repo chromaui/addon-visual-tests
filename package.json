@@ -22,13 +22,12 @@
       "require": "./dist/index.js",
       "import": "./dist/index.mjs"
     },
-    "./manager": "./dist/manager.js",
+    "./manager": "./dist/manager.mjs",
     "./package.json": "./package.json",
     "./preset": "./dist/preset.js",
     "./preview": {
       "types": "./dist/preview.d.ts",
-      "code": "./src/preview.ts",
-      "default": "./dist/preview.js"
+      "default": "./dist/preview.mjs"
     }
   },
   "main": "dist/index.js",
