@@ -1,5 +1,5 @@
 import React from 'react';
-import { ClickEventDetails } from 'storybook/highlight';
+import { type ClickEventDetails } from 'storybook/highlight';
 import { type Addon_TestProviderType, Addon_TypesEnum } from 'storybook/internal/types';
 import { addons, experimental_getStatusStore } from 'storybook/manager-api';
 
