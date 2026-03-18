@@ -27,11 +27,11 @@ export const TELEMETRY = `${ADDON_ID}/telemetry`;
 export const ENABLE_FILTER = `${ADDON_ID}/enableFilter`;
 export const REMOVE_ADDON = `${ADDON_ID}/removeAddon`;
 export const PARAM_KEY = 'chromatic';
-export const IGNORE_HIGHLIGHT_KEY = 'ignoredRegions';
-export const IGNORE_HIGHLIGHT_ID = `${ADDON_ID}/ignoreHighlight`;
-export const IGNORE_HIGHLIGHT_COUNT = `${ADDON_ID}/ignoreHighlight/count`;
-export const IGNORE_HIGHLIGHT_SELECT = `${ADDON_ID}/ignoreHighlight/select`;
-export const DEFAULT_IGNORE_SELECTORS = [
+export const HIGHLIGHT_IGNORED_PARAM = 'highlightIgnored';
+export const HIGHLIGHT_IGNORED_ID = `${ADDON_ID}/highlightIgnored`;
+export const HIGHLIGHT_IGNORED_COUNT = `${ADDON_ID}/highlightIgnored/count`;
+export const HIGHLIGHT_IGNORED_SELECT = `${ADDON_ID}/highlightIgnored/select`;
+export const HIGHLIGHT_IGNORED_DEFAULT_SELECTORS = [
   '[data-chromatic="ignore"]',
   '[class~="chromatic-ignore"]',
 ];

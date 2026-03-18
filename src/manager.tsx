@@ -6,8 +6,8 @@ import { addons, experimental_getStatusStore } from 'storybook/manager-api';
 import { GlobalIgnoreToggle } from './components/GlobalIgnoreToggle.tsx';
 import {
   ADDON_ID,
-  DEFAULT_IGNORE_SELECTORS,
-  IGNORE_HIGHLIGHT_SELECT,
+  HIGHLIGHT_IGNORED_DEFAULT_SELECTORS,
+  HIGHLIGHT_IGNORED_SELECT,
   PANEL_ID,
   PARAM_KEY,
   TEST_PROVIDER_ID,
@@ -16,8 +16,8 @@ import { Panel } from './Panel';
 import { TestProviderRender } from './TestProviderRender';
 
 addons.register(ADDON_ID, (api) => {
-  api.on(IGNORE_HIGHLIGHT_SELECT, (itemId: string, details: ClickEventDetails) => {
-    const isDefaultSelector = DEFAULT_IGNORE_SELECTORS.includes(details.selectors[0]);
+  api.on(HIGHLIGHT_IGNORED_SELECT, (itemId: string, details: ClickEventDetails) => {
+    const isDefaultSelector = HIGHLIGHT_IGNORED_DEFAULT_SELECTORS.includes(details.selectors[0]);
     window.open(
       isDefaultSelector
         ? 'https://www.chromatic.com/docs/ignoring-elements/#ignoring-elements-inline'

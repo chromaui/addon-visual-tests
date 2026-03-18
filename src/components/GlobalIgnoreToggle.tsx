@@ -3,19 +3,19 @@ import React, { useState } from 'react';
 import { IconButton } from 'storybook/internal/components';
 import { useChannel, useGlobals } from 'storybook/manager-api';
 
-import { IGNORE_HIGHLIGHT_COUNT, IGNORE_HIGHLIGHT_KEY } from '../constants';
+import { HIGHLIGHT_IGNORED_COUNT, HIGHLIGHT_IGNORED_PARAM } from '../constants';
 
 export const GlobalIgnoreToggle = () => {
   const [globals, updateGlobals, storyGlobals] = useGlobals();
   const [ignoreCount, setIgnoreCount] = useState(0);
-  const enabled = !!globals[IGNORE_HIGHLIGHT_KEY];
-  const locked = IGNORE_HIGHLIGHT_KEY in storyGlobals;
+  const enabled = !!globals[HIGHLIGHT_IGNORED_PARAM];
+  const locked = HIGHLIGHT_IGNORED_PARAM in storyGlobals;
 
-  useChannel({ [IGNORE_HIGHLIGHT_COUNT]: setIgnoreCount }, []);
+  useChannel({ [HIGHLIGHT_IGNORED_COUNT]: setIgnoreCount }, []);
 
   return ignoreCount === 0 ? null : (
     <IconButton
-      key={IGNORE_HIGHLIGHT_KEY}
+      key={HIGHLIGHT_IGNORED_PARAM}
       active={enabled}
       ariaLabel={
         locked
@@ -25,7 +25,9 @@ export const GlobalIgnoreToggle = () => {
       padding="small"
       variant="ghost"
       disabled={locked}
-      onClick={() => updateGlobals({ [IGNORE_HIGHLIGHT_KEY]: !globals[IGNORE_HIGHLIGHT_KEY] })}
+      onClick={() =>
+        updateGlobals({ [HIGHLIGHT_IGNORED_PARAM]: !globals[HIGHLIGHT_IGNORED_PARAM] })
+      }
     >
       <ContrastIgnoredIcon />
       {ignoreCount}

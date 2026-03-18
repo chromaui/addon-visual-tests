@@ -1,19 +1,23 @@
 import { HIGHLIGHT, REMOVE_HIGHLIGHT } from 'storybook/highlight';
 import { useChannel, useEffect } from 'storybook/preview-api';
 
-import { IGNORE_HIGHLIGHT_COUNT, IGNORE_HIGHLIGHT_ID, IGNORE_HIGHLIGHT_KEY } from './constants';
+import {
+  HIGHLIGHT_IGNORED_COUNT,
+  HIGHLIGHT_IGNORED_ID,
+  HIGHLIGHT_IGNORED_PARAM,
+} from './constants';
 import { getIgnoreHighlightOptions } from './utils/ignoreHighlight';
 
 const WithIgnoreHighlight = (Story: any, { globals, parameters, id }: any) => {
-  const enabled = !!globals[IGNORE_HIGHLIGHT_KEY];
+  const enabled = !!globals[HIGHLIGHT_IGNORED_PARAM];
   const emit = useChannel({});
   const highlightOptions = getIgnoreHighlightOptions(parameters.chromatic);
   const selectorKey = highlightOptions?.selectors.join('\n') ?? '';
 
   useEffect(() => {
-    emit(REMOVE_HIGHLIGHT, IGNORE_HIGHLIGHT_ID);
+    emit(REMOVE_HIGHLIGHT, HIGHLIGHT_IGNORED_ID);
     if (!highlightOptions?.selectors.length) {
-      emit(IGNORE_HIGHLIGHT_COUNT, 0);
+      emit(HIGHLIGHT_IGNORED_COUNT, 0);
       return;
     }
     if (enabled) {
@@ -35,9 +39,9 @@ const WithIgnoreHighlight = (Story: any, { globals, parameters, id }: any) => {
 
       return acc;
     }, new Set());
-    emit(IGNORE_HIGHLIGHT_COUNT, elements.size);
+    emit(HIGHLIGHT_IGNORED_COUNT, elements.size);
 
-    return () => emit(REMOVE_HIGHLIGHT, IGNORE_HIGHLIGHT_ID);
+    return () => emit(REMOVE_HIGHLIGHT, HIGHLIGHT_IGNORED_ID);
   }, [emit, highlightOptions, id, selectorKey, enabled]);
 
   return Story();
@@ -46,5 +50,5 @@ const WithIgnoreHighlight = (Story: any, { globals, parameters, id }: any) => {
 export const decorators = [WithIgnoreHighlight];
 
 export const initialGlobals = {
-  [IGNORE_HIGHLIGHT_KEY]: false,
+  [HIGHLIGHT_IGNORED_PARAM]: false,
 };

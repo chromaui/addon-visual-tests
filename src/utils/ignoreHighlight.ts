@@ -1,9 +1,9 @@
 import type { HighlightMenuItem, HighlightOptions } from 'storybook/highlight';
 
 import {
-  DEFAULT_IGNORE_SELECTORS,
-  IGNORE_HIGHLIGHT_ID,
-  IGNORE_HIGHLIGHT_SELECT,
+  HIGHLIGHT_IGNORED_DEFAULT_SELECTORS,
+  HIGHLIGHT_IGNORED_ID,
+  HIGHLIGHT_IGNORED_SELECT,
 } from '../constants';
 import type { ChromaticParameters } from '../types';
 
@@ -41,17 +41,17 @@ const isSupportedSelector = (selector: string) => {
 export const getIgnoreHighlightOptions = (config: ChromaticConfig): HighlightOptions => {
   const ignoreSelectors = config?.ignoreSelectors ?? [];
   const selectors = Array.from(
-    new Set(DEFAULT_IGNORE_SELECTORS.concat(ignoreSelectors.filter(isSupportedSelector)))
+    new Set(HIGHLIGHT_IGNORED_DEFAULT_SELECTORS.concat(ignoreSelectors.filter(isSupportedSelector)))
   );
 
   return {
-    id: IGNORE_HIGHLIGHT_ID,
+    id: HIGHLIGHT_IGNORED_ID,
     selectors,
     styles: defaultHighlightStyles,
     hoverStyles: defaultHoverStyles,
     focusStyles: defaultFocusStyles,
     menu: selectors.map<HighlightMenuItem[]>((selector) => {
-      const isDefaultSelector = DEFAULT_IGNORE_SELECTORS.includes(selector);
+      const isDefaultSelector = HIGHLIGHT_IGNORED_DEFAULT_SELECTORS.includes(selector);
       return [
         {
           id: `${selector}-info`,
@@ -66,7 +66,7 @@ export const getIgnoreHighlightOptions = (config: ChromaticConfig): HighlightOpt
           iconLeft: 'info',
           iconRight: 'shareAlt',
           title: 'Learn how to configure ignored elements',
-          clickEvent: IGNORE_HIGHLIGHT_SELECT,
+          clickEvent: HIGHLIGHT_IGNORED_SELECT,
           selectors: [selector],
         },
       ];
