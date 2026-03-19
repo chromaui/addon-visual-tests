@@ -1,3 +1,16 @@
+# v5.0.2 (Thu Mar 19 2026)
+
+#### 🐛 Bug Fix
+
+- chore: Allow 10.4 prerelease peers [#412](https://github.com/chromaui/addon-visual-tests/pull/412) ([@Sidnioulz](https://github.com/Sidnioulz))
+
+#### Authors: 2
+
+- Steve Dodier-Lazaro ([@Sidnioulz](https://github.com/Sidnioulz))
+- Yann Braga ([@yannbf](https://github.com/yannbf))
+
+---
+
 # v5.0.1 (Mon Feb 09 2026)
 
 #### 🐛 Bug Fix
