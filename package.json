@@ -22,9 +22,13 @@
       "require": "./dist/index.js",
       "import": "./dist/index.mjs"
     },
-    "./manager": "./dist/manager.js",
+    "./manager": "./dist/manager.mjs",
+    "./package.json": "./package.json",
     "./preset": "./dist/preset.js",
-    "./package.json": "./package.json"
+    "./preview": {
+      "types": "./dist/preview.d.ts",
+      "default": "./dist/preview.mjs"
+    }
   },
   "main": "dist/index.js",
   "files": [
@@ -153,6 +157,9 @@
     ],
     "nodeEntries": [
       "./src/preset.ts"
+    ],
+    "previewEntries": [
+      "./src/preview.ts"
     ]
   },
   "msw": {
