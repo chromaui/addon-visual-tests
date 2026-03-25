@@ -1,3 +1,15 @@
+# v5.1.0 (Wed Mar 25 2026)
+
+#### 🚀 Enhancement
+
+- Add tool to highlight ignored elements [#411](https://github.com/chromaui/addon-visual-tests/pull/411) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v5.0.2 (Thu Mar 19 2026)
 
 #### 🐛 Bug Fix
