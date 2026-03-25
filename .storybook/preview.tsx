@@ -1,18 +1,18 @@
-import { ManagerContext } from 'storybook/manager-api';
 import type { Decorator, Loader, Preview } from '@storybook/react-vite';
+import { graphql, HttpResponse } from 'msw';
+import { initialize, mswLoader } from 'msw-storybook-addon';
+import React from 'react';
+import { ManagerContext } from 'storybook/manager-api';
 import { fn } from 'storybook/test';
 import {
-  Global,
-  ThemeProvider,
   convert,
   createReset,
+  Global,
   styled,
+  ThemeProvider,
   themes,
   useTheme,
 } from 'storybook/theming';
-import { HttpResponse, graphql } from 'msw';
-import { initialize, mswLoader } from 'msw-storybook-addon';
-import React from 'react';
 
 import { AuthProvider } from '../src/AuthContext';
 import { baseModes } from '../src/modes';
@@ -234,6 +234,7 @@ const preview: Preview = {
     },
     chromatic: {
       modes: baseModes,
+      ignoreSelectors: ['video'],
     },
     controls: {
       matchers: {

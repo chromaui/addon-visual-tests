@@ -168,8 +168,13 @@ export interface ChromaticParameters {
   };
 }
 
+export interface ChromaticGlobals {
+  ignoredRegions?: boolean;
+}
+
 export interface ChromaticTypes {
   parameters: ChromaticParameters;
+  globals: ChromaticGlobals;
 }
 
 export type LocalBuildProgress = {
