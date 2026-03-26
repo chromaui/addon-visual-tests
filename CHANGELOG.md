@@ -1,3 +1,16 @@
+# v5.1.1 (Thu Mar 26 2026)
+
+#### 🐛 Bug Fix
+
+- Fix preview errors [#416](https://github.com/chromaui/addon-visual-tests/pull/416) ([@JReinhold](https://github.com/JReinhold))
+
+#### Authors: 2
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Jeppe Reinhold ([@JReinhold](https://github.com/JReinhold))
+
+---
+
 # v5.1.0 (Wed Mar 25 2026)
 
 #### 🚀 Enhancement
