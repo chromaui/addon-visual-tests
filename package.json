@@ -22,13 +22,8 @@
       "require": "./dist/index.js",
       "import": "./dist/index.mjs"
     },
-    "./manager": "./dist/manager.mjs",
     "./package.json": "./package.json",
-    "./preset": "./dist/preset.js",
-    "./preview": {
-      "types": "./dist/preview.d.ts",
-      "default": "./dist/preview.mjs"
-    }
+    "./preset": "./dist/preset.js"
   },
   "main": "dist/index.js",
   "files": [
