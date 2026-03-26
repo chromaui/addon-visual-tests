@@ -1,15 +1,8 @@
-export const {
-  CHROMATIC_INDEX_URL,
-  CHROMATIC_BASE_URL = CHROMATIC_INDEX_URL || 'https://www.chromatic.com',
-  CHROMATIC_API_URL = `${CHROMATIC_BASE_URL}/api`,
-} = process.env;
-
 export const PACKAGE_NAME = '@chromatic-com/storybook';
 
 export const ADDON_ID = 'chromaui/addon-visual-tests';
 export const PANEL_ID = `${ADDON_ID}/panel`;
 export const TEST_PROVIDER_ID = `${ADDON_ID}/test-provider`;
-export const ACCESS_TOKEN_KEY = `${ADDON_ID}/access-token/${CHROMATIC_BASE_URL}`;
 export const DEV_BUILD_ID_KEY = `${ADDON_ID}/dev-build-id`;
 export const CONFIG_INFO = `${ADDON_ID}/configInfo`;
 export const CONFIG_INFO_DISMISSED = `${ADDON_ID}/configInfoDismissed`;

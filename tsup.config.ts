@@ -96,7 +96,7 @@ export default defineConfig(async (options) => {
       format: ['esm'],
       platform: 'browser',
       external: globalManagerPackagesNoIcons,
-      dts: true,
+      dts: false,
     });
   }
 
