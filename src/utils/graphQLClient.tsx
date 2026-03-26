@@ -4,7 +4,8 @@ import { useAddonState } from 'storybook/manager-api';
 import { Client, ClientOptions, fetchExchange, mapExchange, Provider } from 'urql';
 import { v4 as uuid } from 'uuid';
 
-import { ACCESS_TOKEN_KEY, ADDON_ID, CHROMATIC_API_URL } from '../constants';
+import { ADDON_ID } from '../constants';
+import { ACCESS_TOKEN_KEY, CHROMATIC_API_URL } from '../env';
 
 let currentToken: string | null;
 let currentTokenExpiration: number | null;

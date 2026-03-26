@@ -1,4 +1,4 @@
-import { CHROMATIC_BASE_URL } from '../constants';
+import { CHROMATIC_BASE_URL } from '../env';
 // @ts-expect-error File is in plain JS
 import { sha256 } from './sha256';
 

@@ -17,7 +17,6 @@ import type { Options } from 'storybook/internal/types';
 
 import {
   ADDON_ID,
-  CHROMATIC_BASE_URL,
   CONFIG_INFO,
   CONFIG_OVERRIDES,
   GIT_INFO,
@@ -31,6 +30,7 @@ import {
   TELEMETRY,
   TEST_PROVIDER_ID,
 } from './constants.ts';
+import { CHROMATIC_BASE_URL } from './env.ts';
 import { runChromaticBuild, stopChromaticBuild } from './runChromaticBuild.ts';
 import {
   ConfigInfoPayload,
