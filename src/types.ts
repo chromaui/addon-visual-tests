@@ -215,3 +215,10 @@ export type LocalBuildProgress = {
   /** Progress tracking data from the previous build (if any) */
   previousBuildProgress?: Record<KnownStep, StepProgressPayload>;
 };
+
+export type ShareProgress = {
+  status: 'pending' | 'uploading' | 'complete' | 'error';
+  shareUrl?: string;
+  progress?: number;
+  error?: string;
+};
