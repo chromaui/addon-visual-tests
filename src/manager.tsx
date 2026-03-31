@@ -13,6 +13,7 @@ import {
   TEST_PROVIDER_ID,
 } from './constants.ts';
 import { Panel } from './Panel';
+import { ShareToolbarButton } from './screens/ShareSection';
 import { TestProviderRender } from './TestProviderRender';
 
 addons.register(ADDON_ID, (api) => {
@@ -56,4 +57,10 @@ addons.register(ADDON_ID, (api) => {
     type: Addon_TypesEnum.experimental_TEST_PROVIDER,
     render: () => <TestProviderRender />,
   } satisfies Omit<Addon_TestProviderType, 'id'>);
+
+  addons.add(`${ADDON_ID}/share-tool`, {
+    type: Addon_TypesEnum.TOOLEXTRA,
+    title: 'Share',
+    render: () => <ShareToolbarButton api={api} />,
+  });
 });

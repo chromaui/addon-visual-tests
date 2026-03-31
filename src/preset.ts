@@ -10,6 +10,7 @@ import {
   getGitInfo,
   type GitInfo,
 } from 'chromatic/node';
+import * as chromaticNode from 'chromatic/node';
 import type { Channel } from 'storybook/internal/channels';
 import { experimental_getTestProviderStore } from 'storybook/internal/core-server';
 import { telemetry } from 'storybook/internal/telemetry';
@@ -25,7 +26,9 @@ import {
   PACKAGE_NAME,
   PROJECT_INFO,
   REMOVE_ADDON,
+  SHARE_PROGRESS,
   START_BUILD,
+  START_SHARE,
   STOP_BUILD,
   TELEMETRY,
   TEST_PROVIDER_ID,
@@ -38,10 +41,24 @@ import {
   GitInfoPayload,
   LocalBuildProgress,
   ProjectInfoPayload,
+  ShareProgress,
 } from './types.ts';
 import { ChannelFetch } from './utils/ChannelFetch.ts';
 import { SharedState } from './utils/SharedState.ts';
 import { updateChromaticConfig } from './utils/updateChromaticConfig.ts';
+
+const share = (
+  chromaticNode as {
+    share?: (options: {
+      userToken: string;
+      storyId?: string;
+      onUrl?: (url: string) => void;
+      onProgress?: (progress: number, total: number) => void;
+      onError?: (error: Error) => void;
+      abortSignal?: AbortSignal;
+    }) => Promise<{ shareUrl: string }>;
+  }
+).share;
 
 const require = createRequire(import.meta.url);
 
@@ -247,6 +264,38 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
   channel.on(STOP_BUILD, () => {
     testProviderStore.setState('test-provider-state:succeeded');
     stopChromaticBuild();
+  });
+
+  const shareProgressState = SharedState.subscribe<ShareProgress>(SHARE_PROGRESS, channel);
+
+  channel.on(START_SHARE, async ({ accessToken, storyId }) => {
+    shareProgressState.value = { status: 'pending' };
+    try {
+      if (!share) {
+        throw new Error('Share API unavailable');
+      }
+
+      const result = await share({
+        userToken: accessToken,
+        storyId,
+        onUrl: (url: string) => {
+          shareProgressState.value = { status: 'uploading', shareUrl: url, progress: 0 };
+        },
+        onProgress: (current: number, total: number) => {
+          shareProgressState.value = {
+            ...shareProgressState.value,
+            status: 'uploading',
+            progress: Math.round((current / total) * 100),
+          };
+        },
+        onError: (error: Error) => {
+          shareProgressState.value = { status: 'error', error: error.message };
+        },
+      });
+      shareProgressState.value = { status: 'complete', shareUrl: result.shareUrl };
+    } catch (e: any) {
+      shareProgressState.value = { status: 'error', error: e?.message || 'Share failed' };
+    }
   });
 
   channel.on(TELEMETRY, async (event: Event) => {
