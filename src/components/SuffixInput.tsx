@@ -50,8 +50,10 @@ const SuffixOverlay = ({
   </SuffixWrapper>
 );
 
-interface SuffixInputProps
-  extends Omit<ComponentProps<typeof Input>, 'label' | 'crossOrigin' | 'enterKeyHint'> {
+interface SuffixInputProps extends Omit<
+  ComponentProps<typeof Input>,
+  'label' | 'crossOrigin' | 'enterKeyHint'
+> {
   suffix: string;
 }
 
