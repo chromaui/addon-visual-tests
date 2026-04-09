@@ -14,6 +14,7 @@ import type { Channel } from 'storybook/internal/channels';
 import { experimental_getTestProviderStore } from 'storybook/internal/core-server';
 import { telemetry } from 'storybook/internal/telemetry';
 import type { Options } from 'storybook/internal/types';
+import { experimental_getStatusStore } from 'storybook/manager-api';
 
 import {
   ADDON_ID,
@@ -190,6 +191,9 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
   projectInfoState.value = initialProjectId ? { projectId: initialProjectId } : {};
 
   const testProviderStore = experimental_getTestProviderStore(TEST_PROVIDER_ID);
+  const statusStore = experimental_getStatusStore(ADDON_ID);
+
+  testProviderStore.onClearAll(() => statusStore.unset());
 
   let lastProjectId = initialProjectId;
   projectInfoState.on('change', async ({ projectId } = {}) => {
