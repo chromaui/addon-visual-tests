@@ -1,9 +1,8 @@
 import { CheckIcon, CopyIcon } from '@storybook/icons';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import React from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 // @ts-expect-error Button export exists at runtime
-import { Button } from 'storybook/internal/components';
-import { keyframes, styled } from 'storybook/theming';
+import { Button, TooltipNote, TooltipProvider } from 'storybook/internal/components';
+import { styled } from 'storybook/theming';
 
 const UrlRow = styled.div(({ theme }) => ({
   display: 'flex',
@@ -32,23 +31,6 @@ const PlaceholderText = styled(UrlText)(({ theme }) => ({
 
 const CopyButton = styled(Button)({
   margin: 1,
-});
-
-const pop = keyframes({
-  '0%': { transform: 'scale(0.4)', opacity: 0 },
-  '50%': { transform: 'scale(1.3)' },
-  '70%': { transform: 'scale(0.9)' },
-  '100%': { transform: 'scale(1)', opacity: 1 },
-});
-
-const IconWrapper = styled.span({
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-});
-
-const AnimatedIcon = styled(IconWrapper)({
-  animation: `${pop} 0.35s ease-out`,
 });
 
 interface UrlCopyFieldProps {
@@ -85,23 +67,21 @@ export const UrlCopyField = ({ url, placeholder, onCopy }: UrlCopyFieldProps) =>
         <PlaceholderText>{placeholder ?? 'Getting URL...'}</PlaceholderText>
       )}
       {url && (
-        <CopyButton
-          variant="ghost"
-          size="small"
-          padding="small"
-          aria-label="Copy link"
-          onClick={handleCopy}
+        <TooltipProvider
+          tooltip={<TooltipNote note={copied ? 'Copied!' : 'Copy link to clipboard'} />}
+          placement="top"
+          visible={copied || undefined}
         >
-          {copied ? (
-            <AnimatedIcon key="check">
-              <CheckIcon size={14} color="green" />
-            </AnimatedIcon>
-          ) : (
-            <IconWrapper key="copy">
-              <CopyIcon size={14} />
-            </IconWrapper>
-          )}
-        </CopyButton>
+          <CopyButton
+            variant="ghost"
+            size="small"
+            padding="small"
+            aria-label="Copy link"
+            onClick={handleCopy}
+          >
+            {copied ? <CheckIcon color="green" /> : <CopyIcon />}
+          </CopyButton>
+        </TooltipProvider>
       )}
     </UrlRow>
   );
