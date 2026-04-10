@@ -1,30 +1,16 @@
 import React from 'react';
 import { styled } from 'storybook/theming';
 
+import { Button } from '../../components/Button';
 import {
+  ButtonStack,
   ShareContainer,
-  ShareCTAButton,
   ShareDescription,
   ShareTitle,
+  StatusRow,
+  TextBlock,
 } from './ShareSectionPrimitives';
 import { WhoHasAccess } from './WhoHasAccess';
-
-const TextBlock = styled.div({
-  display: 'flex',
-  flexDirection: 'column',
-});
-
-const ButtonGroup = styled.div({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 8,
-});
-
-const ErrorRow = styled.div({
-  display: 'flex',
-  alignItems: 'center',
-  gap: 6,
-});
 
 const ErrorBadge = styled.span(({ theme }) => ({
   backgroundColor: theme.color.negative,
@@ -58,20 +44,22 @@ export const ShareSectionError = ({ reason, onRetry }: ShareSectionErrorProps) =
   const mappedReason = reasonMessages[reason];
 
   return (
-    <ShareContainer $gap={24}>
+    <ShareContainer>
       <TextBlock>
         <ShareTitle>Publish a build to share</ShareTitle>
         <ShareDescription>
           This Storybook will be uploaded and available to collaborators for feedback.
         </ShareDescription>
       </TextBlock>
-      <ButtonGroup>
-        <ShareCTAButton onClick={onRetry}>Publish &amp; copy link</ShareCTAButton>
-        <ErrorRow>
+      <ButtonStack>
+        <Button size="medium" variant="solid" onClick={onRetry}>
+          Publish &amp; copy link
+        </Button>
+        <StatusRow>
           <ErrorBadge>Error</ErrorBadge>
           <ErrorMessage>Publish failed: {mappedReason}</ErrorMessage>
-        </ErrorRow>
-      </ButtonGroup>
+        </StatusRow>
+      </ButtonStack>
       <WhoHasAccess />
     </ShareContainer>
   );

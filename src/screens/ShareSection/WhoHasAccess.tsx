@@ -7,6 +7,8 @@ import { ShareTitle } from './ShareSectionPrimitives';
 const WhoHasAccessBlock = styled.div({
   display: 'flex',
   flexDirection: 'column',
+  alignSelf: 'stretch',
+  marginTop: 8,
   gap: 8,
 });
 

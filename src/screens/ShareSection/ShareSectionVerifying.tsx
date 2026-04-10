@@ -1,13 +1,17 @@
 import React from 'react';
 import { styled } from 'storybook/theming';
 
-import { ShareContainer, ShareTextLink, ShareTitle } from './ShareSectionPrimitives';
-
-const VerifyDescription = styled.div(({ theme }) => ({
-  fontSize: theme.typography.size.s1,
-  color: theme.textMutedColor,
-  lineHeight: '18px',
-}));
+import { Button } from '../../components/Button';
+import {
+  ButtonRow,
+  ButtonStack,
+  ShareContainer,
+  ShareDescription,
+  ShareTextLink,
+  ShareTitle,
+  StatusRow,
+  TextBlock,
+} from './ShareSectionPrimitives';
 
 const Digits = styled.ol(({ theme }) => ({
   display: 'inline-flex',
@@ -29,14 +33,6 @@ const Digits = styled.ol(({ theme }) => ({
   },
 }));
 
-const StatusRow = styled.div(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  gap: 8,
-  fontSize: theme.typography.size.s1,
-  color: theme.textMutedColor,
-}));
-
 const PulsingDot = styled.div(({ theme }) => ({
   width: 8,
   height: 8,
@@ -51,22 +47,38 @@ const PulsingDot = styled.div(({ theme }) => ({
 
 interface ShareSectionVerifyingProps {
   userCode: string;
+  onGoToChromatic: () => void;
   onBack: () => void;
 }
 
-export const ShareSectionVerifying = ({ userCode, onBack }: ShareSectionVerifyingProps) => (
+export const ShareSectionVerifying = ({
+  userCode,
+  onGoToChromatic,
+  onBack,
+}: ShareSectionVerifyingProps) => (
   <ShareContainer>
-    <ShareTitle>Verify your account</ShareTitle>
-    <VerifyDescription>Enter this code on Chromatic to share your Storybook.</VerifyDescription>
+    <TextBlock>
+      <ShareTitle>Verify your account</ShareTitle>
+      <ShareDescription>
+        Enter this verification code on Chromatic to grant access to your published Storybooks.
+      </ShareDescription>
+    </TextBlock>
     <Digits>
       {userCode.split('').map((char, index) => (
         <li key={`${index}-${char}`}>{char.replace(/[^A-Z0-9]/i, '')}</li>
       ))}
     </Digits>
-    <StatusRow>
-      <PulsingDot />
-      Waiting for verification...
-    </StatusRow>
-    <ShareTextLink onClick={onBack}>&larr; Back to sign in</ShareTextLink>
+    <ButtonStack>
+      <ButtonRow>
+        <Button size="medium" variant="solid" onClick={onGoToChromatic}>
+          Go to Chromatic
+        </Button>
+        <StatusRow>
+          <PulsingDot />
+          Waiting for verification...
+        </StatusRow>
+      </ButtonRow>
+      <ShareTextLink onClick={onBack}>Back to sign in</ShareTextLink>
+    </ButtonStack>
   </ShareContainer>
 );

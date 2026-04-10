@@ -31,7 +31,7 @@ export const ShareSection = ({ storyId, api }: { storyId: string; api: API }) =>
     'shareLastCompletedUrl',
     null
   );
-  const { startSignIn, reset } = useShareAuth(shareState, setShareState);
+  const { startSignIn, reset, openVerificationDialog } = useShareAuth(shareState, setShareState);
   const shareTriggeredRef = useRef(false);
   const isRepeatShareRef = useRef(false);
   const prevShareStatusRef = useRef<string>(shareState.status);
@@ -128,25 +128,26 @@ export const ShareSection = ({ storyId, api }: { storyId: string; api: API }) =>
     }
 
     if (shareProgress.status === 'complete' && shareProgress.shareUrl) {
+      const shareUrl = shareProgress.shareUrl;
       setHasChanges(false);
       setShareState({
         status: 'complete',
-        shareUrl: shareProgress.shareUrl,
+        shareUrl,
         publishedAt: Date.now(),
       });
 
-      if (shareProgress.shareUrl !== lastCompletedShareUrl) {
-        setLastCompletedShareUrl(shareProgress.shareUrl);
+      if (shareUrl !== lastCompletedShareUrl) {
+        setLastCompletedShareUrl(shareUrl);
         emitTelemetry('share-upload-completed');
         api.addNotification({
           id: `${ADDON_ID}/share-published`,
           content: {
             headline: 'Storybook published!',
-            subHeadline: shareProgress.shareUrl,
+            subHeadline: shareUrl,
           },
           duration: 8_000,
           onClick: ({ onDismiss }: { onDismiss: () => void }) => {
-            navigator.clipboard.writeText(shareProgress.shareUrl!);
+            navigator.clipboard.writeText(shareUrl);
             onDismiss();
           },
         });
@@ -189,7 +190,13 @@ export const ShareSection = ({ storyId, api }: { storyId: string; api: API }) =>
     case 'idle':
       return <ShareSectionIdle onSignIn={startSignIn} />;
     case 'verifying':
-      return <ShareSectionVerifying userCode={shareState.userCode} onBack={reset} />;
+      return (
+        <ShareSectionVerifying
+          userCode={shareState.userCode}
+          onGoToChromatic={openVerificationDialog}
+          onBack={reset}
+        />
+      );
     case 'uploading':
       return (
         <ShareSectionUploading

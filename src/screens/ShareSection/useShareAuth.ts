@@ -49,8 +49,6 @@ export function useShareAuth(shareState: ShareState, setShareState: (s: ShareSta
         interval: params.interval,
       });
 
-      openDialogRef.current(params.verificationUrl);
-
       pollingRef.current = setInterval(async () => {
         const currentParams = exchangeParamsRef.current;
         if (!currentParams) {
@@ -82,6 +80,13 @@ export function useShareAuth(shareState: ShareState, setShareState: (s: ShareSta
     }
   }, [setShareState, updateToken, clearPolling]);
 
+  const openVerificationDialog = useCallback(() => {
+    if (shareState.status !== 'verifying') {
+      return;
+    }
+    openDialogRef.current(shareState.verificationUrl);
+  }, [shareState]);
+
   const reset = useCallback(() => {
     clearPolling();
     closeDialogRef.current();
@@ -95,5 +100,5 @@ export function useShareAuth(shareState: ShareState, setShareState: (s: ShareSta
     };
   }, [clearPolling]);
 
-  return { startSignIn, reset };
+  return { startSignIn, reset, openVerificationDialog };
 }

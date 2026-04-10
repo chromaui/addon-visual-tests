@@ -4,6 +4,7 @@ export const ShareContainer = styled.div<{ $gap?: number; $center?: boolean }>(
   ({ $gap = 16, $center = false }) => ({
     display: 'flex',
     flexDirection: 'column',
+    alignItems: 'flex-start',
     padding: 24,
     width: 400,
     maxWidth: 400,
@@ -41,7 +42,6 @@ export const ShareCTAButton = styled.button(({ theme }) => ({
   border: 'none',
   cursor: 'pointer',
   flexShrink: 0,
-  alignSelf: 'flex-start',
   '&:hover': {
     opacity: 0.9,
   },
@@ -56,4 +56,32 @@ export const ShareTextLink = styled.button<{ $underline?: boolean }>(({ theme, $
   padding: 0,
   lineHeight: '16px',
   textDecoration: $underline ? 'underline' : 'none',
+}));
+
+export const TextBlock = styled.div({
+  display: 'flex',
+  flexDirection: 'column',
+});
+
+export const ButtonStack = styled.div({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'flex-start',
+  alignSelf: 'stretch',
+  gap: 8,
+});
+
+export const ButtonRow = styled.div({
+  display: 'flex',
+  flexDirection: 'row',
+  alignItems: 'center',
+  gap: 12,
+});
+
+export const StatusRow = styled.div(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  gap: 8,
+  fontSize: theme.typography.size.s1,
+  color: theme.textMutedColor,
 }));

@@ -1,32 +1,17 @@
 import React from 'react';
 import { styled } from 'storybook/theming';
 
+import { Button } from '../../components/Button';
 import {
+  ButtonStack,
   ShareContainer,
-  ShareCTAButton,
   ShareDescription,
   ShareTextLink,
   ShareTitle,
+  TextBlock,
 } from './ShareSectionPrimitives';
 import { UrlCopyField } from './UrlCopyField';
 import { WhoHasAccess } from './WhoHasAccess';
-
-const ShareLinkBlock = styled.div({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 16,
-});
-
-const TitleBlock = styled.div({
-  display: 'flex',
-  flexDirection: 'column',
-});
-
-const UrlStatusBlock = styled.div({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 8,
-});
 
 const SuccessRow = styled.div({
   display: 'flex',
@@ -114,43 +99,41 @@ export const ShareSectionComplete = ({
   onDelete,
 }: ShareSectionCompleteProps) => {
   return (
-    <ShareContainer $gap={24}>
-      <ShareLinkBlock>
-        <TitleBlock>
-          <ShareTitle>Copy link to published Storybook</ShareTitle>
-          <ShareDescription>
-            Share with collaborators to get feedback or reproduce issues.
-          </ShareDescription>
-        </TitleBlock>
-        <UrlStatusBlock>
-          <UrlCopyField url={shareUrl} onCopy={onCopy} />
-          {!hasChanges ? (
-            <SuccessRow>
-              <span>🎉</span>
-              <SuccessText>Storybook published!</SuccessText>
-            </SuccessRow>
-          ) : (
-            <>
-              <TimestampRow>
-                <span style={{ fontSize: 12, flexShrink: 0 }}>⏳</span>
-                <TimestampText>
-                  Published {formatRelativeTime(publishedAt)} – expires in{' '}
-                  {formatExpiryDays(publishedAt)} days
-                </TimestampText>
-                <ShareTextLink onClick={onDelete}>Delete</ShareTextLink>
-              </TimestampRow>
-              <InfoBanner>
-                <InfoBannerText>
-                  Changes have been made since you last published this Storybook.
-                </InfoBannerText>
-                <ShareCTAButton style={{ width: 83 }} onClick={onPublishAgain}>
-                  Republish
-                </ShareCTAButton>
-              </InfoBanner>
-            </>
-          )}
-        </UrlStatusBlock>
-      </ShareLinkBlock>
+    <ShareContainer>
+      <TextBlock>
+        <ShareTitle>Copy link to published Storybook</ShareTitle>
+        <ShareDescription>
+          Share with collaborators to get feedback or reproduce issues.
+        </ShareDescription>
+      </TextBlock>
+      <ButtonStack>
+        <UrlCopyField url={shareUrl} onCopy={onCopy} />
+        {!hasChanges ? (
+          <SuccessRow>
+            <span>🎉</span>
+            <SuccessText>Storybook published!</SuccessText>
+          </SuccessRow>
+        ) : (
+          <>
+            <TimestampRow>
+              <span style={{ fontSize: 12, flexShrink: 0 }}>⏳</span>
+              <TimestampText>
+                Published {formatRelativeTime(publishedAt)} – expires in{' '}
+                {formatExpiryDays(publishedAt)} days
+              </TimestampText>
+              <ShareTextLink onClick={onDelete}>Delete</ShareTextLink>
+            </TimestampRow>
+            <InfoBanner>
+              <InfoBannerText>
+                Changes have been made since you last published this Storybook.
+              </InfoBannerText>
+              <Button size="medium" variant="solid" onClick={onPublishAgain}>
+                Republish
+              </Button>
+            </InfoBanner>
+          </>
+        )}
+      </ButtonStack>
       <WhoHasAccess />
     </ShareContainer>
   );

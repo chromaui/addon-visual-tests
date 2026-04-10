@@ -1,25 +1,14 @@
 import React from 'react';
-import { styled } from 'storybook/theming';
 
+import { Button } from '../../components/Button';
 import {
+  ButtonStack,
   ShareContainer,
-  ShareCTAButton,
   ShareDescription,
   ShareTextLink,
   ShareTitle,
+  TextBlock,
 } from './ShareSectionPrimitives';
-
-const TextBlock = styled.div({
-  display: 'flex',
-  flexDirection: 'column',
-});
-
-const ButtonStack = styled.div({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'flex-start',
-  gap: 8,
-});
 
 interface ShareSectionIdleProps {
   onSignIn: () => void;
@@ -34,12 +23,10 @@ export const ShareSectionIdle = ({ onSignIn }: ShareSectionIdleProps) => (
       </ShareDescription>
     </TextBlock>
     <ButtonStack>
-      <ShareCTAButton style={{ width: 166 }} onClick={onSignIn}>
+      <Button size="medium" variant="solid" onClick={onSignIn}>
         Sign in with Chromatic
-      </ShareCTAButton>
-      <ShareTextLink $underline onClick={onSignIn}>
-        Connect with SAML SSO
-      </ShareTextLink>
+      </Button>
+      <ShareTextLink onClick={onSignIn}>Connect with SAML SSO</ShareTextLink>
     </ButtonStack>
   </ShareContainer>
 );

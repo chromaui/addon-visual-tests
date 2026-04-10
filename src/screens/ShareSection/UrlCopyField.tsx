@@ -8,6 +8,7 @@ import { keyframes, styled } from 'storybook/theming';
 const UrlRow = styled.div(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
+  alignSelf: 'stretch',
   border: `1px solid ${theme.appBorderColor}`,
   borderRadius: 4,
   minHeight: 32,
@@ -28,6 +29,10 @@ const UrlText = styled.div(({ theme }) => ({
 const PlaceholderText = styled(UrlText)(({ theme }) => ({
   color: theme.textMutedColor,
 }));
+
+const CopyButton = styled(Button)({
+  margin: 1,
+});
 
 const pop = keyframes({
   '0%': { transform: 'scale(0.4)', opacity: 0 },
@@ -80,7 +85,7 @@ export const UrlCopyField = ({ url, placeholder, onCopy }: UrlCopyFieldProps) =>
         <PlaceholderText>{placeholder ?? 'Getting URL...'}</PlaceholderText>
       )}
       {url && (
-        <Button
+        <CopyButton
           variant="ghost"
           size="small"
           padding="small"
@@ -96,7 +101,7 @@ export const UrlCopyField = ({ url, placeholder, onCopy }: UrlCopyFieldProps) =>
               <CopyIcon size={14} />
             </IconWrapper>
           )}
-        </Button>
+        </CopyButton>
       )}
     </UrlRow>
   );
