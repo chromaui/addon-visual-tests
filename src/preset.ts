@@ -35,7 +35,7 @@ import {
 } from './constants.ts';
 import { CHROMATIC_BASE_URL } from './env.ts';
 import { runChromaticBuild, stopChromaticBuild } from './runChromaticBuild.ts';
-import {
+import type {
   ConfigInfoPayload,
   ConfigurationUpdate,
   GitInfoPayload,

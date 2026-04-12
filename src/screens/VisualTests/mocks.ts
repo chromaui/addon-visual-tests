@@ -28,7 +28,7 @@ export const buildInfo = (selectedBuild?: SelectedBuildFieldsFragment) => ({
   lastBuildOnBranchIsReady: false,
   lastBuildOnBranchIsSelectable: false,
   selectedBuild,
-  selectedBuildMatchesGit: true,
+  checkOutdated: () => true,
   rerunQuery: () => {},
   queryError: undefined,
   userCanReview: true,

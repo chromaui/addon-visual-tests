@@ -187,6 +187,12 @@ export type LocalBuildProgress = {
    */
   branch?: string;
 
+  /** The commit we ran the build on */
+  commit?: string;
+
+  /** The uncommitted hash we ran the build on, if any */
+  uncommittedHash?: string | null;
+
   /** Overall percentage of build progress */
   buildProgressPercentage: number;
 

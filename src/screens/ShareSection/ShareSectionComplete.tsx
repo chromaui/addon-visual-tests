@@ -47,6 +47,7 @@ const InfoBanner = styled.div(({ theme }) => ({
   borderRadius: 4,
   display: 'flex',
   gap: 16,
+  marginTop: 8,
   padding: '8px 12px',
   alignItems: 'center',
 }));
@@ -84,7 +85,7 @@ function formatExpiryDays(publishedAt: number): number {
 interface ShareSectionCompleteProps {
   shareUrl: string;
   publishedAt: number;
-  hasChanges: boolean;
+  isOutdated: boolean;
   onPublishAgain: () => void;
   onCopy?: () => void;
   onDelete?: () => void;
@@ -93,7 +94,7 @@ interface ShareSectionCompleteProps {
 export const ShareSectionComplete = ({
   shareUrl,
   publishedAt,
-  hasChanges,
+  isOutdated,
   onPublishAgain,
   onCopy,
   onDelete,
@@ -108,7 +109,7 @@ export const ShareSectionComplete = ({
       </TextBlock>
       <ButtonStack>
         <UrlCopyField url={shareUrl} onCopy={onCopy} />
-        {!hasChanges ? (
+        {!isOutdated ? (
           <SuccessRow>
             <span>🎉</span>
             <SuccessText>Storybook published!</SuccessText>

@@ -37,7 +37,7 @@ interface ShareSectionErrorProps {
 const reasonMessages: Record<ShareSectionErrorProps['reason'], string> = {
   cancelled: 'Sign-in was not completed',
   expired: 'Sign-in link expired',
-  unknown: 'Something went wrong',
+  unknown: '',
 };
 
 export const ShareSectionError = ({ reason, onRetry }: ShareSectionErrorProps) => {
@@ -57,7 +57,9 @@ export const ShareSectionError = ({ reason, onRetry }: ShareSectionErrorProps) =
         </Button>
         <StatusRow>
           <ErrorBadge>Error</ErrorBadge>
-          <ErrorMessage>Publish failed: {mappedReason}</ErrorMessage>
+          <ErrorMessage>
+            <strong>Publish failed{mappedReason && ':'}</strong> {mappedReason}
+          </ErrorMessage>
         </StatusRow>
       </ButtonStack>
       <WhoHasAccess />

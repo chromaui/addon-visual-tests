@@ -9,7 +9,6 @@ import {
   GIT_INFO,
   GIT_INFO_ERROR,
   IS_OFFLINE,
-  IS_OUTDATED,
   LOCAL_BUILD_PROGRESS,
   REMOVE_ADDON,
   TELEMETRY,
@@ -26,7 +25,7 @@ import { Uninstalled } from './screens/Uninstalled/Uninstalled';
 import { ControlsProvider } from './screens/VisualTests/ControlsContext';
 import { RunBuildProvider } from './screens/VisualTests/RunBuildContext';
 import { VisualTests } from './screens/VisualTests/VisualTests';
-import { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from './types';
+import type { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from './types';
 import { createClient, GraphQLClientProvider, useAccessToken } from './utils/graphQLClient';
 import { TelemetryProvider } from './utils/TelemetryContext';
 import { useBuildEvents } from './utils/useBuildEvents';
@@ -56,10 +55,8 @@ export const Panel = ({ active }: PanelProps) => {
   const [gitInfo] = useSharedState<GitInfoPayload>(GIT_INFO);
   const [gitInfoError] = useSharedState<Error>(GIT_INFO_ERROR);
   const [isOffline] = useSharedState<boolean>(IS_OFFLINE);
-  const [isOutdated] = useSharedState<boolean>(IS_OUTDATED);
   const [localBuildProgress, setLocalBuildProgress] =
     useSharedState<LocalBuildProgress>(LOCAL_BUILD_PROGRESS);
-  const [, setOutdated] = useSharedState<boolean>(IS_OUTDATED);
   const emit = useChannel({});
 
   const updateBuildStatus = useCallback<UpdateStatusFunction>((statuses) => {
@@ -177,9 +174,7 @@ export const Panel = ({ active }: PanelProps) => {
   return withProviders(
     <VisualTests
       dismissBuildError={() => setLocalBuildProgress(undefined)}
-      isOutdated={!!isOutdated}
       localBuildProgress={localBuildIsRightBranch ? localBuildProgress : undefined}
-      setOutdated={setOutdated}
       updateBuildStatus={updateBuildStatus}
       projectId={projectId}
       gitInfo={gitInfo}

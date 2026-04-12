@@ -98,10 +98,6 @@ export const useBuild = ({
     lastBuildOnBranchIsReady,
     lastBuildOnBranchIsSelectable,
     selectedBuild,
-    selectedBuildMatchesGit:
-      selectedBuild?.branch.split(':').at(-1) === gitInfo.branch &&
-      selectedBuild?.commit === gitInfo.commit &&
-      selectedBuild?.uncommittedHash === gitInfo.uncommittedHash,
     rerunQuery,
     queryError,
     userCanReview: !!data?.viewer?.projectMembership?.userCanReview,

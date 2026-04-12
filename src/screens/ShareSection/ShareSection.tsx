@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useRef } from 'react';
-import { STORY_INDEX_INVALIDATED } from 'storybook/internal/core-events';
 import type { API } from 'storybook/manager-api';
 
-import { ADDON_ID, SHARE_PROGRESS, START_SHARE, TELEMETRY } from '../../constants';
-import type { ShareProgress } from '../../types';
+import { ADDON_ID, GIT_INFO, SHARE_PROGRESS, START_SHARE, TELEMETRY } from '../../constants';
+import type { GitInfoPayload, ShareProgress } from '../../types';
+import { checkOutdated } from '../../utils/checkOutdated';
 import { useAccessToken } from '../../utils/graphQLClient';
 import { useSessionState } from '../../utils/useSessionState';
 import { useSharedState } from '../../utils/useSharedState';
@@ -18,11 +18,11 @@ import { useShareAuth } from './useShareAuth';
 
 export const ShareSection = ({ storyId, api }: { storyId: string; api: API }) => {
   const [token] = useAccessToken();
+  const [gitInfo] = useSharedState<GitInfoPayload>(GIT_INFO);
   const [shareProgress] = useSharedState<ShareProgress>(SHARE_PROGRESS);
   const [shareState, setShareState] = useSessionState<ShareState>('shareState', {
     status: 'welcome',
   });
-  const [hasChanges, setHasChanges] = useSessionState<boolean>('shareHasChanges', false);
   const [awaitingFreshProgress, setAwaitingFreshProgress] = useSessionState<boolean>(
     'shareAwaitingFreshProgress',
     false
@@ -31,6 +31,9 @@ export const ShareSection = ({ storyId, api }: { storyId: string; api: API }) =>
     'shareLastCompletedUrl',
     null
   );
+  const [lastCompletedGitInfo, setLastCompletedGitInfo] = useSessionState<
+    GitInfoPayload | undefined
+  >('shareLastCompletedGitInfo', undefined);
   const { startSignIn, reset, openVerificationDialog } = useShareAuth(shareState, setShareState);
   const shareTriggeredRef = useRef(false);
   const isRepeatShareRef = useRef(false);
@@ -129,7 +132,6 @@ export const ShareSection = ({ storyId, api }: { storyId: string; api: API }) =>
 
     if (shareProgress.status === 'complete' && shareProgress.shareUrl) {
       const shareUrl = shareProgress.shareUrl;
-      setHasChanges(false);
       setShareState({
         status: 'complete',
         shareUrl,
@@ -138,6 +140,7 @@ export const ShareSection = ({ storyId, api }: { storyId: string; api: API }) =>
 
       if (shareUrl !== lastCompletedShareUrl) {
         setLastCompletedShareUrl(shareUrl);
+        setLastCompletedGitInfo(gitInfo);
         emitTelemetry('share-upload-completed');
         api.addNotification({
           id: `${ADDON_ID}/share-published`,
@@ -164,25 +167,14 @@ export const ShareSection = ({ storyId, api }: { storyId: string; api: API }) =>
     awaitingFreshProgress,
     currentShareUrl,
     emitTelemetry,
+    gitInfo,
     lastCompletedShareUrl,
     setAwaitingFreshProgress,
     setLastCompletedShareUrl,
+    setLastCompletedGitInfo,
     setShareState,
     shareProgress,
-    setHasChanges,
   ]);
-
-  useEffect(() => {
-    const handler = () => {
-      if (shareState.status === 'complete') {
-        setHasChanges(true);
-      }
-    };
-    api.getChannel()?.on(STORY_INDEX_INVALIDATED, handler);
-    return () => {
-      api.getChannel()?.off(STORY_INDEX_INVALIDATED, handler);
-    };
-  }, [api, shareState.status, setHasChanges]);
 
   switch (shareState.status) {
     case 'welcome':
@@ -214,7 +206,7 @@ export const ShareSection = ({ storyId, api }: { storyId: string; api: API }) =>
         <ShareSectionComplete
           shareUrl={shareState.shareUrl}
           publishedAt={publishedAt}
-          hasChanges={hasChanges}
+          isOutdated={checkOutdated(lastCompletedGitInfo, gitInfo)}
           onCopy={() => emitTelemetry('share-url-copied')}
           onDelete={() => {}}
           onPublishAgain={() => {

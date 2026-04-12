@@ -86,7 +86,7 @@ export const CompleteJustPublished: CompleteStory = {
   args: {
     shareUrl: 'https://64e2e5e6ad08a7e515c54b37-abcdefghij.chromatic.com',
     publishedAt: Date.now(),
-    hasChanges: false,
+    isOutdated: false,
     onPublishAgain: fn().mockName('onPublishAgain'),
     onCopy: fn().mockName('onCopy'),
     onDelete: fn().mockName('onDelete'),
@@ -100,7 +100,7 @@ export const CompleteWithChanges: CompleteStory = {
   args: {
     shareUrl: 'https://64e2e5e6ad08a7e515c54b37-abcdefghij.chromatic.com',
     publishedAt: Date.now() - 2 * 60 * 60 * 1000, // 2 hours ago
-    hasChanges: true,
+    isOutdated: true,
     onPublishAgain: fn().mockName('onPublishAgain'),
     onCopy: fn().mockName('onCopy'),
     onDelete: fn().mockName('onDelete'),
