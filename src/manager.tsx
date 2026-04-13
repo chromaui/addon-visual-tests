@@ -54,6 +54,9 @@ addons.register(ADDON_ID, (api) => {
 
   addons.add(TEST_PROVIDER_ID, {
     type: Addon_TypesEnum.experimental_TEST_PROVIDER,
+    clear: () => {
+      statusStore.unset();
+    },
     render: () => <TestProviderRender />,
-  } satisfies Omit<Addon_TestProviderType, 'id'>);
+  } as Omit<Addon_TestProviderType, 'id'>);
 });
