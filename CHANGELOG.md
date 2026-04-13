@@ -1,3 +1,15 @@
+# v5.1.2 (Mon Apr 13 2026)
+
+#### 🐛 Bug Fix
+
+- Sidebar: add clear() to test provider to clear visual test statuses [#421](https://github.com/chromaui/addon-visual-tests/pull/421) ([@valentinpalkovic](https://github.com/valentinpalkovic))
+
+#### Authors: 1
+
+- Valentin Palkovic ([@valentinpalkovic](https://github.com/valentinpalkovic))
+
+---
+
 # v5.1.1 (Thu Mar 26 2026)
 
 #### 🐛 Bug Fix
