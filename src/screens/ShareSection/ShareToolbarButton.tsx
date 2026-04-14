@@ -16,7 +16,7 @@ export const ShareToolbarButton = ({ api }: { api: API }) => (
         padding={0}
         popover={<ShareSection storyId={storyId} api={api} />}
       >
-        <Button variant="ghost" padding="small">
+        <Button variant="ghost" padding="small" id="chromatic-share-button">
           Share
         </Button>
       </PopoverProvider>
