@@ -1,5 +1,4 @@
 import React, { useCallback, useRef } from 'react';
-import { styled } from 'storybook/theming';
 import { useClient } from 'urql';
 
 import { Button } from '../../components/Button';
@@ -9,31 +8,12 @@ import { Screen } from '../../components/Screen';
 import { Stack } from '../../components/Stack';
 import { Text } from '../../components/Text';
 import { graphql } from '../../gql';
-import { Project } from '../../gql/graphql';
+import type { Project } from '../../gql/graphql';
 import { getFetchOptions } from '../../utils/graphQLClient';
-import { fetchAccessToken, TokenExchangeParameters } from '../../utils/requestAccessToken';
-import { DialogHandler, useChromaticDialog } from '../../utils/useChromaticDialog';
+import { fetchAccessToken, type TokenExchangeParameters } from '../../utils/requestAccessToken';
+import { type DialogHandler, useChromaticDialog } from '../../utils/useChromaticDialog';
 import { useErrorNotification } from '../../utils/useErrorNotification';
 import { AuthHeader } from './AuthHeader';
-
-const Digits = styled.ol(({ theme }) => ({
-  display: 'inline-flex',
-  listStyle: 'none',
-  marginTop: 15,
-  marginBottom: 5,
-  padding: 0,
-  gap: 5,
-
-  'li:not(:empty)': {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    border: `1px dashed ${theme.input.border}`,
-    borderRadius: 4,
-    width: 28,
-    height: 32,
-  },
-}));
 
 const ProjectCountQuery = graphql(/* GraphQL */ `
   query VisualTestsProjectCountQuery {
@@ -64,25 +44,48 @@ export const Verify = ({
   const client = useClient();
   const onError = useErrorNotification();
 
-  const { user_code: userCode, verificationUrl } = exchangeParameters;
+  const { authorizationUrl, state, clientId, codeVerifier, redirectUri } = exchangeParameters;
+  const redirectOrigin = new URL(redirectUri).origin;
 
   // Store the access token until we are ready to pass it to `setAccessToken` (at which point
   // the Panel will close the Authentication screen)
   const accessToken = useRef<string>();
 
-  const openDialogRef = useRef<(url: string) => void>();
+  const openDialogRef = useRef<(url: string, additionalOrigins?: string[]) => void>();
   const closeDialogRef = useRef<() => void>();
   const handler = useCallback<DialogHandler>(
     async (event) => {
       // If the user logs in as part of the grant process, don't close the dialog,
       // instead redirect us back to where we were trying to go.
       if (event.message === 'login') {
-        openDialogRef.current?.(verificationUrl);
+        openDialogRef.current?.(authorizationUrl, [redirectOrigin]);
       }
 
       if (event.message === 'grant') {
         try {
-          const token = await fetchAccessToken(exchangeParameters);
+          if ('denied' in event) {
+            if (event.denied) {
+              throw new Error('Authorization request was denied');
+            }
+            // Ignore intermediate legacy "granted" events and wait for auth code callback payload.
+            return;
+          }
+          if ('error' in event) {
+            throw new Error(event.error_description || event.error);
+          }
+          if (!('code' in event) || !('state' in event)) {
+            throw new Error('Unexpected OAuth callback payload');
+          }
+          if (event.state !== state) {
+            throw new Error('Invalid OAuth state');
+          }
+
+          const token = await fetchAccessToken({
+            clientId,
+            codeVerifier,
+            redirectUri,
+            code: event.code,
+          });
           if (!token) throw new Error('Failed to fetch an access token');
           accessToken.current = token;
 
@@ -122,8 +125,12 @@ export const Verify = ({
       }
     },
     [
-      verificationUrl,
-      exchangeParameters,
+      authorizationUrl,
+      redirectOrigin,
+      state,
+      clientId,
+      codeVerifier,
+      redirectUri,
       client,
       hasProjectId,
       setAccessToken,
@@ -144,21 +151,15 @@ export const Verify = ({
             <Heading>Verify your account</Heading>
             <div>
               <Text center muted>
-                Check this verification code on Chromatic to grant access to your published
-                Storybooks.
+                Continue in Chromatic to approve access to your published Storybooks.
               </Text>
             </div>
-            <Digits>
-              {userCode?.split('').map((char: string, index: number) => (
-                <li key={`${index}-${char}`}>{char.replace(/[^A-Z0-9]/, '')}</li>
-              ))}
-            </Digits>
           </div>
           <Button
             ariaLabel={false}
             variant="solid"
             size="medium"
-            onClick={() => openDialog(verificationUrl)}
+            onClick={() => openDialog(authorizationUrl, [redirectOrigin])}
           >
             Go to Chromatic
           </Button>

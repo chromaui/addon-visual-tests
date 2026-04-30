@@ -4,6 +4,7 @@ export const {
   CHROMATIC_INDEX_URL,
   CHROMATIC_BASE_URL = CHROMATIC_INDEX_URL || 'https://www.chromatic.com',
   CHROMATIC_API_URL = `${CHROMATIC_BASE_URL}/api`,
+  OAUTH_REDIRECT_URI = `${CHROMATIC_BASE_URL}/connect/chromaui:addon-visual-tests`,
 } = process.env;
 
 export const ACCESS_TOKEN_KEY = `${ADDON_ID}/access-token/${CHROMATIC_BASE_URL}`;

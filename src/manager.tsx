@@ -1,5 +1,5 @@
 import React from 'react';
-import { type ClickEventDetails } from 'storybook/highlight';
+import type { ClickEventDetails } from 'storybook/highlight';
 import { type Addon_TestProviderType, Addon_TypesEnum } from 'storybook/internal/types';
 import { addons, experimental_getStatusStore } from 'storybook/manager-api';
 
@@ -8,15 +8,18 @@ import {
   ADDON_ID,
   HIGHLIGHT_IGNORED_DEFAULT_SELECTORS,
   HIGHLIGHT_IGNORED_SELECT,
+  PAGE_ID,
+  PAGE_URL,
   PANEL_ID,
   PARAM_KEY,
   TEST_PROVIDER_ID,
 } from './constants.ts';
 import { Panel } from './Panel';
+import { OAuthRedirectBridgePage } from './screens/Authentication/OAuthRedirectBridgePage.tsx';
 import { TestProviderRender } from './TestProviderRender';
 
 addons.register(ADDON_ID, (api) => {
-  api.on(HIGHLIGHT_IGNORED_SELECT, (itemId: string, details: ClickEventDetails) => {
+  api.on(HIGHLIGHT_IGNORED_SELECT, (_itemId: string, details: ClickEventDetails) => {
     const isDefaultSelector = HIGHLIGHT_IGNORED_DEFAULT_SELECTORS.includes(details.selectors[0]);
     window.open(
       isDefaultSelector
@@ -39,6 +42,13 @@ addons.register(ADDON_ID, (api) => {
     paramKey: PARAM_KEY,
     match: ({ viewMode }) => viewMode === 'story',
     render: ({ active }) => <Panel active={!!active} api={api} />,
+  });
+
+  addons.add(PAGE_ID, {
+    type: Addon_TypesEnum.experimental_PAGE,
+    url: PAGE_URL,
+    title: 'OAuth redirect',
+    render: () => <OAuthRedirectBridgePage />,
   });
 
   if (globalThis.CONFIG_TYPE !== 'DEVELOPMENT') {
