@@ -8,15 +8,37 @@ import {
   ADDON_ID,
   HIGHLIGHT_IGNORED_DEFAULT_SELECTORS,
   HIGHLIGHT_IGNORED_SELECT,
-  PAGE_ID,
-  PAGE_URL,
   PANEL_ID,
   PARAM_KEY,
   TEST_PROVIDER_ID,
 } from './constants.ts';
 import { Panel } from './Panel';
-import { OAuthRedirectBridgePage } from './screens/Authentication/OAuthRedirectBridgePage.tsx';
 import { TestProviderRender } from './TestProviderRender';
+
+// OAuth redirect handler
+if (window.opener && !window.opener.closed) {
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get('code');
+  const state = params.get('state');
+  const error = params.get('error');
+
+  if (code && state) {
+    window.opener.postMessage({ message: 'grant', code, state }, window.location.origin);
+    window.close();
+  } else if (error) {
+    const errorDescription = params.get('error_description');
+    window.opener.postMessage(
+      {
+        message: 'grant',
+        error,
+        ...(errorDescription ? { error_description: errorDescription } : {}),
+        ...(state ? { state } : {}),
+      },
+      window.location.origin
+    );
+    window.close();
+  }
+}
 
 addons.register(ADDON_ID, (api) => {
   api.on(HIGHLIGHT_IGNORED_SELECT, (_itemId: string, details: ClickEventDetails) => {
@@ -42,13 +64,6 @@ addons.register(ADDON_ID, (api) => {
     paramKey: PARAM_KEY,
     match: ({ viewMode }) => viewMode === 'story',
     render: ({ active }) => <Panel active={!!active} api={api} />,
-  });
-
-  addons.add(PAGE_ID, {
-    type: Addon_TypesEnum.experimental_PAGE,
-    url: PAGE_URL,
-    title: 'OAuth redirect',
-    render: () => <OAuthRedirectBridgePage />,
   });
 
   if (globalThis.CONFIG_TYPE !== 'DEVELOPMENT') {

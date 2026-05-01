@@ -1,4 +1,4 @@
-import { OAUTH_CLIENT_ID, PAGE_URL } from '../constants';
+import { OAUTH_CLIENT_ID } from '../constants';
 import { CHROMATIC_BASE_URL } from '../env';
 // @ts-expect-error File is in plain JS
 import { sha256 } from './sha256';
@@ -52,7 +52,7 @@ export const initiateSignin = async (subdomain?: string): Promise<TokenExchangeP
   const codeVerifier = randomBase64Url(64);
   const codeChallenge = base64URLEncode(hexStringToBytes(sha256(codeVerifier)));
   const chromaticBaseUrl = resolveChromaticHost(subdomain);
-  const redirectUri = `${window.location.origin}/?path=${PAGE_URL}`;
+  const redirectUri = window.location.origin;
   const authorizationUrl = `${chromaticBaseUrl}/authorize?${encodeParams({
     client_id: OAUTH_CLIENT_ID,
     response_type: 'code',
@@ -80,10 +80,8 @@ export const fetchAccessToken = async ({
 }: Pick<TokenExchangeParameters, 'clientId' | 'codeVerifier' | 'redirectUri'> & {
   code: string;
 }) => {
-  const tokenUrl = `${CHROMATIC_BASE_URL}/token`;
-
   try {
-    const res = await fetch(tokenUrl, {
+    const res = await fetch(`${CHROMATIC_BASE_URL}/token`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
       body: encodeParams({
