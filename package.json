@@ -42,15 +42,13 @@
     "codegen": "graphql-codegen",
     "lint": "eslint src --report-unused-disable-directives",
     "format": "prettier . --write",
-    "release": "yarn run build && auto shipit",
+    "release": "pnpm build && changeset publish",
     "start": "run-p build:watch 'storybook --quiet'",
     "storybook": "CHROMATIC_ADDON_NAME='../src/dev.ts' storybook dev -p 6004",
     "storybook-from-dist": "CHROMATIC_USE_DIST_VERSION=true CHROMATIC_ADDON_NAME='../dist/index.js' storybook dev -p 6004",
     "test": "vitest --coverage",
-    "typecheck": "tsc --noemit"
-  },
-  "resolutions": {
-    "jackspeak": "2.1.1"
+    "typecheck": "tsc --noemit",
+    "changeset": "changeset"
   },
   "dependencies": {
     "@neoconfetti/react": "^1.0.0",
@@ -61,7 +59,8 @@
   },
   "devDependencies": {
     "@0no-co/graphqlsp": "^1.12.16",
-    "@auto-it/slack": "^11.2.1",
+    "@changesets/changelog-github": "^0.5.1",
+    "@changesets/cli": "^2.29.7",
     "@emotion/weak-memoize": "^0.3.1",
     "@graphql-codegen/cli": "^5.0.5",
     "@graphql-typed-document-node/core": "^3.2.0",
@@ -80,7 +79,6 @@
     "@urql/exchange-auth": "^2.1.6",
     "@vitejs/plugin-react": "^4.3.4",
     "@vitest/coverage-v8": "^3.0.8",
-    "auto": "^11.0.5",
     "boxen": "^5.0.1",
     "date-fns": "^2.30.0",
     "dedent": "^0.7.0",
@@ -95,6 +93,7 @@
     "msw": "^2.0.0",
     "msw-storybook-addon": "^2.0.6",
     "npm-run-all": "^4.1.5",
+    "pkg-pr-new": "^0.0.51",
     "pluralize": "^8.0.0",
     "polished": "^4.2.2",
     "prettier": "^3.5.3",
@@ -120,28 +119,15 @@
   "peerDependencies": {
     "storybook": "^0.0.0-0 || ^10.1.0 || ^10.1.0-0 || ^10.2.0-0 || ^10.3.0-0 || ^10.4.0-0"
   },
-  "packageManager": "yarn@4.12.0",
+  "packageManager": "pnpm@10.33.0+sha512.10568bb4a6afb58c9eb3630da90cc9516417abebd3fabbe6739f0ae795728da1491e9db5a544c76ad8eb7570f5c4bb3d6c637b2cb41bfdcdb47fa823c8649319",
   "engines": {
     "node": ">=20.0.0",
-    "yarn": ">=1.22.18"
+    "pnpm": ">=10.0.0"
   },
   "publishConfig": {
     "access": "public",
-    "registry": "https://registry.npmjs.org/"
-  },
-  "auto": {
-    "baseBranch": "main",
-    "plugins": [
-      "npm",
-      "released",
-      [
-        "slack",
-        {
-          "atTarget": "support-team",
-          "iconEmoji": ":package:"
-        }
-      ]
-    ]
+    "registry": "https://registry.npmjs.org/",
+    "provenance": true
   },
   "bundler": {
     "exportEntries": [
@@ -173,6 +159,16 @@
       "svelte",
       "preact",
       "react-native"
+    ]
+  },
+  "pnpm": {
+    "overrides": {
+      "jackspeak": "2.1.1"
+    },
+    "onlyBuiltDependencies": [
+      "@parcel/watcher",
+      "esbuild",
+      "msw"
     ]
   }
 }
