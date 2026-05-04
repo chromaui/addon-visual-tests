@@ -32,8 +32,11 @@ export const useChromaticDialog = (handler?: DialogHandler) => {
   const allowedOrigins = useRef<Set<string>>(new Set());
 
   useEffect(() => {
-    const handleMessage = ({ origin, data }: MessageEvent) => {
+    const handleMessage = ({ origin, data, source }: MessageEvent) => {
       if (!allowedOrigins.current.has(origin)) {
+        return;
+      }
+      if (source !== dialog.current) {
         return;
       }
 
@@ -66,6 +69,9 @@ export const useChromaticDialog = (handler?: DialogHandler) => {
         dialog.current?.focus();
       } else {
         dialog.current = window.open(url, '_blank');
+      }
+      if (!dialog.current) {
+        return;
       }
       const { origin } = new URL(url);
       allowedOrigins.current = new Set([origin, ...additionalOrigins]);

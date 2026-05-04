@@ -34,8 +34,6 @@ const encodeParams = (params: Record<string, string | number | boolean>) =>
     .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
     .join('&');
 
-const authorizationPending = ({ error }: { error: string }) => error === 'authorization_pending';
-
 const resolveChromaticHost = (subdomain?: string) => {
   if (!subdomain) {
     return CHROMATIC_BASE_URL;
@@ -52,7 +50,7 @@ export const initiateSignin = async (subdomain?: string): Promise<TokenExchangeP
   const codeVerifier = randomBase64Url(64);
   const codeChallenge = base64URLEncode(hexStringToBytes(sha256(codeVerifier)));
   const chromaticBaseUrl = resolveChromaticHost(subdomain);
-  const redirectUri = window.location.origin;
+  const redirectUri = window.location.href.split(/[?#]/)[0];
   const authorizationUrl = `${chromaticBaseUrl}/authorize?${encodeParams({
     client_id: OAUTH_CLIENT_ID,
     response_type: 'code',
@@ -94,7 +92,7 @@ export const fetchAccessToken = async ({
     });
 
     const data = await res.json();
-    if (authorizationPending(data)) {
+    if (data.error === 'authorization_pending') {
       throw new Error(
         `You have not authorized the Visual Tests addon for Chromatic, please try again`
       );
