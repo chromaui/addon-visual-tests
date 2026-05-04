@@ -40,8 +40,8 @@ const resolveChromaticHost = (subdomain?: string) => {
     return CHROMATIC_BASE_URL;
   }
   const base = new URL(CHROMATIC_BASE_URL);
-  if (base.hostname === 'www.chromatic.com') {
-    base.hostname = `${subdomain}.chromatic.com`;
+  if (base.hostname.startsWith('www.')) {
+    base.hostname = `${subdomain}.${base.hostname.slice(4)}`;
   }
   return base.origin;
 };
