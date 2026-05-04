@@ -59,6 +59,7 @@ vi.mock('./useShareAuth', () => ({
 
 vi.mock('./ShareSectionWelcome', () => ({ ShareSectionWelcome: vi.fn() }));
 vi.mock('./ShareSectionIdle', () => ({ ShareSectionIdle: vi.fn() }));
+vi.mock('./ShareSectionSubdomain', () => ({ ShareSectionSubdomain: vi.fn() }));
 vi.mock('./ShareSectionUploading', () => ({ ShareSectionUploading: vi.fn() }));
 vi.mock('./ShareSectionComplete', () => ({ ShareSectionComplete: vi.fn() }));
 vi.mock('./ShareSectionError', () => ({ ShareSectionError: vi.fn() }));

@@ -6,6 +6,7 @@ import { baseModes } from '../../modes';
 import { ShareSectionComplete } from './ShareSectionComplete';
 import { ShareSectionError } from './ShareSectionError';
 import { ShareSectionIdle } from './ShareSectionIdle';
+import { ShareSectionSubdomain } from './ShareSectionSubdomain';
 import { ShareSectionUploading } from './ShareSectionUploading';
 import { ShareSectionWelcome } from './ShareSectionWelcome';
 
@@ -34,6 +35,19 @@ export const Idle: IdleStory = {
   render: (args) => <ShareSectionIdle {...args} />,
   args: {
     onSignIn: fn().mockName('onSignIn'),
+    onSignInWithSSO: fn().mockName('onSignInWithSSO'),
+  },
+};
+
+// --- Subdomain (SAML SSO) ---
+
+type SubdomainStory = StoryObj<typeof ShareSectionSubdomain>;
+
+export const Subdomain: SubdomainStory = {
+  render: (args) => <ShareSectionSubdomain {...args} />,
+  args: {
+    onSubmit: fn().mockName('onSubmit'),
+    onBack: fn().mockName('onBack'),
   },
 };
 

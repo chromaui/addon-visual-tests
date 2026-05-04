@@ -12,9 +12,10 @@ import {
 
 interface ShareSectionIdleProps {
   onSignIn: () => void;
+  onSignInWithSSO: () => void;
 }
 
-export const ShareSectionIdle = ({ onSignIn }: ShareSectionIdleProps) => (
+export const ShareSectionIdle = ({ onSignIn, onSignInWithSSO }: ShareSectionIdleProps) => (
   <ShareContainer>
     <TextBlock>
       <ShareTitle>Publish and share local builds</ShareTitle>
@@ -26,7 +27,7 @@ export const ShareSectionIdle = ({ onSignIn }: ShareSectionIdleProps) => (
       <Button size="medium" variant="solid" onClick={onSignIn}>
         Sign in with Chromatic
       </Button>
-      <ShareTextLink onClick={onSignIn}>Connect with SAML SSO</ShareTextLink>
+      <ShareTextLink onClick={onSignInWithSSO}>Connect with SAML SSO</ShareTextLink>
     </ButtonStack>
   </ShareContainer>
 );

@@ -72,16 +72,19 @@ export function useShareAuth(setShareState: (s: ShareState) => void) {
   openDialogRef.current = openDialog;
   closeDialogRef.current = closeDialog;
 
-  const startSignIn = useCallback(async () => {
-    try {
-      const params = await initiateSignin();
-      paramsRef.current = params;
-      const redirectOrigin = new URL(params.redirectUri).origin;
-      openDialogRef.current?.(params.authorizationUrl, [redirectOrigin]);
-    } catch {
-      setShareState({ status: 'error', reason: 'unknown' });
-    }
-  }, [setShareState]);
+  const startSignIn = useCallback(
+    async (subdomain?: string) => {
+      try {
+        const params = await initiateSignin(subdomain);
+        paramsRef.current = params;
+        const redirectOrigin = new URL(params.redirectUri).origin;
+        openDialogRef.current?.(params.authorizationUrl, [redirectOrigin]);
+      } catch {
+        setShareState({ status: 'error', reason: 'unknown' });
+      }
+    },
+    [setShareState]
+  );
 
   return { startSignIn, updateToken };
 }

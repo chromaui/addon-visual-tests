@@ -10,6 +10,7 @@ import { useSharedState } from '../../utils/useSharedState';
 import { ShareSectionComplete } from './ShareSectionComplete';
 import { ShareSectionError } from './ShareSectionError';
 import { ShareSectionIdle } from './ShareSectionIdle';
+import { ShareSectionSubdomain } from './ShareSectionSubdomain';
 import { ShareSectionUploading } from './ShareSectionUploading';
 import { ShareSectionWelcome } from './ShareSectionWelcome';
 import type { ShareState } from './types';
@@ -52,9 +53,9 @@ export const ShareSection = ({ api }: { api: API }) => {
   const sharedUploadInFlight =
     shareProgress?.status === 'pending' || shareProgress?.status === 'uploading';
 
-  // Auto-skip idle if already signed in
+  // Auto-skip idle/subdomain if already signed in
   useEffect(() => {
-    if (token && shareState.status === 'idle') {
+    if (token && (shareState.status === 'idle' || shareState.status === 'subdomain')) {
       shareTriggeredRef.current = false;
       currentShareRequestIdRef.current = crypto.randomUUID();
       setShareState({ status: 'uploading', shareUrl: '' });
@@ -199,7 +200,19 @@ export const ShareSection = ({ api }: { api: API }) => {
     case 'welcome':
       return <ShareSectionWelcome onPublish={handlePublish} />;
     case 'idle':
-      return <ShareSectionIdle onSignIn={startSignIn} />;
+      return (
+        <ShareSectionIdle
+          onSignIn={() => startSignIn()}
+          onSignInWithSSO={() => setShareState({ status: 'subdomain' })}
+        />
+      );
+    case 'subdomain':
+      return (
+        <ShareSectionSubdomain
+          onSubmit={(subdomain) => startSignIn(subdomain)}
+          onBack={() => setShareState({ status: 'idle' })}
+        />
+      );
     case 'uploading':
       return (
         <ShareSectionUploading
