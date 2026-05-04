@@ -8,7 +8,7 @@ const storybookMocks = vi.hoisted(() => {
   };
 
   const addons = {
-    register: vi.fn((_: string, callback: (api: typeof api) => void) => callback(api)),
+    register: vi.fn((_: string, callback: (managerApi: typeof api) => void) => callback(api)),
     add: vi.fn(),
   };
 
