@@ -74,11 +74,5 @@ export function useShareAuth(setShareState: (s: ShareState) => void) {
     }
   }, [setShareState]);
 
-  const reset = useCallback(() => {
-    closeDialogRef.current?.();
-    paramsRef.current = null;
-    setShareState({ status: 'welcome' });
-  }, [setShareState]);
-
-  return { startSignIn, reset };
+  return { startSignIn };
 }

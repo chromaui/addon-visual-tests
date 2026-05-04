@@ -258,10 +258,6 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
   channel.on(START_SHARE, async ({ accessToken }: { accessToken: string }) => {
     shareProgressState.value = { status: 'pending' };
     try {
-      if (!share) {
-        throw new Error('Share API unavailable');
-      }
-
       const result = await share({
         userToken: accessToken,
         onUrl: (url: string) => {

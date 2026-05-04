@@ -33,7 +33,7 @@ export const ShareSection = ({ storyId, api }: { storyId: string; api: API }) =>
   const [lastCompletedGitInfo, setLastCompletedGitInfo] = useSessionState<
     GitInfoPayload | undefined
   >('shareLastCompletedGitInfo', undefined);
-  const { startSignIn, reset } = useShareAuth(setShareState);
+  const { startSignIn } = useShareAuth(setShareState);
   const shareTriggeredRef = useRef(false);
   const isRepeatShareRef = useRef(false);
   const prevShareStatusRef = useRef<string>(shareState.status);
@@ -62,11 +62,12 @@ export const ShareSection = ({ storyId, api }: { storyId: string; api: API }) =>
   const handlePublish = useCallback(() => {
     if (token) {
       shareTriggeredRef.current = false;
+      setAwaitingFreshProgress(true);
       setShareState({ status: 'uploading', shareUrl: '' });
     } else {
       setShareState({ status: 'idle' });
     }
-  }, [token, setShareState]);
+  }, [token, setAwaitingFreshProgress, setShareState]);
 
   useEffect(() => {
     if (
@@ -210,7 +211,7 @@ export const ShareSection = ({ storyId, api }: { storyId: string; api: API }) =>
       );
     }
     case 'error':
-      return <ShareSectionError reason={shareState.reason} onRetry={reset} />;
+      return <ShareSectionError reason={shareState.reason} onRetry={handlePublish} />;
     default:
       return null;
   }
