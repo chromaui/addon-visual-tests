@@ -44,7 +44,8 @@ export const Verify = ({
   const client = useClient();
   const onError = useErrorNotification();
 
-  const { authorizationUrl, state, clientId, codeVerifier, redirectUri } = exchangeParameters;
+  const { authorizationUrl, state, clientId, codeVerifier, redirectUri, tokenEndpoint } =
+    exchangeParameters;
   const redirectOrigin = new URL(redirectUri).origin;
 
   // Store the access token until we are ready to pass it to `setAccessToken` (at which point
@@ -84,6 +85,7 @@ export const Verify = ({
             clientId,
             codeVerifier,
             redirectUri,
+            tokenEndpoint,
             code: event.code,
           });
           if (!token) throw new Error('Failed to fetch an access token');
@@ -131,6 +133,7 @@ export const Verify = ({
       clientId,
       codeVerifier,
       redirectUri,
+      tokenEndpoint,
       client,
       hasProjectId,
       setAccessToken,

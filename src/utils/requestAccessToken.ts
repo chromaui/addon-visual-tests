@@ -10,6 +10,7 @@ export type TokenExchangeParameters = {
   codeVerifier: string;
   state: string;
   authorizationUrl: string;
+  tokenEndpoint: string;
 };
 
 const bytes = (buf: number[]) =>
@@ -67,6 +68,7 @@ export const initiateSignin = async (subdomain?: string): Promise<TokenExchangeP
     codeVerifier,
     state,
     authorizationUrl,
+    tokenEndpoint: `${chromaticBaseUrl}/token`,
   };
 };
 
@@ -74,12 +76,13 @@ export const fetchAccessToken = async ({
   clientId,
   codeVerifier,
   redirectUri,
+  tokenEndpoint,
   code,
-}: Pick<TokenExchangeParameters, 'clientId' | 'codeVerifier' | 'redirectUri'> & {
+}: Pick<TokenExchangeParameters, 'clientId' | 'codeVerifier' | 'redirectUri' | 'tokenEndpoint'> & {
   code: string;
 }) => {
   try {
-    const res = await fetch(`${CHROMATIC_BASE_URL}/token`, {
+    const res = await fetch(tokenEndpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
       body: encodeParams({
