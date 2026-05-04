@@ -10,6 +10,7 @@ import { Text } from '../../components/Text';
 import { graphql } from '../../gql';
 import type { Project } from '../../gql/graphql';
 import { getFetchOptions } from '../../utils/graphQLClient';
+import { parseGrantPayload } from '../../utils/oauthGrant';
 import { fetchAccessToken, type TokenExchangeParameters } from '../../utils/requestAccessToken';
 import { type DialogHandler, useChromaticDialog } from '../../utils/useChromaticDialog';
 import { useErrorNotification } from '../../utils/useErrorNotification';
@@ -64,29 +65,18 @@ export const Verify = ({
 
       if (event.message === 'grant') {
         try {
-          if ('denied' in event) {
-            if (event.denied) {
-              throw new Error('Authorization request was denied');
-            }
-            // Ignore intermediate legacy "granted" events and wait for auth code callback payload.
-            return;
-          }
-          if ('error' in event) {
-            throw new Error(event.error_description || event.error);
-          }
-          if (!('code' in event) || !('state' in event)) {
-            throw new Error('Unexpected OAuth callback payload');
-          }
-          if (event.state !== state) {
-            throw new Error('Invalid OAuth state');
-          }
+          const outcome = parseGrantPayload(event, state);
+          if (outcome.kind === 'ignore') return;
+          if (outcome.kind === 'denied') throw new Error('Authorization request was denied');
+          if (outcome.kind === 'error') throw new Error(outcome.message);
+          if (outcome.kind === 'login') return;
 
           const token = await fetchAccessToken({
             clientId,
             codeVerifier,
             redirectUri,
             tokenEndpoint,
-            code: event.code,
+            code: outcome.code,
           });
           if (!token) throw new Error('Failed to fetch an access token');
           accessToken.current = token;

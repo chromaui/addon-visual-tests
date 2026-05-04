@@ -9,8 +9,8 @@ import {
   getConfiguration,
   getGitInfo,
   type GitInfo,
+  share,
 } from 'chromatic/node';
-import * as chromaticNode from 'chromatic/node';
 import type { Channel } from 'storybook/internal/channels';
 import { experimental_getTestProviderStore } from 'storybook/internal/core-server';
 import { telemetry } from 'storybook/internal/telemetry';
@@ -46,19 +46,6 @@ import type {
 import { ChannelFetch } from './utils/ChannelFetch.ts';
 import { SharedState } from './utils/SharedState.ts';
 import { updateChromaticConfig } from './utils/updateChromaticConfig.ts';
-
-const share = (
-  chromaticNode as {
-    share?: (options: {
-      userToken: string;
-      storyId?: string;
-      onUrl?: (url: string) => void;
-      onProgress?: (progress: number, total: number) => void;
-      onError?: (error: Error) => void;
-      abortSignal?: AbortSignal;
-    }) => Promise<{ shareUrl: string }>;
-  }
-).share;
 
 const require = createRequire(import.meta.url);
 
@@ -249,7 +236,7 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
     channel
   );
 
-  channel.on(START_BUILD, async ({ accessToken: userToken }) => {
+  channel.on(START_BUILD, async ({ accessToken: userToken }: { accessToken: string }) => {
     const { projectId } = projectInfoState.value || {};
     testProviderStore.runWithState(async () => {
       try {
@@ -268,7 +255,7 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
 
   const shareProgressState = SharedState.subscribe<ShareProgress>(SHARE_PROGRESS, channel);
 
-  channel.on(START_SHARE, async ({ accessToken, storyId }) => {
+  channel.on(START_SHARE, async ({ accessToken }: { accessToken: string }) => {
     shareProgressState.value = { status: 'pending' };
     try {
       if (!share) {
@@ -277,7 +264,6 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
 
       const result = await share({
         userToken: accessToken,
-        storyId,
         onUrl: (url: string) => {
           shareProgressState.value = { status: 'uploading', shareUrl: url, progress: 0 };
         },

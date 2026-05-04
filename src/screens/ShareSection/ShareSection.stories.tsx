@@ -7,7 +7,6 @@ import { ShareSectionComplete } from './ShareSectionComplete';
 import { ShareSectionError } from './ShareSectionError';
 import { ShareSectionIdle } from './ShareSectionIdle';
 import { ShareSectionUploading } from './ShareSectionUploading';
-import { ShareSectionVerifying } from './ShareSectionVerifying';
 import { ShareSectionWelcome } from './ShareSectionWelcome';
 
 // --- Welcome ---
@@ -35,21 +34,6 @@ export const Idle: IdleStory = {
   render: (args) => <ShareSectionIdle {...args} />,
   args: {
     onSignIn: fn().mockName('onSignIn'),
-  },
-};
-
-// --- Verifying ---
-
-type VerifyingStory = StoryObj<typeof ShareSectionVerifying>;
-
-export const Verifying: VerifyingStory = {
-  render: (args) => <ShareSectionVerifying {...args} />,
-  args: {
-    userCode: 'AB12CD',
-    onBack: fn().mockName('onBack'),
-  },
-  parameters: {
-    chromatic: { ignoreSelectors: ['ol'] },
   },
 };
 

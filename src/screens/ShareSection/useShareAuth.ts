@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 
 import { useAccessToken } from '../../utils/graphQLClient';
+import { parseGrantPayload } from '../../utils/oauthGrant';
 import {
   fetchAccessToken,
   initiateSignin,
@@ -9,96 +10,75 @@ import {
 import { type DialogHandler, useChromaticDialog } from '../../utils/useChromaticDialog';
 import type { ShareState } from './types';
 
-export function useShareAuth(shareState: ShareState, setShareState: (s: ShareState) => void) {
+export function useShareAuth(setShareState: (s: ShareState) => void) {
   const [, updateToken] = useAccessToken();
-  const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const exchangeParamsRef = useRef<TokenExchangeParameters | null>(null);
+  const paramsRef = useRef<TokenExchangeParameters | null>(null);
+  const openDialogRef = useRef<(url: string, additionalOrigins?: string[]) => void>();
+  const closeDialogRef = useRef<() => void>();
 
-  const clearPolling = useCallback(() => {
-    if (pollingRef.current) {
-      clearInterval(pollingRef.current);
-      pollingRef.current = null;
-    }
-    exchangeParamsRef.current = null;
-  }, []);
+  const handler = useCallback<DialogHandler>(
+    async (event) => {
+      const params = paramsRef.current;
+      if (!params) return;
+      const { authorizationUrl, redirectUri, state, clientId, codeVerifier, tokenEndpoint } =
+        params;
+      const redirectOrigin = new URL(redirectUri).origin;
 
-  const handler = useCallback<DialogHandler>((event) => {
-    if (event.message === 'grant' && !('denied' in event && event.denied)) {
-      // The grant message confirms user authorized — polling will pick up the token
-    }
-  }, []);
+      const outcome = parseGrantPayload(event, state);
+
+      if (outcome.kind === 'login') {
+        openDialogRef.current?.(authorizationUrl, [redirectOrigin]);
+        return;
+      }
+      if (outcome.kind === 'ignore') return;
+
+      try {
+        if (outcome.kind === 'denied') throw new Error('cancelled');
+        if (outcome.kind === 'error') throw new Error(outcome.message);
+
+        const token = await fetchAccessToken({
+          clientId,
+          codeVerifier,
+          redirectUri,
+          tokenEndpoint,
+          code: outcome.code,
+        });
+        if (!token) throw new Error('Failed to fetch an access token');
+
+        updateToken(token);
+        closeDialogRef.current?.();
+        paramsRef.current = null;
+        setShareState({ status: 'uploading', shareUrl: '' });
+      } catch (err) {
+        closeDialogRef.current?.();
+        paramsRef.current = null;
+        const reason = (err as Error)?.message === 'cancelled' ? 'cancelled' : 'unknown';
+        setShareState({ status: 'error', reason });
+      }
+    },
+    [setShareState, updateToken]
+  );
 
   const [openDialog, closeDialog] = useChromaticDialog(handler);
-  const openDialogRef = useRef(openDialog);
-  const closeDialogRef = useRef(closeDialog);
   openDialogRef.current = openDialog;
   closeDialogRef.current = closeDialog;
 
   const startSignIn = useCallback(async () => {
     try {
       const params = await initiateSignin();
-      exchangeParamsRef.current = params;
-
-      setShareState({
-        status: 'verifying',
-        userCode: params.user_code,
-        verificationUrl: params.verificationUrl,
-        deviceCode: params.device_code,
-        verifier: params.verifier,
-        expires: params.expires,
-        interval: params.interval,
-      });
-
-      pollingRef.current = setInterval(async () => {
-        const currentParams = exchangeParamsRef.current;
-        if (!currentParams) {
-          clearPolling();
-          return;
-        }
-
-        if (Date.now() >= currentParams.expires) {
-          clearPolling();
-          closeDialogRef.current();
-          setShareState({ status: 'error', reason: 'expired' });
-          return;
-        }
-
-        try {
-          const token = await fetchAccessToken(currentParams);
-          if (token) {
-            clearPolling();
-            updateToken(token);
-            closeDialogRef.current();
-            setShareState({ status: 'uploading', shareUrl: '' });
-          }
-        } catch {
-          // authorization_pending — continue polling
-        }
-      }, params.interval);
+      paramsRef.current = params;
+      const redirectOrigin = new URL(params.redirectUri).origin;
+      openDialogRef.current?.(params.authorizationUrl, [redirectOrigin]);
     } catch {
       setShareState({ status: 'error', reason: 'unknown' });
     }
-  }, [setShareState, updateToken, clearPolling]);
-
-  const openVerificationDialog = useCallback(() => {
-    if (shareState.status !== 'verifying') {
-      return;
-    }
-    openDialogRef.current(shareState.verificationUrl);
-  }, [shareState]);
+  }, [setShareState]);
 
   const reset = useCallback(() => {
-    clearPolling();
-    closeDialogRef.current();
+    closeDialogRef.current?.();
+    paramsRef.current = null;
     setShareState({ status: 'welcome' });
-  }, [clearPolling, setShareState]);
+  }, [setShareState]);
 
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      clearPolling();
-    };
-  }, [clearPolling]);
-
-  return { startSignIn, reset, openVerificationDialog };
+  return { startSignIn, reset };
 }

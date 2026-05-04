@@ -11,7 +11,6 @@ import { ShareSectionComplete } from './ShareSectionComplete';
 import { ShareSectionError } from './ShareSectionError';
 import { ShareSectionIdle } from './ShareSectionIdle';
 import { ShareSectionUploading } from './ShareSectionUploading';
-import { ShareSectionVerifying } from './ShareSectionVerifying';
 import { ShareSectionWelcome } from './ShareSectionWelcome';
 import type { ShareState } from './types';
 import { useShareAuth } from './useShareAuth';
@@ -34,7 +33,7 @@ export const ShareSection = ({ storyId, api }: { storyId: string; api: API }) =>
   const [lastCompletedGitInfo, setLastCompletedGitInfo] = useSessionState<
     GitInfoPayload | undefined
   >('shareLastCompletedGitInfo', undefined);
-  const { startSignIn, reset, openVerificationDialog } = useShareAuth(shareState, setShareState);
+  const { startSignIn, reset } = useShareAuth(setShareState);
   const shareTriggeredRef = useRef(false);
   const isRepeatShareRef = useRef(false);
   const prevShareStatusRef = useRef<string>(shareState.status);
@@ -95,7 +94,7 @@ export const ShareSection = ({ storyId, api }: { storyId: string; api: API }) =>
   ]);
 
   useEffect(() => {
-    if (prevShareStatusRef.current === 'verifying' && shareState.status === 'uploading') {
+    if (prevShareStatusRef.current === 'idle' && shareState.status === 'uploading') {
       emitTelemetry('share-auth-completed');
     }
     prevShareStatusRef.current = shareState.status;
@@ -181,14 +180,6 @@ export const ShareSection = ({ storyId, api }: { storyId: string; api: API }) =>
       return <ShareSectionWelcome onPublish={handlePublish} />;
     case 'idle':
       return <ShareSectionIdle onSignIn={startSignIn} />;
-    case 'verifying':
-      return (
-        <ShareSectionVerifying
-          userCode={shareState.userCode}
-          onGoToChromatic={openVerificationDialog}
-          onBack={reset}
-        />
-      );
     case 'uploading':
       return (
         <ShareSectionUploading
