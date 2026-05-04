@@ -3,7 +3,23 @@ import { z } from 'zod';
 
 const dialogPayloadSchema = z.union([
   z.object({ message: z.literal('login') }),
-  z.object({ message: z.literal('grant'), denied: z.boolean() }),
+  z.union([
+    z.object({
+      message: z.literal('grant'),
+      code: z.string(),
+      state: z.string(),
+    }),
+    z.object({
+      message: z.literal('grant'),
+      denied: z.boolean(),
+    }),
+    z.object({
+      message: z.literal('grant'),
+      error: z.string(),
+      error_description: z.string().optional(),
+      state: z.string().optional(),
+    }),
+  ]),
   z.object({ message: z.literal('createdProject'), projectId: z.string() }),
 ]);
 
@@ -13,20 +29,25 @@ export type DialogHandler = (payload: Schema) => void;
 
 export const useChromaticDialog = (handler?: DialogHandler) => {
   const dialog = useRef<Window | null>();
-  const dialogOrigin = useRef<string>();
+  const allowedOrigins = useRef<Set<string>>(new Set());
 
   useEffect(() => {
-    const handleMessage = ({ origin, data }: MessageEvent) => {
-      if (origin === dialogOrigin.current) {
-        let parsed: Schema;
-        try {
-          parsed = dialogPayloadSchema.parse(data);
-        } catch (_) {
-          // Don't log anything on parsing errors, as we can get messages from things like intercom
-          return;
-        }
-        handler?.(parsed);
+    const handleMessage = ({ origin, data, source }: MessageEvent) => {
+      if (!allowedOrigins.current.has(origin)) {
+        return;
       }
+      if (source !== dialog.current) {
+        return;
+      }
+
+      let parsed: Schema;
+      try {
+        parsed = dialogPayloadSchema.parse(data);
+      } catch (_) {
+        // Don't log anything on parsing errors, as we can get messages from things like intercom
+        return;
+      }
+      handler?.(parsed);
     };
 
     window.addEventListener('message', handleMessage);
@@ -35,7 +56,7 @@ export const useChromaticDialog = (handler?: DialogHandler) => {
   }, [handler]);
 
   return [
-    useCallback((url: string) => {
+    useCallback((url: string, additionalOrigins: string[] = []) => {
       const width = 800;
       const height = 800;
       const usePopup = window.innerWidth > width && window.innerHeight > height;
@@ -49,8 +70,11 @@ export const useChromaticDialog = (handler?: DialogHandler) => {
       } else {
         dialog.current = window.open(url, '_blank');
       }
+      if (!dialog.current) {
+        return;
+      }
       const { origin } = new URL(url);
-      dialogOrigin.current = origin;
+      allowedOrigins.current = new Set([origin, ...additionalOrigins]);
     }, []),
 
     useCallback(() => dialog.current?.close(), []),

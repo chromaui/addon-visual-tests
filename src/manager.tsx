@@ -1,5 +1,5 @@
 import React from 'react';
-import { type ClickEventDetails } from 'storybook/highlight';
+import type { ClickEventDetails } from 'storybook/highlight';
 import { type Addon_TestProviderType, Addon_TypesEnum } from 'storybook/internal/types';
 import { addons, experimental_getStatusStore } from 'storybook/manager-api';
 
@@ -16,8 +16,33 @@ import { Panel } from './Panel';
 import { ShareToolbarButton } from './screens/ShareSection';
 import { TestProviderRender } from './TestProviderRender';
 
+// OAuth redirect handler
+if (window.opener && !window.opener.closed) {
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get('code');
+  const state = params.get('state');
+  const error = params.get('error');
+
+  if (code && state) {
+    window.opener.postMessage({ message: 'grant', code, state }, window.location.origin);
+    window.close();
+  } else if (error) {
+    const errorDescription = params.get('error_description');
+    window.opener.postMessage(
+      {
+        message: 'grant',
+        error,
+        ...(errorDescription ? { error_description: errorDescription } : {}),
+        ...(state ? { state } : {}),
+      },
+      window.location.origin
+    );
+    window.close();
+  }
+}
+
 addons.register(ADDON_ID, (api) => {
-  api.on(HIGHLIGHT_IGNORED_SELECT, (itemId: string, details: ClickEventDetails) => {
+  api.on(HIGHLIGHT_IGNORED_SELECT, (_itemId: string, details: ClickEventDetails) => {
     const isDefaultSelector = HIGHLIGHT_IGNORED_DEFAULT_SELECTORS.includes(details.selectors[0]);
     window.open(
       isDefaultSelector

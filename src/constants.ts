@@ -1,5 +1,6 @@
 export const PACKAGE_NAME = '@chromatic-com/storybook';
 
+export const OAUTH_CLIENT_ID = 'chromaui:addon-visual-tests';
 export const ADDON_ID = 'chromaui/addon-visual-tests';
 export const PANEL_ID = `${ADDON_ID}/panel`;
 export const TEST_PROVIDER_ID = `${ADDON_ID}/test-provider`;
