@@ -15,7 +15,7 @@ import { ShareSectionWelcome } from './ShareSectionWelcome';
 import type { ShareState } from './types';
 import { useShareAuth } from './useShareAuth';
 
-export const ShareSection = ({ storyId, api }: { storyId: string; api: API }) => {
+export const ShareSection = ({ api }: { api: API }) => {
   const [token] = useAccessToken();
   const currentShareRequestIdRef = useRef<string | null>(null);
   const [gitInfo] = useSharedState<GitInfoPayload>(GIT_INFO);
@@ -86,7 +86,7 @@ export const ShareSection = ({ storyId, api }: { storyId: string; api: API }) =>
     setAwaitingFreshProgress(true);
     const shareRequestId = currentShareRequestIdRef.current ?? crypto.randomUUID();
     currentShareRequestIdRef.current = shareRequestId;
-    api.getChannel()?.emit(START_SHARE, { accessToken: token, storyId, shareRequestId });
+    api.getChannel()?.emit(START_SHARE, { accessToken: token, shareRequestId });
     emitTelemetry('share-initiated', { isRepeatShare: isRepeatShareRef.current });
     isRepeatShareRef.current = false;
   }, [
@@ -95,7 +95,6 @@ export const ShareSection = ({ storyId, api }: { storyId: string; api: API }) =>
     setAwaitingFreshProgress,
     shareState.status,
     sharedUploadInFlight,
-    storyId,
     token,
   ]);
 

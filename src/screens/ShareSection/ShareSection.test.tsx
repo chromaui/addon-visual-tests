@@ -81,7 +81,7 @@ function makeApi() {
 
 // Call the component as a plain function to trigger all useEffect calls
 function invokeShareSection() {
-  (ShareSection as any)({ storyId: 'story-1', api: makeApi() });
+  (ShareSection as any)({ api: makeApi() });
 }
 
 afterEach(() => {
