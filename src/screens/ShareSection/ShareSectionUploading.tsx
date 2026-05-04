@@ -41,8 +41,8 @@ export const ShareSectionUploading = ({
       </TextBlock>
       <ButtonStack>
         <UrlCopyField url={shareUrl || undefined} onCopy={onCopy} />
-        <StatusRow>
-          <WrenchIcon size={12} />
+        <StatusRow aria-live="polite">
+          <WrenchIcon size={12} aria-hidden="true" />
           {statusLabels[step]}
         </StatusRow>
       </ButtonStack>

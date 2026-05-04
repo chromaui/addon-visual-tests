@@ -13,7 +13,7 @@ const UrlRow = styled.div(({ theme }) => ({
   minHeight: 32,
 }));
 
-const UrlText = styled.div(({ theme }) => ({
+const UrlInput = styled.input(({ theme }) => ({
   fontFamily: "'SF Mono', SFMono-Regular, ui-monospace, monospace",
   fontSize: 11,
   color: theme.color.secondary,
@@ -23,9 +23,26 @@ const UrlText = styled.div(({ theme }) => ({
   flex: 1,
   paddingLeft: 9,
   lineHeight: '16px',
+  border: 'none',
+  background: 'transparent',
+  outline: 'none',
+  cursor: 'default',
+  width: 0,
 }));
 
-const PlaceholderText = styled(UrlText)(({ theme }) => ({
+const SrOnly = styled.span({
+  position: 'absolute',
+  width: 1,
+  height: 1,
+  padding: 0,
+  margin: -1,
+  overflow: 'hidden',
+  clip: 'rect(0,0,0,0)',
+  whiteSpace: 'nowrap',
+  border: 0,
+});
+
+const PlaceholderText = styled(UrlInput)(({ theme }) => ({
   color: theme.textMutedColor,
 }));
 
@@ -51,20 +68,33 @@ export const UrlCopyField = ({ url, placeholder, onCopy }: UrlCopyFieldProps) =>
 
   const handleCopy = useCallback(() => {
     if (url) {
-      navigator.clipboard.writeText(url);
-      onCopy?.();
-      setCopied(true);
-      if (timerRef.current) clearTimeout(timerRef.current);
-      timerRef.current = setTimeout(() => setCopied(false), 2000);
+      navigator.clipboard.writeText(url).then(() => {
+        onCopy?.();
+        setCopied(true);
+        if (timerRef.current) clearTimeout(timerRef.current);
+        timerRef.current = setTimeout(() => setCopied(false), 2000);
+      }).catch((err) => {
+        console.warn('Failed to copy to clipboard:', err);
+      });
     }
   }, [url, onCopy]);
 
   return (
     <UrlRow>
       {url ? (
-        <UrlText>{url}</UrlText>
+        <UrlInput
+          readOnly
+          value={url}
+          aria-label="Shareable URL"
+          onFocus={(e) => e.target.select()}
+        />
       ) : (
-        <PlaceholderText>{placeholder ?? 'Getting URL...'}</PlaceholderText>
+        <PlaceholderText
+          readOnly
+          value={placeholder ?? 'Getting URL...'}
+          aria-label="Shareable URL"
+          tabIndex={-1}
+        />
       )}
       {url && (
         <TooltipProvider
@@ -83,6 +113,7 @@ export const UrlCopyField = ({ url, placeholder, onCopy }: UrlCopyFieldProps) =>
           </CopyButton>
         </TooltipProvider>
       )}
+      <SrOnly aria-live="polite">{copied ? 'Copied to clipboard' : ''}</SrOnly>
     </UrlRow>
   );
 };

@@ -52,6 +52,7 @@ export const WhoHasAccess = () => {
           size={14}
           color={theme.textMutedColor}
           style={{ flexShrink: 0, borderRadius: 6 }}
+          aria-hidden="true"
         />
         <AccessText>Anyone with the link</AccessText>
         <LearnMoreLink
@@ -60,7 +61,7 @@ export const WhoHasAccess = () => {
           rel="noopener noreferrer"
         >
           Learn more
-          <ChevronSmallRightIcon size={14} />
+          <ChevronSmallRightIcon size={14} aria-hidden="true" />
         </LearnMoreLink>
       </AccessRow>
     </WhoHasAccessBlock>

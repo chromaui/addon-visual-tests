@@ -3,4 +3,8 @@ export type ShareState =
   | { status: 'idle' }
   | { status: 'uploading'; shareUrl: string }
   | { status: 'complete'; shareUrl: string; publishedAt: number }
-  | { status: 'error'; reason: 'cancelled' | 'expired' | 'unknown' };
+  | {
+      status: 'error';
+      reason: 'cancelled' | 'expired' | 'unknown' | 'auth';
+      message?: string;
+    };

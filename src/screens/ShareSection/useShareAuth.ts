@@ -19,23 +19,35 @@ export function useShareAuth(setShareState: (s: ShareState) => void) {
   const handler = useCallback<DialogHandler>(
     async (event) => {
       const params = paramsRef.current;
-      if (!params) return;
       const { authorizationUrl, redirectUri, state, clientId, codeVerifier, tokenEndpoint } =
-        params;
-      const redirectOrigin = new URL(redirectUri).origin;
+        params ?? ({} as TokenExchangeParameters);
+      const redirectOrigin = redirectUri ? new URL(redirectUri).origin : '';
 
       const outcome = parseGrantPayload(event, state);
 
       if (outcome.kind === 'login') {
+        if (!params) return;
         openDialogRef.current?.(authorizationUrl, [redirectOrigin]);
         return;
       }
       if (outcome.kind === 'ignore') return;
 
-      try {
-        if (outcome.kind === 'denied') throw new Error('cancelled');
-        if (outcome.kind === 'error') throw new Error(outcome.message);
+      if (outcome.kind === 'code' && !params) {
+        closeDialogRef.current?.();
+        return;
+      }
 
+      if (outcome.kind === 'denied' || outcome.kind === 'error') {
+        paramsRef.current = null;
+        closeDialogRef.current?.();
+        const reason = outcome.kind === 'denied' ? 'cancelled' : 'unknown';
+        setShareState({ status: 'error', reason });
+        return;
+      }
+
+      paramsRef.current = null;
+
+      try {
         const token = await fetchAccessToken({
           clientId,
           codeVerifier,
@@ -47,13 +59,10 @@ export function useShareAuth(setShareState: (s: ShareState) => void) {
 
         updateToken(token);
         closeDialogRef.current?.();
-        paramsRef.current = null;
         setShareState({ status: 'uploading', shareUrl: '' });
-      } catch (err) {
+      } catch {
         closeDialogRef.current?.();
-        paramsRef.current = null;
-        const reason = (err as Error)?.message === 'cancelled' ? 'cancelled' : 'unknown';
-        setShareState({ status: 'error', reason });
+        setShareState({ status: 'error', reason: 'unknown' });
       }
     },
     [setShareState, updateToken]
@@ -74,5 +83,5 @@ export function useShareAuth(setShareState: (s: ShareState) => void) {
     }
   }, [setShareState]);
 
-  return { startSignIn };
+  return { startSignIn, updateToken };
 }

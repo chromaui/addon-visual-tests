@@ -254,31 +254,62 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
   });
 
   const shareProgressState = SharedState.subscribe<ShareProgress>(SHARE_PROGRESS, channel);
+  let shareInFlight = false;
 
-  channel.on(START_SHARE, async ({ accessToken }: { accessToken: string }) => {
-    shareProgressState.value = { status: 'pending' };
-    try {
-      const result = await share({
-        userToken: accessToken,
-        onUrl: (url: string) => {
-          shareProgressState.value = { status: 'uploading', shareUrl: url, progress: 0 };
-        },
-        onProgress: (current: number, total: number) => {
+  channel.on(
+    START_SHARE,
+    async ({ accessToken, shareRequestId }: { accessToken: string; shareRequestId?: string }) => {
+      if (shareInFlight) return;
+      shareInFlight = true;
+      let didError = false;
+      shareProgressState.value = { status: 'pending', shareRequestId };
+      try {
+        const result = await share({
+          userToken: accessToken,
+          onUrl: (url: string) => {
+            shareProgressState.value = {
+              status: 'uploading',
+              shareUrl: url,
+              progress: 0,
+              shareRequestId,
+            };
+          },
+          onProgress: (current: number, total: number) => {
+            const progress = total > 0 ? Math.round((current / total) * 100) : 0;
+            shareProgressState.value = {
+              ...shareProgressState.value,
+              status: 'uploading',
+              progress,
+              shareRequestId,
+            };
+          },
+          onError: (error: Error) => {
+            didError = true;
+            shareProgressState.value = {
+              status: 'error',
+              error: error.message,
+              shareRequestId,
+            };
+          },
+        });
+        if (!didError) {
           shareProgressState.value = {
-            ...shareProgressState.value,
-            status: 'uploading',
-            progress: Math.round((current / total) * 100),
+            status: 'complete',
+            shareUrl: result.shareUrl,
+            shareRequestId,
           };
-        },
-        onError: (error: Error) => {
-          shareProgressState.value = { status: 'error', error: error.message };
-        },
-      });
-      shareProgressState.value = { status: 'complete', shareUrl: result.shareUrl };
-    } catch (e: any) {
-      shareProgressState.value = { status: 'error', error: e?.message || 'Share failed' };
+        }
+      } catch (e: any) {
+        shareProgressState.value = {
+          status: 'error',
+          error: e?.message || 'Share failed',
+          shareRequestId,
+        };
+      } finally {
+        shareInFlight = false;
+      }
     }
-  });
+  );
 
   channel.on(TELEMETRY, async (event: Event) => {
     if ((await corePromise).disableTelemetry) return;

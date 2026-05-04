@@ -6,7 +6,6 @@ import {
   ButtonStack,
   ShareContainer,
   ShareDescription,
-  ShareTextLink,
   ShareTitle,
   TextBlock,
 } from './ShareSectionPrimitives';
@@ -88,7 +87,6 @@ interface ShareSectionCompleteProps {
   isOutdated: boolean;
   onPublishAgain: () => void;
   onCopy?: () => void;
-  onDelete?: () => void;
 }
 
 export const ShareSectionComplete = ({
@@ -97,7 +95,6 @@ export const ShareSectionComplete = ({
   isOutdated,
   onPublishAgain,
   onCopy,
-  onDelete,
 }: ShareSectionCompleteProps) => {
   return (
     <ShareContainer>
@@ -122,7 +119,6 @@ export const ShareSectionComplete = ({
                 Published {formatRelativeTime(publishedAt)} – expires in{' '}
                 {formatExpiryDays(publishedAt)} days
               </TimestampText>
-              <ShareTextLink onClick={onDelete}>Delete</ShareTextLink>
             </TimestampRow>
             <InfoBanner>
               <InfoBannerText>

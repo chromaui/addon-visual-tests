@@ -30,7 +30,8 @@ const ErrorMessage = styled.span(({ theme }) => ({
 }));
 
 interface ShareSectionErrorProps {
-  reason: 'cancelled' | 'expired' | 'unknown';
+  reason: 'cancelled' | 'expired' | 'unknown' | 'auth';
+  message?: string;
   onRetry: () => void;
 }
 
@@ -38,10 +39,11 @@ const reasonMessages: Record<ShareSectionErrorProps['reason'], string> = {
   cancelled: 'Sign-in was not completed',
   expired: 'Sign-in link expired',
   unknown: '',
+  auth: 'Please sign in again',
 };
 
-export const ShareSectionError = ({ reason, onRetry }: ShareSectionErrorProps) => {
-  const mappedReason = reasonMessages[reason];
+export const ShareSectionError = ({ reason, message, onRetry }: ShareSectionErrorProps) => {
+  const mappedReason = reason === 'unknown' && message ? message : reasonMessages[reason];
 
   return (
     <ShareContainer>
