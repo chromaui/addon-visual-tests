@@ -1,4 +1,4 @@
-import { addDays, differenceInDays } from 'date-fns';
+import { addDays } from 'date-fns';
 import React, { useEffect, useState } from 'react';
 import { styled } from 'storybook/theming';
 
@@ -113,8 +113,11 @@ export const ShareSectionComplete = ({
             <span style={{ fontSize: 12, flexShrink: 0 }}>⏳</span>
             <TimestampText>
               Published {formatDate(publishedAt)} – expires in{' '}
-              {Math.max(0, differenceInDays(addDays(publishedAt, SHARE_EXPIRY_DAYS), Date.now()))}{' '}
-              days
+              {(() => {
+                const msRemaining = addDays(publishedAt, SHARE_EXPIRY_DAYS).getTime() - Date.now();
+                const daysRemaining = Math.max(0, Math.ceil(msRemaining / 86_400_000));
+                return `${daysRemaining} ${daysRemaining === 1 ? 'day' : 'days'}`;
+              })()}
             </TimestampText>
           </TimestampRow>
         )}
