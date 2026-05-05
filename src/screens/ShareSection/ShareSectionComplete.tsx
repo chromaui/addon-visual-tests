@@ -2,6 +2,7 @@ import React from 'react';
 import { styled } from 'storybook/theming';
 
 import { Button } from '../../components/Button';
+import { SHARE_EXPIRY_DAYS } from '../../constants';
 import {
   ButtonStack,
   ShareContainer,
@@ -74,10 +75,12 @@ function formatRelativeTime(publishedAt: number): string {
 }
 
 function formatExpiryDays(publishedAt: number): number {
-  if (!Number.isFinite(publishedAt)) return 30;
+  if (!Number.isFinite(publishedAt)) return SHARE_EXPIRY_DAYS;
   return Math.max(
     0,
-    Math.round((publishedAt + 30 * 24 * 60 * 60 * 1000 - Date.now()) / (24 * 60 * 60 * 1000))
+    Math.round(
+      (publishedAt + SHARE_EXPIRY_DAYS * 24 * 60 * 60 * 1000 - Date.now()) / (24 * 60 * 60 * 1000)
+    )
   );
 }
 
@@ -106,29 +109,28 @@ export const ShareSectionComplete = ({
       </TextBlock>
       <ButtonStack>
         <UrlCopyField url={shareUrl} onCopy={onCopy} />
-        {!isOutdated ? (
+        {!isOutdated && (
           <SuccessRow>
             <span>🎉</span>
             <SuccessText>Storybook published!</SuccessText>
           </SuccessRow>
-        ) : (
-          <>
-            <TimestampRow>
-              <span style={{ fontSize: 12, flexShrink: 0 }}>⏳</span>
-              <TimestampText>
-                Published {formatRelativeTime(publishedAt)} – expires in{' '}
-                {formatExpiryDays(publishedAt)} days
-              </TimestampText>
-            </TimestampRow>
-            <InfoBanner>
-              <InfoBannerText>
-                Changes have been made since you last published this Storybook.
-              </InfoBannerText>
-              <Button size="medium" variant="solid" onClick={onPublishAgain}>
-                Republish
-              </Button>
-            </InfoBanner>
-          </>
+        )}
+        <TimestampRow>
+          <span style={{ fontSize: 12, flexShrink: 0 }}>⏳</span>
+          <TimestampText>
+            Published {formatRelativeTime(publishedAt)} – expires in {formatExpiryDays(publishedAt)}{' '}
+            days
+          </TimestampText>
+        </TimestampRow>
+        {isOutdated && (
+          <InfoBanner>
+            <InfoBannerText>
+              Changes have been made since you last published this Storybook.
+            </InfoBannerText>
+            <Button size="medium" variant="solid" onClick={onPublishAgain}>
+              Republish
+            </Button>
+          </InfoBanner>
         )}
       </ButtonStack>
       <WhoHasAccess />

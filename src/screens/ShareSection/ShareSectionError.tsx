@@ -39,7 +39,7 @@ const reasonMessages: Record<ShareSectionErrorProps['reason'], string> = {
   cancelled: 'Sign-in was not completed',
   'upload-cancelled': 'Upload cancelled',
   expired: 'Sign-in link expired',
-  unknown: '',
+  unknown: 'An unexpected error occurred. Please try again.',
   auth: 'Please sign in again',
 };
 

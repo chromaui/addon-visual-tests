@@ -22,7 +22,6 @@ const statusLabels: Record<ShareProgress['status'], string> = {
 
 interface ShareSectionUploadingProps {
   shareUrl?: string;
-  progress?: number;
   step?: ShareProgress['status'];
   onCopy?: () => void;
   onCancel?: () => void;
@@ -40,7 +39,8 @@ export const ShareSectionUploading = ({
       <TextBlock>
         <ShareTitle>Publishing your Storybook</ShareTitle>
         <ShareDescription>
-          Please don&apos;t modify code or switch branches until upload is complete.
+          Stay on this branch and keep your code unchanged until the upload finishes to ensure a
+          consistent build.
         </ShareDescription>
       </TextBlock>
       <ButtonStack>
