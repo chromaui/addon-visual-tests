@@ -1,16 +1,19 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-// We test useShareAuth by calling it as a plain function (no DOM render needed)
-// because all hooks it depends on are mocked synchronously.
+import type { DriverSnapshot, SignInDriver } from '../../utils/signInDriver';
+
+// We test useShareAuth by invoking it as a plain function with mocked react primitives.
 
 const mocks = vi.hoisted(() => {
   const openDialog = vi.fn();
   const closeDialog = vi.fn();
   const updateToken = vi.fn();
-  const exchangeOAuthCode = vi.fn();
-  const initiateSignin = vi.fn();
-  return { openDialog, closeDialog, updateToken, exchangeOAuthCode, initiateSignin };
+  const createSignInDriver = vi.fn();
+  const setSnapshot = vi.fn();
+  return { openDialog, closeDialog, updateToken, createSignInDriver, setSnapshot };
 });
+
+const effects: Array<() => void | (() => void)> = [];
 
 vi.mock('react', async (importOriginal) => {
   const actual = await importOriginal<typeof import('react')>();
@@ -18,6 +21,9 @@ vi.mock('react', async (importOriginal) => {
     ...actual,
     useRef: (initial: unknown) => ({ current: initial }),
     useCallback: (fn: unknown) => fn,
+    useEffect: (fn: () => void | (() => void)) => {
+      effects.push(fn);
+    },
   };
 });
 
@@ -25,171 +31,275 @@ vi.mock('../../utils/graphQLClient', () => ({
   useAccessToken: () => [null, mocks.updateToken],
 }));
 
-vi.mock('../../utils/oauthGrant', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('../../utils/oauthGrant')>();
-  return { ...actual, exchangeOAuthCode: mocks.exchangeOAuthCode };
-});
-
-vi.mock('../../utils/requestAccessToken', () => ({
-  initiateSignin: mocks.initiateSignin,
+let snapshotValue: DriverSnapshot | null = null;
+vi.mock('../../utils/useSessionState', () => ({
+  useSessionState: () => [snapshotValue, mocks.setSnapshot] as const,
 }));
 
-// Capture the handler registered with useChromaticDialog
-let capturedHandler: ((event: any) => Promise<void>) | undefined;
+let capturedDialogHandler: ((event: any) => Promise<void>) | undefined;
 vi.mock('../../utils/useChromaticDialog', () => ({
   useChromaticDialog: (handler: (event: any) => Promise<void>) => {
-    capturedHandler = handler;
+    capturedDialogHandler = handler;
     return [mocks.openDialog, mocks.closeDialog] as const;
   },
 }));
 
+vi.mock('../../utils/signInDriver', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../utils/signInDriver')>();
+  return { ...actual, createSignInDriver: mocks.createSignInDriver };
+});
+
 const { useShareAuth } = await import('./useShareAuth');
 
-const defaultParams = {
-  clientId: 'client-id',
-  redirectUri: 'https://example.com/redirect',
-  codeVerifier: 'verifier',
-  state: 'state-abc',
-  authorizationUrl: 'https://chromatic.com/authorize',
-  tokenEndpoint: 'https://chromatic.com/token',
+const flushEffects = () => {
+  while (effects.length) {
+    const fn = effects.shift()!;
+    fn();
+  }
 };
+
+const flushMicrotasks = async () => {
+  // allow promise microtasks to drain
+  for (let i = 0; i < 5; i += 1) await Promise.resolve();
+};
+
+const makeDeviceCodeDriver = () => {
+  let resolveToken!: (token: string) => void;
+  let rejectToken!: (err: unknown) => void;
+  const tokenPromise = new Promise<string>((resolve, reject) => {
+    resolveToken = resolve;
+    rejectToken = reject;
+  });
+  // Avoid unhandled rejection
+  tokenPromise.catch(() => {});
+
+  const driver: SignInDriver = {
+    flow: 'device-code',
+    start: vi.fn(async (opts) => {
+      opts.dispatch?.({
+        type: 'VERIFICATION_STARTED',
+        userCode: 'AB12CD',
+        verificationUrl: 'https://chromatic.com/verify',
+      });
+      opts.onSnapshot?.({
+        flow: 'device-code',
+        deviceCode: 'd',
+        verifier: 'v',
+        expires: Date.now() + 60_000,
+        interval: 1000,
+        userCode: 'AB12CD',
+        verificationUrl: 'https://chromatic.com/verify',
+        tokenEndpoint: 'https://chromatic.com/token',
+      });
+      return {
+        affordance: { userCode: 'AB12CD', verificationUrl: 'https://chromatic.com/verify' },
+        token: tokenPromise,
+      };
+    }),
+    resume: vi.fn(async () => ({ token: tokenPromise })),
+    cancel: vi.fn(),
+  };
+
+  return { driver, resolveToken, rejectToken };
+};
+
+const makeAuthCodeDriver = () => {
+  let resolveToken!: (token: string) => void;
+  let rejectToken!: (err: unknown) => void;
+  const tokenPromise = new Promise<string>((resolve, reject) => {
+    resolveToken = resolve;
+    rejectToken = reject;
+  });
+  tokenPromise.catch(() => {});
+
+  const driver: SignInDriver & { handleDialogEvent: any } = {
+    flow: 'authorization-code',
+    start: vi.fn(async (opts) => {
+      opts.onSnapshot?.({
+        flow: 'authorization-code',
+        params: {
+          clientId: 'cid',
+          redirectUri: 'https://example.com/redirect',
+          codeVerifier: 'v',
+          state: 'state-abc',
+          authorizationUrl: 'https://chromatic.com/authorize',
+          tokenEndpoint: 'https://chromatic.com/token',
+        },
+      });
+      return { token: tokenPromise };
+    }),
+    cancel: vi.fn(),
+    handleDialogEvent: vi.fn(async () => ({ kind: 'code', code: 'auth' })),
+  };
+
+  return { driver, resolveToken, rejectToken };
+};
+
+beforeEach(() => {
+  effects.length = 0;
+  snapshotValue = null;
+  capturedDialogHandler = undefined;
+});
 
 afterEach(() => {
   vi.clearAllMocks();
-  capturedHandler = undefined;
 });
 
-describe('useShareAuth', () => {
-  it('successful flow: startSignIn opens dialog, grant code triggers fetchAccessToken and updateToken', async () => {
-    const setShareState = vi.fn();
-    mocks.initiateSignin.mockResolvedValueOnce(defaultParams);
-    mocks.exchangeOAuthCode.mockResolvedValueOnce('access-token-xyz');
+describe('useShareAuth (device-code flow)', () => {
+  it('start dispatches VERIFICATION_STARTED then START_UPLOAD on token resolve', async () => {
+    const { driver, resolveToken } = makeDeviceCodeDriver();
+    mocks.createSignInDriver.mockReturnValue(driver);
 
-    const { startSignIn } = useShareAuth(setShareState);
+    const dispatch = vi.fn();
+    const { startSignIn } = useShareAuth(dispatch);
+    flushEffects();
+
     await (startSignIn as () => Promise<void>)();
+    await flushMicrotasks();
 
-    expect(mocks.openDialog).toHaveBeenCalledWith(defaultParams.authorizationUrl, [
-      new URL(defaultParams.redirectUri).origin,
-    ]);
+    expect(dispatch).toHaveBeenCalledWith({
+      type: 'VERIFICATION_STARTED',
+      userCode: 'AB12CD',
+      verificationUrl: 'https://chromatic.com/verify',
+    });
 
-    await capturedHandler!({ message: 'grant', code: 'auth-code', state: 'state-abc' });
+    resolveToken('access-token-xyz');
+    await flushMicrotasks();
 
-    expect(mocks.exchangeOAuthCode).toHaveBeenCalledOnce();
+    const completed = dispatch.mock.calls.find(([a]) => a.type === 'START_UPLOAD');
+    expect(completed).toBeTruthy();
+    expect(completed![0].newRequestId).toEqual(expect.any(String));
     expect(mocks.updateToken).toHaveBeenCalledWith('access-token-xyz');
-    expect(setShareState).toHaveBeenCalledWith({ status: 'uploading', shareUrl: '' });
   });
 
-  it('duplicate grant: fetchAccessToken called only once (paramsRef cleared pre-await)', async () => {
-    const setShareState = vi.fn();
-    mocks.initiateSignin.mockResolvedValueOnce(defaultParams);
+  it('token rejection dispatches VERIFICATION_FAILED with cancelled reason', async () => {
+    const { driver, rejectToken } = makeDeviceCodeDriver();
+    mocks.createSignInDriver.mockReturnValue(driver);
 
-    let resolveFetch!: (token: string) => void;
-    mocks.exchangeOAuthCode.mockReturnValueOnce(
-      new Promise((resolve) => {
-        resolveFetch = resolve;
-      })
-    );
+    const dispatch = vi.fn();
+    const { startSignIn } = useShareAuth(dispatch);
+    flushEffects();
 
-    const { startSignIn } = useShareAuth(setShareState);
     await (startSignIn as () => Promise<void>)();
+    await flushMicrotasks();
 
-    // First grant — clears paramsRef, starts fetch
-    const first = capturedHandler!({ message: 'grant', code: 'auth-code', state: 'state-abc' });
-    // Second grant — paramsRef is null now, should short-circuit
-    await capturedHandler!({ message: 'grant', code: 'auth-code', state: 'state-abc' });
+    const abortErr: any = new Error('aborted');
+    abortErr.name = 'AbortError';
+    rejectToken(abortErr);
+    await flushMicrotasks();
 
-    resolveFetch('token');
-    await first;
-
-    expect(mocks.exchangeOAuthCode).toHaveBeenCalledOnce();
+    const failed = dispatch.mock.calls.find(([a]) => a.type === 'VERIFICATION_FAILED');
+    expect(failed).toBeTruthy();
+    expect(failed![0].reason).toBe('cancelled');
   });
 
-  it('error outcome: setShareState reason=unknown, closeDialog called', async () => {
-    const setShareState = vi.fn();
-    mocks.initiateSignin.mockResolvedValueOnce(defaultParams);
+  it('rejects a second concurrent startSignIn', async () => {
+    const { driver } = makeDeviceCodeDriver();
+    mocks.createSignInDriver.mockReturnValue(driver);
 
-    const { startSignIn } = useShareAuth(setShareState);
+    const dispatch = vi.fn();
+    const { startSignIn } = useShareAuth(dispatch);
+    flushEffects();
+
+    await (startSignIn as () => Promise<void>)();
     await (startSignIn as () => Promise<void>)();
 
-    await capturedHandler!({ message: 'grant', error: 'server_error', state: 'state-abc' });
-
-    expect(mocks.closeDialog).toHaveBeenCalledOnce();
-    expect(setShareState).toHaveBeenCalledWith({ status: 'error', reason: 'unknown' });
+    expect(driver.start).toHaveBeenCalledTimes(1);
   });
 
-  it('stale grant: arriving after paramsRef cleared, no state change or error surfaced', async () => {
-    const setShareState = vi.fn();
-    mocks.initiateSignin.mockResolvedValueOnce(defaultParams);
-    mocks.exchangeOAuthCode.mockResolvedValueOnce('token');
+  it('mount with matching device-code snapshot resumes', async () => {
+    const { driver } = makeDeviceCodeDriver();
+    mocks.createSignInDriver.mockReturnValue(driver);
 
-    const { startSignIn } = useShareAuth(setShareState);
-    await (startSignIn as () => Promise<void>)();
+    snapshotValue = {
+      flow: 'device-code',
+      deviceCode: 'd',
+      verifier: 'v',
+      expires: Date.now() + 60_000,
+      interval: 1000,
+      userCode: 'AB12CD',
+      verificationUrl: 'https://chromatic.com/verify',
+      tokenEndpoint: 'https://chromatic.com/token',
+    };
 
-    // Complete the flow — clears paramsRef
-    await capturedHandler!({ message: 'grant', code: 'auth-code', state: 'state-abc' });
-    setShareState.mockClear();
-    mocks.closeDialog.mockClear();
+    const dispatch = vi.fn();
+    useShareAuth(dispatch);
+    flushEffects();
+    await flushMicrotasks();
 
-    // Stale grant arrives after params cleared
-    await capturedHandler!({ message: 'grant', error: 'server_error', state: 'state-abc' });
-
-    expect(setShareState).not.toHaveBeenCalled();
-    expect(mocks.closeDialog).not.toHaveBeenCalled();
+    expect(driver.resume).toHaveBeenCalledTimes(1);
   });
 
-  it('grant with wrong state during active flow: ignored, flow stays in current state', async () => {
-    const setShareState = vi.fn();
-    mocks.initiateSignin.mockResolvedValueOnce(defaultParams);
+  it('mount with mismatched-flow snapshot drops snapshot without resume', async () => {
+    const { driver } = makeDeviceCodeDriver();
+    mocks.createSignInDriver.mockReturnValue(driver);
 
-    const { startSignIn } = useShareAuth(setShareState);
-    await (startSignIn as () => Promise<void>)();
-    setShareState.mockClear();
+    snapshotValue = {
+      flow: 'authorization-code',
+      params: {
+        clientId: 'cid',
+        redirectUri: 'https://example.com/redirect',
+        codeVerifier: 'v',
+        state: 's',
+        authorizationUrl: 'https://chromatic.com/authorize',
+        tokenEndpoint: 'https://chromatic.com/token',
+      },
+    } as DriverSnapshot;
 
-    // Grant with mismatched state — should be ignored
-    await capturedHandler!({ message: 'grant', error: 'server_error', state: 'wrong-state' });
+    const dispatch = vi.fn();
+    useShareAuth(dispatch);
+    flushEffects();
+    await flushMicrotasks();
 
-    expect(setShareState).not.toHaveBeenCalled();
-    expect(mocks.closeDialog).not.toHaveBeenCalled();
-    expect(mocks.exchangeOAuthCode).not.toHaveBeenCalled();
+    expect(driver.resume).not.toHaveBeenCalled();
+    expect(mocks.setSnapshot).toHaveBeenCalledWith(null);
   });
 
-  it('login relay: openDialog called again with authorizationUrl', async () => {
-    const setShareState = vi.fn();
-    mocks.initiateSignin.mockResolvedValueOnce(defaultParams);
+  it('cleanup effect calls driver.cancel on unmount', () => {
+    const { driver } = makeDeviceCodeDriver();
+    mocks.createSignInDriver.mockReturnValue(driver);
 
-    const { startSignIn } = useShareAuth(setShareState);
+    const dispatch = vi.fn();
+    useShareAuth(dispatch);
+
+    // First effect is mount-resume, second is cleanup. Run both and capture cleanup return.
+    const cleanupFns: Array<() => void> = [];
+    while (effects.length) {
+      const fn = effects.shift()!;
+      const ret = fn();
+      if (typeof ret === 'function') cleanupFns.push(ret);
+    }
+    cleanupFns.forEach((c) => c());
+
+    expect(driver.cancel).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('useShareAuth (auth-code flow)', () => {
+  it('start opens dialog via onSnapshot and resolves token', async () => {
+    const { driver, resolveToken } = makeAuthCodeDriver();
+    mocks.createSignInDriver.mockReturnValue(driver);
+
+    const dispatch = vi.fn();
+    const { startSignIn } = useShareAuth(dispatch);
+    flushEffects();
+
     await (startSignIn as () => Promise<void>)();
-    mocks.openDialog.mockClear();
+    await flushMicrotasks();
 
-    await capturedHandler!({ message: 'login' });
-
-    expect(mocks.openDialog).toHaveBeenCalledWith(defaultParams.authorizationUrl, [
-      new URL(defaultParams.redirectUri).origin,
+    expect(mocks.openDialog).toHaveBeenCalledWith('https://chromatic.com/authorize', [
+      new URL('https://example.com/redirect').origin,
     ]);
-    expect(mocks.exchangeOAuthCode).not.toHaveBeenCalled();
-  });
 
-  it('fetchAccessToken throws: setShareState reason=unknown, closeDialog called', async () => {
-    const setShareState = vi.fn();
-    mocks.initiateSignin.mockResolvedValueOnce(defaultParams);
-    mocks.exchangeOAuthCode.mockRejectedValueOnce(new Error('network error'));
+    // dispatch into dialog handler should call driver.handleDialogEvent
+    await capturedDialogHandler!({ message: 'grant', code: 'auth', state: 'state-abc' });
+    expect(driver.handleDialogEvent).toHaveBeenCalled();
 
-    const { startSignIn } = useShareAuth(setShareState);
-    await (startSignIn as () => Promise<void>)();
+    resolveToken('access-token-xyz');
+    await flushMicrotasks();
 
-    await capturedHandler!({ message: 'grant', code: 'auth-code', state: 'state-abc' });
-
-    expect(mocks.closeDialog).toHaveBeenCalledOnce();
-    expect(setShareState).toHaveBeenCalledWith({ status: 'error', reason: 'unknown' });
-  });
-
-  it('initiateSignin throws in startSignIn: setShareState reason=unknown', async () => {
-    const setShareState = vi.fn();
-    mocks.initiateSignin.mockRejectedValueOnce(new Error('network error'));
-
-    const { startSignIn } = useShareAuth(setShareState);
-    await (startSignIn as () => Promise<void>)();
-
-    expect(setShareState).toHaveBeenCalledWith({ status: 'error', reason: 'unknown' });
+    const completed = dispatch.mock.calls.find(([a]) => a.type === 'START_UPLOAD');
+    expect(completed).toBeTruthy();
+    expect(mocks.updateToken).toHaveBeenCalledWith('access-token-xyz');
   });
 });

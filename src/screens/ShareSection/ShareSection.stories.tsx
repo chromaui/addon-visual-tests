@@ -8,6 +8,7 @@ import { ShareSectionError } from './ShareSectionError';
 import { ShareSectionIdle } from './ShareSectionIdle';
 import { ShareSectionSubdomain } from './ShareSectionSubdomain';
 import { ShareSectionUploading } from './ShareSectionUploading';
+import { ShareSectionVerifying } from './ShareSectionVerifying';
 import { ShareSectionWelcome } from './ShareSectionWelcome';
 
 // --- Welcome ---
@@ -48,6 +49,22 @@ export const Subdomain: SubdomainStory = {
   args: {
     onSubmit: fn().mockName('onSubmit'),
     onBack: fn().mockName('onBack'),
+  },
+};
+
+// --- Verifying (device-code 6-digit screen) ---
+
+type VerifyingStory = StoryObj<typeof ShareSectionVerifying>;
+
+export const Verifying: VerifyingStory = {
+  render: (args) => <ShareSectionVerifying {...args} />,
+  args: {
+    userCode: 'AB12CD',
+    onGoToChromatic: fn().mockName('onGoToChromatic'),
+    onBack: fn().mockName('onBack'),
+  },
+  parameters: {
+    chromatic: { ignoreSelectors: ['ol'] },
   },
 };
 
@@ -120,6 +137,22 @@ export const ErrorUnknown: ErrorStory = {
   render: (args) => <ShareSectionError {...args} />,
   args: {
     reason: 'unknown',
+    onRetry: fn().mockName('onRetry'),
+  },
+};
+
+export const ErrorVerificationCancelled: ErrorStory = {
+  render: (args) => <ShareSectionError {...args} />,
+  args: {
+    reason: 'cancelled',
+    onRetry: fn().mockName('onRetry'),
+  },
+};
+
+export const ErrorVerificationExpired: ErrorStory = {
+  render: (args) => <ShareSectionError {...args} />,
+  args: {
+    reason: 'expired',
     onRetry: fn().mockName('onRetry'),
   },
 };

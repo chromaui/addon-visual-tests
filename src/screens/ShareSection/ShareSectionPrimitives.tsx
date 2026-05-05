@@ -51,6 +51,12 @@ export const ButtonStack = styled.div({
   gap: 8,
 });
 
+export const ButtonRow = styled.div({
+  display: 'flex',
+  alignItems: 'center',
+  gap: 12,
+});
+
 export const StatusRow = styled.div(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',

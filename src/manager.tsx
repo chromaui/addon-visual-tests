@@ -19,9 +19,11 @@ import { isPresent as isSharePopoverPresent } from './screens/ShareSection/popov
 import { TestProviderRender } from './TestProviderRender';
 import type { ShareProgress } from './types';
 import { SharedState } from './utils/SharedState';
+import { handlesOAuthRedirect } from './utils/signInDriver';
 
-// OAuth redirect handler
-if (window.opener && !window.opener.closed) {
+// OAuth redirect handler — only runs for flows that round-trip through this
+// window (authorization-code). Device-code never opens the addon as a popup.
+if (handlesOAuthRedirect && window.opener && !window.opener.closed) {
   const params = new URLSearchParams(window.location.search);
   const code = params.get('code');
   const state = params.get('state');

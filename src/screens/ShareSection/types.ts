@@ -2,11 +2,12 @@ export type ShareState =
   | { status: 'welcome' }
   | { status: 'idle' }
   | { status: 'subdomain' }
+  | { status: 'verifying'; userCode: string; verificationUrl: string }
   | { status: 'uploading'; shareUrl: string }
   | { status: 'complete'; shareUrl: string; publishedAt: number }
   | {
       status: 'error';
-      reason: 'upload-canceled' | 'unknown';
+      reason: 'upload-canceled' | 'cancelled' | 'expired' | 'unknown';
       message?: string;
     };
 
@@ -19,14 +20,13 @@ export type ShareReducerState = {
 };
 
 export type ShareAction =
-  | { type: 'SET_SCREEN'; screen: ShareState }
-  | { type: 'PUBLISH_REQUESTED'; hasToken: boolean; newRequestId: string }
-  | { type: 'PUBLISH_AGAIN'; newRequestId: string }
+  | { type: 'START_UPLOAD'; newRequestId: string }
   | { type: 'GO_SUBDOMAIN' }
   | { type: 'BACK_TO_IDLE' }
-  | { type: 'AUTO_SKIP_TO_UPLOADING'; newRequestId: string }
   | { type: 'START_SHARE_EMITTED'; id: string }
-  | { type: 'APPLY_STATE'; next: ShareReducerState };
+  | { type: 'APPLY_STATE'; next: ShareReducerState }
+  | { type: 'VERIFICATION_STARTED'; userCode: string; verificationUrl: string }
+  | { type: 'VERIFICATION_FAILED'; reason: 'cancelled' | 'expired' | 'unknown' };
 
 export type ProgressEffect =
   | { kind: 'none' }

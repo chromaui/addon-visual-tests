@@ -66,6 +66,7 @@ vi.mock('./popoverPresence', () => ({
 vi.mock('./ShareSectionWelcome', () => ({ ShareSectionWelcome: vi.fn() }));
 vi.mock('./ShareSectionIdle', () => ({ ShareSectionIdle: vi.fn() }));
 vi.mock('./ShareSectionSubdomain', () => ({ ShareSectionSubdomain: vi.fn() }));
+vi.mock('./ShareSectionVerifying', () => ({ ShareSectionVerifying: vi.fn() }));
 vi.mock('./ShareSectionUploading', () => ({ ShareSectionUploading: vi.fn() }));
 vi.mock('./ShareSectionComplete', () => ({ ShareSectionComplete: vi.fn() }));
 vi.mock('./ShareSectionError', () => ({ ShareSectionError: vi.fn() }));
@@ -284,14 +285,14 @@ describe('ShareSection', () => {
   });
 
   describe('welcome auto-skip when authenticated', () => {
-    it('dispatches AUTO_SKIP_TO_UPLOADING when token is present and welcome', () => {
+    it('dispatches START_UPLOAD when token is present and welcome', () => {
       setReducer({ screen: { status: 'welcome' } });
       shareProgressValue = undefined;
 
       invokeShareSection();
 
       const autoSkipDispatches = mocks.dispatch.mock.calls.filter(
-        ([action]) => action?.type === 'AUTO_SKIP_TO_UPLOADING'
+        ([action]) => action?.type === 'START_UPLOAD'
       );
       expect(autoSkipDispatches.length).toBeGreaterThanOrEqual(1);
     });
@@ -307,7 +308,7 @@ describe('ShareSection', () => {
       invokeShareSection();
 
       const autoSkipDispatches = mocks.dispatch.mock.calls.filter(
-        ([action]) => action?.type === 'AUTO_SKIP_TO_UPLOADING'
+        ([action]) => action?.type === 'START_UPLOAD'
       );
       expect(autoSkipDispatches).toHaveLength(0);
     });

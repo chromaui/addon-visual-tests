@@ -1,3 +1,5 @@
+// Authorization-code flow only. The device-code flow does NOT call this
+// module — it polls /token directly via deviceCodeDriver.
 import { fetchAccessToken, type TokenExchangeParameters } from './requestAccessToken';
 import type { DialogHandler } from './useChromaticDialog';
 

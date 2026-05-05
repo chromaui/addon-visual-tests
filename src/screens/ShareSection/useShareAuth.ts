@@ -1,75 +1,144 @@
-import { useCallback, useRef } from 'react';
+import { type Dispatch, useCallback, useEffect, useRef } from 'react';
 
+import type { AuthCodeDriver } from '../../utils/authCodeDriver';
+import { BetaUserDeniedError } from '../../utils/deviceCodeDriver';
 import { useAccessToken } from '../../utils/graphQLClient';
-import { exchangeOAuthCode, parseGrantPayload } from '../../utils/oauthGrant';
-import { initiateSignin, type TokenExchangeParameters } from '../../utils/requestAccessToken';
-import { type DialogHandler, useChromaticDialog } from '../../utils/useChromaticDialog';
-import type { ShareState } from './types';
+import {
+  createSignInDriver,
+  type DriverAction,
+  type DriverSnapshot,
+  type SignInDriver,
+} from '../../utils/signInDriver';
+import { useChromaticDialog } from '../../utils/useChromaticDialog';
+import { useSessionState } from '../../utils/useSessionState';
+import type { ShareAction } from './types';
 
-export function useShareAuth(setShareState: (s: ShareState) => void) {
+const errorReason = (err: unknown): 'cancelled' | 'expired' | 'unknown' => {
+  if (err instanceof BetaUserDeniedError) return 'expired';
+  const e = err as { name?: string; message?: string } | null;
+  if (!e) return 'unknown';
+  if (e.name === 'AbortError') return 'cancelled';
+  if (typeof e.message === 'string') {
+    const m = e.message.toLowerCase();
+    if (m.includes('cancel')) return 'cancelled';
+    if (m.includes('expired')) return 'expired';
+  }
+  return 'unknown';
+};
+
+export function useShareAuth(dispatch: Dispatch<ShareAction>) {
   const [, updateToken] = useAccessToken();
-  const paramsRef = useRef<TokenExchangeParameters | null>(null);
+
+  const driverRef = useRef<SignInDriver | null>(null);
+  if (driverRef.current === null) {
+    driverRef.current = createSignInDriver();
+  }
+  const driver = driverRef.current;
+
+  const startedRef = useRef(false);
+  const [snapshot, setSnapshot] = useSessionState<DriverSnapshot | null>(
+    'shareSignInSnapshot',
+    null
+  );
+  const snapshotRef = useRef(snapshot);
+  snapshotRef.current = snapshot;
+
+  const driverDispatch = useCallback((action: DriverAction) => dispatch(action), [dispatch]);
+
   const openDialogRef = useRef<(url: string, additionalOrigins?: string[]) => void>();
   const closeDialogRef = useRef<() => void>();
 
-  const handler = useCallback<DialogHandler>(
-    async (event) => {
-      const params = paramsRef.current;
-      if (!params) return;
+  const dialogHandler = useCallback(async (event: unknown) => {
+    const d = driverRef.current as AuthCodeDriver | null;
+    if (!d || d.flow !== 'authorization-code') return;
+    const outcome = await d.handleDialogEvent(
+      event as Parameters<AuthCodeDriver['handleDialogEvent']>[0]
+    );
+    if (outcome.kind === 'code' || outcome.kind === 'error') {
+      closeDialogRef.current?.();
+    }
+  }, []);
 
-      const { authorizationUrl, redirectUri, state, clientId, codeVerifier, tokenEndpoint } =
-        params;
-      const redirectOrigin = new URL(redirectUri).origin;
-      const outcome = parseGrantPayload(event, state);
-
-      if (outcome.kind === 'login') {
-        openDialogRef.current?.(authorizationUrl, [redirectOrigin]);
-        return;
-      }
-      if (outcome.kind === 'ignore') return;
-
-      if (outcome.kind === 'error') {
-        paramsRef.current = null;
-        closeDialogRef.current?.();
-        setShareState({ status: 'error', reason: 'unknown' });
-        return;
-      }
-
-      paramsRef.current = null;
-
-      try {
-        const token = await exchangeOAuthCode(
-          { clientId, codeVerifier, redirectUri, tokenEndpoint },
-          outcome.code
-        );
-
-        updateToken(token);
-        closeDialogRef.current?.();
-        setShareState({ status: 'uploading', shareUrl: '' });
-      } catch {
-        closeDialogRef.current?.();
-        setShareState({ status: 'error', reason: 'unknown' });
-      }
-    },
-    [setShareState, updateToken]
-  );
-
-  const [openDialog, closeDialog] = useChromaticDialog(handler);
+  const [openDialog, closeDialog] = useChromaticDialog(dialogHandler);
   openDialogRef.current = openDialog;
   closeDialogRef.current = closeDialog;
 
-  const startSignIn = useCallback(
-    async (subdomain?: string) => {
+  const finalizeToken = useCallback(
+    async (tokenPromise: Promise<string>) => {
       try {
-        const params = await initiateSignin(subdomain);
-        paramsRef.current = params;
-        const redirectOrigin = new URL(params.redirectUri).origin;
-        openDialogRef.current?.(params.authorizationUrl, [redirectOrigin]);
-      } catch {
-        setShareState({ status: 'error', reason: 'unknown' });
+        const token = await tokenPromise;
+        dispatch({ type: 'START_UPLOAD', newRequestId: crypto.randomUUID() });
+        updateToken(token);
+        setSnapshot(null);
+        closeDialogRef.current?.();
+      } catch (err) {
+        dispatch({ type: 'VERIFICATION_FAILED', reason: errorReason(err) });
+        setSnapshot(null);
+        closeDialogRef.current?.();
+      } finally {
+        startedRef.current = false;
       }
     },
-    [setShareState]
+    [dispatch, setSnapshot, updateToken]
+  );
+
+  // On mount: resume from snapshot when flow matches.
+  useEffect(() => {
+    const snap = snapshotRef.current;
+    if (!snap) return;
+    if (snap.flow !== driver.flow) {
+      setSnapshot(null);
+      return;
+    }
+    if (!driver.resume) return;
+    if (startedRef.current) return;
+    startedRef.current = true;
+
+    driver
+      .resume(snap, { dispatch: driverDispatch, onSnapshot: setSnapshot })
+      .then((result) => finalizeToken(result.token))
+      .catch((err) => {
+        dispatch({ type: 'VERIFICATION_FAILED', reason: errorReason(err) });
+        setSnapshot(null);
+        startedRef.current = false;
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Cleanup on unmount.
+  useEffect(() => {
+    return () => {
+      driver.cancel();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const startSignIn = useCallback(
+    async (subdomain?: string) => {
+      if (startedRef.current) return;
+      startedRef.current = true;
+
+      try {
+        const result = await driver.start({
+          subdomain,
+          dispatch: driverDispatch,
+          onSnapshot: (s) => {
+            setSnapshot(s);
+            if (s.flow === 'authorization-code') {
+              const redirectOrigin = new URL(s.params.redirectUri).origin;
+              openDialogRef.current?.(s.params.authorizationUrl, [redirectOrigin]);
+            }
+          },
+        });
+        // Token resolution happens later — don't block startSignIn on it.
+        finalizeToken(result.token);
+      } catch (err) {
+        dispatch({ type: 'VERIFICATION_FAILED', reason: errorReason(err) });
+        setSnapshot(null);
+        startedRef.current = false;
+      }
+    },
+    [driver, driverDispatch, dispatch, finalizeToken, setSnapshot]
   );
 
   return { startSignIn, updateToken };

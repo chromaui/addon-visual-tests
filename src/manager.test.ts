@@ -79,6 +79,13 @@ vi.mock('./screens/ShareSection/popoverPresence', () => ({
   isPresent: () => false,
 }));
 
+const driverMock = vi.hoisted(() => ({ handlesRedirect: true }));
+vi.mock('./utils/signInDriver', () => ({
+  get handlesOAuthRedirect() {
+    return driverMock.handlesRedirect;
+  },
+}));
+
 function stubWindow(search = '', opener: Record<string, unknown> | null = null) {
   const windowMock = {
     opener,
@@ -99,6 +106,7 @@ afterEach(() => {
   vi.resetModules();
   vi.clearAllMocks();
   vi.unstubAllGlobals();
+  driverMock.handlesRedirect = true;
   delete (globalThis as { CONFIG_TYPE?: string }).CONFIG_TYPE;
 });
 
@@ -189,6 +197,18 @@ describe('manager', () => {
       await import('./manager');
 
       expect(opener.postMessage).not.toHaveBeenCalled();
+    });
+
+    it('does not post when driver does not handle redirect (device-code flow)', async () => {
+      driverMock.handlesRedirect = false;
+      const opener = { closed: false, postMessage: vi.fn() };
+      const windowMock = stubWindow('?code=grant-code&state=abc123', opener);
+      (globalThis as { CONFIG_TYPE?: string }).CONFIG_TYPE = 'PRODUCTION';
+
+      await import('./manager');
+
+      expect(opener.postMessage).not.toHaveBeenCalled();
+      expect(windowMock.close).not.toHaveBeenCalled();
     });
   });
 });
