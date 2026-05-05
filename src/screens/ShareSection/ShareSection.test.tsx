@@ -125,7 +125,7 @@ describe('ShareSection', () => {
       // Even though dispatch is called, the reducer's pure logic must produce a no-op effect.
       // We verify by checking that no telemetry side-effects fired for url-received.
       const urlReceivedEmits = mocks.channel.emit.mock.calls.filter(
-        ([, payload]: [string, any]) => payload?.action === 'share-url-received'
+        ([, payload]) => payload?.action === 'share-url-received'
       );
       expect(urlReceivedEmits).toHaveLength(0);
     });
@@ -176,7 +176,7 @@ describe('ShareSection', () => {
       invokeShareSection();
 
       const failedEmits = mocks.channel.emit.mock.calls.filter(
-        ([, payload]: [string, any]) => payload?.action === 'share-failed'
+        ([, payload]) => payload?.action === 'share-failed'
       );
       expect(failedEmits.length).toBeGreaterThanOrEqual(1);
       // updateToken should NOT be called for non-auth errors
@@ -219,7 +219,7 @@ describe('ShareSection', () => {
       invokeShareSection();
 
       const startShareEmits = mocks.channel.emit.mock.calls.filter(
-        ([event]: [string]) => event && event.endsWith('startShare')
+        ([event]) => event && event.endsWith('startShare')
       );
       expect(startShareEmits).toHaveLength(0);
     });
@@ -235,7 +235,7 @@ describe('ShareSection', () => {
       invokeShareSection();
 
       const startShareEmits = mocks.channel.emit.mock.calls.filter(
-        ([event]: [string]) => event && event.endsWith('startShare')
+        ([event]) => event && event.endsWith('startShare')
       );
       expect(startShareEmits).toHaveLength(0);
     });
@@ -257,7 +257,7 @@ describe('ShareSection', () => {
       invokeShareSection();
 
       const completedEmits = mocks.channel.emit.mock.calls.filter(
-        ([, payload]: [string, any]) => payload?.action === 'share-upload-completed'
+        ([, payload]) => payload?.action === 'share-upload-completed'
       );
       expect(completedEmits.length).toBeGreaterThanOrEqual(1);
     });
@@ -277,7 +277,7 @@ describe('ShareSection', () => {
       invokeShareSection();
 
       const failedEmits = mocks.channel.emit.mock.calls.filter(
-        ([, payload]: [string, any]) => payload?.action === 'share-failed'
+        ([, payload]) => payload?.action === 'share-failed'
       );
       expect(failedEmits.length).toBeGreaterThanOrEqual(1);
     });
@@ -291,7 +291,7 @@ describe('ShareSection', () => {
       invokeShareSection();
 
       const autoSkipDispatches = mocks.dispatch.mock.calls.filter(
-        ([action]: [{ type: string }]) => action?.type === 'AUTO_SKIP_TO_UPLOADING'
+        ([action]) => action?.type === 'AUTO_SKIP_TO_UPLOADING'
       );
       expect(autoSkipDispatches.length).toBeGreaterThanOrEqual(1);
     });
@@ -307,7 +307,7 @@ describe('ShareSection', () => {
       invokeShareSection();
 
       const autoSkipDispatches = mocks.dispatch.mock.calls.filter(
-        ([action]: [{ type: string }]) => action?.type === 'AUTO_SKIP_TO_UPLOADING'
+        ([action]) => action?.type === 'AUTO_SKIP_TO_UPLOADING'
       );
       expect(autoSkipDispatches).toHaveLength(0);
     });
