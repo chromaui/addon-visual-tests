@@ -257,6 +257,7 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
   const shareProgressState = SharedState.subscribe<ShareProgress>(SHARE_PROGRESS, channel);
   let shareInFlight = false;
   let currentAbortController: AbortController | null = null;
+  let activeShareRequestId: string | null = null;
   let lastCompletedShareRequestId: string | null = null;
 
   channel.on(
@@ -264,11 +265,13 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
     async ({ accessToken, shareRequestId }: { accessToken: string; shareRequestId?: string }) => {
       if (shareInFlight) return;
       if (shareRequestId && shareRequestId === lastCompletedShareRequestId) return;
+      const requestId = shareRequestId ?? crypto.randomUUID();
       shareInFlight = true;
+      activeShareRequestId = requestId;
       const controller = new AbortController();
       currentAbortController = controller;
       let didError = false;
-      shareProgressState.value = { status: 'pending', shareRequestId };
+      shareProgressState.value = { status: 'pending', shareRequestId: requestId };
       try {
         const result = await share({
           userToken: accessToken,
@@ -278,7 +281,7 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
               status: 'uploading',
               shareUrl: url,
               progress: 0,
-              shareRequestId,
+              shareRequestId: requestId,
             };
           },
           onProgress: (current: number, total: number) => {
@@ -287,7 +290,7 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
               ...shareProgressState.value,
               status: 'uploading',
               progress,
-              shareRequestId,
+              shareRequestId: requestId,
             };
           },
           onError: (error: Error) => {
@@ -295,7 +298,7 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
             shareProgressState.value = {
               status: 'error',
               error: error.message,
-              shareRequestId,
+              shareRequestId: requestId,
             };
           },
         });
@@ -304,15 +307,15 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
             status: 'error',
             error: 'cancelled',
             cancelled: true,
-            shareRequestId,
+            shareRequestId: requestId,
           };
         } else if (!didError) {
           shareProgressState.value = {
             status: 'complete',
             shareUrl: result.shareUrl,
-            shareRequestId,
+            shareRequestId: requestId,
           };
-          if (shareRequestId) lastCompletedShareRequestId = shareRequestId;
+          lastCompletedShareRequestId = requestId;
         }
       } catch (e: any) {
         if (controller.signal.aborted) {
@@ -320,23 +323,27 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
             status: 'error',
             error: 'cancelled',
             cancelled: true,
-            shareRequestId,
+            shareRequestId: requestId,
           };
         } else {
           shareProgressState.value = {
             status: 'error',
             error: e?.message || 'Share failed',
-            shareRequestId,
+            shareRequestId: requestId,
           };
         }
       } finally {
         if (currentAbortController === controller) currentAbortController = null;
+        if (activeShareRequestId === requestId) activeShareRequestId = null;
         shareInFlight = false;
       }
     }
   );
 
-  channel.on(CANCEL_SHARE, () => {
+  channel.on(CANCEL_SHARE, ({ shareRequestId }: { shareRequestId?: string } = {}) => {
+    if (shareRequestId && activeShareRequestId && shareRequestId !== activeShareRequestId) {
+      return;
+    }
     currentAbortController?.abort();
   });
 

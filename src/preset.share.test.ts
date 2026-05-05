@@ -133,7 +133,13 @@ describe('preset START_SHARE handler', () => {
     await loadPreset();
 
     mocks.shareMock.mockImplementationOnce(
-      async ({ onUrl, onProgress }: { onUrl: (u: string) => void; onProgress: (c: number, t: number) => void }) => {
+      async ({
+        onUrl,
+        onProgress,
+      }: {
+        onUrl: (u: string) => void;
+        onProgress: (c: number, t: number) => void;
+      }) => {
         onUrl('https://share.example.com/sb');
         onProgress(50, 100);
         return { shareUrl: 'https://share.example.com/sb' };
@@ -172,12 +178,10 @@ describe('preset START_SHARE handler', () => {
   it('onError sets status=error and subsequent share() resolution does NOT overwrite to complete', async () => {
     await loadPreset();
 
-    mocks.shareMock.mockImplementationOnce(
-      async ({ onError }: { onError: (e: Error) => void }) => {
-        onError(new Error('upload failed'));
-        return { shareUrl: 'https://share.example.com/sb' };
-      }
-    );
+    mocks.shareMock.mockImplementationOnce(async ({ onError }: { onError: (e: Error) => void }) => {
+      onError(new Error('upload failed'));
+      return { shareUrl: 'https://share.example.com/sb' };
+    });
 
     await emitStartShare({ accessToken: 'token', shareRequestId: 'req-1' });
 
@@ -191,16 +195,12 @@ describe('preset START_SHARE handler', () => {
     await loadPreset();
 
     let capturedSignal: AbortSignal | undefined;
-    let resolveShare!: (v: any) => void;
-    mocks.shareMock.mockImplementationOnce(
-      ({ abortSignal }: { abortSignal?: AbortSignal }) => {
-        capturedSignal = abortSignal;
-        return new Promise((resolve, reject) => {
-          resolveShare = resolve;
-          abortSignal?.addEventListener('abort', () => reject(new Error('aborted')));
-        });
-      }
-    );
+    mocks.shareMock.mockImplementationOnce(({ abortSignal }: { abortSignal?: AbortSignal }) => {
+      capturedSignal = abortSignal;
+      return new Promise((_resolve, reject) => {
+        abortSignal?.addEventListener('abort', () => reject(new Error('aborted')));
+      });
+    });
 
     const shareDone = emitStartShare({ accessToken: 'token', shareRequestId: 'req-1' });
     await new Promise((r) => setTimeout(r, 0));
@@ -226,16 +226,12 @@ describe('preset START_SHARE handler', () => {
     await loadPreset();
 
     const captured: AbortSignal[] = [];
-    let resolveFirst!: (v: any) => void;
-    mocks.shareMock.mockImplementationOnce(
-      ({ abortSignal }: { abortSignal?: AbortSignal }) => {
-        if (abortSignal) captured.push(abortSignal);
-        return new Promise((_resolve, reject) => {
-          resolveFirst = _resolve;
-          abortSignal?.addEventListener('abort', () => reject(new Error('aborted')));
-        });
-      }
-    );
+    mocks.shareMock.mockImplementationOnce(({ abortSignal }: { abortSignal?: AbortSignal }) => {
+      if (abortSignal) captured.push(abortSignal);
+      return new Promise((_resolve, reject) => {
+        abortSignal?.addEventListener('abort', () => reject(new Error('aborted')));
+      });
+    });
 
     const first = emitStartShare({ accessToken: 'token', shareRequestId: 'req-1' });
     await new Promise((r) => setTimeout(r, 0));
@@ -268,5 +264,30 @@ describe('preset START_SHARE handler', () => {
     await emitStartShare({ accessToken: 'token', shareRequestId: 'req-done' });
     expect(mocks.shareMock).toHaveBeenCalledTimes(1);
     expect(mocks.shareProgressState.value).toBe(valueBeforeReplay);
+  });
+
+  it('CANCEL_SHARE with mismatched shareRequestId does not abort the active share', async () => {
+    await loadPreset();
+
+    let capturedSignal: AbortSignal | undefined;
+    mocks.shareMock.mockImplementationOnce(({ abortSignal }: { abortSignal?: AbortSignal }) => {
+      capturedSignal = abortSignal;
+      return new Promise((_resolve, reject) => {
+        abortSignal?.addEventListener('abort', () => reject(new Error('aborted')));
+      });
+    });
+
+    const shareDone = emitStartShare({ accessToken: 'token', shareRequestId: 'req-active' });
+    await new Promise((r) => setTimeout(r, 0));
+
+    // Stale cancel for a different request id — must be ignored
+    await emitCancelShare({ shareRequestId: 'req-stale' });
+    expect(capturedSignal?.aborted).toBe(false);
+
+    // Cancel with matching id should abort
+    await emitCancelShare({ shareRequestId: 'req-active' });
+    expect(capturedSignal?.aborted).toBe(true);
+
+    await shareDone;
   });
 });

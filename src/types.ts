@@ -228,5 +228,5 @@ export type ShareProgress = {
   progress?: number;
   error?: string;
   cancelled?: boolean;
-  shareRequestId?: string;
+  shareRequestId: string;
 };
