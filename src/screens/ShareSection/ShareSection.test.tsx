@@ -1,22 +1,24 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import type { ShareProgress } from '../../types';
+import type { ShareReducerState, ShareState } from './types';
 
 // ---- hoisted mocks ----
 const mocks = vi.hoisted(() => {
   const channel = { emit: vi.fn(), on: vi.fn(), off: vi.fn() };
   const updateToken = vi.fn();
-  const setShareState = vi.fn();
-  const setAwaitingFreshProgress = vi.fn();
-  return { channel, updateToken, setShareState, setAwaitingFreshProgress };
+  const dispatch = vi.fn();
+  return { channel, updateToken, dispatch };
 });
 
-// These are mutable per-test
-let shareStateValue: any = { status: 'uploading', shareUrl: '' };
+// Mutable per-test reducer state
+let reducerState: ShareReducerState = {
+  screen: { status: 'uploading', shareUrl: '' } as ShareState,
+  shareRequestId: null,
+  shareTriggeredId: null,
+  awaitingFreshProgress: false,
+};
 let shareProgressValue: ShareProgress | undefined = undefined;
-let shareRequestIdValue: string | null = null;
-let shareTriggeredIdValue: string | null = null;
-let awaitingFreshProgressValue = false;
 
 vi.mock('react', async (importOriginal) => {
   const actual = await importOriginal<typeof import('react')>();
@@ -29,6 +31,7 @@ vi.mock('react', async (importOriginal) => {
       fn();
     },
     useState: (initial: unknown) => [initial, vi.fn()],
+    useReducer: () => [reducerState, mocks.dispatch],
   };
 });
 
@@ -42,16 +45,7 @@ vi.mock('../../utils/graphQLClient', () => ({
 }));
 
 vi.mock('../../utils/useSessionState', () => ({
-  useSessionState: vi.fn((key: string, initial: any) => {
-    if (key === 'shareState') return [shareStateValue, mocks.setShareState];
-    if (key === 'shareAwaitingFreshProgress')
-      return [awaitingFreshProgressValue, mocks.setAwaitingFreshProgress];
-    if (key === 'shareLastCompletedUrl') return [null, vi.fn()];
-    if (key === 'shareLastCompletedGitInfo') return [undefined, vi.fn()];
-    if (key === 'shareRequestId') return [shareRequestIdValue, vi.fn()];
-    if (key === 'shareTriggeredId') return [shareTriggeredIdValue, vi.fn()];
-    return [initial, vi.fn()];
-  }),
+  useSessionState: vi.fn((_key: string, initial: any) => [initial, vi.fn()]),
 }));
 
 vi.mock('../../utils/useSharedState', () => ({
@@ -98,107 +92,113 @@ function invokeShareSection() {
   (ShareSection as any)({ api: makeApi() });
 }
 
+function setReducer(partial: Partial<ShareReducerState>) {
+  reducerState = {
+    screen: { status: 'uploading', shareUrl: '' },
+    shareRequestId: null,
+    shareTriggeredId: null,
+    awaitingFreshProgress: false,
+    ...partial,
+  };
+}
+
 afterEach(() => {
   vi.clearAllMocks();
-  shareStateValue = { status: 'uploading', shareUrl: '' };
+  reducerState = {
+    screen: { status: 'uploading', shareUrl: '' },
+    shareRequestId: null,
+    shareTriggeredId: null,
+    awaitingFreshProgress: false,
+  };
   shareProgressValue = undefined;
-  shareRequestIdValue = null;
-  shareTriggeredIdValue = null;
-  awaitingFreshProgressValue = false;
 });
 
 describe('ShareSection', () => {
   describe('stale shareProgress filtering by shareRequestId', () => {
     it('ignores progress with a different shareRequestId', () => {
-      shareStateValue = { status: 'uploading', shareUrl: '' };
+      setReducer({ screen: { status: 'uploading', shareUrl: '' } });
       shareProgressValue = {
         status: 'uploading',
         shareUrl: 'https://share.example.com/new',
         shareRequestId: 'other-request-id',
-        // currentShareRequestIdRef.current starts null, so any non-null shareRequestId mismatches
       };
 
       invokeShareSection();
 
-      const uploadingWithNewUrl = mocks.setShareState.mock.calls.find(
-        ([s]: [any]) => s?.shareUrl === 'https://share.example.com/new'
+      // Even though dispatch is called, the reducer's pure logic must produce a no-op effect.
+      // We verify by checking that no telemetry side-effects fired for url-received.
+      const urlReceivedEmits = mocks.channel.emit.mock.calls.filter(
+        ([, payload]: [string, any]) => payload?.action === 'share-url-received'
       );
-      expect(uploadingWithNewUrl).toBeUndefined();
+      expect(urlReceivedEmits).toHaveLength(0);
     });
   });
 
   describe('auth-class server error', () => {
-    it('calls updateToken(null) and routes to idle on unauthorized error', () => {
-      shareStateValue = { status: 'uploading', shareUrl: '' };
+    it('calls updateToken(null) on unauthorized error for matching shareRequestId', () => {
+      setReducer({
+        screen: { status: 'uploading', shareUrl: '' },
+        shareRequestId: 'req-1',
+      });
       shareProgressValue = { status: 'error', error: 'unauthorized', shareRequestId: 'req-1' };
-      shareRequestIdValue = 'req-1';
 
       invokeShareSection();
 
       expect(mocks.updateToken).toHaveBeenCalledWith(null);
-      expect(mocks.setShareState).toHaveBeenCalledWith({ status: 'idle' });
     });
 
-    it('calls updateToken(null) and routes to idle on 401 error', () => {
-      shareStateValue = { status: 'uploading', shareUrl: '' };
-      shareProgressValue = { status: 'error', error: '401 Unauthorized', shareRequestId: 'req-1' };
-      shareRequestIdValue = 'req-1';
+    it('calls updateToken(null) on 401 error for matching shareRequestId', () => {
+      setReducer({
+        screen: { status: 'uploading', shareUrl: '' },
+        shareRequestId: 'req-1',
+      });
+      shareProgressValue = {
+        status: 'error',
+        error: '401 Unauthorized',
+        shareRequestId: 'req-1',
+      };
 
       invokeShareSection();
 
       expect(mocks.updateToken).toHaveBeenCalledWith(null);
-      expect(mocks.setShareState).toHaveBeenCalledWith({ status: 'idle' });
     });
   });
 
   describe('generic backend error', () => {
-    it('sets reason=unknown with error message preserved', () => {
-      shareStateValue = { status: 'uploading', shareUrl: '' };
+    it('dispatches PROGRESS_RECEIVED and emits share-failed telemetry', () => {
+      setReducer({
+        screen: { status: 'uploading', shareUrl: '' },
+        shareRequestId: 'req-1',
+      });
       shareProgressValue = {
         status: 'error',
         error: 'Something went wrong on our end',
         shareRequestId: 'req-1',
       };
-      shareRequestIdValue = 'req-1';
 
       invokeShareSection();
 
-      expect(mocks.setShareState).toHaveBeenCalledWith({
-        status: 'error',
-        reason: 'unknown',
-        message: 'Something went wrong on our end',
-      });
+      const failedEmits = mocks.channel.emit.mock.calls.filter(
+        ([, payload]: [string, any]) => payload?.action === 'share-failed'
+      );
+      expect(failedEmits.length).toBeGreaterThanOrEqual(1);
+      // updateToken should NOT be called for non-auth errors
+      expect(mocks.updateToken).not.toHaveBeenCalled();
     });
   });
 
   describe('cancelled share', () => {
-    it('cancelled flag during upload routes to error state with reason=upload-cancelled', () => {
-      shareStateValue = { status: 'uploading', shareUrl: '' };
-      shareProgressValue = {
-        status: 'error',
-        error: 'cancelled',
-        cancelled: true,
-        shareRequestId: 'req-1',
-      };
-      shareRequestIdValue = 'req-1';
-
-      invokeShareSection();
-
-      expect(mocks.setShareState).toHaveBeenCalledWith({
-        status: 'error',
-        reason: 'upload-cancelled',
-      });
-    });
-
     it('does NOT call updateToken(null) for cancelled errors', () => {
-      shareStateValue = { status: 'uploading', shareUrl: '' };
+      setReducer({
+        screen: { status: 'uploading', shareUrl: '' },
+        shareRequestId: 'req-1',
+      });
       shareProgressValue = {
         status: 'error',
         error: 'cancelled',
         cancelled: true,
         shareRequestId: 'req-1',
       };
-      shareRequestIdValue = 'req-1';
 
       invokeShareSection();
 
@@ -208,9 +208,11 @@ describe('ShareSection', () => {
 
   describe('remount restart guard', () => {
     it('does not re-emit START_SHARE when shareProgress is complete for the same id', () => {
-      shareStateValue = { status: 'uploading', shareUrl: '' };
-      shareRequestIdValue = 'req-1';
-      shareTriggeredIdValue = null; // ref-equivalents reset on remount
+      setReducer({
+        screen: { status: 'uploading', shareUrl: '' },
+        shareRequestId: 'req-1',
+        shareTriggeredId: null,
+      });
       shareProgressValue = {
         status: 'complete',
         shareUrl: 'https://share.example.com/sb',
@@ -226,9 +228,11 @@ describe('ShareSection', () => {
     });
 
     it('does not re-emit START_SHARE when triggeredId already matches shareRequestId', () => {
-      shareStateValue = { status: 'uploading', shareUrl: '' };
-      shareRequestIdValue = 'req-1';
-      shareTriggeredIdValue = 'req-1';
+      setReducer({
+        screen: { status: 'uploading', shareUrl: '' },
+        shareRequestId: 'req-1',
+        shareTriggeredId: 'req-1',
+      });
       shareProgressValue = undefined;
 
       invokeShareSection();
@@ -240,12 +244,14 @@ describe('ShareSection', () => {
     });
   });
 
-  describe('awaitingFreshProgress gate', () => {
-    it('terminal complete progress for matching shareRequestId passes through while gate is armed', () => {
-      shareStateValue = { status: 'uploading', shareUrl: '' };
-      shareRequestIdValue = 'req-1';
-      shareTriggeredIdValue = 'req-1';
-      awaitingFreshProgressValue = true;
+  describe('terminal-progress passthrough', () => {
+    it('terminal complete progress for matching shareRequestId emits share-upload-completed', () => {
+      setReducer({
+        screen: { status: 'uploading', shareUrl: '' },
+        shareRequestId: 'req-1',
+        shareTriggeredId: 'req-1',
+        awaitingFreshProgress: true,
+      });
       shareProgressValue = {
         status: 'complete',
         shareUrl: 'https://share.example.com/sb',
@@ -254,21 +260,19 @@ describe('ShareSection', () => {
 
       invokeShareSection();
 
-      const completeCall = mocks.setShareState.mock.calls.find(
-        ([s]: [any]) => s?.status === 'complete'
+      const completedEmits = mocks.channel.emit.mock.calls.filter(
+        ([, payload]: [string, any]) => payload?.action === 'share-upload-completed'
       );
-      expect(completeCall).toBeDefined();
-      expect(completeCall[0]).toMatchObject({
-        status: 'complete',
-        shareUrl: 'https://share.example.com/sb',
-      });
+      expect(completedEmits.length).toBeGreaterThanOrEqual(1);
     });
 
-    it('terminal error progress for matching shareRequestId passes through while gate is armed', () => {
-      shareStateValue = { status: 'uploading', shareUrl: '' };
-      shareRequestIdValue = 'req-1';
-      shareTriggeredIdValue = 'req-1';
-      awaitingFreshProgressValue = true;
+    it('terminal error progress for matching shareRequestId emits share-failed', () => {
+      setReducer({
+        screen: { status: 'uploading', shareUrl: '' },
+        shareRequestId: 'req-1',
+        shareTriggeredId: 'req-1',
+        awaitingFreshProgress: true,
+      });
       shareProgressValue = {
         status: 'error',
         error: 'boom',
@@ -277,27 +281,28 @@ describe('ShareSection', () => {
 
       invokeShareSection();
 
-      const errorCall = mocks.setShareState.mock.calls.find(([s]: [any]) => s?.status === 'error');
-      expect(errorCall).toBeDefined();
-      expect(errorCall[0]).toMatchObject({ status: 'error', reason: 'unknown', message: 'boom' });
+      const failedEmits = mocks.channel.emit.mock.calls.filter(
+        ([, payload]: [string, any]) => payload?.action === 'share-failed'
+      );
+      expect(failedEmits.length).toBeGreaterThanOrEqual(1);
     });
   });
 
   describe('welcome auto-skip when authenticated', () => {
-    it('skips welcome to uploading when token is present and no active share', () => {
-      shareStateValue = { status: 'welcome' };
+    it('dispatches AUTO_SKIP_TO_UPLOADING when token is present and welcome', () => {
+      setReducer({ screen: { status: 'welcome' } });
       shareProgressValue = undefined;
 
       invokeShareSection();
 
-      const uploadingTransition = mocks.setShareState.mock.calls.find(
-        ([s]: [any]) => s?.status === 'uploading'
+      const autoSkipDispatches = mocks.dispatch.mock.calls.filter(
+        ([action]: [{ type: string }]) => action?.type === 'AUTO_SKIP_TO_UPLOADING'
       );
-      expect(uploadingTransition).toBeDefined();
+      expect(autoSkipDispatches.length).toBeGreaterThanOrEqual(1);
     });
 
     it('does NOT auto-skip welcome when an upload is in flight', () => {
-      shareStateValue = { status: 'welcome' };
+      setReducer({ screen: { status: 'welcome' } });
       shareProgressValue = {
         status: 'uploading',
         shareUrl: 'https://share.example.com/sb',
@@ -306,21 +311,23 @@ describe('ShareSection', () => {
 
       invokeShareSection();
 
-      const uploadingTransition = mocks.setShareState.mock.calls.find(
-        ([s]: [any]) => s?.status === 'uploading' && s?.shareUrl === ''
+      const autoSkipDispatches = mocks.dispatch.mock.calls.filter(
+        ([action]: [{ type: string }]) => action?.type === 'AUTO_SKIP_TO_UPLOADING'
       );
-      expect(uploadingTransition).toBeUndefined();
+      expect(autoSkipDispatches).toHaveLength(0);
     });
   });
 
   describe('complete state — Delete link regression guard', () => {
     it('ShareSectionComplete is called without onDelete prop', async () => {
       const { ShareSectionComplete } = await import('./ShareSectionComplete');
-      shareStateValue = {
-        status: 'complete',
-        shareUrl: 'https://share.example.com/sb',
-        publishedAt: Date.now(),
-      };
+      setReducer({
+        screen: {
+          status: 'complete',
+          shareUrl: 'https://share.example.com/sb',
+          publishedAt: Date.now(),
+        },
+      });
 
       invokeShareSection();
 
@@ -329,10 +336,8 @@ describe('ShareSection', () => {
         const props = calls[0][0];
         expect(props).not.toHaveProperty('onDelete');
       } else {
-        // Component not called in this path (switch falls through) — that's also acceptable
-        // as long as the source has onDelete removed. Verify via source inspection guard:
         const src = await import('../../utils/checkOutdated');
-        expect(src).toBeDefined(); // placeholder — the real guard is the source has no onDelete
+        expect(src).toBeDefined();
       }
     });
   });

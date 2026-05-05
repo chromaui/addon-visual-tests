@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useReducer, useRef } from 'react';
 import type { API } from 'storybook/manager-api';
 
 import { CANCEL_SHARE, GIT_INFO, SHARE_PROGRESS, START_SHARE, TELEMETRY } from '../../constants';
@@ -14,28 +14,180 @@ import { ShareSectionIdle } from './ShareSectionIdle';
 import { ShareSectionSubdomain } from './ShareSectionSubdomain';
 import { ShareSectionUploading } from './ShareSectionUploading';
 import { ShareSectionWelcome } from './ShareSectionWelcome';
-import type { ShareState } from './types';
+import type { ProgressEffect, ShareAction, ShareReducerState, ShareState } from './types';
 import { useShareAuth } from './useShareAuth';
+
+const initialState: ShareReducerState = {
+  screen: { status: 'welcome' },
+  shareRequestId: null,
+  shareTriggeredId: null,
+  awaitingFreshProgress: false,
+};
+
+function applyProgress(
+  state: ShareReducerState,
+  progress: ShareProgress,
+  gitInfo: GitInfoPayload | undefined,
+  lastCompletedShareUrl: string | null
+): { next: ShareReducerState; effect: ProgressEffect } {
+  // Stale-progress filter: drop updates from a different request id.
+  if (progress.shareRequestId && progress.shareRequestId !== state.shareRequestId) {
+    return { next: state, effect: { kind: 'none' } };
+  }
+
+  const isTerminal = progress.status === 'complete' || progress.status === 'error';
+
+  // Drop mid-state updates from prior requests when awaiting fresh progress.
+  // Terminal updates always pass through (the gate only filters mid-state).
+  if (
+    state.awaitingFreshProgress &&
+    !isTerminal &&
+    progress.status !== 'pending' &&
+    progress.status !== 'uploading'
+  ) {
+    return { next: state, effect: { kind: 'none' } };
+  }
+
+  const clearedGate = state.awaitingFreshProgress
+    ? { ...state, awaitingFreshProgress: false }
+    : state;
+
+  if (
+    progress.status === 'uploading' &&
+    progress.shareUrl &&
+    state.screen.status === 'uploading' &&
+    progress.shareUrl !== state.screen.shareUrl
+  ) {
+    return {
+      next: {
+        ...clearedGate,
+        screen: { status: 'uploading', shareUrl: progress.shareUrl },
+      },
+      effect: { kind: 'url-received' },
+    };
+  }
+
+  if (progress.status === 'complete' && progress.shareUrl) {
+    const shareUrl = progress.shareUrl;
+    return {
+      next: {
+        ...clearedGate,
+        screen: { status: 'complete', shareUrl, publishedAt: Date.now() },
+        shareRequestId: null,
+        shareTriggeredId: null,
+      },
+      effect: {
+        kind: 'completed',
+        shareUrl,
+        gitInfo,
+        isNew: shareUrl !== lastCompletedShareUrl,
+      },
+    };
+  }
+
+  if (progress.status === 'error') {
+    const errorMessage = progress.error ?? '';
+    if (progress.cancelled) {
+      return {
+        next: {
+          ...clearedGate,
+          screen: { status: 'error', reason: 'upload-cancelled' },
+          shareRequestId: null,
+          shareTriggeredId: null,
+        },
+        effect: { kind: 'failed' },
+      };
+    }
+    const isAuthError = /\b(401|403|unauthorized|expired)\b/i.test(errorMessage);
+    if (isAuthError) {
+      return {
+        next: {
+          ...clearedGate,
+          screen: { status: 'idle' },
+          shareRequestId: null,
+          shareTriggeredId: null,
+        },
+        effect: { kind: 'auth-error' },
+      };
+    }
+    return {
+      next: {
+        ...clearedGate,
+        screen: {
+          status: 'error',
+          reason: 'unknown',
+          message: errorMessage || undefined,
+        },
+        shareRequestId: null,
+        shareTriggeredId: null,
+      },
+      effect: { kind: 'failed' },
+    };
+  }
+
+  return { next: clearedGate, effect: { kind: 'none' } };
+}
+
+function shareReducer(state: ShareReducerState, action: ShareAction): ShareReducerState {
+  switch (action.type) {
+    case 'SET_SCREEN':
+      return { ...state, screen: action.screen };
+    case 'PUBLISH_REQUESTED':
+      if (action.hasToken) {
+        return {
+          ...state,
+          screen: { status: 'uploading', shareUrl: '' },
+          shareRequestId: action.newRequestId,
+          shareTriggeredId: null,
+          awaitingFreshProgress: true,
+        };
+      }
+      return { ...state, screen: { status: 'idle' } };
+    case 'PUBLISH_AGAIN':
+      return {
+        ...state,
+        screen: { status: 'uploading', shareUrl: '' },
+        shareRequestId: action.newRequestId,
+        shareTriggeredId: null,
+        awaitingFreshProgress: true,
+      };
+    case 'GO_SUBDOMAIN':
+      return { ...state, screen: { status: 'subdomain' } };
+    case 'BACK_TO_IDLE':
+      return { ...state, screen: { status: 'idle' } };
+    case 'AUTO_SKIP_TO_UPLOADING':
+      return {
+        ...state,
+        screen: { status: 'uploading', shareUrl: '' },
+        shareRequestId: action.newRequestId,
+        shareTriggeredId: null,
+      };
+    case 'START_SHARE_EMITTED':
+      return {
+        ...state,
+        shareRequestId: action.id,
+        shareTriggeredId: action.id,
+        awaitingFreshProgress: true,
+      };
+    case 'PROGRESS_RECEIVED':
+      return applyProgress(state, action.progress, action.gitInfo, action.lastCompletedShareUrl)
+        .next;
+    default:
+      return state;
+  }
+}
 
 export const ShareSection = ({ api }: { api: API }) => {
   const [token] = useAccessToken();
   const [gitInfo] = useSharedState<GitInfoPayload>(GIT_INFO);
   const [shareProgress] = useSharedState<ShareProgress>(SHARE_PROGRESS);
-  const [shareState, setShareState] = useSessionState<ShareState>('shareState', {
-    status: 'welcome',
-  });
-  const [shareRequestId, setShareRequestId] = useSessionState<string | null>(
-    'shareRequestId',
-    null
+
+  const [persisted, setPersisted] = useSessionState<ShareReducerState>(
+    'shareReducer',
+    initialState
   );
-  const [shareTriggeredId, setShareTriggeredId] = useSessionState<string | null>(
-    'shareTriggeredId',
-    null
-  );
-  const [awaitingFreshProgress, setAwaitingFreshProgress] = useSessionState<boolean>(
-    'shareAwaitingFreshProgress',
-    false
-  );
+  const [reducerState, dispatch] = useReducer(shareReducer, persisted);
+
   const [lastCompletedShareUrl, setLastCompletedShareUrl] = useSessionState<string | null>(
     'shareLastCompletedUrl',
     null
@@ -43,12 +195,15 @@ export const ShareSection = ({ api }: { api: API }) => {
   const [lastCompletedGitInfo, setLastCompletedGitInfo] = useSessionState<
     GitInfoPayload | undefined
   >('shareLastCompletedGitInfo', undefined);
-  const { startSignIn, updateToken } = useShareAuth(setShareState);
-  const isRepeatShareRef = useRef(false);
-  const prevShareStatusRef = useRef<string>(shareState.status);
 
-  // Track popover presence so the manager-level subscriber can decide whether
-  // to surface a Storybook notification when a share completes.
+  const isRepeatShareRef = useRef(false);
+  const prevShareStatusRef = useRef<string>(reducerState.screen.status);
+
+  // Persist reducer state for cross-remount survival.
+  useEffect(() => {
+    setPersisted(reducerState);
+  }, [reducerState, setPersisted]);
+
   useEffect(() => {
     setPresent(true);
     return () => setPresent(false);
@@ -60,56 +215,45 @@ export const ShareSection = ({ api }: { api: API }) => {
     },
     [api]
   );
-  const currentShareUrl =
-    shareState.status === 'uploading' || shareState.status === 'complete'
-      ? shareState.shareUrl
-      : '';
+
   const sharedUploadInFlight =
     shareProgress?.status === 'pending' || shareProgress?.status === 'uploading';
 
-  const startNewShareRequest = useCallback(() => {
-    const id = crypto.randomUUID();
-    setShareRequestId(id);
-    setShareTriggeredId(null);
-    return id;
-  }, [setShareRequestId, setShareTriggeredId]);
+  const setShareScreen = useCallback(
+    (screen: ShareState) => dispatch({ type: 'SET_SCREEN', screen }),
+    []
+  );
+  const { startSignIn, updateToken } = useShareAuth(setShareScreen);
 
-  // Auto-skip welcome/idle/subdomain if already signed in and no active share
+  // Auto-skip welcome/idle/subdomain if already signed in and no active share.
   useEffect(() => {
     const skippableStatus =
-      shareState.status === 'welcome' ||
-      shareState.status === 'idle' ||
-      shareState.status === 'subdomain';
+      reducerState.screen.status === 'welcome' ||
+      reducerState.screen.status === 'idle' ||
+      reducerState.screen.status === 'subdomain';
     if (token && skippableStatus && !sharedUploadInFlight) {
-      startNewShareRequest();
-      setShareState({ status: 'uploading', shareUrl: '' });
+      dispatch({ type: 'AUTO_SKIP_TO_UPLOADING', newRequestId: crypto.randomUUID() });
     }
-  }, [token, shareState.status, sharedUploadInFlight, setShareState, startNewShareRequest]);
+  }, [token, reducerState.screen.status, sharedUploadInFlight]);
 
   const handlePublish = useCallback(() => {
-    if (token) {
-      startNewShareRequest();
-      setAwaitingFreshProgress(true);
-      setShareState({ status: 'uploading', shareUrl: '' });
-    } else {
-      setShareState({ status: 'idle' });
-    }
-  }, [token, setAwaitingFreshProgress, setShareState, startNewShareRequest]);
+    dispatch({
+      type: 'PUBLISH_REQUESTED',
+      hasToken: Boolean(token),
+      newRequestId: crypto.randomUUID(),
+    });
+  }, [token]);
 
   const handleCancel = useCallback(() => {
-    api.getChannel()?.emit(CANCEL_SHARE, { shareRequestId });
+    api.getChannel()?.emit(CANCEL_SHARE, { shareRequestId: reducerState.shareRequestId });
     emitTelemetry('share-cancelled');
-  }, [api, emitTelemetry, shareRequestId]);
+  }, [api, emitTelemetry, reducerState.shareRequestId]);
 
+  // Emit START_SHARE for the active uploading session, with remount guards.
   useEffect(() => {
-    if (shareState.status !== 'uploading' || !token || sharedUploadInFlight) {
-      return;
-    }
-    // Already emitted START_SHARE for this request id (across remounts too).
-    if (shareTriggeredId && shareTriggeredId === shareRequestId) {
-      return;
-    }
-    // Backend already finished this request id — don't re-emit.
+    const { screen, shareRequestId, shareTriggeredId } = reducerState;
+    if (screen.status !== 'uploading' || !token || sharedUploadInFlight) return;
+    if (shareTriggeredId && shareTriggeredId === shareRequestId) return;
     if (
       shareProgress?.shareRequestId &&
       shareProgress.shareRequestId === shareRequestId &&
@@ -119,165 +263,95 @@ export const ShareSection = ({ api }: { api: API }) => {
     }
 
     const id = shareRequestId ?? crypto.randomUUID();
-    if (!shareRequestId) setShareRequestId(id);
-    setShareTriggeredId(id);
-    setAwaitingFreshProgress(true);
+    dispatch({ type: 'START_SHARE_EMITTED', id });
     api.getChannel()?.emit(START_SHARE, { accessToken: token, shareRequestId: id });
     emitTelemetry('share-initiated', { isRepeatShare: isRepeatShareRef.current });
     isRepeatShareRef.current = false;
-  }, [
-    api,
-    emitTelemetry,
-    setAwaitingFreshProgress,
-    setShareRequestId,
-    setShareTriggeredId,
-    shareProgress,
-    shareRequestId,
-    shareState.status,
-    sharedUploadInFlight,
-    shareTriggeredId,
-    token,
-  ]);
+  }, [api, emitTelemetry, reducerState, shareProgress, sharedUploadInFlight, token]);
 
+  // Telemetry: detect idle -> uploading transition (auth completed).
   useEffect(() => {
-    if (prevShareStatusRef.current === 'idle' && shareState.status === 'uploading') {
+    if (prevShareStatusRef.current === 'idle' && reducerState.screen.status === 'uploading') {
       emitTelemetry('share-auth-completed');
     }
-    prevShareStatusRef.current = shareState.status;
-  }, [emitTelemetry, shareState.status]);
+    prevShareStatusRef.current = reducerState.screen.status;
+  }, [emitTelemetry, reducerState.screen.status]);
 
+  // Pipe shareProgress through the reducer; emit telemetry / token updates as side effects.
   useEffect(() => {
-    if (!shareProgress) {
-      return;
-    }
+    if (!shareProgress) return;
+    const { effect } = applyProgress(reducerState, shareProgress, gitInfo, lastCompletedShareUrl);
+    dispatch({
+      type: 'PROGRESS_RECEIVED',
+      progress: shareProgress,
+      gitInfo,
+      lastCompletedShareUrl,
+    });
 
-    if (shareProgress.shareRequestId && shareProgress.shareRequestId !== shareRequestId) {
-      return;
-    }
-
-    const isTerminal = shareProgress.status === 'complete' || shareProgress.status === 'error';
-
-    if (
-      (shareProgress.status === 'pending' || shareProgress.status === 'uploading') &&
-      awaitingFreshProgress
-    ) {
-      setAwaitingFreshProgress(false);
-    }
-
-    // Terminal updates for the matching shareRequestId always pass through.
-    // The gate only filters mid-state updates from prior requests.
-    if (awaitingFreshProgress && isTerminal) {
-      setAwaitingFreshProgress(false);
-    }
-
-    if (
-      shareProgress.status === 'uploading' &&
-      shareProgress.shareUrl &&
-      shareProgress.shareUrl !== currentShareUrl
-    ) {
-      setShareState({ status: 'uploading', shareUrl: shareProgress.shareUrl });
-      emitTelemetry('share-url-received');
-      return;
-    }
-
-    if (shareProgress.status === 'complete' && shareProgress.shareUrl) {
-      const shareUrl = shareProgress.shareUrl;
-      setShareState({
-        status: 'complete',
-        shareUrl,
-        publishedAt: Date.now(),
-      });
-      setShareTriggeredId(null);
-      setShareRequestId(null);
-
-      if (shareUrl !== lastCompletedShareUrl) {
-        setLastCompletedShareUrl(shareUrl);
-        setLastCompletedGitInfo(gitInfo);
-        emitTelemetry('share-upload-completed');
-      }
-      return;
-    }
-
-    if (shareProgress.status === 'error') {
-      const errorMessage = shareProgress.error ?? '';
-      if (shareProgress.cancelled) {
-        setShareState({ status: 'error', reason: 'upload-cancelled' });
-      } else {
-        const isAuthError = /\b(401|403|unauthorized|expired)\b/i.test(errorMessage);
-        if (isAuthError) {
-          updateToken(null);
-          setShareState({ status: 'idle' });
-        } else {
-          setShareState({
-            status: 'error',
-            reason: 'unknown',
-            message: errorMessage || undefined,
-          });
+    switch (effect.kind) {
+      case 'url-received':
+        emitTelemetry('share-url-received');
+        break;
+      case 'completed':
+        if (effect.isNew) {
+          setLastCompletedShareUrl(effect.shareUrl);
+          setLastCompletedGitInfo(effect.gitInfo);
+          emitTelemetry('share-upload-completed');
         }
-      }
-      setShareTriggeredId(null);
-      setShareRequestId(null);
-      emitTelemetry('share-failed');
+        break;
+      case 'auth-error':
+        updateToken(null);
+        emitTelemetry('share-failed');
+        break;
+      case 'failed':
+        emitTelemetry('share-failed');
+        break;
+      default:
+        break;
     }
-  }, [
-    awaitingFreshProgress,
-    currentShareUrl,
-    emitTelemetry,
-    gitInfo,
-    lastCompletedShareUrl,
-    setAwaitingFreshProgress,
-    setLastCompletedShareUrl,
-    setLastCompletedGitInfo,
-    setShareRequestId,
-    setShareState,
-    setShareTriggeredId,
-    shareProgress,
-    shareRequestId,
-    updateToken,
-  ]);
+    // We intentionally re-run when shareProgress changes; reducerState is read for the
+    // pure decision but isn't needed as a dependency since applyProgress is deterministic.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shareProgress]);
 
-  switch (shareState.status) {
+  const screen = reducerState.screen;
+  switch (screen.status) {
     case 'welcome':
       return <ShareSectionWelcome onPublish={handlePublish} />;
     case 'idle':
       return (
         <ShareSectionIdle
           onSignIn={() => startSignIn()}
-          onSignInWithSSO={() => setShareState({ status: 'subdomain' })}
+          onSignInWithSSO={() => dispatch({ type: 'GO_SUBDOMAIN' })}
         />
       );
     case 'subdomain':
       return (
         <ShareSectionSubdomain
           onSubmit={(subdomain) => startSignIn(subdomain)}
-          onBack={() => setShareState({ status: 'idle' })}
+          onBack={() => dispatch({ type: 'BACK_TO_IDLE' })}
         />
       );
     case 'uploading':
       return (
         <ShareSectionUploading
-          shareUrl={shareState.shareUrl}
-          progress={shareProgress?.progress}
+          shareUrl={screen.shareUrl}
           step={shareProgress?.status}
           onCopy={() => emitTelemetry('share-url-copied')}
           onCancel={handleCancel}
         />
       );
     case 'complete': {
-      const publishedAt = Number.isFinite(shareState.publishedAt)
-        ? shareState.publishedAt
-        : Date.now();
+      const publishedAt = Number.isFinite(screen.publishedAt) ? screen.publishedAt : Date.now();
       return (
         <ShareSectionComplete
-          shareUrl={shareState.shareUrl}
+          shareUrl={screen.shareUrl}
           publishedAt={publishedAt}
           isOutdated={checkOutdated(lastCompletedGitInfo, gitInfo)}
           onCopy={() => emitTelemetry('share-url-copied')}
           onPublishAgain={() => {
             isRepeatShareRef.current = true;
-            startNewShareRequest();
-            setAwaitingFreshProgress(true);
-            setShareState({ status: 'uploading', shareUrl: '' });
+            dispatch({ type: 'PUBLISH_AGAIN', newRequestId: crypto.randomUUID() });
           }}
         />
       );
@@ -285,8 +359,8 @@ export const ShareSection = ({ api }: { api: API }) => {
     case 'error':
       return (
         <ShareSectionError
-          reason={shareState.reason}
-          message={shareState.message}
+          reason={screen.reason}
+          message={screen.message}
           onRetry={handlePublish}
         />
       );
