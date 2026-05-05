@@ -14,9 +14,11 @@ export const parseGrantPayload = (event: DialogPayload, expectedState: string): 
   if (event.message !== 'grant') return { kind: 'ignore' };
 
   if ('denied' in event) {
+    if (!('state' in event) || event.state !== expectedState) return { kind: 'ignore' };
     return event.denied ? { kind: 'denied' } : { kind: 'ignore' };
   }
   if ('error' in event) {
+    if (!('state' in event) || event.state !== expectedState) return { kind: 'ignore' };
     return { kind: 'error', message: event.error_description || event.error };
   }
   if (!('code' in event) || !('state' in event)) {

@@ -30,14 +30,14 @@ if (window.opener && !window.opener.closed) {
   if (code && state) {
     window.opener.postMessage({ message: 'grant', code, state }, window.location.origin);
     window.close();
-  } else if (error) {
+  } else if (error && state) {
     const errorDescription = params.get('error_description');
     window.opener.postMessage(
       {
         message: 'grant',
         error,
+        state,
         ...(errorDescription ? { error_description: errorDescription } : {}),
-        ...(state ? { state } : {}),
       },
       window.location.origin
     );

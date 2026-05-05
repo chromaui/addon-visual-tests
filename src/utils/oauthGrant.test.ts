@@ -8,28 +8,68 @@ describe('parseGrantPayload', () => {
   });
 
   it('returns kind=ignore for non-grant message', () => {
-    expect(parseGrantPayload({ message: 'createdProject', projectId: 'p1' } as any, 'state')).toEqual({ kind: 'ignore' });
+    expect(
+      parseGrantPayload({ message: 'createdProject', projectId: 'p1' } as any, 'state')
+    ).toEqual({ kind: 'ignore' });
   });
 
-  it('returns kind=denied for grant with denied=true', () => {
-    expect(parseGrantPayload({ message: 'grant', denied: true }, 'state')).toEqual({ kind: 'denied' });
+  it('returns kind=denied for grant with denied=true and matching state', () => {
+    expect(parseGrantPayload({ message: 'grant', denied: true, state: 'state' }, 'state')).toEqual({
+      kind: 'denied',
+    });
   });
 
-  it('returns kind=ignore for grant with denied=false', () => {
-    expect(parseGrantPayload({ message: 'grant', denied: false }, 'state')).toEqual({ kind: 'ignore' });
+  it('returns kind=ignore for grant with denied=false and matching state', () => {
+    expect(parseGrantPayload({ message: 'grant', denied: false, state: 'state' }, 'state')).toEqual(
+      { kind: 'ignore' }
+    );
   });
 
   it('returns kind=error with error_description preferred over error', () => {
     const result = parseGrantPayload(
-      { message: 'grant', error: 'access_denied', error_description: 'User denied access' },
+      {
+        message: 'grant',
+        error: 'access_denied',
+        error_description: 'User denied access',
+        state: 'state',
+      },
       'state'
     );
     expect(result).toEqual({ kind: 'error', message: 'User denied access' });
   });
 
   it('returns kind=error with error when error_description is absent', () => {
-    const result = parseGrantPayload({ message: 'grant', error: 'server_error' }, 'state');
+    const result = parseGrantPayload(
+      { message: 'grant', error: 'server_error', state: 'state' },
+      'state'
+    );
     expect(result).toEqual({ kind: 'error', message: 'server_error' });
+  });
+
+  it('returns kind=ignore for error payload missing state', () => {
+    const result = parseGrantPayload({ message: 'grant', error: 'server_error' }, 'expected');
+    expect(result).toEqual({ kind: 'ignore' });
+  });
+
+  it('returns kind=ignore for error payload with mismatched state', () => {
+    const result = parseGrantPayload(
+      { message: 'grant', error: 'server_error', state: 'wrong' },
+      'expected'
+    );
+    expect(result).toEqual({ kind: 'ignore' });
+  });
+
+  it('returns kind=ignore for denied payload missing state', () => {
+    const result = parseGrantPayload({ message: 'grant', denied: true }, 'expected');
+    expect(result).toEqual({ kind: 'ignore' });
+  });
+
+  it('returns kind=ignore for denied payload with mismatched state', () => {
+    const result = parseGrantPayload(
+      { message: 'grant', denied: true, state: 'wrong' },
+      'expected'
+    );
+    expect(result).toEqual({ kind: 'ignore' });
   });
 
   it('returns kind=error with unexpected payload message when code is missing', () => {

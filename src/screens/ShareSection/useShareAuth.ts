@@ -38,6 +38,7 @@ export function useShareAuth(setShareState: (s: ShareState) => void) {
       }
 
       if (outcome.kind === 'denied' || outcome.kind === 'error') {
+        if (!params || !params.state) return;
         paramsRef.current = null;
         closeDialogRef.current?.();
         const reason = outcome.kind === 'denied' ? 'cancelled' : 'unknown';

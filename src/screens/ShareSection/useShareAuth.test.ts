@@ -64,10 +64,9 @@ describe('useShareAuth', () => {
     const { startSignIn } = useShareAuth(setShareState);
     await (startSignIn as () => Promise<void>)();
 
-    expect(mocks.openDialog).toHaveBeenCalledWith(
-      defaultParams.authorizationUrl,
-      [new URL(defaultParams.redirectUri).origin]
-    );
+    expect(mocks.openDialog).toHaveBeenCalledWith(defaultParams.authorizationUrl, [
+      new URL(defaultParams.redirectUri).origin,
+    ]);
 
     await capturedHandler!({ message: 'grant', code: 'auth-code', state: 'state-abc' });
 
@@ -82,7 +81,9 @@ describe('useShareAuth', () => {
 
     let resolveFetch!: (token: string) => void;
     mocks.fetchAccessToken.mockReturnValueOnce(
-      new Promise((resolve) => { resolveFetch = resolve; })
+      new Promise((resolve) => {
+        resolveFetch = resolve;
+      })
     );
 
     const { startSignIn } = useShareAuth(setShareState);
@@ -106,7 +107,7 @@ describe('useShareAuth', () => {
     const { startSignIn } = useShareAuth(setShareState);
     await (startSignIn as () => Promise<void>)();
 
-    await capturedHandler!({ message: 'grant', denied: true });
+    await capturedHandler!({ message: 'grant', denied: true, state: 'state-abc' });
 
     expect(mocks.closeDialog).toHaveBeenCalledOnce();
     expect(setShareState).toHaveBeenCalledWith({ status: 'error', reason: 'cancelled' });
@@ -120,10 +121,46 @@ describe('useShareAuth', () => {
     const { startSignIn } = useShareAuth(setShareState);
     await (startSignIn as () => Promise<void>)();
 
-    await capturedHandler!({ message: 'grant', error: 'server_error' });
+    await capturedHandler!({ message: 'grant', error: 'server_error', state: 'state-abc' });
 
     expect(mocks.closeDialog).toHaveBeenCalledOnce();
     expect(setShareState).toHaveBeenCalledWith({ status: 'error', reason: 'unknown' });
+  });
+
+  it('stale grant: arriving after paramsRef cleared, no state change or error surfaced', async () => {
+    const setShareState = vi.fn();
+    mocks.initiateSignin.mockResolvedValueOnce(defaultParams);
+    mocks.fetchAccessToken.mockResolvedValueOnce('token');
+
+    const { startSignIn } = useShareAuth(setShareState);
+    await (startSignIn as () => Promise<void>)();
+
+    // Complete the flow — clears paramsRef
+    await capturedHandler!({ message: 'grant', code: 'auth-code', state: 'state-abc' });
+    setShareState.mockClear();
+    mocks.closeDialog.mockClear();
+
+    // Stale grant arrives after params cleared
+    await capturedHandler!({ message: 'grant', denied: true, state: 'state-abc' });
+
+    expect(setShareState).not.toHaveBeenCalled();
+    expect(mocks.closeDialog).not.toHaveBeenCalled();
+  });
+
+  it('grant with wrong state during active flow: ignored, flow stays in current state', async () => {
+    const setShareState = vi.fn();
+    mocks.initiateSignin.mockResolvedValueOnce(defaultParams);
+
+    const { startSignIn } = useShareAuth(setShareState);
+    await (startSignIn as () => Promise<void>)();
+    setShareState.mockClear();
+
+    // Grant with mismatched state — should be ignored
+    await capturedHandler!({ message: 'grant', denied: true, state: 'wrong-state' });
+
+    expect(setShareState).not.toHaveBeenCalled();
+    expect(mocks.closeDialog).not.toHaveBeenCalled();
+    expect(mocks.fetchAccessToken).not.toHaveBeenCalled();
   });
 
   it('login relay: openDialog called again with authorizationUrl', async () => {
@@ -136,10 +173,9 @@ describe('useShareAuth', () => {
 
     await capturedHandler!({ message: 'login' });
 
-    expect(mocks.openDialog).toHaveBeenCalledWith(
-      defaultParams.authorizationUrl,
-      [new URL(defaultParams.redirectUri).origin]
-    );
+    expect(mocks.openDialog).toHaveBeenCalledWith(defaultParams.authorizationUrl, [
+      new URL(defaultParams.redirectUri).origin,
+    ]);
     expect(mocks.fetchAccessToken).not.toHaveBeenCalled();
   });
 
