@@ -1,8 +1,10 @@
+import { addDays, differenceInDays } from 'date-fns';
 import React from 'react';
 import { styled } from 'storybook/theming';
 
 import { Button } from '../../components/Button';
 import { SHARE_EXPIRY_DAYS } from '../../constants';
+import { formatDate } from '../../utils/formatDate';
 import {
   ButtonStack,
   ShareContainer,
@@ -59,31 +61,6 @@ const InfoBannerText = styled.span(({ theme }) => ({
   lineHeight: '20px',
 }));
 
-function formatRelativeTime(publishedAt: number): string {
-  if (!Number.isFinite(publishedAt)) return 'some time ago';
-  const elapsed = Date.now() - publishedAt;
-  const minutes = Math.floor(elapsed / (60 * 1000));
-  if (minutes < 60) {
-    return `${Math.max(1, minutes)}m ago`;
-  }
-  const hours = Math.floor(elapsed / (60 * 60 * 1000));
-  if (hours < 24) {
-    return `${hours}h ago`;
-  }
-  const days = Math.floor(elapsed / (24 * 60 * 60 * 1000));
-  return `${days}d ago`;
-}
-
-function formatExpiryDays(publishedAt: number): number {
-  if (!Number.isFinite(publishedAt)) return SHARE_EXPIRY_DAYS;
-  return Math.max(
-    0,
-    Math.round(
-      (publishedAt + SHARE_EXPIRY_DAYS * 24 * 60 * 60 * 1000 - Date.now()) / (24 * 60 * 60 * 1000)
-    )
-  );
-}
-
 interface ShareSectionCompleteProps {
   shareUrl: string;
   publishedAt: number;
@@ -118,7 +95,8 @@ export const ShareSectionComplete = ({
         <TimestampRow>
           <span style={{ fontSize: 12, flexShrink: 0 }}>⏳</span>
           <TimestampText>
-            Published {formatRelativeTime(publishedAt)} – expires in {formatExpiryDays(publishedAt)}{' '}
+            Published {formatDate(publishedAt)} – expires in{' '}
+            {Math.max(0, differenceInDays(addDays(publishedAt, SHARE_EXPIRY_DAYS), Date.now()))}{' '}
             days
           </TimestampText>
         </TimestampRow>

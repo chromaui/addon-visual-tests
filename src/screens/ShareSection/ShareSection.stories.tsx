@@ -69,7 +69,6 @@ export const UploadingWithProgress: UploadingStory = {
   render: (args) => <ShareSectionUploading {...args} />,
   args: {
     shareUrl: 'https://64e2e5e6ad08a7e515c54b37-abcdefghij.chromatic.com',
-    progress: 42,
     step: 'uploading',
     onCopy: fn().mockName('onCopy'),
   },
@@ -105,29 +104,17 @@ export const CompleteWithChanges: CompleteStory = {
   },
 };
 
-// --- Error (cancelled) ---
+// --- Error ---
 
 type ErrorStory = StoryObj<typeof ShareSectionError>;
 
-export const ErrorCancelled: ErrorStory = {
+export const ErrorUploadCancelled: ErrorStory = {
   render: (args) => <ShareSectionError {...args} />,
   args: {
-    reason: 'cancelled',
+    reason: 'upload-cancelled',
     onRetry: fn().mockName('onRetry'),
   },
 };
-
-// --- Error (expired) ---
-
-export const ErrorExpired: ErrorStory = {
-  render: (args) => <ShareSectionError {...args} />,
-  args: {
-    reason: 'expired',
-    onRetry: fn().mockName('onRetry'),
-  },
-};
-
-// --- Error (unknown) ---
 
 export const ErrorUnknown: ErrorStory = {
   render: (args) => <ShareSectionError {...args} />,

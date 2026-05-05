@@ -79,17 +79,9 @@ addons.register(ADDON_ID, (api) => {
     let lastNotifiedShareUrl: string | null = null;
     const shareProgressState = SharedState.subscribe<ShareProgress>(SHARE_PROGRESS, channel);
     shareProgressState.on('change', (progress) => {
-      if (
-        !progress ||
-        progress.status !== 'complete' ||
-        progress.cancelled ||
-        !progress.shareUrl ||
-        progress.shareUrl === lastNotifiedShareUrl ||
-        isSharePopoverPresent()
-      ) {
-        return;
-      }
-      const shareUrl = progress.shareUrl;
+      if (progress?.status !== 'complete') return;
+      if (progress.shareUrl === lastNotifiedShareUrl || isSharePopoverPresent()) return;
+      const { shareUrl } = progress;
       lastNotifiedShareUrl = shareUrl;
       api.addNotification({
         id: `${ADDON_ID}/share-published`,

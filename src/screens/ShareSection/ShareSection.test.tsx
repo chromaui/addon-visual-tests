@@ -16,7 +16,6 @@ let reducerState: ShareReducerState = {
   screen: { status: 'uploading', shareUrl: '' } as ShareState,
   shareRequestId: null,
   shareTriggeredId: null,
-  awaitingFreshProgress: false,
 };
 let shareProgressValue: ShareProgress | undefined = undefined;
 
@@ -97,7 +96,6 @@ function setReducer(partial: Partial<ShareReducerState>) {
     screen: { status: 'uploading', shareUrl: '' },
     shareRequestId: null,
     shareTriggeredId: null,
-    awaitingFreshProgress: false,
     ...partial,
   };
 }
@@ -108,7 +106,6 @@ afterEach(() => {
     screen: { status: 'uploading', shareUrl: '' },
     shareRequestId: null,
     shareTriggeredId: null,
-    awaitingFreshProgress: false,
   };
   shareProgressValue = undefined;
 });
@@ -250,7 +247,6 @@ describe('ShareSection', () => {
         screen: { status: 'uploading', shareUrl: '' },
         shareRequestId: 'req-1',
         shareTriggeredId: 'req-1',
-        awaitingFreshProgress: true,
       });
       shareProgressValue = {
         status: 'complete',
@@ -271,7 +267,6 @@ describe('ShareSection', () => {
         screen: { status: 'uploading', shareUrl: '' },
         shareRequestId: 'req-1',
         shareTriggeredId: 'req-1',
-        awaitingFreshProgress: true,
       });
       shareProgressValue = {
         status: 'error',

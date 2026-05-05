@@ -104,20 +104,6 @@ describe('useShareAuth', () => {
     expect(mocks.exchangeOAuthCode).toHaveBeenCalledOnce();
   });
 
-  it('denied outcome: setShareState reason=cancelled, closeDialog called', async () => {
-    const setShareState = vi.fn();
-    mocks.initiateSignin.mockResolvedValueOnce(defaultParams);
-
-    const { startSignIn } = useShareAuth(setShareState);
-    await (startSignIn as () => Promise<void>)();
-
-    await capturedHandler!({ message: 'grant', denied: true, state: 'state-abc' });
-
-    expect(mocks.closeDialog).toHaveBeenCalledOnce();
-    expect(setShareState).toHaveBeenCalledWith({ status: 'error', reason: 'cancelled' });
-    expect(mocks.exchangeOAuthCode).not.toHaveBeenCalled();
-  });
-
   it('error outcome: setShareState reason=unknown, closeDialog called', async () => {
     const setShareState = vi.fn();
     mocks.initiateSignin.mockResolvedValueOnce(defaultParams);
@@ -145,7 +131,7 @@ describe('useShareAuth', () => {
     mocks.closeDialog.mockClear();
 
     // Stale grant arrives after params cleared
-    await capturedHandler!({ message: 'grant', denied: true, state: 'state-abc' });
+    await capturedHandler!({ message: 'grant', error: 'server_error', state: 'state-abc' });
 
     expect(setShareState).not.toHaveBeenCalled();
     expect(mocks.closeDialog).not.toHaveBeenCalled();
@@ -160,7 +146,7 @@ describe('useShareAuth', () => {
     setShareState.mockClear();
 
     // Grant with mismatched state — should be ignored
-    await capturedHandler!({ message: 'grant', denied: true, state: 'wrong-state' });
+    await capturedHandler!({ message: 'grant', error: 'server_error', state: 'wrong-state' });
 
     expect(setShareState).not.toHaveBeenCalled();
     expect(mocks.closeDialog).not.toHaveBeenCalled();

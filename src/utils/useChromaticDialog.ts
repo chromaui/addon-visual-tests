@@ -3,23 +3,17 @@ import { z } from 'zod';
 
 const dialogPayloadSchema = z.union([
   z.object({ message: z.literal('login') }),
-  z.union([
-    z.object({
-      message: z.literal('grant'),
-      code: z.string(),
-      state: z.string(),
-    }),
-    z.object({
-      message: z.literal('grant'),
-      denied: z.boolean(),
-    }),
-    z.object({
-      message: z.literal('grant'),
-      error: z.string(),
-      error_description: z.string().optional(),
-      state: z.string().optional(),
-    }),
-  ]),
+  z.object({
+    message: z.literal('grant'),
+    code: z.string(),
+    state: z.string(),
+  }),
+  z.object({
+    message: z.literal('grant'),
+    error: z.string(),
+    error_description: z.string().optional(),
+    state: z.string().optional(),
+  }),
   z.object({ message: z.literal('createdProject'), projectId: z.string() }),
 ]);
 

@@ -6,17 +6,16 @@ export type ShareState =
   | { status: 'complete'; shareUrl: string; publishedAt: number }
   | {
       status: 'error';
-      reason: 'cancelled' | 'upload-cancelled' | 'expired' | 'unknown' | 'auth';
+      reason: 'upload-cancelled' | 'unknown';
       message?: string;
     };
 
-import type { GitInfoPayload, ShareProgress } from '../../types';
+import type { GitInfoPayload } from '../../types';
 
 export type ShareReducerState = {
   screen: ShareState;
   shareRequestId: string | null;
   shareTriggeredId: string | null;
-  awaitingFreshProgress: boolean;
 };
 
 export type ShareAction =
@@ -27,12 +26,7 @@ export type ShareAction =
   | { type: 'BACK_TO_IDLE' }
   | { type: 'AUTO_SKIP_TO_UPLOADING'; newRequestId: string }
   | { type: 'START_SHARE_EMITTED'; id: string }
-  | {
-      type: 'PROGRESS_RECEIVED';
-      progress: ShareProgress;
-      gitInfo: GitInfoPayload | undefined;
-      lastCompletedShareUrl: string | null;
-    };
+  | { type: 'APPLY_STATE'; next: ShareReducerState };
 
 export type ProgressEffect =
   | { kind: 'none' }

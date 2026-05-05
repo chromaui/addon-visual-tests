@@ -132,47 +132,17 @@ describe('preset START_SHARE handler', () => {
   it('echoes shareRequestId on SHARE_PROGRESS emits', async () => {
     await loadPreset();
 
-    mocks.shareMock.mockImplementationOnce(
-      async ({
-        onUrl,
-        onProgress,
-      }: {
-        onUrl: (u: string) => void;
-        onProgress: (c: number, t: number) => void;
-      }) => {
-        onUrl('https://share.example.com/sb');
-        onProgress(50, 100);
-        return { shareUrl: 'https://share.example.com/sb' };
-      }
-    );
+    mocks.shareMock.mockImplementationOnce(async ({ onUrl }: { onUrl: (u: string) => void }) => {
+      onUrl('https://share.example.com/sb');
+      return { shareUrl: 'https://share.example.com/sb' };
+    });
 
     await emitStartShare({ accessToken: 'token', shareRequestId: 'req-xyz' });
 
-    // Check that all progress state values carry the shareRequestId
-    // The final value is 'complete'
     expect(mocks.shareProgressState.value).toMatchObject({
       status: 'complete',
       shareRequestId: 'req-xyz',
     });
-  });
-
-  it('onProgress with total=0 emits progress=0 (no NaN)', async () => {
-    await loadPreset();
-
-    let capturedProgress: number | undefined;
-
-    mocks.shareMock.mockImplementationOnce(
-      async ({ onProgress }: { onProgress: (c: number, t: number) => void }) => {
-        onProgress(0, 0);
-        capturedProgress = mocks.shareProgressState.value?.progress;
-        return { shareUrl: 'https://share.example.com/sb' };
-      }
-    );
-
-    await emitStartShare({ accessToken: 'token', shareRequestId: 'req-1' });
-
-    expect(capturedProgress).toBe(0);
-    expect(Number.isNaN(capturedProgress)).toBe(false);
   });
 
   it('onError sets status=error and subsequent share() resolution does NOT overwrite to complete', async () => {

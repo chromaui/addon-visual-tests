@@ -15,30 +15,23 @@ export function useShareAuth(setShareState: (s: ShareState) => void) {
   const handler = useCallback<DialogHandler>(
     async (event) => {
       const params = paramsRef.current;
-      const { authorizationUrl, redirectUri, state, clientId, codeVerifier, tokenEndpoint } =
-        params ?? ({} as TokenExchangeParameters);
-      const redirectOrigin = redirectUri ? new URL(redirectUri).origin : '';
+      if (!params) return;
 
+      const { authorizationUrl, redirectUri, state, clientId, codeVerifier, tokenEndpoint } =
+        params;
+      const redirectOrigin = new URL(redirectUri).origin;
       const outcome = parseGrantPayload(event, state);
 
       if (outcome.kind === 'login') {
-        if (!params) return;
         openDialogRef.current?.(authorizationUrl, [redirectOrigin]);
         return;
       }
       if (outcome.kind === 'ignore') return;
 
-      if (outcome.kind === 'code' && !params) {
-        closeDialogRef.current?.();
-        return;
-      }
-
-      if (outcome.kind === 'denied' || outcome.kind === 'error') {
-        if (!params || !params.state) return;
+      if (outcome.kind === 'error') {
         paramsRef.current = null;
         closeDialogRef.current?.();
-        const reason = outcome.kind === 'denied' ? 'cancelled' : 'unknown';
-        setShareState({ status: 'error', reason });
+        setShareState({ status: 'error', reason: 'unknown' });
         return;
       }
 

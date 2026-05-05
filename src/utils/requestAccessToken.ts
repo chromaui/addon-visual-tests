@@ -80,33 +80,25 @@ export const fetchAccessToken = async ({
   code,
 }: Pick<TokenExchangeParameters, 'clientId' | 'codeVerifier' | 'redirectUri' | 'tokenEndpoint'> & {
   code: string;
-}) => {
-  try {
-    const res = await fetch(tokenEndpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
-      body: encodeParams({
-        client_id: clientId,
-        grant_type: 'authorization_code',
-        code,
-        redirect_uri: redirectUri,
-        code_verifier: codeVerifier,
-      }),
-    });
+}): Promise<string> => {
+  const res = await fetch(tokenEndpoint, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+    body: encodeParams({
+      client_id: clientId,
+      grant_type: 'authorization_code',
+      code,
+      redirect_uri: redirectUri,
+      code_verifier: codeVerifier,
+    }),
+  });
 
-    const data = await res.json();
-    if (data.error === 'authorization_pending') {
-      throw new Error(
-        `You have not authorized the Visual Tests addon for Chromatic, please try again`
-      );
-    } else if (data.access_token) {
-      return data.access_token as string;
-    }
-
-    const message = data?.error_description || data?.error || `Token exchange failed`;
-    throw new Error(message);
-  } catch (err: unknown) {
-    console.warn(err);
-    throw err;
+  const data = await res.json();
+  if (data.access_token) return data.access_token as string;
+  if (data.error === 'authorization_pending') {
+    throw new Error(
+      'You have not authorized the Visual Tests addon for Chromatic, please try again'
+    );
   }
+  throw new Error(data?.error_description || data?.error || 'Token exchange failed');
 };

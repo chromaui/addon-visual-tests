@@ -280,16 +280,6 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
             shareProgressState.value = {
               status: 'uploading',
               shareUrl: url,
-              progress: 0,
-              shareRequestId: requestId,
-            };
-          },
-          onProgress: (current: number, total: number) => {
-            const progress = total > 0 ? Math.round((current / total) * 100) : 0;
-            shareProgressState.value = {
-              ...shareProgressState.value,
-              status: 'uploading',
-              progress,
               shareRequestId: requestId,
             };
           },
@@ -333,8 +323,8 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
           };
         }
       } finally {
-        if (currentAbortController === controller) currentAbortController = null;
-        if (activeShareRequestId === requestId) activeShareRequestId = null;
+        currentAbortController = null;
+        activeShareRequestId = null;
         shareInFlight = false;
       }
     }

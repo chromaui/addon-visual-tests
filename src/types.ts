@@ -222,11 +222,13 @@ export type LocalBuildProgress = {
   previousBuildProgress?: Record<KnownStep, StepProgressPayload>;
 };
 
-export type ShareProgress = {
-  status: 'pending' | 'uploading' | 'complete' | 'error';
-  shareUrl?: string;
-  progress?: number;
-  error?: string;
-  cancelled?: boolean;
-  shareRequestId: string;
-};
+export type ShareProgress =
+  | { status: 'pending'; shareRequestId: string }
+  | { status: 'uploading'; shareUrl?: string; shareRequestId: string }
+  | { status: 'complete'; shareUrl: string; shareRequestId: string }
+  | {
+      status: 'error';
+      error: string;
+      cancelled?: boolean;
+      shareRequestId: string;
+    };

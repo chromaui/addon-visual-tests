@@ -67,7 +67,6 @@ export const Verify = ({
         try {
           const outcome = parseGrantPayload(event, state);
           if (outcome.kind === 'ignore') return;
-          if (outcome.kind === 'denied') throw new Error('Authorization request was denied');
           if (outcome.kind === 'error') throw new Error(outcome.message);
           if (outcome.kind === 'login') return;
 
