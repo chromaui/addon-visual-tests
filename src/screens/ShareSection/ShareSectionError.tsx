@@ -14,7 +14,7 @@ import {
 import { WhoHasAccess } from './WhoHasAccess';
 
 const ErrorRow = styled(StatusRow)({
-  alignItems: 'flex-start',
+  alignItems: 'baseline',
 });
 
 const ErrorBadge = styled(Badge)({
