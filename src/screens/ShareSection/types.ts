@@ -6,6 +6,6 @@ export type ShareState =
   | { status: 'complete'; shareUrl: string; publishedAt: number }
   | {
       status: 'error';
-      reason: 'cancelled' | 'expired' | 'unknown' | 'auth';
+      reason: 'cancelled' | 'upload-cancelled' | 'expired' | 'unknown' | 'auth';
       message?: string;
     };

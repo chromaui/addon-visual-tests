@@ -74,13 +74,17 @@ export const ShareSection = ({ api }: { api: API }) => {
     return id;
   }, [setShareRequestId, setShareTriggeredId]);
 
-  // Auto-skip idle/subdomain if already signed in
+  // Auto-skip welcome/idle/subdomain if already signed in and no active share
   useEffect(() => {
-    if (token && (shareState.status === 'idle' || shareState.status === 'subdomain')) {
+    const skippableStatus =
+      shareState.status === 'welcome' ||
+      shareState.status === 'idle' ||
+      shareState.status === 'subdomain';
+    if (token && skippableStatus && !sharedUploadInFlight) {
       startNewShareRequest();
       setShareState({ status: 'uploading', shareUrl: '' });
     }
-  }, [token, shareState.status, setShareState, startNewShareRequest]);
+  }, [token, shareState.status, sharedUploadInFlight, setShareState, startNewShareRequest]);
 
   const handlePublish = useCallback(() => {
     if (token) {
@@ -151,6 +155,8 @@ export const ShareSection = ({ api }: { api: API }) => {
       return;
     }
 
+    const isTerminal = shareProgress.status === 'complete' || shareProgress.status === 'error';
+
     if (
       (shareProgress.status === 'pending' || shareProgress.status === 'uploading') &&
       awaitingFreshProgress
@@ -158,11 +164,10 @@ export const ShareSection = ({ api }: { api: API }) => {
       setAwaitingFreshProgress(false);
     }
 
-    if (
-      awaitingFreshProgress &&
-      (shareProgress.status === 'complete' || shareProgress.status === 'error')
-    ) {
-      return;
+    // Terminal updates for the matching shareRequestId always pass through.
+    // The gate only filters mid-state updates from prior requests.
+    if (awaitingFreshProgress && isTerminal) {
+      setAwaitingFreshProgress(false);
     }
 
     if (
@@ -196,7 +201,7 @@ export const ShareSection = ({ api }: { api: API }) => {
     if (shareProgress.status === 'error') {
       const errorMessage = shareProgress.error ?? '';
       if (shareProgress.cancelled) {
-        setShareState({ status: 'error', reason: 'cancelled' });
+        setShareState({ status: 'error', reason: 'upload-cancelled' });
       } else {
         const isAuthError = /\b(401|403|unauthorized|expired)\b/i.test(errorMessage);
         if (isAuthError) {

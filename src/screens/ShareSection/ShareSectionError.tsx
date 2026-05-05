@@ -30,13 +30,14 @@ const ErrorMessage = styled.span(({ theme }) => ({
 }));
 
 interface ShareSectionErrorProps {
-  reason: 'cancelled' | 'expired' | 'unknown' | 'auth';
+  reason: 'cancelled' | 'upload-cancelled' | 'expired' | 'unknown' | 'auth';
   message?: string;
   onRetry: () => void;
 }
 
 const reasonMessages: Record<ShareSectionErrorProps['reason'], string> = {
   cancelled: 'Sign-in was not completed',
+  'upload-cancelled': 'Upload cancelled',
   expired: 'Sign-in link expired',
   unknown: '',
   auth: 'Please sign in again',
