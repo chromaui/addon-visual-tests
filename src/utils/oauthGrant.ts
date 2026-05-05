@@ -1,4 +1,8 @@
-import { fetchAccessToken, type TokenExchangeParameters } from './requestAccessToken';
+import {
+  type AuthStorage,
+  fetchAccessToken,
+  type TokenExchangeParameters,
+} from './requestAccessToken';
 import type { DialogHandler } from './useChromaticDialog';
 
 type DialogPayload = Parameters<DialogHandler>[0];
@@ -12,10 +16,10 @@ export type GrantOutcome =
 export const exchangeOAuthCode = (
   params: Pick<
     TokenExchangeParameters,
-    'clientId' | 'codeVerifier' | 'redirectUri' | 'tokenEndpoint'
+    'clientId' | 'codeVerifier' | 'redirectUri' | 'tokenEndpoint' | 'sessionId'
   >,
   code: string
-): Promise<string> => fetchAccessToken({ ...params, code });
+): Promise<AuthStorage> => fetchAccessToken({ ...params, code });
 
 export const parseGrantPayload = (event: DialogPayload, expectedState: string): GrantOutcome => {
   if (event.message === 'login') return { kind: 'login' };

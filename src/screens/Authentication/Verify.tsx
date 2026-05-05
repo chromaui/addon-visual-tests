@@ -9,7 +9,7 @@ import { Stack } from '../../components/Stack';
 import { Text } from '../../components/Text';
 import { graphql } from '../../gql';
 import type { Project } from '../../gql/graphql';
-import { getFetchOptions } from '../../utils/graphQLClient';
+import { getFetchOptions, setAuthenticatedSession } from '../../utils/graphQLClient';
 import { exchangeOAuthCode, parseGrantPayload } from '../../utils/oauthGrant';
 import type { TokenExchangeParameters } from '../../utils/requestAccessToken';
 import { type DialogHandler, useChromaticDialog } from '../../utils/useChromaticDialog';
@@ -45,7 +45,7 @@ export const Verify = ({
   const client = useClient();
   const onError = useErrorNotification();
 
-  const { authorizationUrl, state, clientId, codeVerifier, redirectUri, tokenEndpoint } =
+  const { authorizationUrl, state, clientId, codeVerifier, redirectUri, sessionId, tokenEndpoint } =
     exchangeParameters;
   const redirectOrigin = new URL(redirectUri).origin;
 
@@ -57,12 +57,6 @@ export const Verify = ({
   const closeDialogRef = useRef<() => void>();
   const handler = useCallback<DialogHandler>(
     async (event) => {
-      // If the user logs in as part of the grant process, don't close the dialog,
-      // instead redirect us back to where we were trying to go.
-      if (event.message === 'login') {
-        openDialogRef.current?.(authorizationUrl, [redirectOrigin]);
-      }
-
       if (event.message === 'grant') {
         try {
           const outcome = parseGrantPayload(event, state);
@@ -71,13 +65,14 @@ export const Verify = ({
           if (outcome.kind === 'login') return;
 
           const token = await exchangeOAuthCode(
-            { clientId, codeVerifier, redirectUri, tokenEndpoint },
+            { clientId, codeVerifier, redirectUri, sessionId, tokenEndpoint },
             outcome.code
           );
-          accessToken.current = token;
+          setAuthenticatedSession(token);
+          accessToken.current = token.accessToken;
 
           // Override token for this query but don't store it yet until they've created a project
-          const fetchOptions = getFetchOptions(token);
+          const fetchOptions = getFetchOptions(token.accessToken);
           const { data } = await client.query(ProjectCountQuery, {}, { fetchOptions });
 
           if (!data?.viewer) throw new Error('Failed to fetch initial project list');
@@ -112,12 +107,11 @@ export const Verify = ({
       }
     },
     [
-      authorizationUrl,
-      redirectOrigin,
       state,
       clientId,
       codeVerifier,
       redirectUri,
+      sessionId,
       tokenEndpoint,
       client,
       hasProjectId,
