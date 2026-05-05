@@ -1,12 +1,8 @@
 import { useCallback, useRef } from 'react';
 
 import { useAccessToken } from '../../utils/graphQLClient';
-import { parseGrantPayload } from '../../utils/oauthGrant';
-import {
-  fetchAccessToken,
-  initiateSignin,
-  type TokenExchangeParameters,
-} from '../../utils/requestAccessToken';
+import { exchangeOAuthCode, parseGrantPayload } from '../../utils/oauthGrant';
+import { initiateSignin, type TokenExchangeParameters } from '../../utils/requestAccessToken';
 import { type DialogHandler, useChromaticDialog } from '../../utils/useChromaticDialog';
 import type { ShareState } from './types';
 
@@ -49,14 +45,10 @@ export function useShareAuth(setShareState: (s: ShareState) => void) {
       paramsRef.current = null;
 
       try {
-        const token = await fetchAccessToken({
-          clientId,
-          codeVerifier,
-          redirectUri,
-          tokenEndpoint,
-          code: outcome.code,
-        });
-        if (!token) throw new Error('Failed to fetch an access token');
+        const token = await exchangeOAuthCode(
+          { clientId, codeVerifier, redirectUri, tokenEndpoint },
+          outcome.code
+        );
 
         updateToken(token);
         closeDialogRef.current?.();

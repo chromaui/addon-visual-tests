@@ -1,3 +1,4 @@
+import { fetchAccessToken, type TokenExchangeParameters } from './requestAccessToken';
 import type { DialogHandler } from './useChromaticDialog';
 
 type DialogPayload = Parameters<DialogHandler>[0];
@@ -8,6 +9,18 @@ export type GrantOutcome =
   | { kind: 'error'; message: string }
   | { kind: 'ignore' }
   | { kind: 'code'; code: string };
+
+export const exchangeOAuthCode = async (
+  params: Pick<
+    TokenExchangeParameters,
+    'clientId' | 'codeVerifier' | 'redirectUri' | 'tokenEndpoint'
+  >,
+  code: string
+): Promise<string> => {
+  const token = await fetchAccessToken({ ...params, code });
+  if (!token) throw new Error('Failed to fetch an access token');
+  return token;
+};
 
 export const parseGrantPayload = (event: DialogPayload, expectedState: string): GrantOutcome => {
   if (event.message === 'login') return { kind: 'login' };

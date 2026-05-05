@@ -7,9 +7,9 @@ const mocks = vi.hoisted(() => {
   const openDialog = vi.fn();
   const closeDialog = vi.fn();
   const updateToken = vi.fn();
-  const fetchAccessToken = vi.fn();
+  const exchangeOAuthCode = vi.fn();
   const initiateSignin = vi.fn();
-  return { openDialog, closeDialog, updateToken, fetchAccessToken, initiateSignin };
+  return { openDialog, closeDialog, updateToken, exchangeOAuthCode, initiateSignin };
 });
 
 vi.mock('react', async (importOriginal) => {
@@ -25,8 +25,12 @@ vi.mock('../../utils/graphQLClient', () => ({
   useAccessToken: () => [null, mocks.updateToken],
 }));
 
+vi.mock('../../utils/oauthGrant', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../utils/oauthGrant')>();
+  return { ...actual, exchangeOAuthCode: mocks.exchangeOAuthCode };
+});
+
 vi.mock('../../utils/requestAccessToken', () => ({
-  fetchAccessToken: mocks.fetchAccessToken,
   initiateSignin: mocks.initiateSignin,
 }));
 
@@ -59,7 +63,7 @@ describe('useShareAuth', () => {
   it('successful flow: startSignIn opens dialog, grant code triggers fetchAccessToken and updateToken', async () => {
     const setShareState = vi.fn();
     mocks.initiateSignin.mockResolvedValueOnce(defaultParams);
-    mocks.fetchAccessToken.mockResolvedValueOnce('access-token-xyz');
+    mocks.exchangeOAuthCode.mockResolvedValueOnce('access-token-xyz');
 
     const { startSignIn } = useShareAuth(setShareState);
     await (startSignIn as () => Promise<void>)();
@@ -70,7 +74,7 @@ describe('useShareAuth', () => {
 
     await capturedHandler!({ message: 'grant', code: 'auth-code', state: 'state-abc' });
 
-    expect(mocks.fetchAccessToken).toHaveBeenCalledOnce();
+    expect(mocks.exchangeOAuthCode).toHaveBeenCalledOnce();
     expect(mocks.updateToken).toHaveBeenCalledWith('access-token-xyz');
     expect(setShareState).toHaveBeenCalledWith({ status: 'uploading', shareUrl: '' });
   });
@@ -80,7 +84,7 @@ describe('useShareAuth', () => {
     mocks.initiateSignin.mockResolvedValueOnce(defaultParams);
 
     let resolveFetch!: (token: string) => void;
-    mocks.fetchAccessToken.mockReturnValueOnce(
+    mocks.exchangeOAuthCode.mockReturnValueOnce(
       new Promise((resolve) => {
         resolveFetch = resolve;
       })
@@ -97,7 +101,7 @@ describe('useShareAuth', () => {
     resolveFetch('token');
     await first;
 
-    expect(mocks.fetchAccessToken).toHaveBeenCalledOnce();
+    expect(mocks.exchangeOAuthCode).toHaveBeenCalledOnce();
   });
 
   it('denied outcome: setShareState reason=cancelled, closeDialog called', async () => {
@@ -111,7 +115,7 @@ describe('useShareAuth', () => {
 
     expect(mocks.closeDialog).toHaveBeenCalledOnce();
     expect(setShareState).toHaveBeenCalledWith({ status: 'error', reason: 'cancelled' });
-    expect(mocks.fetchAccessToken).not.toHaveBeenCalled();
+    expect(mocks.exchangeOAuthCode).not.toHaveBeenCalled();
   });
 
   it('error outcome: setShareState reason=unknown, closeDialog called', async () => {
@@ -130,7 +134,7 @@ describe('useShareAuth', () => {
   it('stale grant: arriving after paramsRef cleared, no state change or error surfaced', async () => {
     const setShareState = vi.fn();
     mocks.initiateSignin.mockResolvedValueOnce(defaultParams);
-    mocks.fetchAccessToken.mockResolvedValueOnce('token');
+    mocks.exchangeOAuthCode.mockResolvedValueOnce('token');
 
     const { startSignIn } = useShareAuth(setShareState);
     await (startSignIn as () => Promise<void>)();
@@ -160,7 +164,7 @@ describe('useShareAuth', () => {
 
     expect(setShareState).not.toHaveBeenCalled();
     expect(mocks.closeDialog).not.toHaveBeenCalled();
-    expect(mocks.fetchAccessToken).not.toHaveBeenCalled();
+    expect(mocks.exchangeOAuthCode).not.toHaveBeenCalled();
   });
 
   it('login relay: openDialog called again with authorizationUrl', async () => {
@@ -176,13 +180,13 @@ describe('useShareAuth', () => {
     expect(mocks.openDialog).toHaveBeenCalledWith(defaultParams.authorizationUrl, [
       new URL(defaultParams.redirectUri).origin,
     ]);
-    expect(mocks.fetchAccessToken).not.toHaveBeenCalled();
+    expect(mocks.exchangeOAuthCode).not.toHaveBeenCalled();
   });
 
   it('fetchAccessToken throws: setShareState reason=unknown, closeDialog called', async () => {
     const setShareState = vi.fn();
     mocks.initiateSignin.mockResolvedValueOnce(defaultParams);
-    mocks.fetchAccessToken.mockRejectedValueOnce(new Error('network error'));
+    mocks.exchangeOAuthCode.mockRejectedValueOnce(new Error('network error'));
 
     const { startSignIn } = useShareAuth(setShareState);
     await (startSignIn as () => Promise<void>)();

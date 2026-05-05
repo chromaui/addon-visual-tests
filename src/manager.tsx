@@ -99,7 +99,7 @@ addons.register(ADDON_ID, (api) => {
         },
         duration: 8_000,
         onClick: ({ onDismiss }: { onDismiss: () => void }) => {
-          navigator.clipboard.writeText(shareUrl);
+          navigator.clipboard.writeText(shareUrl).catch(() => {});
           onDismiss();
         },
       });

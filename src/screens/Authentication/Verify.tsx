@@ -10,8 +10,8 @@ import { Text } from '../../components/Text';
 import { graphql } from '../../gql';
 import type { Project } from '../../gql/graphql';
 import { getFetchOptions } from '../../utils/graphQLClient';
-import { parseGrantPayload } from '../../utils/oauthGrant';
-import { fetchAccessToken, type TokenExchangeParameters } from '../../utils/requestAccessToken';
+import { exchangeOAuthCode, parseGrantPayload } from '../../utils/oauthGrant';
+import type { TokenExchangeParameters } from '../../utils/requestAccessToken';
 import { type DialogHandler, useChromaticDialog } from '../../utils/useChromaticDialog';
 import { useErrorNotification } from '../../utils/useErrorNotification';
 import { AuthHeader } from './AuthHeader';
@@ -71,14 +71,10 @@ export const Verify = ({
           if (outcome.kind === 'error') throw new Error(outcome.message);
           if (outcome.kind === 'login') return;
 
-          const token = await fetchAccessToken({
-            clientId,
-            codeVerifier,
-            redirectUri,
-            tokenEndpoint,
-            code: outcome.code,
-          });
-          if (!token) throw new Error('Failed to fetch an access token');
+          const token = await exchangeOAuthCode(
+            { clientId, codeVerifier, redirectUri, tokenEndpoint },
+            outcome.code
+          );
           accessToken.current = token;
 
           // Override token for this query but don't store it yet until they've created a project
