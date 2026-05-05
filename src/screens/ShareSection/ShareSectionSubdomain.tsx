@@ -28,15 +28,27 @@ export const ShareSectionSubdomain = ({ onSubmit, onBack }: ShareSectionSubdomai
   const [subdomain, setSubdomain] = useState('');
   const [inputError, setInputError] = useState<string | null>(null);
 
-  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setSubdomain(e.target.value.replace(/[^a-z0-9-]/g, ''));
-    setInputError(null);
+  const normalizeSubdomain = useCallback((value: string) => {
+    return value
+      .toLowerCase()
+      .replace(/[^a-z0-9-]/g, '')
+      .replace(/^-+/, '')
+      .replace(/-{2,}/g, '-');
   }, []);
+
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setSubdomain(normalizeSubdomain(e.target.value));
+      setInputError(null);
+    },
+    [normalizeSubdomain]
+  );
 
   const handleSubmit = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      if (subdomain) onSubmit(subdomain);
+      const normalized = subdomain.replace(/-+$/, '');
+      if (normalized) onSubmit(normalized);
       else setInputError('Please enter a subdomain');
     },
     [subdomain, onSubmit]
