@@ -71,6 +71,31 @@ export default [
       ],
 
       'jest/no-deprecated-functions': 'off',
+
+      // Ban common DOM/JS sinks used for runtime code/HTML injection.
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: "JSXAttribute[name.name='dangerouslySetInnerHTML']",
+          message: 'dangerouslySetInnerHTML is banned',
+        },
+        {
+          selector: "AssignmentExpression[left.property.name='innerHTML']",
+          message: 'innerHTML assignment is banned',
+        },
+        {
+          selector: "CallExpression[callee.property.name='insertAdjacentHTML']",
+          message: 'insertAdjacentHTML is banned',
+        },
+        {
+          selector: "CallExpression[callee.name='eval']",
+          message: 'eval is banned',
+        },
+        {
+          selector: "NewExpression[callee.name='Function']",
+          message: 'Function constructor is banned',
+        },
+      ],
     },
   },
 ];

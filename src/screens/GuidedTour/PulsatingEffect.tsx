@@ -24,7 +24,7 @@ export function PulsatingEffect({ targetSelector }: { targetSelector: string }):
       `;
       const style = document.createElement('style');
       style.id = 'sb-onboarding-pulsating-effect';
-      style.innerHTML = keyframes;
+      style.textContent = keyframes;
       document.head.appendChild(style);
     }
 
@@ -41,5 +41,5 @@ export function PulsatingEffect({ targetSelector }: { targetSelector: string }):
     };
   }, [targetSelector]);
 
-  return <></>;
+  return <React.Fragment />;
 }
