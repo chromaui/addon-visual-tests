@@ -1,6 +1,5 @@
 import { CheckIcon, CopyIcon } from '@storybook/icons';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-// @ts-expect-error Button export exists at runtime
 import { Button, TooltipNote, TooltipProvider } from 'storybook/internal/components';
 import { styled } from 'storybook/theming';
 
