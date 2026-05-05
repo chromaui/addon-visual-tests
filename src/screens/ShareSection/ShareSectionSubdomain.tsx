@@ -15,9 +15,9 @@ const Form = styled.form({
 const FormRow = styled.div({
   display: 'flex',
   flexDirection: 'row',
-  alignItems: 'flex-start',
+  alignItems: 'center',
   gap: 8,
-  '& > :first-of-type': {
+  '& > :first-child': {
     flex: 1,
     minWidth: 0,
   },
@@ -82,7 +82,7 @@ export const ShareSectionSubdomain = ({ onSubmit, onBack }: ShareSectionSubdomai
             error={inputError}
             errorTooltipPlacement="top"
           />
-          <Button size="medium" variant="solid" type="submit">
+          <Button size="medium" variant="solid" type="submit" style={{ flexShrink: 0 }}>
             Connect
           </Button>
         </FormRow>
