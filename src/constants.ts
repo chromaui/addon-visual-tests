@@ -15,6 +15,7 @@ export const START_BUILD = `${ADDON_ID}/startBuild`;
 export const STOP_BUILD = `${ADDON_ID}/stopBuild`;
 export const LOCAL_BUILD_PROGRESS = `${ADDON_ID}/localBuildProgress`;
 export const START_SHARE = `${ADDON_ID}/startShare`;
+export const CANCEL_SHARE = `${ADDON_ID}/cancelShare`;
 export const SHARE_PROGRESS = `${ADDON_ID}/shareProgress`;
 export const SELECTED_MODE_NAME = `${ADDON_ID}/selectedModeName`;
 export const SELECTED_BROWSER_ID = `${ADDON_ID}/selectedBrowserId`;

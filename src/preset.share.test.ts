@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { SHARE_PROGRESS, START_SHARE } from './constants';
+import { CANCEL_SHARE, SHARE_PROGRESS, START_SHARE } from './constants';
 
 // ---- hoisted mocks ----
 const mocks = vi.hoisted(() => {
@@ -74,6 +74,11 @@ vi.mock('node:module', () => ({
 // Helper to invoke the START_SHARE handler registered on the channel
 function emitStartShare(payload: { accessToken: string; shareRequestId?: string }) {
   const handlers = mocks.channelHandlers[START_SHARE] || [];
+  return Promise.all(handlers.map((h) => h(payload)));
+}
+
+function emitCancelShare(payload: { shareRequestId?: string } = {}) {
+  const handlers = mocks.channelHandlers[CANCEL_SHARE] || [];
   return Promise.all(handlers.map((h) => h(payload)));
 }
 
@@ -180,5 +185,88 @@ describe('preset START_SHARE handler', () => {
       status: 'error',
       error: 'upload failed',
     });
+  });
+
+  it('CANCEL_SHARE aborts the in-flight signal and emits cancelled', async () => {
+    await loadPreset();
+
+    let capturedSignal: AbortSignal | undefined;
+    let resolveShare!: (v: any) => void;
+    mocks.shareMock.mockImplementationOnce(
+      ({ abortSignal }: { abortSignal?: AbortSignal }) => {
+        capturedSignal = abortSignal;
+        return new Promise((resolve, reject) => {
+          resolveShare = resolve;
+          abortSignal?.addEventListener('abort', () => reject(new Error('aborted')));
+        });
+      }
+    );
+
+    const shareDone = emitStartShare({ accessToken: 'token', shareRequestId: 'req-1' });
+    await new Promise((r) => setTimeout(r, 0));
+
+    await emitCancelShare({ shareRequestId: 'req-1' });
+    expect(capturedSignal?.aborted).toBe(true);
+
+    await shareDone;
+    expect(mocks.shareProgressState.value).toMatchObject({
+      status: 'error',
+      cancelled: true,
+      error: 'cancelled',
+      shareRequestId: 'req-1',
+    });
+
+    // After abort, shareInFlight should be released — a new share with a different id must run
+    mocks.shareMock.mockResolvedValueOnce({ shareUrl: 'https://share.example.com/2' });
+    await emitStartShare({ accessToken: 'token', shareRequestId: 'req-2' });
+    expect(mocks.shareMock).toHaveBeenCalledTimes(2);
+  });
+
+  it('post-cancel restart with a fresh id starts a new non-aborted share()', async () => {
+    await loadPreset();
+
+    const captured: AbortSignal[] = [];
+    let resolveFirst!: (v: any) => void;
+    mocks.shareMock.mockImplementationOnce(
+      ({ abortSignal }: { abortSignal?: AbortSignal }) => {
+        if (abortSignal) captured.push(abortSignal);
+        return new Promise((_resolve, reject) => {
+          resolveFirst = _resolve;
+          abortSignal?.addEventListener('abort', () => reject(new Error('aborted')));
+        });
+      }
+    );
+
+    const first = emitStartShare({ accessToken: 'token', shareRequestId: 'req-1' });
+    await new Promise((r) => setTimeout(r, 0));
+    await emitCancelShare({ shareRequestId: 'req-1' });
+    await first;
+
+    mocks.shareMock.mockImplementationOnce(
+      async ({ abortSignal }: { abortSignal?: AbortSignal }) => {
+        if (abortSignal) captured.push(abortSignal);
+        return { shareUrl: 'https://share.example.com/2' };
+      }
+    );
+    await emitStartShare({ accessToken: 'token', shareRequestId: 'req-2' });
+
+    expect(captured).toHaveLength(2);
+    expect(captured[0].aborted).toBe(true);
+    expect(captured[1].aborted).toBe(false);
+  });
+
+  it('duplicate START_SHARE with the id of the last completed share is ignored', async () => {
+    await loadPreset();
+
+    mocks.shareMock.mockResolvedValueOnce({ shareUrl: 'https://share.example.com/sb' });
+    await emitStartShare({ accessToken: 'token', shareRequestId: 'req-done' });
+    expect(mocks.shareProgressState.value).toMatchObject({ status: 'complete' });
+    expect(mocks.shareMock).toHaveBeenCalledTimes(1);
+
+    // Resending the same id should be a no-op (no second share() invocation, no progress emit churn)
+    const valueBeforeReplay = mocks.shareProgressState.value;
+    await emitStartShare({ accessToken: 'token', shareRequestId: 'req-done' });
+    expect(mocks.shareMock).toHaveBeenCalledTimes(1);
+    expect(mocks.shareProgressState.value).toBe(valueBeforeReplay);
   });
 });

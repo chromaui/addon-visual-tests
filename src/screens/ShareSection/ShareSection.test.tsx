@@ -14,6 +14,8 @@ const mocks = vi.hoisted(() => {
 // These are mutable per-test
 let shareStateValue: any = { status: 'uploading', shareUrl: '' };
 let shareProgressValue: ShareProgress | undefined = undefined;
+let shareRequestIdValue: string | null = null;
+let shareTriggeredIdValue: string | null = null;
 
 vi.mock('react', async (importOriginal) => {
   const actual = await importOriginal<typeof import('react')>();
@@ -42,6 +44,8 @@ vi.mock('../../utils/useSessionState', () => ({
     if (key === 'shareAwaitingFreshProgress') return [false, mocks.setAwaitingFreshProgress];
     if (key === 'shareLastCompletedUrl') return [null, vi.fn()];
     if (key === 'shareLastCompletedGitInfo') return [undefined, vi.fn()];
+    if (key === 'shareRequestId') return [shareRequestIdValue, vi.fn()];
+    if (key === 'shareTriggeredId') return [shareTriggeredIdValue, vi.fn()];
     return [initial, vi.fn()];
   }),
 }));
@@ -55,6 +59,11 @@ vi.mock('../../utils/useSharedState', () => ({
 
 vi.mock('./useShareAuth', () => ({
   useShareAuth: () => ({ startSignIn: vi.fn(), updateToken: mocks.updateToken }),
+}));
+
+vi.mock('./popoverPresence', () => ({
+  setPresent: vi.fn(),
+  isPresent: () => false,
 }));
 
 vi.mock('./ShareSectionWelcome', () => ({ ShareSectionWelcome: vi.fn() }));
@@ -89,6 +98,8 @@ afterEach(() => {
   vi.clearAllMocks();
   shareStateValue = { status: 'uploading', shareUrl: '' };
   shareProgressValue = undefined;
+  shareRequestIdValue = null;
+  shareTriggeredIdValue = null;
 });
 
 describe('ShareSection', () => {
@@ -145,6 +156,71 @@ describe('ShareSection', () => {
         reason: 'unknown',
         message: 'Something went wrong on our end',
       });
+    });
+  });
+
+  describe('cancelled share', () => {
+    it('cancelled flag routes to error state with reason=cancelled', () => {
+      shareStateValue = { status: 'uploading', shareUrl: '' };
+      shareProgressValue = {
+        status: 'error',
+        error: 'cancelled',
+        cancelled: true,
+      };
+
+      invokeShareSection();
+
+      expect(mocks.setShareState).toHaveBeenCalledWith({
+        status: 'error',
+        reason: 'cancelled',
+      });
+    });
+
+    it('does NOT call updateToken(null) for cancelled errors', () => {
+      shareStateValue = { status: 'uploading', shareUrl: '' };
+      shareProgressValue = {
+        status: 'error',
+        error: 'cancelled',
+        cancelled: true,
+      };
+
+      invokeShareSection();
+
+      expect(mocks.updateToken).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('remount restart guard', () => {
+    it('does not re-emit START_SHARE when shareProgress is complete for the same id', () => {
+      shareStateValue = { status: 'uploading', shareUrl: '' };
+      shareRequestIdValue = 'req-1';
+      shareTriggeredIdValue = null; // ref-equivalents reset on remount
+      shareProgressValue = {
+        status: 'complete',
+        shareUrl: 'https://share.example.com/sb',
+        shareRequestId: 'req-1',
+      };
+
+      invokeShareSection();
+
+      const startShareEmits = mocks.channel.emit.mock.calls.filter(
+        ([event]: [string]) => event && event.endsWith('startShare')
+      );
+      expect(startShareEmits).toHaveLength(0);
+    });
+
+    it('does not re-emit START_SHARE when triggeredId already matches shareRequestId', () => {
+      shareStateValue = { status: 'uploading', shareUrl: '' };
+      shareRequestIdValue = 'req-1';
+      shareTriggeredIdValue = 'req-1';
+      shareProgressValue = undefined;
+
+      invokeShareSection();
+
+      const startShareEmits = mocks.channel.emit.mock.calls.filter(
+        ([event]: [string]) => event && event.endsWith('startShare')
+      );
+      expect(startShareEmits).toHaveLength(0);
     });
   });
 

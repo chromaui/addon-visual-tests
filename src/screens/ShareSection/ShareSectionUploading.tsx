@@ -6,6 +6,7 @@ import {
   ButtonStack,
   ShareContainer,
   ShareDescription,
+  ShareTextLink,
   ShareTitle,
   StatusRow,
   TextBlock,
@@ -24,13 +25,16 @@ interface ShareSectionUploadingProps {
   progress?: number;
   step?: ShareProgress['status'];
   onCopy?: () => void;
+  onCancel?: () => void;
 }
 
 export const ShareSectionUploading = ({
   shareUrl,
   step = 'pending',
   onCopy,
+  onCancel,
 }: ShareSectionUploadingProps) => {
+  const canCancel = onCancel && step !== 'complete';
   return (
     <ShareContainer>
       <TextBlock>
@@ -45,6 +49,11 @@ export const ShareSectionUploading = ({
           <WrenchIcon size={12} aria-hidden="true" />
           {statusLabels[step]}
         </StatusRow>
+        {canCancel && (
+          <ShareTextLink type="button" aria-label="Cancel publish" onClick={onCancel}>
+            Cancel
+          </ShareTextLink>
+        )}
       </ButtonStack>
     </ShareContainer>
   );

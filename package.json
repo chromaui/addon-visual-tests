@@ -68,7 +68,7 @@
     "@parcel/watcher": "^2.4.1",
     "@storybook/addon-designs": "^11.1.1",
     "@storybook/addon-docs": "^10.3.0",
-    "@storybook/icons": "^2.0.1",
+    "@storybook/icons": "^2.0.2",
     "@storybook/react-vite": "^10.3.0",
     "@types/jsonfile": "^6.1.1",
     "@types/node": "^22.13.5",

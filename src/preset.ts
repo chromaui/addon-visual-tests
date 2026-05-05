@@ -18,6 +18,7 @@ import type { Options } from 'storybook/internal/types';
 
 import {
   ADDON_ID,
+  CANCEL_SHARE,
   CONFIG_INFO,
   CONFIG_OVERRIDES,
   GIT_INFO,
@@ -255,17 +256,23 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
 
   const shareProgressState = SharedState.subscribe<ShareProgress>(SHARE_PROGRESS, channel);
   let shareInFlight = false;
+  let currentAbortController: AbortController | null = null;
+  let lastCompletedShareRequestId: string | null = null;
 
   channel.on(
     START_SHARE,
     async ({ accessToken, shareRequestId }: { accessToken: string; shareRequestId?: string }) => {
       if (shareInFlight) return;
+      if (shareRequestId && shareRequestId === lastCompletedShareRequestId) return;
       shareInFlight = true;
+      const controller = new AbortController();
+      currentAbortController = controller;
       let didError = false;
       shareProgressState.value = { status: 'pending', shareRequestId };
       try {
         const result = await share({
           userToken: accessToken,
+          abortSignal: controller.signal,
           onUrl: (url: string) => {
             shareProgressState.value = {
               status: 'uploading',
@@ -292,24 +299,46 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
             };
           },
         });
-        if (!didError) {
+        if (controller.signal.aborted) {
+          shareProgressState.value = {
+            status: 'error',
+            error: 'cancelled',
+            cancelled: true,
+            shareRequestId,
+          };
+        } else if (!didError) {
           shareProgressState.value = {
             status: 'complete',
             shareUrl: result.shareUrl,
             shareRequestId,
           };
+          if (shareRequestId) lastCompletedShareRequestId = shareRequestId;
         }
       } catch (e: any) {
-        shareProgressState.value = {
-          status: 'error',
-          error: e?.message || 'Share failed',
-          shareRequestId,
-        };
+        if (controller.signal.aborted) {
+          shareProgressState.value = {
+            status: 'error',
+            error: 'cancelled',
+            cancelled: true,
+            shareRequestId,
+          };
+        } else {
+          shareProgressState.value = {
+            status: 'error',
+            error: e?.message || 'Share failed',
+            shareRequestId,
+          };
+        }
       } finally {
+        if (currentAbortController === controller) currentAbortController = null;
         shareInFlight = false;
       }
     }
   );
+
+  channel.on(CANCEL_SHARE, () => {
+    currentAbortController?.abort();
+  });
 
   channel.on(TELEMETRY, async (event: Event) => {
     if ((await corePromise).disableTelemetry) return;

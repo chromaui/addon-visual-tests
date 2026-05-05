@@ -10,11 +10,15 @@ import {
   HIGHLIGHT_IGNORED_SELECT,
   PANEL_ID,
   PARAM_KEY,
+  SHARE_PROGRESS,
   TEST_PROVIDER_ID,
 } from './constants.ts';
 import { Panel } from './Panel';
 import { ShareToolbarButton } from './screens/ShareSection';
+import { isPresent as isSharePopoverPresent } from './screens/ShareSection/popoverPresence';
 import { TestProviderRender } from './TestProviderRender';
+import type { ShareProgress } from './types';
+import { SharedState } from './utils/SharedState';
 
 // OAuth redirect handler
 if (window.opener && !window.opener.closed) {
@@ -66,6 +70,41 @@ addons.register(ADDON_ID, (api) => {
     match: ({ viewMode }) => viewMode === 'story',
     render: ({ active }) => <Panel active={!!active} api={api} />,
   });
+
+  // Surface a Storybook notification when a share completes — but only when the
+  // share popover is closed. While the popover is open, ShareSection itself
+  // shows the completion state, so a duplicate toast would be noise.
+  const channel = api.getChannel();
+  if (channel) {
+    let lastNotifiedShareUrl: string | null = null;
+    const shareProgressState = SharedState.subscribe<ShareProgress>(SHARE_PROGRESS, channel);
+    shareProgressState.on('change', (progress) => {
+      if (
+        !progress ||
+        progress.status !== 'complete' ||
+        progress.cancelled ||
+        !progress.shareUrl ||
+        progress.shareUrl === lastNotifiedShareUrl ||
+        isSharePopoverPresent()
+      ) {
+        return;
+      }
+      const shareUrl = progress.shareUrl;
+      lastNotifiedShareUrl = shareUrl;
+      api.addNotification({
+        id: `${ADDON_ID}/share-published`,
+        content: {
+          headline: 'Storybook published!',
+          subHeadline: shareUrl,
+        },
+        duration: 8_000,
+        onClick: ({ onDismiss }: { onDismiss: () => void }) => {
+          navigator.clipboard.writeText(shareUrl);
+          onDismiss();
+        },
+      });
+    });
+  }
 
   if (globalThis.CONFIG_TYPE !== 'DEVELOPMENT') {
     return;
