@@ -1,5 +1,5 @@
 import { addDays, differenceInDays } from 'date-fns';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { styled } from 'storybook/theming';
 
 import { Button } from '../../components/Button';
@@ -69,6 +69,8 @@ interface ShareSectionCompleteProps {
   onCopy?: () => void;
 }
 
+const CELEBRATION_DURATION_MS = 5000;
+
 export const ShareSectionComplete = ({
   shareUrl,
   publishedAt,
@@ -76,6 +78,21 @@ export const ShareSectionComplete = ({
   onPublishAgain,
   onCopy,
 }: ShareSectionCompleteProps) => {
+  const [showCelebration, setShowCelebration] = useState(
+    () => Date.now() - publishedAt < CELEBRATION_DURATION_MS
+  );
+
+  useEffect(() => {
+    if (!showCelebration) return;
+    const remaining = CELEBRATION_DURATION_MS - (Date.now() - publishedAt);
+    if (remaining <= 0) {
+      setShowCelebration(false);
+      return;
+    }
+    const timer = setTimeout(() => setShowCelebration(false), remaining);
+    return () => clearTimeout(timer);
+  }, [publishedAt, showCelebration]);
+
   return (
     <ShareContainer>
       <TextBlock>
@@ -86,20 +103,21 @@ export const ShareSectionComplete = ({
       </TextBlock>
       <ButtonStack>
         <UrlCopyField url={shareUrl} onCopy={onCopy} />
-        {!isOutdated && (
+        {!isOutdated && showCelebration ? (
           <SuccessRow>
             <span>🎉</span>
             <SuccessText>Storybook published!</SuccessText>
           </SuccessRow>
+        ) : (
+          <TimestampRow>
+            <span style={{ fontSize: 12, flexShrink: 0 }}>⏳</span>
+            <TimestampText>
+              Published {formatDate(publishedAt)} – expires in{' '}
+              {Math.max(0, differenceInDays(addDays(publishedAt, SHARE_EXPIRY_DAYS), Date.now()))}{' '}
+              days
+            </TimestampText>
+          </TimestampRow>
         )}
-        <TimestampRow>
-          <span style={{ fontSize: 12, flexShrink: 0 }}>⏳</span>
-          <TimestampText>
-            Published {formatDate(publishedAt)} – expires in{' '}
-            {Math.max(0, differenceInDays(addDays(publishedAt, SHARE_EXPIRY_DAYS), Date.now()))}{' '}
-            days
-          </TimestampText>
-        </TimestampRow>
         {isOutdated && (
           <InfoBanner>
             <InfoBannerText>
