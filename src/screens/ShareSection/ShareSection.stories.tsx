@@ -111,7 +111,7 @@ type ErrorStory = StoryObj<typeof ShareSectionError>;
 export const ErrorUploadCancelled: ErrorStory = {
   render: (args) => <ShareSectionError {...args} />,
   args: {
-    reason: 'upload-cancelled',
+    reason: 'upload-canceled',
     onRetry: fn().mockName('onRetry'),
   },
 };

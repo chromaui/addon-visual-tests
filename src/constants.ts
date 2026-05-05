@@ -61,6 +61,6 @@ export const CONFIG_OVERRIDES = {
   storybookBuildDir: undefined,
 };
 
-export const SHARE_EXPIRY_DAYS = 30;
+export const SHARE_EXPIRY_DAYS = 7;
 
 export const DOCS_URL = 'https://www.chromatic.com/docs/visual-tests-addon';

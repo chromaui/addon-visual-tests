@@ -184,16 +184,16 @@ describe('ShareSection', () => {
     });
   });
 
-  describe('cancelled share', () => {
-    it('does NOT call updateToken(null) for cancelled errors', () => {
+  describe('canceled share', () => {
+    it('does NOT call updateToken(null) for canceled errors', () => {
       setReducer({
         screen: { status: 'uploading', shareUrl: '' },
         shareRequestId: 'req-1',
       });
       shareProgressValue = {
         status: 'error',
-        error: 'cancelled',
-        cancelled: true,
+        error: 'canceled',
+        canceled: true,
         shareRequestId: 'req-1',
       };
 

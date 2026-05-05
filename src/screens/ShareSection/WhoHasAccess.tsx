@@ -8,7 +8,6 @@ const WhoHasAccessBlock = styled.div({
   display: 'flex',
   flexDirection: 'column',
   alignSelf: 'stretch',
-  marginTop: 8,
   gap: 8,
 });
 
@@ -46,7 +45,7 @@ export const WhoHasAccess = () => {
 
   return (
     <WhoHasAccessBlock>
-      <ShareTitle>Who has access</ShareTitle>
+      <ShareTitle as="h3">Who has access</ShareTitle>
       <AccessRow>
         <GlobeIcon
           size={14}

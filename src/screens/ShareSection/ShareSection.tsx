@@ -64,11 +64,11 @@ function applyProgress(
   }
 
   if (progress.status === 'error') {
-    if (progress.cancelled) {
+    if (progress.canceled) {
       return {
         next: {
           ...state,
-          screen: { status: 'error', reason: 'upload-cancelled' },
+          screen: { status: 'error', reason: 'upload-canceled' },
           shareRequestId: null,
           shareTriggeredId: null,
         },
@@ -215,7 +215,7 @@ export const ShareSection = ({ api }: { api: API }) => {
 
   const handleCancel = useCallback(() => {
     api.getChannel()?.emit(CANCEL_SHARE, { shareRequestId: reducerState.shareRequestId });
-    emitTelemetry('share-cancelled');
+    emitTelemetry('share-canceled');
   }, [api, emitTelemetry, reducerState.shareRequestId]);
 
   // Emit START_SHARE for the active uploading session, with remount guards.

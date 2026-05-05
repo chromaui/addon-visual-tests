@@ -30,13 +30,13 @@ const ErrorMessage = styled.span(({ theme }) => ({
 }));
 
 interface ShareSectionErrorProps {
-  reason: 'upload-cancelled' | 'unknown';
+  reason: 'upload-canceled' | 'unknown';
   message?: string;
   onRetry: () => void;
 }
 
 const reasonMessages: Record<ShareSectionErrorProps['reason'], string> = {
-  'upload-cancelled': 'Upload cancelled',
+  'upload-canceled': 'Upload canceled',
   unknown: 'An unexpected error occurred. Please try again.',
 };
 

@@ -18,7 +18,7 @@ interface ShareSectionIdleProps {
 export const ShareSectionIdle = ({ onSignIn, onSignInWithSSO }: ShareSectionIdleProps) => (
   <ShareContainer>
     <TextBlock>
-      <ShareTitle>Publish and share local builds</ShareTitle>
+      <ShareTitle>Publish and share builds</ShareTitle>
       <ShareDescription>
         This Storybook will be uploaded and available to collaborators for feedback.
       </ShareDescription>

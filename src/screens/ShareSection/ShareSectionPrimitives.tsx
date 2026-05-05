@@ -11,7 +11,9 @@ export const ShareContainer = styled.div({
   gap: 16,
 });
 
-export const ShareTitle = styled.div(({ theme }) => ({
+export const ShareTitle = styled.h2(({ theme }) => ({
+  margin: 0,
+  fontFamily: 'inherit',
   fontWeight: theme.typography.weight.bold,
   fontSize: theme.typography.size.s2,
   color: theme.color.defaultText,

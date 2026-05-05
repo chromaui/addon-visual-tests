@@ -161,7 +161,7 @@ describe('preset START_SHARE handler', () => {
     });
   });
 
-  it('CANCEL_SHARE aborts the in-flight signal and emits cancelled', async () => {
+  it('CANCEL_SHARE aborts the in-flight signal and emits canceled', async () => {
     await loadPreset();
 
     let capturedSignal: AbortSignal | undefined;
@@ -181,8 +181,8 @@ describe('preset START_SHARE handler', () => {
     await shareDone;
     expect(mocks.shareProgressState.value).toMatchObject({
       status: 'error',
-      cancelled: true,
-      error: 'cancelled',
+      canceled: true,
+      error: 'canceled',
       shareRequestId: 'req-1',
     });
 

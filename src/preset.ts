@@ -295,8 +295,8 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
         if (controller.signal.aborted) {
           shareProgressState.value = {
             status: 'error',
-            error: 'cancelled',
-            cancelled: true,
+            error: 'canceled',
+            canceled: true,
             shareRequestId: requestId,
           };
         } else if (!didError) {
@@ -311,8 +311,8 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
         if (controller.signal.aborted) {
           shareProgressState.value = {
             status: 'error',
-            error: 'cancelled',
-            cancelled: true,
+            error: 'canceled',
+            canceled: true,
             shareRequestId: requestId,
           };
         } else {
