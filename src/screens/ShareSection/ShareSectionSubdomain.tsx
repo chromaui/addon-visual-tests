@@ -3,20 +3,29 @@ import { styled } from 'storybook/theming';
 
 import { Button } from '../../components/Button';
 import { SuffixInput } from '../../components/SuffixInput';
-import {
-  ButtonStack,
-  ShareContainer,
-  ShareDescription,
-  ShareTextLink,
-  ShareTitle,
-  TextBlock,
-} from './ShareSectionPrimitives';
+import { ShareContainer, ShareDescription, ShareTitle, TextBlock } from './ShareSectionPrimitives';
+import { WhoHasAccess } from './WhoHasAccess';
 
 const Form = styled.form({
   display: 'flex',
   flexDirection: 'column',
   alignSelf: 'stretch',
+});
+
+const FormRow = styled.div({
+  display: 'flex',
+  flexDirection: 'row',
+  alignItems: 'flex-start',
   gap: 8,
+  '& > :first-of-type': {
+    flex: 1,
+    minWidth: 0,
+  },
+});
+
+const BackButtonRow = styled.div({
+  marginTop: 24,
+  alignSelf: 'flex-start',
 });
 
 interface ShareSectionSubdomainProps {
@@ -61,26 +70,29 @@ export const ShareSectionSubdomain = ({ onSubmit, onBack }: ShareSectionSubdomai
         <ShareDescription>Enter your team&apos;s Chromatic subdomain.</ShareDescription>
       </TextBlock>
       <Form onSubmit={handleSubmit}>
-        <SuffixInput
-          autoFocus
-          icon="users"
-          value={subdomain}
-          placeholder="yourteam"
-          suffix=".chromatic.com"
-          onChange={handleChange}
-          id="share-subdomain-input"
-          error={inputError}
-          errorTooltipPlacement="top"
-        />
-        <ButtonStack>
+        <FormRow>
+          <SuffixInput
+            autoFocus
+            icon="users"
+            value={subdomain}
+            placeholder="yourteam"
+            suffix=".chromatic.com"
+            onChange={handleChange}
+            id="share-subdomain-input"
+            error={inputError}
+            errorTooltipPlacement="top"
+          />
           <Button size="medium" variant="solid" type="submit">
-            Continue
+            Connect
           </Button>
-          <ShareTextLink type="button" onClick={onBack}>
+        </FormRow>
+        <BackButtonRow>
+          <Button size="small" variant="ghost" type="button" onClick={onBack}>
             Back
-          </ShareTextLink>
-        </ButtonStack>
+          </Button>
+        </BackButtonRow>
       </Form>
+      <WhoHasAccess />
     </ShareContainer>
   );
 };

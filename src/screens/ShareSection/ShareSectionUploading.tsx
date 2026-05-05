@@ -12,6 +12,7 @@ import {
   TextBlock,
 } from './ShareSectionPrimitives';
 import { UrlCopyField } from './UrlCopyField';
+import { WhoHasAccess } from './WhoHasAccess';
 
 const statusLabels: Record<ShareProgress['status'], string> = {
   pending: 'Initializing build...',
@@ -37,10 +38,9 @@ export const ShareSectionUploading = ({
   return (
     <ShareContainer>
       <TextBlock>
-        <ShareTitle>Publishing your Storybook</ShareTitle>
+        <ShareTitle>Publishing…</ShareTitle>
         <ShareDescription>
-          Stay on this branch and keep your code unchanged until the upload finishes to ensure a
-          consistent build.
+          Please don&apos;t modify code or switch branches until upload is complete.
         </ShareDescription>
       </TextBlock>
       <ButtonStack>
@@ -55,6 +55,7 @@ export const ShareSectionUploading = ({
           </ShareTextLink>
         )}
       </ButtonStack>
+      <WhoHasAccess />
     </ShareContainer>
   );
 };

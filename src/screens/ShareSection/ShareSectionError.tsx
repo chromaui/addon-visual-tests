@@ -1,6 +1,7 @@
 import React from 'react';
 import { styled } from 'storybook/theming';
 
+import { Badge } from '../../components/Badge';
 import { Button } from '../../components/Button';
 import {
   ButtonStack,
@@ -12,19 +13,17 @@ import {
 } from './ShareSectionPrimitives';
 import { WhoHasAccess } from './WhoHasAccess';
 
-const ErrorBadge = styled.span(({ theme }) => ({
-  backgroundColor: theme.color.negative,
-  color: theme.color.lightest,
-  fontSize: theme.typography.size.s1,
-  fontWeight: theme.typography.weight.bold,
-  borderRadius: 4,
-  padding: '2px 6px',
-  lineHeight: '16px',
+const ErrorRow = styled(StatusRow)({
+  alignItems: 'flex-start',
+});
+
+const ErrorBadge = styled(Badge)({
+  margin: 0,
   flexShrink: 0,
-}));
+});
 
 const ErrorMessage = styled.span(({ theme }) => ({
-  color: theme.textMutedColor,
+  color: theme.color.defaultText,
   fontSize: theme.typography.size.s1,
   lineHeight: '16px',
 }));
@@ -55,12 +54,12 @@ export const ShareSectionError = ({ reason, message, onRetry }: ShareSectionErro
         <Button size="medium" variant="solid" onClick={onRetry}>
           Publish &amp; copy link
         </Button>
-        <StatusRow>
-          <ErrorBadge>Error</ErrorBadge>
+        <ErrorRow>
+          <ErrorBadge status="critical">Error</ErrorBadge>
           <ErrorMessage>
             <strong>Publish failed{mappedReason && ':'}</strong> {mappedReason}
           </ErrorMessage>
-        </StatusRow>
+        </ErrorRow>
       </ButtonStack>
       <WhoHasAccess />
     </ShareContainer>

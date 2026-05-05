@@ -9,6 +9,7 @@ import {
   ShareTitle,
   TextBlock,
 } from './ShareSectionPrimitives';
+import { WhoHasAccess } from './WhoHasAccess';
 
 interface ShareSectionIdleProps {
   onSignIn: () => void;
@@ -29,5 +30,6 @@ export const ShareSectionIdle = ({ onSignIn, onSignInWithSSO }: ShareSectionIdle
       </Button>
       <ShareTextLink onClick={onSignInWithSSO}>Connect with SAML SSO</ShareTextLink>
     </ButtonStack>
+    <WhoHasAccess />
   </ShareContainer>
 );
