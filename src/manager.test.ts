@@ -1,10 +1,32 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+vi.hoisted(() => {
+  const store: Record<string, string> = {};
+  globalThis.localStorage = {
+    getItem: (key: string) => store[key] ?? null,
+    setItem: (key: string, value: string) => {
+      store[key] = value;
+    },
+    removeItem: (key: string) => {
+      delete store[key];
+    },
+    clear: () => {
+      Object.keys(store).forEach((k) => delete store[k]);
+    },
+    key: (index: number) => Object.keys(store)[index] ?? null,
+    get length() {
+      return Object.keys(store).length;
+    },
+  } as Storage;
+});
+
 const storybookMocks = vi.hoisted(() => {
   const api = {
     on: vi.fn(),
     setSelectedPanel: vi.fn(),
     togglePanel: vi.fn(),
+    getChannel: vi.fn(() => null),
+    addNotification: vi.fn(),
   };
 
   const addons = {
@@ -47,6 +69,14 @@ vi.mock('./Panel', () => ({
 
 vi.mock('./TestProviderRender', () => ({
   TestProviderRender: () => null,
+}));
+
+vi.mock('./screens/ShareSection', () => ({
+  ShareToolbarButton: () => null,
+}));
+
+vi.mock('./screens/ShareSection/popoverPresence', () => ({
+  isPresent: () => false,
 }));
 
 function stubWindow(search = '', opener: Record<string, unknown> | null = null) {
@@ -110,18 +140,15 @@ describe('manager', () => {
       expect(windowMock.close).toHaveBeenCalledOnce();
     });
 
-    it('posts error without optional state/description fields', async () => {
+    it('does not post when error is present but state is missing', async () => {
       const opener = { closed: false, postMessage: vi.fn() };
       const windowMock = stubWindow('?error=server_error', opener);
       (globalThis as { CONFIG_TYPE?: string }).CONFIG_TYPE = 'PRODUCTION';
 
       await import('./manager');
 
-      expect(opener.postMessage).toHaveBeenCalledWith(
-        { message: 'grant', error: 'server_error' },
-        windowMock.location.origin
-      );
-      expect(windowMock.close).toHaveBeenCalledOnce();
+      expect(opener.postMessage).not.toHaveBeenCalled();
+      expect(windowMock.close).not.toHaveBeenCalled();
     });
 
     it('does not post message when opener is null', async () => {
