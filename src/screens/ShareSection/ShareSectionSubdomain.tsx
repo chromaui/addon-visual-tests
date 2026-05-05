@@ -1,3 +1,4 @@
+import { ChevronLeftIcon } from '@storybook/icons';
 import React, { useCallback, useState } from 'react';
 import { styled } from 'storybook/theming';
 
@@ -23,9 +24,15 @@ const FormRow = styled.div({
   },
 });
 
-const BackButtonRow = styled.div({
-  marginTop: 24,
-  alignSelf: 'flex-start',
+const RelativeContainer = styled(ShareContainer)({
+  position: 'relative',
+  paddingTop: 42,
+});
+
+const BackButton = styled(Button)({
+  position: 'absolute',
+  top: 6,
+  left: 6,
 });
 
 interface ShareSectionSubdomainProps {
@@ -64,7 +71,11 @@ export const ShareSectionSubdomain = ({ onSubmit, onBack }: ShareSectionSubdomai
   );
 
   return (
-    <ShareContainer>
+    <RelativeContainer>
+      <BackButton variant="ghost" onClick={onBack} aria-label="Back">
+        <ChevronLeftIcon size={12} aria-hidden="true" />
+        Back
+      </BackButton>
       <TextBlock>
         <ShareTitle>Sign in with SSO</ShareTitle>
         <ShareDescription>Enter your team&apos;s Chromatic subdomain.</ShareDescription>
@@ -86,13 +97,8 @@ export const ShareSectionSubdomain = ({ onSubmit, onBack }: ShareSectionSubdomai
             Connect
           </Button>
         </FormRow>
-        <BackButtonRow>
-          <Button size="small" variant="ghost" type="button" onClick={onBack}>
-            Back
-          </Button>
-        </BackButtonRow>
       </Form>
       <WhoHasAccess />
-    </ShareContainer>
+    </RelativeContainer>
   );
 };
