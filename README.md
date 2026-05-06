@@ -1,6 +1,8 @@
 # Visual Tests Addon for Storybook
 
-Run visual tests on your stories and compare changes with the latest baselines to catch UI regressions early in development. Supports multiple viewports, themes, and browsers.
+Run [visual tests on your stories](https://storybook.js.org/docs/writing-tests/visual-testing) and compare changes with the latest baselines to catch UI regressions early in development. Supports multiple viewports, themes, and browsers.
+
+Also provides the infrastructure for [quick sharing](https://storybook.js.org/docs/sharing#quick-sharing) of your Storybook with your team and collaborators.
 
 ## Prerequisites
 
