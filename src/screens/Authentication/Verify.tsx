@@ -11,7 +11,7 @@ import { graphql } from '../../gql';
 import type { Project } from '../../gql/graphql';
 import { getFetchOptions, setAuthenticatedSession } from '../../utils/graphQLClient';
 import { exchangeOAuthCode, parseGrantPayload } from '../../utils/oauthGrant';
-import type { TokenExchangeParameters } from '../../utils/requestAccessToken';
+import type { AuthStorage, TokenExchangeParameters } from '../../utils/requestAccessToken';
 import { type DialogHandler, useChromaticDialog } from '../../utils/useChromaticDialog';
 import { useErrorNotification } from '../../utils/useErrorNotification';
 import { AuthHeader } from './AuthHeader';
@@ -49,8 +49,9 @@ export const Verify = ({
     exchangeParameters;
   const redirectOrigin = new URL(redirectUri).origin;
 
-  // Store the access token until we are ready to pass it to `setAccessToken` (at which point
-  // the Panel will close the Authentication screen)
+  // Store auth details until we're ready to finish the login flow and persist them in addon state.
+  const authSession = useRef<AuthStorage>();
+  // Store just the access token for existing callback paths that only need bearer auth.
   const accessToken = useRef<string>();
 
   const openDialogRef = useRef<(url: string, additionalOrigins?: string[]) => void>();
@@ -75,7 +76,7 @@ export const Verify = ({
             { clientId, codeVerifier, redirectUri, sessionId, tokenEndpoint },
             outcome.code
           );
-          setAuthenticatedSession(token);
+          authSession.current = token;
           accessToken.current = token.accessToken;
 
           // Override token for this query but don't store it yet until they've created a project
@@ -87,6 +88,7 @@ export const Verify = ({
           // The user has projects to choose from (or the project is already selected),
           // so send them to pick one
           if (data.viewer.projectCount > 0 || hasProjectId) {
+            setAuthenticatedSession(token);
             setAccessToken(accessToken.current);
             closeDialogRef.current?.();
           } else {
@@ -107,6 +109,11 @@ export const Verify = ({
         if (!accessToken.current) {
           onError('Unexpected missing access token', new Error());
         } else {
+          if (!authSession.current) {
+            onError('Unexpected missing auth session', new Error());
+            return;
+          }
+          setAuthenticatedSession(authSession.current);
           setAccessToken(accessToken.current);
           setCreatedProjectId(`Project:${event.projectId}`);
           closeDialogRef.current?.();
