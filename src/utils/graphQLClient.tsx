@@ -5,7 +5,7 @@ import { Client, ClientOptions, fetchExchange, mapExchange, Provider } from 'urq
 import { v4 as uuid } from 'uuid';
 
 import { ADDON_ID } from '../constants';
-import { ACCESS_TOKEN_KEY, CHROMATIC_API_URL } from '../env';
+import { ACCESS_TOKEN_KEY, ACCESS_TOKEN_KEY_LEGACY, CHROMATIC_API_URL } from '../env';
 
 let currentToken: string | null;
 let currentTokenExpiration: number | null;
@@ -24,6 +24,17 @@ const setCurrentToken = (token: string | null) => {
     localStorage.removeItem(ACCESS_TOKEN_KEY);
   }
 };
+
+// One-time migration: previous releases stored the token at the legacy
+// (un-scoped) key. If the new scoped key is empty but the legacy key still
+// holds a token, adopt it under the scoped key so users don't get logged
+// out by the upgrade. The legacy key is left in place — clearing it would
+// log out any other Storybook on the same origin still using the old
+// addon version.
+if (ACCESS_TOKEN_KEY !== ACCESS_TOKEN_KEY_LEGACY && !localStorage.getItem(ACCESS_TOKEN_KEY)) {
+  const legacyToken = localStorage.getItem(ACCESS_TOKEN_KEY_LEGACY);
+  if (legacyToken) localStorage.setItem(ACCESS_TOKEN_KEY, legacyToken);
+}
 
 setCurrentToken(localStorage.getItem(ACCESS_TOKEN_KEY));
 

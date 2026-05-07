@@ -45,6 +45,7 @@ import type {
   ShareProgress,
 } from './types.ts';
 import { ChannelFetch } from './utils/ChannelFetch.ts';
+import { getStorybookId } from './utils/getStorybookId.ts';
 import { SharedState } from './utils/SharedState.ts';
 import { updateChromaticConfig } from './utils/updateChromaticConfig.ts';
 
@@ -370,8 +371,20 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
   return channel;
 }
 
+// Inject the Storybook installation identifier into the manager so the
+// addon can scope its localStorage keys per Storybook. Without this, two
+// different Storybooks served on the same dev port (different projects,
+// different Chromatic accounts) would silently share the cached access
+// token, since localStorage is scoped to origin only.
+async function managerHead(head: string) {
+  const storybookId = await getStorybookId();
+  if (!storybookId) return head;
+  return `${head}\n<script>window.__CHROMATIC_STORYBOOK_ID__ = ${JSON.stringify(storybookId)};</script>`;
+}
+
 const config = {
   managerEntries,
+  managerHead,
   previewAnnotations,
   experimental_serverChannel: serverChannel,
   staticDirs: async (inputDirs: string[]) => [
