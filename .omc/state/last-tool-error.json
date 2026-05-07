@@ -1,7 +1,0 @@
-{
-  "tool_name": "Bash",
-  "tool_input_preview": "{\"command\":\"sed -i '' 's/AuthStorage/AuthSession/g' src/utils/graphQLClient.tsx src/utils/graphQLClient.test.ts src/utils/oauthGrant.ts src/utils/requestAccessToken.test.ts src/utils/requestAccessToke...",
-  "error": "Exit code 1",
-  "timestamp": "2026-05-07T14:14:20.572Z",
-  "retry_count": 2
-}
