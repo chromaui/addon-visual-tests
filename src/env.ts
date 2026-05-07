@@ -13,5 +13,4 @@ const STORYBOOK_ID =
     (window as { __CHROMATIC_STORYBOOK_ID__?: string }).__CHROMATIC_STORYBOOK_ID__) ||
   'unscoped';
 
-export const ACCESS_TOKEN_KEY_LEGACY = `${ADDON_ID}/access-token/${CHROMATIC_BASE_URL}`;
-export const ACCESS_TOKEN_KEY = `${ACCESS_TOKEN_KEY_LEGACY}/${STORYBOOK_ID}`;
+export const ACCESS_TOKEN_KEY = `${ADDON_ID}/access-token/${CHROMATIC_BASE_URL}/${STORYBOOK_ID}`;

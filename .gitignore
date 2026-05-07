@@ -9,6 +9,7 @@ chromatic.log
 chromatic-build-*.xml
 chromatic-diagnostics.json
 coverage/
+.omc/
 
 **/.pnp.*
 **/.yarn/*

@@ -9,9 +9,9 @@ import { Stack } from '../../components/Stack';
 import { Text } from '../../components/Text';
 import { graphql } from '../../gql';
 import type { Project } from '../../gql/graphql';
-import { getFetchOptions } from '../../utils/graphQLClient';
+import { getFetchOptions, setAuthenticatedSession } from '../../utils/graphQLClient';
 import { exchangeOAuthCode, parseGrantPayload } from '../../utils/oauthGrant';
-import type { TokenExchangeParameters } from '../../utils/requestAccessToken';
+import type { AuthSession, TokenExchangeParameters } from '../../utils/requestAccessToken';
 import { type DialogHandler, useChromaticDialog } from '../../utils/useChromaticDialog';
 import { useErrorNotification } from '../../utils/useErrorNotification';
 import { AuthHeader } from './AuthHeader';
@@ -45,22 +45,22 @@ export const Verify = ({
   const client = useClient();
   const onError = useErrorNotification();
 
-  const { authorizationUrl, state, clientId, codeVerifier, redirectUri, tokenEndpoint } =
+  const { authorizationUrl, state, codeVerifier, redirectUri, sessionId, subdomain } =
     exchangeParameters;
   const redirectOrigin = new URL(redirectUri).origin;
 
-  // Store the access token until we are ready to pass it to `setAccessToken` (at which point
-  // the Panel will close the Authentication screen)
-  const accessToken = useRef<string>();
+  // Store auth details until we're ready to finish the login flow and persist them in addon state.
+  const authSession = useRef<AuthSession>();
 
   const openDialogRef = useRef<(url: string, additionalOrigins?: string[]) => void>();
   const closeDialogRef = useRef<() => void>();
   const handler = useCallback<DialogHandler>(
     async (event) => {
-      // If the user logs in as part of the grant process, don't close the dialog,
-      // instead redirect us back to where we were trying to go.
+      // Ignore login relay events here. Re-opening the popup from a postMessage
+      // handler can replace the tracked window (or be popup-blocked), causing
+      // the eventual grant callback from the original popup to be ignored.
       if (event.message === 'login') {
-        openDialogRef.current?.(authorizationUrl, [redirectOrigin]);
+        return;
       }
 
       if (event.message === 'grant') {
@@ -71,13 +71,13 @@ export const Verify = ({
           if (outcome.kind === 'login') return;
 
           const token = await exchangeOAuthCode(
-            { clientId, codeVerifier, redirectUri, tokenEndpoint },
+            { codeVerifier, redirectUri, sessionId, subdomain },
             outcome.code
           );
-          accessToken.current = token;
+          authSession.current = token;
 
           // Override token for this query but don't store it yet until they've created a project
-          const fetchOptions = getFetchOptions(token);
+          const fetchOptions = getFetchOptions(token.accessToken, token.sessionId);
           const { data } = await client.query(ProjectCountQuery, {}, { fetchOptions });
 
           if (!data?.viewer) throw new Error('Failed to fetch initial project list');
@@ -85,7 +85,8 @@ export const Verify = ({
           // The user has projects to choose from (or the project is already selected),
           // so send them to pick one
           if (data.viewer.projectCount > 0 || hasProjectId) {
-            setAccessToken(accessToken.current);
+            setAuthenticatedSession(token);
+            setAccessToken(token.accessToken);
             closeDialogRef.current?.();
           } else {
             // The user has no projects, so we need to get them to create one, then close the dialog
@@ -102,23 +103,22 @@ export const Verify = ({
       }
 
       if (event.message === 'createdProject') {
-        if (!accessToken.current) {
-          onError('Unexpected missing access token', new Error());
-        } else {
-          setAccessToken(accessToken.current);
-          setCreatedProjectId(`Project:${event.projectId}`);
-          closeDialogRef.current?.();
+        if (!authSession.current) {
+          onError('Unexpected missing auth session', new Error());
+          return;
         }
+        setAuthenticatedSession(authSession.current);
+        setAccessToken(authSession.current.accessToken);
+        setCreatedProjectId(`Project:${event.projectId}`);
+        closeDialogRef.current?.();
       }
     },
     [
-      authorizationUrl,
-      redirectOrigin,
       state,
-      clientId,
       codeVerifier,
       redirectUri,
-      tokenEndpoint,
+      sessionId,
+      subdomain,
       client,
       hasProjectId,
       setAccessToken,

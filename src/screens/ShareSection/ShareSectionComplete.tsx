@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { styled } from 'storybook/theming';
 
 import { Button } from '../../components/Button';
-import { SHARE_EXPIRY_DAYS } from '../../constants';
 import { formatDate } from '../../utils/formatDate';
 import {
   ButtonStack,
@@ -64,6 +63,7 @@ const InfoBannerText = styled.span(({ theme }) => ({
 interface ShareSectionCompleteProps {
   shareUrl: string;
   publishedAt: number;
+  daysToExpire?: number;
   isOutdated: boolean;
   onPublishAgain: () => void;
   onCopy?: () => void;
@@ -74,6 +74,7 @@ const CELEBRATION_DURATION_MS = 5000;
 export const ShareSectionComplete = ({
   shareUrl,
   publishedAt,
+  daysToExpire,
   isOutdated,
   onPublishAgain,
   onCopy,
@@ -112,12 +113,14 @@ export const ShareSectionComplete = ({
           <TimestampRow>
             <span style={{ fontSize: 12, flexShrink: 0 }}>⏳</span>
             <TimestampText>
-              Published {formatDate(publishedAt)} – expires in{' '}
-              {(() => {
-                const msRemaining = addDays(publishedAt, SHARE_EXPIRY_DAYS).getTime() - Date.now();
-                const daysRemaining = Math.max(0, Math.ceil(msRemaining / 86_400_000));
-                return `${daysRemaining} ${daysRemaining === 1 ? 'day' : 'days'}`;
-              })()}
+              Published {formatDate(publishedAt)}
+              {daysToExpire !== undefined
+                ? (() => {
+                    const msRemaining = addDays(publishedAt, daysToExpire).getTime() - Date.now();
+                    const daysRemaining = Math.max(0, Math.ceil(msRemaining / 86_400_000));
+                    return ` – expires in ${daysRemaining} ${daysRemaining === 1 ? 'day' : 'days'}`;
+                  })()
+                : ''}
             </TimestampText>
           </TimestampRow>
         )}
