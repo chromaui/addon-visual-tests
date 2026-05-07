@@ -11,6 +11,10 @@ import { type AuthStorage, AuthStorageSchema, refreshAccessToken } from './reque
 const REFRESH_TIMEOUT_MS = 10_000;
 const getStorage = () => (typeof localStorage === 'undefined' ? null : localStorage);
 const SESSION_EXPIRED_EVENT = `${ADDON_ID}/session-expired`;
+const setBrowserTimeout = (...args: Parameters<typeof globalThis.setTimeout>) =>
+  (typeof window !== 'undefined' ? window : globalThis).setTimeout(...args);
+const clearBrowserTimeout = (...args: Parameters<typeof globalThis.clearTimeout>) =>
+  (typeof window !== 'undefined' ? window : globalThis).clearTimeout(...args);
 
 let currentAuth: AuthStorage | null = null;
 let currentToken: string | null = null;
@@ -195,7 +199,7 @@ const attemptTokenRefresh = async () => {
   const generation = authGeneration;
   const abortController = new AbortController();
   refreshAbortController = abortController;
-  const timeoutId = globalThis.setTimeout(() => abortController.abort(), REFRESH_TIMEOUT_MS);
+  const timeoutId = setBrowserTimeout(() => abortController.abort(), REFRESH_TIMEOUT_MS);
   try {
     const nextAuth = await refreshAccessToken({
       clientId: OAUTH_CLIENT_ID,
@@ -209,7 +213,7 @@ const attemptTokenRefresh = async () => {
     }
     setCurrentAuth(nextAuth);
   } finally {
-    globalThis.clearTimeout(timeoutId);
+    clearBrowserTimeout(timeoutId);
     refreshAbortController = null;
   }
 };
