@@ -77,13 +77,8 @@ const setCurrentToken = (token: string | null) => {
     clearCurrentAuth();
     return;
   }
-
   if (currentAuth) {
     setCurrentAuth({ ...currentAuth, accessToken: token });
-  } else {
-    // Keep runtime behavior sane if we ever receive a token before full auth state is initialized.
-    currentToken = token;
-    notifyTokenSubscribers();
   }
 };
 

@@ -68,7 +68,7 @@ addons.register(ADDON_ID, (api) => {
     title: 'Visual tests',
     paramKey: PARAM_KEY,
     match: ({ viewMode }) => viewMode === 'story',
-    render: ({ active }) => <Panel active={!!active} api={api} />,
+    render: ({ active }) => <Panel active={!!active} />,
   });
 
   // Surface a Storybook notification when a share completes — but only when the

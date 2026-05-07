@@ -1,6 +1,5 @@
 import { FailedIcon } from '@storybook/icons';
 import React, { useCallback, useEffect } from 'react';
-import type { API } from 'storybook/manager-api';
 import {
   experimental_getStatusStore,
   useChannel,
@@ -48,7 +47,6 @@ import { useSharedState } from './utils/useSharedState';
 
 interface PanelProps {
   active: boolean;
-  api: API;
 }
 
 const statusStore = experimental_getStatusStore(ADDON_ID);

@@ -59,8 +59,6 @@ export const Verify = ({
 
   // Store auth details until we're ready to finish the login flow and persist them in addon state.
   const authSession = useRef<AuthStorage>();
-  // Store just the access token for existing callback paths that only need bearer auth.
-  const accessToken = useRef<string>();
 
   const openDialogRef = useRef<(url: string, additionalOrigins?: string[]) => void>();
   const closeDialogRef = useRef<() => void>();
@@ -85,7 +83,6 @@ export const Verify = ({
             outcome.code
           );
           authSession.current = token;
-          accessToken.current = token.accessToken;
 
           // Override token for this query but don't store it yet until they've created a project
           const fetchOptions = getFetchOptions(token.accessToken);
@@ -97,7 +94,7 @@ export const Verify = ({
           // so send them to pick one
           if (data.viewer.projectCount > 0 || hasProjectId) {
             setAuthenticatedSession(token);
-            setAccessToken(accessToken.current);
+            setAccessToken(token.accessToken);
             closeDialogRef.current?.();
           } else {
             // The user has no projects, so we need to get them to create one, then close the dialog
@@ -114,18 +111,14 @@ export const Verify = ({
       }
 
       if (event.message === 'createdProject') {
-        if (!accessToken.current) {
-          onError('Unexpected missing access token', new Error());
-        } else {
-          if (!authSession.current) {
-            onError('Unexpected missing auth session', new Error());
-            return;
-          }
-          setAuthenticatedSession(authSession.current);
-          setAccessToken(accessToken.current);
-          setCreatedProjectId(`Project:${event.projectId}`);
-          closeDialogRef.current?.();
+        if (!authSession.current) {
+          onError('Unexpected missing auth session', new Error());
+          return;
         }
+        setAuthenticatedSession(authSession.current);
+        setAccessToken(authSession.current.accessToken);
+        setCreatedProjectId(`Project:${event.projectId}`);
+        closeDialogRef.current?.();
       }
     },
     [
