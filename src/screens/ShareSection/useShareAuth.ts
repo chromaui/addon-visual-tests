@@ -1,6 +1,6 @@
 import { useCallback, useRef } from 'react';
 
-import { useAccessToken } from '../../utils/graphQLClient';
+import { setAuthenticatedSession, useAccessToken } from '../../utils/graphQLClient';
 import { exchangeOAuthCode, parseGrantPayload } from '../../utils/oauthGrant';
 import { initiateSignin, type TokenExchangeParameters } from '../../utils/requestAccessToken';
 import { type DialogHandler, useChromaticDialog } from '../../utils/useChromaticDialog';
@@ -17,7 +17,8 @@ export function useShareAuth(setShareState: (s: ShareState) => void) {
       const params = paramsRef.current;
       if (!params) return;
 
-      const { redirectUri, state, clientId, codeVerifier, tokenEndpoint } = params;
+      const { redirectUri, state, clientId, codeVerifier, tokenEndpoint, sessionId, subdomain } =
+        params;
       const outcome = parseGrantPayload(event, state);
 
       if (outcome.kind === 'login' || outcome.kind === 'ignore') {
@@ -35,11 +36,12 @@ export function useShareAuth(setShareState: (s: ShareState) => void) {
 
       try {
         const token = await exchangeOAuthCode(
-          { clientId, codeVerifier, redirectUri, tokenEndpoint },
+          { clientId, codeVerifier, redirectUri, tokenEndpoint, sessionId, subdomain },
           outcome.code
         );
 
-        updateToken(token);
+        setAuthenticatedSession(token);
+        updateToken(token.accessToken);
         closeDialogRef.current?.();
         setShareState({ status: 'uploading', shareUrl: '' });
       } catch {

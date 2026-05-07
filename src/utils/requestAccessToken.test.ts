@@ -71,16 +71,30 @@ describe('fetchAccessToken', () => {
     codeVerifier: 'verifier',
     redirectUri: 'https://example.com/redirect',
     tokenEndpoint: 'https://www.chromatic.com/token',
+    sessionId: 'session-1',
     code: 'auth-code',
   };
 
-  it('returns access token on success', async () => {
+  it('returns AuthStorage on success', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
+      json: async () => ({ access_token: 'tok-abc', refresh_token: 'ref-xyz' }),
+    } as Response);
+
+    const auth = await fetchAccessToken(baseParams);
+    expect(auth).toMatchObject({
+      version: 2,
+      accessToken: 'tok-abc',
+      refreshToken: 'ref-xyz',
+      sessionId: 'session-1',
+    });
+  });
+
+  it('throws when refresh_token missing on success response', async () => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
       json: async () => ({ access_token: 'tok-abc' }),
     } as Response);
 
-    const token = await fetchAccessToken(baseParams);
-    expect(token).toBe('tok-abc');
+    await expect(fetchAccessToken(baseParams)).rejects.toThrow('missing refresh token');
   });
 
   it('throws on authorization_pending error', async () => {
@@ -129,7 +143,7 @@ describe('fetchAccessToken', () => {
 
   it('POSTs to tokenEndpoint with correct Content-Type header', async () => {
     const mockFetch = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
-      json: async () => ({ access_token: 'tok' }),
+      json: async () => ({ access_token: 'tok', refresh_token: 'ref' }),
     } as Response);
 
     await fetchAccessToken(baseParams);
@@ -138,14 +152,17 @@ describe('fetchAccessToken', () => {
       'https://www.chromatic.com/token',
       expect.objectContaining({
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+        headers: expect.objectContaining({
+          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+          'X-Chromatic-Session-ID': 'session-1',
+        }),
       })
     );
   });
 
   it('includes grant_type and code in request body', async () => {
     const mockFetch = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
-      json: async () => ({ access_token: 'tok' }),
+      json: async () => ({ access_token: 'tok', refresh_token: 'ref' }),
     } as Response);
 
     await fetchAccessToken(baseParams);
