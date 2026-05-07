@@ -108,7 +108,7 @@ export default [
         },
         {
           selector:
-            "CallExpression[callee.name=/^(setTimeout|setInterval)$/][arguments.0.type=/^(Literal|TemplateLiteral)$/]",
+            'CallExpression[callee.name=/^(setTimeout|setInterval)$/][arguments.0.type=/^(Literal|TemplateLiteral)$/]',
           message: 'String/template-form setTimeout/setInterval is banned',
         },
         {
