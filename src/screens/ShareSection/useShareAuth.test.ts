@@ -64,7 +64,7 @@ const defaultParams = {
   tokenEndpoint: 'https://chromatic.com/token',
 };
 
-const createAuthStorage = (accessToken = 'access-token-xyz') => ({
+const createAuthSession = (accessToken = 'access-token-xyz') => ({
   version: 2 as const,
   accessToken,
   refreshToken: 'refresh-token',
@@ -79,7 +79,7 @@ afterEach(() => {
 describe('useShareAuth', () => {
   it('successful flow: startSignIn opens dialog, grant code triggers fetchAccessToken and updateToken', async () => {
     const setShareState = vi.fn();
-    const auth = createAuthStorage();
+    const auth = createAuthSession();
     mocks.initiateSignin.mockResolvedValueOnce(defaultParams);
     mocks.exchangeOAuthCode.mockResolvedValueOnce(auth);
 
@@ -102,7 +102,7 @@ describe('useShareAuth', () => {
     const setShareState = vi.fn();
     mocks.initiateSignin.mockResolvedValueOnce(defaultParams);
 
-    let resolveFetch!: (token: ReturnType<typeof createAuthStorage>) => void;
+    let resolveFetch!: (token: ReturnType<typeof createAuthSession>) => void;
     mocks.exchangeOAuthCode.mockReturnValueOnce(
       new Promise((resolve) => {
         resolveFetch = resolve;
@@ -117,7 +117,7 @@ describe('useShareAuth', () => {
     // Second grant — paramsRef is null now, should short-circuit
     await capturedHandler!({ message: 'grant', code: 'auth-code', state: 'state-abc' });
 
-    resolveFetch(createAuthStorage());
+    resolveFetch(createAuthSession());
     await first;
 
     expect(mocks.exchangeOAuthCode).toHaveBeenCalledOnce();
@@ -139,7 +139,7 @@ describe('useShareAuth', () => {
   it('stale grant: arriving after paramsRef cleared, no state change or error surfaced', async () => {
     const setShareState = vi.fn();
     mocks.initiateSignin.mockResolvedValueOnce(defaultParams);
-    mocks.exchangeOAuthCode.mockResolvedValueOnce(createAuthStorage('token'));
+    mocks.exchangeOAuthCode.mockResolvedValueOnce(createAuthSession('token'));
 
     const { startSignIn } = useShareAuth(setShareState);
     await (startSignIn as () => Promise<void>)();

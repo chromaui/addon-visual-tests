@@ -6,7 +6,7 @@ import { v4 as uuid } from 'uuid';
 
 import { ADDON_ID, OAUTH_CLIENT_ID } from '../constants';
 import { ACCESS_TOKEN_KEY, CHROMATIC_API_URL } from '../env';
-import { type AuthStorage, AuthStorageSchema, refreshAccessToken } from './requestAccessToken';
+import { type AuthSession, AuthSessionSchema, refreshAccessToken } from './requestAccessToken';
 
 const REFRESH_TIMEOUT_MS = 10_000;
 const getStorage = () => (typeof localStorage === 'undefined' ? null : localStorage);
@@ -16,7 +16,7 @@ const setBrowserTimeout = (...args: Parameters<typeof globalThis.setTimeout>) =>
 const clearBrowserTimeout = (...args: Parameters<typeof globalThis.clearTimeout>) =>
   (typeof window !== 'undefined' ? window : globalThis).clearTimeout(...args);
 
-let currentAuth: AuthStorage | null = null;
+let currentAuth: AuthSession | null = null;
 let currentToken: string | null = null;
 let refreshPromise: Promise<void> | null = null;
 let refreshAbortController: AbortController | null = null;
@@ -56,7 +56,7 @@ const persistCurrentAuth = () => {
   }
 };
 
-const setCurrentAuth = (auth: AuthStorage | null) => {
+const setCurrentAuth = (auth: AuthSession | null) => {
   currentAuth = auth;
   currentToken = auth?.accessToken ?? null;
 
@@ -82,12 +82,12 @@ const setCurrentToken = (token: string | null) => {
   }
 };
 
-const parseStoredAuth = (rawAuth: string): AuthStorage | null => {
+const parseStoredAuth = (rawAuth: string): AuthSession | null => {
   // Legacy format used to persist only a raw JWT string.
   if (!rawAuth.trim().startsWith('{')) {
     return null;
   }
-  const parsed = AuthStorageSchema.safeParse(JSON.parse(rawAuth));
+  const parsed = AuthSessionSchema.safeParse(JSON.parse(rawAuth));
   return parsed.success ? parsed.data : null;
 };
 
@@ -137,7 +137,7 @@ if (typeof window !== 'undefined') {
   });
 }
 
-export const setAuthenticatedSession = (auth: AuthStorage) => setCurrentAuth(auth);
+export const setAuthenticatedSession = (auth: AuthSession) => setCurrentAuth(auth);
 
 export const useAccessToken = () => {
   // We use an object rather than a straight boolean here due to https://github.com/storybookjs/storybook/pull/23991

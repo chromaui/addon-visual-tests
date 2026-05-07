@@ -75,7 +75,7 @@ describe('fetchAccessToken', () => {
     code: 'auth-code',
   };
 
-  it('returns AuthStorage on success', async () => {
+  it('returns AuthSession on success', async () => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
       json: async () => ({ access_token: 'tok-abc', refresh_token: 'ref-xyz' }),
     } as Response);

@@ -1,0 +1,276 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1778155560064,
+  "projectRoot": "/Users/valentinpalkovic/Projects/addon-visual-tests",
+  "techStack": {
+    "languages": [
+      {
+        "name": "JavaScript/TypeScript",
+        "version": ">=20.0.0",
+        "confidence": "high",
+        "markers": [
+          "package.json"
+        ]
+      },
+      {
+        "name": "TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "tsconfig.json"
+        ]
+      }
+    ],
+    "frameworks": [
+      {
+        "name": "react",
+        "version": "18.3.1",
+        "category": "frontend"
+      },
+      {
+        "name": "react-dom",
+        "version": "18.3.1",
+        "category": "frontend"
+      },
+      {
+        "name": "vite",
+        "version": "6.2.2",
+        "category": "build"
+      },
+      {
+        "name": "vitest",
+        "version": "3.0.8",
+        "category": "testing"
+      }
+    ],
+    "packageManager": "yarn",
+    "runtime": "Node.js 20.0.0"
+  },
+  "build": {
+    "buildCommand": "yarn tsc --noEmit 2>&1 | grep -E \"src/utils/requestAccessToken|src/utils/graphQLClient|src/utils/oauthGrant|src/screens/Authentication/Verify|src/Panel\\.tsx|src/screens/ShareSection/useShareAuth\" | head -20",
+    "testCommand": "yarn vitest run src/utils/graphQLClient.test.ts src/utils/requestAccessToken.test.ts src/screens/ShareSection/useShareAuth.test.ts 2>&1 | tail -15",
+    "lintCommand": "yarn lint",
+    "devCommand": "yarn start",
+    "scripts": {
+      "build": "tsup",
+      "build-storybook": "storybook build --webpack-stats-json",
+      "build:staging": "CHROMATIC_BASE_URL=https://www.staging-chromatic.com tsup",
+      "build:watch": "run-p 'build --watch' 'codegen --watch'",
+      "chromatic": "chromatic --config-file production.config.json",
+      "codegen": "graphql-codegen",
+      "lint": "eslint src --report-unused-disable-directives",
+      "format": "prettier . --write",
+      "release": "yarn run build && auto shipit",
+      "start": "run-p build:watch 'storybook --quiet'",
+      "storybook": "CHROMATIC_ADDON_NAME='../src/dev.ts' storybook dev -p 6004",
+      "storybook-from-dist": "CHROMATIC_USE_DIST_VERSION=true CHROMATIC_ADDON_NAME='../dist/index.js' storybook dev -p 6004",
+      "test": "vitest --coverage",
+      "typecheck": "tsc --noemit"
+    }
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": "ES modules",
+    "testPattern": null,
+    "fileOrganization": "type-based"
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "assets",
+      "public",
+      "src"
+    ],
+    "gitBranches": {
+      "defaultBranch": "main",
+      "branchingStrategy": null
+    }
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "assets": {
+      "path": "assets",
+      "purpose": "Static assets",
+      "fileCount": 1,
+      "lastAccessed": 1778155559810,
+      "keyFiles": [
+        "visual-test-illustration.mp4"
+      ]
+    },
+    "coverage": {
+      "path": "coverage",
+      "purpose": null,
+      "fileCount": 10,
+      "lastAccessed": 1778155559812,
+      "keyFiles": [
+        "base.css",
+        "block-navigation.js",
+        "clover.xml",
+        "coverage-final.json",
+        "favicon.png"
+      ]
+    },
+    "dist": {
+      "path": "dist",
+      "purpose": "Distribution/build output",
+      "fileCount": 5,
+      "lastAccessed": 1778155559813,
+      "keyFiles": [
+        "index.js",
+        "index.mjs",
+        "manager.mjs",
+        "preset.js",
+        "preview.mjs"
+      ]
+    },
+    "public": {
+      "path": "public",
+      "purpose": "Public files",
+      "fileCount": 18,
+      "lastAccessed": 1778155559814,
+      "keyFiles": [
+        "A.png",
+        "B-comparison.png",
+        "B-focus.png",
+        "B.png",
+        "ProjectItem-Chrome-1200.png"
+      ]
+    },
+    "src": {
+      "path": "src",
+      "purpose": "Source code",
+      "fileCount": 17,
+      "lastAccessed": 1778155559819,
+      "keyFiles": [
+        "AuthContext.tsx",
+        "Panel.tsx",
+        "TestProviderRender.tsx",
+        "buildSteps.ts",
+        "constants.ts"
+      ]
+    },
+    "src/components": {
+      "path": "src/components",
+      "purpose": "UI components",
+      "fileCount": 33,
+      "lastAccessed": 1778155559820,
+      "keyFiles": [
+        "Accordions.tsx",
+        "ActionButton.tsx",
+        "Badge.tsx"
+      ]
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "src/screens/Authentication/Verify.tsx",
+      "accessCount": 16,
+      "lastAccessed": 1778163133641,
+      "type": "file"
+    },
+    {
+      "path": "src/utils/requestAccessToken.ts",
+      "accessCount": 9,
+      "lastAccessed": 1778162239408,
+      "type": "file"
+    },
+    {
+      "path": "src/utils/graphQLClient.tsx",
+      "accessCount": 8,
+      "lastAccessed": 1778163132681,
+      "type": "file"
+    },
+    {
+      "path": "src/screens/ShareSection/useShareAuth.test.ts",
+      "accessCount": 7,
+      "lastAccessed": 1778162039659,
+      "type": "file"
+    },
+    {
+      "path": "src/screens/ShareSection/useShareAuth.ts",
+      "accessCount": 5,
+      "lastAccessed": 1778162963403,
+      "type": "file"
+    },
+    {
+      "path": "src/Panel.tsx",
+      "accessCount": 5,
+      "lastAccessed": 1778163025071,
+      "type": "file"
+    },
+    {
+      "path": "src/utils/oauthGrant.ts",
+      "accessCount": 4,
+      "lastAccessed": 1778162962516,
+      "type": "file"
+    },
+    {
+      "path": "src/utils/graphQLClient.test.ts",
+      "accessCount": 3,
+      "lastAccessed": 1778162239684,
+      "type": "file"
+    },
+    {
+      "path": "src/utils/requestAccessToken.test.ts",
+      "accessCount": 3,
+      "lastAccessed": 1778162963123,
+      "type": "file"
+    },
+    {
+      "path": "src/manager.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1778163026332,
+      "type": "file"
+    },
+    {
+      "path": "src/screens",
+      "accessCount": 1,
+      "lastAccessed": 1778155730039,
+      "type": "directory"
+    },
+    {
+      "path": "src/screens/ShareSection/ShareSection.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1778155733293,
+      "type": "file"
+    },
+    {
+      "path": "src/utils/getStorybookId.ts",
+      "accessCount": 1,
+      "lastAccessed": 1778155794663,
+      "type": "file"
+    },
+    {
+      "path": "src/utils/getStorybookId.test.ts",
+      "accessCount": 1,
+      "lastAccessed": 1778155803438,
+      "type": "file"
+    },
+    {
+      "path": "src/preset.ts",
+      "accessCount": 1,
+      "lastAccessed": 1778155815078,
+      "type": "file"
+    },
+    {
+      "path": "src/env.ts",
+      "accessCount": 1,
+      "lastAccessed": 1778160419832,
+      "type": "file"
+    },
+    {
+      "path": "src/screens/Authentication/SetSubdomain.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1778160514547,
+      "type": "file"
+    },
+    {
+      "path": "src/utils/oauthGrant.test.ts",
+      "accessCount": 1,
+      "lastAccessed": 1778160806934,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}

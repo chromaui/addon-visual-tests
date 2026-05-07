@@ -2,9 +2,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ACCESS_TOKEN_KEY } from '../env';
 import { __testUtils, setAuthenticatedSession } from './graphQLClient';
-import type { AuthStorage } from './requestAccessToken';
+import type { AuthSession } from './requestAccessToken';
 
-const createAuth = (overrides: Partial<AuthStorage> = {}): AuthStorage => ({
+const createAuth = (overrides: Partial<AuthSession> = {}): AuthSession => ({
   version: 2,
   accessToken: 'access-token-1',
   refreshToken: 'refresh-token-1',

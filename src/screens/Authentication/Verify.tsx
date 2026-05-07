@@ -11,7 +11,7 @@ import { graphql } from '../../gql';
 import type { Project } from '../../gql/graphql';
 import { getFetchOptions, setAuthenticatedSession } from '../../utils/graphQLClient';
 import { exchangeOAuthCode, parseGrantPayload } from '../../utils/oauthGrant';
-import type { AuthStorage, TokenExchangeParameters } from '../../utils/requestAccessToken';
+import type { AuthSession, TokenExchangeParameters } from '../../utils/requestAccessToken';
 import { type DialogHandler, useChromaticDialog } from '../../utils/useChromaticDialog';
 import { useErrorNotification } from '../../utils/useErrorNotification';
 import { AuthHeader } from './AuthHeader';
@@ -58,7 +58,7 @@ export const Verify = ({
   const redirectOrigin = new URL(redirectUri).origin;
 
   // Store auth details until we're ready to finish the login flow and persist them in addon state.
-  const authSession = useRef<AuthStorage>();
+  const authSession = useRef<AuthSession>();
 
   const openDialogRef = useRef<(url: string, additionalOrigins?: string[]) => void>();
   const closeDialogRef = useRef<() => void>();

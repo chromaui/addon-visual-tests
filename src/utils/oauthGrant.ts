@@ -1,5 +1,5 @@
 import {
-  type AuthStorage,
+  type AuthSession,
   fetchAccessToken,
   type TokenExchangeParameters,
 } from './requestAccessToken';
@@ -19,7 +19,7 @@ export const exchangeOAuthCode = (
     'clientId' | 'codeVerifier' | 'redirectUri' | 'tokenEndpoint' | 'sessionId' | 'subdomain'
   >,
   code: string
-): Promise<AuthStorage> => fetchAccessToken({ ...params, code });
+): Promise<AuthSession> => fetchAccessToken({ ...params, code });
 
 export const parseGrantPayload = (event: DialogPayload, expectedState: string): GrantOutcome => {
   if (event.message === 'login') return { kind: 'login' };

@@ -19,14 +19,14 @@ export type TokenExchangeParameters = {
 
 const SUBDOMAIN_REGEX = /^[a-z0-9][a-z0-9-]{0,62}$/;
 
-export const AuthStorageSchema = z.object({
+export const AuthSessionSchema = z.object({
   version: z.literal(2),
   accessToken: z.string().min(1),
   refreshToken: z.string().min(1),
   subdomain: z.string().regex(SUBDOMAIN_REGEX).optional(),
   sessionId: z.string().min(1),
 });
-export type AuthStorage = z.infer<typeof AuthStorageSchema>;
+export type AuthSession = z.infer<typeof AuthSessionSchema>;
 
 const TokenResponseSchema = z.object({
   access_token: z.string().min(1),
@@ -136,7 +136,7 @@ export const fetchAccessToken = async ({
   'clientId' | 'codeVerifier' | 'redirectUri' | 'tokenEndpoint' | 'sessionId' | 'subdomain'
 > & {
   code: string;
-}): Promise<AuthStorage> => {
+}): Promise<AuthSession> => {
   const res = await fetch(tokenEndpoint, {
     method: 'POST',
     headers: {
@@ -176,7 +176,7 @@ export const refreshAccessToken = async ({
   refreshToken: string;
   sessionId: string;
   signal: AbortSignal;
-}): Promise<AuthStorage> => {
+}): Promise<AuthSession> => {
   const tokenEndpoint = resolveTokenEndpoint(subdomain);
   const res = await fetch(tokenEndpoint, {
     method: 'POST',
