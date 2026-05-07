@@ -57,13 +57,9 @@ const persistCurrentAuth = () => {
 };
 
 const setCurrentAuth = (auth: AuthStorage | null) => {
-  try {
-    currentAuth = auth;
-    currentToken = auth?.accessToken ?? null;
-  } catch (_) {
-    currentAuth = null;
-    currentToken = null;
-  }
+  currentAuth = auth;
+  currentToken = auth?.accessToken ?? null;
+
   persistCurrentAuth();
   notifyTokenSubscribers();
 };
