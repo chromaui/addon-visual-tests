@@ -46,11 +46,11 @@ function applyProgress(
   }
 
   if (progress.status === 'complete') {
-    const { shareUrl } = progress;
+    const { shareUrl, daysToExpire } = progress;
     return {
       next: {
         ...state,
-        screen: { status: 'complete', shareUrl, publishedAt: Date.now() },
+        screen: { status: 'complete', shareUrl, publishedAt: Date.now(), daysToExpire },
         shareRequestId: null,
         shareTriggeredId: null,
       },
@@ -319,6 +319,7 @@ export const ShareSection = ({ api }: { api: API }) => {
         <ShareSectionComplete
           shareUrl={screen.shareUrl}
           publishedAt={screen.publishedAt}
+          daysToExpire={screen.daysToExpire}
           isOutdated={checkOutdated(lastCompletedGitInfo, gitInfo)}
           onCopy={() => emitTelemetry('share-url-copied')}
           onPublishAgain={() => {

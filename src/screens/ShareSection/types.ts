@@ -3,7 +3,7 @@ export type ShareState =
   | { status: 'idle' }
   | { status: 'subdomain' }
   | { status: 'uploading'; shareUrl: string }
-  | { status: 'complete'; shareUrl: string; publishedAt: number }
+  | { status: 'complete'; shareUrl: string; publishedAt: number; daysToExpire?: number }
   | {
       status: 'error';
       reason: 'upload-canceled' | 'unknown';

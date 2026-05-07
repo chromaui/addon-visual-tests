@@ -83,6 +83,21 @@ export const CompleteJustPublished: CompleteStory = {
   args: {
     shareUrl: 'https://64e2e5e6ad08a7e515c54b37-abcdefghij.chromatic.com',
     publishedAt: Date.now(),
+    daysToExpire: 7,
+    isOutdated: false,
+    onPublishAgain: fn().mockName('onPublishAgain'),
+    onCopy: fn().mockName('onCopy'),
+    onDelete: fn().mockName('onDelete'),
+  },
+};
+
+// --- Complete (without expiry info) ---
+
+export const CompleteWithoutExpiry: CompleteStory = {
+  render: (args) => <ShareSectionComplete {...args} />,
+  args: {
+    shareUrl: 'https://64e2e5e6ad08a7e515c54b37-abcdefghij.chromatic.com',
+    publishedAt: Date.now() - 2 * 60 * 60 * 1000, // 2 hours ago
     isOutdated: false,
     onPublishAgain: fn().mockName('onPublishAgain'),
     onCopy: fn().mockName('onCopy'),
@@ -97,6 +112,7 @@ export const CompleteWithChanges: CompleteStory = {
   args: {
     shareUrl: 'https://64e2e5e6ad08a7e515c54b37-abcdefghij.chromatic.com',
     publishedAt: Date.now() - 2 * 60 * 60 * 1000, // 2 hours ago
+    daysToExpire: 7,
     isOutdated: true,
     onPublishAgain: fn().mockName('onPublishAgain'),
     onCopy: fn().mockName('onCopy'),
