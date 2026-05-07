@@ -120,4 +120,32 @@ describe('graphQLClient refresh auth', () => {
 
     expect(fetchSpy).toHaveBeenCalledTimes(1);
   });
+
+  it('does not restore auth after logout while refresh is in flight', async () => {
+    setAuthenticatedSession(createAuth());
+    let resolveRefresh!: (response: Response) => void;
+    vi.spyOn(globalThis, 'fetch').mockImplementationOnce(
+      () =>
+        new Promise<Response>((resolve) => {
+          resolveRefresh = resolve;
+        })
+    );
+
+    const refreshPromise = __testUtils.refreshCurrentSession();
+    __testUtils.clearCurrentAuth();
+    resolveRefresh(
+      new Response(
+        JSON.stringify({
+          access_token: 'access-token-2',
+          refresh_token: 'refresh-token-2',
+        }),
+        { status: 200 }
+      )
+    );
+
+    await refreshPromise;
+
+    expect(__testUtils.getCurrentAuth()).toBeNull();
+    expect(localStorage.getItem(ACCESS_TOKEN_KEY)).toBeNull();
+  });
 });

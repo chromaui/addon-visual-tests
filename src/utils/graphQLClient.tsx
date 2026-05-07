@@ -15,6 +15,7 @@ let currentAuth: AuthStorage | null = null;
 let currentToken: string | null = null;
 let refreshPromise: Promise<void> | null = null;
 let refreshAbortController: AbortController | null = null;
+let authGeneration = 0;
 const tokenSubscribers = new Set<(token: string | null) => void>();
 const fallbackSessionId = uuid();
 
@@ -56,6 +57,7 @@ const setCurrentAuth = (auth: AuthStorage | null) => {
 };
 
 const clearCurrentAuth = () => {
+  authGeneration += 1;
   refreshAbortController?.abort();
   refreshAbortController = null;
   refreshPromise = null;
@@ -143,20 +145,26 @@ const isRetryableRefreshError = (error: unknown) => {
 };
 
 const attemptTokenRefresh = async () => {
-  if (!currentAuth) {
+  const auth = currentAuth;
+  if (!auth) {
     throw new Error('Token refresh failed (401)');
   }
+
+  const generation = authGeneration;
   const abortController = new AbortController();
   refreshAbortController = abortController;
   const timeoutId = globalThis.setTimeout(() => abortController.abort(), REFRESH_TIMEOUT_MS);
   try {
     const nextAuth = await refreshAccessToken({
       clientId: OAUTH_CLIENT_ID,
-      tokenEndpoint: currentAuth.tokenEndpoint,
-      refreshToken: currentAuth.refreshToken,
-      sessionId: currentAuth.sessionId,
+      tokenEndpoint: auth.tokenEndpoint,
+      refreshToken: auth.refreshToken,
+      sessionId: auth.sessionId,
       signal: abortController.signal,
     });
+    if (generation !== authGeneration) {
+      return;
+    }
     setCurrentAuth(nextAuth);
   } finally {
     globalThis.clearTimeout(timeoutId);
@@ -238,6 +246,7 @@ export const createClient = (options?: Partial<ClientOptions>) =>
 
 export const __testUtils = {
   getCurrentAuth: () => currentAuth,
+  clearCurrentAuth,
   subscribeToTokenUpdates,
   refreshCurrentSession,
 };
