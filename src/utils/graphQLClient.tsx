@@ -137,8 +137,9 @@ const isRetryableRefreshError = (error: unknown) => {
     if (error.name === 'AbortError') {
       return true;
     }
+    return false;
   }
-  return true;
+  return false;
 };
 
 const attemptTokenRefresh = async () => {

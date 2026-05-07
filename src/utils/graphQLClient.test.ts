@@ -103,4 +103,21 @@ describe('graphQLClient refresh auth', () => {
     expect(__testUtils.getCurrentAuth()).toBeNull();
     expect(localStorage.getItem(ACCESS_TOKEN_KEY)).toBeNull();
   });
+
+  it('does not retry terminal OAuth refresh errors', async () => {
+    setAuthenticatedSession(createAuth());
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          error: 'invalid_grant',
+        }),
+        { status: 200 }
+      )
+    );
+
+    await __testUtils.refreshCurrentSession();
+
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+  });
 });
