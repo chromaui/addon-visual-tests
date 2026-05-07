@@ -16,7 +16,7 @@ export type GrantOutcome =
 export const exchangeOAuthCode = (
   params: Pick<
     TokenExchangeParameters,
-    'clientId' | 'codeVerifier' | 'redirectUri' | 'tokenEndpoint' | 'sessionId'
+    'clientId' | 'codeVerifier' | 'redirectUri' | 'tokenEndpoint' | 'sessionId' | 'subdomain'
   >,
   code: string
 ): Promise<AuthStorage> => fetchAccessToken({ ...params, code });

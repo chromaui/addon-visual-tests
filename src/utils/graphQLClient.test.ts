@@ -5,10 +5,9 @@ import { __testUtils, setAuthenticatedSession } from './graphQLClient';
 import type { AuthStorage } from './requestAccessToken';
 
 const createAuth = (overrides: Partial<AuthStorage> = {}): AuthStorage => ({
-  version: 1,
+  version: 2,
   accessToken: 'access-token-1',
   refreshToken: 'refresh-token-1',
-  tokenEndpoint: 'https://www.chromatic.com/token',
   sessionId: 'session-id-1',
   ...overrides,
 });

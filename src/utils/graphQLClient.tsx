@@ -199,7 +199,7 @@ const attemptTokenRefresh = async () => {
   try {
     const nextAuth = await refreshAccessToken({
       clientId: OAUTH_CLIENT_ID,
-      tokenEndpoint: auth.tokenEndpoint,
+      subdomain: auth.subdomain,
       refreshToken: auth.refreshToken,
       sessionId: auth.sessionId,
       signal: abortController.signal,

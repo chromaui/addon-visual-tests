@@ -14,13 +14,16 @@ export type TokenExchangeParameters = {
   sessionId: string;
   authorizationUrl: string;
   tokenEndpoint: string;
+  subdomain?: string;
 };
 
+const SUBDOMAIN_REGEX = /^[a-z0-9][a-z0-9-]{0,62}$/;
+
 export const AuthStorageSchema = z.object({
-  version: z.literal(1),
+  version: z.literal(2),
   accessToken: z.string().min(1),
   refreshToken: z.string().min(1),
-  tokenEndpoint: z.string().url(),
+  subdomain: z.string().regex(SUBDOMAIN_REGEX).optional(),
   sessionId: z.string().min(1),
 });
 export type AuthStorage = z.infer<typeof AuthStorageSchema>;
@@ -60,12 +63,18 @@ const resolveChromaticHost = (subdomain?: string) => {
   if (!subdomain) {
     return CHROMATIC_BASE_URL;
   }
+  if (!SUBDOMAIN_REGEX.test(subdomain)) {
+    throw new Error('Invalid Chromatic subdomain');
+  }
   const base = new URL(CHROMATIC_BASE_URL);
   if (base.hostname.startsWith('www.')) {
     base.hostname = `${subdomain}.${base.hostname.slice(4)}`;
   }
   return base.origin;
 };
+
+export const resolveTokenEndpoint = (subdomain?: string) =>
+  `${resolveChromaticHost(subdomain)}/token`;
 
 export const initiateSignin = async (subdomain?: string): Promise<TokenExchangeParameters> => {
   const state = randomBase64Url(32);
@@ -92,6 +101,7 @@ export const initiateSignin = async (subdomain?: string): Promise<TokenExchangeP
     sessionId,
     authorizationUrl,
     tokenEndpoint: `${chromaticBaseUrl}/token`,
+    subdomain,
   };
 };
 
@@ -119,10 +129,11 @@ export const fetchAccessToken = async ({
   redirectUri,
   sessionId,
   tokenEndpoint,
+  subdomain,
   code,
 }: Pick<
   TokenExchangeParameters,
-  'clientId' | 'codeVerifier' | 'redirectUri' | 'tokenEndpoint' | 'sessionId'
+  'clientId' | 'codeVerifier' | 'redirectUri' | 'tokenEndpoint' | 'sessionId' | 'subdomain'
 > & {
   code: string;
 }): Promise<AuthStorage> => {
@@ -145,24 +156,28 @@ export const fetchAccessToken = async ({
     throw new Error('Token exchange failed: missing refresh token');
   }
   return {
-    version: 1,
+    version: 2,
     accessToken: data.access_token,
     refreshToken: data.refresh_token,
-    tokenEndpoint,
     sessionId,
+    ...(subdomain ? { subdomain } : {}),
   };
 };
 
 export const refreshAccessToken = async ({
   clientId,
-  tokenEndpoint,
+  subdomain,
   refreshToken,
   sessionId,
   signal,
-}: Pick<TokenExchangeParameters, 'clientId' | 'tokenEndpoint' | 'sessionId'> & {
+}: {
+  clientId: string;
+  subdomain?: string;
   refreshToken: string;
+  sessionId: string;
   signal: AbortSignal;
 }): Promise<AuthStorage> => {
+  const tokenEndpoint = resolveTokenEndpoint(subdomain);
   const res = await fetch(tokenEndpoint, {
     method: 'POST',
     signal,
@@ -183,10 +198,10 @@ export const refreshAccessToken = async ({
 
   const data = await decodeTokenResponse(res, 'Token refresh failed');
   return {
-    version: 1,
+    version: 2,
     accessToken: data.access_token,
     refreshToken: data.refresh_token ?? refreshToken,
-    tokenEndpoint,
     sessionId,
+    ...(subdomain ? { subdomain } : {}),
   };
 };

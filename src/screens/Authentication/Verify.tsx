@@ -45,8 +45,16 @@ export const Verify = ({
   const client = useClient();
   const onError = useErrorNotification();
 
-  const { authorizationUrl, state, clientId, codeVerifier, redirectUri, sessionId, tokenEndpoint } =
-    exchangeParameters;
+  const {
+    authorizationUrl,
+    state,
+    clientId,
+    codeVerifier,
+    redirectUri,
+    sessionId,
+    tokenEndpoint,
+    subdomain,
+  } = exchangeParameters;
   const redirectOrigin = new URL(redirectUri).origin;
 
   // Store auth details until we're ready to finish the login flow and persist them in addon state.
@@ -73,7 +81,7 @@ export const Verify = ({
           if (outcome.kind === 'login') return;
 
           const token = await exchangeOAuthCode(
-            { clientId, codeVerifier, redirectUri, sessionId, tokenEndpoint },
+            { clientId, codeVerifier, redirectUri, sessionId, tokenEndpoint, subdomain },
             outcome.code
           );
           authSession.current = token;
@@ -127,6 +135,7 @@ export const Verify = ({
       redirectUri,
       sessionId,
       tokenEndpoint,
+      subdomain,
       client,
       hasProjectId,
       setAccessToken,
