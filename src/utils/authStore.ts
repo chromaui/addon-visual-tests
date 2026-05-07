@@ -15,10 +15,6 @@ const clearBrowserTimeout = (...args: Parameters<typeof globalThis.clearTimeout>
 type Subscriber = (token: string | null) => void;
 
 const parseStoredAuth = (rawAuth: string): AuthSession | null => {
-  // Legacy format used to persist only a raw JWT string.
-  if (!rawAuth.trim().startsWith('{')) {
-    return null;
-  }
   const parsed = AuthSessionSchema.safeParse(JSON.parse(rawAuth));
   return parsed.success ? parsed.data : null;
 };
