@@ -110,6 +110,29 @@ const initializeCurrentAuthFromStorage = () => {
 };
 
 initializeCurrentAuthFromStorage();
+if (typeof window !== 'undefined') {
+  window.addEventListener('storage', (event) => {
+    if (event.key !== ACCESS_TOKEN_KEY) {
+      return;
+    }
+    if (!event.newValue) {
+      setCurrentAuth(null);
+      return;
+    }
+    try {
+      const parsed = parseStoredAuth(event.newValue);
+      if (!parsed) {
+        getStorage()?.removeItem(ACCESS_TOKEN_KEY);
+        setCurrentAuth(null);
+        return;
+      }
+      setCurrentAuth(parsed);
+    } catch {
+      getStorage()?.removeItem(ACCESS_TOKEN_KEY);
+      setCurrentAuth(null);
+    }
+  });
+}
 
 export const setAuthenticatedSession = (auth: AuthStorage) => setCurrentAuth(auth);
 
