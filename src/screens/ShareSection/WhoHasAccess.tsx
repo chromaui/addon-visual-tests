@@ -55,7 +55,7 @@ export const WhoHasAccess = () => {
         />
         <AccessText>Anyone with the link</AccessText>
         <LearnMoreLink
-          href="https://www.chromatic.com/docs/sharing"
+          href="https://storybook.js.org/docs/sharing#quick-sharing"
           target="_blank"
           rel="noopener noreferrer"
         >
