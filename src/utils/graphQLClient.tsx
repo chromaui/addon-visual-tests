@@ -79,6 +79,15 @@ const setCurrentToken = (token: string | null) => {
   }
 };
 
+const parseStoredAuth = (rawAuth: string): AuthStorage | null => {
+  // Legacy format used to persist only a raw JWT string.
+  if (!rawAuth.trim().startsWith('{')) {
+    return null;
+  }
+  const parsed = AuthStorageSchema.safeParse(JSON.parse(rawAuth));
+  return parsed.success ? parsed.data : null;
+};
+
 const initializeCurrentAuthFromStorage = () => {
   const storage = getStorage();
   const storedAuth = storage?.getItem(ACCESS_TOKEN_KEY);
@@ -87,14 +96,16 @@ const initializeCurrentAuthFromStorage = () => {
     return;
   }
   try {
-    const parsed = AuthStorageSchema.safeParse(JSON.parse(storedAuth));
-    if (!parsed.success) {
-      clearCurrentAuth();
+    const parsed = parseStoredAuth(storedAuth);
+    if (!parsed) {
+      storage?.removeItem(ACCESS_TOKEN_KEY);
+      setCurrentAuth(null);
       return;
     }
-    setCurrentAuth(parsed.data);
+    setCurrentAuth(parsed);
   } catch {
-    clearCurrentAuth();
+    storage?.removeItem(ACCESS_TOKEN_KEY);
+    setCurrentAuth(null);
   }
 };
 
