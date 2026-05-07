@@ -80,12 +80,14 @@ export default [
           message: 'dangerouslySetInnerHTML is banned',
         },
         {
-          selector: "AssignmentExpression[left.property.name='innerHTML']",
-          message: 'innerHTML assignment is banned',
+          selector:
+            "AssignmentExpression[left.type='MemberExpression'][left.computed=false][left.property.name=/^(innerHTML|outerHTML)$/]",
+          message: 'innerHTML/outerHTML assignment is banned',
         },
         {
-          selector: "AssignmentExpression[left.property.name='outerHTML']",
-          message: 'outerHTML assignment is banned',
+          selector:
+            "AssignmentExpression[left.type='MemberExpression'][left.computed=true][left.property.value=/^(innerHTML|outerHTML)$/]",
+          message: 'innerHTML/outerHTML assignment is banned',
         },
         {
           selector: "CallExpression[callee.property.name='insertAdjacentHTML']",
@@ -106,8 +108,8 @@ export default [
         },
         {
           selector:
-            "CallExpression[callee.name=/^(setTimeout|setInterval)$/][arguments.0.type='Literal']",
-          message: 'String-form setTimeout/setInterval is banned',
+            "CallExpression[callee.name=/^(setTimeout|setInterval)$/][arguments.0.type=/^(Literal|TemplateLiteral)$/]",
+          message: 'String/template-form setTimeout/setInterval is banned',
         },
         {
           selector: "CallExpression[callee.name='eval']",
