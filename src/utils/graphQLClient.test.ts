@@ -93,12 +93,12 @@ describe('graphQLClient refresh auth', () => {
     expect(subscriber).toHaveBeenLastCalledWith('access-token-2');
   });
 
-  it('clears auth state when refresh fails with terminal error', async () => {
+  it('clears auth state and rejects when refresh fails with terminal error', async () => {
     setAuthenticatedSession(createAuth());
     vi.spyOn(console, 'warn').mockImplementation(() => {});
     vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(new Response(null, { status: 401 }));
 
-    await __testUtils.refreshCurrentSession();
+    await expect(__testUtils.refreshCurrentSession()).rejects.toThrow('Token refresh failed (401)');
 
     expect(__testUtils.getCurrentAuth()).toBeNull();
     expect(localStorage.getItem(ACCESS_TOKEN_KEY)).toBeNull();
@@ -116,7 +116,7 @@ describe('graphQLClient refresh auth', () => {
       )
     );
 
-    await __testUtils.refreshCurrentSession();
+    await expect(__testUtils.refreshCurrentSession()).rejects.toThrow('invalid_grant');
 
     expect(fetchSpy).toHaveBeenCalledTimes(1);
   });

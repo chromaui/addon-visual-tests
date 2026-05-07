@@ -182,9 +182,10 @@ const refreshCurrentSession = async () => {
         throw error;
       }
     })()
-      .catch(() => {
+      .catch((error) => {
         console.warn('Session expired. Please sign in again.');
         clearCurrentAuth();
+        throw error;
       })
       .finally(() => {
         refreshPromise = null;
