@@ -10,6 +10,7 @@ import { type AuthStorage, AuthStorageSchema, refreshAccessToken } from './reque
 
 const REFRESH_TIMEOUT_MS = 10_000;
 const getStorage = () => (typeof localStorage === 'undefined' ? null : localStorage);
+const SESSION_EXPIRED_EVENT = `${ADDON_ID}/session-expired`;
 
 let currentAuth: AuthStorage | null = null;
 let currentToken: string | null = null;
@@ -30,6 +31,13 @@ const subscribeToTokenUpdates = (subscriber: (token: string | null) => void) => 
   return () => {
     tokenSubscribers.delete(subscriber);
   };
+};
+
+const notifySessionExpired = () => {
+  if (typeof window === 'undefined') {
+    return;
+  }
+  window.dispatchEvent(new window.CustomEvent(SESSION_EXPIRED_EVENT));
 };
 
 const persistCurrentAuth = () => {
@@ -227,6 +235,7 @@ const refreshCurrentSession = async () => {
       .catch((error) => {
         console.warn('Session expired. Please sign in again.');
         clearCurrentAuth();
+        notifySessionExpired();
         throw error;
       })
       .finally(() => {
@@ -284,6 +293,8 @@ export const __testUtils = {
   subscribeToTokenUpdates,
   refreshCurrentSession,
 };
+
+export const sessionExpiredEventName = SESSION_EXPIRED_EVENT;
 
 export const GraphQLClientProvider = ({
   children,
