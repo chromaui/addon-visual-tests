@@ -303,6 +303,7 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
           shareProgressState.value = {
             status: 'complete',
             shareUrl: result.shareUrl,
+            daysToExpire: result.daysToExpire,
             shareRequestId: requestId,
           };
           lastCompletedShareRequestId = requestId;

@@ -225,7 +225,7 @@ export type LocalBuildProgress = {
 export type ShareProgress =
   | { status: 'pending'; shareRequestId: string }
   | { status: 'uploading'; shareUrl?: string; shareRequestId: string }
-  | { status: 'complete'; shareUrl: string; shareRequestId: string }
+  | { status: 'complete'; shareUrl: string; shareRequestId: string; daysToExpire?: number }
   | {
       status: 'error';
       error: string;

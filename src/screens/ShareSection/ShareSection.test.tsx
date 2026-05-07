@@ -213,6 +213,7 @@ describe('ShareSection', () => {
       shareProgressValue = {
         status: 'complete',
         shareUrl: 'https://share.example.com/sb',
+        daysToExpire: 7,
         shareRequestId: 'req-1',
       };
 
@@ -251,6 +252,7 @@ describe('ShareSection', () => {
       shareProgressValue = {
         status: 'complete',
         shareUrl: 'https://share.example.com/sb',
+        daysToExpire: 7,
         shareRequestId: 'req-1',
       };
 
@@ -321,6 +323,7 @@ describe('ShareSection', () => {
           status: 'complete',
           shareUrl: 'https://share.example.com/sb',
           publishedAt: Date.now(),
+          daysToExpire: 7,
         },
       });
 

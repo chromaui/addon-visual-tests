@@ -121,7 +121,7 @@ describe('preset START_SHARE handler', () => {
     emitStartShare({ accessToken: 'token', shareRequestId: 'req-1' });
     emitStartShare({ accessToken: 'token', shareRequestId: 'req-2' });
 
-    resolveShare({ shareUrl: 'https://share.example.com/1' });
+    resolveShare({ shareUrl: 'https://share.example.com/1', daysToExpire: 7 });
 
     // Give promises time to flush
     await new Promise((r) => setTimeout(r, 0));
@@ -150,7 +150,7 @@ describe('preset START_SHARE handler', () => {
 
     mocks.shareMock.mockImplementationOnce(async ({ onError }: { onError: (e: Error) => void }) => {
       onError(new Error('upload failed'));
-      return { shareUrl: 'https://share.example.com/sb' };
+      return { shareUrl: 'https://share.example.com/sb', daysToExpire: 7 };
     });
 
     await emitStartShare({ accessToken: 'token', shareRequestId: 'req-1' });
@@ -187,7 +187,10 @@ describe('preset START_SHARE handler', () => {
     });
 
     // After abort, shareInFlight should be released — a new share with a different id must run
-    mocks.shareMock.mockResolvedValueOnce({ shareUrl: 'https://share.example.com/2' });
+    mocks.shareMock.mockResolvedValueOnce({
+      shareUrl: 'https://share.example.com/2',
+      daysToExpire: 7,
+    });
     await emitStartShare({ accessToken: 'token', shareRequestId: 'req-2' });
     expect(mocks.shareMock).toHaveBeenCalledTimes(2);
   });
@@ -211,7 +214,7 @@ describe('preset START_SHARE handler', () => {
     mocks.shareMock.mockImplementationOnce(
       async ({ abortSignal }: { abortSignal?: AbortSignal }) => {
         if (abortSignal) captured.push(abortSignal);
-        return { shareUrl: 'https://share.example.com/2' };
+        return { shareUrl: 'https://share.example.com/2', daysToExpire: 7 };
       }
     );
     await emitStartShare({ accessToken: 'token', shareRequestId: 'req-2' });
@@ -224,7 +227,10 @@ describe('preset START_SHARE handler', () => {
   it('duplicate START_SHARE with the id of the last completed share is ignored', async () => {
     await loadPreset();
 
-    mocks.shareMock.mockResolvedValueOnce({ shareUrl: 'https://share.example.com/sb' });
+    mocks.shareMock.mockResolvedValueOnce({
+      shareUrl: 'https://share.example.com/sb',
+      daysToExpire: 7,
+    });
     await emitStartShare({ accessToken: 'token', shareRequestId: 'req-done' });
     expect(mocks.shareProgressState.value).toMatchObject({ status: 'complete' });
     expect(mocks.shareMock).toHaveBeenCalledTimes(1);
