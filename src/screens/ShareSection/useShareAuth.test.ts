@@ -153,7 +153,7 @@ describe('useShareAuth', () => {
     expect(mocks.exchangeOAuthCode).not.toHaveBeenCalled();
   });
 
-  it('login relay: openDialog called again with authorizationUrl', async () => {
+  it('login relay: ignored so current popup tracking is preserved', async () => {
     const setShareState = vi.fn();
     mocks.initiateSignin.mockResolvedValueOnce(defaultParams);
 
@@ -163,9 +163,7 @@ describe('useShareAuth', () => {
 
     await capturedHandler!({ message: 'login' });
 
-    expect(mocks.openDialog).toHaveBeenCalledWith(defaultParams.authorizationUrl, [
-      new URL(defaultParams.redirectUri).origin,
-    ]);
+    expect(mocks.openDialog).not.toHaveBeenCalled();
     expect(mocks.exchangeOAuthCode).not.toHaveBeenCalled();
   });
 

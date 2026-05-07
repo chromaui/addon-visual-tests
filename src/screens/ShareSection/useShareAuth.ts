@@ -17,16 +17,12 @@ export function useShareAuth(setShareState: (s: ShareState) => void) {
       const params = paramsRef.current;
       if (!params) return;
 
-      const { authorizationUrl, redirectUri, state, clientId, codeVerifier, tokenEndpoint } =
-        params;
-      const redirectOrigin = new URL(redirectUri).origin;
+      const { redirectUri, state, clientId, codeVerifier, tokenEndpoint } = params;
       const outcome = parseGrantPayload(event, state);
 
-      if (outcome.kind === 'login') {
-        openDialogRef.current?.(authorizationUrl, [redirectOrigin]);
+      if (outcome.kind === 'login' || outcome.kind === 'ignore') {
         return;
       }
-      if (outcome.kind === 'ignore') return;
 
       if (outcome.kind === 'error') {
         paramsRef.current = null;
