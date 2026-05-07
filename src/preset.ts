@@ -256,7 +256,6 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
   });
 
   const shareProgressState = SharedState.subscribe<ShareProgress>(SHARE_PROGRESS, channel);
-  let shareInFlight = false;
   let currentAbortController: AbortController | null = null;
   let activeShareRequestId: string | null = null;
   let lastCompletedShareRequestId: string | null = null;
@@ -264,10 +263,9 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
   channel.on(
     START_SHARE,
     async ({ accessToken, shareRequestId }: { accessToken: string; shareRequestId?: string }) => {
-      if (shareInFlight) return;
+      if (activeShareRequestId) return;
       if (shareRequestId && shareRequestId === lastCompletedShareRequestId) return;
       const requestId = shareRequestId ?? crypto.randomUUID();
-      shareInFlight = true;
       activeShareRequestId = requestId;
       const controller = new AbortController();
       currentAbortController = controller;
@@ -327,7 +325,6 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
       } finally {
         currentAbortController = null;
         activeShareRequestId = null;
-        shareInFlight = false;
       }
     }
   );

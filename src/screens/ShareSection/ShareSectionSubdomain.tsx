@@ -35,6 +35,13 @@ const BackButton = styled(Button)({
   left: 6,
 });
 
+const normalizeSubdomain = (value: string) =>
+  value
+    .toLowerCase()
+    .replace(/[^a-z0-9-]/g, '')
+    .replace(/^-+/, '')
+    .replace(/-{2,}/g, '-');
+
 interface ShareSectionSubdomainProps {
   onSubmit: (subdomain: string) => void;
   onBack: () => void;
@@ -44,21 +51,10 @@ export const ShareSectionSubdomain = ({ onSubmit, onBack }: ShareSectionSubdomai
   const [subdomain, setSubdomain] = useState('');
   const [inputError, setInputError] = useState<string | null>(null);
 
-  const normalizeSubdomain = useCallback((value: string) => {
-    return value
-      .toLowerCase()
-      .replace(/[^a-z0-9-]/g, '')
-      .replace(/^-+/, '')
-      .replace(/-{2,}/g, '-');
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSubdomain(normalizeSubdomain(e.target.value));
+    setInputError(null);
   }, []);
-
-  const handleChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setSubdomain(normalizeSubdomain(e.target.value));
-      setInputError(null);
-    },
-    [normalizeSubdomain]
-  );
 
   const handleSubmit = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {

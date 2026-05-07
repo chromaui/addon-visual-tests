@@ -7,16 +7,15 @@ import { type AuthSession, AuthSessionSchema, refreshAccessToken } from './reque
 const REFRESH_TIMEOUT_MS = 10_000;
 const SESSION_EXPIRED_EVENT = `${ADDON_ID}/session-expired`;
 
-const setBrowserTimeout = (...args: Parameters<typeof globalThis.setTimeout>) =>
-  (typeof window !== 'undefined' ? window : globalThis).setTimeout(...args);
-const clearBrowserTimeout = (...args: Parameters<typeof globalThis.clearTimeout>) =>
-  (typeof window !== 'undefined' ? window : globalThis).clearTimeout(...args);
-
 type Subscriber = (token: string | null) => void;
 
 const parseStoredAuth = (rawAuth: string): AuthSession | null => {
-  const parsed = AuthSessionSchema.safeParse(JSON.parse(rawAuth));
-  return parsed.success ? parsed.data : null;
+  try {
+    const parsed = AuthSessionSchema.safeParse(JSON.parse(rawAuth));
+    return parsed.success ? parsed.data : null;
+  } catch {
+    return null;
+  }
 };
 
 class AuthStore {
@@ -56,22 +55,9 @@ class AuthStore {
   }
 
   private applyParsedAuth(rawAuth: string | null) {
-    if (!rawAuth) {
-      this.setAuth(null, { persist: false });
-      return;
-    }
-    try {
-      const parsed = parseStoredAuth(rawAuth);
-      if (!parsed) {
-        this.storage?.removeItem(ACCESS_TOKEN_KEY);
-        this.setAuth(null, { persist: false });
-        return;
-      }
-      this.setAuth(parsed, { persist: false });
-    } catch {
-      this.storage?.removeItem(ACCESS_TOKEN_KEY);
-      this.setAuth(null, { persist: false });
-    }
+    const parsed = rawAuth ? parseStoredAuth(rawAuth) : null;
+    if (rawAuth && !parsed) this.storage?.removeItem(ACCESS_TOKEN_KEY);
+    this.setAuth(parsed, { persist: false });
   }
 
   private loadFromStorage() {
@@ -91,7 +77,7 @@ class AuthStore {
     const generation = this.generation;
     const abortController = new AbortController();
     this.refreshAbort = abortController;
-    const timeoutId = setBrowserTimeout(() => abortController.abort(), REFRESH_TIMEOUT_MS);
+    const timeoutId = setTimeout(() => abortController.abort(), REFRESH_TIMEOUT_MS);
     try {
       const nextAuth = await refreshAccessToken({
         subdomain: auth.subdomain,
@@ -102,7 +88,7 @@ class AuthStore {
       if (generation !== this.generation) return;
       this.setAuth(nextAuth);
     } finally {
-      clearBrowserTimeout(timeoutId);
+      clearTimeout(timeoutId);
       this.refreshAbort = null;
     }
   }

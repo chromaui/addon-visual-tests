@@ -65,19 +65,16 @@ export const UrlCopyField = ({ url, placeholder, onCopy }: UrlCopyFieldProps) =>
     };
   }, []);
 
-  const handleCopy = useCallback(() => {
-    if (url) {
-      navigator.clipboard
-        .writeText(url)
-        .then(() => {
-          onCopy?.();
-          setCopied(true);
-          if (timerRef.current) clearTimeout(timerRef.current);
-          timerRef.current = setTimeout(() => setCopied(false), 2000);
-        })
-        .catch((err) => {
-          console.warn('Failed to copy to clipboard:', err);
-        });
+  const handleCopy = useCallback(async () => {
+    if (!url) return;
+    try {
+      await navigator.clipboard.writeText(url);
+      onCopy?.();
+      setCopied(true);
+      if (timerRef.current) clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.warn('Failed to copy to clipboard:', err);
     }
   }, [url, onCopy]);
 

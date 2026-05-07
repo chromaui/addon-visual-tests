@@ -1,6 +1,6 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { CANCEL_SHARE, SHARE_PROGRESS, START_SHARE } from './constants';
+import { CANCEL_SHARE, START_SHARE } from './constants';
 
 // ---- hoisted mocks ----
 const mocks = vi.hoisted(() => {

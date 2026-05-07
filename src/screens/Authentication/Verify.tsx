@@ -66,9 +66,10 @@ export const Verify = ({
       if (event.message === 'grant') {
         try {
           const outcome = parseGrantPayload(event, state);
-          if (outcome.kind === 'ignore') return;
-          if (outcome.kind === 'error') throw new Error(outcome.message);
-          if (outcome.kind === 'login') return;
+          if (outcome.kind !== 'code') {
+            if (outcome.kind === 'error') throw new Error(outcome.message);
+            return;
+          }
 
           const token = await exchangeOAuthCode(
             { codeVerifier, redirectUri, sessionId, subdomain },

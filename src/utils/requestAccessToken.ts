@@ -35,8 +35,7 @@ const TokenResponseSchema = z.object({
 
 export type TokenResponse = z.infer<typeof TokenResponseSchema>;
 
-const bytes = (buf: number[]) =>
-  new Uint8Array(buf).reduce((acc, val) => acc + String.fromCharCode(val), '');
+const bytes = (buf: number[]) => String.fromCharCode(...buf);
 
 const base64 = (val: string | number[]) => window.btoa(Array.isArray(val) ? bytes(val) : val);
 
@@ -52,10 +51,7 @@ const randomBase64Url = (byteLength: number) => {
   return base64URLEncode(Array.from(randomValues));
 };
 
-const encodeParams = (params: Record<string, string | number | boolean>) =>
-  Object.entries(params)
-    .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
-    .join('&');
+const encodeParams = (params: Record<string, string>) => new URLSearchParams(params).toString();
 
 const resolveChromaticHost = (subdomain?: string) => {
   if (!subdomain) {

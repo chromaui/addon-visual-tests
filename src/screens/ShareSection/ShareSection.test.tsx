@@ -316,7 +316,7 @@ describe('ShareSection', () => {
   });
 
   describe('complete state — Delete link regression guard', () => {
-    it('ShareSectionComplete is called without onDelete prop', async () => {
+    it('renders ShareSectionComplete without onDelete prop', async () => {
       const { ShareSectionComplete } = await import('./ShareSectionComplete');
       setReducer({
         screen: {
@@ -327,16 +327,25 @@ describe('ShareSection', () => {
         },
       });
 
-      invokeShareSection();
-
-      const calls = (ShareSectionComplete as ReturnType<typeof vi.fn>).mock.calls;
-      if (calls.length > 0) {
-        const props = calls[0][0];
-        expect(props).not.toHaveProperty('onDelete');
-      } else {
-        const src = await import('../../utils/checkOutdated');
-        expect(src).toBeDefined();
-      }
+      const tree = (ShareSection as any)({ api: makeApi() });
+      const completeElement = findElement(tree, ShareSectionComplete);
+      expect(completeElement).toBeTruthy();
+      expect(completeElement!.props).not.toHaveProperty('onDelete');
     });
   });
 });
+
+function findElement(node: any, type: unknown): any {
+  if (!node || typeof node !== 'object') return null;
+  if (node.type === type) return node;
+  const children = node.props?.children;
+  if (Array.isArray(children)) {
+    for (const child of children) {
+      const found = findElement(child, type);
+      if (found) return found;
+    }
+  } else if (children) {
+    return findElement(children, type);
+  }
+  return null;
+}
