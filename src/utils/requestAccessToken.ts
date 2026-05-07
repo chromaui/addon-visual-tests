@@ -27,7 +27,7 @@ export type AuthStorage = z.infer<typeof AuthStorageSchema>;
 
 const TokenResponseSchema = z.object({
   access_token: z.string().min(1),
-  refresh_token: z.string().min(1),
+  refresh_token: z.string().min(1).optional(),
   error: z.string().optional(),
   error_description: z.string().optional(),
 });
@@ -141,6 +141,9 @@ export const fetchAccessToken = async ({
     }),
   });
   const data = await decodeTokenResponse(res, 'Token exchange failed');
+  if (!data.refresh_token) {
+    throw new Error('Token exchange failed: missing refresh token');
+  }
   return {
     version: 1,
     accessToken: data.access_token,
@@ -182,7 +185,7 @@ export const refreshAccessToken = async ({
   return {
     version: 1,
     accessToken: data.access_token,
-    refreshToken: data.refresh_token,
+    refreshToken: data.refresh_token ?? refreshToken,
     tokenEndpoint,
     sessionId,
   };
