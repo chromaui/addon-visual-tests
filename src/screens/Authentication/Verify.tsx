@@ -57,6 +57,13 @@ export const Verify = ({
   const closeDialogRef = useRef<() => void>();
   const handler = useCallback<DialogHandler>(
     async (event) => {
+      // Ignore login relay events here. Re-opening the popup from a postMessage
+      // handler can replace the tracked window (or be popup-blocked), causing
+      // the eventual grant callback from the original popup to be ignored.
+      if (event.message === 'login') {
+        return;
+      }
+
       if (event.message === 'grant') {
         try {
           const outcome = parseGrantPayload(event, state);
