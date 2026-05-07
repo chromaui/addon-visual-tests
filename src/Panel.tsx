@@ -57,7 +57,14 @@ export const Panel = ({ active }: PanelProps) => {
   const setAccessToken = useCallback(
     (token: string | null) => {
       updateAccessToken(token);
-      if (!token) clearSessionState('authenticationScreen', 'exchangeParameters');
+      if (!token)
+        clearSessionState(
+          'authenticationScreen',
+          'exchangeParameters',
+          'shareReducer',
+          'shareLastCompletedUrl',
+          'shareLastCompletedGitInfo'
+        );
     },
     [updateAccessToken]
   );
