@@ -84,8 +84,30 @@ export default [
           message: 'innerHTML assignment is banned',
         },
         {
+          selector: "AssignmentExpression[left.property.name='outerHTML']",
+          message: 'outerHTML assignment is banned',
+        },
+        {
           selector: "CallExpression[callee.property.name='insertAdjacentHTML']",
           message: 'insertAdjacentHTML is banned',
+        },
+        {
+          selector:
+            "CallExpression[callee.object.name='document'][callee.property.name=/^writeln?$/]",
+          message: 'document.write/writeln is banned',
+        },
+        {
+          selector: "JSXAttribute[name.name='srcdoc']",
+          message: 'iframe srcdoc is banned',
+        },
+        {
+          selector: "CallExpression[callee.property.name='createContextualFragment']",
+          message: 'createContextualFragment is banned',
+        },
+        {
+          selector:
+            "CallExpression[callee.name=/^(setTimeout|setInterval)$/][arguments.0.type='Literal']",
+          message: 'String-form setTimeout/setInterval is banned',
         },
         {
           selector: "CallExpression[callee.name='eval']",
