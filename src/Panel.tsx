@@ -17,6 +17,7 @@ import {
   IS_OFFLINE,
   LOCAL_BUILD_PROGRESS,
   REMOVE_ADDON,
+  SHARE_PROGRESS,
   TELEMETRY,
 } from './constants';
 import { Authentication } from './screens/Authentication/Authentication';
@@ -31,7 +32,12 @@ import { Uninstalled } from './screens/Uninstalled/Uninstalled';
 import { ControlsProvider } from './screens/VisualTests/ControlsContext';
 import { RunBuildProvider } from './screens/VisualTests/RunBuildContext';
 import { VisualTests } from './screens/VisualTests/VisualTests';
-import type { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from './types';
+import type {
+  GitInfoPayload,
+  LocalBuildProgress,
+  ShareProgress,
+  UpdateStatusFunction,
+} from './types';
 import {
   createClient,
   GraphQLClientProvider,
@@ -54,10 +60,11 @@ const statusStore = experimental_getStatusStore(ADDON_ID);
 export const Panel = ({ active }: PanelProps) => {
   const api = useStorybookApi();
   const [accessToken, updateAccessToken] = useAccessToken();
+  const [, setShareProgress] = useSharedState<ShareProgress>(SHARE_PROGRESS);
   const setAccessToken = useCallback(
     (token: string | null) => {
       updateAccessToken(token);
-      if (!token)
+      if (!token) {
         clearSessionState(
           'authenticationScreen',
           'exchangeParameters',
@@ -65,8 +72,10 @@ export const Panel = ({ active }: PanelProps) => {
           'shareLastCompletedUrl',
           'shareLastCompletedGitInfo'
         );
+        setShareProgress(undefined);
+      }
     },
-    [updateAccessToken]
+    [updateAccessToken, setShareProgress]
   );
   const { storyId } = useStorybookState();
 
