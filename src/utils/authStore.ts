@@ -105,7 +105,19 @@ class AuthStore {
     return this.auth?.sessionId || this.fallbackSessionId;
   }
 
+  private identityChanged(prev: AuthSession | null, next: AuthSession | null) {
+    if (prev === next) return false;
+    if (!prev || !next) return true;
+    return prev.refreshToken !== next.refreshToken || prev.sessionId !== next.sessionId;
+  }
+
   setAuth(auth: AuthSession | null, { persist = true }: { persist?: boolean } = {}) {
+    if (this.identityChanged(this.auth, auth)) {
+      this.generation += 1;
+      this.refreshAbort?.abort();
+      this.refreshAbort = null;
+      this.refreshing = null;
+    }
     this.auth = auth;
     if (persist) this.persist();
     this.notifySubscribers();
@@ -120,10 +132,6 @@ class AuthStore {
   }
 
   clear() {
-    this.generation += 1;
-    this.refreshAbort?.abort();
-    this.refreshAbort = null;
-    this.refreshing = null;
     this.setAuth(null);
   }
 

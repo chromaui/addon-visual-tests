@@ -112,8 +112,12 @@ afterEach(() => {
 
 describe('ShareSection', () => {
   describe('stale shareProgress filtering by shareRequestId', () => {
-    it('ignores progress with a different shareRequestId', () => {
-      setReducer({ screen: { status: 'uploading', shareUrl: '' } });
+    it('ignores progress with a different shareRequestId when one is active locally', () => {
+      setReducer({
+        screen: { status: 'uploading', shareUrl: '' },
+        shareRequestId: 'req-1',
+        shareTriggeredId: 'req-1',
+      });
       shareProgressValue = {
         status: 'uploading',
         shareUrl: 'https://share.example.com/new',
@@ -122,8 +126,6 @@ describe('ShareSection', () => {
 
       invokeShareSection();
 
-      // Even though dispatch is called, the reducer's pure logic must produce a no-op effect.
-      // We verify by checking that no telemetry side-effects fired for url-received.
       const urlReceivedEmits = mocks.channel.emit.mock.calls.filter(
         ([, payload]) => payload?.action === 'share-url-received'
       );

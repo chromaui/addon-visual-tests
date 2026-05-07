@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useRef } from 'react';
 import { useClient } from 'urql';
 
 import { Button } from '../../components/Button';
@@ -10,10 +10,9 @@ import { Text } from '../../components/Text';
 import { graphql } from '../../gql';
 import type { Project } from '../../gql/graphql';
 import { getFetchOptions, setAuthenticatedSession } from '../../utils/graphQLClient';
-import { exchangeOAuthCode, parseGrantPayload } from '../../utils/oauthGrant';
 import type { AuthSession, TokenExchangeParameters } from '../../utils/requestAccessToken';
-import { type DialogHandler, useChromaticDialog } from '../../utils/useChromaticDialog';
 import { useErrorNotification } from '../../utils/useErrorNotification';
+import { useOAuthFlow } from '../../utils/useOAuthFlow';
 import { AuthHeader } from './AuthHeader';
 
 const ProjectCountQuery = graphql(/* GraphQL */ `
@@ -45,64 +44,37 @@ export const Verify = ({
   const client = useClient();
   const onError = useErrorNotification();
 
-  const { authorizationUrl, state, codeVerifier, redirectUri, sessionId, subdomain } =
-    exchangeParameters;
-  const redirectOrigin = new URL(redirectUri).origin;
-
-  // Store auth details until we're ready to finish the login flow and persist them in addon state.
+  // Hold the auth session until the user finishes the create-project follow-up flow.
   const authSession = useRef<AuthSession>();
 
-  const openDialogRef = useRef<(url: string, additionalOrigins?: string[]) => void>();
-  const closeDialogRef = useRef<() => void>();
-  const handler = useCallback<DialogHandler>(
-    async (event) => {
-      // Ignore login relay events here. Re-opening the popup from a postMessage
-      // handler can replace the tracked window (or be popup-blocked), causing
-      // the eventual grant callback from the original popup to be ignored.
-      if (event.message === 'login') {
-        return;
-      }
+  const { begin } = useOAuthFlow({
+    onAuthenticated: async (session, ctx) => {
+      try {
+        authSession.current = session;
+        const fetchOptions = getFetchOptions(session.accessToken, session.sessionId);
+        const { data } = await client.query(ProjectCountQuery, {}, { fetchOptions });
 
-      if (event.message === 'grant') {
-        try {
-          const outcome = parseGrantPayload(event, state);
-          if (outcome.kind !== 'code') {
-            if (outcome.kind === 'error') throw new Error(outcome.message);
-            return;
-          }
+        if (!data?.viewer) throw new Error('Failed to fetch initial project list');
 
-          const token = await exchangeOAuthCode(
-            { codeVerifier, redirectUri, sessionId, subdomain },
-            outcome.code
-          );
-          authSession.current = token;
-
-          // Override token for this query but don't store it yet until they've created a project
-          const fetchOptions = getFetchOptions(token.accessToken, token.sessionId);
-          const { data } = await client.query(ProjectCountQuery, {}, { fetchOptions });
-
-          if (!data?.viewer) throw new Error('Failed to fetch initial project list');
-
-          // The user has projects to choose from (or the project is already selected),
-          // so send them to pick one
-          if (data.viewer.projectCount > 0 || hasProjectId) {
-            setAuthenticatedSession(token);
-            setAccessToken(token.accessToken);
-            closeDialogRef.current?.();
-          } else {
-            // The user has no projects, so we need to get them to create one, then close the dialog
-            if (!data.viewer.accounts[0]) throw new Error('User has no accounts!');
-            if (!data.viewer.accounts[0].newProjectUrl) {
-              throw new Error('Unexpected missing project URL');
-            }
-
-            openDialogRef.current?.(data.viewer.accounts[0].newProjectUrl);
-          }
-        } catch (err) {
-          onError('Login Error', err);
+        if (data.viewer.projectCount > 0 || hasProjectId) {
+          setAuthenticatedSession(session);
+          setAccessToken(session.accessToken);
+          ctx.closeDialog();
+          return;
         }
-      }
 
+        if (!data.viewer.accounts[0]) throw new Error('User has no accounts!');
+        if (!data.viewer.accounts[0].newProjectUrl) {
+          throw new Error('Unexpected missing project URL');
+        }
+
+        ctx.openDialog(data.viewer.accounts[0].newProjectUrl);
+      } catch (err) {
+        onError('Login Error', err);
+      }
+    },
+    onError: (err) => onError('Login Error', err),
+    onMessage: (event, ctx) => {
       if (event.message === 'createdProject') {
         if (!authSession.current) {
           onError('Unexpected missing auth session', new Error());
@@ -111,25 +83,10 @@ export const Verify = ({
         setAuthenticatedSession(authSession.current);
         setAccessToken(authSession.current.accessToken);
         setCreatedProjectId(`Project:${event.projectId}`);
-        closeDialogRef.current?.();
+        ctx.closeDialog();
       }
     },
-    [
-      state,
-      codeVerifier,
-      redirectUri,
-      sessionId,
-      subdomain,
-      client,
-      hasProjectId,
-      setAccessToken,
-      onError,
-      setCreatedProjectId,
-    ]
-  );
-  const [openDialog, closeDialog] = useChromaticDialog(handler);
-  openDialogRef.current = openDialog;
-  closeDialogRef.current = closeDialog;
+  });
 
   return (
     <Screen footer={null} ignoreConfig>
@@ -148,7 +105,7 @@ export const Verify = ({
             ariaLabel={false}
             variant="solid"
             size="medium"
-            onClick={() => openDialog(authorizationUrl, [redirectOrigin])}
+            onClick={() => begin(exchangeParameters)}
           >
             Go to Chromatic
           </Button>

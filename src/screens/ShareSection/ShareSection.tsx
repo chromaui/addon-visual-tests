@@ -29,6 +29,33 @@ function applyProgress(
   gitInfo: GitInfoPayload | undefined,
   lastCompletedShareUrl: string | null
 ): { next: ShareReducerState; effect: ProgressEffect } {
+  // Recover from remount loss: useSessionState debounces persist by 1s and cancels on
+  // unmount, so a quick popover close after starting a share can drop the local
+  // shareRequestId. Adopt the server's id when we have no active request locally.
+  if (
+    progress.shareRequestId !== state.shareRequestId &&
+    state.shareRequestId === null &&
+    progress.shareRequestId
+  ) {
+    if (progress.status === 'pending' || progress.status === 'uploading') {
+      state = {
+        ...state,
+        shareRequestId: progress.shareRequestId,
+        shareTriggeredId: progress.shareRequestId,
+        screen: {
+          status: 'uploading',
+          shareUrl: progress.status === 'uploading' ? progress.shareUrl ?? '' : '',
+        },
+      };
+    } else if (progress.status === 'complete' && progress.shareUrl !== lastCompletedShareUrl) {
+      state = {
+        ...state,
+        shareRequestId: progress.shareRequestId,
+        shareTriggeredId: progress.shareRequestId,
+      };
+    }
+  }
+
   if (progress.shareRequestId !== state.shareRequestId) {
     return { next: state, effect: { kind: 'none' } };
   }

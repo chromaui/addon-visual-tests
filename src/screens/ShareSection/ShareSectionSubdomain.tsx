@@ -4,6 +4,7 @@ import { styled } from 'storybook/theming';
 
 import { Button } from '../../components/Button';
 import { SuffixInput } from '../../components/SuffixInput';
+import { finalizeSubdomain, normalizeSubdomain } from '../../utils/subdomain';
 import { ShareContainer, ShareDescription, ShareTitle, TextBlock } from './ShareSectionPrimitives';
 import { WhoHasAccess } from './WhoHasAccess';
 
@@ -35,13 +36,6 @@ const BackButton = styled(Button)({
   left: 6,
 });
 
-const normalizeSubdomain = (value: string) =>
-  value
-    .toLowerCase()
-    .replace(/[^a-z0-9-]/g, '')
-    .replace(/^-+/, '')
-    .replace(/-{2,}/g, '-');
-
 interface ShareSectionSubdomainProps {
   onSubmit: (subdomain: string) => void;
   onBack: () => void;
@@ -59,7 +53,7 @@ export const ShareSectionSubdomain = ({ onSubmit, onBack }: ShareSectionSubdomai
   const handleSubmit = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      const normalized = subdomain.replace(/-+$/, '');
+      const normalized = finalizeSubdomain(subdomain);
       if (normalized) onSubmit(normalized);
       else setInputError('Please enter a subdomain');
     },
