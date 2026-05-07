@@ -17,8 +17,7 @@ export function useShareAuth(setShareState: (s: ShareState) => void) {
       const params = paramsRef.current;
       if (!params) return;
 
-      const { redirectUri, state, clientId, codeVerifier, tokenEndpoint, sessionId, subdomain } =
-        params;
+      const { redirectUri, state, codeVerifier, sessionId, subdomain } = params;
       const outcome = parseGrantPayload(event, state);
 
       if (outcome.kind === 'login' || outcome.kind === 'ignore') {
@@ -36,7 +35,7 @@ export function useShareAuth(setShareState: (s: ShareState) => void) {
 
       try {
         const token = await exchangeOAuthCode(
-          { clientId, codeVerifier, redirectUri, tokenEndpoint, sessionId, subdomain },
+          { codeVerifier, redirectUri, sessionId, subdomain },
           outcome.code
         );
 

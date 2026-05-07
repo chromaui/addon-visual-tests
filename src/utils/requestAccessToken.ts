@@ -7,13 +7,11 @@ import { sha256 } from './sha256';
 
 // Details we exchange with the Chromatic OAuth server
 export type TokenExchangeParameters = {
-  clientId: string;
   redirectUri: string;
   codeVerifier: string;
   state: string;
   sessionId: string;
   authorizationUrl: string;
-  tokenEndpoint: string;
   subdomain?: string;
 };
 
@@ -94,13 +92,11 @@ export const initiateSignin = async (subdomain?: string): Promise<TokenExchangeP
   })}`;
 
   return {
-    clientId: OAUTH_CLIENT_ID,
     redirectUri,
     codeVerifier,
     state,
     sessionId,
     authorizationUrl,
-    tokenEndpoint: `${chromaticBaseUrl}/token`,
     subdomain,
   };
 };
@@ -124,27 +120,22 @@ const decodeTokenResponse = async (
 };
 
 export const fetchAccessToken = async ({
-  clientId,
   codeVerifier,
   redirectUri,
   sessionId,
-  tokenEndpoint,
   subdomain,
   code,
-}: Pick<
-  TokenExchangeParameters,
-  'clientId' | 'codeVerifier' | 'redirectUri' | 'tokenEndpoint' | 'sessionId' | 'subdomain'
-> & {
+}: Pick<TokenExchangeParameters, 'codeVerifier' | 'redirectUri' | 'sessionId' | 'subdomain'> & {
   code: string;
 }): Promise<AuthSession> => {
-  const res = await fetch(tokenEndpoint, {
+  const res = await fetch(resolveTokenEndpoint(subdomain), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
       'X-Chromatic-Session-ID': sessionId,
     },
     body: encodeParams({
-      client_id: clientId,
+      client_id: OAUTH_CLIENT_ID,
       grant_type: 'authorization_code',
       code,
       redirect_uri: redirectUri,
@@ -165,20 +156,17 @@ export const fetchAccessToken = async ({
 };
 
 export const refreshAccessToken = async ({
-  clientId,
   subdomain,
   refreshToken,
   sessionId,
   signal,
 }: {
-  clientId: string;
   subdomain?: string;
   refreshToken: string;
   sessionId: string;
   signal: AbortSignal;
 }): Promise<AuthSession> => {
-  const tokenEndpoint = resolveTokenEndpoint(subdomain);
-  const res = await fetch(tokenEndpoint, {
+  const res = await fetch(resolveTokenEndpoint(subdomain), {
     method: 'POST',
     signal,
     headers: {
@@ -186,7 +174,7 @@ export const refreshAccessToken = async ({
       'X-Chromatic-Session-ID': sessionId,
     },
     body: encodeParams({
-      client_id: clientId,
+      client_id: OAUTH_CLIENT_ID,
       grant_type: 'refresh_token',
       refresh_token: refreshToken,
     }),

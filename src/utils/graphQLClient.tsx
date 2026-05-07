@@ -4,7 +4,7 @@ import { useAddonState } from 'storybook/manager-api';
 import { Client, type ClientOptions, fetchExchange, mapExchange, Provider } from 'urql';
 import { v4 as uuid } from 'uuid';
 
-import { ADDON_ID, OAUTH_CLIENT_ID } from '../constants';
+import { ADDON_ID } from '../constants';
 import { ACCESS_TOKEN_KEY, CHROMATIC_API_URL } from '../env';
 import { type AuthSession, AuthSessionSchema, refreshAccessToken } from './requestAccessToken';
 
@@ -178,7 +178,6 @@ const attemptTokenRefresh = async () => {
   const timeoutId = setBrowserTimeout(() => abortController.abort(), REFRESH_TIMEOUT_MS);
   try {
     const nextAuth = await refreshAccessToken({
-      clientId: OAUTH_CLIENT_ID,
       subdomain: auth.subdomain,
       refreshToken: auth.refreshToken,
       sessionId: auth.sessionId,

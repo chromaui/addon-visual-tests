@@ -55,13 +55,11 @@ vi.mock('../../utils/useChromaticDialog', () => ({
 const { useShareAuth } = await import('./useShareAuth');
 
 const defaultParams = {
-  clientId: 'client-id',
   redirectUri: 'https://example.com/redirect',
   codeVerifier: 'verifier',
   state: 'state-abc',
   sessionId: 'session-id',
   authorizationUrl: 'https://chromatic.com/authorize',
-  tokenEndpoint: 'https://chromatic.com/token',
 };
 
 const createAuthSession = (accessToken = 'access-token-xyz') => ({

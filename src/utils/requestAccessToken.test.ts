@@ -11,7 +11,9 @@ vi.stubGlobal('window', {
   location: { href: 'https://storybook.example.com/iframe.html?args=&id=foo' },
 });
 
-const { initiateSignin, fetchAccessToken } = await import('./requestAccessToken');
+const { initiateSignin, fetchAccessToken, resolveTokenEndpoint } = await import(
+  './requestAccessToken'
+);
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -34,29 +36,14 @@ describe('initiateSignin', () => {
     expect(authorizationUrl).toContain('code_challenge=');
   });
 
-  it('uses CHROMATIC_BASE_URL for token endpoint when no subdomain given', async () => {
-    const { tokenEndpoint } = await initiateSignin();
-    expect(tokenEndpoint).toBe('https://www.chromatic.com/token');
-  });
-
   it('uses CHROMATIC_BASE_URL for authorization URL when no subdomain given', async () => {
     const { authorizationUrl } = await initiateSignin();
     expect(authorizationUrl).toContain('https://www.chromatic.com/authorize');
   });
 
-  it('replaces www. with subdomain in token endpoint', async () => {
-    const { tokenEndpoint } = await initiateSignin('acme');
-    expect(tokenEndpoint).toBe('https://acme.chromatic.com/token');
-  });
-
   it('replaces www. with subdomain in authorization URL', async () => {
     const { authorizationUrl } = await initiateSignin('acme');
     expect(authorizationUrl).toContain('https://acme.chromatic.com/authorize');
-  });
-
-  it('returns clientId matching OAUTH_CLIENT_ID', async () => {
-    const { clientId } = await initiateSignin();
-    expect(clientId).toBe('chromaui:addon-visual-tests');
   });
 
   it('strips query/hash from location.href for redirectUri', async () => {
@@ -65,12 +52,20 @@ describe('initiateSignin', () => {
   });
 });
 
+describe('resolveTokenEndpoint', () => {
+  it('uses CHROMATIC_BASE_URL when no subdomain given', () => {
+    expect(resolveTokenEndpoint()).toBe('https://www.chromatic.com/token');
+  });
+
+  it('replaces www. with the given subdomain', () => {
+    expect(resolveTokenEndpoint('acme')).toBe('https://acme.chromatic.com/token');
+  });
+});
+
 describe('fetchAccessToken', () => {
   const baseParams = {
-    clientId: 'chromaui:addon-visual-tests',
     codeVerifier: 'verifier',
     redirectUri: 'https://example.com/redirect',
-    tokenEndpoint: 'https://www.chromatic.com/token',
     sessionId: 'session-1',
     code: 'auth-code',
   };
