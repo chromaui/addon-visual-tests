@@ -7,9 +7,17 @@ const mocks = vi.hoisted(() => {
   const openDialog = vi.fn();
   const closeDialog = vi.fn();
   const updateToken = vi.fn();
+  const setAuthenticatedSession = vi.fn();
   const exchangeOAuthCode = vi.fn();
   const initiateSignin = vi.fn();
-  return { openDialog, closeDialog, updateToken, exchangeOAuthCode, initiateSignin };
+  return {
+    openDialog,
+    closeDialog,
+    updateToken,
+    setAuthenticatedSession,
+    exchangeOAuthCode,
+    initiateSignin,
+  };
 });
 
 vi.mock('react', async (importOriginal) => {
@@ -23,6 +31,7 @@ vi.mock('react', async (importOriginal) => {
 
 vi.mock('../../utils/graphQLClient', () => ({
   useAccessToken: () => [null, mocks.updateToken],
+  setAuthenticatedSession: mocks.setAuthenticatedSession,
 }));
 
 vi.mock('../../utils/oauthGrant', async (importOriginal) => {
@@ -46,13 +55,19 @@ vi.mock('../../utils/useChromaticDialog', () => ({
 const { useShareAuth } = await import('./useShareAuth');
 
 const defaultParams = {
-  clientId: 'client-id',
   redirectUri: 'https://example.com/redirect',
   codeVerifier: 'verifier',
   state: 'state-abc',
+  sessionId: 'session-id',
   authorizationUrl: 'https://chromatic.com/authorize',
-  tokenEndpoint: 'https://chromatic.com/token',
 };
+
+const createAuthSession = (accessToken = 'access-token-xyz') => ({
+  version: 2 as const,
+  accessToken,
+  refreshToken: 'refresh-token',
+  sessionId: 'session-id',
+});
 
 afterEach(() => {
   vi.clearAllMocks();
@@ -62,8 +77,9 @@ afterEach(() => {
 describe('useShareAuth', () => {
   it('successful flow: startSignIn opens dialog, grant code triggers fetchAccessToken and updateToken', async () => {
     const setShareState = vi.fn();
+    const auth = createAuthSession();
     mocks.initiateSignin.mockResolvedValueOnce(defaultParams);
-    mocks.exchangeOAuthCode.mockResolvedValueOnce('access-token-xyz');
+    mocks.exchangeOAuthCode.mockResolvedValueOnce(auth);
 
     const { startSignIn } = useShareAuth(setShareState);
     await (startSignIn as () => Promise<void>)();
@@ -75,6 +91,7 @@ describe('useShareAuth', () => {
     await capturedHandler!({ message: 'grant', code: 'auth-code', state: 'state-abc' });
 
     expect(mocks.exchangeOAuthCode).toHaveBeenCalledOnce();
+    expect(mocks.setAuthenticatedSession).toHaveBeenCalledWith(auth);
     expect(mocks.updateToken).toHaveBeenCalledWith('access-token-xyz');
     expect(setShareState).toHaveBeenCalledWith({ status: 'uploading', shareUrl: '' });
   });
@@ -83,7 +100,7 @@ describe('useShareAuth', () => {
     const setShareState = vi.fn();
     mocks.initiateSignin.mockResolvedValueOnce(defaultParams);
 
-    let resolveFetch!: (token: string) => void;
+    let resolveFetch!: (token: ReturnType<typeof createAuthSession>) => void;
     mocks.exchangeOAuthCode.mockReturnValueOnce(
       new Promise((resolve) => {
         resolveFetch = resolve;
@@ -98,7 +115,7 @@ describe('useShareAuth', () => {
     // Second grant — paramsRef is null now, should short-circuit
     await capturedHandler!({ message: 'grant', code: 'auth-code', state: 'state-abc' });
 
-    resolveFetch('token');
+    resolveFetch(createAuthSession());
     await first;
 
     expect(mocks.exchangeOAuthCode).toHaveBeenCalledOnce();
@@ -120,7 +137,7 @@ describe('useShareAuth', () => {
   it('stale grant: arriving after paramsRef cleared, no state change or error surfaced', async () => {
     const setShareState = vi.fn();
     mocks.initiateSignin.mockResolvedValueOnce(defaultParams);
-    mocks.exchangeOAuthCode.mockResolvedValueOnce('token');
+    mocks.exchangeOAuthCode.mockResolvedValueOnce(createAuthSession('token'));
 
     const { startSignIn } = useShareAuth(setShareState);
     await (startSignIn as () => Promise<void>)();

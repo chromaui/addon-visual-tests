@@ -11,7 +11,9 @@ vi.stubGlobal('window', {
   location: { href: 'https://storybook.example.com/iframe.html?args=&id=foo' },
 });
 
-const { initiateSignin, fetchAccessToken } = await import('./requestAccessToken');
+const { initiateSignin, fetchAccessToken, resolveTokenEndpoint } = await import(
+  './requestAccessToken'
+);
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -34,29 +36,14 @@ describe('initiateSignin', () => {
     expect(authorizationUrl).toContain('code_challenge=');
   });
 
-  it('uses CHROMATIC_BASE_URL for token endpoint when no subdomain given', async () => {
-    const { tokenEndpoint } = await initiateSignin();
-    expect(tokenEndpoint).toBe('https://www.chromatic.com/token');
-  });
-
   it('uses CHROMATIC_BASE_URL for authorization URL when no subdomain given', async () => {
     const { authorizationUrl } = await initiateSignin();
     expect(authorizationUrl).toContain('https://www.chromatic.com/authorize');
   });
 
-  it('replaces www. with subdomain in token endpoint', async () => {
-    const { tokenEndpoint } = await initiateSignin('acme');
-    expect(tokenEndpoint).toBe('https://acme.chromatic.com/token');
-  });
-
   it('replaces www. with subdomain in authorization URL', async () => {
     const { authorizationUrl } = await initiateSignin('acme');
     expect(authorizationUrl).toContain('https://acme.chromatic.com/authorize');
-  });
-
-  it('returns clientId matching OAUTH_CLIENT_ID', async () => {
-    const { clientId } = await initiateSignin();
-    expect(clientId).toBe('chromaui:addon-visual-tests');
   });
 
   it('strips query/hash from location.href for redirectUri', async () => {
@@ -65,22 +52,44 @@ describe('initiateSignin', () => {
   });
 });
 
+describe('resolveTokenEndpoint', () => {
+  it('uses CHROMATIC_BASE_URL when no subdomain given', () => {
+    expect(resolveTokenEndpoint()).toBe('https://www.chromatic.com/token');
+  });
+
+  it('replaces www. with the given subdomain', () => {
+    expect(resolveTokenEndpoint('acme')).toBe('https://acme.chromatic.com/token');
+  });
+});
+
 describe('fetchAccessToken', () => {
   const baseParams = {
-    clientId: 'chromaui:addon-visual-tests',
     codeVerifier: 'verifier',
     redirectUri: 'https://example.com/redirect',
-    tokenEndpoint: 'https://www.chromatic.com/token',
+    sessionId: 'session-1',
     code: 'auth-code',
   };
 
-  it('returns access token on success', async () => {
+  it('returns AuthSession on success', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
+      json: async () => ({ access_token: 'tok-abc', refresh_token: 'ref-xyz' }),
+    } as Response);
+
+    const auth = await fetchAccessToken(baseParams);
+    expect(auth).toMatchObject({
+      version: 2,
+      accessToken: 'tok-abc',
+      refreshToken: 'ref-xyz',
+      sessionId: 'session-1',
+    });
+  });
+
+  it('throws when refresh_token missing on success response', async () => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
       json: async () => ({ access_token: 'tok-abc' }),
     } as Response);
 
-    const token = await fetchAccessToken(baseParams);
-    expect(token).toBe('tok-abc');
+    await expect(fetchAccessToken(baseParams)).rejects.toThrow('missing refresh token');
   });
 
   it('throws on authorization_pending error', async () => {
@@ -129,7 +138,7 @@ describe('fetchAccessToken', () => {
 
   it('POSTs to tokenEndpoint with correct Content-Type header', async () => {
     const mockFetch = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
-      json: async () => ({ access_token: 'tok' }),
+      json: async () => ({ access_token: 'tok', refresh_token: 'ref' }),
     } as Response);
 
     await fetchAccessToken(baseParams);
@@ -138,14 +147,17 @@ describe('fetchAccessToken', () => {
       'https://www.chromatic.com/token',
       expect.objectContaining({
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+        headers: expect.objectContaining({
+          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+          'X-Chromatic-Session-ID': 'session-1',
+        }),
       })
     );
   });
 
   it('includes grant_type and code in request body', async () => {
     const mockFetch = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
-      json: async () => ({ access_token: 'tok' }),
+      json: async () => ({ access_token: 'tok', refresh_token: 'ref' }),
     } as Response);
 
     await fetchAccessToken(baseParams);

@@ -1,6 +1,12 @@
-import React, { useCallback } from 'react';
-import type { API } from 'storybook/manager-api';
-import { experimental_getStatusStore, useChannel, useStorybookState } from 'storybook/manager-api';
+import { FailedIcon } from '@storybook/icons';
+import React, { useCallback, useEffect } from 'react';
+import {
+  experimental_getStatusStore,
+  useChannel,
+  useStorybookApi,
+  useStorybookState,
+} from 'storybook/manager-api';
+import { color } from 'storybook/theming';
 
 import { AuthProvider } from './AuthContext';
 import { Spinner } from './components/design-system';
@@ -26,7 +32,12 @@ import { ControlsProvider } from './screens/VisualTests/ControlsContext';
 import { RunBuildProvider } from './screens/VisualTests/RunBuildContext';
 import { VisualTests } from './screens/VisualTests/VisualTests';
 import type { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from './types';
-import { createClient, GraphQLClientProvider, useAccessToken } from './utils/graphQLClient';
+import {
+  createClient,
+  GraphQLClientProvider,
+  sessionExpiredEventName,
+  useAccessToken,
+} from './utils/graphQLClient';
 import { TelemetryProvider } from './utils/TelemetryContext';
 import { useBuildEvents } from './utils/useBuildEvents';
 import { useChannelFetch } from './utils/useChannelFetch';
@@ -36,12 +47,12 @@ import { useSharedState } from './utils/useSharedState';
 
 interface PanelProps {
   active: boolean;
-  api: API;
 }
 
 const statusStore = experimental_getStatusStore(ADDON_ID);
 
 export const Panel = ({ active }: PanelProps) => {
+  const api = useStorybookApi();
   const [accessToken, updateAccessToken] = useAccessToken();
   const setAccessToken = useCallback(
     (token: string | null) => {
@@ -58,6 +69,23 @@ export const Panel = ({ active }: PanelProps) => {
   const [localBuildProgress, setLocalBuildProgress] =
     useSharedState<LocalBuildProgress>(LOCAL_BUILD_PROGRESS);
   const emit = useChannel({});
+  useEffect(() => {
+    const notify = () => {
+      api.addNotification({
+        id: `${ADDON_ID}/error/session-expired/${Date.now()}`,
+        content: {
+          headline: 'Session expired',
+          subHeadline: 'Please sign in again to continue.',
+        },
+        icon: <FailedIcon color={color.negative} />,
+      });
+    };
+
+    window.addEventListener(sessionExpiredEventName, notify);
+    return () => {
+      window.removeEventListener(sessionExpiredEventName, notify);
+    };
+  }, [api]);
 
   const updateBuildStatus = useCallback<UpdateStatusFunction>((statuses) => {
     statusStore.unset();
