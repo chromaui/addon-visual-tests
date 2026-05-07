@@ -85,7 +85,7 @@ export const Verify = ({
           authSession.current = token;
 
           // Override token for this query but don't store it yet until they've created a project
-          const fetchOptions = getFetchOptions(token.accessToken);
+          const fetchOptions = getFetchOptions(token.accessToken, token.sessionId);
           const { data } = await client.query(ProjectCountQuery, {}, { fetchOptions });
 
           if (!data?.viewer) throw new Error('Failed to fetch initial project list');

@@ -158,28 +158,13 @@ export const useAccessToken = () => {
   return [token, updateToken] as const;
 };
 
-export const getFetchOptions = (token?: string) => ({
+export const getFetchOptions = (token?: string, sessionId?: string) => ({
   headers: {
     Accept: '*/*',
     ...(token && { Authorization: `Bearer ${token}` }),
-    'X-Chromatic-Session-ID': currentAuth?.sessionId || fallbackSessionId,
+    'X-Chromatic-Session-ID': sessionId || currentAuth?.sessionId || fallbackSessionId,
   },
 });
-
-const isRetryableRefreshError = (error: unknown) => {
-  if (error instanceof Error) {
-    const statusMatch = error.message.match(/\((\d{3})\)/);
-    if (statusMatch) {
-      const statusCode = Number(statusMatch[1]);
-      return statusCode >= 500;
-    }
-    if (error.name === 'AbortError') {
-      return true;
-    }
-    return false;
-  }
-  return false;
-};
 
 const attemptTokenRefresh = async () => {
   const auth = currentAuth;
@@ -216,17 +201,7 @@ const refreshCurrentSession = async () => {
   }
 
   if (!refreshPromise) {
-    refreshPromise = (async () => {
-      try {
-        await attemptTokenRefresh();
-      } catch (error) {
-        if (isRetryableRefreshError(error)) {
-          await attemptTokenRefresh();
-          return;
-        }
-        throw error;
-      }
-    })()
+    refreshPromise = attemptTokenRefresh()
       .catch((error) => {
         console.warn('Session expired. Please sign in again.');
         clearCurrentAuth();
