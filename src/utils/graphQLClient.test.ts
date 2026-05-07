@@ -73,6 +73,26 @@ describe('graphQLClient refresh auth', () => {
     });
   });
 
+  it('notifies token subscribers when refresh updates token', async () => {
+    setAuthenticatedSession(createAuth());
+    const subscriber = vi.fn();
+    const unsubscribe = __testUtils.subscribeToTokenUpdates(subscriber);
+    vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          access_token: 'access-token-2',
+          refresh_token: 'refresh-token-2',
+        }),
+        { status: 200 }
+      )
+    );
+
+    await __testUtils.refreshCurrentSession();
+    unsubscribe();
+
+    expect(subscriber).toHaveBeenLastCalledWith('access-token-2');
+  });
+
   it('clears auth state when refresh fails with terminal error', async () => {
     setAuthenticatedSession(createAuth());
     vi.spyOn(console, 'warn').mockImplementation(() => {});

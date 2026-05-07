@@ -12,10 +12,24 @@ const REFRESH_TIMEOUT_MS = 10_000;
 const getStorage = () => (typeof localStorage === 'undefined' ? null : localStorage);
 
 let currentAuth: AuthStorage | null = null;
-let currentToken: string | null;
+let currentToken: string | null = null;
 let refreshPromise: Promise<void> | null = null;
 let refreshAbortController: AbortController | null = null;
+const tokenSubscribers = new Set<(token: string | null) => void>();
 const fallbackSessionId = uuid();
+
+const notifyTokenSubscribers = () => {
+  tokenSubscribers.forEach((subscriber) => {
+    subscriber(currentToken);
+  });
+};
+
+const subscribeToTokenUpdates = (subscriber: (token: string | null) => void) => {
+  tokenSubscribers.add(subscriber);
+  return () => {
+    tokenSubscribers.delete(subscriber);
+  };
+};
 
 const persistCurrentAuth = () => {
   const storage = getStorage();
@@ -38,6 +52,7 @@ const setCurrentAuth = (auth: AuthStorage | null) => {
     currentToken = null;
   }
   persistCurrentAuth();
+  notifyTokenSubscribers();
 };
 
 const clearCurrentAuth = () => {
@@ -58,6 +73,7 @@ const setCurrentToken = (token: string | null) => {
   } else {
     // Keep runtime behavior sane if we ever receive a token before full auth state is initialized.
     currentToken = token;
+    notifyTokenSubscribers();
   }
 };
 
@@ -91,11 +107,12 @@ export const useAccessToken = () => {
     { token: currentToken }
   );
 
-  const updateToken = React.useCallback(
-    (newToken: string | null) => {
-      setCurrentToken(newToken);
-      setTokenState({ token: currentToken });
-    },
+  const updateToken = React.useCallback((newToken: string | null) => {
+    setCurrentToken(newToken);
+  }, []);
+
+  React.useEffect(
+    () => subscribeToTokenUpdates((nextToken) => setTokenState({ token: nextToken })),
     [setTokenState]
   );
 
@@ -219,6 +236,7 @@ export const createClient = (options?: Partial<ClientOptions>) =>
 
 export const __testUtils = {
   getCurrentAuth: () => currentAuth,
+  subscribeToTokenUpdates,
   refreshCurrentSession,
 };
 
