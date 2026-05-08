@@ -1,12 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { z } from 'zod';
 
-// The dialog hook only delivers the addon's known message shapes:
-// the OAuth login heartbeat, the OAuth grant callback (code or error),
-// and the createdProject relay used by Verify and LinkProject. Anything
-// else - including the `{ message: 'grant', denied: false }` heartbeat
-// the Chromatic authorize page sends before the redirect - is silently
-// dropped here so consumers never have to worry about ambiguous shapes.
 const dialogPayloadSchema = z.union([
   z.object({ message: z.literal('login') }),
   z.object({

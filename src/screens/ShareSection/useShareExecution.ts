@@ -36,8 +36,6 @@ export function useShareExecution({
 }: Params) {
   const isRepeatShareRef = useRef(false);
   const prevShareStatusRef = useRef<string>(reducerState.screen.status);
-  // Whether we've already attempted a token refresh + retry for the current
-  // share attempt. Reset on terminal outcomes and on manual publish.
   const authRetriedRef = useRef(false);
 
   const emitTelemetry = useCallback<EmitTelemetry>(
@@ -88,7 +86,6 @@ export function useShareExecution({
     token,
   ]);
 
-  // Telemetry: detect idle -> uploading transition (auth completed).
   useEffect(() => {
     if (prevShareStatusRef.current === 'idle' && reducerState.screen.status === 'uploading') {
       emitTelemetry('share-auth-completed');
@@ -96,9 +93,6 @@ export function useShareExecution({
     prevShareStatusRef.current = reducerState.screen.status;
   }, [emitTelemetry, reducerState.screen.status]);
 
-  // Latest reducer/git/cleanup values consumed by the progress effect. Stored
-  // in a ref so the effect can run only when shareProgress changes without
-  // chasing stale closures or needing eslint-disable on the dep list.
   const progressCtxRef = useRef({
     reducerState,
     gitInfo,
@@ -144,12 +138,6 @@ export function useShareExecution({
         }
         break;
       case 'auth-error':
-        // First auth error: refresh once. The auto-skip effect re-emits
-        // START_SHARE under a new request id once authStore notifies its
-        // subscribers with the rotated token. If the refresh itself fails
-        // terminally, authStore.clear() runs internally and the user falls
-        // back to the sign-in screen. Subsequent auth errors in the same
-        // chain force a logout to avoid a refresh loop.
         if (authRetriedRef.current) {
           authRetriedRef.current = false;
           ctx.updateToken(null);
