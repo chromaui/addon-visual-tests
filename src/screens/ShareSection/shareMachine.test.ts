@@ -32,7 +32,10 @@ describe('shareReducer', () => {
   });
 
   it('GO_SUBDOMAIN switches to the SSO entry screen', () => {
-    const next = shareReducer({ ...baseState, screen: { status: 'idle' } }, { type: 'GO_SUBDOMAIN' });
+    const next = shareReducer(
+      { ...baseState, screen: { status: 'idle' } },
+      { type: 'GO_SUBDOMAIN' }
+    );
     expect(next.screen.status).toBe('subdomain');
   });
 

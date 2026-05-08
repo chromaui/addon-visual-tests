@@ -1,15 +1,14 @@
-import React, { useCallback, useEffect, useReducer, useRef } from 'react';
+import React, { useCallback, useEffect, useReducer } from 'react';
 import type { API } from 'storybook/manager-api';
 
-import { CANCEL_SHARE, GIT_INFO, SHARE_PROGRESS, START_SHARE, TELEMETRY } from '../../constants';
+import { GIT_INFO, SHARE_PROGRESS } from '../../constants';
 import type { GitInfoPayload, ShareProgress } from '../../types';
-import { authStore } from '../../utils/authStore';
 import { checkOutdated } from '../../utils/checkOutdated';
 import { useAccessToken } from '../../utils/graphQLClient';
 import { useSessionState } from '../../utils/useSessionState';
 import { useSharedState } from '../../utils/useSharedState';
 import { setPresent } from './popoverPresence';
-import { applyProgress, initialState, shareReducer } from './shareMachine';
+import { initialState, shareReducer } from './shareMachine';
 import { ShareSectionComplete } from './ShareSectionComplete';
 import { ShareSectionError } from './ShareSectionError';
 import { ShareSectionIdle } from './ShareSectionIdle';
@@ -18,6 +17,7 @@ import { ShareSectionUploading } from './ShareSectionUploading';
 import { ShareSectionWelcome } from './ShareSectionWelcome';
 import type { ShareReducerState, ShareState } from './types';
 import { useShareAuth } from './useShareAuth';
+import { useShareExecution } from './useShareExecution';
 
 export const ShareSection = ({ api }: { api: API }) => {
   const [token] = useAccessToken();
@@ -38,12 +38,6 @@ export const ShareSection = ({ api }: { api: API }) => {
     GitInfoPayload | undefined
   >('shareLastCompletedGitInfo', undefined);
 
-  const isRepeatShareRef = useRef(false);
-  const prevShareStatusRef = useRef<string>(reducerState.screen.status);
-  // Whether we've already attempted a token refresh + retry for the current
-  // share attempt. Reset on terminal outcomes and on manual publish/republish.
-  const authRetriedRef = useRef(false);
-
   // Persist reducer state for cross-remount survival.
   useEffect(() => {
     setPersisted(reducerState);
@@ -54,130 +48,24 @@ export const ShareSection = ({ api }: { api: API }) => {
     return () => setPresent(false);
   }, []);
 
-  const emitTelemetry = useCallback(
-    (action: string, extra?: Record<string, unknown>) => {
-      api.getChannel()?.emit(TELEMETRY, { action, entryPoint: 'toolbar', ...extra });
-    },
-    [api]
-  );
-
-  const sharedUploadInFlight =
-    shareProgress?.status === 'pending' || shareProgress?.status === 'uploading';
-
   const setShareScreen = useCallback(
     (screen: ShareState) => dispatch({ type: 'SET_SCREEN', screen }),
     []
   );
   const { startSignIn, updateToken } = useShareAuth(setShareScreen);
 
-  // Auto-skip welcome/idle/subdomain if already signed in and no active share.
-  useEffect(() => {
-    const skippableStatus =
-      reducerState.screen.status === 'welcome' ||
-      reducerState.screen.status === 'idle' ||
-      reducerState.screen.status === 'subdomain';
-    if (token && skippableStatus && !sharedUploadInFlight) {
-      dispatch({ type: 'AUTO_SKIP_TO_UPLOADING', newRequestId: crypto.randomUUID() });
-    }
-  }, [token, reducerState.screen.status, sharedUploadInFlight]);
-
-  const handlePublish = useCallback(() => {
-    authRetriedRef.current = false;
-    dispatch({
-      type: 'PUBLISH_REQUESTED',
-      hasToken: Boolean(token),
-      newRequestId: crypto.randomUUID(),
-    });
-  }, [token]);
-
-  const handleCancel = useCallback(() => {
-    api.getChannel()?.emit(CANCEL_SHARE, { shareRequestId: reducerState.shareRequestId });
-    emitTelemetry('share-canceled');
-  }, [api, emitTelemetry, reducerState.shareRequestId]);
-
-  // Emit START_SHARE for the active uploading session, with remount guards.
-  const screenStatus = reducerState.screen.status;
-  const { shareRequestId, shareTriggeredId } = reducerState;
-  useEffect(() => {
-    if (screenStatus !== 'uploading' || !token || sharedUploadInFlight) return;
-    if (shareTriggeredId && shareTriggeredId === shareRequestId) return;
-    if (shareProgress?.shareRequestId === shareRequestId && shareProgress?.status === 'complete') {
-      return;
-    }
-
-    const id = shareRequestId ?? crypto.randomUUID();
-    dispatch({ type: 'START_SHARE_EMITTED', id });
-    api.getChannel()?.emit(START_SHARE, { accessToken: token, shareRequestId: id });
-    emitTelemetry('share-initiated', { isRepeatShare: isRepeatShareRef.current });
-    isRepeatShareRef.current = false;
-  }, [
+  const { emitTelemetry, handleCancel, handlePublish, handlePublishAgain } = useShareExecution({
     api,
-    emitTelemetry,
-    screenStatus,
-    shareRequestId,
-    shareTriggeredId,
-    shareProgress,
-    sharedUploadInFlight,
     token,
-  ]);
-
-  // Telemetry: detect idle -> uploading transition (auth completed).
-  useEffect(() => {
-    if (prevShareStatusRef.current === 'idle' && reducerState.screen.status === 'uploading') {
-      emitTelemetry('share-auth-completed');
-    }
-    prevShareStatusRef.current = reducerState.screen.status;
-  }, [emitTelemetry, reducerState.screen.status]);
-
-  // Pipe shareProgress through the reducer; emit telemetry / token updates as side effects.
-  useEffect(() => {
-    if (!shareProgress) return;
-    const { next, effect } = applyProgress(
-      reducerState,
-      shareProgress,
-      gitInfo,
-      lastCompletedShareUrl
-    );
-    if (next !== reducerState) dispatch({ type: 'APPLY_STATE', next });
-
-    switch (effect.kind) {
-      case 'url-received':
-        emitTelemetry('share-url-received');
-        break;
-      case 'completed':
-        authRetriedRef.current = false;
-        if (effect.isNew) {
-          setLastCompletedShareUrl(effect.shareUrl);
-          setLastCompletedGitInfo(effect.gitInfo);
-          emitTelemetry('share-upload-completed');
-        }
-        break;
-      case 'auth-error':
-        // First auth error: refresh once. The auto-skip effect will re-emit
-        // START_SHARE under a new request id once authStore notifies its
-        // subscribers with the rotated token. If the refresh itself fails
-        // terminally, authStore.clear() runs internally and the user falls
-        // back to the sign-in screen. Subsequent auth errors in the same
-        // chain force a logout to avoid a refresh loop.
-        if (authRetriedRef.current) {
-          authRetriedRef.current = false;
-          updateToken(null);
-          emitTelemetry('share-failed');
-        } else {
-          authRetriedRef.current = true;
-          emitTelemetry('share-auth-retry');
-          void authStore.refresh().catch(() => undefined);
-        }
-        break;
-      case 'failed':
-        authRetriedRef.current = false;
-        emitTelemetry('share-failed');
-        break;
-      default:
-        break;
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [shareProgress]);
+    reducerState,
+    shareProgress,
+    gitInfo,
+    lastCompletedShareUrl,
+    setLastCompletedShareUrl,
+    setLastCompletedGitInfo,
+    updateToken,
+    dispatch,
+  });
 
   const screen = reducerState.screen;
   switch (screen.status) {
@@ -214,10 +102,7 @@ export const ShareSection = ({ api }: { api: API }) => {
           daysToExpire={screen.daysToExpire}
           isOutdated={checkOutdated(lastCompletedGitInfo, gitInfo)}
           onCopy={() => emitTelemetry('share-url-copied')}
-          onPublishAgain={() => {
-            isRepeatShareRef.current = true;
-            dispatch({ type: 'PUBLISH_AGAIN', newRequestId: crypto.randomUUID() });
-          }}
+          onPublishAgain={handlePublishAgain}
         />
       );
     case 'error':
