@@ -1,13 +1,14 @@
 import { authExchange } from '@urql/exchange-auth';
 import React from 'react';
 import { useAddonState } from 'storybook/manager-api';
-import { Client, type ClientOptions, fetchExchange, mapExchange, Provider } from 'urql';
+import { Client, type ClientOptions, fetchExchange, Provider } from 'urql';
 
 import { authStore, SESSION_EXPIRED_EVENT_NAME } from '../auth/authStore';
 import type { AuthSession } from '../auth/requestAccessToken';
 import { ADDON_ID } from '../constants';
 import { CHROMATIC_API_URL } from '../env';
 
+const PREEMPTIVE_REFRESH_WINDOW_SECONDS = 60;
 export const setAuthenticatedSession = (auth: AuthSession) => authStore.setAuth(auth);
 
 export const useAccessToken = () => {
@@ -37,18 +38,40 @@ export const getFetchOptions = (token?: string, sessionId?: string) => ({
   },
 });
 
+const decodeJwtExpiration = (token: string): number | null => {
+  try {
+    const payload = token.split('.')[1];
+    if (!payload) return null;
+
+    // JWT payload is base64url-encoded; convert to base64 and restore required padding for atob().
+    const normalized = payload.replace(/-/g, '+').replace(/_/g, '/');
+    const padding = '='.repeat((4 - (normalized.length % 4)) % 4);
+    const parsed = JSON.parse(globalThis.atob(`${normalized}${padding}`)) as { exp?: unknown };
+    return typeof parsed.exp === 'number' ? parsed.exp : null;
+  } catch {
+    return null;
+  }
+};
+
+const shouldPreemptivelyRefreshSession = () => {
+  const token = authStore.getToken();
+  if (!token) {
+    return false;
+  }
+
+  const expiration = decodeJwtExpiration(token);
+  if (!expiration) {
+    return false;
+  }
+
+  const nowInSeconds = Math.floor(Date.now() / 1000);
+  return expiration <= nowInSeconds + PREEMPTIVE_REFRESH_WINDOW_SECONDS;
+};
+
 export const createClient = (options?: Partial<ClientOptions>) =>
   new Client({
     url: CHROMATIC_API_URL,
     exchanges: [
-      // We don't use cacheExchange, because it would inadvertently share data between stories.
-      mapExchange({
-        onResult(result) {
-          // Not all queries contain the `viewer` field, in which case it will be `undefined`.
-          // When we do retrieve the field but the token is invalid, it will be `null`.
-          if (result.data?.viewer === null) authStore.setToken(null);
-        },
-      }),
       authExchange(async (utils) => {
         return {
           addAuthToOperation(operation) {
@@ -67,9 +90,9 @@ export const createClient = (options?: Partial<ClientOptions>) =>
             await authStore.refresh();
           },
 
-          // Reactive auth: only refresh after auth failures, not pre-emptively by token expiry.
+          // Refresh when missing token or when token is about to expire.
           willAuthError() {
-            return !authStore.getToken();
+            return !authStore.getToken() || shouldPreemptivelyRefreshSession();
           },
         };
       }),
