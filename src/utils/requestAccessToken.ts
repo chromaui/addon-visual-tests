@@ -114,11 +114,28 @@ const decodeTokenResponse = async (
   res: Response,
   failureMessage: string
 ): Promise<TokenResponse> => {
-  const rawData = await res.json();
+  // Token endpoints occasionally return non-JSON bodies (e.g. an HTML error
+  // page from a 500 or a proxy). Surface a useful error in that case
+  // instead of bubbling up a SyntaxError from JSON.parse.
+  type ErrorBody = { error?: string; error_description?: string };
+  let rawData: ErrorBody | null = null;
+  try {
+    rawData = (await res.json()) as ErrorBody;
+  } catch {
+    if (!res.ok) {
+      throw new Error(`${failureMessage} (${res.status})`);
+    }
+    throw new Error(failureMessage);
+  }
   if (rawData?.error === 'authorization_pending') {
     throw new Error(
       `You have not authorized the Visual Tests addon for Chromatic, please try again`
     );
+  }
+  if (!res.ok) {
+    const message =
+      rawData?.error_description || rawData?.error || `${failureMessage} (${res.status})`;
+    throw new Error(message);
   }
   const parsed = TokenResponseSchema.safeParse(rawData);
   if (parsed.success) {

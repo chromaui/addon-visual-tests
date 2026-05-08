@@ -72,6 +72,8 @@ describe('fetchAccessToken', () => {
 
   it('returns AuthSession on success', async () => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
+      ok: true,
+      status: 200,
       json: async () => ({ access_token: 'tok-abc', refresh_token: 'ref-xyz' }),
     } as Response);
 
@@ -86,6 +88,8 @@ describe('fetchAccessToken', () => {
 
   it('throws when refresh_token missing on success response', async () => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
+      ok: true,
+      status: 200,
       json: async () => ({ access_token: 'tok-abc' }),
     } as Response);
 
@@ -126,18 +130,32 @@ describe('fetchAccessToken', () => {
     await expect(fetchAccessToken(baseParams)).rejects.toThrow('Token exchange failed');
   });
 
-  it('throws when response body is not JSON (e.g. 500 HTML)', async () => {
+  it('surfaces OAuth error_description from a non-OK response body', async () => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
+      ok: false,
+      status: 400,
+      json: async () => ({ error: 'invalid_request', error_description: 'bad code' }),
+    } as Response);
+
+    await expect(fetchAccessToken(baseParams)).rejects.toThrow('bad code');
+  });
+
+  it('throws a useful error when response body is not JSON (e.g. 500 HTML)', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
+      ok: false,
+      status: 500,
       json: async () => {
         throw new SyntaxError('Unexpected token < in JSON');
       },
     } as unknown as Response);
 
-    await expect(fetchAccessToken(baseParams)).rejects.toThrow(SyntaxError);
+    await expect(fetchAccessToken(baseParams)).rejects.toThrow('Token exchange failed (500)');
   });
 
   it('POSTs to tokenEndpoint with correct Content-Type header', async () => {
     const mockFetch = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
+      ok: true,
+      status: 200,
       json: async () => ({ access_token: 'tok', refresh_token: 'ref' }),
     } as Response);
 
@@ -157,6 +175,8 @@ describe('fetchAccessToken', () => {
 
   it('includes grant_type and code in request body', async () => {
     const mockFetch = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
+      ok: true,
+      status: 200,
       json: async () => ({ access_token: 'tok', refresh_token: 'ref' }),
     } as Response);
 
