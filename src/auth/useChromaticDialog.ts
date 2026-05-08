@@ -1,6 +1,12 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { z } from 'zod';
 
+// The dialog hook keeps the OAuth grant/login shapes (used directly by
+// useOAuthFlow's grant handler) and accepts any other Chromatic addon
+// message via a permissive catch-all. Domain-specific shapes such as the
+// Verify screen's createdProject relay are validated by their consumers
+// inside the onMessage hook so this transport stays decoupled from
+// product flows.
 const dialogPayloadSchema = z.union([
   z.object({ message: z.literal('login') }),
   z.object({
@@ -14,7 +20,7 @@ const dialogPayloadSchema = z.union([
     error_description: z.string().optional(),
     state: z.string().optional(),
   }),
-  z.object({ message: z.literal('createdProject'), projectId: z.string() }),
+  z.object({ message: z.string() }).passthrough(),
 ]);
 
 type Schema = z.infer<typeof dialogPayloadSchema>;

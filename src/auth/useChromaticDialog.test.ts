@@ -109,14 +109,26 @@ describe('useChromaticDialog', () => {
     expect(handler).toHaveBeenCalledWith({ message: 'login' });
   });
 
-  it('invalid payload: silently ignored (no handler call)', () => {
+  it('payload without a message field: silently ignored (no handler call)', () => {
     const handler = vi.fn();
     const [openDialog] = useChromaticDialog(handler);
 
     (openDialog as (url: string) => void)(ALLOWED_URL);
-    fakeWindow.dispatch(makeMsg(ALLOWED_ORIGIN, { message: 'totally-unknown' }, mockPopup));
+    fakeWindow.dispatch(makeMsg(ALLOWED_ORIGIN, { foo: 'bar' }, mockPopup));
 
     expect(handler).not.toHaveBeenCalled();
+  });
+
+  it('forwards arbitrary message-shaped payloads so consumers can validate them', () => {
+    const handler = vi.fn();
+    const [openDialog] = useChromaticDialog(handler);
+
+    (openDialog as (url: string) => void)(ALLOWED_URL);
+    fakeWindow.dispatch(
+      makeMsg(ALLOWED_ORIGIN, { message: 'createdProject', projectId: 'p1' }, mockPopup)
+    );
+
+    expect(handler).toHaveBeenCalledWith({ message: 'createdProject', projectId: 'p1' });
   });
 
   it('popup reuse: second openDialog replaces the ref; messages from first popup are ignored', () => {

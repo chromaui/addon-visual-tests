@@ -1,4 +1,5 @@
 import { useCallback, useRef } from 'react';
+import { z } from 'zod';
 
 import {
   type AuthSession,
@@ -15,6 +16,19 @@ export type GrantOutcome =
   | { kind: 'ignore' }
   | { kind: 'code'; code: string };
 
+const grantErrorSchema = z.object({
+  message: z.literal('grant'),
+  error: z.string(),
+  error_description: z.string().optional(),
+  state: z.string().optional(),
+});
+
+const grantCodeSchema = z.object({
+  message: z.literal('grant'),
+  code: z.string(),
+  state: z.string(),
+});
+
 export const exchangeOAuthCode = (
   params: Pick<TokenExchangeParameters, 'codeVerifier' | 'redirectUri' | 'sessionId' | 'subdomain'>,
   code: string
@@ -24,17 +38,23 @@ export const parseGrantPayload = (event: DialogPayload, expectedState: string): 
   if (event.message === 'login') return { kind: 'login' };
   if (event.message !== 'grant') return { kind: 'ignore' };
 
-  if ('error' in event) {
-    if (!('state' in event) || event.state !== expectedState) return { kind: 'ignore' };
-    return { kind: 'error', message: event.error_description || event.error };
+  const errorParsed = grantErrorSchema.safeParse(event);
+  if (errorParsed.success) {
+    if (errorParsed.data.state !== expectedState) return { kind: 'ignore' };
+    return {
+      kind: 'error',
+      message: errorParsed.data.error_description || errorParsed.data.error,
+    };
   }
-  if (!('code' in event) || !('state' in event)) {
+
+  const codeParsed = grantCodeSchema.safeParse(event);
+  if (!codeParsed.success) {
     return { kind: 'error', message: 'Unexpected OAuth callback payload' };
   }
-  if (event.state !== expectedState) {
+  if (codeParsed.data.state !== expectedState) {
     return { kind: 'error', message: 'Invalid OAuth state' };
   }
-  return { kind: 'code', code: event.code };
+  return { kind: 'code', code: codeParsed.data.code };
 };
 
 export type OAuthFlowContext = {

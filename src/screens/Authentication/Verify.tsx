@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { useClient } from 'urql';
+import { z } from 'zod';
 
 import type { AuthSession, TokenExchangeParameters } from '../../auth/requestAccessToken';
 import { useOAuthFlow } from '../../auth/useOAuthFlow';
@@ -14,6 +15,14 @@ import type { Project } from '../../gql/graphql';
 import { getFetchOptions, setAuthenticatedSession } from '../../utils/graphQLClient';
 import { useErrorNotification } from '../../utils/useErrorNotification';
 import { AuthHeader } from './AuthHeader';
+
+// The dialog transport forwards any addon message that has a `message` field.
+// Verify validates the createdProject relay locally so that schema lives next
+// to the consumer that owns it instead of inside useChromaticDialog.
+const createdProjectMessageSchema = z.object({
+  message: z.literal('createdProject'),
+  projectId: z.string(),
+});
 
 const ProjectCountQuery = graphql(/* GraphQL */ `
   query VisualTestsProjectCountQuery {
@@ -75,16 +84,16 @@ export const Verify = ({
     },
     onError: (err) => onError('Login Error', err),
     onMessage: (event, ctx) => {
-      if (event.message === 'createdProject') {
-        if (!authSession.current) {
-          onError('Unexpected missing auth session', new Error());
-          return;
-        }
-        setAuthenticatedSession(authSession.current);
-        setAccessToken(authSession.current.accessToken);
-        setCreatedProjectId(`Project:${event.projectId}`);
-        ctx.closeDialog();
+      const parsed = createdProjectMessageSchema.safeParse(event);
+      if (!parsed.success) return;
+      if (!authSession.current) {
+        onError('Unexpected missing auth session', new Error());
+        return;
       }
+      setAuthenticatedSession(authSession.current);
+      setAccessToken(authSession.current.accessToken);
+      setCreatedProjectId(`Project:${parsed.data.projectId}`);
+      ctx.closeDialog();
     },
   });
 
