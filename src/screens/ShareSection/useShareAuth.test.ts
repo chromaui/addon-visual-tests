@@ -75,7 +75,7 @@ afterEach(() => {
 });
 
 describe('useShareAuth', () => {
-  it('successful flow: startSignIn opens dialog, grant code triggers fetchAccessToken and updateToken', async () => {
+  it('successful flow: startSignIn opens dialog, grant code triggers fetchAccessToken and notifies authStore once', async () => {
     const setShareState = vi.fn();
     const auth = createAuthSession();
     mocks.initiateSignin.mockResolvedValueOnce(defaultParams);
@@ -92,7 +92,9 @@ describe('useShareAuth', () => {
 
     expect(mocks.exchangeOAuthCode).toHaveBeenCalledOnce();
     expect(mocks.setAuthenticatedSession).toHaveBeenCalledWith(auth);
-    expect(mocks.updateToken).toHaveBeenCalledWith('access-token-xyz');
+    // The authStore subscriber drives the React mirror, so the hook should
+    // not call updateToken on top of setAuthenticatedSession.
+    expect(mocks.updateToken).not.toHaveBeenCalled();
     expect(setShareState).toHaveBeenCalledWith({ status: 'uploading', shareUrl: '' });
   });
 

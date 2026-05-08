@@ -10,8 +10,10 @@ export function useShareAuth(setShareState: (s: ShareState) => void) {
 
   const { begin } = useOAuthFlow({
     onAuthenticated: (session, { closeDialog }) => {
+      // setAuthenticatedSession notifies authStore subscribers, including the
+      // useAccessToken hook that drives the React mirror, so we don't need a
+      // second updateToken call here.
       setAuthenticatedSession(session);
-      updateToken(session.accessToken);
       closeDialog();
       setShareState({ status: 'uploading', shareUrl: '' });
     },
