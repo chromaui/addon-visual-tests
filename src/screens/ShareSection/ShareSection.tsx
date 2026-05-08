@@ -3,6 +3,7 @@ import type { API } from 'storybook/manager-api';
 
 import { CANCEL_SHARE, GIT_INFO, SHARE_PROGRESS, START_SHARE, TELEMETRY } from '../../constants';
 import type { GitInfoPayload, ShareProgress } from '../../types';
+import { authStore } from '../../utils/authStore';
 import { checkOutdated } from '../../utils/checkOutdated';
 import { useAccessToken } from '../../utils/graphQLClient';
 import { useSessionState } from '../../utils/useSessionState';
@@ -44,7 +45,7 @@ function applyProgress(
         shareTriggeredId: progress.shareRequestId,
         screen: {
           status: 'uploading',
-          shareUrl: progress.status === 'uploading' ? progress.shareUrl ?? '' : '',
+          shareUrl: progress.status === 'uploading' ? (progress.shareUrl ?? '') : '',
         },
       };
     } else if (progress.status === 'complete' && progress.shareUrl !== lastCompletedShareUrl) {
@@ -194,6 +195,9 @@ export const ShareSection = ({ api }: { api: API }) => {
 
   const isRepeatShareRef = useRef(false);
   const prevShareStatusRef = useRef<string>(reducerState.screen.status);
+  // Whether we've already attempted a token refresh + retry for the current
+  // share attempt. Reset on terminal outcomes and on manual publish/republish.
+  const authRetriedRef = useRef(false);
 
   // Persist reducer state for cross-remount survival.
   useEffect(() => {
@@ -233,6 +237,7 @@ export const ShareSection = ({ api }: { api: API }) => {
   }, [token, reducerState.screen.status, sharedUploadInFlight]);
 
   const handlePublish = useCallback(() => {
+    authRetriedRef.current = false;
     dispatch({
       type: 'PUBLISH_REQUESTED',
       hasToken: Boolean(token),
@@ -295,6 +300,7 @@ export const ShareSection = ({ api }: { api: API }) => {
         emitTelemetry('share-url-received');
         break;
       case 'completed':
+        authRetriedRef.current = false;
         if (effect.isNew) {
           setLastCompletedShareUrl(effect.shareUrl);
           setLastCompletedGitInfo(effect.gitInfo);
@@ -302,10 +308,24 @@ export const ShareSection = ({ api }: { api: API }) => {
         }
         break;
       case 'auth-error':
-        updateToken(null);
-        emitTelemetry('share-failed');
+        // First auth error: refresh once. The auto-skip effect will re-emit
+        // START_SHARE under a new request id once authStore notifies its
+        // subscribers with the rotated token. If the refresh itself fails
+        // terminally, authStore.clear() runs internally and the user falls
+        // back to the sign-in screen. Subsequent auth errors in the same
+        // chain force a logout to avoid a refresh loop.
+        if (authRetriedRef.current) {
+          authRetriedRef.current = false;
+          updateToken(null);
+          emitTelemetry('share-failed');
+        } else {
+          authRetriedRef.current = true;
+          emitTelemetry('share-auth-retry');
+          void authStore.refresh().catch(() => undefined);
+        }
         break;
       case 'failed':
+        authRetriedRef.current = false;
         emitTelemetry('share-failed');
         break;
       default:

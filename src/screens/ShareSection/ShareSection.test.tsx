@@ -8,7 +8,8 @@ const mocks = vi.hoisted(() => {
   const channel = { emit: vi.fn(), on: vi.fn(), off: vi.fn() };
   const updateToken = vi.fn();
   const dispatch = vi.fn();
-  return { channel, updateToken, dispatch };
+  const refresh = vi.fn(() => Promise.resolve());
+  return { channel, updateToken, dispatch, refresh };
 });
 
 // Mutable per-test reducer state
@@ -41,6 +42,10 @@ vi.mock('storybook/manager-api', () => ({
 
 vi.mock('../../utils/graphQLClient', () => ({
   useAccessToken: () => ['token-123', mocks.updateToken],
+}));
+
+vi.mock('../../utils/authStore', () => ({
+  authStore: { refresh: mocks.refresh },
 }));
 
 vi.mock('../../utils/useSessionState', () => ({
@@ -134,7 +139,7 @@ describe('ShareSection', () => {
   });
 
   describe('auth-class server error', () => {
-    it('calls updateToken(null) on unauthorized error for matching shareRequestId', () => {
+    it('refreshes the session on unauthorized error and does not clear the token', () => {
       setReducer({
         screen: { status: 'uploading', shareUrl: '' },
         shareRequestId: 'req-1',
@@ -143,10 +148,15 @@ describe('ShareSection', () => {
 
       invokeShareSection();
 
-      expect(mocks.updateToken).toHaveBeenCalledWith(null);
+      expect(mocks.refresh).toHaveBeenCalledOnce();
+      expect(mocks.updateToken).not.toHaveBeenCalled();
+      const retryEmits = mocks.channel.emit.mock.calls.filter(
+        ([, payload]) => payload?.action === 'share-auth-retry'
+      );
+      expect(retryEmits.length).toBeGreaterThanOrEqual(1);
     });
 
-    it('calls updateToken(null) on 401 error for matching shareRequestId', () => {
+    it('refreshes the session on 401 error and does not clear the token', () => {
       setReducer({
         screen: { status: 'uploading', shareUrl: '' },
         shareRequestId: 'req-1',
@@ -159,7 +169,8 @@ describe('ShareSection', () => {
 
       invokeShareSection();
 
-      expect(mocks.updateToken).toHaveBeenCalledWith(null);
+      expect(mocks.refresh).toHaveBeenCalledOnce();
+      expect(mocks.updateToken).not.toHaveBeenCalled();
     });
   });
 
