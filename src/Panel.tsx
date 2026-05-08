@@ -64,19 +64,27 @@ export const Panel = ({ active }: PanelProps) => {
   const setAccessToken = useCallback(
     (token: string | null) => {
       updateAccessToken(token);
-      if (!token) {
-        clearSessionState(
-          'authenticationScreen',
-          'exchangeParameters',
-          'shareReducer',
-          'shareLastCompletedUrl',
-          'shareLastCompletedGitInfo'
-        );
-        setShareProgress(undefined);
-      }
     },
-    [updateAccessToken, setShareProgress]
+    [updateAccessToken]
   );
+
+  // Centralize logout cleanup: fire whenever the token transitions to null,
+  // regardless of whether the source is an explicit setAccessToken(null), a
+  // refresh failure inside authStore, or a viewer:null GraphQL response.
+  const prevAccessTokenRef = React.useRef<string | null>(accessToken);
+  useEffect(() => {
+    if (prevAccessTokenRef.current !== null && accessToken === null) {
+      clearSessionState(
+        'authenticationScreen',
+        'exchangeParameters',
+        'shareReducer',
+        'shareLastCompletedUrl',
+        'shareLastCompletedGitInfo'
+      );
+      setShareProgress(undefined);
+    }
+    prevAccessTokenRef.current = accessToken;
+  }, [accessToken, setShareProgress]);
   const { storyId } = useStorybookState();
 
   const [gitInfo] = useSharedState<GitInfoPayload>(GIT_INFO);
