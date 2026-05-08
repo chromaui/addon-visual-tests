@@ -2,6 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { Button } from 'storybook/internal/components';
 import { styled } from 'storybook/theming';
 
+import { finalizeSubdomain, normalizeSubdomain } from '../../auth/subdomain';
 import { Container } from '../../components/Container';
 import { Heading } from '../../components/Heading';
 import { ChromaticIcon } from '../../components/icons/ChromaticIcon';
@@ -9,7 +10,6 @@ import { Screen } from '../../components/Screen';
 import { Stack as BaseStack } from '../../components/Stack';
 import { SuffixInput } from '../../components/SuffixInput';
 import { Text } from '../../components/Text';
-import { finalizeSubdomain, normalizeSubdomain } from '../../utils/subdomain';
 import { AuthHeader } from './AuthHeader';
 
 const Stack = styled(BaseStack)({

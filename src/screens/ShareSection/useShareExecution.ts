@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef } from 'react';
 import type { API } from 'storybook/manager-api';
 
+import { authStore } from '../../auth/authStore';
 import { CANCEL_SHARE, START_SHARE, TELEMETRY } from '../../constants';
 import type { GitInfoPayload, ShareProgress } from '../../types';
-import { authStore } from '../../utils/authStore';
 import { applyProgress } from './shareMachine';
 import type { ShareAction, ShareReducerState } from './types';
 

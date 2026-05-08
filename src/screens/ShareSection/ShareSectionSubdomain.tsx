@@ -2,9 +2,9 @@ import { ChevronLeftIcon } from '@storybook/icons';
 import React, { useCallback, useState } from 'react';
 import { styled } from 'storybook/theming';
 
+import { finalizeSubdomain, normalizeSubdomain } from '../../auth/subdomain';
 import { Button } from '../../components/Button';
 import { SuffixInput } from '../../components/SuffixInput';
-import { finalizeSubdomain, normalizeSubdomain } from '../../utils/subdomain';
 import { ShareContainer, ShareDescription, ShareTitle, TextBlock } from './ShareSectionPrimitives';
 import { WhoHasAccess } from './WhoHasAccess';
 

@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('../env', () => ({ CHROMATIC_BASE_URL: 'https://www.chromatic.com' }));
 vi.mock('../constants', () => ({ OAUTH_CLIENT_ID: 'chromaui:addon-visual-tests' }));
-vi.mock('./sha256', () => ({ sha256: (_: string) => 'aabbccdd' }));
+vi.mock('../utils/sha256', () => ({ sha256: (_: string) => 'aabbccdd' }));
 
 // Stub window globals needed by requestAccessToken
 vi.stubGlobal('window', {

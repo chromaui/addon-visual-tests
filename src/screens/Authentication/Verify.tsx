@@ -1,6 +1,8 @@
 import React, { useRef } from 'react';
 import { useClient } from 'urql';
 
+import type { AuthSession, TokenExchangeParameters } from '../../auth/requestAccessToken';
+import { useOAuthFlow } from '../../auth/useOAuthFlow';
 import { Button } from '../../components/Button';
 import { Container } from '../../components/Container';
 import { Heading } from '../../components/Heading';
@@ -10,9 +12,7 @@ import { Text } from '../../components/Text';
 import { graphql } from '../../gql';
 import type { Project } from '../../gql/graphql';
 import { getFetchOptions, setAuthenticatedSession } from '../../utils/graphQLClient';
-import type { AuthSession, TokenExchangeParameters } from '../../utils/requestAccessToken';
 import { useErrorNotification } from '../../utils/useErrorNotification';
-import { useOAuthFlow } from '../../utils/useOAuthFlow';
 import { AuthHeader } from './AuthHeader';
 
 const ProjectCountQuery = graphql(/* GraphQL */ `

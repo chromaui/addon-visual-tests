@@ -3,6 +3,7 @@ import React, { useCallback, useEffect } from 'react';
 import { styled } from 'storybook/theming';
 import { useQuery } from 'urql';
 
+import { DialogHandler, useChromaticDialog } from '../../auth/useChromaticDialog';
 import { Container } from '../../components/Container';
 import { Avatar, Link, ListItem } from '../../components/design-system';
 import { Heading } from '../../components/Heading';
@@ -12,7 +13,6 @@ import { Text } from '../../components/Text';
 import { graphql } from '../../gql';
 import type { Project, SelectProjectsQueryQuery } from '../../gql/graphql';
 import { useTelemetry } from '../../utils/TelemetryContext';
-import { DialogHandler, useChromaticDialog } from '../../utils/useChromaticDialog';
 import { useSessionState } from '../../utils/useSessionState';
 
 const SelectProjectsQuery = graphql(/* GraphQL */ `

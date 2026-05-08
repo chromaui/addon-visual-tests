@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { parseGrantPayload } from './oauthGrant';
+import { parseGrantPayload } from './useOAuthFlow';
 
 describe('parseGrantPayload', () => {
   it('returns kind=login for login message', () => {

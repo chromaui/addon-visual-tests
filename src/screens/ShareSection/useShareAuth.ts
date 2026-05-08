@@ -1,8 +1,8 @@
 import { useCallback } from 'react';
 
+import { initiateSignin } from '../../auth/requestAccessToken';
+import { useOAuthFlow } from '../../auth/useOAuthFlow';
 import { setAuthenticatedSession, useAccessToken } from '../../utils/graphQLClient';
-import { initiateSignin } from '../../utils/requestAccessToken';
-import { useOAuthFlow } from '../../utils/useOAuthFlow';
 import type { ShareState } from './types';
 
 export function useShareAuth(setShareState: (s: ShareState) => void) {

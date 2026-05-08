@@ -44,7 +44,7 @@ vi.mock('../../utils/graphQLClient', () => ({
   useAccessToken: () => ['token-123', mocks.updateToken],
 }));
 
-vi.mock('../../utils/authStore', () => ({
+vi.mock('../../auth/authStore', () => ({
   authStore: { refresh: mocks.refresh },
 }));
 

@@ -3,10 +3,10 @@ import React from 'react';
 import { useAddonState } from 'storybook/manager-api';
 import { Client, type ClientOptions, fetchExchange, mapExchange, Provider } from 'urql';
 
+import { authStore, SESSION_EXPIRED_EVENT_NAME } from '../auth/authStore';
+import type { AuthSession } from '../auth/requestAccessToken';
 import { ADDON_ID } from '../constants';
 import { CHROMATIC_API_URL } from '../env';
-import { authStore, SESSION_EXPIRED_EVENT_NAME } from './authStore';
-import type { AuthSession } from './requestAccessToken';
 
 export const setAuthenticatedSession = (auth: AuthSession) => authStore.setAuth(auth);
 

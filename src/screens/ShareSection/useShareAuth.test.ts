@@ -34,18 +34,17 @@ vi.mock('../../utils/graphQLClient', () => ({
   setAuthenticatedSession: mocks.setAuthenticatedSession,
 }));
 
-vi.mock('../../utils/oauthGrant', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('../../utils/oauthGrant')>();
-  return { ...actual, exchangeOAuthCode: mocks.exchangeOAuthCode };
-});
-
-vi.mock('../../utils/requestAccessToken', () => ({
+vi.mock('../../auth/requestAccessToken', () => ({
   initiateSignin: mocks.initiateSignin,
+  // exchangeOAuthCode (now internal to useOAuthFlow) is just a passthrough to
+  // fetchAccessToken, so mocking fetchAccessToken intercepts the network call
+  // the hook actually makes.
+  fetchAccessToken: mocks.exchangeOAuthCode,
 }));
 
 // Capture the handler registered with useChromaticDialog
 let capturedHandler: ((event: any) => Promise<void>) | undefined;
-vi.mock('../../utils/useChromaticDialog', () => ({
+vi.mock('../../auth/useChromaticDialog', () => ({
   useChromaticDialog: (handler: (event: any) => Promise<void>) => {
     capturedHandler = handler;
     return [mocks.openDialog, mocks.closeDialog] as const;

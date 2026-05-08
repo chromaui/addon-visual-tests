@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { OAUTH_CLIENT_ID } from '../constants';
 import { CHROMATIC_BASE_URL } from '../env';
 // @ts-expect-error File is in plain JS
-import { sha256 } from './sha256';
+import { sha256 } from '../utils/sha256';
 import { SUBDOMAIN_REGEX } from './subdomain';
 
 // Details we exchange with the Chromatic OAuth server

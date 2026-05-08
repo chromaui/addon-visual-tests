@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import type { AuthSession } from '../auth/requestAccessToken';
 import { ACCESS_TOKEN_KEY } from '../env';
 import { __testUtils, setAuthenticatedSession } from './graphQLClient';
-import type { AuthSession } from './requestAccessToken';
 
 const createAuth = (overrides: Partial<AuthSession> = {}): AuthSession => ({
   version: 2,
