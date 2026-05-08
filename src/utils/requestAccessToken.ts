@@ -4,6 +4,7 @@ import { OAUTH_CLIENT_ID } from '../constants';
 import { CHROMATIC_BASE_URL } from '../env';
 // @ts-expect-error File is in plain JS
 import { sha256 } from './sha256';
+import { SUBDOMAIN_REGEX } from './subdomain';
 
 // Details we exchange with the Chromatic OAuth server
 export type TokenExchangeParameters = {
@@ -14,8 +15,6 @@ export type TokenExchangeParameters = {
   authorizationUrl: string;
   subdomain?: string;
 };
-
-const SUBDOMAIN_REGEX = /^[a-z0-9][a-z0-9-]{0,62}$/;
 
 export const AuthSessionSchema = z.object({
   version: z.literal(2),
