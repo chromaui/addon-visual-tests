@@ -147,4 +147,34 @@ describe('useChromaticDialog', () => {
 
     expect(mockPopup.close).toHaveBeenCalledOnce();
   });
+
+  it('closeDialog: subsequent messages from the closed popup are ignored', () => {
+    const handler = vi.fn();
+    const [openDialog, closeDialog] = useChromaticDialog(handler);
+
+    (openDialog as (url: string) => void)(ALLOWED_URL);
+    (closeDialog as () => void)();
+
+    fakeWindow.dispatch(makeMsg(ALLOWED_ORIGIN, { message: 'login' }, mockPopup));
+
+    expect(handler).not.toHaveBeenCalled();
+  });
+
+  it('popup blocked: openDialog returns false and accepts no messages', () => {
+    (window.open as ReturnType<typeof vi.fn>).mockReturnValueOnce(null);
+    const handler = vi.fn();
+    const [openDialog] = useChromaticDialog(handler);
+
+    const opened = (openDialog as (url: string) => boolean)(ALLOWED_URL);
+
+    expect(opened).toBe(false);
+    fakeWindow.dispatch(makeMsg(ALLOWED_ORIGIN, { message: 'login' }, mockPopup));
+    expect(handler).not.toHaveBeenCalled();
+  });
+
+  it('openDialog: returns true when the popup opens successfully', () => {
+    const [openDialog] = useChromaticDialog();
+    const opened = (openDialog as (url: string) => boolean)(ALLOWED_URL);
+    expect(opened).toBe(true);
+  });
 });
