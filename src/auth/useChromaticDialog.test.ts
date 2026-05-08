@@ -119,7 +119,7 @@ describe('useChromaticDialog', () => {
     expect(handler).not.toHaveBeenCalled();
   });
 
-  it('forwards arbitrary message-shaped payloads so consumers can validate them', () => {
+  it('forwards the createdProject relay so Verify/LinkProject can validate it', () => {
     const handler = vi.fn();
     const [openDialog] = useChromaticDialog(handler);
 
@@ -129,6 +129,16 @@ describe('useChromaticDialog', () => {
     );
 
     expect(handler).toHaveBeenCalledWith({ message: 'createdProject', projectId: 'p1' });
+  });
+
+  it('drops the pre-redirect grant heartbeat (denied flag, no code/state)', () => {
+    const handler = vi.fn();
+    const [openDialog] = useChromaticDialog(handler);
+
+    (openDialog as (url: string) => void)(ALLOWED_URL);
+    fakeWindow.dispatch(makeMsg(ALLOWED_ORIGIN, { message: 'grant', denied: false }, mockPopup));
+
+    expect(handler).not.toHaveBeenCalled();
   });
 
   it('popup reuse: second openDialog replaces the ref; messages from first popup are ignored', () => {
