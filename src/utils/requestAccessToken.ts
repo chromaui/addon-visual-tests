@@ -35,6 +35,19 @@ const TokenResponseSchema = z.object({
 
 export type TokenResponse = z.infer<typeof TokenResponseSchema>;
 
+// Refresh failures that mean the refresh token is unusable. The session
+// must be cleared and the user must sign in again. Transient failures
+// (network, 5xx, AbortError) preserve the current session for retry.
+export class TerminalAuthError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'TerminalAuthError';
+  }
+}
+
+const isTerminalRefreshStatus = (status: number) =>
+  status === 400 || status === 401 || status === 403;
+
 const bytes = (buf: number[]) => String.fromCharCode(...buf);
 
 const base64 = (val: string | number[]) => window.btoa(Array.isArray(val) ? bytes(val) : val);
@@ -177,7 +190,11 @@ export const refreshAccessToken = async ({
   });
 
   if (!res.ok) {
-    throw new Error(`Token refresh failed (${res.status})`);
+    const message = `Token refresh failed (${res.status})`;
+    if (isTerminalRefreshStatus(res.status)) {
+      throw new TerminalAuthError(message);
+    }
+    throw new Error(message);
   }
 
   const data = await decodeTokenResponse(res, 'Token refresh failed');

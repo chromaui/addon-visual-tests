@@ -2,7 +2,12 @@ import { v4 as uuid } from 'uuid';
 
 import { ADDON_ID } from '../constants';
 import { ACCESS_TOKEN_KEY } from '../env';
-import { type AuthSession, AuthSessionSchema, refreshAccessToken } from './requestAccessToken';
+import {
+  type AuthSession,
+  AuthSessionSchema,
+  refreshAccessToken,
+  TerminalAuthError,
+} from './requestAccessToken';
 
 const REFRESH_TIMEOUT_MS = 10_000;
 const SESSION_EXPIRED_EVENT = `${ADDON_ID}/session-expired`;
@@ -72,7 +77,7 @@ class AuthStore {
   private async attemptRefresh() {
     const auth = this.auth;
     if (!auth) {
-      throw new Error('Token refresh failed (401)');
+      throw new TerminalAuthError('Token refresh failed (401)');
     }
     const generation = this.generation;
     const abortController = new AbortController();
@@ -148,11 +153,19 @@ class AuthStore {
       return;
     }
     if (!this.refreshing) {
+      const capturedGeneration = this.generation;
       this.refreshing = this.attemptRefresh()
         .catch((error) => {
-          console.warn('Session expired. Please sign in again.');
-          this.clear();
-          this.notifySessionExpired();
+          // Only surface the failure as a logout if (a) this refresh is
+          // still the latest (no newer setAuth has bumped the generation)
+          // and (b) the error is terminal (refresh token unusable).
+          // Transient failures (network, 5xx, AbortError) preserve the
+          // session so the next request can retry.
+          if (capturedGeneration === this.generation && error instanceof TerminalAuthError) {
+            console.warn('Session expired. Please sign in again.');
+            this.clear();
+            this.notifySessionExpired();
+          }
           throw error;
         })
         .finally(() => {
