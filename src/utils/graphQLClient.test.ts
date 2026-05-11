@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { AuthSession } from '../auth/requestAccessToken';
 import { ACCESS_TOKEN_KEY } from '../env';
-import { __testUtils, setAuthenticatedSession } from './graphQLClient';
+import { __testUtils, createClient, setAuthenticatedSession } from './graphQLClient';
 
 const createAuth = (overrides: Partial<AuthSession> = {}): AuthSession => ({
   version: 2,
@@ -12,6 +12,16 @@ const createAuth = (overrides: Partial<AuthSession> = {}): AuthSession => ({
   ...overrides,
 });
 
+const createJwtWithExp = (exp: number) => {
+  const encodeSegment = (value: object) =>
+    globalThis
+      .btoa(JSON.stringify(value))
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=/g, '');
+
+  return `${encodeSegment({ alg: 'HS256', typ: 'JWT' })}.${encodeSegment({ exp })}.signature`;
+};
 const ensureLocalStorage = () => {
   if (globalThis.localStorage) {
     return;
@@ -165,5 +175,83 @@ describe('graphQLClient refresh auth', () => {
 
     expect(__testUtils.getCurrentAuth()).toBeNull();
     expect(localStorage.getItem(ACCESS_TOKEN_KEY)).toBeNull();
+  });
+
+  it('does not clear auth when viewer is null without an auth error', async () => {
+    setAuthenticatedSession(createAuth());
+    const client = createClient();
+    vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          data: {
+            viewer: null,
+          },
+        }),
+        {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      )
+    );
+
+    const result = await client.query('{ viewer { __typename } }', {}).toPromise();
+
+    expect(result.error).toBeUndefined();
+    expect(__testUtils.getCurrentAuth()).toMatchObject({
+      accessToken: 'access-token-1',
+      refreshToken: 'refresh-token-1',
+    });
+  });
+
+  it('refreshes session before query when token is near expiry', async () => {
+    const nowSeconds = Math.floor(Date.now() / 1000);
+    const soonToExpireToken = createJwtWithExp(nowSeconds + 30);
+    const refreshedToken = createJwtWithExp(nowSeconds + 3600);
+    setAuthenticatedSession(
+      createAuth({
+        accessToken: soonToExpireToken,
+      })
+    );
+
+    const client = createClient();
+    const fetchSpy = vi
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            access_token: refreshedToken,
+            refresh_token: 'refresh-token-2',
+          }),
+          { status: 200 }
+        )
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            data: {
+              viewer: null,
+            },
+          }),
+          {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          }
+        )
+      );
+
+    await client.query('{ viewer { __typename } }', {}).toPromise();
+
+    expect(fetchSpy).toHaveBeenCalledTimes(2);
+    expect(fetchSpy).toHaveBeenNthCalledWith(
+      1,
+      expect.stringMatching(/\/token$/),
+      expect.objectContaining({
+        method: 'POST',
+      })
+    );
+    expect(__testUtils.getCurrentAuth()).toMatchObject({
+      accessToken: refreshedToken,
+      refreshToken: 'refresh-token-2',
+    });
   });
 });
