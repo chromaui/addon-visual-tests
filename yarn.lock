@@ -467,7 +467,7 @@ __metadata:
     "@vitest/coverage-v8": "npm:^3.0.8"
     auto: "npm:^11.0.5"
     boxen: "npm:^5.0.1"
-    chromatic: "npm:16.10.0--canary.1284.25486644217.0"
+    chromatic: "npm:16.10.0"
     date-fns: "npm:^2.30.0"
     dedent: "npm:^0.7.0"
     eslint: "npm:^9.21.0"
@@ -4263,9 +4263,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chromatic@npm:16.10.0--canary.1284.25486644217.0":
-  version: 16.10.0--canary.1284.25486644217.0
-  resolution: "chromatic@npm:16.10.0--canary.1284.25486644217.0"
+"chromatic@npm:16.10.0":
+  version: 16.10.0
+  resolution: "chromatic@npm:16.10.0"
   dependencies:
     semver: "npm:^7.3.5"
   peerDependencies:
@@ -4283,7 +4283,7 @@ __metadata:
     chroma: dist/bin.cjs
     chromatic: dist/bin.cjs
     chromatic-cli: dist/bin.cjs
-  checksum: 10c0/95075a4ed04238e52ff429c5036c9673c196a52d9e5fcf7797255ff5e359c0988f0c9305581eafe5871cc2671fc085f6999f133f662620e553a6e60de9d7f286
+  checksum: 10c0/4867da7b0512c6c86b00b7e633908e90594b893801202577d76849d9b0ba61c716dfa7479dcb5c0786665b7fe6560ede262ad6a16696fc74c2240cc6d5bf485c
   languageName: node
   linkType: hard
 
