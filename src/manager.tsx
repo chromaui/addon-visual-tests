@@ -13,8 +13,8 @@ import {
   TEST_PROVIDER_ID,
 } from './constants.ts';
 import { Panel } from './Panel';
-import { ShareToolbarButton } from './screens/SharePopup/ShareToolbarButton';
 import { isSharePopupOpen } from './screens/SharePopup/SharePopup';
+import { ShareToolbarButton } from './screens/SharePopup/ShareToolbarButton';
 import { TestProviderRender } from './TestProviderRender';
 import type { ShareProgress } from './types';
 import { SharedState } from './utils/SharedState';

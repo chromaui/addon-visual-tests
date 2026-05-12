@@ -112,11 +112,7 @@ export const SharePopup = ({ api }: { api: API }) => {
       );
     case 'error':
       return (
-        <SharePopupError
-          reason={screen.reason}
-          message={screen.message}
-          onRetry={handlePublish}
-        />
+        <SharePopupError reason={screen.reason} message={screen.message} onRetry={handlePublish} />
       );
     default:
       return null;
