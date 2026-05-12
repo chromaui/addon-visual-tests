@@ -10,7 +10,7 @@ import {
   ShareDescription,
   ShareTitle,
   TextBlock,
-} from './ShareSectionPrimitives';
+} from './SharePopupPrimitives';
 import { UrlCopyField } from './UrlCopyField';
 import { WhoHasAccess } from './WhoHasAccess';
 
@@ -60,7 +60,7 @@ const InfoBannerText = styled.span(({ theme }) => ({
   lineHeight: '20px',
 }));
 
-interface ShareSectionCompleteProps {
+interface SharePopupCompleteProps {
   shareUrl: string;
   publishedAt: number;
   daysToExpire?: number;
@@ -71,14 +71,14 @@ interface ShareSectionCompleteProps {
 
 const CELEBRATION_DURATION_MS = 5000;
 
-export const ShareSectionComplete = ({
+export const SharePopupComplete = ({
   shareUrl,
   publishedAt,
   daysToExpire,
   isOutdated,
   onPublishAgain,
   onCopy,
-}: ShareSectionCompleteProps) => {
+}: SharePopupCompleteProps) => {
   const [showCelebration, setShowCelebration] = useState(
     () => Date.now() - publishedAt < CELEBRATION_DURATION_MS
   );

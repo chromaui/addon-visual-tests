@@ -2,7 +2,7 @@ import { ChevronSmallRightIcon, GlobeIcon } from '@storybook/icons';
 import React from 'react';
 import { styled, useTheme } from 'storybook/theming';
 
-import { ShareTitle } from './ShareSectionPrimitives';
+import { ShareTitle } from './SharePopupPrimitives';
 
 const WhoHasAccessBlock = styled.div({
   display: 'flex',

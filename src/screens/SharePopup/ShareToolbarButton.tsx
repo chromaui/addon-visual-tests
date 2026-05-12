@@ -1,8 +1,7 @@
-import React from 'react';
 import { Button, PopoverProvider } from 'storybook/internal/components';
 import type { API } from 'storybook/manager-api';
 
-import { ShareSection } from './ShareSection';
+import { SharePopup } from './SharePopup';
 
 export const ShareToolbarButton = ({ api }: { api: API }) => (
   <PopoverProvider
@@ -11,7 +10,7 @@ export const ShareToolbarButton = ({ api }: { api: API }) => (
     ariaLabel="Share your Storybook"
     placement="bottom"
     padding={0}
-    popover={<ShareSection api={api} />}
+    popover={<SharePopup api={api} />}
   >
     <Button variant="ghost" padding="small" id="chromatic-share-button">
       Share

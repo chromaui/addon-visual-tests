@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useReducer } from 'react';
+import { useCallback, useEffect, useReducer } from 'react';
 import type { API } from 'storybook/manager-api';
 
 import { GIT_INFO, SHARE_PROGRESS } from '../../constants';
@@ -9,17 +9,17 @@ import { useSessionState } from '../../utils/useSessionState';
 import { useSharedState } from '../../utils/useSharedState';
 import { setPresent } from './popoverPresence';
 import { initialState, shareReducer } from './shareMachine';
-import { ShareSectionComplete } from './ShareSectionComplete';
-import { ShareSectionError } from './ShareSectionError';
-import { ShareSectionIdle } from './ShareSectionIdle';
-import { ShareSectionSubdomain } from './ShareSectionSubdomain';
-import { ShareSectionUploading } from './ShareSectionUploading';
-import { ShareSectionWelcome } from './ShareSectionWelcome';
+import { SharePopupComplete } from './SharePopupComplete';
+import { SharePopupError } from './SharePopupError';
+import { SharePopupIdle } from './SharePopupIdle';
+import { SharePopupSubdomain } from './SharePopupSubdomain';
+import { SharePopupUploading } from './SharePopupUploading';
+import { SharePopupWelcome } from './SharePopupWelcome';
 import type { ShareReducerState, ShareState } from './types';
 import { useShareAuth } from './useShareAuth';
 import { useShareExecution } from './useShareExecution';
 
-export const ShareSection = ({ api }: { api: API }) => {
+export const SharePopup = ({ api }: { api: API }) => {
   const [token] = useAccessToken();
   const [gitInfo] = useSharedState<GitInfoPayload>(GIT_INFO);
   const [shareProgress] = useSharedState<ShareProgress>(SHARE_PROGRESS);
@@ -70,24 +70,24 @@ export const ShareSection = ({ api }: { api: API }) => {
   const screen = reducerState.screen;
   switch (screen.status) {
     case 'welcome':
-      return <ShareSectionWelcome onPublish={handlePublish} />;
+      return <SharePopupWelcome onPublish={handlePublish} />;
     case 'idle':
       return (
-        <ShareSectionIdle
+        <SharePopupIdle
           onSignIn={() => startSignIn()}
           onSignInWithSSO={() => dispatch({ type: 'GO_SUBDOMAIN' })}
         />
       );
     case 'subdomain':
       return (
-        <ShareSectionSubdomain
+        <SharePopupSubdomain
           onSubmit={(subdomain) => startSignIn(subdomain)}
           onBack={() => dispatch({ type: 'BACK_TO_IDLE' })}
         />
       );
     case 'uploading':
       return (
-        <ShareSectionUploading
+        <SharePopupUploading
           shareUrl={screen.shareUrl}
           step={shareProgress?.status}
           onCopy={() => emitTelemetry('share-url-copied')}
@@ -96,7 +96,7 @@ export const ShareSection = ({ api }: { api: API }) => {
       );
     case 'complete':
       return (
-        <ShareSectionComplete
+        <SharePopupComplete
           shareUrl={screen.shareUrl}
           publishedAt={screen.publishedAt}
           daysToExpire={screen.daysToExpire}
@@ -107,7 +107,7 @@ export const ShareSection = ({ api }: { api: API }) => {
       );
     case 'error':
       return (
-        <ShareSectionError
+        <SharePopupError
           reason={screen.reason}
           message={screen.message}
           onRetry={handlePublish}

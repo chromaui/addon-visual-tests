@@ -8,15 +8,15 @@ import {
   ShareTextLink,
   ShareTitle,
   TextBlock,
-} from './ShareSectionPrimitives';
+} from './SharePopupPrimitives';
 import { WhoHasAccess } from './WhoHasAccess';
 
-interface ShareSectionIdleProps {
+interface SharePopupIdleProps {
   onSignIn: () => void;
   onSignInWithSSO: () => void;
 }
 
-export const ShareSectionIdle = ({ onSignIn, onSignInWithSSO }: ShareSectionIdleProps) => (
+export const SharePopupIdle = ({ onSignIn, onSignInWithSSO }: SharePopupIdleProps) => (
   <ShareContainer>
     <TextBlock>
       <ShareTitle>Publish and share builds</ShareTitle>

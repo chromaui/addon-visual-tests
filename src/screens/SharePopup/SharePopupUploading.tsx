@@ -10,7 +10,7 @@ import {
   ShareTitle,
   StatusRow,
   TextBlock,
-} from './ShareSectionPrimitives';
+} from './SharePopupPrimitives';
 import { UrlCopyField } from './UrlCopyField';
 import { WhoHasAccess } from './WhoHasAccess';
 
@@ -21,19 +21,19 @@ const statusLabels: Record<ShareProgress['status'], string> = {
   error: 'Publishing failed',
 };
 
-interface ShareSectionUploadingProps {
+interface SharePopupUploadingProps {
   shareUrl?: string;
   step?: ShareProgress['status'];
   onCopy?: () => void;
   onCancel?: () => void;
 }
 
-export const ShareSectionUploading = ({
+export const SharePopupUploading = ({
   shareUrl,
   step = 'pending',
   onCopy,
   onCancel,
-}: ShareSectionUploadingProps) => {
+}: SharePopupUploadingProps) => {
   const canCancel = onCancel && step !== 'complete';
   return (
     <ShareContainer>

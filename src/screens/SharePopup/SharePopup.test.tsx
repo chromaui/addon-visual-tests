@@ -68,12 +68,12 @@ vi.mock('./popoverPresence', () => ({
   isPresent: () => false,
 }));
 
-vi.mock('./ShareSectionWelcome', () => ({ ShareSectionWelcome: vi.fn() }));
-vi.mock('./ShareSectionIdle', () => ({ ShareSectionIdle: vi.fn() }));
-vi.mock('./ShareSectionSubdomain', () => ({ ShareSectionSubdomain: vi.fn() }));
-vi.mock('./ShareSectionUploading', () => ({ ShareSectionUploading: vi.fn() }));
-vi.mock('./ShareSectionComplete', () => ({ ShareSectionComplete: vi.fn() }));
-vi.mock('./ShareSectionError', () => ({ ShareSectionError: vi.fn() }));
+vi.mock('./SharePopupWelcome', () => ({ SharePopupWelcome: vi.fn() }));
+vi.mock('./SharePopupIdle', () => ({ SharePopupIdle: vi.fn() }));
+vi.mock('./SharePopupSubdomain', () => ({ SharePopupSubdomain: vi.fn() }));
+vi.mock('./SharePopupUploading', () => ({ SharePopupUploading: vi.fn() }));
+vi.mock('./SharePopupComplete', () => ({ SharePopupComplete: vi.fn() }));
+vi.mock('./SharePopupError', () => ({ SharePopupError: vi.fn() }));
 
 vi.mock('../../utils/SharedState', () => ({
   SharedState: { subscribe: vi.fn(() => ({ value: undefined, on: vi.fn(), off: vi.fn() })) },
@@ -82,7 +82,7 @@ vi.mock('../../utils/SharedState', () => ({
 vi.mock('../../utils/checkOutdated', () => ({ checkOutdated: vi.fn(() => false) }));
 
 // Import after mocks — we only exercise effects, no DOM render needed
-const { ShareSection } = await import('./ShareSection');
+const { SharePopup } = await import('./SharePopup');
 
 function makeApi() {
   return {
@@ -92,8 +92,8 @@ function makeApi() {
 }
 
 // Call the component as a plain function to trigger all useEffect calls
-function invokeShareSection() {
-  (ShareSection as any)({ api: makeApi() });
+function invokeSharePopup() {
+  (SharePopup as any)({ api: makeApi() });
 }
 
 function setReducer(partial: Partial<ShareReducerState>) {
@@ -115,7 +115,7 @@ afterEach(() => {
   shareProgressValue = undefined;
 });
 
-describe('ShareSection', () => {
+describe('SharePopup', () => {
   describe('stale shareProgress filtering by shareRequestId', () => {
     it('ignores progress with a different shareRequestId when one is active locally', () => {
       setReducer({
@@ -129,7 +129,7 @@ describe('ShareSection', () => {
         shareRequestId: 'other-request-id',
       };
 
-      invokeShareSection();
+      invokeSharePopup();
 
       const urlReceivedEmits = mocks.channel.emit.mock.calls.filter(
         ([, payload]) => payload?.action === 'share-url-received'
@@ -146,7 +146,7 @@ describe('ShareSection', () => {
       });
       shareProgressValue = { status: 'error', error: 'unauthorized', shareRequestId: 'req-1' };
 
-      invokeShareSection();
+      invokeSharePopup();
 
       expect(mocks.refresh).toHaveBeenCalledOnce();
       expect(mocks.updateToken).not.toHaveBeenCalled();
@@ -167,7 +167,7 @@ describe('ShareSection', () => {
         shareRequestId: 'req-1',
       };
 
-      invokeShareSection();
+      invokeSharePopup();
 
       expect(mocks.refresh).toHaveBeenCalledOnce();
       expect(mocks.updateToken).not.toHaveBeenCalled();
@@ -186,7 +186,7 @@ describe('ShareSection', () => {
         shareRequestId: 'req-1',
       };
 
-      invokeShareSection();
+      invokeSharePopup();
 
       const failedEmits = mocks.channel.emit.mock.calls.filter(
         ([, payload]) => payload?.action === 'share-failed'
@@ -210,7 +210,7 @@ describe('ShareSection', () => {
         shareRequestId: 'req-1',
       };
 
-      invokeShareSection();
+      invokeSharePopup();
 
       expect(mocks.updateToken).not.toHaveBeenCalled();
     });
@@ -230,7 +230,7 @@ describe('ShareSection', () => {
         shareRequestId: 'req-1',
       };
 
-      invokeShareSection();
+      invokeSharePopup();
 
       const startShareEmits = mocks.channel.emit.mock.calls.filter(
         ([event]) => event && event.endsWith('startShare')
@@ -246,7 +246,7 @@ describe('ShareSection', () => {
       });
       shareProgressValue = undefined;
 
-      invokeShareSection();
+      invokeSharePopup();
 
       const startShareEmits = mocks.channel.emit.mock.calls.filter(
         ([event]) => event && event.endsWith('startShare')
@@ -269,7 +269,7 @@ describe('ShareSection', () => {
         shareRequestId: 'req-1',
       };
 
-      invokeShareSection();
+      invokeSharePopup();
 
       const completedEmits = mocks.channel.emit.mock.calls.filter(
         ([, payload]) => payload?.action === 'share-upload-completed'
@@ -289,7 +289,7 @@ describe('ShareSection', () => {
         shareRequestId: 'req-1',
       };
 
-      invokeShareSection();
+      invokeSharePopup();
 
       const failedEmits = mocks.channel.emit.mock.calls.filter(
         ([, payload]) => payload?.action === 'share-failed'
@@ -303,7 +303,7 @@ describe('ShareSection', () => {
       setReducer({ screen: { status: 'welcome' } });
       shareProgressValue = undefined;
 
-      invokeShareSection();
+      invokeSharePopup();
 
       const autoSkipDispatches = mocks.dispatch.mock.calls.filter(
         ([action]) => action?.type === 'AUTO_SKIP_TO_UPLOADING'
@@ -319,7 +319,7 @@ describe('ShareSection', () => {
         shareRequestId: 'req-1',
       };
 
-      invokeShareSection();
+      invokeSharePopup();
 
       const autoSkipDispatches = mocks.dispatch.mock.calls.filter(
         ([action]) => action?.type === 'AUTO_SKIP_TO_UPLOADING'
@@ -329,8 +329,8 @@ describe('ShareSection', () => {
   });
 
   describe('complete state — Delete link regression guard', () => {
-    it('renders ShareSectionComplete without onDelete prop', async () => {
-      const { ShareSectionComplete } = await import('./ShareSectionComplete');
+    it('renders SharePopupComplete without onDelete prop', async () => {
+      const { SharePopupComplete } = await import('./SharePopupComplete');
       setReducer({
         screen: {
           status: 'complete',
@@ -340,8 +340,8 @@ describe('ShareSection', () => {
         },
       });
 
-      const tree = (ShareSection as any)({ api: makeApi() });
-      const completeElement = findElement(tree, ShareSectionComplete);
+      const tree = (SharePopup as any)({ api: makeApi() });
+      const completeElement = findElement(tree, SharePopupComplete);
       expect(completeElement).toBeTruthy();
       expect(completeElement!.props).not.toHaveProperty('onDelete');
     });

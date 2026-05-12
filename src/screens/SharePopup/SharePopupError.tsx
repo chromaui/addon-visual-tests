@@ -10,7 +10,7 @@ import {
   ShareTitle,
   StatusRow,
   TextBlock,
-} from './ShareSectionPrimitives';
+} from './SharePopupPrimitives';
 import { WhoHasAccess } from './WhoHasAccess';
 
 const ErrorRow = styled(StatusRow)({
@@ -28,18 +28,18 @@ const ErrorMessage = styled.span(({ theme }) => ({
   lineHeight: '16px',
 }));
 
-interface ShareSectionErrorProps {
+interface SharePopupErrorProps {
   reason: 'upload-canceled' | 'unknown';
   message?: string;
   onRetry: () => void;
 }
 
-const reasonMessages: Record<ShareSectionErrorProps['reason'], string> = {
+const reasonMessages: Record<SharePopupErrorProps['reason'], string> = {
   'upload-canceled': 'Upload canceled',
   unknown: 'An unexpected error occurred. Please try again.',
 };
 
-export const ShareSectionError = ({ reason, message, onRetry }: ShareSectionErrorProps) => {
+export const SharePopupError = ({ reason, message, onRetry }: SharePopupErrorProps) => {
   const mappedReason = reason === 'unknown' && message ? message : reasonMessages[reason];
 
   return (

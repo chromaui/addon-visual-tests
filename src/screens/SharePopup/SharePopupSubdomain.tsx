@@ -5,7 +5,7 @@ import { styled } from 'storybook/theming';
 import { finalizeSubdomain, normalizeSubdomain } from '../../auth/subdomain';
 import { Button } from '../../components/Button';
 import { SuffixInput } from '../../components/SuffixInput';
-import { ShareContainer, ShareDescription, ShareTitle, TextBlock } from './ShareSectionPrimitives';
+import { ShareContainer, ShareDescription, ShareTitle, TextBlock } from './SharePopupPrimitives';
 import { WhoHasAccess } from './WhoHasAccess';
 
 const Form = styled.form({
@@ -36,12 +36,12 @@ const BackButton = styled(Button)({
   left: 6,
 });
 
-interface ShareSectionSubdomainProps {
+interface SharePopupSubdomainProps {
   onSubmit: (subdomain: string) => void;
   onBack: () => void;
 }
 
-export const ShareSectionSubdomain = ({ onSubmit, onBack }: ShareSectionSubdomainProps) => {
+export const SharePopupSubdomain = ({ onSubmit, onBack }: SharePopupSubdomainProps) => {
   const [subdomain, setSubdomain] = useState('');
   const [inputError, setInputError] = useState<string | null>(null);
 

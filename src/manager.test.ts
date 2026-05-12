@@ -11,7 +11,9 @@ vi.hoisted(() => {
       delete store[key];
     },
     clear: () => {
-      Object.keys(store).forEach((k) => delete store[k]);
+      Object.keys(store).forEach((k) => {
+        delete store[k];
+      });
     },
     key: (index: number) => Object.keys(store)[index] ?? null,
     get length() {
@@ -71,11 +73,11 @@ vi.mock('./TestProviderRender', () => ({
   TestProviderRender: () => null,
 }));
 
-vi.mock('./screens/ShareSection', () => ({
+vi.mock('./screens/SharePopup', () => ({
   ShareToolbarButton: () => null,
 }));
 
-vi.mock('./screens/ShareSection/popoverPresence', () => ({
+vi.mock('./screens/SharePopup/popoverPresence', () => ({
   isPresent: () => false,
 }));
 

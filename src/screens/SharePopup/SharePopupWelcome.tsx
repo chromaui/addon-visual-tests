@@ -1,14 +1,14 @@
 import React from 'react';
 
 import { Button } from '../../components/Button';
-import { ShareContainer, ShareDescription, ShareTitle, TextBlock } from './ShareSectionPrimitives';
+import { ShareContainer, ShareDescription, ShareTitle, TextBlock } from './SharePopupPrimitives';
 import { WhoHasAccess } from './WhoHasAccess';
 
-interface ShareSectionWelcomeProps {
+interface SharePopupWelcomeProps {
   onPublish: () => void;
 }
 
-export const ShareSectionWelcome = ({ onPublish }: ShareSectionWelcomeProps) => (
+export const SharePopupWelcome = ({ onPublish }: SharePopupWelcomeProps) => (
   <ShareContainer>
     <TextBlock>
       <ShareTitle>Publish a build to share</ShareTitle>

@@ -1,4 +1,3 @@
-import React from 'react';
 import type { ClickEventDetails } from 'storybook/highlight';
 import { type Addon_TestProviderType, Addon_TypesEnum } from 'storybook/internal/types';
 import { addons, experimental_getStatusStore } from 'storybook/manager-api';
@@ -14,8 +13,8 @@ import {
   TEST_PROVIDER_ID,
 } from './constants.ts';
 import { Panel } from './Panel';
-import { ShareToolbarButton } from './screens/ShareSection';
-import { isPresent as isSharePopoverPresent } from './screens/ShareSection/popoverPresence';
+import { ShareToolbarButton } from './screens/SharePopup';
+import { isPresent as isSharePopoverPresent } from './screens/SharePopup/popoverPresence';
 import { TestProviderRender } from './TestProviderRender';
 import type { ShareProgress } from './types';
 import { SharedState } from './utils/SharedState';
@@ -72,7 +71,7 @@ addons.register(ADDON_ID, (api) => {
   });
 
   // Surface a Storybook notification when a share completes — but only when the
-  // share popover is closed. While the popover is open, ShareSection itself
+  // share popover is closed. While the popover is open, SharePopup itself
   // shows the completion state, so a duplicate toast would be noise.
   const channel = api.getChannel();
   if (channel) {
