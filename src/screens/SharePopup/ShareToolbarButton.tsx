@@ -1,3 +1,4 @@
+import React from 'react';
 import { Button, PopoverProvider } from 'storybook/internal/components';
 import type { API } from 'storybook/manager-api';
 

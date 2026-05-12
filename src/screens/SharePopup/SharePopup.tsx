@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useReducer } from 'react';
+import React from 'react';
 import type { API } from 'storybook/manager-api';
 
 import { GIT_INFO, SHARE_PROGRESS } from '../../constants';
