@@ -73,7 +73,7 @@ vi.mock('./TestProviderRender', () => ({
   TestProviderRender: () => null,
 }));
 
-vi.mock('./screens/SharePopup', () => ({
+vi.mock('./screens/SharePopup/ShareToolbarButton', () => ({
   ShareToolbarButton: () => null,
 }));
 
