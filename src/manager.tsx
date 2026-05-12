@@ -14,7 +14,7 @@ import {
 } from './constants.ts';
 import { Panel } from './Panel';
 import { ShareToolbarButton } from './screens/SharePopup';
-import { isPresent as isSharePopoverPresent } from './screens/SharePopup/popoverPresence';
+import { isSharePopupOpen } from './screens/SharePopup/SharePopup';
 import { TestProviderRender } from './TestProviderRender';
 import type { ShareProgress } from './types';
 import { SharedState } from './utils/SharedState';
@@ -79,7 +79,7 @@ addons.register(ADDON_ID, (api) => {
     const shareProgressState = SharedState.subscribe<ShareProgress>(SHARE_PROGRESS, channel);
     shareProgressState.on('change', (progress) => {
       if (progress?.status !== 'complete') return;
-      if (progress.shareUrl === lastNotifiedShareUrl || isSharePopoverPresent()) return;
+      if (progress.shareUrl === lastNotifiedShareUrl || isSharePopupOpen()) return;
       const { shareUrl } = progress;
       lastNotifiedShareUrl = shareUrl;
       api.addNotification({

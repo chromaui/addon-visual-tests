@@ -63,11 +63,6 @@ vi.mock('./useShareAuth', () => ({
   useShareAuth: () => ({ startSignIn: vi.fn(), updateToken: mocks.updateToken }),
 }));
 
-vi.mock('./popoverPresence', () => ({
-  setPresent: vi.fn(),
-  isPresent: () => false,
-}));
-
 vi.mock('./SharePopupWelcome', () => ({ SharePopupWelcome: vi.fn() }));
 vi.mock('./SharePopupIdle', () => ({ SharePopupIdle: vi.fn() }));
 vi.mock('./SharePopupSubdomain', () => ({ SharePopupSubdomain: vi.fn() }));

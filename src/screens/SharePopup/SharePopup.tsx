@@ -7,7 +7,6 @@ import { checkOutdated } from '../../utils/checkOutdated';
 import { useAccessToken } from '../../utils/graphQLClient';
 import { useSessionState } from '../../utils/useSessionState';
 import { useSharedState } from '../../utils/useSharedState';
-import { setPresent } from './popoverPresence';
 import { initialState, shareReducer } from './shareMachine';
 import { SharePopupComplete } from './SharePopupComplete';
 import { SharePopupError } from './SharePopupError';
@@ -18,6 +17,10 @@ import { SharePopupWelcome } from './SharePopupWelcome';
 import type { ShareReducerState, ShareState } from './types';
 import { useShareAuth } from './useShareAuth';
 import { useShareExecution } from './useShareExecution';
+
+let sharePopupOpen = false;
+
+export const isSharePopupOpen = () => sharePopupOpen;
 
 export const SharePopup = ({ api }: { api: API }) => {
   const [token] = useAccessToken();
@@ -44,8 +47,10 @@ export const SharePopup = ({ api }: { api: API }) => {
   }, [reducerState, setPersisted]);
 
   useEffect(() => {
-    setPresent(true);
-    return () => setPresent(false);
+    sharePopupOpen = true;
+    return () => {
+      sharePopupOpen = false;
+    };
   }, []);
 
   const setShareScreen = useCallback(

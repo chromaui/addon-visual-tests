@@ -77,8 +77,8 @@ vi.mock('./screens/SharePopup', () => ({
   ShareToolbarButton: () => null,
 }));
 
-vi.mock('./screens/SharePopup/popoverPresence', () => ({
-  isPresent: () => false,
+vi.mock('./screens/SharePopup/SharePopup', () => ({
+  isSharePopupOpen: () => false,
 }));
 
 function stubWindow(search = '', opener: Record<string, unknown> | null = null) {
