@@ -22,6 +22,12 @@ export function formatBytesObject(
   const value = bytes / Math.pow(1000, exp);
   const factor = Math.pow(10, round);
   const rounded = Math.round(value * factor) / factor;
+  const shouldPromoteUnit =
+    options?.exponent === undefined && rounded >= 1000 && exp < UNITS.length - 1;
+  const finalExp = shouldPromoteUnit ? exp + 1 : exp;
+  const finalValue = shouldPromoteUnit
+    ? Math.round((bytes / Math.pow(1000, finalExp)) * factor) / factor
+    : rounded;
 
-  return { value: rounded, symbol: UNITS[exp], exponent: exp };
+  return { value: finalValue, symbol: UNITS[finalExp], exponent: finalExp };
 }
