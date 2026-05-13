@@ -51,7 +51,7 @@ export const BUILD_STEP_CONFIG: Record<
     renderName: () => `Publish your Storybook`,
     renderProgress: ({ stepProgress }) => {
       const { numerator, denominator } = stepProgress.upload;
-      if (!denominator || !numerator) return `Uploading files...`;
+      if (denominator == null || numerator == null || denominator <= 0) return `Uploading files...`;
       const { value: total, exponent } = formatBytesObject(denominator, { round: 1 });
       const { value: progress, symbol } = formatBytesObject(numerator, {
         exponent: exponent,
