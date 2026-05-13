@@ -3,23 +3,17 @@ import { z } from 'zod';
 
 const dialogPayloadSchema = z.union([
   z.object({ message: z.literal('login') }),
-  z.union([
-    z.object({
-      message: z.literal('grant'),
-      code: z.string(),
-      state: z.string(),
-    }),
-    z.object({
-      message: z.literal('grant'),
-      denied: z.boolean(),
-    }),
-    z.object({
-      message: z.literal('grant'),
-      error: z.string(),
-      error_description: z.string().optional(),
-      state: z.string().optional(),
-    }),
-  ]),
+  z.object({
+    message: z.literal('grant'),
+    code: z.string(),
+    state: z.string(),
+  }),
+  z.object({
+    message: z.literal('grant'),
+    error: z.string(),
+    error_description: z.string().optional(),
+    state: z.string().optional(),
+  }),
   z.object({ message: z.literal('createdProject'), projectId: z.string() }),
 ]);
 
@@ -56,7 +50,7 @@ export const useChromaticDialog = (handler?: DialogHandler) => {
   }, [handler]);
 
   return [
-    useCallback((url: string, additionalOrigins: string[] = []) => {
+    useCallback((url: string, additionalOrigins: string[] = []): boolean => {
       const width = 800;
       const height = 800;
       const usePopup = window.innerWidth > width && window.innerHeight > height;
@@ -71,12 +65,20 @@ export const useChromaticDialog = (handler?: DialogHandler) => {
         dialog.current = window.open(url, '_blank');
       }
       if (!dialog.current) {
-        return;
+        // Popup blocked or unavailable. Reset allowed origins so a stale
+        // listener never accepts messages tied to a previous attempt.
+        allowedOrigins.current = new Set();
+        return false;
       }
       const { origin } = new URL(url);
       allowedOrigins.current = new Set([origin, ...additionalOrigins]);
+      return true;
     }, []),
 
-    useCallback(() => dialog.current?.close(), []),
+    useCallback(() => {
+      dialog.current?.close();
+      dialog.current = null;
+      allowedOrigins.current = new Set();
+    }, []),
   ] as const;
 };

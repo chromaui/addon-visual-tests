@@ -1,6 +1,12 @@
-import React, { useCallback } from 'react';
-import type { API } from 'storybook/manager-api';
-import { experimental_getStatusStore, useChannel, useStorybookState } from 'storybook/manager-api';
+import { FailedIcon } from '@storybook/icons';
+import React, { useCallback, useEffect } from 'react';
+import {
+  experimental_getStatusStore,
+  useChannel,
+  useStorybookApi,
+  useStorybookState,
+} from 'storybook/manager-api';
+import { color } from 'storybook/theming';
 
 import { AuthProvider } from './AuthContext';
 import { Spinner } from './components/design-system';
@@ -9,9 +15,9 @@ import {
   GIT_INFO,
   GIT_INFO_ERROR,
   IS_OFFLINE,
-  IS_OUTDATED,
   LOCAL_BUILD_PROGRESS,
   REMOVE_ADDON,
+  SHARE_PROGRESS,
   TELEMETRY,
 } from './constants';
 import { Authentication } from './screens/Authentication/Authentication';
@@ -26,8 +32,18 @@ import { Uninstalled } from './screens/Uninstalled/Uninstalled';
 import { ControlsProvider } from './screens/VisualTests/ControlsContext';
 import { RunBuildProvider } from './screens/VisualTests/RunBuildContext';
 import { VisualTests } from './screens/VisualTests/VisualTests';
-import { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from './types';
-import { createClient, GraphQLClientProvider, useAccessToken } from './utils/graphQLClient';
+import type {
+  GitInfoPayload,
+  LocalBuildProgress,
+  ShareProgress,
+  UpdateStatusFunction,
+} from './types';
+import {
+  createClient,
+  GraphQLClientProvider,
+  sessionExpiredEventName,
+  useAccessToken,
+} from './utils/graphQLClient';
 import { TelemetryProvider } from './utils/TelemetryContext';
 import { useBuildEvents } from './utils/useBuildEvents';
 import { useChannelFetch } from './utils/useChannelFetch';
@@ -37,30 +53,63 @@ import { useSharedState } from './utils/useSharedState';
 
 interface PanelProps {
   active: boolean;
-  api: API;
 }
 
 const statusStore = experimental_getStatusStore(ADDON_ID);
 
 export const Panel = ({ active }: PanelProps) => {
+  const api = useStorybookApi();
   const [accessToken, updateAccessToken] = useAccessToken();
+  const [, setShareProgress] = useSharedState<ShareProgress>(SHARE_PROGRESS);
   const setAccessToken = useCallback(
     (token: string | null) => {
       updateAccessToken(token);
-      if (!token) clearSessionState('authenticationScreen', 'exchangeParameters');
     },
     [updateAccessToken]
   );
+
+  // Centralize logout cleanup: fire whenever the token transitions to null,
+  // regardless of whether the source is an explicit setAccessToken(null), a
+  // refresh failure inside authStore, or a viewer:null GraphQL response.
+  const prevAccessTokenRef = React.useRef<string | null>(accessToken);
+  useEffect(() => {
+    if (prevAccessTokenRef.current !== null && accessToken === null) {
+      clearSessionState(
+        'authenticationScreen',
+        'exchangeParameters',
+        'shareReducer',
+        'shareLastCompletedUrl',
+        'shareLastCompletedGitInfo'
+      );
+      setShareProgress(undefined);
+    }
+    prevAccessTokenRef.current = accessToken;
+  }, [accessToken, setShareProgress]);
   const { storyId } = useStorybookState();
 
   const [gitInfo] = useSharedState<GitInfoPayload>(GIT_INFO);
   const [gitInfoError] = useSharedState<Error>(GIT_INFO_ERROR);
   const [isOffline] = useSharedState<boolean>(IS_OFFLINE);
-  const [isOutdated] = useSharedState<boolean>(IS_OUTDATED);
   const [localBuildProgress, setLocalBuildProgress] =
     useSharedState<LocalBuildProgress>(LOCAL_BUILD_PROGRESS);
-  const [, setOutdated] = useSharedState<boolean>(IS_OUTDATED);
   const emit = useChannel({});
+  useEffect(() => {
+    const notify = () => {
+      api.addNotification({
+        id: `${ADDON_ID}/error/session-expired/${Date.now()}`,
+        content: {
+          headline: 'Session expired',
+          subHeadline: 'Please sign in again to continue.',
+        },
+        icon: <FailedIcon color={color.negative} />,
+      });
+    };
+
+    window.addEventListener(sessionExpiredEventName, notify);
+    return () => {
+      window.removeEventListener(sessionExpiredEventName, notify);
+    };
+  }, [api]);
 
   const updateBuildStatus = useCallback<UpdateStatusFunction>((statuses) => {
     statusStore.unset();
@@ -177,9 +226,7 @@ export const Panel = ({ active }: PanelProps) => {
   return withProviders(
     <VisualTests
       dismissBuildError={() => setLocalBuildProgress(undefined)}
-      isOutdated={!!isOutdated}
       localBuildProgress={localBuildIsRightBranch ? localBuildProgress : undefined}
-      setOutdated={setOutdated}
       updateBuildStatus={updateBuildStatus}
       projectId={projectId}
       gitInfo={gitInfo}

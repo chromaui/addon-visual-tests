@@ -71,6 +71,55 @@ export default [
       ],
 
       'jest/no-deprecated-functions': 'off',
+
+      // Ban common DOM/JS sinks used for runtime code/HTML injection.
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: "JSXAttribute[name.name='dangerouslySetInnerHTML']",
+          message: 'dangerouslySetInnerHTML is banned',
+        },
+        {
+          selector:
+            "AssignmentExpression[left.type='MemberExpression'][left.computed=false][left.property.name=/^(innerHTML|outerHTML)$/]",
+          message: 'innerHTML/outerHTML assignment is banned',
+        },
+        {
+          selector:
+            "AssignmentExpression[left.type='MemberExpression'][left.computed=true][left.property.value=/^(innerHTML|outerHTML)$/]",
+          message: 'innerHTML/outerHTML assignment is banned',
+        },
+        {
+          selector: "CallExpression[callee.property.name='insertAdjacentHTML']",
+          message: 'insertAdjacentHTML is banned',
+        },
+        {
+          selector:
+            "CallExpression[callee.object.name='document'][callee.property.name=/^writeln?$/]",
+          message: 'document.write/writeln is banned',
+        },
+        {
+          selector: "JSXAttribute[name.name='srcdoc']",
+          message: 'iframe srcdoc is banned',
+        },
+        {
+          selector: "CallExpression[callee.property.name='createContextualFragment']",
+          message: 'createContextualFragment is banned',
+        },
+        {
+          selector:
+            'CallExpression[callee.name=/^(setTimeout|setInterval)$/][arguments.0.type=/^(Literal|TemplateLiteral)$/]',
+          message: 'String/template-form setTimeout/setInterval is banned',
+        },
+        {
+          selector: "CallExpression[callee.name='eval']",
+          message: 'eval is banned',
+        },
+        {
+          selector: "NewExpression[callee.name='Function']",
+          message: 'Function constructor is banned',
+        },
+      ],
     },
   },
 ];

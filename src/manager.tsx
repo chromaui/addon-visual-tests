@@ -10,10 +10,15 @@ import {
   HIGHLIGHT_IGNORED_SELECT,
   PANEL_ID,
   PARAM_KEY,
+  SHARE_PROGRESS,
   TEST_PROVIDER_ID,
 } from './constants.ts';
 import { Panel } from './Panel';
+import { isSharePopupOpen } from './screens/SharePopup/SharePopup';
+import { ShareToolbarButton } from './screens/SharePopup/ShareToolbarButton';
 import { TestProviderRender } from './TestProviderRender';
+import type { ShareProgress } from './types';
+import { SharedState } from './utils/SharedState';
 
 // OAuth redirect handler
 if (window.opener && !window.opener.closed) {
@@ -25,14 +30,14 @@ if (window.opener && !window.opener.closed) {
   if (code && state) {
     window.opener.postMessage({ message: 'grant', code, state }, window.location.origin);
     window.close();
-  } else if (error) {
+  } else if (error && state) {
     const errorDescription = params.get('error_description');
     window.opener.postMessage(
       {
         message: 'grant',
         error,
+        state,
         ...(errorDescription ? { error_description: errorDescription } : {}),
-        ...(state ? { state } : {}),
       },
       window.location.origin
     );
@@ -63,8 +68,35 @@ addons.register(ADDON_ID, (api) => {
     title: 'Visual tests',
     paramKey: PARAM_KEY,
     match: ({ viewMode }) => viewMode === 'story',
-    render: ({ active }) => <Panel active={!!active} api={api} />,
+    render: ({ active }) => <Panel active={!!active} />,
   });
+
+  // Surface a Storybook notification when a share completes — but only when the
+  // share popover is closed. While the popover is open, SharePopup itself
+  // shows the completion state, so a duplicate toast would be noise.
+  const channel = api.getChannel();
+  if (channel) {
+    let lastNotifiedShareUrl: string | null = null;
+    const shareProgressState = SharedState.subscribe<ShareProgress>(SHARE_PROGRESS, channel);
+    shareProgressState.on('change', (progress) => {
+      if (progress?.status !== 'complete') return;
+      if (progress.shareUrl === lastNotifiedShareUrl || isSharePopupOpen()) return;
+      const { shareUrl } = progress;
+      lastNotifiedShareUrl = shareUrl;
+      api.addNotification({
+        id: `${ADDON_ID}/share-published`,
+        content: {
+          headline: 'Storybook published!',
+          subHeadline: shareUrl,
+        },
+        duration: 8_000,
+        onClick: ({ onDismiss }: { onDismiss: () => void }) => {
+          navigator.clipboard.writeText(shareUrl).catch(() => {});
+          onDismiss();
+        },
+      });
+    });
+  }
 
   if (globalThis.CONFIG_TYPE !== 'DEVELOPMENT') {
     return;
@@ -81,4 +113,10 @@ addons.register(ADDON_ID, (api) => {
     type: Addon_TypesEnum.experimental_TEST_PROVIDER,
     render: () => <TestProviderRender />,
   } satisfies Omit<Addon_TestProviderType, 'id'>);
+
+  addons.add(`${ADDON_ID}/share-tool`, {
+    type: Addon_TypesEnum.TOOLEXTRA,
+    title: 'Share',
+    render: () => <ShareToolbarButton api={api} />,
+  });
 });

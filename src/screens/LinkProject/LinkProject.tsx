@@ -2,7 +2,16 @@ import { AddIcon } from '@storybook/icons';
 import React, { useCallback, useEffect } from 'react';
 import { styled } from 'storybook/theming';
 import { useQuery } from 'urql';
+import { z } from 'zod';
 
+import { DialogHandler, useChromaticDialog } from '../../auth/useChromaticDialog';
+
+// LinkProject validates the createdProject relay locally so the dialog
+// transport stays decoupled from product-specific message shapes.
+const createdProjectMessageSchema = z.object({
+  message: z.literal('createdProject'),
+  projectId: z.string(),
+});
 import { Container } from '../../components/Container';
 import { Avatar, Link, ListItem } from '../../components/design-system';
 import { Heading } from '../../components/Heading';
@@ -12,7 +21,6 @@ import { Text } from '../../components/Text';
 import { graphql } from '../../gql';
 import type { Project, SelectProjectsQueryQuery } from '../../gql/graphql';
 import { useTelemetry } from '../../utils/TelemetryContext';
-import { DialogHandler, useChromaticDialog } from '../../utils/useChromaticDialog';
 import { useSessionState } from '../../utils/useSessionState';
 
 const SelectProjectsQuery = graphql(/* GraphQL */ `
@@ -169,13 +177,13 @@ function SelectProject({
 
   const handler = useCallback<DialogHandler>(
     async (event) => {
-      if (event.message === 'createdProject') {
-        // We don't know the project token yet, so we need to wait until it comes back on the query
-        // longer be necessary once we don't write tokens any more
-        // (https://linear.app/chromaui/issue/AP-3383/generate-an-app-token-for-each-build-rather-than-writing-project-token)
-        rerunProjectsQuery();
-        setCreatedProjectId(event.projectId);
-      }
+      const parsed = createdProjectMessageSchema.safeParse(event);
+      if (!parsed.success) return;
+      // We don't know the project token yet, so we need to wait until it comes back on the query
+      // longer be necessary once we don't write tokens any more
+      // (https://linear.app/chromaui/issue/AP-3383/generate-an-app-token-for-each-build-rather-than-writing-project-token)
+      rerunProjectsQuery();
+      setCreatedProjectId(parsed.data.projectId);
     },
     [rerunProjectsQuery, setCreatedProjectId]
   );

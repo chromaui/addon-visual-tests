@@ -9,6 +9,7 @@ import {
   getConfiguration,
   getGitInfo,
   type GitInfo,
+  share,
 } from 'chromatic/node';
 import type { Channel } from 'storybook/internal/channels';
 import { experimental_getTestProviderStore } from 'storybook/internal/core-server';
@@ -17,6 +18,7 @@ import type { Options } from 'storybook/internal/types';
 
 import {
   ADDON_ID,
+  CANCEL_SHARE,
   CONFIG_INFO,
   CONFIG_OVERRIDES,
   GIT_INFO,
@@ -25,21 +27,25 @@ import {
   PACKAGE_NAME,
   PROJECT_INFO,
   REMOVE_ADDON,
+  SHARE_PROGRESS,
   START_BUILD,
+  START_SHARE,
   STOP_BUILD,
   TELEMETRY,
   TEST_PROVIDER_ID,
 } from './constants.ts';
 import { CHROMATIC_BASE_URL } from './env.ts';
 import { runChromaticBuild, stopChromaticBuild } from './runChromaticBuild.ts';
-import {
+import type {
   ConfigInfoPayload,
   ConfigurationUpdate,
   GitInfoPayload,
   LocalBuildProgress,
   ProjectInfoPayload,
+  ShareProgress,
 } from './types.ts';
 import { ChannelFetch } from './utils/ChannelFetch.ts';
+import { getStorybookId } from './utils/getStorybookId.ts';
 import { SharedState } from './utils/SharedState.ts';
 import { updateChromaticConfig } from './utils/updateChromaticConfig.ts';
 
@@ -232,7 +238,7 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
     channel
   );
 
-  channel.on(START_BUILD, async ({ accessToken: userToken }) => {
+  channel.on(START_BUILD, async ({ accessToken: userToken }: { accessToken: string }) => {
     const { projectId } = projectInfoState.value || {};
     testProviderStore.runWithState(async () => {
       try {
@@ -247,6 +253,87 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
   channel.on(STOP_BUILD, () => {
     testProviderStore.setState('test-provider-state:succeeded');
     stopChromaticBuild();
+  });
+
+  const shareProgressState = SharedState.subscribe<ShareProgress>(SHARE_PROGRESS, channel);
+  let currentAbortController: AbortController | null = null;
+  let activeShareRequestId: string | null = null;
+  let lastCompletedShareRequestId: string | null = null;
+
+  channel.on(
+    START_SHARE,
+    async ({ accessToken, shareRequestId }: { accessToken: string; shareRequestId?: string }) => {
+      if (activeShareRequestId) return;
+      if (shareRequestId && shareRequestId === lastCompletedShareRequestId) return;
+      const requestId = shareRequestId ?? crypto.randomUUID();
+      activeShareRequestId = requestId;
+      const controller = new AbortController();
+      currentAbortController = controller;
+      let didError = false;
+      shareProgressState.value = { status: 'pending', shareRequestId: requestId };
+      try {
+        const result = await share({
+          userToken: accessToken,
+          abortSignal: controller.signal,
+          onUrl: (url: string) => {
+            shareProgressState.value = {
+              status: 'uploading',
+              shareUrl: url,
+              shareRequestId: requestId,
+            };
+          },
+          onError: (error: Error) => {
+            didError = true;
+            shareProgressState.value = {
+              status: 'error',
+              error: error.message,
+              shareRequestId: requestId,
+            };
+          },
+        });
+        if (controller.signal.aborted) {
+          shareProgressState.value = {
+            status: 'error',
+            error: 'canceled',
+            canceled: true,
+            shareRequestId: requestId,
+          };
+        } else if (!didError) {
+          shareProgressState.value = {
+            status: 'complete',
+            shareUrl: result.shareUrl,
+            daysToExpire: result.daysToExpire,
+            shareRequestId: requestId,
+          };
+          lastCompletedShareRequestId = requestId;
+        }
+      } catch (e: any) {
+        if (controller.signal.aborted) {
+          shareProgressState.value = {
+            status: 'error',
+            error: 'canceled',
+            canceled: true,
+            shareRequestId: requestId,
+          };
+        } else {
+          shareProgressState.value = {
+            status: 'error',
+            error: e?.message || 'Share failed',
+            shareRequestId: requestId,
+          };
+        }
+      } finally {
+        currentAbortController = null;
+        activeShareRequestId = null;
+      }
+    }
+  );
+
+  channel.on(CANCEL_SHARE, ({ shareRequestId }: { shareRequestId?: string } = {}) => {
+    if (shareRequestId && activeShareRequestId && shareRequestId !== activeShareRequestId) {
+      return;
+    }
+    currentAbortController?.abort();
   });
 
   channel.on(TELEMETRY, async (event: Event) => {
@@ -282,8 +369,20 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
   return channel;
 }
 
+// Inject the Storybook installation identifier into the manager so the
+// addon can scope its localStorage keys per Storybook. Without this, two
+// different Storybooks served on the same dev port (different projects,
+// different Chromatic accounts) would silently share the cached access
+// token, since localStorage is scoped to origin only.
+async function managerHead(head: string) {
+  const storybookId = await getStorybookId();
+  if (!storybookId) return head;
+  return `${head}\n<script>window.__CHROMATIC_STORYBOOK_ID__ = ${JSON.stringify(storybookId)};</script>`;
+}
+
 const config = {
   managerEntries,
+  managerHead,
   previewAnnotations,
   experimental_serverChannel: serverChannel,
   staticDirs: async (inputDirs: string[]) => [

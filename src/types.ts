@@ -187,6 +187,12 @@ export type LocalBuildProgress = {
    */
   branch?: string;
 
+  /** The commit we ran the build on */
+  commit?: string;
+
+  /** The uncommitted hash we ran the build on, if any */
+  uncommittedHash?: string | null;
+
   /** Overall percentage of build progress */
   buildProgressPercentage: number;
 
@@ -215,3 +221,14 @@ export type LocalBuildProgress = {
   /** Progress tracking data from the previous build (if any) */
   previousBuildProgress?: Record<KnownStep, StepProgressPayload>;
 };
+
+export type ShareProgress =
+  | { status: 'pending'; shareRequestId: string }
+  | { status: 'uploading'; shareUrl?: string; shareRequestId: string }
+  | { status: 'complete'; shareUrl: string; shareRequestId: string; daysToExpire?: number }
+  | {
+      status: 'error';
+      error: string;
+      canceled?: boolean;
+      shareRequestId: string;
+    };
