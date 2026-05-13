@@ -1,76 +1,83 @@
 import { authExchange } from '@urql/exchange-auth';
 import React from 'react';
 import { useAddonState } from 'storybook/manager-api';
-import { Client, ClientOptions, fetchExchange, mapExchange, Provider } from 'urql';
-import { v4 as uuid } from 'uuid';
+import { Client, type ClientOptions, fetchExchange, Provider } from 'urql';
 
-import { ACCESS_TOKEN_KEY, ADDON_ID, CHROMATIC_API_URL } from '../constants';
+import { authStore, SESSION_EXPIRED_EVENT_NAME } from '../auth/authStore';
+import type { AuthSession } from '../auth/requestAccessToken';
+import { ADDON_ID } from '../constants';
+import { CHROMATIC_API_URL } from '../env';
 
-let currentToken: string | null;
-let currentTokenExpiration: number | null;
-const setCurrentToken = (token: string | null) => {
-  try {
-    const { exp } = token ? JSON.parse(atob(token.split('.')[1])) : { exp: null };
-    currentToken = token;
-    currentTokenExpiration = exp;
-  } catch (_) {
-    currentToken = null;
-    currentTokenExpiration = null;
-  }
-  if (currentToken) {
-    localStorage.setItem(ACCESS_TOKEN_KEY, currentToken);
-  } else {
-    localStorage.removeItem(ACCESS_TOKEN_KEY);
-  }
-};
-
-setCurrentToken(localStorage.getItem(ACCESS_TOKEN_KEY));
+const PREEMPTIVE_REFRESH_WINDOW_SECONDS = 60;
+export const setAuthenticatedSession = (auth: AuthSession) => authStore.setAuth(auth);
 
 export const useAccessToken = () => {
   // We use an object rather than a straight boolean here due to https://github.com/storybookjs/storybook/pull/23991
   const [{ token }, setTokenState] = useAddonState<{ token: string | null }>(
     `${ADDON_ID}/accessToken`,
-    { token: currentToken }
+    { token: authStore.getToken() }
   );
 
-  const updateToken = React.useCallback(
-    (newToken: string | null) => {
-      setCurrentToken(newToken);
-      setTokenState({ token: currentToken });
-    },
+  const updateToken = React.useCallback((newToken: string | null) => {
+    authStore.setToken(newToken);
+  }, []);
+
+  React.useEffect(
+    () => authStore.subscribe((nextToken) => setTokenState({ token: nextToken })),
     [setTokenState]
   );
 
   return [token, updateToken] as const;
 };
 
-const sessionId = uuid();
-
-export const getFetchOptions = (token?: string) => ({
+export const getFetchOptions = (token?: string, sessionId?: string) => ({
   headers: {
     Accept: '*/*',
     ...(token && { Authorization: `Bearer ${token}` }),
-    'X-Chromatic-Session-ID': sessionId,
+    'X-Chromatic-Session-ID': sessionId || authStore.getSessionId(),
   },
 });
+
+const decodeJwtExpiration = (token: string): number | null => {
+  try {
+    const payload = token.split('.')[1];
+    if (!payload) return null;
+
+    // JWT payload is base64url-encoded; convert to base64 and restore required padding for atob().
+    const normalized = payload.replace(/-/g, '+').replace(/_/g, '/');
+    const padding = '='.repeat((4 - (normalized.length % 4)) % 4);
+    const parsed = JSON.parse(globalThis.atob(`${normalized}${padding}`)) as { exp?: unknown };
+    return typeof parsed.exp === 'number' ? parsed.exp : null;
+  } catch {
+    return null;
+  }
+};
+
+const shouldPreemptivelyRefreshSession = () => {
+  const token = authStore.getToken();
+  if (!token) {
+    return false;
+  }
+
+  const expiration = decodeJwtExpiration(token);
+  if (!expiration) {
+    return false;
+  }
+
+  const nowInSeconds = Math.floor(Date.now() / 1000);
+  return expiration <= nowInSeconds + PREEMPTIVE_REFRESH_WINDOW_SECONDS;
+};
 
 export const createClient = (options?: Partial<ClientOptions>) =>
   new Client({
     url: CHROMATIC_API_URL,
     exchanges: [
-      // We don't use cacheExchange, because it would inadvertently share data between stories.
-      mapExchange({
-        onResult(result) {
-          // Not all queries contain the `viewer` field, in which case it will be `undefined`.
-          // When we do retrieve the field but the token is invalid, it will be `null`.
-          if (result.data?.viewer === null) setCurrentToken(null);
-        },
-      }),
       authExchange(async (utils) => {
         return {
           addAuthToOperation(operation) {
-            if (!currentToken) return operation;
-            return utils.appendHeaders(operation, { Authorization: `Bearer ${currentToken}` });
+            const token = authStore.getToken();
+            if (!token) return operation;
+            return utils.appendHeaders(operation, { Authorization: `Bearer ${token}` });
           },
 
           // Determine if the current error is an authentication error.
@@ -78,25 +85,14 @@ export const createClient = (options?: Partial<ClientOptions>) =>
             error.response?.status === 401 ||
             error.graphQLErrors.some((e) => e.message.includes('Must login')),
 
-          // If didAuthError returns true, clear the token. Ideally we should refresh the token here.
-          // The operation will be retried automatically.
+          // Refresh access token on demand after auth failures.
           async refreshAuth() {
-            setCurrentToken(null);
+            await authStore.refresh();
           },
 
-          // Prevent making a request if we know the token is missing, invalid or expired.
-          // This handler is called repeatedly so we avoid parsing the token each time.
+          // Refresh when missing token or when token is about to expire.
           willAuthError() {
-            if (!currentToken) return true;
-            try {
-              if (!currentTokenExpiration) {
-                const { exp } = JSON.parse(atob(currentToken.split('.')[1]));
-                currentTokenExpiration = exp;
-              }
-              return Date.now() / 1000 > (currentTokenExpiration || 0);
-            } catch (_) {
-              return true;
-            }
+            return !authStore.getToken() || shouldPreemptivelyRefreshSession();
           },
         };
       }),
@@ -105,6 +101,15 @@ export const createClient = (options?: Partial<ClientOptions>) =>
     fetchOptions: getFetchOptions(), // Auth header (token) is handled by authExchange
     ...options,
   });
+
+export const __testUtils = {
+  getCurrentAuth: () => authStore.getAuth(),
+  clearCurrentAuth: () => authStore.clear(),
+  subscribeToTokenUpdates: (cb: (token: string | null) => void) => authStore.subscribe(cb),
+  refreshCurrentSession: () => authStore.refresh(),
+};
+
+export const sessionExpiredEventName = SESSION_EXPIRED_EVENT_NAME;
 
 export const GraphQLClientProvider = ({
   children,

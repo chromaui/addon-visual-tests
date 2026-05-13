@@ -1,4 +1,10 @@
-import { Context, InitialContext, Options, run, TaskName } from 'chromatic/node';
+import {
+  type Context,
+  type InitialContext,
+  type Options,
+  run,
+  type TaskName,
+} from 'chromatic/node';
 
 import {
   BUILD_STEP_CONFIG,
@@ -8,8 +14,8 @@ import {
   isKnownStep,
 } from './buildSteps.ts';
 import { CONFIG_OVERRIDES } from './constants.ts';
-import { LocalBuildProgress } from './types.ts';
-import { SharedState } from './utils/SharedState.ts';
+import type { LocalBuildProgress } from './types.ts';
+import type { SharedState } from './utils/SharedState.ts';
 
 const ESTIMATED_PROGRESS_INTERVAL = 2000;
 
@@ -106,6 +112,8 @@ export const onStartOrProgress =
     localBuildProgress.value = {
       buildId: ctx.announcedBuild?.id,
       branch: ctx.git?.branch,
+      commit: ctx.git?.commit,
+      uncommittedHash: ctx.git?.uncommittedHash,
       buildProgressPercentage: Math.min(newPercentage, endPercentage),
       currentStep: ctx.task,
       stepProgress,

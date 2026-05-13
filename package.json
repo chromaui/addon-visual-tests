@@ -22,9 +22,8 @@
       "require": "./dist/index.js",
       "import": "./dist/index.mjs"
     },
-    "./manager": "./dist/manager.js",
-    "./preset": "./dist/preset.js",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./preset": "./dist/preset.js"
   },
   "main": "dist/index.js",
   "files": [
@@ -55,7 +54,7 @@
   },
   "dependencies": {
     "@neoconfetti/react": "^1.0.0",
-    "chromatic": "^13.3.4",
+    "chromatic": "16.10.0",
     "filesize": "^10.0.12",
     "jsonfile": "^6.1.0",
     "strip-ansi": "^7.1.0"
@@ -68,9 +67,9 @@
     "@graphql-typed-document-node/core": "^3.2.0",
     "@parcel/watcher": "^2.4.1",
     "@storybook/addon-designs": "^11.1.1",
-    "@storybook/addon-docs": "^10.2.1",
-    "@storybook/icons": "^2.0.1",
-    "@storybook/react-vite": "^10.2.1",
+    "@storybook/addon-docs": "^10.3.0",
+    "@storybook/icons": "^2.0.2",
+    "@storybook/react-vite": "^10.3.0",
     "@types/jsonfile": "^6.1.1",
     "@types/node": "^22.13.5",
     "@types/pluralize": "^0.0.29",
@@ -91,7 +90,7 @@
     "eslint-plugin-prettier": "^5.2.3",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
-    "eslint-plugin-storybook": "^10.2.1",
+    "eslint-plugin-storybook": "^10.3.0",
     "graphql": "^16.8.1",
     "msw": "^2.0.0",
     "msw-storybook-addon": "^2.0.6",
@@ -105,7 +104,7 @@
     "react-dom": "^18.3.1",
     "react-joyride": "^2.7.2",
     "rimraf": "^3.0.2",
-    "storybook": "^10.2.1",
+    "storybook": "^10.3.0",
     "ts-dedent": "^2.2.0",
     "tsup": "^6.6.3",
     "typescript": "^5.7.3",
@@ -119,7 +118,7 @@
     "zx": "^1.14.1"
   },
   "peerDependencies": {
-    "storybook": "^0.0.0-0 || ^10.1.0 || ^10.1.0-0 || ^10.2.0-0 || ^10.3.0-0"
+    "storybook": "^0.0.0-0 || ^10.1.0 || ^10.1.0-0 || ^10.2.0-0 || ^10.3.0-0 || ^10.4.0-0"
   },
   "packageManager": "yarn@4.12.0",
   "engines": {
@@ -153,6 +152,9 @@
     ],
     "nodeEntries": [
       "./src/preset.ts"
+    ],
+    "previewEntries": [
+      "./src/preview.ts"
     ]
   },
   "msw": {

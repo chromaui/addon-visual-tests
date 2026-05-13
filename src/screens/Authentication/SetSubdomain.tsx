@@ -2,6 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { Button } from 'storybook/internal/components';
 import { styled } from 'storybook/theming';
 
+import { finalizeSubdomain, normalizeSubdomain } from '../../auth/subdomain';
 import { Container } from '../../components/Container';
 import { Heading } from '../../components/Heading';
 import { ChromaticIcon } from '../../components/icons/ChromaticIcon';
@@ -51,15 +52,15 @@ export const SetSubdomain = ({ onBack, onSignIn }: SetSubdomainProps) => {
   const [inputError, setInputError] = useState<string | null>(null);
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/[^a-z0-9-]/g, '');
-    setSubdomain(value);
+    setSubdomain(normalizeSubdomain(e.target.value));
     setInputError(null);
   }, []);
 
   const handleSubmit = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      if (subdomain) onSignIn(subdomain);
+      const normalized = finalizeSubdomain(subdomain);
+      if (normalized) onSignIn(normalized);
       else setInputError('Please enter a subdomain');
     },
     [subdomain, onSignIn]

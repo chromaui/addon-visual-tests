@@ -142,7 +142,6 @@ const meta = {
     },
   },
   args: {
-    isOutdated: false,
     setSelectedBuildInfo: fn(),
     dismissBuildError: fn(),
     gitInfo: {
@@ -155,7 +154,6 @@ const meta = {
     },
     storyId: 'button--primary',
     projectId: 'Project:id123',
-    setOutdated: fn(),
     updateBuildStatus: fn(),
     addNotification: fn(),
     clearNotification: fn(),
