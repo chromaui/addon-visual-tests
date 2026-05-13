@@ -1,3 +1,71 @@
+# v5.1.2 (Mon Apr 13 2026)
+
+#### 🐛 Bug Fix
+
+- Sidebar: add clear() to test provider to clear visual test statuses [#421](https://github.com/chromaui/addon-visual-tests/pull/421) ([@valentinpalkovic](https://github.com/valentinpalkovic))
+
+#### Authors: 1
+
+- Valentin Palkovic ([@valentinpalkovic](https://github.com/valentinpalkovic))
+
+---
+
+# v5.1.1 (Thu Mar 26 2026)
+
+#### 🐛 Bug Fix
+
+- Fix preview errors [#416](https://github.com/chromaui/addon-visual-tests/pull/416) ([@JReinhold](https://github.com/JReinhold))
+
+#### Authors: 2
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Jeppe Reinhold ([@JReinhold](https://github.com/JReinhold))
+
+---
+
+# v5.1.0 (Wed Mar 25 2026)
+
+#### 🚀 Enhancement
+
+- Add tool to highlight ignored elements [#411](https://github.com/chromaui/addon-visual-tests/pull/411) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v5.0.2 (Thu Mar 19 2026)
+
+#### 🐛 Bug Fix
+
+- chore: Allow 10.4 prerelease peers [#412](https://github.com/chromaui/addon-visual-tests/pull/412) ([@Sidnioulz](https://github.com/Sidnioulz))
+
+#### Authors: 2
+
+- Steve Dodier-Lazaro ([@Sidnioulz](https://github.com/Sidnioulz))
+- Yann Braga ([@yannbf](https://github.com/yannbf))
+
+---
+
+# v5.0.1 (Mon Feb 09 2026)
+
+#### 🐛 Bug Fix
+
+- feat: Add CSF Next compatibility for definePreview addons pattern [#404](https://github.com/chromaui/addon-visual-tests/pull/404) ([@jthrilly](https://github.com/jthrilly) [@valentinpalkovic](https://github.com/valentinpalkovic))
+- upgrade storybook to latest [#406](https://github.com/chromaui/addon-visual-tests/pull/406) ([@ndelangen](https://github.com/ndelangen))
+- Main > Next sync [#407](https://github.com/chromaui/addon-visual-tests/pull/407) ([@ndelangen](https://github.com/ndelangen) [@chromatic-support](https://github.com/chromatic-support) [@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 5
+
+- [@chromatic-support](https://github.com/chromatic-support)
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Joshua Melville ([@jthrilly](https://github.com/jthrilly))
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+- Valentin Palkovic ([@valentinpalkovic](https://github.com/valentinpalkovic))
+
+---
+
 # v5.0.0 (Tue Jan 13 2026)
 
 #### 💥 Breaking Change
