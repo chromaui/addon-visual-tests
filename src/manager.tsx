@@ -115,7 +115,7 @@ addons.register(ADDON_ID, (api) => {
       statusStore.unset();
     },
     render: () => <TestProviderRender />,
-  } satisfies Omit<Addon_TestProviderType, 'id'>);
+  } as Omit<Addon_TestProviderType, 'id'>);
 
   addons.add(`${ADDON_ID}/share-tool`, {
     type: Addon_TypesEnum.TOOLEXTRA,
