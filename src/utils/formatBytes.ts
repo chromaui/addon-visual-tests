@@ -4,11 +4,12 @@ export type FormatBytesObject = {
   exponent: number;
 };
 
+const UNITS = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+
 export function formatBytesObject(
   bytes: number,
   options?: { exponent?: number; round?: number }
 ): FormatBytesObject {
-  const UNITS = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
   const round = options?.round ?? 1;
 
   if (!Number.isFinite(bytes) || bytes <= 0) {
