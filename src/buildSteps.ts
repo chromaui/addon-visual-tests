@@ -1,7 +1,7 @@
 import { TaskName } from 'chromatic/node';
-import { formatBytesObject } from './utils/formatBytes';
 
 import { KnownStep, LocalBuildProgress, StepProgressPayload } from './types';
+import { formatBytesObject } from './utils/formatBytes';
 
 export const isKnownStep = (
   taskOrStep: TaskName | LocalBuildProgress['currentStep']
