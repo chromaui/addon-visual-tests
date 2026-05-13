@@ -4,8 +4,6 @@ import { useRequiredContext } from '../../utils/useRequiredContext';
 
 const initialControls = {
   configVisible: false,
-  settingsVisible: false,
-  warningsVisible: false,
   baselineImageVisible: false,
   focusVisible: false,
   diffVisible: false,
@@ -24,8 +22,6 @@ const handlers = {
   toggleDiff: toggle('diffVisible'),
   toggleFocus: toggle('focusVisible'),
   toggleConfig: toggle('configVisible'),
-  toggleSettings: toggle('settingsVisible'),
-  toggleWarnings: toggle('warningsVisible'),
   toggleBaselineImage: toggle('baselineImageVisible'),
 } as const;
 
@@ -45,8 +41,6 @@ export const useControlsDispatch = () => {
       toggleDiff: (visible?: boolean) => dispatch({ type: 'toggleDiff', payload: visible }),
       toggleFocus: (visible?: boolean) => dispatch({ type: 'toggleFocus', payload: visible }),
       toggleConfig: (visible?: boolean) => dispatch({ type: 'toggleConfig', payload: visible }),
-      toggleSettings: (visible?: boolean) => dispatch({ type: 'toggleSettings', payload: visible }),
-      toggleWarnings: (visible?: boolean) => dispatch({ type: 'toggleWarnings', payload: visible }),
       toggleBaselineImage: (visible?: boolean) =>
         dispatch({ type: 'toggleBaselineImage', payload: visible }),
     }),

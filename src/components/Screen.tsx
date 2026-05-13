@@ -1,6 +1,7 @@
 import { CloseIcon } from '@storybook/icons';
 import pluralize from 'pluralize';
 import React, { ReactNode, useCallback, useState } from 'react';
+import { ActionList } from 'storybook/internal/components';
 import { styled } from 'storybook/theming';
 
 import { CONFIG_INFO, CONFIG_INFO_DISMISSED } from '../constants';
@@ -10,7 +11,6 @@ import { ConfigInfoPayload } from '../types';
 import { useSharedState } from '../utils/useSharedState';
 import { Link } from './design-system';
 import { FooterMenu } from './FooterMenu';
-import { IconButton } from './IconButton';
 import { Col, Section } from './layout';
 
 const Bar = styled.div(({ theme }) => ({
@@ -83,9 +83,9 @@ export const ConfigSection = ({
             <span>Configuration could be improved. {configLink}</span>
           </Col>
           <Col push>
-            <IconButton onClick={onDismiss}>
+            <ActionList.Button onClick={onDismiss} size="small" ariaLabel="Dismiss">
               <CloseIcon />
-            </IconButton>
+            </ActionList.Button>
           </Col>
         </Bar>
       </InfoSection>

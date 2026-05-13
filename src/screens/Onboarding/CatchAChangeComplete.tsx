@@ -46,10 +46,10 @@ export const CatchAChangeComplete = ({
             </div>
             <ButtonStack>
               <ButtonStackText>You&apos;re ready to start testing!</ButtonStackText>
-              <Button variant="solid" size="medium" onClick={onComplete}>
+              <Button ariaLabel={false} variant="solid" size="medium" onClick={onComplete}>
                 Done
               </Button>
-              <Button link onClick={onSkip}>
+              <Button ariaLabel={false} link onClick={onSkip}>
                 Skip walkthrough
               </Button>
             </ButtonStack>
@@ -71,10 +71,10 @@ export const CatchAChangeComplete = ({
             </div>
             <ButtonStack>
               <ButtonStackText>It's time to review changes!</ButtonStackText>
-              <Button variant="solid" size="medium" onClick={onComplete}>
+              <Button ariaLabel={false} variant="solid" size="medium" onClick={onComplete}>
                 Take a tour
               </Button>
-              <Button link onClick={onSkip}>
+              <Button ariaLabel={false} link onClick={onSkip}>
                 Skip walkthrough
               </Button>
             </ButtonStack>

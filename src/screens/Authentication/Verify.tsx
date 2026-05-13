@@ -1,7 +1,9 @@
-import React, { useCallback, useRef } from 'react';
-import { styled } from 'storybook/theming';
+import React, { useRef } from 'react';
 import { useClient } from 'urql';
+import { z } from 'zod';
 
+import type { AuthSession, TokenExchangeParameters } from '../../auth/requestAccessToken';
+import { useOAuthFlow } from '../../auth/useOAuthFlow';
 import { Button } from '../../components/Button';
 import { Container } from '../../components/Container';
 import { Heading } from '../../components/Heading';
@@ -9,31 +11,18 @@ import { Screen } from '../../components/Screen';
 import { Stack } from '../../components/Stack';
 import { Text } from '../../components/Text';
 import { graphql } from '../../gql';
-import { Project } from '../../gql/graphql';
-import { getFetchOptions } from '../../utils/graphQLClient';
-import { fetchAccessToken, TokenExchangeParameters } from '../../utils/requestAccessToken';
-import { DialogHandler, useChromaticDialog } from '../../utils/useChromaticDialog';
+import type { Project } from '../../gql/graphql';
+import { getFetchOptions, setAuthenticatedSession } from '../../utils/graphQLClient';
 import { useErrorNotification } from '../../utils/useErrorNotification';
 import { AuthHeader } from './AuthHeader';
 
-const Digits = styled.ol(({ theme }) => ({
-  display: 'inline-flex',
-  listStyle: 'none',
-  marginTop: 15,
-  marginBottom: 5,
-  padding: 0,
-  gap: 5,
-
-  'li:not(:empty)': {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    border: `1px dashed ${theme.input.border}`,
-    borderRadius: 4,
-    width: 28,
-    height: 32,
-  },
-}));
+// The dialog transport forwards any addon message that has a `message` field.
+// Verify validates the createdProject relay locally so that schema lives next
+// to the consumer that owns it instead of inside useChromaticDialog.
+const createdProjectMessageSchema = z.object({
+  message: z.literal('createdProject'),
+  projectId: z.string(),
+});
 
 const ProjectCountQuery = graphql(/* GraphQL */ `
   query VisualTestsProjectCountQuery {
@@ -64,76 +53,49 @@ export const Verify = ({
   const client = useClient();
   const onError = useErrorNotification();
 
-  const { user_code: userCode, verificationUrl } = exchangeParameters;
+  // Hold the auth session until the user finishes the create-project follow-up flow.
+  const authSession = useRef<AuthSession>();
 
-  // Store the access token until we are ready to pass it to `setAccessToken` (at which point
-  // the Panel will close the Authentication screen)
-  const accessToken = useRef<string>();
+  const { begin } = useOAuthFlow({
+    onAuthenticated: async (session, ctx) => {
+      try {
+        authSession.current = session;
+        const fetchOptions = getFetchOptions(session.accessToken, session.sessionId);
+        const { data } = await client.query(ProjectCountQuery, {}, { fetchOptions });
 
-  const openDialogRef = useRef<(url: string) => void>();
-  const closeDialogRef = useRef<() => void>();
-  const handler = useCallback<DialogHandler>(
-    async (event) => {
-      // If the user logs in as part of the grant process, don't close the dialog,
-      // instead redirect us back to where we were trying to go.
-      if (event.message === 'login') {
-        openDialogRef.current?.(verificationUrl);
-      }
+        if (!data?.viewer) throw new Error('Failed to fetch initial project list');
 
-      if (event.message === 'grant') {
-        try {
-          const token = await fetchAccessToken(exchangeParameters);
-          if (!token) throw new Error('Failed to fetch an access token');
-          accessToken.current = token;
-
-          // Override token for this query but don't store it yet until they've created a project
-          const fetchOptions = getFetchOptions(token);
-          const { data } = await client.query(ProjectCountQuery, {}, { fetchOptions });
-
-          if (!data?.viewer) throw new Error('Failed to fetch initial project list');
-
-          // The user has projects to choose from (or the project is already selected),
-          // so send them to pick one
-          if (data.viewer.projectCount > 0 || hasProjectId) {
-            setAccessToken(accessToken.current);
-            closeDialogRef.current?.();
-          } else {
-            // The user has no projects, so we need to get them to create one, then close the dialog
-            if (!data.viewer.accounts[0]) throw new Error('User has no accounts!');
-            if (!data.viewer.accounts[0].newProjectUrl) {
-              throw new Error('Unexpected missing project URL');
-            }
-
-            openDialogRef.current?.(data.viewer.accounts[0].newProjectUrl);
-          }
-        } catch (err) {
-          onError('Login Error', err);
+        if (data.viewer.projectCount > 0 || hasProjectId) {
+          setAuthenticatedSession(session);
+          setAccessToken(session.accessToken);
+          ctx.closeDialog();
+          return;
         }
-      }
 
-      if (event.message === 'createdProject') {
-        if (!accessToken.current) {
-          onError('Unexpected missing access token', new Error());
-        } else {
-          setAccessToken(accessToken.current);
-          setCreatedProjectId(`Project:${event.projectId}`);
-          closeDialogRef.current?.();
+        if (!data.viewer.accounts[0]) throw new Error('User has no accounts!');
+        if (!data.viewer.accounts[0].newProjectUrl) {
+          throw new Error('Unexpected missing project URL');
         }
+
+        ctx.openDialog(data.viewer.accounts[0].newProjectUrl);
+      } catch (err) {
+        onError('Login Error', err);
       }
     },
-    [
-      verificationUrl,
-      exchangeParameters,
-      client,
-      hasProjectId,
-      setAccessToken,
-      onError,
-      setCreatedProjectId,
-    ]
-  );
-  const [openDialog, closeDialog] = useChromaticDialog(handler);
-  openDialogRef.current = openDialog;
-  closeDialogRef.current = closeDialog;
+    onError: (err) => onError('Login Error', err),
+    onMessage: (event, ctx) => {
+      const parsed = createdProjectMessageSchema.safeParse(event);
+      if (!parsed.success) return;
+      if (!authSession.current) {
+        onError('Unexpected missing auth session', new Error());
+        return;
+      }
+      setAuthenticatedSession(authSession.current);
+      setAccessToken(authSession.current.accessToken);
+      setCreatedProjectId(`Project:${parsed.data.projectId}`);
+      ctx.closeDialog();
+    },
+  });
 
   return (
     <Screen footer={null} ignoreConfig>
@@ -144,17 +106,16 @@ export const Verify = ({
             <Heading>Verify your account</Heading>
             <div>
               <Text center muted>
-                Check this verification code on Chromatic to grant access to your published
-                Storybooks.
+                Continue in Chromatic to approve access to your published Storybooks.
               </Text>
             </div>
-            <Digits>
-              {userCode?.split('').map((char: string, index: number) => (
-                <li key={`${index}-${char}`}>{char.replace(/[^A-Z0-9]/, '')}</li>
-              ))}
-            </Digits>
           </div>
-          <Button variant="solid" size="medium" onClick={() => openDialog(verificationUrl)}>
+          <Button
+            ariaLabel={false}
+            variant="solid"
+            size="medium"
+            onClick={() => begin(exchangeParameters)}
+          >
             Go to Chromatic
           </Button>
         </Stack>

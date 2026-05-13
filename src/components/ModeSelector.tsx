@@ -1,64 +1,24 @@
-import { ChevronDownIcon, DiamondIcon } from '@storybook/icons';
+import { DiamondIcon } from '@storybook/icons';
 import React from 'react';
-import { WithTooltip } from 'storybook/internal/components';
+import { ActionList, PopoverProvider } from 'storybook/internal/components';
 import { styled } from 'storybook/theming';
 
 import { ComparisonResult, TestMode } from '../gql/graphql';
 import { aggregateResult } from '../utils/aggregateResult';
 import { StatusDot, StatusDotWrapper } from './StatusDot';
-import { TooltipMenu } from './TooltipMenu';
-import { TooltipNote } from './TooltipNote';
 
-const IconWrapper = styled.div(({ theme }) => ({
-  alignItems: 'center',
-  color: theme.base === 'light' ? theme.color.darkest : theme.color.light,
-  display: 'inline-flex',
-  gap: 6,
-  height: 14,
-  margin: '7px 7px',
-
-  svg: {
-    verticalAlign: 'top',
-
-    path: {
-      fill: theme.base === 'light' ? theme.color.dark : theme.color.light,
-    },
-  },
-}));
-
-const StyledTooltipMenu = styled(TooltipMenu)(({ theme }) => ({
-  button: {
-    svg: {
-      verticalAlign: 'top',
-
-      path: {
-        fill: theme.base === 'light' ? theme.color.dark : theme.color.light,
-      },
-    },
-
-    '&:hover': {
-      svg: {
-        path: {
-          fill: theme.color.secondary,
-        },
-      },
-    },
-  },
-}));
-
-const Label = styled.span(({ theme }) => ({
-  color: theme.base === 'light' ? theme.color.dark : theme.color.light,
+const ButtonLabel = styled(ActionList.Text)({
   display: 'none',
-  fontSize: theme.typography.size.s1,
-  fontWeight: theme.typography.weight.bold,
 
   '@container (min-width: 300px)': {
     display: 'inline-block',
   },
+});
 
-  'button:hover > &': {
-    color: theme.color.secondary,
-  },
+const ItemLabel = styled(ActionList.Text)<{ active?: boolean }>(({ theme, active }) => ({
+  minWidth: 80,
+  color: active ? theme.color.secondary : 'inherit',
+  fontWeight: active ? theme.typography.weight.bold : 'inherit',
 }));
 
 type ModeData = Pick<TestMode, 'name'>;
@@ -90,48 +50,59 @@ export const ModeSelector = ({
     icon = <StatusDotWrapper status={aggregate}>{icon}</StatusDotWrapper>;
   }
 
-  const links =
-    modeResults.length > 1 &&
-    modeResults
-      .map(({ mode, result }) => ({
-        id: mode.name,
-        title: mode.name,
-        right: !isAccepted &&
-          ![ComparisonResult.Equal, ComparisonResult.Skipped].includes(aggregate) && (
-            <StatusDot status={result} />
-          ),
-        onClick: () => onSelectMode(mode),
-        active: selectedMode.name === mode.name,
-      }))
-      .sort((a, b) => {
-        if (!modeOrder) return 0;
-        const ia = modeOrder.indexOf(a.title);
-        const ib = modeOrder.indexOf(b.title);
-        return ia !== -1 && ib !== -1 ? ia - ib : 0;
-      });
+  if (modeResults.length === 1) {
+    return (
+      <ActionList.Button readOnly tooltip={`View mode: ${selectedMode.name}`}>
+        <ActionList.Icon>{icon}</ActionList.Icon>
+        <ButtonLabel>{selectedMode.name}</ButtonLabel>
+      </ActionList.Button>
+    );
+  }
+
+  const links = modeResults
+    .map(({ mode, result }) => ({
+      id: mode.name,
+      title: mode.name,
+      right: !isAccepted &&
+        ![ComparisonResult.Equal, ComparisonResult.Skipped].includes(aggregate) && (
+          <StatusDot status={result} />
+        ),
+      onClick: () => onSelectMode(mode),
+      active: selectedMode.name === mode.name,
+    }))
+    .sort((a, b) => {
+      if (!modeOrder) return 0;
+      const ia = modeOrder.indexOf(a.title);
+      const ib = modeOrder.indexOf(b.title);
+      return ia !== -1 && ib !== -1 ? ia - ib : 0;
+    });
 
   return (
-    <WithTooltip
-      key={selectedMode.name}
-      hasChrome={false}
-      placement="top"
-      trigger="hover"
-      tooltip={
-        <TooltipNote note={links ? 'Switch mode' : `View mode: ${modeResults[0].mode.name}`} />
-      }
-    >
-      {links ? (
-        <StyledTooltipMenu placement="bottom" links={links}>
-          {icon}
-          <Label>{selectedMode.name}</Label>
-          <ChevronDownIcon size={10} />
-        </StyledTooltipMenu>
-      ) : (
-        <IconWrapper>
-          {icon}
-          <Label>{selectedMode.name}</Label>
-        </IconWrapper>
+    <PopoverProvider
+      padding={0}
+      popover={({ onHide }) => (
+        <ActionList>
+          {links.map((link) => (
+            <ActionList.Item key={link.id}>
+              <ActionList.Action
+                ariaLabel={false}
+                onClick={() => {
+                  link.onClick();
+                  onHide();
+                }}
+              >
+                <ItemLabel active={link.active}>{link.title}</ItemLabel>
+                {link.right && <ActionList.Icon>{link.right}</ActionList.Icon>}
+              </ActionList.Action>
+            </ActionList.Item>
+          ))}
+        </ActionList>
       )}
-    </WithTooltip>
+    >
+      <ActionList.Button size="small" ariaLabel="Switch mode">
+        <ActionList.Icon>{icon}</ActionList.Icon>
+        <ButtonLabel>{selectedMode.name}</ButtonLabel>
+      </ActionList.Button>
+    </PopoverProvider>
   );
 };

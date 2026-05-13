@@ -66,10 +66,10 @@ export const Onboarding = ({
     return (
       <BuildError localBuildProgress={localBuildProgress}>
         <ButtonStack>
-          <Button variant="solid" size="medium" onClick={startBuild}>
+          <Button ariaLabel={false} variant="solid" size="medium" onClick={startBuild}>
             Try again
           </Button>
-          <Button link onClick={onSkip}>
+          <Button ariaLabel={false} link onClick={onSkip}>
             Skip walkthrough
           </Button>
         </ButtonStack>
@@ -83,7 +83,7 @@ export const Onboarding = ({
         billingUrl={localBuildProgress.errorDetailsUrl}
         suspensionReason={AccountSuspensionReason.ExceededThreshold}
       >
-        <Button link onClick={dismissBuildError}>
+        <Button ariaLabel={false} link onClick={dismissBuildError}>
           Continue
         </Button>
       </AccountSuspended>

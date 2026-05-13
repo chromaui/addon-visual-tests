@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { http, HttpResponse } from 'msw';
 import { findByRole, fn, userEvent } from 'storybook/test';
 
+import { HIGHLIGHT_IGNORED_PARAM } from '../../constants';
 import { panelModes } from '../../modes';
 import { GraphQLClientProvider } from '../../utils/graphQLClient';
 import { playAll } from '../../utils/playAll';
@@ -51,6 +52,9 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Welcome = {
+  globals: {
+    [HIGHLIGHT_IGNORED_PARAM]: true,
+  },
   parameters: withFigmaDesign(
     'https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-317931&t=3EAIRe8423CpOQWY-4'
   ),
@@ -90,9 +94,14 @@ export const SSO = {
 } satisfies Story;
 
 export const Verify = {
-  parameters: withFigmaDesign(
-    'https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318063&t=3EAIRe8423CpOQWY-4'
-  ),
+  parameters: {
+    chromatic: {
+      ignoreSelectors: ['ol'],
+    },
+    ...withFigmaDesign(
+      'https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318063&t=3EAIRe8423CpOQWY-4'
+    ),
+  },
   play: playAll(SignIn, async (context) => {
     const button = await findByRole(context.canvasElement, 'button', {
       name: 'Sign in with Chromatic',

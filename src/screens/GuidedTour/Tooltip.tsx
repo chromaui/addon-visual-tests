@@ -61,6 +61,7 @@ export const Tooltip = ({ isLastStep, step, primaryProps, tooltipProps }: Toolti
         <TooltipFooter id="buttonSkip">
           {!step.hideSkipButton && !isLastStep && (
             <Button
+              ariaLabel={false}
               size="medium"
               onClick={step.onSkipWalkthroughButtonClick}
               link
@@ -71,6 +72,7 @@ export const Tooltip = ({ isLastStep, step, primaryProps, tooltipProps }: Toolti
           )}
           {!step.hideNextButton && (
             <Button
+              ariaLabel={false}
               {...{
                 ...primaryProps,
                 // @tmeasday - I'm not sure if we ever use this, but this makes the types work

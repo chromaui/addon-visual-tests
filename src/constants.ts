@@ -1,15 +1,9 @@
-export const {
-  CHROMATIC_INDEX_URL,
-  CHROMATIC_BASE_URL = CHROMATIC_INDEX_URL || 'https://www.chromatic.com',
-  CHROMATIC_API_URL = `${CHROMATIC_BASE_URL}/api`,
-} = process.env;
-
 export const PACKAGE_NAME = '@chromatic-com/storybook';
 
+export const OAUTH_CLIENT_ID = 'chromaui:addon-visual-tests';
 export const ADDON_ID = 'chromaui/addon-visual-tests';
 export const PANEL_ID = `${ADDON_ID}/panel`;
 export const TEST_PROVIDER_ID = `${ADDON_ID}/test-provider`;
-export const ACCESS_TOKEN_KEY = `${ADDON_ID}/access-token/${CHROMATIC_BASE_URL}`;
 export const DEV_BUILD_ID_KEY = `${ADDON_ID}/dev-build-id`;
 export const CONFIG_INFO = `${ADDON_ID}/configInfo`;
 export const CONFIG_INFO_DISMISSED = `${ADDON_ID}/configInfoDismissed`;
@@ -17,16 +11,26 @@ export const GIT_INFO = `${ADDON_ID}/gitInfo`;
 export const GIT_INFO_ERROR = `${ADDON_ID}/gitInfoError`;
 export const PROJECT_INFO = `${ADDON_ID}/projectInfo`;
 export const IS_OFFLINE = `${ADDON_ID}/isOffline`;
-export const IS_OUTDATED = `${ADDON_ID}/isOutdated`;
 export const START_BUILD = `${ADDON_ID}/startBuild`;
 export const STOP_BUILD = `${ADDON_ID}/stopBuild`;
 export const LOCAL_BUILD_PROGRESS = `${ADDON_ID}/localBuildProgress`;
+export const START_SHARE = `${ADDON_ID}/startShare`;
+export const CANCEL_SHARE = `${ADDON_ID}/cancelShare`;
+export const SHARE_PROGRESS = `${ADDON_ID}/shareProgress`;
 export const SELECTED_MODE_NAME = `${ADDON_ID}/selectedModeName`;
 export const SELECTED_BROWSER_ID = `${ADDON_ID}/selectedBrowserId`;
 export const TELEMETRY = `${ADDON_ID}/telemetry`;
 export const ENABLE_FILTER = `${ADDON_ID}/enableFilter`;
 export const REMOVE_ADDON = `${ADDON_ID}/removeAddon`;
 export const PARAM_KEY = 'chromatic';
+export const HIGHLIGHT_IGNORED_PARAM = 'highlightIgnored';
+export const HIGHLIGHT_IGNORED_ID = `${ADDON_ID}/highlightIgnored`;
+export const HIGHLIGHT_IGNORED_COUNT = `${ADDON_ID}/highlightIgnored/count`;
+export const HIGHLIGHT_IGNORED_SELECT = `${ADDON_ID}/highlightIgnored/select`;
+export const HIGHLIGHT_IGNORED_DEFAULT_SELECTORS = [
+  '[data-chromatic="ignore"]',
+  '[class~="chromatic-ignore"]',
+];
 
 export const FETCH_ABORTED = `${ADDON_ID}/ChannelFetch/aborted`;
 export const FETCH_REQUEST = `${ADDON_ID}ChannelFetch/request`;

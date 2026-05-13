@@ -130,7 +130,7 @@ export const SnapshotComparison = ({
   storyId,
 }: SnapshotComparisonProps) => {
   const { baselineImageVisible, diffVisible, focusVisible } = useControlsState();
-  const { toggleBaselineImage, toggleSettings, toggleWarnings } = useControlsDispatch();
+  const { toggleBaselineImage } = useControlsDispatch();
 
   const selectedBuild = useSelectedBuildState();
   const startedAt: Date = 'startedAt' in selectedBuild && selectedBuild.startedAt;
@@ -174,8 +174,6 @@ export const SnapshotComparison = ({
       isNewBrowser
     ) {
       toggleBaselineImage(false);
-      toggleSettings(false);
-      toggleWarnings(false);
     }
 
     prevSelectedComparisonIdRef.current = selectedStory.selectedComparison?.id;
@@ -186,8 +184,6 @@ export const SnapshotComparison = ({
     storyId,
     selectedStory,
     toggleBaselineImage,
-    toggleSettings,
-    toggleWarnings,
     isNewStory,
     isNewMode,
     isNewBrowser,

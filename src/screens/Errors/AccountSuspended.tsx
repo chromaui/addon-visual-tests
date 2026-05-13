@@ -54,7 +54,7 @@ export const AccountSuspended = ({
           </div>
 
           {billingUrl && (
-            <Button asChild size="medium" variant="solid">
+            <Button ariaLabel={false} asChild size="medium" variant="solid">
               <a href={billingUrl} target="_new">
                 {action}
               </a>

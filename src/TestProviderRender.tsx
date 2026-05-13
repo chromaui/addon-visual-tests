@@ -3,7 +3,7 @@ import { PlayHollowIcon, StopAltIcon } from '@storybook/icons';
 import pluralize from 'pluralize';
 import React, { useCallback, useContext, useEffect, useRef } from 'react';
 import { Link } from 'storybook/internal/components';
-import { Button, ProgressSpinner, TooltipNote, WithTooltip } from 'storybook/internal/components';
+import { Button, ProgressSpinner } from 'storybook/internal/components';
 import {
   experimental_getTestProviderStore,
   experimental_useStatusStore,
@@ -17,14 +17,15 @@ import { BUILD_STEP_CONFIG } from './buildSteps';
 import {
   ADDON_ID,
   CONFIG_INFO,
+  GIT_INFO,
   GIT_INFO_ERROR,
   IS_OFFLINE,
-  IS_OUTDATED,
   LOCAL_BUILD_PROGRESS,
   PANEL_ID,
   TEST_PROVIDER_ID,
 } from './constants';
-import { ConfigInfoPayload, LocalBuildProgress } from './types';
+import type { ConfigInfoPayload, GitInfoPayload, LocalBuildProgress } from './types';
+import { checkOutdated } from './utils/checkOutdated';
 import { useAccessToken } from './utils/graphQLClient';
 import { TelemetryContext } from './utils/TelemetryContext';
 import { useBuildEvents } from './utils/useBuildEvents';
@@ -82,12 +83,12 @@ export const TestProviderRender = () => {
   const isLoggedIn = !!accessToken;
 
   const [isOffline, setOffline] = useSharedState<boolean>(IS_OFFLINE);
-  const [isOutdated] = useSharedState<boolean>(IS_OUTDATED);
   const [localBuildProgress] = useSharedState<LocalBuildProgress>(LOCAL_BUILD_PROGRESS);
 
   const [configInfo] = useSharedState<ConfigInfoPayload>(CONFIG_INFO);
   const hasConfigProblem = Object.keys(configInfo?.problems || {}).length > 0;
 
+  const [gitInfo] = useSharedState<GitInfoPayload>(GIT_INFO);
   const [gitInfoError] = useSharedState<Error>(GIT_INFO_ERROR);
 
   const lastStep = useRef(localBuildProgress?.currentStep);
@@ -204,7 +205,7 @@ export const TestProviderRender = () => {
         ? BUILD_STEP_CONFIG[localBuildProgress.currentStep].renderProgress(localBuildProgress)
         : 'Starting...';
       break;
-    case !!isOutdated:
+    case checkOutdated(localBuildProgress, gitInfo):
       description = 'Test results outdated';
       break;
     case localBuildProgress?.currentStep === 'aborted':
@@ -235,43 +236,31 @@ export const TestProviderRender = () => {
 
       <Actions>
         {warning ? null : testProviderState === 'test-provider-state:running' ? (
-          <WithTooltip
-            hasChrome={false}
-            trigger="hover"
-            tooltip={<TooltipNote note="Stop Visual tests" />}
+          <Button
+            ariaLabel="Stop visual tests"
+            size="medium"
+            variant="ghost"
+            padding="none"
+            onClick={stopBuild}
+            disabled={
+              !['initialize', 'build', 'upload'].includes(localBuildProgress?.currentStep ?? '')
+            }
           >
-            <Button
-              aria-label="Stop Visual tests"
-              size="medium"
-              variant="ghost"
-              padding="none"
-              onClick={stopBuild}
-              disabled={
-                !['initialize', 'build', 'upload'].includes(localBuildProgress?.currentStep ?? '')
-              }
-            >
-              <Progress percentage={localBuildProgress?.buildProgressPercentage}>
-                <StopIcon />
-              </Progress>
-            </Button>
-          </WithTooltip>
+            <Progress percentage={localBuildProgress?.buildProgressPercentage}>
+              <StopIcon />
+            </Progress>
+          </Button>
         ) : (
-          <WithTooltip
-            hasChrome={false}
-            trigger="hover"
-            tooltip={<TooltipNote note="Start Visual tests" />}
+          <Button
+            ariaLabel="Start visual tests"
+            size="medium"
+            variant="ghost"
+            padding="small"
+            disabled={!isRunnable}
+            onClick={startBuildIfPossible}
           >
-            <Button
-              aria-label="Start Visual tests"
-              size="medium"
-              variant="ghost"
-              padding="small"
-              disabled={!isRunnable}
-              onClick={startBuildIfPossible}
-            >
-              <PlayHollowIcon />
-            </Button>
-          </WithTooltip>
+            <PlayHollowIcon />
+          </Button>
         )}
       </Actions>
     </Container>

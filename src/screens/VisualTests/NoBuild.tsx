@@ -49,7 +49,13 @@ export const NoBuild = ({
 
   const getDetails = () => {
     const button = (
-      <Button disabled={isRunning} size="medium" variant="solid" onClick={startBuild}>
+      <Button
+        ariaLabel={false}
+        disabled={isRunning}
+        size="medium"
+        variant="solid"
+        onClick={startBuild}
+      >
         <PlayIcon />
         Take snapshots
       </Button>
@@ -79,7 +85,12 @@ export const NoBuild = ({
               <Text>{queryError.networkError.message}</Text>
             </div>
 
-            <Button size="medium" variant="solid" onClick={() => setAccessToken(null)}>
+            <Button
+              ariaLabel={false}
+              size="medium"
+              variant="solid"
+              onClick={() => setAccessToken(null)}
+            >
               Log out
             </Button>
           </Stack>
@@ -100,7 +111,12 @@ export const NoBuild = ({
               </Text>
             </div>
             <ButtonStack>
-              <Button size="medium" variant="solid" onClick={() => setAccessToken(null)}>
+              <Button
+                ariaLabel={false}
+                size="medium"
+                variant="solid"
+                onClick={() => setAccessToken(null)}
+              >
                 Log out
               </Button>
               <ButtonStackLink withArrow href={`${DOCS_URL}#troubleshooting`} target="_blank">

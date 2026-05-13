@@ -1,18 +1,18 @@
-import { ManagerContext } from 'storybook/manager-api';
 import type { Decorator, Loader, Preview } from '@storybook/react-vite';
+import { graphql, HttpResponse } from 'msw';
+import { initialize, mswLoader } from 'msw-storybook-addon';
+import React from 'react';
+import { ManagerContext } from 'storybook/manager-api';
 import { fn } from 'storybook/test';
 import {
-  Global,
-  ThemeProvider,
   convert,
   createReset,
+  Global,
   styled,
+  ThemeProvider,
   themes,
   useTheme,
 } from 'storybook/theming';
-import { HttpResponse, graphql } from 'msw';
-import { initialize, mswLoader } from 'msw-storybook-addon';
-import React from 'react';
 
 import { AuthProvider } from '../src/AuthContext';
 import { baseModes } from '../src/modes';
@@ -22,7 +22,6 @@ import { GraphQLClientProvider } from '../src/utils/graphQLClient';
 import { storyWrapper } from '../src/utils/storyWrapper';
 import { TelemetryProvider } from '../src/utils/TelemetryContext';
 import { useSessionState } from '../src/utils/useSessionState';
-import { action } from 'storybook/actions';
 
 // Initialize MSW
 initialize({
@@ -225,16 +224,17 @@ const preview: Preview = {
       argTypesRegex: '^on[A-Z].*',
     },
     backgrounds: {
-      disable: true,
+      disabled: true,
     },
     viewport: {
       disable: true,
-      viewports: {
+      options: {
         default: { name: 'Default', styles: { width: '960px', height: '720px' } },
       },
     },
     chromatic: {
       modes: baseModes,
+      ignoreSelectors: ['video'],
     },
     controls: {
       matchers: {

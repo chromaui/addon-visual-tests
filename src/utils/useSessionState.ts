@@ -81,11 +81,14 @@ export function useSessionState<S>(
 
 export function clearSessionState(...keys: string[]) {
   const items = sessionStorage.getItem(`${ADDON_ID}/state`)?.split(';') || [];
+  const cleared = keys.length ? keys : items;
+  cleared.forEach((key) => sessionStorage.removeItem(`${ADDON_ID}/state/${key}`));
   if (keys.length) {
-    keys.forEach((key) => sessionStorage.removeItem(`${ADDON_ID}/state/${key}`));
     sessionStorage.setItem(`${ADDON_ID}/state`, items.filter((i) => !keys.includes(i)).join(';'));
   } else {
-    items.forEach((item) => sessionStorage.removeItem(`${ADDON_ID}/state/${item}`));
     sessionStorage.removeItem(`${ADDON_ID}/state`);
   }
+  cleared.forEach((key) => {
+    window.dispatchEvent(new StorageEvent('session-storage', { key }));
+  });
 }

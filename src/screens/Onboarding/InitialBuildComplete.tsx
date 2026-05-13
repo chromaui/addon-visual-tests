@@ -42,10 +42,10 @@ export const InitialBuildComplete = ({ onCatchAChange, onSkip }: InitialBuildCom
             <ButtonStackText muted>
               Let&apos;s see the superpower of catching visual changes.
             </ButtonStackText>
-            <Button variant="solid" size="medium" onClick={onCatchAChange}>
+            <Button ariaLabel={false} variant="solid" size="medium" onClick={onCatchAChange}>
               Catch a UI change
             </Button>
-            <Button link onClick={onSkip}>
+            <Button ariaLabel={false} link onClick={onSkip}>
               Skip walkthrough
             </Button>
           </ButtonStack>

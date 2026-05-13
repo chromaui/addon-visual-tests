@@ -1,6 +1,5 @@
-import { ChevronDownIcon } from '@storybook/icons';
-import React, { ComponentProps } from 'react';
-import { WithTooltip } from 'storybook/internal/components';
+import React from 'react';
+import { ActionList, PopoverProvider } from 'storybook/internal/components';
 import { styled } from 'storybook/theming';
 
 import { Browser, BrowserInfo, ComparisonResult } from '../gql/graphql';
@@ -10,8 +9,6 @@ import { EdgeIcon } from './icons/EdgeIcon';
 import { FirefoxIcon } from './icons/FirefoxIcon';
 import { SafariIcon } from './icons/SafariIcon';
 import { StatusDot, StatusDotWrapper } from './StatusDot';
-import { TooltipMenu } from './TooltipMenu';
-import { TooltipNote } from './TooltipNote';
 
 const browserIcons = {
   [Browser.Chrome]: <ChromeIcon alt="Chrome" />,
@@ -20,36 +17,18 @@ const browserIcons = {
   [Browser.Edge]: <EdgeIcon alt="Edge" />,
 } as const;
 
-const IconWrapper = styled.div(({ theme }) => ({
-  alignItems: 'center',
-  color: theme.base === 'light' ? theme.color.dark : theme.color.light,
-  display: 'inline-flex',
-  gap: 6,
-  height: 16,
-  margin: '6px 7px',
-
-  svg: {
-    verticalAlign: 'top',
-  },
-}));
-
-const Label = styled.span(({ theme }) => ({
-  color: theme.base === 'light' ? theme.color.dark : theme.color.light,
+const ButtonLabel = styled(ActionList.Text)({
   display: 'none',
-  fontSize: theme.typography.size.s1,
-  fontWeight: theme.typography.weight.bold,
 
   '@container (min-width: 300px)': {
     display: 'inline-block',
   },
+});
 
-  '+ svg': {
-    color: theme.base === 'light' ? theme.color.dark : theme.color.light,
-  },
-
-  'button:hover > &, button:hover > & + svg': {
-    color: theme.color.secondary,
-  },
+const ItemLabel = styled(ActionList.Text)<{ active?: boolean }>(({ theme, active }) => ({
+  minWidth: 80,
+  color: active ? theme.color.secondary : 'inherit',
+  fontWeight: active ? theme.typography.weight.bold : 'inherit',
 }));
 
 type BrowserData = Pick<BrowserInfo, 'id' | 'key' | 'name'>;
@@ -79,47 +58,54 @@ export const BrowserSelector = ({
     icon = <StatusDotWrapper status={aggregate}>{icon}</StatusDotWrapper>;
   }
 
-  type Link = ComponentProps<typeof TooltipMenu>['links'][0];
-
-  const links =
-    browserResults.length > 1 &&
-    browserResults.map(
-      ({ browser, result }): Link => ({
-        active: selectedBrowser === browser,
-        id: browser.id,
-        onClick: () => onSelectBrowser(browser),
-        right: !isAccepted &&
-          ![ComparisonResult.Equal, ComparisonResult.Skipped].includes(aggregate) && (
-            <StatusDot status={result} />
-          ),
-        icon: browserIcons[browser.key],
-        title: browser.name,
-      })
+  if (browserResults.length === 1) {
+    return (
+      <ActionList.Button readOnly tooltip={`Tested in ${selectedBrowser.name}`}>
+        <ActionList.Icon>{icon}</ActionList.Icon>
+        <ButtonLabel>{selectedBrowser.name}</ButtonLabel>
+      </ActionList.Button>
     );
+  }
+
+  const links = browserResults.map(({ browser, result }) => ({
+    id: browser.id,
+    title: browser.name,
+    icon: browserIcons[browser.key],
+    right: !isAccepted &&
+      ![ComparisonResult.Equal, ComparisonResult.Skipped].includes(aggregate) && (
+        <StatusDot status={result} />
+      ),
+    onClick: () => onSelectBrowser(browser),
+    active: selectedBrowser.name === browser.name,
+  }));
+
   return (
-    <WithTooltip
-      key={selectedBrowser.key}
-      hasChrome={false}
-      placement="top"
-      trigger="hover"
-      tooltip={
-        <TooltipNote
-          note={links ? 'Switch browser' : `Tested in ${browserResults[0].browser.name}`}
-        />
-      }
-    >
-      {links ? (
-        <TooltipMenu placement="bottom" links={links as any}>
-          {icon}
-          <Label>{selectedBrowser.name}</Label>
-          <ChevronDownIcon size={10} />
-        </TooltipMenu>
-      ) : (
-        <IconWrapper>
-          {icon}
-          <Label>{selectedBrowser.name}</Label>
-        </IconWrapper>
+    <PopoverProvider
+      padding={0}
+      popover={({ onHide }) => (
+        <ActionList>
+          {links.map((link) => (
+            <ActionList.Item key={link.id}>
+              <ActionList.Action
+                ariaLabel={false}
+                onClick={() => {
+                  link.onClick();
+                  onHide();
+                }}
+              >
+                <ActionList.Icon>{link.icon}</ActionList.Icon>
+                <ItemLabel active={link.active}>{link.title}</ItemLabel>
+                {link.right && <ActionList.Icon>{link.right}</ActionList.Icon>}
+              </ActionList.Action>
+            </ActionList.Item>
+          ))}
+        </ActionList>
       )}
-    </WithTooltip>
+    >
+      <ActionList.Button size="small" ariaLabel="Switch browser">
+        <ActionList.Icon>{icon}</ActionList.Icon>
+        <ButtonLabel>{selectedBrowser.name}</ButtonLabel>
+      </ActionList.Button>
+    </PopoverProvider>
   );
 };

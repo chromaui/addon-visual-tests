@@ -142,7 +142,6 @@ const meta = {
     },
   },
   args: {
-    isOutdated: false,
     setSelectedBuildInfo: fn(),
     dismissBuildError: fn(),
     gitInfo: {
@@ -155,7 +154,6 @@ const meta = {
     },
     storyId: 'button--primary',
     projectId: 'Project:id123',
-    setOutdated: fn(),
     updateBuildStatus: fn(),
     addNotification: fn(),
     clearNotification: fn(),
@@ -942,27 +940,3 @@ export const CIBuildNewerThanCommit = {
     });
   },
 } satisfies Story;
-
-// export const RenderSettings = {
-//   parameters: {
-//     ...withFigmaDesign(
-//       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-525764&t=18c1zI1SMe76dWYk-4"
-//     ),
-//   },
-//   play: playAll(async ({ canvasElement }) => {
-//     const button = await findByRole(canvasElement, "button", { name: "Show render settings" });
-//     await fireEvent.click(button);
-//   }),
-// } satisfies Story;
-
-// export const Warnings = {
-//   parameters: {
-//     ...withFigmaDesign(
-//       "https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=516-672810&t=18c1zI1SMe76dWYk-4"
-//     ),
-//   },
-//   play: playAll(async ({ canvasElement }) => {
-//     const button = await findByRole(canvasElement, "button", { name: "Show warnings" });
-//     await fireEvent.click(button);
-//   }),
-// } satisfies Story;

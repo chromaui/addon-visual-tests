@@ -14,6 +14,7 @@ import {
   VtaOnboardingPreference,
 } from '../../gql/graphql';
 import { GitInfoPayload, LocalBuildProgress, UpdateStatusFunction } from '../../types';
+import { checkOutdated } from '../../utils/checkOutdated';
 import { testsToStatusUpdate } from '../../utils/testsToStatusUpdate';
 import { SelectedBuildInfo, updateSelectedBuildInfo } from '../../utils/updateSelectedBuildInfo';
 import { useSessionState } from '../../utils/useSessionState';
@@ -28,12 +29,10 @@ import { NoBuild } from './NoBuild';
 import { ReviewTestProvider } from './ReviewTestContext';
 
 interface VisualTestsProps {
-  isOutdated: boolean;
   selectedBuildInfo?: SelectedBuildInfo;
   setSelectedBuildInfo: ReturnType<typeof useSessionState<SelectedBuildInfo | undefined>>[1];
   dismissBuildError: () => void;
   localBuildProgress?: LocalBuildProgress;
-  setOutdated: (isOutdated: boolean) => void;
   updateBuildStatus: UpdateStatusFunction;
   projectId: string;
   gitInfo: Pick<
@@ -185,12 +184,10 @@ const useOnboarding = ({ lastBuildOnBranch, vtaOnboarding }: ReturnType<typeof u
 };
 
 export const VisualTestsWithoutSelectedBuildId = ({
-  isOutdated,
   selectedBuildInfo,
   setSelectedBuildInfo,
   dismissBuildError,
   localBuildProgress,
-  setOutdated,
   updateBuildStatus,
   projectId,
   gitInfo,
@@ -211,7 +208,6 @@ export const VisualTestsWithoutSelectedBuildId = ({
     lastBuildOnBranchIsReady,
     lastBuildOnBranchIsSelectable,
     selectedBuild,
-    selectedBuildMatchesGit,
     queryError,
     rerunQuery,
     userCanReview,
@@ -247,9 +243,6 @@ export const VisualTestsWithoutSelectedBuildId = ({
       }
     },
   });
-
-  // Currently only used by the sidebar button to show a blue dot ("build outdated")
-  useEffect(() => setOutdated(!selectedBuildMatchesGit), [selectedBuildMatchesGit, setOutdated]);
 
   // We always set status to the next build's status, as when we change to a new story we'll see the
   // next builds. The status update is calculated outside useEffect so it only reruns when changed.
@@ -364,7 +357,7 @@ export const VisualTestsWithoutSelectedBuildId = ({
               {...{
                 branch: gitInfo.branch,
                 dismissBuildError,
-                isOutdated,
+                isOutdated: checkOutdated(selectedBuild, gitInfo),
                 localBuildProgress,
                 ...(lastBuildOnBranch && { lastBuildOnBranch }),
                 ...(lastBuildOnBranchIsSelectable && { switchToLastBuildOnBranch }),

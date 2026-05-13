@@ -30,6 +30,7 @@ export default defineConfig(async (options) => {
       exportEntries = [],
       nodeEntries = [],
       managerEntries = [],
+      previewEntries = [],
       externals: extraExternals = [],
     } = {},
   } = packageJson;
@@ -88,11 +89,23 @@ export default defineConfig(async (options) => {
     });
   }
 
+  if (previewEntries.length) {
+    configs.push({
+      ...commonConfig,
+      entry: previewEntries,
+      format: ['esm'],
+      platform: 'browser',
+      external: globalManagerPackagesNoIcons,
+      dts: false,
+    });
+  }
+
   if (exportEntries.length > 0) {
     configs.push({
       ...commonConfig,
       ...browserOptions,
       entry: exportEntries,
+      dts: true,
     });
     configs.push({
       ...commonConfig,

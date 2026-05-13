@@ -6,9 +6,8 @@ import {
   StopIcon as Stop,
   TimerIcon as Timer,
 } from '@storybook/icons';
+import { ActionList } from 'storybook/internal/components';
 import { styled } from 'storybook/theming';
-
-import { IconButton } from './IconButton';
 
 export const Accordions = styled.div({
   display: 'flex',
@@ -77,7 +76,7 @@ export const CloseIcon = styled(Close)({
   marginLeft: 'auto',
 });
 
-export const CloseButton: typeof IconButton = styled(IconButton)({
+export const CloseButton = styled(ActionList.Button)({
   margin: -5,
   marginLeft: 'auto',
 });
