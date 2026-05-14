@@ -1,3 +1,15 @@
+# v5.2.1 (Thu May 14 2026)
+
+#### 🐛 Bug Fix
+
+- Widen peer-dependency range for storybook [#434](https://github.com/chromaui/addon-visual-tests/pull/434) ([@valentinpalkovic](https://github.com/valentinpalkovic))
+
+#### Authors: 1
+
+- Valentin Palkovic ([@valentinpalkovic](https://github.com/valentinpalkovic))
+
+---
+
 # v5.2.0 (Thu May 14 2026)
 
 #### 🚀 Enhancement
