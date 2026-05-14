@@ -1,8 +1,8 @@
 import React, { useCallback } from 'react';
 
+import { initiateSignin, TokenExchangeParameters } from '../../auth/requestAccessToken';
 import { useAuthState } from '../../AuthContext';
 import { Project } from '../../gql/graphql';
-import { initiateSignin, TokenExchangeParameters } from '../../utils/requestAccessToken';
 import { useTelemetry } from '../../utils/TelemetryContext';
 import { useErrorNotification } from '../../utils/useErrorNotification';
 import { useSessionState } from '../../utils/useSessionState';

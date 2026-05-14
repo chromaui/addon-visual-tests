@@ -17,14 +17,15 @@ import { BUILD_STEP_CONFIG } from './buildSteps';
 import {
   ADDON_ID,
   CONFIG_INFO,
+  GIT_INFO,
   GIT_INFO_ERROR,
   IS_OFFLINE,
-  IS_OUTDATED,
   LOCAL_BUILD_PROGRESS,
   PANEL_ID,
   TEST_PROVIDER_ID,
 } from './constants';
-import { ConfigInfoPayload, LocalBuildProgress } from './types';
+import type { ConfigInfoPayload, GitInfoPayload, LocalBuildProgress } from './types';
+import { checkOutdated } from './utils/checkOutdated';
 import { useAccessToken } from './utils/graphQLClient';
 import { TelemetryContext } from './utils/TelemetryContext';
 import { useBuildEvents } from './utils/useBuildEvents';
@@ -82,12 +83,12 @@ export const TestProviderRender = () => {
   const isLoggedIn = !!accessToken;
 
   const [isOffline, setOffline] = useSharedState<boolean>(IS_OFFLINE);
-  const [isOutdated] = useSharedState<boolean>(IS_OUTDATED);
   const [localBuildProgress] = useSharedState<LocalBuildProgress>(LOCAL_BUILD_PROGRESS);
 
   const [configInfo] = useSharedState<ConfigInfoPayload>(CONFIG_INFO);
   const hasConfigProblem = Object.keys(configInfo?.problems || {}).length > 0;
 
+  const [gitInfo] = useSharedState<GitInfoPayload>(GIT_INFO);
   const [gitInfoError] = useSharedState<Error>(GIT_INFO_ERROR);
 
   const lastStep = useRef(localBuildProgress?.currentStep);
@@ -204,7 +205,7 @@ export const TestProviderRender = () => {
         ? BUILD_STEP_CONFIG[localBuildProgress.currentStep].renderProgress(localBuildProgress)
         : 'Starting...';
       break;
-    case !!isOutdated:
+    case checkOutdated(localBuildProgress, gitInfo):
       description = 'Test results outdated';
       break;
     case localBuildProgress?.currentStep === 'aborted':
