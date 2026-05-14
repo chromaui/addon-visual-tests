@@ -1,3 +1,30 @@
+# v5.2.0 (Thu May 14 2026)
+
+#### 🚀 Enhancement
+
+- Add missing `ChromaticTypes` export to support composite mode [#410](https://github.com/chromaui/addon-visual-tests/pull/410) ([@jdpnielsen](https://github.com/jdpnielsen) [@ghengeveld](https://github.com/ghengeveld))
+- Add Share tool to quickly publish a Storybook [#418](https://github.com/chromaui/addon-visual-tests/pull/418) ([@valentinpalkovic](https://github.com/valentinpalkovic) [@ghengeveld](https://github.com/ghengeveld) [@kylegach](https://github.com/kylegach))
+- Add refresh-token auth flow and harden HTML injection paths [#425](https://github.com/chromaui/addon-visual-tests/pull/425) ([@ghengeveld](https://github.com/ghengeveld) [@valentinpalkovic](https://github.com/valentinpalkovic))
+- Replace `device_code` OAuth flow with `authorization_code` flow [#424](https://github.com/chromaui/addon-visual-tests/pull/424) ([@ghengeveld](https://github.com/ghengeveld) [@valentinpalkovic](https://github.com/valentinpalkovic))
+
+#### 🐛 Bug Fix
+
+- Refresh auth preemptively before token expiry [#431](https://github.com/chromaui/addon-visual-tests/pull/431) ([@ghengeveld](https://github.com/ghengeveld))
+- Merge remote-tracking branch 'origin/valentin/viral-sharing-2' into valentin/viral-sharing-2 [#429](https://github.com/chromaui/addon-visual-tests/pull/429) ([@valentinpalkovic](https://github.com/valentinpalkovic))
+- Consolidate auth state into a single AuthStore [#430](https://github.com/chromaui/addon-visual-tests/pull/430) ([@valentinpalkovic](https://github.com/valentinpalkovic))
+- Show share expiry based on `daysToExpire` from CLI [#428](https://github.com/chromaui/addon-visual-tests/pull/428) ([@ghengeveld](https://github.com/ghengeveld) [@valentinpalkovic](https://github.com/valentinpalkovic))
+- Fix OAuth authorization_code flow [#427](https://github.com/chromaui/addon-visual-tests/pull/427) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 5
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Joshua Daniel Pratt Nielsen ([@jdpnielsen](https://github.com/jdpnielsen))
+- Kyle Gach ([@kylegach](https://github.com/kylegach))
+- Piotr Wysocki ([@piwysocki](https://github.com/piwysocki))
+- Valentin Palkovic ([@valentinpalkovic](https://github.com/valentinpalkovic))
+
+---
+
 # v5.1.2 (Mon Apr 13 2026)
 
 #### 🐛 Bug Fix
