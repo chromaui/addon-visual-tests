@@ -19,12 +19,22 @@ let reducerState: ShareReducerState = {
   shareTriggeredId: null,
 };
 let shareProgressValue: ShareProgress | undefined = undefined;
+let tokenValue: string | null = 'token-123';
+
+// Refs persist across invocations (keyed by hook call order) so that calling
+// the component repeatedly behaves like re-rendering the same mount.
+const refStore: { current: unknown }[] = [];
+let refIndex = 0;
 
 vi.mock('react', async (importOriginal) => {
   const actual = await importOriginal<typeof import('react')>();
   return {
     ...actual,
-    useRef: (initial: unknown) => ({ current: initial }),
+    useRef: (initial: unknown) => {
+      const ref = (refStore[refIndex] ??= { current: initial });
+      refIndex += 1;
+      return ref;
+    },
     useCallback: (fn: unknown) => fn,
     // useEffect: run synchronously so effects fire during the "render" call
     useEffect: (fn: () => (() => void) | void) => {
@@ -41,7 +51,7 @@ vi.mock('storybook/manager-api', () => ({
 }));
 
 vi.mock('../../utils/graphQLClient', () => ({
-  useAccessToken: () => ['token-123', mocks.updateToken],
+  useAccessToken: () => [tokenValue, mocks.updateToken],
 }));
 
 vi.mock('../../auth/authStore', () => ({
@@ -88,6 +98,7 @@ function makeApi() {
 
 // Call the component as a plain function to trigger all useEffect calls
 function invokeSharePopup() {
+  refIndex = 0;
   (SharePopup as any)({ api: makeApi() });
 }
 
@@ -108,7 +119,13 @@ afterEach(() => {
     shareTriggeredId: null,
   };
   shareProgressValue = undefined;
+  tokenValue = 'token-123';
+  refStore.length = 0;
 });
+
+function viewEmits(action: string) {
+  return mocks.channel.emit.mock.calls.filter(([, payload]) => payload?.action === action);
+}
 
 describe('SharePopup', () => {
   describe('stale shareProgress filtering by shareRequestId', () => {
@@ -320,6 +337,62 @@ describe('SharePopup', () => {
         ([action]) => action?.type === 'AUTO_SKIP_TO_UPLOADING'
       );
       expect(autoSkipDispatches).toHaveLength(0);
+    });
+  });
+
+  describe('top-of-funnel view telemetry', () => {
+    it('emits share-welcome-viewed when the welcome screen is shown signed out', () => {
+      tokenValue = null;
+      setReducer({ screen: { status: 'welcome' } });
+
+      invokeSharePopup();
+
+      expect(viewEmits('share-welcome-viewed')).toHaveLength(1);
+    });
+
+    it('does not re-emit the view event on re-render of the same screen', () => {
+      tokenValue = null;
+      setReducer({ screen: { status: 'welcome' } });
+
+      invokeSharePopup();
+      invokeSharePopup();
+
+      expect(viewEmits('share-welcome-viewed')).toHaveLength(1);
+    });
+
+    it('emits once per screen entry and re-fires when returning to a screen', () => {
+      tokenValue = null;
+
+      setReducer({ screen: { status: 'idle' } });
+      invokeSharePopup();
+      setReducer({ screen: { status: 'subdomain' } });
+      invokeSharePopup();
+      setReducer({ screen: { status: 'idle' } });
+      invokeSharePopup();
+
+      expect(viewEmits('share-signin-viewed')).toHaveLength(2);
+      expect(viewEmits('share-sso-viewed')).toHaveLength(1);
+    });
+
+    it('does not emit view events when signed in, since those screens auto-skip', () => {
+      setReducer({ screen: { status: 'welcome' } });
+
+      invokeSharePopup();
+
+      expect(viewEmits('share-welcome-viewed')).toHaveLength(0);
+      expect(viewEmits('share-signin-viewed')).toHaveLength(0);
+      expect(viewEmits('share-sso-viewed')).toHaveLength(0);
+    });
+
+    it('does not emit view events for screens outside the funnel entry', () => {
+      tokenValue = null;
+      setReducer({ screen: { status: 'uploading', shareUrl: '' } });
+
+      invokeSharePopup();
+
+      expect(viewEmits('share-welcome-viewed')).toHaveLength(0);
+      expect(viewEmits('share-signin-viewed')).toHaveLength(0);
+      expect(viewEmits('share-sso-viewed')).toHaveLength(0);
     });
   });
 

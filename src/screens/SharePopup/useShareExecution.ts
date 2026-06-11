@@ -5,7 +5,16 @@ import { authStore } from '../../auth/authStore';
 import { CANCEL_SHARE, START_SHARE, TELEMETRY } from '../../constants';
 import type { GitInfoPayload, ShareProgress } from '../../types';
 import { applyProgress } from './shareMachine';
-import type { ShareAction, ShareReducerState } from './types';
+import type { ShareAction, ShareReducerState, ShareState } from './types';
+
+// Top-of-funnel screens report a view event so we can measure drop-off before
+// publish/auth. They only actually render when signed out; with a token they
+// auto-skip straight to uploading.
+const VIEW_TELEMETRY_ACTIONS: Partial<Record<ShareState['status'], string>> = {
+  welcome: 'share-welcome-viewed',
+  idle: 'share-signin-viewed',
+  subdomain: 'share-sso-viewed',
+};
 
 type Params = {
   api: API;
@@ -92,6 +101,17 @@ export function useShareExecution({
     }
     prevShareStatusRef.current = reducerState.screen.status;
   }, [emitTelemetry, reducerState.screen.status]);
+
+  // One view event per screen entry: the ref suppresses re-renders of the same
+  // screen, while leaving and returning (e.g. subdomain → back → idle) fires again.
+  const lastViewedScreenRef = useRef<string | null>(null);
+  useEffect(() => {
+    const viewAction = VIEW_TELEMETRY_ACTIONS[screenStatus];
+    if (viewAction && !token && lastViewedScreenRef.current !== screenStatus) {
+      emitTelemetry(viewAction);
+    }
+    lastViewedScreenRef.current = screenStatus;
+  }, [emitTelemetry, screenStatus, token]);
 
   const progressCtxRef = useRef({
     reducerState,
