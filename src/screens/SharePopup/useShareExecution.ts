@@ -104,7 +104,7 @@ export function useShareExecution({
 
   // One view event per screen entry: the ref suppresses re-renders of the same
   // screen, while leaving and returning (e.g. subdomain → back → idle) fires again.
-  const lastViewedScreenRef = useRef<string | null>(null);
+  const lastViewedScreenRef = useRef<ShareState['status'] | null>(null);
   useEffect(() => {
     const viewAction = VIEW_TELEMETRY_ACTIONS[screenStatus];
     if (viewAction && !token && lastViewedScreenRef.current !== screenStatus) {

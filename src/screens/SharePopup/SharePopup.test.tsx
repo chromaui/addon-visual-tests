@@ -124,7 +124,10 @@ afterEach(() => {
 });
 
 function viewEmits(action: string) {
-  return mocks.channel.emit.mock.calls.filter(([, payload]) => payload?.action === action);
+  return mocks.channel.emit.mock.calls.filter(
+    ([eventName, payload]) =>
+      eventName === 'chromaui/addon-visual-tests/telemetry' && payload?.action === action
+  );
 }
 
 describe('SharePopup', () => {
