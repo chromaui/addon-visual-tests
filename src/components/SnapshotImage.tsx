@@ -3,7 +3,7 @@ import React, { ComponentProps } from 'react';
 import { styled, useTheme } from 'storybook/theming';
 
 import { CaptureImage, CaptureOverlayImage, ComparisonResult, Test } from '../gql/graphql';
-import { getCapturedPixelRatio, getDisplayImageSize } from '../utils/dpr';
+import { getDisplayImageSize } from '../utils/dpr';
 import { Spinner } from './design-system';
 import { Stack } from './Stack';
 import { Text } from './Text';
@@ -154,30 +154,24 @@ export const SnapshotImage = ({
     showFocus,
   });
 
-  const latestCapturedPixelRatio = getCapturedPixelRatio({
-    browsers: [],
-    deviceScaleFactor: latestDeviceScaleFactor ?? 1,
-  });
+  const latestDeviceScaleFactorValue = latestDeviceScaleFactor ?? 1;
   const latestDisplaySize =
     latestImage &&
     getDisplayImageSize({
       captureImageSize: { width: latestImage.imageWidth, height: latestImage.imageHeight },
-      capturedPixelRatio: latestCapturedPixelRatio,
+      deviceScaleFactor: latestDeviceScaleFactorValue,
     });
   const baselineDisplaySize =
     baselineImage &&
     getDisplayImageSize({
       captureImageSize: { width: baselineImage.imageWidth, height: baselineImage.imageHeight },
-      capturedPixelRatio: getCapturedPixelRatio({
-        browsers: [],
-        deviceScaleFactor: baselineDeviceScaleFactor ?? 1,
-      }),
+      deviceScaleFactor: baselineDeviceScaleFactor ?? 1,
     });
   const diffDisplayWidth =
     diffImage &&
     getDisplayImageSize({
       captureImageSize: { width: diffImage.imageWidth, height: 1 },
-      capturedPixelRatio: latestCapturedPixelRatio,
+      deviceScaleFactor: latestDeviceScaleFactorValue,
     })?.width;
 
   return (
