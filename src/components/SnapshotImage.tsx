@@ -3,6 +3,7 @@ import React, { ComponentProps } from 'react';
 import { styled, useTheme } from 'storybook/theming';
 
 import { CaptureImage, CaptureOverlayImage, ComparisonResult, Test } from '../gql/graphql';
+import { getCapturedPixelRatio, getDisplayImageSize } from '../utils/dpr';
 import { Spinner } from './design-system';
 import { Stack } from './Stack';
 import { Text } from './Text';
@@ -105,7 +106,9 @@ interface SnapshotImageProps {
   testUrl: Test['webUrl'];
   comparisonResult?: ComparisonResult;
   latestImage?: Pick<CaptureImage, 'imageUrl' | 'imageWidth' | 'imageHeight'>;
+  latestDeviceScaleFactor?: number | null;
   baselineImage?: Pick<CaptureImage, 'imageUrl' | 'imageWidth' | 'imageHeight'>;
+  baselineDeviceScaleFactor?: number | null;
   baselineImageVisible?: boolean;
   diffImage?: Pick<CaptureOverlayImage, 'imageUrl' | 'imageWidth'>;
   focusImage?: Pick<CaptureOverlayImage, 'imageUrl' | 'imageWidth'>;
@@ -119,7 +122,9 @@ export const SnapshotImage = ({
   testUrl,
   comparisonResult,
   latestImage,
+  latestDeviceScaleFactor,
   baselineImage,
+  baselineDeviceScaleFactor,
   baselineImageVisible,
   diffImage,
   focusImage,
@@ -149,14 +154,40 @@ export const SnapshotImage = ({
     showFocus,
   });
 
+  const latestCapturedPixelRatio = getCapturedPixelRatio({
+    browsers: [],
+    deviceScaleFactor: latestDeviceScaleFactor ?? 1,
+  });
+  const latestDisplaySize =
+    latestImage &&
+    getDisplayImageSize({
+      captureImageSize: { width: latestImage.imageWidth, height: latestImage.imageHeight },
+      capturedPixelRatio: latestCapturedPixelRatio,
+    });
+  const baselineDisplaySize =
+    baselineImage &&
+    getDisplayImageSize({
+      captureImageSize: { width: baselineImage.imageWidth, height: baselineImage.imageHeight },
+      capturedPixelRatio: getCapturedPixelRatio({
+        browsers: [],
+        deviceScaleFactor: baselineDeviceScaleFactor ?? 1,
+      }),
+    });
+  const diffDisplayWidth =
+    diffImage &&
+    getDisplayImageSize({
+      captureImageSize: { width: diffImage.imageWidth, height: 1 },
+      capturedPixelRatio: latestCapturedPixelRatio,
+    })?.width;
+
   return (
     <Container {...props} {...containerProps}>
-      {latestImage && (
+      {latestImage && latestDisplaySize && (
         <ImageWrapper
           isVisible={!baselineImage || !baselineImageVisible}
           style={{
-            aspectRatio: `${latestImage.imageWidth} / ${latestImage.imageHeight}`,
-            width: latestImage.imageWidth,
+            aspectRatio: `${latestDisplaySize.width} / ${latestDisplaySize.height}`,
+            width: latestDisplaySize.width,
           }}
         >
           {(!latestImageLoaded || !overlayImageLoaded) && <Spinner />}
@@ -168,12 +199,12 @@ export const SnapshotImage = ({
           />
         </ImageWrapper>
       )}
-      {baselineImage && (
+      {baselineImage && baselineDisplaySize && (
         <ImageWrapper
           isVisible={baselineImageVisible}
           style={{
-            aspectRatio: `${baselineImage.imageWidth} / ${baselineImage.imageHeight}`,
-            width: baselineImage.imageWidth,
+            aspectRatio: `${baselineDisplaySize.width} / ${baselineDisplaySize.height}`,
+            width: baselineDisplaySize.width,
           }}
         >
           {(!baselineImageLoaded || !overlayImageLoaded) && <Spinner />}
@@ -185,26 +216,26 @@ export const SnapshotImage = ({
           />
         </ImageWrapper>
       )}
-      {hasDiff && snapshotImageLoaded && (
+      {hasDiff && snapshotImageLoaded && diffDisplayWidth && latestImage && (
         <Image
           alt=""
           data-overlay="diff"
           src={diffImage.imageUrl}
           style={{
-            width: diffImage.imageWidth,
+            width: diffDisplayWidth,
             maxWidth: `${(diffImage.imageWidth / latestImage.imageWidth) * 100}%`,
             opacity: showDiff && comparisonImageLoaded ? 0.7 : 0,
           }}
           onLoad={() => setComparisonImageLoaded(true)}
         />
       )}
-      {hasFocus && snapshotImageLoaded && (
+      {hasFocus && snapshotImageLoaded && diffDisplayWidth && latestImage && (
         <Image
           alt=""
           data-overlay="focus"
           src={focusImage.imageUrl}
           style={{
-            width: focusImage.imageWidth,
+            width: diffDisplayWidth,
             maxWidth: `${(focusImage.imageWidth / latestImage.imageWidth) * 100}%`,
             opacity: showFocus && focusImageLoaded ? 0.7 : 0,
             filter: showFocus ? 'blur(2px)' : 'none',
