@@ -156,6 +156,7 @@ export const FragmentStoryTestFields = graphql(/* GraphQL */ `
         }
       }
       headCapture {
+        deviceScaleFactor
         captureImage(signed: true) {
           backgroundColor
           imageUrl
@@ -177,6 +178,7 @@ export const FragmentStoryTestFields = graphql(/* GraphQL */ `
         }
       }
       baseCapture {
+        deviceScaleFactor
         captureImage(signed: true) {
           imageUrl
           imageWidth

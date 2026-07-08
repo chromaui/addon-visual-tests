@@ -598,6 +598,9 @@ type Capture {
 
   """Capture regions (bounding boxes) to ignore while diffing."""
   ignoredRegions: [CaptureRegion!]
+
+  """The deviceScaleFactor (DPR) the browser used when rendering this capture."""
+  deviceScaleFactor: Float
 }
 
 enum CaptureResult {
