@@ -54,7 +54,7 @@
   },
   "dependencies": {
     "@neoconfetti/react": "^1.0.0",
-    "chromatic": "16.10.0",
+    "chromatic": "^18.0.1",
     "jsonfile": "^6.1.0",
     "strip-ansi": "^7.1.0"
   },
