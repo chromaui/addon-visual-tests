@@ -205,12 +205,6 @@ export const Panel = ({ active }: PanelProps) => {
     );
   }
 
-  // Guard before VisualTests/useBuild — invalid ids throw in the public API ObjectId
-  // constructor and the panel would otherwise poll every 5s (Sentry INDEX-1GC / API-54).
-  if (!isValidProjectId(projectId)) {
-    return withProviders(<InvalidProjectId projectId={projectId} configFile={configFile} />);
-  }
-
   if (projectUpdatingFailed) {
     // These should always be set when we get this error
     if (!configFile) throw new Error(`Missing config file after configuration failure`);
@@ -228,6 +222,12 @@ export const Panel = ({ active }: PanelProps) => {
         goToNext={clearProjectIdUpdated}
       />
     );
+  }
+
+  // Guard before VisualTests/useBuild — invalid ids throw in the public API ObjectId
+  // constructor and the panel would otherwise poll every 5s (Sentry INDEX-1GC / API-54).
+  if (!isValidProjectId(projectId)) {
+    return withProviders(<InvalidProjectId projectId={projectId} configFile={configFile} />);
   }
 
   const localBuildIsRightBranch = gitInfo.branch === localBuildProgress?.branch;
