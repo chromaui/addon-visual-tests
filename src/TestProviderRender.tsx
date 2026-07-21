@@ -27,6 +27,7 @@ import {
 import type { ConfigInfoPayload, GitInfoPayload, LocalBuildProgress } from './types';
 import { checkOutdated } from './utils/checkOutdated';
 import { useAccessToken } from './utils/graphQLClient';
+import { isValidProjectId } from './utils/isValidProjectId';
 import { TelemetryContext } from './utils/TelemetryContext';
 import { useBuildEvents } from './utils/useBuildEvents';
 import { useProjectId } from './utils/useProjectId';
@@ -109,6 +110,7 @@ export const TestProviderRender = () => {
   if (gitInfoError) warning = 'Git synchronization problem';
   if (!isLoggedIn) warning = 'Login required';
   if (!projectId) warning = 'Set up visual tests';
+  if (projectId && !isValidProjectId(projectId)) warning = 'Invalid projectId';
 
   const isRunnable = !warning && testProviderState !== 'test-provider-state:crashed';
 
