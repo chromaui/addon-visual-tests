@@ -28,7 +28,9 @@ export const CatchAChangeComplete = ({
   const trackEvent = useTelemetry('Onboarding', 'CatchAChangeComplete');
   const handleComplete = () => {
     // Both routes land on this screen, so `screen` alone can't tell them apart.
-    trackEvent('completeOnboarding', { path: ranSecondBuild ? 'secondBuild' : 'firstBuild' });
+    trackEvent('completeOnboarding', {
+      path: ranSecondBuild ? 'completedSecondBuild' : 'skippedSecondBuild',
+    });
     onComplete();
   };
   const handleSkip = () => {
