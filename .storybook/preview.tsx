@@ -207,7 +207,7 @@ export const graphQLArgLoader: Loader = async (context) => {
       graphql.query(argName, ({ variables }) => {
         const result = argTypes.$graphql[argName]?.map?.(inputResult, variables) ?? inputResult;
         return HttpResponse.json({ data: result });
-    })
+      })
   );
 
   return loadMswForStory({
