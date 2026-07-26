@@ -181,17 +181,41 @@ const withRunBuild = storyWrapper(RunBuildProvider, ({ args }) => ({
  *   },
  * }
  */
-export const graphQLArgLoader: Loader = async ({ argTypes, argsByTarget, parameters }) => {
+const loadMswForStory = mswLoader(async () => {
+  const worker = setupWorker();
+
+  await worker.start({
+    onUnhandledRequest(req) {
+      if (new URL(req.url).origin !== document.location.origin) {
+        console.error(
+          `[MSW] %s %s %s (UNHANDLED)`,
+          new Date().toTimeString().slice(0, 8),
+          req.method.toUpperCase(),
+          req.url
+        );
+      }
+    },
+  });
+
+  return worker;
+});
+
+export const graphQLArgLoader: Loader = async (context) => {
+  const { argTypes, argsByTarget, parameters } = context;
   const handlers = Object.entries(argsByTarget.graphql?.$graphql || []).map(
     ([argName, inputResult]: [string, any]) =>
       graphql.query(argName, ({ variables }) => {
         const result = argTypes.$graphql[argName]?.map?.(inputResult, variables) ?? inputResult;
         return HttpResponse.json({ data: result });
-      })
+    })
   );
 
-  return mswLoader({
-    parameters: { msw: { handlers: [...handlers, ...(parameters.msw?.handlers || [])] } },
+  return loadMswForStory({
+    ...context,
+    parameters: {
+      ...parameters,
+      msw: { handlers: [...handlers, ...(parameters.msw?.handlers || [])] },
+    },
   });
 };
 
@@ -205,27 +229,7 @@ const preview: Preview = {
     withManagerApi,
     withRunBuild,
   ],
-  loaders: [
-    graphQLArgLoader,
-    mswLoader(async () => {
-      const worker = setupWorker();
-
-      await worker.start({
-        onUnhandledRequest(req) {
-          if (new URL(req.url).origin !== document.location.origin) {
-            console.error(
-              `[MSW] %s %s %s (UNHANDLED)`,
-              new Date().toTimeString().slice(0, 8),
-              req.method.toUpperCase(),
-              req.url
-            );
-          }
-        },
-      });
-
-      return worker;
-    }),
-  ],
+  loaders: [graphQLArgLoader],
   parameters: {
     actions: {
       argTypesRegex: '^on[A-Z].*',

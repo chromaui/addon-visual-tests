@@ -24,6 +24,7 @@ const config: StorybookConfig = {
     },
     '@storybook/addon-mcp',
     'msw-storybook-addon',
+    '@storybook/addon-vitest',
   ],
   framework: {
     name: '@storybook/react-vite',

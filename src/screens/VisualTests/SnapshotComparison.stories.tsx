@@ -75,8 +75,10 @@ export const InProgress = {
 } satisfies Story;
 
 export const Loading = {
-  beforeEach({ msw }) {
-    msw.use(http.get('/B.png', () => delay('infinite')));
+  parameters: {
+    msw: {
+      handlers: [http.get('/B.png', () => delay('infinite'))],
+    },
   },
 } satisfies Story;
 
@@ -150,9 +152,10 @@ export const ShowingBaseline: Story = {
 
 export const BaselineLoading: Story = {
   ...ShowingBaseline,
-
-  beforeEach({ msw }) {
-    msw.use(http.get('/A.png', () => delay('infinite')));
+  parameters: {
+    msw: {
+      handlers: [http.get('/A.png', () => delay('infinite'))],
+    },
   },
 } satisfies Story;
 
