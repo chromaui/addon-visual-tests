@@ -6,6 +6,12 @@ import { LocalBuildProgress } from '../types';
 import { debounce } from './debounce';
 import { TelemetryContext } from './TelemetryContext';
 
+/**
+ * Where a build was triggered from, so build lifecycle events can be attributed to a screen the
+ * same way `useTelemetry` actions are. Omit it when the trigger isn't a screen (e.g. Run All).
+ */
+export type BuildTelemetryContext = { location: string; screen: string };
+
 export const useBuildEvents = ({
   localBuildProgress,
   accessToken,
@@ -30,11 +36,11 @@ export const useBuildEvents = ({
     () =>
       debounce(
         'startBuild',
-        () => {
+        (context?: BuildTelemetryContext) => {
           setDisallowed(false);
           setStarting(true);
           emit(START_BUILD, { accessToken });
-          trackEvent?.({ action: 'startBuild' });
+          trackEvent?.({ ...context, action: 'startBuild' });
         },
         1000,
         false
@@ -46,13 +52,13 @@ export const useBuildEvents = ({
     () =>
       debounce(
         'startBuild',
-        () => {
+        (context?: BuildTelemetryContext) => {
           if (!isCancelable) {
             setDisallowed(true);
           } else {
             setStarting(false);
             emit(STOP_BUILD);
-            trackEvent?.({ action: 'stopBuild' });
+            trackEvent?.({ ...context, action: 'stopBuild' });
           }
         },
         1000,

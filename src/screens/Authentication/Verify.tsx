@@ -13,6 +13,7 @@ import { Text } from '../../components/Text';
 import { graphql } from '../../gql';
 import type { Project } from '../../gql/graphql';
 import { getFetchOptions, setAuthenticatedSession } from '../../utils/graphQLClient';
+import { useTrackAction } from '../../utils/TelemetryContext';
 import { useErrorNotification } from '../../utils/useErrorNotification';
 import { AuthHeader } from './AuthHeader';
 
@@ -52,6 +53,7 @@ export const Verify = ({
 }: VerifyProps) => {
   const client = useClient();
   const onError = useErrorNotification();
+  const trackEvent = useTrackAction('Authentication', 'Verify');
 
   // Hold the auth session until the user finishes the create-project follow-up flow.
   const authSession = useRef<AuthSession>();
@@ -114,7 +116,10 @@ export const Verify = ({
             ariaLabel={false}
             variant="solid"
             size="medium"
-            onClick={() => begin(exchangeParameters)}
+            onClick={() => {
+              trackEvent('signIn');
+              begin(exchangeParameters);
+            }}
           >
             Go to Chromatic
           </Button>

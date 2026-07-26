@@ -336,7 +336,7 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
 
           <ActionButton
             ariaLabel={isOutdated ? 'Run new tests' : 'Rerun tests'}
-            onClick={startBuild}
+            onClick={() => startBuild()}
             disabled={isRunning}
             variant="outline"
           >

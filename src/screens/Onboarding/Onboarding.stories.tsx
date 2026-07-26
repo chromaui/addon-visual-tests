@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { graphql, HttpResponse } from 'msw';
 import React from 'react';
 import { fn } from 'storybook/test';
-import { findByRole, userEvent } from 'storybook/test';
+import { expect, findByRole, userEvent } from 'storybook/test';
 
 import { INITIAL_BUILD_PAYLOAD } from '../../buildSteps';
 import { panelModes } from '../../modes';
@@ -10,6 +10,8 @@ import { LocalBuildProgress } from '../../types';
 import { GraphQLClientProvider } from '../../utils/graphQLClient';
 import { playAll } from '../../utils/playAll';
 import { storyWrapper } from '../../utils/storyWrapper';
+import { telemetrySpy } from '../../utils/telemetrySpy';
+import type { BuildTelemetryContext } from '../../utils/useBuildEvents';
 import { clearSessionState } from '../../utils/useSessionState';
 import { withFigmaDesign } from '../../utils/withFigmaDesign';
 import { withSetup } from '../../utils/withSetup';
@@ -26,8 +28,8 @@ const RunBuildWrapper = ({
 }: {
   children: React.ReactNode;
   localBuildProgress: LocalBuildProgress | undefined;
-  startBuild?: () => void;
-  stopBuild?: () => void;
+  startBuild?: (context?: BuildTelemetryContext) => void;
+  stopBuild?: (context?: BuildTelemetryContext) => void;
 }) => (
   <RunBuildProvider
     watchState={{
@@ -41,6 +43,9 @@ const RunBuildWrapper = ({
     {children}
   </RunBuildProvider>
 );
+
+const telemetry = telemetrySpy();
+const startBuildSpy = fn<(context?: BuildTelemetryContext) => void>().mockName('startBuild');
 
 const meta = {
   component: Onboarding,
@@ -408,4 +413,103 @@ export const Limited = {
       'https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=304-318693&t=3EAIRe8423CpOQWY-4'
     ),
   },
+} satisfies Story;
+
+/**
+ * Telemetry stories. These assert on reported events rather than appearance, so they opt out of
+ * snapshots and pin to a single theme (the default renders two canvases sharing one spy).
+ */
+const telemetryParameters = {
+  ...BaselineSaved.parameters,
+  theme: 'light',
+  chromatic: { disableSnapshot: true },
+};
+
+export const ReportsSkipFromInitialBuild = {
+  args: {
+    showInitialBuildScreen: true,
+    lastBuildHasChangesForStory: false,
+  },
+  decorators: telemetry.decorators,
+  parameters: telemetryParameters,
+  play: playAll(async ({ canvasElement }) => {
+    await userEvent.click(await findByRole(canvasElement, 'button', { name: 'Skip walkthrough' }));
+    await expect(telemetry.trackEvent).toHaveBeenCalledWith({
+      action: 'skipOnboarding',
+      location: 'Onboarding',
+      screen: 'InitialBuild',
+    });
+  }),
+} satisfies Story;
+
+export const ReportsStartBuildFromInitialBuild = {
+  args: {
+    showInitialBuildScreen: true,
+    lastBuildHasChangesForStory: false,
+  },
+  decorators: telemetry.decorators,
+  parameters: telemetryParameters,
+  render: (args) => (
+    <RunBuildWrapper localBuildProgress={undefined} startBuild={startBuildSpy}>
+      <meta.component {...args} />
+    </RunBuildWrapper>
+  ),
+  play: playAll(async ({ canvasElement }) => {
+    startBuildSpy.mockClear();
+    await userEvent.click(await findByRole(canvasElement, 'button', { name: 'Take snapshots' }));
+    await expect(startBuildSpy).toHaveBeenCalledWith({
+      location: 'Onboarding',
+      screen: 'InitialBuild',
+    });
+  }),
+} satisfies Story;
+
+export const ReportsSkipFromBuildError = {
+  args: Error.args,
+  decorators: telemetry.decorators,
+  parameters: telemetryParameters,
+  play: playAll(async ({ canvasElement }) => {
+    // The BuildError screen reports its own view from `Errors`; the skip action must match it so
+    // views and actions stay joinable.
+    await expect(telemetry.trackEvent).toHaveBeenCalledWith({
+      location: 'Errors',
+      screen: 'BuildError',
+    });
+    await userEvent.click(await findByRole(canvasElement, 'button', { name: 'Skip walkthrough' }));
+    await expect(telemetry.trackEvent).toHaveBeenCalledWith({
+      action: 'skipOnboarding',
+      location: 'Errors',
+      screen: 'BuildError',
+    });
+  }),
+} satisfies Story;
+
+export const ReportsRetryFromBuildError = {
+  args: Error.args,
+  decorators: telemetry.decorators,
+  parameters: telemetryParameters,
+  render: (args) => (
+    <RunBuildWrapper localBuildProgress={args.localBuildProgress} startBuild={startBuildSpy}>
+      <meta.component {...args} />
+    </RunBuildWrapper>
+  ),
+  play: playAll(async ({ canvasElement }) => {
+    startBuildSpy.mockClear();
+    await userEvent.click(await findByRole(canvasElement, 'button', { name: 'Try again' }));
+    await expect(startBuildSpy).toHaveBeenCalledWith({ location: 'Errors', screen: 'BuildError' });
+  }),
+} satisfies Story;
+
+export const ReportsContinueFromAccountSuspended = {
+  args: Limited.args,
+  decorators: telemetry.decorators,
+  parameters: telemetryParameters,
+  play: playAll(async ({ canvasElement }) => {
+    await userEvent.click(await findByRole(canvasElement, 'button', { name: 'Continue' }));
+    await expect(telemetry.trackEvent).toHaveBeenCalledWith({
+      action: 'continue',
+      location: 'Errors',
+      screen: 'AccountSuspended',
+    });
+  }),
 } satisfies Story;

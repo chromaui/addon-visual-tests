@@ -14,6 +14,7 @@ import { Stack } from '../../components/Stack';
 import { Text } from '../../components/Text';
 import { LocalBuildProgress } from '../../types';
 import { useTelemetry } from '../../utils/TelemetryContext';
+import type { BuildTelemetryContext } from '../../utils/useBuildEvents';
 import onboardingAdjustSizeImage from './onboarding-adjust-size.png';
 import onboardingColorPaletteImage from './onboarding-color-palette.png';
 import onboardingEmbiggenImage from './onboarding-embiggen.png';
@@ -106,7 +107,7 @@ const MakeAChange = ({ onSkip, runningSecondBuild }: MakeAChangeProps) => (
 interface ChangesDetectedProps {
   isRunning: boolean;
   setRunningSecondBuild: (value: boolean) => void;
-  startBuild: () => void;
+  startBuild: (context?: BuildTelemetryContext) => void;
   setInitialGitHash: (value: string) => void;
   uncommittedHash: string;
 }
@@ -135,7 +136,7 @@ const ChangesDetected = ({
             disabled={isRunning}
             onClick={() => {
               setRunningSecondBuild(true);
-              startBuild();
+              startBuild({ location: 'Onboarding', screen: 'CatchAChange' });
               // In case the build does not have changes, reset gitHash to the current value to show Make A Change again.
               // A timeout is used to prevent "Make a Change" from reappearing briefly before the build starts.
               setTimeout(() => {
@@ -179,8 +180,23 @@ interface CatchAChangeProps extends MakeAChangeProps, ChangesDetectedProps {
   localBuildProgress?: LocalBuildProgress;
 }
 
-export const CatchAChange = ({ isUnchanged, localBuildProgress, ...props }: CatchAChangeProps) => {
-  useTelemetry('Onboarding', 'CatchAChange');
+export const CatchAChange = ({
+  isUnchanged,
+  localBuildProgress,
+  onSkip,
+  ...props
+}: CatchAChangeProps) => {
+  const trackEvent = useTelemetry('Onboarding', 'CatchAChange');
   if (props.isRunning && localBuildProgress) return <RunningTests {...{ localBuildProgress }} />;
-  return isUnchanged ? <MakeAChange {...props} /> : <ChangesDetected {...props} />;
+  return isUnchanged ? (
+    <MakeAChange
+      {...props}
+      onSkip={() => {
+        trackEvent('skipOnboarding');
+        onSkip();
+      }}
+    />
+  ) : (
+    <ChangesDetected {...props} />
+  );
 };

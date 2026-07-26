@@ -10,6 +10,7 @@ import { Stack } from '../../components/Stack';
 import { Text } from '../../components/Text';
 import { LocalBuildProgress } from '../../types';
 import { useTelemetry } from '../../utils/TelemetryContext';
+import type { BuildTelemetryContext } from '../../utils/useBuildEvents';
 
 const Intro = () => (
   <div>
@@ -24,7 +25,7 @@ const Intro = () => (
 type InitialBuildProps = {
   isRunning: boolean;
   localBuildProgress?: LocalBuildProgress;
-  startBuild: () => void;
+  startBuild: (context?: BuildTelemetryContext) => void;
   onSkip: () => void;
 };
 
@@ -34,7 +35,7 @@ export const InitialBuild = ({
   startBuild,
   onSkip,
 }: InitialBuildProps) => {
-  useTelemetry('Onboarding', 'InitialBuild');
+  const trackEvent = useTelemetry('Onboarding', 'InitialBuild');
   return (
     <Screen footer={null}>
       <Container>
@@ -52,11 +53,18 @@ export const InitialBuild = ({
                 disabled={isRunning}
                 size="medium"
                 variant="solid"
-                onClick={startBuild}
+                onClick={() => startBuild({ location: 'Onboarding', screen: 'InitialBuild' })}
               >
                 Take snapshots
               </Button>
-              <Button ariaLabel={false} link onClick={onSkip}>
+              <Button
+                ariaLabel={false}
+                link
+                onClick={() => {
+                  trackEvent('skipOnboarding');
+                  onSkip();
+                }}
+              >
                 Skip walkthrough
               </Button>
             </ButtonStack>

@@ -1,14 +1,19 @@
 import React, { createContext } from 'react';
 
+import type { BuildTelemetryContext } from '../../utils/useBuildEvents';
 import { useRequiredContext } from '../../utils/useRequiredContext';
 
-const initialState = {
+type State = {
+  isRunning: boolean;
+  startBuild: (context?: BuildTelemetryContext) => void;
+  stopBuild: (context?: BuildTelemetryContext) => void;
+};
+
+const initialState: State = {
   isRunning: false,
   startBuild: () => {},
   stopBuild: () => {},
 };
-
-type State = typeof initialState;
 
 export const RunBuildContext = createContext(initialState);
 
