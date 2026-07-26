@@ -114,21 +114,19 @@ export const CaptureError = {
 
 export const Loading = {
   ...BothVisible,
-  parameters: {
-    msw: {
-      handlers: [http.get('/B.png', () => delay('infinite'))],
-    },
+
+  beforeEach({ msw }) {
+    msw.use(http.get('/B.png', () => delay('infinite')));
   },
 } satisfies Story;
 
 export const OverlayLoading = {
   ...BothVisible,
-  parameters: {
-    msw: {
-      handlers: [
-        http.get('/B-comparison.png', () => delay('infinite')),
-        http.get('/B-focus.png', () => delay('infinite')),
-      ],
-    },
+
+  beforeEach({ msw }) {
+    msw.use(
+      http.get('/B-comparison.png', () => delay('infinite')),
+      http.get('/B-focus.png', () => delay('infinite'))
+    );
   },
 } satisfies Story;

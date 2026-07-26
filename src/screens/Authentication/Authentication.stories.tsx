@@ -16,34 +16,37 @@ import { Authentication } from './Authentication';
 const meta = {
   component: Authentication,
   decorators: [withSetup(clearSessionState), storyWrapper(GraphQLClientProvider)],
+
   args: {
     setAccessToken: fn().mockName('setAccessToken'),
     hasProjectId: false,
   },
+
+  beforeEach({ msw }) {
+    msw.use(
+      http.post('*/authorize', () =>
+        HttpResponse.json({
+          device_code: 'chdc_95a7123d17a84851abcdefc869ec0741',
+          user_code: '123 123',
+          verification_uri: 'https://www.chromatic.com/connect/chromaui:addon-visual-tests',
+          verification_uri_complete:
+            'https://www.chromatic.com/connect/chromaui:addon-visual-tests?code=123123',
+          expires_in: 300,
+          interval: 5,
+        })
+      ),
+      http.post('*/token', () =>
+        HttpResponse.json({
+          error: 'authorization_pending',
+          error_description: 'Authorization is pending approval',
+        })
+      )
+    );
+  },
+
   parameters: {
     chromatic: {
       modes: panelModes,
-    },
-    msw: {
-      handlers: [
-        http.post('*/authorize', () =>
-          HttpResponse.json({
-            device_code: 'chdc_95a7123d17a84851abcdefc869ec0741',
-            user_code: '123 123',
-            verification_uri: 'https://www.chromatic.com/connect/chromaui:addon-visual-tests',
-            verification_uri_complete:
-              'https://www.chromatic.com/connect/chromaui:addon-visual-tests?code=123123',
-            expires_in: 300,
-            interval: 5,
-          })
-        ),
-        http.post('*/token', () =>
-          HttpResponse.json({
-            error: 'authorization_pending',
-            error_description: 'Authorization is pending approval',
-          })
-        ),
-      ],
     },
   },
 } satisfies Meta<typeof Authentication>;

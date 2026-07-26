@@ -44,11 +44,13 @@ const RunBuildWrapper = ({
 
 const meta = {
   component: Onboarding,
+
   decorators: [
     withSetup(clearSessionState),
     storyWrapper(BuildProvider, (ctx) => ({ watchState: buildInfo(ctx.parameters.selectedBuild) })),
     storyWrapper(GraphQLClientProvider),
   ],
+
   args: {
     dismissBuildError: fn(),
     localBuildProgress: undefined,
@@ -59,28 +61,30 @@ const meta = {
     onComplete: fn(),
     onSkip: fn(),
   },
+
+  beforeEach({ msw }) {
+    msw.use(
+      graphql.query('ProjectQuery', () =>
+        HttpResponse.json({
+          data: {
+            project: {
+              id: '123',
+              name: 'acme',
+              webUrl: 'https://www.chromatic.com/builds?appId=123',
+              lastBuild: {
+                branch: 'main',
+                number: 123,
+              },
+            },
+          },
+        })
+      )
+    );
+  },
+
   parameters: {
     chromatic: {
       modes: panelModes,
-    },
-    msw: {
-      handlers: [
-        graphql.query('ProjectQuery', () =>
-          HttpResponse.json({
-            data: {
-              project: {
-                id: '123',
-                name: 'acme',
-                webUrl: 'https://www.chromatic.com/builds?appId=123',
-                lastBuild: {
-                  branch: 'main',
-                  number: 123,
-                },
-              },
-            },
-          })
-        ),
-      ],
     },
   },
 } satisfies Meta<typeof Onboarding>;

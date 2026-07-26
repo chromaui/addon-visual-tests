@@ -1,6 +1,7 @@
+import { setupWorker } from 'msw/browser';
 import type { Decorator, Loader, Preview } from '@storybook/react-vite';
 import { graphql, HttpResponse } from 'msw';
-import { initialize, mswLoader } from 'msw-storybook-addon';
+import { mswLoader } from 'msw-storybook-addon/csf3';
 import React from 'react';
 import { ManagerContext } from 'storybook/manager-api';
 import { fn } from 'storybook/test';
@@ -22,20 +23,6 @@ import { GraphQLClientProvider } from '../src/utils/graphQLClient';
 import { storyWrapper } from '../src/utils/storyWrapper';
 import { TelemetryProvider } from '../src/utils/TelemetryContext';
 import { useSessionState } from '../src/utils/useSessionState';
-
-// Initialize MSW
-initialize({
-  onUnhandledRequest(req) {
-    if (new URL(req.url).origin !== document.location.origin) {
-      console.error(
-        `[MSW] %s %s %s (UNHANDLED)`,
-        new Date().toTimeString().slice(0, 8),
-        req.method.toUpperCase(),
-        req.url
-      );
-    }
-  },
-});
 
 const Panels = styled.div<{ orientation: 'right' | 'bottom' }>(
   ({ orientation }) => ({
@@ -218,7 +205,27 @@ const preview: Preview = {
     withManagerApi,
     withRunBuild,
   ],
-  loaders: [graphQLArgLoader],
+  loaders: [
+    graphQLArgLoader,
+    mswLoader(async () => {
+      const worker = setupWorker();
+
+      await worker.start({
+        onUnhandledRequest(req) {
+          if (new URL(req.url).origin !== document.location.origin) {
+            console.error(
+              `[MSW] %s %s %s (UNHANDLED)`,
+              new Date().toTimeString().slice(0, 8),
+              req.method.toUpperCase(),
+              req.url
+            );
+          }
+        },
+      });
+
+      return worker;
+    }),
+  ],
   parameters: {
     actions: {
       argTypesRegex: '^on[A-Z].*',

@@ -22,6 +22,8 @@ const config: StorybookConfig = {
         configFile: configFileMap[CHROMATIC_BASE_URL || '"https://www.chromatic.com"'],
       },
     },
+    '@storybook/addon-mcp',
+    'msw-storybook-addon',
   ],
   framework: {
     name: '@storybook/react-vite',
