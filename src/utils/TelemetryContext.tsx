@@ -14,6 +14,8 @@ export type TelemetryAction =
   | 'createProject'
   | 'goBack'
   | 'openWarning'
+  | 'openShare'
+  | 'publish'
   | 'selectAccount'
   | 'selectProject'
   | 'signIn'
