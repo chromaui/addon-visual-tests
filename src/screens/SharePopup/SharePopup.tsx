@@ -76,19 +76,44 @@ export const SharePopup = ({ api }: { api: API }) => {
   const screen = reducerState.screen;
   switch (screen.status) {
     case 'welcome':
-      return <SharePopupWelcome onPublish={handlePublish} />;
+      return (
+        <SharePopupWelcome
+          onPublish={() => {
+            emitTelemetry('publish', { location: 'SharePopup', screen: 'ShareWelcome' });
+            handlePublish();
+          }}
+        />
+      );
     case 'idle':
       return (
         <SharePopupIdle
-          onSignIn={() => startSignIn()}
-          onSignInWithSSO={() => dispatch({ type: 'GO_SUBDOMAIN' })}
+          onSignIn={() => {
+            emitTelemetry('signIn', { location: 'SharePopup', screen: 'ShareSignIn' });
+            startSignIn();
+          }}
+          onSignInWithSSO={() => {
+            emitTelemetry('signInWithSSO', {
+              location: 'SharePopup',
+              screen: 'ShareSignIn',
+            });
+            dispatch({ type: 'GO_SUBDOMAIN' });
+          }}
         />
       );
     case 'subdomain':
       return (
         <SharePopupSubdomain
-          onSubmit={(subdomain) => startSignIn(subdomain)}
-          onBack={() => dispatch({ type: 'BACK_TO_IDLE' })}
+          onSubmit={(subdomain) => {
+            emitTelemetry('submitSubdomain', {
+              location: 'SharePopup',
+              screen: 'ShareSubdomain',
+            });
+            startSignIn(subdomain);
+          }}
+          onBack={() => {
+            emitTelemetry('goBack', { location: 'SharePopup', screen: 'ShareSubdomain' });
+            dispatch({ type: 'BACK_TO_IDLE' });
+          }}
         />
       );
     case 'uploading':
