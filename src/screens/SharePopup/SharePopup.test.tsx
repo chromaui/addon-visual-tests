@@ -127,7 +127,7 @@ afterEach(() => {
 function telemetryEmits(action: string) {
   return mocks.channel.emit.mock.calls.filter(
     ([eventName, payload]) =>
-      eventName === 'chromaui/addon-visual-tests/telemetry' && payload?.action === action
+      eventName === 'chromaui/addon-visual-tests/shareTelemetry' && payload?.action === action
   );
 }
 

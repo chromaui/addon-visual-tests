@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { TELEMETRY } from '../../constants';
+import { SHARE_TELEMETRY } from '../../constants';
 import { ShareToolbarButton } from './ShareToolbarButton';
 
 vi.mock('storybook/internal/components', () => ({
@@ -17,7 +17,7 @@ describe('ShareToolbarButton', () => {
     const tree = ShareToolbarButton({ api });
     tree.props.children.props.onClick();
 
-    expect(emit).toHaveBeenCalledWith(TELEMETRY, {
+    expect(emit).toHaveBeenCalledWith(SHARE_TELEMETRY, {
       action: 'openShare',
       entryPoint: 'toolbar',
       location: 'SharePopup',
