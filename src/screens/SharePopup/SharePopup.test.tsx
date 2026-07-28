@@ -352,7 +352,13 @@ describe('SharePopup', () => {
       invokeSharePopup();
       invokeSharePopup();
 
-      expect(telemetryEmits('openShare')).toHaveLength(1);
+      const openShareEmits = telemetryEmits('openShare');
+      expect(openShareEmits).toHaveLength(1);
+      expect(openShareEmits[0][1]).toMatchObject({
+        entryPoint: 'toolbar',
+        location: 'SharePopup',
+        screen: 'Toolbar',
+      });
     });
 
     it('records publishing from welcome', () => {
