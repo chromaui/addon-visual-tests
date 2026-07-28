@@ -37,7 +37,6 @@ export function useShareExecution({
   const isRepeatShareRef = useRef(false);
   const prevShareStatusRef = useRef<string>(reducerState.screen.status);
   const authRetriedRef = useRef(false);
-  const openedRef = useRef(false);
 
   const emitTelemetry = useCallback<EmitTelemetry>(
     (action, extra) => {
@@ -48,12 +47,6 @@ export function useShareExecution({
 
   const sharedUploadInFlight =
     shareProgress?.status === 'pending' || shareProgress?.status === 'uploading';
-
-  useEffect(() => {
-    if (openedRef.current) return;
-    openedRef.current = true;
-    emitTelemetry('openShare', { location: 'SharePopup', screen: 'Toolbar' });
-  }, [emitTelemetry]);
 
   // Auto-skip welcome/idle/subdomain if already signed in and no active share.
   useEffect(() => {
