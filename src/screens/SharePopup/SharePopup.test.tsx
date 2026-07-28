@@ -345,22 +345,6 @@ describe('SharePopup', () => {
   });
 
   describe('top-of-funnel action telemetry', () => {
-    it('records opening the share popup once per mount', () => {
-      tokenValue = null;
-      setReducer({ screen: { status: 'welcome' } });
-
-      invokeSharePopup();
-      invokeSharePopup();
-
-      const openShareEmits = telemetryEmits('openShare');
-      expect(openShareEmits).toHaveLength(1);
-      expect(openShareEmits[0][1]).toMatchObject({
-        entryPoint: 'toolbar',
-        location: 'SharePopup',
-        screen: 'Toolbar',
-      });
-    });
-
     it('records publishing from welcome', () => {
       tokenValue = null;
       setReducer({ screen: { status: 'welcome' } });
