@@ -1,10 +1,9 @@
-import { useContext, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useChannel } from 'storybook/manager-api';
 
-import { START_BUILD, STOP_BUILD } from '../constants';
+import { START_BUILD, STOP_BUILD, TELEMETRY } from '../constants';
 import { LocalBuildProgress } from '../types';
 import { debounce } from './debounce';
-import { TelemetryContext } from './TelemetryContext';
 
 /**
  * Where a build was triggered from, so build lifecycle events can be attributed to a screen the
@@ -20,7 +19,6 @@ export const useBuildEvents = ({
   accessToken: string | null;
 }) => {
   const emit = useChannel({});
-  const trackEvent = useContext(TelemetryContext);
   const [isStarting, setStarting] = useState(false);
   const [isDisallowed, setDisallowed] = useState(false);
 
@@ -40,12 +38,12 @@ export const useBuildEvents = ({
           setDisallowed(false);
           setStarting(true);
           emit(START_BUILD, { accessToken });
-          trackEvent?.({ ...context, action: 'startBuild' });
+          emit(TELEMETRY, { ...context, action: 'startBuild' });
         },
         1000,
         false
       ),
-    [accessToken, emit, trackEvent]
+    [accessToken, emit]
   );
 
   const stopBuild = useMemo(
@@ -58,13 +56,13 @@ export const useBuildEvents = ({
           } else {
             setStarting(false);
             emit(STOP_BUILD);
-            trackEvent?.({ ...context, action: 'stopBuild' });
+            emit(TELEMETRY, { ...context, action: 'stopBuild' });
           }
         },
         1000,
         false
       ),
-    [isCancelable, emit, trackEvent]
+    [isCancelable, emit]
   );
 
   useEffect(() => {
