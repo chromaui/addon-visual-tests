@@ -108,7 +108,7 @@ describe('Panel Git info loading', () => {
     globalThis.CONFIG_TYPE = 'DEVELOPMENT';
   });
 
-  it.fails('does not render GitError before Git info has resolved', () => {
+  it('does not render GitError before Git info has resolved', () => {
     const tree = Panel({ active: true });
 
     expect(findElement(tree, mocks.GitError)).toBeUndefined();
