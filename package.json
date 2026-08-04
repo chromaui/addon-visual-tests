@@ -83,7 +83,7 @@
     "@typescript-eslint/parser": "^8.25.0",
     "@urql/exchange-auth": "^2.1.6",
     "@vitejs/plugin-react": "^4.3.4",
-    "@vitest/browser": "3.2.4",
+    "@vitest/browser": "3.2.7",
     "@vitest/coverage-v8": "^3.0.8",
     "auto": "^11.0.5",
     "boxen": "^5.0.1",
