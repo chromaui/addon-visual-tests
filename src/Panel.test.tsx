@@ -118,8 +118,9 @@ describe('Panel Git info loading', () => {
   it('does not render GitError before Git info has resolved', () => {
     const tree = Panel({ active: true });
 
+    expect(tree).not.toBeNull();
     expect(findElement(tree, mocks.GitError)).toBeUndefined();
-    expect(tree.type).toBe(mocks.Spinner);
+    expect(tree!.type).toBe(mocks.Spinner);
   });
 
   it('renders GitError when git info fails to resolve', () => {
