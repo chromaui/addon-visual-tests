@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   GIT_INFO,
@@ -13,7 +13,12 @@ const mocks = vi.hoisted(() => {
   const component = () => null;
   return {
     GitError: component,
+    Spinner: 'span',
     emit: vi.fn(),
+    sharedState: {
+      gitInfo: undefined as unknown,
+      gitInfoError: undefined as unknown,
+    },
   };
 });
 
@@ -43,7 +48,7 @@ vi.mock('storybook/theming', () => ({ color: { negative: 'red' } }));
 vi.mock('@storybook/icons', () => ({ FailedIcon: () => null }));
 
 vi.mock('./AuthContext', () => ({ AuthProvider: 'div' }));
-vi.mock('./components/design-system', () => ({ Spinner: 'span' }));
+vi.mock('./components/design-system', () => ({ Spinner: mocks.Spinner }));
 vi.mock('./screens/Authentication/Authentication', () => ({ Authentication: 'div' }));
 vi.mock('./screens/Errors/GitError', () => ({ GitError: mocks.GitError }));
 vi.mock('./screens/Errors/InvalidProjectId', () => ({ InvalidProjectId: 'div' }));
@@ -84,9 +89,9 @@ vi.mock('./utils/useSessionState', () => ({
 }));
 vi.mock('./utils/useSharedState', () => ({
   useSharedState: (key: string) => {
-    if (key === GIT_INFO || key === GIT_INFO_ERROR || key === LOCAL_BUILD_PROGRESS) {
-      return [undefined, vi.fn()];
-    }
+    if (key === GIT_INFO) return [mocks.sharedState.gitInfo, vi.fn()];
+    if (key === GIT_INFO_ERROR) return [mocks.sharedState.gitInfoError, vi.fn()];
+    if (key === LOCAL_BUILD_PROGRESS) return [undefined, vi.fn()];
     if (key === IS_OFFLINE || key === REMOVE_ADDON) return [false, vi.fn()];
     if (key === SHARE_PROGRESS) return [undefined, vi.fn()];
     return [undefined, vi.fn()];
@@ -106,11 +111,22 @@ function findElement(node: any, type: unknown): any {
 describe('Panel Git info loading', () => {
   beforeEach(() => {
     globalThis.CONFIG_TYPE = 'DEVELOPMENT';
+    mocks.sharedState.gitInfo = undefined;
+    mocks.sharedState.gitInfoError = undefined;
   });
 
   it('does not render GitError before Git info has resolved', () => {
     const tree = Panel({ active: true });
 
     expect(findElement(tree, mocks.GitError)).toBeUndefined();
+    expect(tree.type).toBe(mocks.Spinner);
+  });
+
+  it('renders GitError when git info fails to resolve', () => {
+    mocks.sharedState.gitInfoError = new Error('git init required');
+
+    const tree = Panel({ active: true });
+
+    expect(findElement(tree, mocks.GitError)).toBeDefined();
   });
 });
