@@ -186,12 +186,12 @@ export const Panel = ({ active }: PanelProps) => {
     );
   }
 
-  if (gitInfoError || !gitInfo) {
+  if (gitInfoError) {
     return withProviders(<GitError gitInfoError={gitInfoError} />);
   }
 
-  // Momentarily wait on addonState (should be very fast)
-  if (projectInfoLoading) {
+  // Wait for git info (and project info) to resolve before deciding next screen
+  if (!gitInfo || projectInfoLoading) {
     return active ? <Spinner /> : null;
   }
 
