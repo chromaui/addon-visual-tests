@@ -25,7 +25,17 @@ export const CatchAChangeComplete = ({
   onSkip,
   ranSecondBuild = false,
 }: CatchAChangeCompleteProps) => {
-  useTelemetry('Onboarding', 'CatchAChangeComplete');
+  const trackEvent = useTelemetry('Onboarding', 'CatchAChangeComplete');
+  const handleComplete = () => {
+    // The two CTAs are different user intents: "Done" finishes onboarding, while "Take a tour"
+    // continues into reviewing the changes that were found.
+    trackEvent(ranSecondBuild ? 'completeOnboarding' : 'takeTour');
+    onComplete();
+  };
+  const handleSkip = () => {
+    trackEvent('skipOnboarding');
+    onSkip();
+  };
   const selectedStory = useSelectedStoryState();
   return (
     <Screen footer={null}>
@@ -46,10 +56,10 @@ export const CatchAChangeComplete = ({
             </div>
             <ButtonStack>
               <ButtonStackText>You&apos;re ready to start testing!</ButtonStackText>
-              <Button ariaLabel={false} variant="solid" size="medium" onClick={onComplete}>
+              <Button ariaLabel={false} variant="solid" size="medium" onClick={handleComplete}>
                 Done
               </Button>
-              <Button ariaLabel={false} link onClick={onSkip}>
+              <Button ariaLabel={false} link onClick={handleSkip}>
                 Skip walkthrough
               </Button>
             </ButtonStack>
@@ -71,10 +81,10 @@ export const CatchAChangeComplete = ({
             </div>
             <ButtonStack>
               <ButtonStackText>It's time to review changes!</ButtonStackText>
-              <Button ariaLabel={false} variant="solid" size="medium" onClick={onComplete}>
+              <Button ariaLabel={false} variant="solid" size="medium" onClick={handleComplete}>
                 Take a tour
               </Button>
-              <Button ariaLabel={false} link onClick={onSkip}>
+              <Button ariaLabel={false} link onClick={handleSkip}>
                 Skip walkthrough
               </Button>
             </ButtonStack>

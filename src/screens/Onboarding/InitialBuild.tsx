@@ -34,7 +34,7 @@ export const InitialBuild = ({
   startBuild,
   onSkip,
 }: InitialBuildProps) => {
-  useTelemetry('Onboarding', 'InitialBuild');
+  const trackEvent = useTelemetry('Onboarding', 'InitialBuild');
   return (
     <Screen footer={null}>
       <Container>
@@ -52,11 +52,21 @@ export const InitialBuild = ({
                 disabled={isRunning}
                 size="medium"
                 variant="solid"
-                onClick={startBuild}
+                onClick={() => {
+                  trackEvent('startBuild');
+                  startBuild();
+                }}
               >
                 Take snapshots
               </Button>
-              <Button ariaLabel={false} link onClick={onSkip}>
+              <Button
+                ariaLabel={false}
+                link
+                onClick={() => {
+                  trackEvent('skipOnboarding');
+                  onSkip();
+                }}
+              >
                 Skip walkthrough
               </Button>
             </ButtonStack>

@@ -54,7 +54,7 @@ export const LinkedProject = ({
   configFile: string;
   goToNext: () => void;
 }) => {
-  useTelemetry('LinkProject', 'LinkedProject');
+  const trackEvent = useTelemetry('LinkProject', 'LinkedProject');
 
   const [{ data, fetching, error }] = useQuery<ProjectQueryQuery>({
     query: ProjectQuery,
@@ -99,7 +99,10 @@ export const LinkedProject = ({
                   ariaLabel="Continue"
                   variant="solid"
                   size="medium"
-                  onClick={() => goToNext()}
+                  onClick={() => {
+                    trackEvent('continue');
+                    goToNext();
+                  }}
                 >
                   Catch a UI change
                 </Button>

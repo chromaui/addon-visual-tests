@@ -1,10 +1,9 @@
-import { useContext, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useChannel } from 'storybook/manager-api';
 
-import { START_BUILD, STOP_BUILD } from '../constants';
+import { START_BUILD, STOP_BUILD, TELEMETRY } from '../constants';
 import { LocalBuildProgress } from '../types';
 import { debounce } from './debounce';
-import { TelemetryContext } from './TelemetryContext';
 
 export const useBuildEvents = ({
   localBuildProgress,
@@ -14,7 +13,6 @@ export const useBuildEvents = ({
   accessToken: string | null;
 }) => {
   const emit = useChannel({});
-  const trackEvent = useContext(TelemetryContext);
   const [isStarting, setStarting] = useState(false);
   const [isDisallowed, setDisallowed] = useState(false);
 
@@ -34,12 +32,14 @@ export const useBuildEvents = ({
           setDisallowed(false);
           setStarting(true);
           emit(START_BUILD, { accessToken });
-          trackEvent?.({ action: 'startBuild' });
+          // Unattributed so the Test Provider stays visible; screens that need screen attribution
+          // report their own `startBuild` action via `useTelemetry` before calling this.
+          emit(TELEMETRY, { action: 'startBuild' });
         },
         1000,
         false
       ),
-    [accessToken, emit, trackEvent]
+    [accessToken, emit]
   );
 
   const stopBuild = useMemo(
@@ -52,13 +52,13 @@ export const useBuildEvents = ({
           } else {
             setStarting(false);
             emit(STOP_BUILD);
-            trackEvent?.({ action: 'stopBuild' });
+            emit(TELEMETRY, { action: 'stopBuild' });
           }
         },
         1000,
         false
       ),
-    [isCancelable, emit, trackEvent]
+    [isCancelable, emit]
   );
 
   useEffect(() => {

@@ -35,7 +35,11 @@ export const Authentication = ({
   const { uninstallAddon } = useUninstallAddon();
   const { setSubdomain } = useAuthState();
 
-  useTelemetry('Authentication', screen.charAt(0).toUpperCase() + screen.slice(1));
+  const renderedScreen = screen === 'welcome' && hasProjectId ? 'signin' : screen;
+  const trackEvent = useTelemetry(
+    'Authentication',
+    renderedScreen.charAt(0).toUpperCase() + renderedScreen.slice(1)
+  );
 
   const initiateSignInAndMoveToVerify = useCallback(
     async (subdomain?: string) => {
@@ -51,22 +55,55 @@ export const Authentication = ({
   );
 
   if (screen === 'welcome' && !hasProjectId) {
-    return <Welcome onNext={() => setScreen('signin')} onUninstall={uninstallAddon} />;
+    return (
+      <Welcome
+        onNext={() => {
+          trackEvent('continue');
+          setScreen('signin');
+        }}
+        onUninstall={() => {
+          trackEvent('uninstallAddon');
+          uninstallAddon();
+        }}
+      />
+    );
   }
 
   if (screen === 'signin' || (screen === 'welcome' && hasProjectId)) {
     return (
       <SignIn
-        {...(!hasProjectId ? { onBack: () => setScreen('welcome') } : {})}
-        onSignIn={initiateSignInAndMoveToVerify}
-        onSignInWithSSO={() => setScreen('subdomain')}
+        {...(!hasProjectId
+          ? {
+              onBack: () => {
+                trackEvent('goBack');
+                setScreen('welcome');
+              },
+            }
+          : {})}
+        onSignIn={() => {
+          trackEvent('signIn');
+          initiateSignInAndMoveToVerify();
+        }}
+        onSignInWithSSO={() => {
+          trackEvent('signInWithSSO');
+          setScreen('subdomain');
+        }}
       />
     );
   }
 
   if (screen === 'subdomain') {
     return (
-      <SetSubdomain onBack={() => setScreen('signin')} onSignIn={initiateSignInAndMoveToVerify} />
+      <SetSubdomain
+        onBack={() => {
+          trackEvent('goBack');
+          setScreen('signin');
+        }}
+        onSignIn={(subdomain) => {
+          trackEvent('submitSubdomain');
+          initiateSignInAndMoveToVerify(subdomain);
+        }}
+      />
     );
   }
 
@@ -76,7 +113,11 @@ export const Authentication = ({
     }
     return (
       <Verify
-        onBack={() => setScreen('signin')}
+        onBack={() => {
+          trackEvent('goBack');
+          setScreen('signin');
+        }}
+        onSignIn={() => trackEvent('signIn')}
         hasProjectId={hasProjectId}
         setAccessToken={setAccessToken}
         setCreatedProjectId={setCreatedProjectId}

@@ -1,12 +1,15 @@
 // @ts-nocheck TODO: Address SB 8 type errors
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { delay, graphql, HttpResponse } from 'msw';
-import { findByTestId, fn } from 'storybook/test';
+import { expect, findByTestId, findByText, fn, userEvent } from 'storybook/test';
 
 import { SelectProjectsQueryQuery } from '../../gql/graphql';
 import { panelModes } from '../../modes';
 import { playAll } from '../../utils/playAll';
+import { telemetrySpy } from '../../utils/telemetrySpy';
+import { clearSessionState } from '../../utils/useSessionState';
 import { withFigmaDesign } from '../../utils/withFigmaDesign';
+import { withSetup } from '../../utils/withSetup';
 import { LinkProject } from './LinkProject';
 
 const meta = {
@@ -260,4 +263,56 @@ export const Loading: Story = {
       'https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-317038&mode=design&t=P9IPi8sOGNpjCeNs-4'
     ),
   },
+};
+
+/**
+ * Telemetry stories. These assert on reported events rather than appearance, so they opt out of
+ * snapshots and pin to a single theme (the default renders two canvases sharing one spy).
+ */
+const telemetry = telemetrySpy();
+// The selected account is kept in session state, so clear it to keep stories independent.
+const telemetryDecorators = [...telemetry.decorators, withSetup(clearSessionState)];
+const telemetryParameters = {
+  ...withSelectProjectsQuery(fewProjects),
+  theme: 'light',
+  chromatic: { disableSnapshot: true },
+};
+
+export const ReportsSelectAccount: Story = {
+  decorators: telemetryDecorators,
+  parameters: telemetryParameters,
+  play: playAll(async ({ canvasElement }) => {
+    await userEvent.click(await findByText(canvasElement, 'acme corp'));
+    await expect(telemetry.trackEvent).toHaveBeenCalledWith({
+      action: 'selectAccount',
+      location: 'LinkProject',
+      screen: 'LinkProject',
+    });
+  }),
+};
+
+export const ReportsSelectProject: Story = {
+  decorators: telemetryDecorators,
+  parameters: telemetryParameters,
+  play: playAll(async ({ canvasElement }) => {
+    await userEvent.click(await findByText(canvasElement, 'optics'));
+    await expect(telemetry.trackEvent).toHaveBeenCalledWith({
+      action: 'selectProject',
+      location: 'LinkProject',
+      screen: 'LinkProject',
+    });
+  }),
+};
+
+export const ReportsCreateProject: Story = {
+  decorators: telemetryDecorators,
+  parameters: telemetryParameters,
+  play: playAll(async ({ canvasElement }) => {
+    await userEvent.click(await findByText(canvasElement, 'Create new project'));
+    await expect(telemetry.trackEvent).toHaveBeenCalledWith({
+      action: 'createProject',
+      location: 'LinkProject',
+      screen: 'LinkProject',
+    });
+  }),
 };

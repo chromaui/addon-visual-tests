@@ -123,7 +123,7 @@ export const BuildResults = ({
                 belowText
                 size="medium"
                 variant="solid"
-                onClick={isRunning ? stopBuild : startBuild}
+                onClick={() => (isRunning ? stopBuild() : startBuild())}
               >
                 {isRunning ? 'Cancel build' : 'Create visual test'}
               </Button>

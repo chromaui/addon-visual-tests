@@ -179,8 +179,29 @@ interface CatchAChangeProps extends MakeAChangeProps, ChangesDetectedProps {
   localBuildProgress?: LocalBuildProgress;
 }
 
-export const CatchAChange = ({ isUnchanged, localBuildProgress, ...props }: CatchAChangeProps) => {
-  useTelemetry('Onboarding', 'CatchAChange');
+export const CatchAChange = ({
+  isUnchanged,
+  localBuildProgress,
+  onSkip,
+  ...props
+}: CatchAChangeProps) => {
+  const trackEvent = useTelemetry('Onboarding', 'CatchAChange');
   if (props.isRunning && localBuildProgress) return <RunningTests {...{ localBuildProgress }} />;
-  return isUnchanged ? <MakeAChange {...props} /> : <ChangesDetected {...props} />;
+  return isUnchanged ? (
+    <MakeAChange
+      {...props}
+      onSkip={() => {
+        trackEvent('skipOnboarding');
+        onSkip();
+      }}
+    />
+  ) : (
+    <ChangesDetected
+      {...props}
+      startBuild={() => {
+        trackEvent('startBuild');
+        props.startBuild();
+      }}
+    />
+  );
 };
