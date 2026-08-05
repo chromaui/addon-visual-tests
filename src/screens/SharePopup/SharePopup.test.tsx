@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { SHARE_TELEMETRY } from '../../constants';
 import type { ShareProgress } from '../../types';
 import type { ShareReducerState, ShareState } from './types';
 
@@ -127,7 +128,7 @@ afterEach(() => {
 function telemetryEmits(action: string) {
   return mocks.channel.emit.mock.calls.filter(
     ([eventName, payload]) =>
-      eventName === 'chromaui/addon-visual-tests/shareTelemetry' && payload?.action === action
+      eventName === SHARE_TELEMETRY && payload?.action === action
   );
 }
 
