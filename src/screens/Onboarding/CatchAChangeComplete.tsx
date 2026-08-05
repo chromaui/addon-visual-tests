@@ -27,10 +27,9 @@ export const CatchAChangeComplete = ({
 }: CatchAChangeCompleteProps) => {
   const trackEvent = useTelemetry('Onboarding', 'CatchAChangeComplete');
   const handleComplete = () => {
-    // Both routes land on this screen, so `screen` alone can't tell them apart.
-    trackEvent('completeOnboarding', {
-      path: ranSecondBuild ? 'completedSecondBuild' : 'skippedSecondBuild',
-    });
+    // The two CTAs are different user intents: "Done" finishes onboarding, while "Take a tour"
+    // continues into reviewing the changes that were found.
+    trackEvent(ranSecondBuild ? 'completeOnboarding' : 'takeTour');
     onComplete();
   };
   const handleSkip = () => {

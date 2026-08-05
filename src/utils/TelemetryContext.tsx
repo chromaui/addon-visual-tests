@@ -22,6 +22,7 @@ export type TelemetryAction =
   | 'startBuild'
   | 'stopBuild'
   | 'submitSubdomain'
+  | 'takeTour'
   | 'uninstallAddon';
 
 export type TrackEvent = (event: { [key: string]: any }) => void;
