@@ -13,20 +13,16 @@ export const ShareToolbarButton = ({ api }: { api: API }) => (
     placement="bottom"
     padding={0}
     popover={<SharePopup api={api} />}
+    onVisibleChange={(visible) => {
+      if (!visible) return;
+      api.getChannel()?.emit(SHARE_TELEMETRY, {
+        action: 'openShare',
+        entryPoint: 'toolbar',
+        location: 'SharePopup',
+      });
+    }}
   >
-    <Button
-      variant="ghost"
-      padding="small"
-      id="chromatic-share-button"
-      onClick={() =>
-        api.getChannel()?.emit(SHARE_TELEMETRY, {
-          action: 'openShare',
-          entryPoint: 'toolbar',
-          location: 'SharePopup',
-          screen: 'Toolbar',
-        })
-      }
-    >
+    <Button variant="ghost" padding="small" id="chromatic-share-button">
       Share
     </Button>
   </PopoverProvider>

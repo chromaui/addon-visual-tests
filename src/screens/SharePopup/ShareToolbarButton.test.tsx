@@ -10,18 +10,27 @@ vi.mock('storybook/internal/components', () => ({
 vi.mock('./SharePopup', () => ({ SharePopup: 'div' }));
 
 describe('ShareToolbarButton', () => {
-  it('records opening Share when clicked', () => {
+  it('records opening Share when the popup becomes visible', () => {
     const emit = vi.fn();
     const api = { getChannel: () => ({ emit }) } as any;
 
     const tree = ShareToolbarButton({ api });
-    tree.props.children.props.onClick();
+    tree.props.onVisibleChange(true);
 
     expect(emit).toHaveBeenCalledWith(SHARE_TELEMETRY, {
       action: 'openShare',
       entryPoint: 'toolbar',
       location: 'SharePopup',
-      screen: 'Toolbar',
     });
+  });
+
+  it('does not record openShare when the popup closes', () => {
+    const emit = vi.fn();
+    const api = { getChannel: () => ({ emit }) } as any;
+
+    const tree = ShareToolbarButton({ api });
+    tree.props.onVisibleChange(false);
+
+    expect(emit).not.toHaveBeenCalled();
   });
 });
