@@ -3,6 +3,7 @@ import { Button, PopoverProvider } from 'storybook/internal/components';
 import type { API } from 'storybook/manager-api';
 
 import { SHARE_TELEMETRY } from '../../constants';
+import type { TelemetryAction } from '../../utils/TelemetryContext';
 import { SharePopup } from './SharePopup';
 
 export const ShareToolbarButton = ({ api }: { api: API }) => (
@@ -16,7 +17,7 @@ export const ShareToolbarButton = ({ api }: { api: API }) => (
     onVisibleChange={(visible) => {
       if (!visible) return;
       api.getChannel()?.emit(SHARE_TELEMETRY, {
-        action: 'openShare',
+        action: 'openShare' satisfies TelemetryAction,
         entryPoint: 'toolbar',
         location: 'SharePopup',
       });
