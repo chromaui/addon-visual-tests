@@ -10,7 +10,6 @@ import { Stack } from '../../components/Stack';
 import { Text } from '../../components/Text';
 import { LocalBuildProgress } from '../../types';
 import { useTelemetry } from '../../utils/TelemetryContext';
-import type { BuildTelemetryContext } from '../../utils/useBuildEvents';
 
 const Intro = () => (
   <div>
@@ -25,7 +24,7 @@ const Intro = () => (
 type InitialBuildProps = {
   isRunning: boolean;
   localBuildProgress?: LocalBuildProgress;
-  startBuild: (context?: BuildTelemetryContext) => void;
+  startBuild: () => void;
   onSkip: () => void;
 };
 
@@ -53,7 +52,10 @@ export const InitialBuild = ({
                 disabled={isRunning}
                 size="medium"
                 variant="solid"
-                onClick={() => startBuild({ location: 'Onboarding', screen: 'InitialBuild' })}
+                onClick={() => {
+                  trackEvent('startBuild');
+                  startBuild();
+                }}
               >
                 Take snapshots
               </Button>

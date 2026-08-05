@@ -5,12 +5,6 @@ import { START_BUILD, STOP_BUILD, TELEMETRY } from '../constants';
 import { LocalBuildProgress } from '../types';
 import { debounce } from './debounce';
 
-/**
- * Where a build was triggered from, so build lifecycle events can be attributed to a screen the
- * same way `useTelemetry` actions are. Omit it when the trigger isn't a screen (e.g. Run All).
- */
-export type BuildTelemetryContext = { location: string; screen: string };
-
 export const useBuildEvents = ({
   localBuildProgress,
   accessToken,
@@ -34,11 +28,13 @@ export const useBuildEvents = ({
     () =>
       debounce(
         'startBuild',
-        (context?: BuildTelemetryContext) => {
+        () => {
           setDisallowed(false);
           setStarting(true);
           emit(START_BUILD, { accessToken });
-          emit(TELEMETRY, { ...context, action: 'startBuild' });
+          // Unattributed so the Test Provider stays visible; screens that need screen attribution
+          // report their own `startBuild` action via `useTelemetry` before calling this.
+          emit(TELEMETRY, { action: 'startBuild' });
         },
         1000,
         false
@@ -50,13 +46,13 @@ export const useBuildEvents = ({
     () =>
       debounce(
         'startBuild',
-        (context?: BuildTelemetryContext) => {
+        () => {
           if (!isCancelable) {
             setDisallowed(true);
           } else {
             setStarting(false);
             emit(STOP_BUILD);
-            emit(TELEMETRY, { ...context, action: 'stopBuild' });
+            emit(TELEMETRY, { action: 'stopBuild' });
           }
         },
         1000,

@@ -11,7 +11,6 @@ import { GraphQLClientProvider } from '../../utils/graphQLClient';
 import { playAll } from '../../utils/playAll';
 import { storyWrapper } from '../../utils/storyWrapper';
 import { telemetrySpy } from '../../utils/telemetrySpy';
-import type { BuildTelemetryContext } from '../../utils/useBuildEvents';
 import { clearSessionState } from '../../utils/useSessionState';
 import { withFigmaDesign } from '../../utils/withFigmaDesign';
 import { withSetup } from '../../utils/withSetup';
@@ -28,8 +27,8 @@ const RunBuildWrapper = ({
 }: {
   children: React.ReactNode;
   localBuildProgress: LocalBuildProgress | undefined;
-  startBuild?: (context?: BuildTelemetryContext) => void;
-  stopBuild?: (context?: BuildTelemetryContext) => void;
+  startBuild?: () => void;
+  stopBuild?: () => void;
 }) => (
   <RunBuildProvider
     watchState={{
@@ -45,7 +44,7 @@ const RunBuildWrapper = ({
 );
 
 const telemetry = telemetrySpy();
-const startBuildSpy = fn<(context?: BuildTelemetryContext) => void>().mockName('startBuild');
+const startBuildSpy = fn<() => void>().mockName('startBuild');
 
 const meta = {
   component: Onboarding,
@@ -457,7 +456,9 @@ export const ReportsStartBuildFromInitialBuild = {
   play: playAll(async ({ canvasElement }) => {
     startBuildSpy.mockClear();
     await userEvent.click(await findByRole(canvasElement, 'button', { name: 'Take snapshots' }));
-    await expect(startBuildSpy).toHaveBeenCalledWith({
+    await expect(startBuildSpy).toHaveBeenCalledOnce();
+    await expect(telemetry.trackEvent).toHaveBeenCalledWith({
+      action: 'startBuild',
       location: 'Onboarding',
       screen: 'InitialBuild',
     });
@@ -496,7 +497,12 @@ export const ReportsRetryFromBuildError = {
   play: playAll(async ({ canvasElement }) => {
     startBuildSpy.mockClear();
     await userEvent.click(await findByRole(canvasElement, 'button', { name: 'Try again' }));
-    await expect(startBuildSpy).toHaveBeenCalledWith({ location: 'Errors', screen: 'BuildError' });
+    await expect(startBuildSpy).toHaveBeenCalledOnce();
+    await expect(telemetry.trackEvent).toHaveBeenCalledWith({
+      action: 'startBuild',
+      location: 'Errors',
+      screen: 'BuildError',
+    });
   }),
 } satisfies Story;
 

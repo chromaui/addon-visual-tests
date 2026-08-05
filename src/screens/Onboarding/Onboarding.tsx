@@ -76,7 +76,10 @@ export const Onboarding = ({
             ariaLabel={false}
             variant="solid"
             size="medium"
-            onClick={() => startBuild({ location: 'Errors', screen: 'BuildError' })}
+            onClick={() => {
+              trackBuildError('startBuild');
+              startBuild();
+            }}
           >
             Try again
           </Button>

@@ -1,12 +1,11 @@
 import React, { createContext } from 'react';
 
-import type { BuildTelemetryContext } from '../../utils/useBuildEvents';
 import { useRequiredContext } from '../../utils/useRequiredContext';
 
 type State = {
   isRunning: boolean;
-  startBuild: (context?: BuildTelemetryContext) => void;
-  stopBuild: (context?: BuildTelemetryContext) => void;
+  startBuild: () => void;
+  stopBuild: () => void;
 };
 
 const initialState: State = {
