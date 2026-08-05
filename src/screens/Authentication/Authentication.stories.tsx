@@ -1,7 +1,7 @@
 // @ts-nocheck TODO: Address SB 8 type errors
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { http, HttpResponse } from 'msw';
-import { expect, findByRole, fn, userEvent } from 'storybook/test';
+import { expect, findByRole, findByText, fn, userEvent } from 'storybook/test';
 
 import { ADDON_ID, HIGHLIGHT_IGNORED_PARAM } from '../../constants';
 import { panelModes } from '../../modes';
@@ -193,6 +193,59 @@ export const ReportsSignInFromVerify = {
       action: 'signIn',
       location: 'Authentication',
       screen: 'Verify',
+    });
+  }),
+} satisfies Story;
+
+export const ReportsGoBackFromVerify = {
+  decorators: telemetry.decorators,
+  parameters: { ...telemetryParameters, chromatic: { disableSnapshot: true } },
+  play: playAll(Verify, async ({ canvasElement }) => {
+    await userEvent.click(await findByRole(canvasElement, 'button', { name: 'Go back' }));
+    await expect(telemetry.trackEvent).toHaveBeenCalledWith({
+      action: 'goBack',
+      location: 'Authentication',
+      screen: 'Verify',
+    });
+  }),
+} satisfies Story;
+
+export const ReportsUninstallFromWelcome = {
+  decorators: telemetry.decorators,
+  parameters: telemetryParameters,
+  play: playAll(async ({ canvasElement }) => {
+    await userEvent.click(await findByText(canvasElement, 'Uninstall this addon'));
+    await expect(telemetry.trackEvent).toHaveBeenCalledWith({
+      action: 'uninstallAddon',
+      location: 'Authentication',
+      screen: 'Welcome',
+    });
+  }),
+} satisfies Story;
+
+export const ReportsGoBackFromSetSubdomain = {
+  decorators: telemetry.decorators,
+  parameters: telemetryParameters,
+  play: playAll(SSO, async ({ canvasElement }) => {
+    await userEvent.click(await findByRole(canvasElement, 'button', { name: 'Go back' }));
+    await expect(telemetry.trackEvent).toHaveBeenCalledWith({
+      action: 'goBack',
+      location: 'Authentication',
+      screen: 'Subdomain',
+    });
+  }),
+} satisfies Story;
+
+export const ReportsSubmitSubdomain = {
+  decorators: telemetry.decorators,
+  parameters: { ...telemetryParameters, chromatic: { disableSnapshot: true } },
+  play: playAll(SSO, async ({ canvasElement }) => {
+    await userEvent.type(await findByRole(canvasElement, 'textbox'), 'yourteam');
+    await userEvent.click(await findByRole(canvasElement, 'button', { name: 'Continue' }));
+    await expect(telemetry.trackEvent).toHaveBeenCalledWith({
+      action: 'submitSubdomain',
+      location: 'Authentication',
+      screen: 'Subdomain',
     });
   }),
 } satisfies Story;

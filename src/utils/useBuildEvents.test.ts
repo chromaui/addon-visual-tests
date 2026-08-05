@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { START_BUILD, TELEMETRY } from '../constants';
+import { START_BUILD, STOP_BUILD, TELEMETRY } from '../constants';
+import type { LocalBuildProgress } from '../types';
 
 const mocks = vi.hoisted(() => ({
   emit: vi.fn(),
@@ -47,5 +48,30 @@ describe('useBuildEvents telemetry', () => {
     expect(mocks.emit).toHaveBeenNthCalledWith(2, TELEMETRY, {
       action: 'startBuild',
     });
+  });
+
+  it('emits stop telemetry when stopBuild() is called on a cancelable build', () => {
+    const { stopBuild } = useBuildEvents({
+      localBuildProgress: { currentStep: 'build' } as LocalBuildProgress,
+      accessToken: 'access-token',
+    });
+
+    stopBuild();
+
+    expect(mocks.emit).toHaveBeenNthCalledWith(1, STOP_BUILD);
+    expect(mocks.emit).toHaveBeenNthCalledWith(2, TELEMETRY, {
+      action: 'stopBuild',
+    });
+  });
+
+  it('emits nothing when stopBuild() is called without a cancelable build', () => {
+    const { stopBuild } = useBuildEvents({
+      localBuildProgress: undefined,
+      accessToken: 'access-token',
+    });
+
+    stopBuild();
+
+    expect(mocks.emit).not.toHaveBeenCalled();
   });
 });

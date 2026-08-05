@@ -5,6 +5,7 @@ import { fn } from 'storybook/test';
 import { expect, findByRole, userEvent } from 'storybook/test';
 
 import { INITIAL_BUILD_PAYLOAD } from '../../buildSteps';
+import { ADDON_ID } from '../../constants';
 import { panelModes } from '../../modes';
 import { LocalBuildProgress } from '../../types';
 import { GraphQLClientProvider } from '../../utils/graphQLClient';
@@ -516,6 +517,85 @@ export const ReportsContinueFromAccountSuspended = {
       action: 'continue',
       location: 'Errors',
       screen: 'AccountSuspended',
+    });
+  }),
+} satisfies Story;
+
+export const ReportsSkipFromInitialBuildComplete = {
+  args: BaselineSaved.args,
+  decorators: telemetry.decorators,
+  parameters: telemetryParameters,
+  play: playAll(async ({ canvasElement }) => {
+    await userEvent.click(await findByRole(canvasElement, 'button', { name: 'Skip walkthrough' }));
+    await expect(telemetry.trackEvent).toHaveBeenCalledWith({
+      action: 'skipOnboarding',
+      location: 'Onboarding',
+      screen: 'InitialBuildComplete',
+    });
+  }),
+} satisfies Story;
+
+export const ReportsSkipFromCatchAChange = {
+  args: BaselineSaved.args,
+  decorators: telemetry.decorators,
+  parameters: telemetryParameters,
+  play: playAll(async ({ canvasElement }) => {
+    // Move from InitialBuildComplete into the CatchAChange (make a change) screen first.
+    await userEvent.click(await findByRole(canvasElement, 'button', { name: 'Catch a UI change' }));
+    await userEvent.click(await findByRole(canvasElement, 'button', { name: 'Skip walkthrough' }));
+    await expect(telemetry.trackEvent).toHaveBeenCalledWith({
+      action: 'skipOnboarding',
+      location: 'Onboarding',
+      screen: 'CatchAChange',
+    });
+  }),
+} satisfies Story;
+
+export const ReportsTakeTourFromCatchAChangeComplete = {
+  args: ChangesFoundOnFirstBuild.args,
+  decorators: telemetry.decorators,
+  parameters: telemetryParameters,
+  play: playAll(async ({ canvasElement }) => {
+    await userEvent.click(await findByRole(canvasElement, 'button', { name: 'Take a tour' }));
+    await expect(telemetry.trackEvent).toHaveBeenCalledWith({
+      action: 'takeTour',
+      location: 'Onboarding',
+      screen: 'CatchAChangeComplete',
+    });
+  }),
+} satisfies Story;
+
+export const ReportsSkipFromCatchAChangeComplete = {
+  args: ChangesFoundOnFirstBuild.args,
+  decorators: telemetry.decorators,
+  parameters: telemetryParameters,
+  play: playAll(async ({ canvasElement }) => {
+    await userEvent.click(await findByRole(canvasElement, 'button', { name: 'Skip walkthrough' }));
+    await expect(telemetry.trackEvent).toHaveBeenCalledWith({
+      action: 'skipOnboarding',
+      location: 'Onboarding',
+      screen: 'CatchAChangeComplete',
+    });
+  }),
+} satisfies Story;
+
+export const ReportsCompleteOnboarding = {
+  args: ChangesFoundOnFirstBuild.args,
+  decorators: [
+    ...telemetry.decorators,
+    // Simulate having gone through the catch-a-change flow, so the second build "ran".
+    withSetup(() => {
+      sessionStorage.setItem(`${ADDON_ID}/state/showCatchAChange`, JSON.stringify(true));
+      sessionStorage.setItem(`${ADDON_ID}/state/runningSecondBuild`, JSON.stringify(true));
+    }),
+  ],
+  parameters: telemetryParameters,
+  play: playAll(async ({ canvasElement }) => {
+    await userEvent.click(await findByRole(canvasElement, 'button', { name: 'Done' }));
+    await expect(telemetry.trackEvent).toHaveBeenCalledWith({
+      action: 'completeOnboarding',
+      location: 'Onboarding',
+      screen: 'CatchAChangeComplete',
     });
   }),
 } satisfies Story;
