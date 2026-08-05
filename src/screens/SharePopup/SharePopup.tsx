@@ -6,6 +6,7 @@ import { GIT_INFO, SHARE_PROGRESS } from '../../constants';
 import type { GitInfoPayload, ShareProgress } from '../../types';
 import { checkOutdated } from '../../utils/checkOutdated';
 import { useAccessToken } from '../../utils/graphQLClient';
+import type { TelemetryAction } from '../../utils/TelemetryContext';
 import { useSessionState } from '../../utils/useSessionState';
 import { useSharedState } from '../../utils/useSharedState';
 import { initialState, shareReducer } from './shareMachine';
@@ -73,13 +74,16 @@ export const SharePopup = ({ api }: { api: API }) => {
     dispatch,
   });
 
+  const track = (screen: string) => (action: TelemetryAction) =>
+    emitTelemetry(action, { location: 'SharePopup', screen });
+
   const screen = reducerState.screen;
   switch (screen.status) {
     case 'welcome':
       return (
         <SharePopupWelcome
           onPublish={() => {
-            emitTelemetry('publish', { location: 'SharePopup', screen: 'ShareWelcome' });
+            track('Welcome')('publish');
             handlePublish();
           }}
         />
@@ -88,14 +92,11 @@ export const SharePopup = ({ api }: { api: API }) => {
       return (
         <SharePopupIdle
           onSignIn={() => {
-            emitTelemetry('signIn', { location: 'SharePopup', screen: 'ShareSignIn' });
+            track('Signin')('signIn');
             startSignIn();
           }}
           onSignInWithSSO={() => {
-            emitTelemetry('signInWithSSO', {
-              location: 'SharePopup',
-              screen: 'ShareSignIn',
-            });
+            track('Signin')('signInWithSSO');
             dispatch({ type: 'GO_SUBDOMAIN' });
           }}
         />
@@ -104,14 +105,11 @@ export const SharePopup = ({ api }: { api: API }) => {
       return (
         <SharePopupSubdomain
           onSubmit={(subdomain) => {
-            emitTelemetry('submitSubdomain', {
-              location: 'SharePopup',
-              screen: 'ShareSubdomain',
-            });
+            track('Subdomain')('submitSubdomain');
             startSignIn(subdomain);
           }}
           onBack={() => {
-            emitTelemetry('goBack', { location: 'SharePopup', screen: 'ShareSubdomain' });
+            track('Subdomain')('goBack');
             dispatch({ type: 'BACK_TO_IDLE' });
           }}
         />

@@ -354,7 +354,7 @@ describe('SharePopup', () => {
 
       expect(telemetryEmits('publish')[0][1]).toMatchObject({
         location: 'SharePopup',
-        screen: 'ShareWelcome',
+        screen: 'Welcome',
       });
     });
 
@@ -368,11 +368,11 @@ describe('SharePopup', () => {
 
       expect(telemetryEmits('signIn')[0][1]).toMatchObject({
         location: 'SharePopup',
-        screen: 'ShareSignIn',
+        screen: 'Signin',
       });
       expect(telemetryEmits('signInWithSSO')[0][1]).toMatchObject({
         location: 'SharePopup',
-        screen: 'ShareSignIn',
+        screen: 'Signin',
       });
     });
 
@@ -386,11 +386,11 @@ describe('SharePopup', () => {
 
       expect(telemetryEmits('submitSubdomain')[0][1]).toMatchObject({
         location: 'SharePopup',
-        screen: 'ShareSubdomain',
+        screen: 'Subdomain',
       });
       expect(telemetryEmits('goBack')[0][1]).toMatchObject({
         location: 'SharePopup',
-        screen: 'ShareSubdomain',
+        screen: 'Subdomain',
       });
     });
   });
