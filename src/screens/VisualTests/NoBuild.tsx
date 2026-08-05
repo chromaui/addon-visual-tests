@@ -54,7 +54,7 @@ export const NoBuild = ({
         disabled={isRunning}
         size="medium"
         variant="solid"
-        onClick={() => startBuild()}
+        onClick={startBuild}
       >
         <PlayIcon />
         Take snapshots

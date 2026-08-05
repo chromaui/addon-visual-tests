@@ -243,7 +243,7 @@ export const TestProviderRender = () => {
             size="medium"
             variant="ghost"
             padding="none"
-            onClick={() => stopBuild()}
+            onClick={stopBuild}
             disabled={
               !['initialize', 'build', 'upload'].includes(localBuildProgress?.currentStep ?? '')
             }

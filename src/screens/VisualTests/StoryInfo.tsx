@@ -200,12 +200,7 @@ export const StoryInfo = ({
 
       {showButton && (
         <Actions>
-          <ActionButton
-            ariaLabel={false}
-            onClick={() => startBuild()}
-            disabled={isRunning}
-            variant="solid"
-          >
+          <ActionButton ariaLabel={false} onClick={startBuild} disabled={isRunning} variant="solid">
             {isRunning ? <ProgressIcon parentComponent="Button" /> : <PlayIcon />}
             {isErrored ? 'Rerun tests' : 'Run tests'}
           </ActionButton>
