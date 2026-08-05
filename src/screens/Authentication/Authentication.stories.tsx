@@ -186,8 +186,8 @@ export const ReportsSignInFromVerify = {
   decorators: telemetry.decorators,
   parameters: { ...telemetryParameters, chromatic: { disableSnapshot: true } },
   play: playAll(Verify, async ({ canvasElement }) => {
-    // Verify reports this itself via `useTrackAction`, tagged with the screen Authentication
-    // reported the view for — no `trackEvent` prop threaded down.
+    // Authentication owns all of Verify's action tracking (via the `onSignIn` callback), so views
+    // and actions come from the same tracker.
     await userEvent.click(await findByRole(canvasElement, 'button', { name: 'Go to Chromatic' }));
     await expect(telemetry.trackEvent).toHaveBeenCalledWith({
       action: 'signIn',

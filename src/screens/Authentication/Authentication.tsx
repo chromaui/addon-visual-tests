@@ -117,6 +117,7 @@ export const Authentication = ({
           trackEvent('goBack');
           setScreen('signin');
         }}
+        onSignIn={() => trackEvent('signIn')}
         hasProjectId={hasProjectId}
         setAccessToken={setAccessToken}
         setCreatedProjectId={setCreatedProjectId}

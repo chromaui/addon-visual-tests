@@ -13,7 +13,6 @@ import { Text } from '../../components/Text';
 import { graphql } from '../../gql';
 import type { Project } from '../../gql/graphql';
 import { getFetchOptions, setAuthenticatedSession } from '../../utils/graphQLClient';
-import { useTrackAction } from '../../utils/TelemetryContext';
 import { useErrorNotification } from '../../utils/useErrorNotification';
 import { AuthHeader } from './AuthHeader';
 
@@ -38,6 +37,7 @@ const ProjectCountQuery = graphql(/* GraphQL */ `
 
 interface VerifyProps {
   onBack: () => void;
+  onSignIn: () => void;
   hasProjectId: boolean;
   setAccessToken: (token: string) => void;
   setCreatedProjectId: (projectId: Project['id']) => void;
@@ -46,6 +46,7 @@ interface VerifyProps {
 
 export const Verify = ({
   onBack,
+  onSignIn,
   hasProjectId,
   setAccessToken,
   setCreatedProjectId,
@@ -53,7 +54,6 @@ export const Verify = ({
 }: VerifyProps) => {
   const client = useClient();
   const onError = useErrorNotification();
-  const trackEvent = useTrackAction('Authentication', 'Verify');
 
   // Hold the auth session until the user finishes the create-project follow-up flow.
   const authSession = useRef<AuthSession>();
@@ -117,7 +117,7 @@ export const Verify = ({
             variant="solid"
             size="medium"
             onClick={() => {
-              trackEvent('signIn');
+              onSignIn();
               begin(exchangeParameters);
             }}
           >
