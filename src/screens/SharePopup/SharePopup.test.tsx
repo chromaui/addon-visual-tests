@@ -127,8 +127,7 @@ afterEach(() => {
 
 function telemetryEmits(action: string) {
   return mocks.channel.emit.mock.calls.filter(
-    ([eventName, payload]) =>
-      eventName === SHARE_TELEMETRY && payload?.action === action
+    ([eventName, payload]) => eventName === SHARE_TELEMETRY && payload?.action === action
   );
 }
 
