@@ -28,6 +28,7 @@ import {
   PROJECT_INFO,
   REMOVE_ADDON,
   SHARE_PROGRESS,
+  SHARE_TELEMETRY,
   START_BUILD,
   START_SHARE,
   STOP_BUILD,
@@ -339,6 +340,11 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
   channel.on(TELEMETRY, async (event: Event) => {
     if ((await corePromise).disableTelemetry) return;
     telemetry('addon-visual-tests' as any, { ...event, addonVersion: await getAddonVersion() });
+  });
+
+  channel.on(SHARE_TELEMETRY, async (event: Event) => {
+    if ((await corePromise).disableTelemetry) return;
+    telemetry('chromatic-share' as any, { ...event, addonVersion: await getAddonVersion() });
   });
 
   const configInfoState = SharedState.subscribe<ConfigInfoPayload>(CONFIG_INFO, channel);

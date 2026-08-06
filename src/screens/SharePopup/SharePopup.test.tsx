@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { SHARE_TELEMETRY } from '../../constants';
 import type { ShareProgress } from '../../types';
 import type { ShareReducerState, ShareState } from './types';
 
@@ -8,8 +9,9 @@ const mocks = vi.hoisted(() => {
   const channel = { emit: vi.fn(), on: vi.fn(), off: vi.fn() };
   const updateToken = vi.fn();
   const dispatch = vi.fn();
+  const startSignIn = vi.fn();
   const refresh = vi.fn(() => Promise.resolve());
-  return { channel, updateToken, dispatch, refresh };
+  return { channel, updateToken, dispatch, startSignIn, refresh };
 });
 
 // Mutable per-test reducer state
@@ -70,7 +72,7 @@ vi.mock('../../utils/useSharedState', () => ({
 }));
 
 vi.mock('./useShareAuth', () => ({
-  useShareAuth: () => ({ startSignIn: vi.fn(), updateToken: mocks.updateToken }),
+  useShareAuth: () => ({ startSignIn: mocks.startSignIn, updateToken: mocks.updateToken }),
 }));
 
 vi.mock('./SharePopupWelcome', () => ({ SharePopupWelcome: vi.fn() }));
@@ -99,7 +101,7 @@ function makeApi() {
 // Call the component as a plain function to trigger all useEffect calls
 function invokeSharePopup() {
   refIndex = 0;
-  (SharePopup as any)({ api: makeApi() });
+  return (SharePopup as any)({ api: makeApi() });
 }
 
 function setReducer(partial: Partial<ShareReducerState>) {
@@ -123,10 +125,9 @@ afterEach(() => {
   refStore.length = 0;
 });
 
-function viewEmits(action: string) {
+function telemetryEmits(action: string) {
   return mocks.channel.emit.mock.calls.filter(
-    ([eventName, payload]) =>
-      eventName === 'chromaui/addon-visual-tests/telemetry' && payload?.action === action
+    ([eventName, payload]) => eventName === SHARE_TELEMETRY && payload?.action === action
   );
 }
 
@@ -343,59 +344,54 @@ describe('SharePopup', () => {
     });
   });
 
-  describe('top-of-funnel view telemetry', () => {
-    it('emits share-welcome-viewed when the welcome screen is shown signed out', () => {
+  describe('top-of-funnel action telemetry', () => {
+    it('records publishing from welcome', () => {
       tokenValue = null;
       setReducer({ screen: { status: 'welcome' } });
 
-      invokeSharePopup();
+      const tree = invokeSharePopup();
+      tree.props.onPublish();
 
-      expect(viewEmits('share-welcome-viewed')).toHaveLength(1);
+      expect(telemetryEmits('publish')[0][1]).toMatchObject({
+        location: 'SharePopup',
+        screen: 'Welcome',
+      });
     });
 
-    it('does not re-emit the view event on re-render of the same screen', () => {
+    it('records sign-in choices', () => {
       tokenValue = null;
-      setReducer({ screen: { status: 'welcome' } });
-
-      invokeSharePopup();
-      invokeSharePopup();
-
-      expect(viewEmits('share-welcome-viewed')).toHaveLength(1);
-    });
-
-    it('emits once per screen entry and re-fires when returning to a screen', () => {
-      tokenValue = null;
-
       setReducer({ screen: { status: 'idle' } });
-      invokeSharePopup();
+
+      const tree = invokeSharePopup();
+      tree.props.onSignIn();
+      tree.props.onSignInWithSSO();
+
+      expect(telemetryEmits('signIn')[0][1]).toMatchObject({
+        location: 'SharePopup',
+        screen: 'Signin',
+      });
+      expect(telemetryEmits('signInWithSSO')[0][1]).toMatchObject({
+        location: 'SharePopup',
+        screen: 'Signin',
+      });
+    });
+
+    it('records subdomain submission and back navigation', () => {
+      tokenValue = null;
       setReducer({ screen: { status: 'subdomain' } });
-      invokeSharePopup();
-      setReducer({ screen: { status: 'idle' } });
-      invokeSharePopup();
 
-      expect(viewEmits('share-signin-viewed')).toHaveLength(2);
-      expect(viewEmits('share-sso-viewed')).toHaveLength(1);
-    });
+      const tree = invokeSharePopup();
+      tree.props.onSubmit('team');
+      tree.props.onBack();
 
-    it('does not emit view events when signed in, since those screens auto-skip', () => {
-      setReducer({ screen: { status: 'welcome' } });
-
-      invokeSharePopup();
-
-      expect(viewEmits('share-welcome-viewed')).toHaveLength(0);
-      expect(viewEmits('share-signin-viewed')).toHaveLength(0);
-      expect(viewEmits('share-sso-viewed')).toHaveLength(0);
-    });
-
-    it('does not emit view events for screens outside the funnel entry', () => {
-      tokenValue = null;
-      setReducer({ screen: { status: 'uploading', shareUrl: '' } });
-
-      invokeSharePopup();
-
-      expect(viewEmits('share-welcome-viewed')).toHaveLength(0);
-      expect(viewEmits('share-signin-viewed')).toHaveLength(0);
-      expect(viewEmits('share-sso-viewed')).toHaveLength(0);
+      expect(telemetryEmits('submitSubdomain')[0][1]).toMatchObject({
+        location: 'SharePopup',
+        screen: 'Subdomain',
+      });
+      expect(telemetryEmits('goBack')[0][1]).toMatchObject({
+        location: 'SharePopup',
+        screen: 'Subdomain',
+      });
     });
   });
 
