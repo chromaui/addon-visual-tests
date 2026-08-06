@@ -1,3 +1,32 @@
+# v5.3.0 (Thu Aug 06 2026)
+
+#### 🚀 Enhancement
+
+- Merge pull request #440 from chromaui/ghengeveld/api-54-validate-project-id [#440](https://github.com/chromaui/addon-visual-tests/pull/440) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### 🐛 Bug Fix
+
+- Pin actions/checkout to commit SHA [#450](https://github.com/chromaui/addon-visual-tests/pull/450) ([@ghengeveld](https://github.com/ghengeveld))
+- Track share funnel actions [#443](https://github.com/chromaui/addon-visual-tests/pull/443) ([@shilman](https://github.com/shilman) [@ghengeveld](https://github.com/ghengeveld))
+- Add action telemetry to onboarding funnel [#442](https://github.com/chromaui/addon-visual-tests/pull/442) ([@shilman](https://github.com/shilman) [@ndelangen](https://github.com/ndelangen) [@ghengeveld](https://github.com/ghengeveld))
+- Bump the npm_and_yarn group across 1 directory with 17 updates [#448](https://github.com/chromaui/addon-visual-tests/pull/448) ([@dependabot[bot]](https://github.com/dependabot[bot]) [@ndelangen](https://github.com/ndelangen))
+- Bump the npm_and_yarn group across 1 directory with 14 updates [#433](https://github.com/chromaui/addon-visual-tests/pull/433) ([@ndelangen](https://github.com/ndelangen) [@dependabot[bot]](https://github.com/dependabot[bot]))
+- Fix premature GitError while git info loads [#447](https://github.com/chromaui/addon-visual-tests/pull/447) ([@shilman](https://github.com/shilman) [@ndelangen](https://github.com/ndelangen))
+- Upgrade repo to Storybook 10.5 [#441](https://github.com/chromaui/addon-visual-tests/pull/441) ([@shilman](https://github.com/shilman) [@ndelangen](https://github.com/ndelangen))
+- Merge pull request #439 from chromaui/steven/upgrade-chromatic-version [#439](https://github.com/chromaui/addon-visual-tests/pull/439) ([@ghengeveld](https://github.com/ghengeveld))
+- Render DPR 2 snapshots at the correct display size [#438](https://github.com/chromaui/addon-visual-tests/pull/438) ([@ghengeveld](https://github.com/ghengeveld))
+- Add view telemetry for top-of-funnel share screens [#437](https://github.com/chromaui/addon-visual-tests/pull/437) ([@shilman](https://github.com/shilman))
+
+#### Authors: 5
+
+- [@dependabot[bot]](https://github.com/dependabot[bot])
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Michael Shilman ([@shilman](https://github.com/shilman))
+- Norbert de Langen ([@ndelangen](https://github.com/ndelangen))
+- Steven Kitterman ([@skitterm](https://github.com/skitterm))
+
+---
+
 # v5.2.1 (Thu May 14 2026)
 
 #### 🐛 Bug Fix
