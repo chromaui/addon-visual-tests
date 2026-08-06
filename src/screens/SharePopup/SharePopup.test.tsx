@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { SHARE_TELEMETRY } from '../../constants';
 import type { ShareProgress } from '../../types';
 import type { ShareReducerState, ShareState } from './types';
 
@@ -8,8 +9,9 @@ const mocks = vi.hoisted(() => {
   const channel = { emit: vi.fn(), on: vi.fn(), off: vi.fn() };
   const updateToken = vi.fn();
   const dispatch = vi.fn();
+  const startSignIn = vi.fn();
   const refresh = vi.fn(() => Promise.resolve());
-  return { channel, updateToken, dispatch, refresh };
+  return { channel, updateToken, dispatch, startSignIn, refresh };
 });
 
 // Mutable per-test reducer state
@@ -19,12 +21,22 @@ let reducerState: ShareReducerState = {
   shareTriggeredId: null,
 };
 let shareProgressValue: ShareProgress | undefined = undefined;
+let tokenValue: string | null = 'token-123';
+
+// Refs persist across invocations (keyed by hook call order) so that calling
+// the component repeatedly behaves like re-rendering the same mount.
+const refStore: { current: unknown }[] = [];
+let refIndex = 0;
 
 vi.mock('react', async (importOriginal) => {
   const actual = await importOriginal<typeof import('react')>();
   return {
     ...actual,
-    useRef: (initial: unknown) => ({ current: initial }),
+    useRef: (initial: unknown) => {
+      const ref = (refStore[refIndex] ??= { current: initial });
+      refIndex += 1;
+      return ref;
+    },
     useCallback: (fn: unknown) => fn,
     // useEffect: run synchronously so effects fire during the "render" call
     useEffect: (fn: () => (() => void) | void) => {
@@ -41,7 +53,7 @@ vi.mock('storybook/manager-api', () => ({
 }));
 
 vi.mock('../../utils/graphQLClient', () => ({
-  useAccessToken: () => ['token-123', mocks.updateToken],
+  useAccessToken: () => [tokenValue, mocks.updateToken],
 }));
 
 vi.mock('../../auth/authStore', () => ({
@@ -60,7 +72,7 @@ vi.mock('../../utils/useSharedState', () => ({
 }));
 
 vi.mock('./useShareAuth', () => ({
-  useShareAuth: () => ({ startSignIn: vi.fn(), updateToken: mocks.updateToken }),
+  useShareAuth: () => ({ startSignIn: mocks.startSignIn, updateToken: mocks.updateToken }),
 }));
 
 vi.mock('./SharePopupWelcome', () => ({ SharePopupWelcome: vi.fn() }));
@@ -88,7 +100,8 @@ function makeApi() {
 
 // Call the component as a plain function to trigger all useEffect calls
 function invokeSharePopup() {
-  (SharePopup as any)({ api: makeApi() });
+  refIndex = 0;
+  return (SharePopup as any)({ api: makeApi() });
 }
 
 function setReducer(partial: Partial<ShareReducerState>) {
@@ -108,7 +121,15 @@ afterEach(() => {
     shareTriggeredId: null,
   };
   shareProgressValue = undefined;
+  tokenValue = 'token-123';
+  refStore.length = 0;
 });
+
+function telemetryEmits(action: string) {
+  return mocks.channel.emit.mock.calls.filter(
+    ([eventName, payload]) => eventName === SHARE_TELEMETRY && payload?.action === action
+  );
+}
 
 describe('SharePopup', () => {
   describe('stale shareProgress filtering by shareRequestId', () => {
@@ -320,6 +341,57 @@ describe('SharePopup', () => {
         ([action]) => action?.type === 'AUTO_SKIP_TO_UPLOADING'
       );
       expect(autoSkipDispatches).toHaveLength(0);
+    });
+  });
+
+  describe('top-of-funnel action telemetry', () => {
+    it('records publishing from welcome', () => {
+      tokenValue = null;
+      setReducer({ screen: { status: 'welcome' } });
+
+      const tree = invokeSharePopup();
+      tree.props.onPublish();
+
+      expect(telemetryEmits('publish')[0][1]).toMatchObject({
+        location: 'SharePopup',
+        screen: 'Welcome',
+      });
+    });
+
+    it('records sign-in choices', () => {
+      tokenValue = null;
+      setReducer({ screen: { status: 'idle' } });
+
+      const tree = invokeSharePopup();
+      tree.props.onSignIn();
+      tree.props.onSignInWithSSO();
+
+      expect(telemetryEmits('signIn')[0][1]).toMatchObject({
+        location: 'SharePopup',
+        screen: 'Signin',
+      });
+      expect(telemetryEmits('signInWithSSO')[0][1]).toMatchObject({
+        location: 'SharePopup',
+        screen: 'Signin',
+      });
+    });
+
+    it('records subdomain submission and back navigation', () => {
+      tokenValue = null;
+      setReducer({ screen: { status: 'subdomain' } });
+
+      const tree = invokeSharePopup();
+      tree.props.onSubmit('team');
+      tree.props.onBack();
+
+      expect(telemetryEmits('submitSubdomain')[0][1]).toMatchObject({
+        location: 'SharePopup',
+        screen: 'Subdomain',
+      });
+      expect(telemetryEmits('goBack')[0][1]).toMatchObject({
+        location: 'SharePopup',
+        screen: 'Subdomain',
+      });
     });
   });
 

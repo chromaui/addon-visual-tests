@@ -2,8 +2,9 @@ import { useCallback, useEffect, useRef } from 'react';
 import type { API } from 'storybook/manager-api';
 
 import { authStore } from '../../auth/authStore';
-import { CANCEL_SHARE, START_SHARE, TELEMETRY } from '../../constants';
+import { CANCEL_SHARE, SHARE_TELEMETRY, START_SHARE } from '../../constants';
 import type { GitInfoPayload, ShareProgress } from '../../types';
+import type { TelemetryAction } from '../../utils/TelemetryContext';
 import { applyProgress } from './shareMachine';
 import type { ShareAction, ShareReducerState } from './types';
 
@@ -20,7 +21,20 @@ type Params = {
   dispatch: (action: ShareAction) => void;
 };
 
-type EmitTelemetry = (action: string, extra?: Record<string, unknown>) => void;
+type ShareLifecycleAction =
+  | 'share-initiated'
+  | 'share-auth-completed'
+  | 'share-url-received'
+  | 'share-upload-completed'
+  | 'share-auth-retry'
+  | 'share-failed'
+  | 'share-canceled'
+  | 'share-url-copied';
+
+export type EmitTelemetry = (
+  action: TelemetryAction | ShareLifecycleAction,
+  extra?: Record<string, unknown>
+) => void;
 
 export function useShareExecution({
   api,
@@ -40,7 +54,7 @@ export function useShareExecution({
 
   const emitTelemetry = useCallback<EmitTelemetry>(
     (action, extra) => {
-      api.getChannel()?.emit(TELEMETRY, { action, entryPoint: 'toolbar', ...extra });
+      api.getChannel()?.emit(SHARE_TELEMETRY, { action, entryPoint: 'toolbar', ...extra });
     },
     [api]
   );

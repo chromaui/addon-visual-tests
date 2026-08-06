@@ -14,10 +14,13 @@ export function withSetup(setup: () => void | (() => void)): Decorator {
     }
 
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    React.useEffect(() => {
-      teardown?.();
-      initialized = false;
-    }, []);
+    React.useEffect(
+      () => () => {
+        teardown?.();
+        initialized = false;
+      },
+      []
+    );
 
     return <Story />;
   };

@@ -4,6 +4,7 @@ import { Button } from '../../components/Button';
 import { ButtonStack } from '../../components/ButtonStack';
 import { AccountSuspensionReason } from '../../gql/graphql';
 import { GitInfoPayload, LocalBuildProgress } from '../../types';
+import { useTrackAction } from '../../utils/TelemetryContext';
 import { useSessionState } from '../../utils/useSessionState';
 import { AccountSuspended } from '../Errors/AccountSuspended';
 import { BuildError } from '../Errors/BuildError';
@@ -62,14 +63,34 @@ export const Onboarding = ({
 
   const [runningSecondBuild, setRunningSecondBuild] = useSessionState('runningSecondBuild', false);
 
+  // These two screens report their own screen views (from `Errors`), so we only take the tracker
+  // here and tag actions with the same location, to keep views and actions joinable.
+  const trackBuildError = useTrackAction('Errors', 'BuildError');
+  const trackAccountSuspended = useTrackAction('Errors', 'AccountSuspended');
+
   if (localBuildProgress?.currentStep === 'error') {
     return (
       <BuildError localBuildProgress={localBuildProgress}>
         <ButtonStack>
-          <Button ariaLabel={false} variant="solid" size="medium" onClick={startBuild}>
+          <Button
+            ariaLabel={false}
+            variant="solid"
+            size="medium"
+            onClick={() => {
+              trackBuildError('startBuild');
+              startBuild();
+            }}
+          >
             Try again
           </Button>
-          <Button ariaLabel={false} link onClick={onSkip}>
+          <Button
+            ariaLabel={false}
+            link
+            onClick={() => {
+              trackBuildError('skipOnboarding');
+              onSkip();
+            }}
+          >
             Skip walkthrough
           </Button>
         </ButtonStack>
@@ -83,7 +104,14 @@ export const Onboarding = ({
         billingUrl={localBuildProgress.errorDetailsUrl}
         suspensionReason={AccountSuspensionReason.ExceededThreshold}
       >
-        <Button ariaLabel={false} link onClick={dismissBuildError}>
+        <Button
+          ariaLabel={false}
+          link
+          onClick={() => {
+            trackAccountSuspended('continue');
+            dismissBuildError();
+          }}
+        >
           Continue
         </Button>
       </AccountSuspended>

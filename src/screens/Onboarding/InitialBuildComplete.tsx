@@ -20,7 +20,7 @@ type InitialBuildCompleteProps = {
 };
 
 export const InitialBuildComplete = ({ onCatchAChange, onSkip }: InitialBuildCompleteProps) => {
-  useTelemetry('Onboarding', 'InitialBuildComplete');
+  const trackEvent = useTelemetry('Onboarding', 'InitialBuildComplete');
   const selectedStory = useSelectedStoryState();
   return (
     <Screen footer={null}>
@@ -42,10 +42,25 @@ export const InitialBuildComplete = ({ onCatchAChange, onSkip }: InitialBuildCom
             <ButtonStackText muted>
               Let&apos;s see the superpower of catching visual changes.
             </ButtonStackText>
-            <Button ariaLabel={false} variant="solid" size="medium" onClick={onCatchAChange}>
+            <Button
+              ariaLabel={false}
+              variant="solid"
+              size="medium"
+              onClick={() => {
+                trackEvent('catchAChange');
+                onCatchAChange();
+              }}
+            >
               Catch a UI change
             </Button>
-            <Button ariaLabel={false} link onClick={onSkip}>
+            <Button
+              ariaLabel={false}
+              link
+              onClick={() => {
+                trackEvent('skipOnboarding');
+                onSkip();
+              }}
+            >
               Skip walkthrough
             </Button>
           </ButtonStack>

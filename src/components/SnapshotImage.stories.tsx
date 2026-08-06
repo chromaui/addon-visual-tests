@@ -83,6 +83,28 @@ export const TallerConstrained = {
   },
 } satisfies Story;
 
+export const HighDPR = {
+  args: {
+    componentName: 'Page',
+    storyName: 'Pages in Storybook',
+    testUrl: 'https://www.chromatic.com/test?appId=123&id=1',
+    comparisonResult: ComparisonResult.Added,
+    diffVisible: false,
+    focusVisible: false,
+    baselineImageVisible: false,
+    latestImage: {
+      imageUrl: '/capture-74923b5.png',
+      imageWidth: 2400,
+      imageHeight: 1246,
+    },
+    latestDeviceScaleFactor: 2,
+    baselineImage: null,
+    baselineDeviceScaleFactor: null,
+    diffImage: null,
+    focusImage: null,
+  },
+} satisfies Story;
+
 export const CaptureError = {
   args: {
     latestImage: undefined,

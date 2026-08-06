@@ -6,6 +6,7 @@ import { GIT_INFO, SHARE_PROGRESS } from '../../constants';
 import type { GitInfoPayload, ShareProgress } from '../../types';
 import { checkOutdated } from '../../utils/checkOutdated';
 import { useAccessToken } from '../../utils/graphQLClient';
+import type { TelemetryAction } from '../../utils/TelemetryContext';
 import { useSessionState } from '../../utils/useSessionState';
 import { useSharedState } from '../../utils/useSharedState';
 import { initialState, shareReducer } from './shareMachine';
@@ -73,22 +74,44 @@ export const SharePopup = ({ api }: { api: API }) => {
     dispatch,
   });
 
+  const track = (screen: string) => (action: TelemetryAction) =>
+    emitTelemetry(action, { location: 'SharePopup', screen });
+
   const screen = reducerState.screen;
   switch (screen.status) {
     case 'welcome':
-      return <SharePopupWelcome onPublish={handlePublish} />;
+      return (
+        <SharePopupWelcome
+          onPublish={() => {
+            track('Welcome')('publish');
+            handlePublish();
+          }}
+        />
+      );
     case 'idle':
       return (
         <SharePopupIdle
-          onSignIn={() => startSignIn()}
-          onSignInWithSSO={() => dispatch({ type: 'GO_SUBDOMAIN' })}
+          onSignIn={() => {
+            track('Signin')('signIn');
+            startSignIn();
+          }}
+          onSignInWithSSO={() => {
+            track('Signin')('signInWithSSO');
+            dispatch({ type: 'GO_SUBDOMAIN' });
+          }}
         />
       );
     case 'subdomain':
       return (
         <SharePopupSubdomain
-          onSubmit={(subdomain) => startSignIn(subdomain)}
-          onBack={() => dispatch({ type: 'BACK_TO_IDLE' })}
+          onSubmit={(subdomain) => {
+            track('Subdomain')('submitSubdomain');
+            startSignIn(subdomain);
+          }}
+          onBack={() => {
+            track('Subdomain')('goBack');
+            dispatch({ type: 'BACK_TO_IDLE' });
+          }}
         />
       );
     case 'uploading':

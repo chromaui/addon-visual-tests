@@ -22,6 +22,7 @@ import {
 } from './constants';
 import { Authentication } from './screens/Authentication/Authentication';
 import { GitError } from './screens/Errors/GitError';
+import { InvalidProjectId } from './screens/Errors/InvalidProjectId';
 import { LinkedProject } from './screens/LinkProject/LinkedProject';
 import { LinkingProjectFailed } from './screens/LinkProject/LinkingProjectFailed';
 import { LinkProject } from './screens/LinkProject/LinkProject';
@@ -44,6 +45,7 @@ import {
   sessionExpiredEventName,
   useAccessToken,
 } from './utils/graphQLClient';
+import { isValidProjectId } from './utils/isValidProjectId';
 import { TelemetryProvider } from './utils/TelemetryContext';
 import { useBuildEvents } from './utils/useBuildEvents';
 import { useChannelFetch } from './utils/useChannelFetch';
@@ -184,12 +186,12 @@ export const Panel = ({ active }: PanelProps) => {
     );
   }
 
-  if (gitInfoError || !gitInfo) {
+  if (gitInfoError) {
     return withProviders(<GitError gitInfoError={gitInfoError} />);
   }
 
-  // Momentarily wait on addonState (should be very fast)
-  if (projectInfoLoading) {
+  // Wait for git info (and project info) to resolve before deciding next screen
+  if (!gitInfo || projectInfoLoading) {
     return active ? <Spinner /> : null;
   }
 
@@ -220,6 +222,12 @@ export const Panel = ({ active }: PanelProps) => {
         goToNext={clearProjectIdUpdated}
       />
     );
+  }
+
+  // Guard before VisualTests/useBuild — invalid ids throw in the public API ObjectId
+  // constructor and the panel would otherwise poll every 5s (Sentry INDEX-1GC / API-54).
+  if (!isValidProjectId(projectId)) {
+    return withProviders(<InvalidProjectId projectId={projectId} configFile={configFile} />);
   }
 
   const localBuildIsRightBranch = gitInfo.branch === localBuildProgress?.branch;

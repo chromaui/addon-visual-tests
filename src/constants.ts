@@ -17,6 +17,7 @@ export const LOCAL_BUILD_PROGRESS = `${ADDON_ID}/localBuildProgress`;
 export const START_SHARE = `${ADDON_ID}/startShare`;
 export const CANCEL_SHARE = `${ADDON_ID}/cancelShare`;
 export const SHARE_PROGRESS = `${ADDON_ID}/shareProgress`;
+export const SHARE_TELEMETRY = `${ADDON_ID}/shareTelemetry`;
 export const SELECTED_MODE_NAME = `${ADDON_ID}/selectedModeName`;
 export const SELECTED_BROWSER_ID = `${ADDON_ID}/selectedBrowserId`;
 export const TELEMETRY = `${ADDON_ID}/telemetry`;

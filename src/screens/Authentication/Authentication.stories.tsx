@@ -1,13 +1,14 @@
 // @ts-nocheck TODO: Address SB 8 type errors
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { http, HttpResponse } from 'msw';
-import { findByRole, fn, userEvent } from 'storybook/test';
+import { expect, findByRole, findByText, fn, userEvent } from 'storybook/test';
 
-import { HIGHLIGHT_IGNORED_PARAM } from '../../constants';
+import { ADDON_ID, HIGHLIGHT_IGNORED_PARAM } from '../../constants';
 import { panelModes } from '../../modes';
 import { GraphQLClientProvider } from '../../utils/graphQLClient';
 import { playAll } from '../../utils/playAll';
 import { storyWrapper } from '../../utils/storyWrapper';
+import { telemetrySpy } from '../../utils/telemetrySpy';
 import { clearSessionState } from '../../utils/useSessionState';
 import { withFigmaDesign } from '../../utils/withFigmaDesign';
 import { withSetup } from '../../utils/withSetup';
@@ -47,6 +48,8 @@ const meta = {
     },
   },
 } satisfies Meta<typeof Authentication>;
+
+const telemetry = telemetrySpy();
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -107,5 +110,142 @@ export const Verify = {
       name: 'Sign in with Chromatic',
     });
     await userEvent.click(button);
+  }),
+} satisfies Story;
+
+/**
+ * Telemetry stories. These assert on reported events rather than appearance, so they opt out of
+ * snapshots and pin to a single theme (the default renders two canvases sharing one spy).
+ */
+const telemetryParameters = {
+  theme: 'light',
+  chromatic: { disableSnapshot: true },
+};
+
+export const ReportsContinueFromWelcome = {
+  decorators: telemetry.decorators,
+  parameters: telemetryParameters,
+  play: playAll(async ({ canvasElement }) => {
+    await userEvent.click(await findByRole(canvasElement, 'button', { name: /Get started/ }));
+    await expect(telemetry.trackEvent).toHaveBeenCalledWith({
+      action: 'continue',
+      location: 'Authentication',
+      screen: 'Welcome',
+    });
+  }),
+} satisfies Story;
+
+export const ReportsSignInWithSSO = {
+  decorators: telemetry.decorators,
+  parameters: telemetryParameters,
+  play: playAll(SignIn, async ({ canvasElement }) => {
+    await userEvent.click(await findByRole(canvasElement, 'button', { name: 'Sign in with SSO' }));
+    await expect(telemetry.trackEvent).toHaveBeenCalledWith({
+      action: 'signInWithSSO',
+      location: 'Authentication',
+      screen: 'Signin',
+    });
+  }),
+} satisfies Story;
+
+export const ReportsSignInWhenPersistedWelcomeHasProject = {
+  args: {
+    hasProjectId: true,
+  },
+  decorators: [
+    ...telemetry.decorators,
+    withSetup(() => {
+      sessionStorage.setItem(`${ADDON_ID}/state/authenticationScreen`, JSON.stringify('welcome'));
+    }),
+  ],
+  parameters: telemetryParameters,
+  play: async ({ canvasElement }) => {
+    await userEvent.click(await findByRole(canvasElement, 'button', { name: 'Sign in with SSO' }));
+    await expect(telemetry.trackEvent).toHaveBeenCalledWith({
+      action: 'signInWithSSO',
+      location: 'Authentication',
+      screen: 'Signin',
+    });
+  },
+} satisfies Story;
+
+export const ReportsGoBackFromSignIn = {
+  decorators: telemetry.decorators,
+  parameters: telemetryParameters,
+  play: playAll(SignIn, async ({ canvasElement }) => {
+    await userEvent.click(await findByRole(canvasElement, 'button', { name: 'Go back' }));
+    await expect(telemetry.trackEvent).toHaveBeenCalledWith({
+      action: 'goBack',
+      location: 'Authentication',
+      screen: 'Signin',
+    });
+  }),
+} satisfies Story;
+
+export const ReportsSignInFromVerify = {
+  decorators: telemetry.decorators,
+  parameters: { ...telemetryParameters, chromatic: { disableSnapshot: true } },
+  play: playAll(Verify, async ({ canvasElement }) => {
+    // Authentication owns all of Verify's action tracking (via the `onSignIn` callback), so views
+    // and actions come from the same tracker.
+    await userEvent.click(await findByRole(canvasElement, 'button', { name: 'Go to Chromatic' }));
+    await expect(telemetry.trackEvent).toHaveBeenCalledWith({
+      action: 'signIn',
+      location: 'Authentication',
+      screen: 'Verify',
+    });
+  }),
+} satisfies Story;
+
+export const ReportsGoBackFromVerify = {
+  decorators: telemetry.decorators,
+  parameters: { ...telemetryParameters, chromatic: { disableSnapshot: true } },
+  play: playAll(Verify, async ({ canvasElement }) => {
+    await userEvent.click(await findByRole(canvasElement, 'button', { name: 'Go back' }));
+    await expect(telemetry.trackEvent).toHaveBeenCalledWith({
+      action: 'goBack',
+      location: 'Authentication',
+      screen: 'Verify',
+    });
+  }),
+} satisfies Story;
+
+export const ReportsUninstallFromWelcome = {
+  decorators: telemetry.decorators,
+  parameters: telemetryParameters,
+  play: playAll(async ({ canvasElement }) => {
+    await userEvent.click(await findByText(canvasElement, 'Uninstall this addon'));
+    await expect(telemetry.trackEvent).toHaveBeenCalledWith({
+      action: 'uninstallAddon',
+      location: 'Authentication',
+      screen: 'Welcome',
+    });
+  }),
+} satisfies Story;
+
+export const ReportsGoBackFromSetSubdomain = {
+  decorators: telemetry.decorators,
+  parameters: telemetryParameters,
+  play: playAll(SSO, async ({ canvasElement }) => {
+    await userEvent.click(await findByRole(canvasElement, 'button', { name: 'Go back' }));
+    await expect(telemetry.trackEvent).toHaveBeenCalledWith({
+      action: 'goBack',
+      location: 'Authentication',
+      screen: 'Subdomain',
+    });
+  }),
+} satisfies Story;
+
+export const ReportsSubmitSubdomain = {
+  decorators: telemetry.decorators,
+  parameters: { ...telemetryParameters, chromatic: { disableSnapshot: true } },
+  play: playAll(SSO, async ({ canvasElement }) => {
+    await userEvent.type(await findByRole(canvasElement, 'textbox'), 'yourteam');
+    await userEvent.click(await findByRole(canvasElement, 'button', { name: 'Continue' }));
+    await expect(telemetry.trackEvent).toHaveBeenCalledWith({
+      action: 'submitSubdomain',
+      location: 'Authentication',
+      screen: 'Subdomain',
+    });
   }),
 } satisfies Story;

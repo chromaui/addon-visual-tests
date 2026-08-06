@@ -1,6 +1,7 @@
+import { setupWorker } from 'msw/browser';
 import type { Decorator, Loader, Preview } from '@storybook/react-vite';
 import { graphql, HttpResponse } from 'msw';
-import { initialize, mswLoader } from 'msw-storybook-addon';
+import { mswLoader } from 'msw-storybook-addon/csf3';
 import React from 'react';
 import { ManagerContext } from 'storybook/manager-api';
 import { fn } from 'storybook/test';
@@ -22,20 +23,6 @@ import { GraphQLClientProvider } from '../src/utils/graphQLClient';
 import { storyWrapper } from '../src/utils/storyWrapper';
 import { TelemetryProvider } from '../src/utils/TelemetryContext';
 import { useSessionState } from '../src/utils/useSessionState';
-
-// Initialize MSW
-initialize({
-  onUnhandledRequest(req) {
-    if (new URL(req.url).origin !== document.location.origin) {
-      console.error(
-        `[MSW] %s %s %s (UNHANDLED)`,
-        new Date().toTimeString().slice(0, 8),
-        req.method.toUpperCase(),
-        req.url
-      );
-    }
-  },
-});
 
 const Panels = styled.div<{ orientation: 'right' | 'bottom' }>(
   ({ orientation }) => ({
@@ -194,7 +181,27 @@ const withRunBuild = storyWrapper(RunBuildProvider, ({ args }) => ({
  *   },
  * }
  */
-export const graphQLArgLoader: Loader = async ({ argTypes, argsByTarget, parameters }) => {
+const loadMswForStory = mswLoader(async () => {
+  const worker = setupWorker();
+
+  await worker.start({
+    onUnhandledRequest(req) {
+      if (new URL(req.url).origin !== document.location.origin) {
+        console.error(
+          `[MSW] %s %s %s (UNHANDLED)`,
+          new Date().toTimeString().slice(0, 8),
+          req.method.toUpperCase(),
+          req.url
+        );
+      }
+    },
+  });
+
+  return worker;
+});
+
+export const graphQLArgLoader: Loader = async (context) => {
+  const { argTypes, argsByTarget, parameters } = context;
   const handlers = Object.entries(argsByTarget.graphql?.$graphql || []).map(
     ([argName, inputResult]: [string, any]) =>
       graphql.query(argName, ({ variables }) => {
@@ -203,8 +210,12 @@ export const graphQLArgLoader: Loader = async ({ argTypes, argsByTarget, paramet
       })
   );
 
-  return mswLoader({
-    parameters: { msw: { handlers: [...handlers, ...(parameters.msw?.handlers || [])] } },
+  return loadMswForStory({
+    ...context,
+    parameters: {
+      ...parameters,
+      msw: { handlers: [...handlers, ...(parameters.msw?.handlers || [])] },
+    },
   });
 };
 

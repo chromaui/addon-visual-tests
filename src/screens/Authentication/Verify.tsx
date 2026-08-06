@@ -37,6 +37,7 @@ const ProjectCountQuery = graphql(/* GraphQL */ `
 
 interface VerifyProps {
   onBack: () => void;
+  onSignIn: () => void;
   hasProjectId: boolean;
   setAccessToken: (token: string) => void;
   setCreatedProjectId: (projectId: Project['id']) => void;
@@ -45,6 +46,7 @@ interface VerifyProps {
 
 export const Verify = ({
   onBack,
+  onSignIn,
   hasProjectId,
   setAccessToken,
   setCreatedProjectId,
@@ -114,7 +116,10 @@ export const Verify = ({
             ariaLabel={false}
             variant="solid"
             size="medium"
-            onClick={() => begin(exchangeParameters)}
+            onClick={() => {
+              onSignIn();
+              begin(exchangeParameters);
+            }}
           >
             Go to Chromatic
           </Button>

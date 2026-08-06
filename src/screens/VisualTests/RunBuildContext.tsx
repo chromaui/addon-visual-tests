@@ -2,13 +2,17 @@ import React, { createContext } from 'react';
 
 import { useRequiredContext } from '../../utils/useRequiredContext';
 
-const initialState = {
+type State = {
+  isRunning: boolean;
+  startBuild: () => void;
+  stopBuild: () => void;
+};
+
+const initialState: State = {
   isRunning: false,
   startBuild: () => {},
   stopBuild: () => {},
 };
-
-type State = typeof initialState;
 
 export const RunBuildContext = createContext(initialState);
 

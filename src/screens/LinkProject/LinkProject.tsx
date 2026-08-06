@@ -130,6 +130,7 @@ function SelectProject({
   setCreatedProjectId: (projectId: Project['id']) => void;
   onSelectProjectId: (projectId: string) => Promise<void>;
 }) {
+  const trackEvent = useTelemetry('LinkProject', 'LinkProject');
   const [{ data, fetching, error }, rerunProjectsQuery] = useQuery<SelectProjectsQueryQuery>({
     query: SelectProjectsQuery,
   });
@@ -144,16 +145,18 @@ function SelectProject({
   const selectedAccount = data?.viewer?.accounts.find((a) => a.id === selectedAccountId);
 
   const onSelectAccount = useCallback(
-    (account: NonNullable<SelectProjectsQueryQuery['viewer']>['accounts'][number]) =>
-      setSelectedAccountId(account.id),
-    [setSelectedAccountId]
+    (account: NonNullable<SelectProjectsQueryQuery['viewer']>['accounts'][number]) => {
+      trackEvent('selectAccount');
+      setSelectedAccountId(account.id);
+    },
+    [setSelectedAccountId, trackEvent]
   );
 
   useEffect(() => {
     if (!selectedAccountId && data?.viewer?.accounts) {
-      onSelectAccount(data.viewer.accounts[0]);
+      setSelectedAccountId(data.viewer.accounts[0].id);
     }
-  }, [data, selectedAccountId, onSelectAccount]);
+  }, [data, selectedAccountId, setSelectedAccountId]);
 
   const [isSelectingProject, setSelectingProject] = useSessionState('isSelectingProject', false);
 
@@ -199,8 +202,6 @@ function SelectProject({
       handleSelectProject(createdProject);
     }
   }, [createdProject, handleSelectProject, closeDialog]);
-
-  useTelemetry('LinkProject', 'LinkProject');
 
   return (
     <Screen>
@@ -262,6 +263,7 @@ function SelectProject({
                         if (!selectedAccount?.newProjectUrl) {
                           throw new Error('Unexpected missing `newProjectUrl` on account');
                         }
+                        trackEvent('createProject');
                         openDialog(selectedAccount.newProjectUrl);
                       }}
                       title={
@@ -279,7 +281,10 @@ function SelectProject({
                           key={project.id}
                           title={project.name}
                           right={<AddIcon aria-label={project.name} />}
-                          onClick={() => handleSelectProject(project)}
+                          onClick={() => {
+                            trackEvent('selectProject');
+                            handleSelectProject(project);
+                          }}
                           disabled={isSelectingProject}
                         />
                       )
