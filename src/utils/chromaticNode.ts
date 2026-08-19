@@ -11,7 +11,12 @@ let modulePromise: Promise<ChromaticNode> | undefined;
  * Chromatic — running a build, sharing, reading git or configuration info — pays for the CLI.
  */
 export function importChromaticNode(): Promise<ChromaticNode> {
-  return (modulePromise ??= import('chromatic/node'));
+  return (modulePromise ??= import('chromatic/node').catch((error) => {
+    // Do not memoize a failed load: a transient failure would otherwise poison every later
+    // Chromatic feature until the process restarts.
+    modulePromise = undefined;
+    throw error;
+  }));
 }
 
 let logger: ReturnType<ChromaticNode['createLogger']> | undefined;
