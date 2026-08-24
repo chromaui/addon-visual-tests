@@ -1,4 +1,4 @@
-import { TaskName } from 'chromatic/node';
+import type { TaskName } from 'chromatic/node';
 
 import { KnownStep, LocalBuildProgress, StepProgressPayload } from './types';
 import { formatBytesObject } from './utils/formatBytes';
