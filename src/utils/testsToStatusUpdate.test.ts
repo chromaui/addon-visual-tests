@@ -1,7 +1,16 @@
 import { expect, it } from 'vitest';
 
 import { TestStatus } from '../gql/graphql';
-import { testsToStatusUpdate } from './testsToStatusUpdate';
+import { sidebarTestStatuses, statusMap, testsToStatusUpdate } from './testsToStatusUpdate';
+
+// Requesting successful statuses fills the single (unpaginated) page of 1000 tests with tests that
+// don't need an icon, hiding changes on large Storybooks. See sidebarTestStatuses.
+it('does not request tests which yield a successful status', () => {
+  const successful = sidebarTestStatuses.filter(
+    (status) => statusMap[status] === 'status-value:success'
+  );
+  expect(successful).toEqual([]);
+});
 
 it('handles single test with no changes', () => {
   expect(

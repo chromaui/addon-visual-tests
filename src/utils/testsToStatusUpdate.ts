@@ -13,6 +13,21 @@ export const statusMap: Record<TestStatus, StatusValue> = {
   [TestStatus.Passed]: 'status-value:success',
 };
 
+/**
+ * Statuses we request tests for in order to set sidebar status icons. Successful tests (passed and
+ * accepted) are deliberately excluded: `testsForStatus` fetches a single page of 1000 tests and
+ * ignores the connection's cursor, so including them exhausts that page on a large Storybook long
+ * before reaching the tests that need an icon. Consequently, stories which passed get no icon.
+ * Querying every status requires paginating `testsForStatus` first.
+ */
+export const sidebarTestStatuses: TestStatus[] = [
+  TestStatus.InProgress,
+  TestStatus.Pending,
+  TestStatus.Failed,
+  TestStatus.Denied,
+  TestStatus.Broken,
+];
+
 const statusValueOrder: StatusValue[] = [
   'status-value:unknown',
   'status-value:pending',
