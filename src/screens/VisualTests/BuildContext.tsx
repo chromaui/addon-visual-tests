@@ -5,7 +5,7 @@ import { getFragment } from '../../gql';
 import { StoryTestFieldsFragment, TestStatus } from '../../gql/graphql';
 import { GitInfoPayload } from '../../types';
 import { summarizeTests } from '../../utils/summarizeTests';
-import { statusMap } from '../../utils/testsToStatusUpdate';
+import { sidebarTestStatuses } from '../../utils/testsToStatusUpdate';
 import { SelectedBuildInfo } from '../../utils/updateSelectedBuildInfo';
 import { useRequiredContext } from '../../utils/useRequiredContext';
 import { useTests } from '../../utils/useTests';
@@ -37,7 +37,7 @@ export const useBuild = ({
     variables: {
       projectId,
       storyId,
-      testStatuses: Object.keys(statusMap) as any as TestStatus[],
+      testStatuses: sidebarTestStatuses,
       branch: gitInfo.branch || '',
       ...(gitInfo.slug ? { repositoryOwnerName: gitInfo.slug.split('/', 1)[0] } : {}),
       gitUserEmailHash: gitInfo.userEmailHash,
