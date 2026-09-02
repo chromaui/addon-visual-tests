@@ -1,10 +1,4 @@
-import {
-  type Context,
-  type InitialContext,
-  type Options,
-  run,
-  type TaskName,
-} from 'chromatic/node';
+import type { Context, InitialContext, Options, TaskName } from 'chromatic/node';
 
 import {
   BUILD_STEP_CONFIG,
@@ -15,6 +9,7 @@ import {
 } from './buildSteps.ts';
 import { CONFIG_OVERRIDES } from './constants.ts';
 import type { LocalBuildProgress } from './types.ts';
+import { importChromaticNode } from './utils/chromaticNode.ts';
 import type { SharedState } from './utils/SharedState.ts';
 
 const ESTIMATED_PROGRESS_INTERVAL = 2000;
@@ -201,6 +196,7 @@ export const runChromaticBuild = async (
 
   process.env.SB_TESTBUILD = 'true';
 
+  const { run } = await importChromaticNode();
   await run({
     flags: {
       interactive: false,
