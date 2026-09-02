@@ -1,3 +1,19 @@
+# v5.3.1 (Wed Sep 02 2026)
+
+#### 🐛 Bug Fix
+
+- Broaden version-range for storybook peerDependency to include 11.0.0-0 [#453](https://github.com/chromaui/addon-visual-tests/pull/453) ([@JReinhold](https://github.com/JReinhold))
+- Restore sidebar status icons for large Storybooks [#452](https://github.com/chromaui/addon-visual-tests/pull/452) ([@ghengeveld](https://github.com/ghengeveld))
+- Load chromatic/node lazily so preset registration stays cheap [#451](https://github.com/chromaui/addon-visual-tests/pull/451) ([@kasperpeulen](https://github.com/kasperpeulen))
+
+#### Authors: 3
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Jeppe Reinhold ([@JReinhold](https://github.com/JReinhold))
+- Kasper Peulen ([@kasperpeulen](https://github.com/kasperpeulen))
+
+---
+
 # v5.3.0 (Thu Aug 06 2026)
 
 #### 🚀 Enhancement
