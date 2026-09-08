@@ -13,7 +13,17 @@ import { makeComparison, makeTest, makeTests } from '../../utils/storyData';
 import { storyWrapper } from '../../utils/storyWrapper';
 import { BuildProvider } from './BuildContext';
 import { ControlsProvider } from './ControlsContext';
-import { buildInfo, interactionFailureTests, pendingBuild, pendingTests, withTests } from './mocks';
+import {
+  autoIgnoredTests,
+  buildInfo,
+  interactionFailureTests,
+  manuallyIgnoredTests,
+  pendingBuild,
+  pendingTests,
+  quarantinedAcceptedTests,
+  quarantinedTests,
+  withTests,
+} from './mocks';
 import { ReviewTestProvider } from './ReviewTestContext';
 import { SnapshotComparison } from './SnapshotComparison';
 
@@ -249,6 +259,23 @@ export const InteractionFailure = {
     selectedBuild: withTests(build, interactionFailureTests),
   },
 };
+
+// Ignored / quarantined states: badge in the header, single Accept, Unquarantine where applicable
+export const Ignored = {
+  parameters: { selectedBuild: withTests(build, manuallyIgnoredTests) },
+} satisfies Story;
+
+export const AutoIgnored = {
+  parameters: { selectedBuild: withTests(build, autoIgnoredTests) },
+} satisfies Story;
+
+export const Quarantined = {
+  parameters: { selectedBuild: withTests(build, quarantinedTests) },
+} satisfies Story;
+
+export const QuarantinedAccepted = {
+  parameters: { selectedBuild: withTests(build, quarantinedAcceptedTests) },
+} satisfies Story;
 
 export const NewBaseline = {
   parameters: {
