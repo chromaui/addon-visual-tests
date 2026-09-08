@@ -1,4 +1,3 @@
-import { MobileIcon } from '@storybook/icons';
 import React from 'react';
 import { ActionList, PopoverProvider } from 'storybook/internal/components';
 import { styled } from 'storybook/theming';
@@ -11,14 +10,13 @@ import { FirefoxIcon } from './icons/FirefoxIcon';
 import { SafariIcon } from './icons/SafariIcon';
 import { StatusDot, StatusDotWrapper } from './StatusDot';
 
-const browserIcons = {
+// VTA builds never run on Android or iOS, so those browsers are deliberately omitted.
+const browserIcons: Partial<Record<Browser, React.ReactNode>> = {
   [Browser.Chrome]: <ChromeIcon alt="Chrome" />,
   [Browser.Firefox]: <FirefoxIcon alt="Firefox" />,
   [Browser.Safari]: <SafariIcon alt="Safari" />,
   [Browser.Edge]: <EdgeIcon alt="Edge" />,
-  [Browser.Android]: <MobileIcon aria-label="Android" />,
-  [Browser.Ios]: <MobileIcon aria-label="iOS" />,
-} as const;
+};
 
 const ButtonLabel = styled(ActionList.Text)({
   display: 'none',
