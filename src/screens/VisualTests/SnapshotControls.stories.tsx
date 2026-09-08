@@ -9,10 +9,14 @@ import { BuildProvider } from './BuildContext';
 import { ControlsProvider } from './ControlsContext';
 import {
   acceptedTests,
+  autoIgnoredTests,
   buildInfo,
   inProgressTests,
+  manuallyIgnoredTests,
   pendingBuild,
   pendingTests,
+  quarantinedAcceptedTests,
+  quarantinedTests,
   withTests,
 } from './mocks';
 import { ReviewTestProvider } from './ReviewTestContext';
@@ -40,6 +44,7 @@ const meta = {
       buildIsReviewable: true,
       acceptTest: fn().mockName('acceptTest'),
       unacceptTest: fn().mockName('unacceptTest'),
+      unquarantineTest: fn().mockName('unquarantineTest'),
     },
     selectedBuild: withTests(pendingBuild, pendingTests),
   },
@@ -99,6 +104,53 @@ export const BatchAcceptOptions = {
     await userEvent.keyboard('[Escape]');
     const menu = await canvas.findByRole('button', { name: 'Batch accept options' });
     await userEvent.click(menu);
+  }),
+} satisfies Story;
+
+// Ignored tests are accepted one at a time (batch review skips them), so no batch options
+export const Ignored = {
+  parameters: {
+    selectedBuild: withTests(pendingBuild, manuallyIgnoredTests),
+  },
+} satisfies Story;
+
+export const AutoIgnored = {
+  parameters: {
+    selectedBuild: withTests(pendingBuild, autoIgnoredTests),
+  },
+} satisfies Story;
+
+export const AcceptIgnored = {
+  ...Ignored,
+  play: playAll(async ({ canvas, parameters }) => {
+    await expect(canvas.queryByRole('button', { name: 'Batch accept options' })).toBeNull();
+    await userEvent.click(await canvas.findByRole('button', { name: 'Accept this story' }));
+    await expect(parameters.reviewTest.acceptTest).toHaveBeenCalledWith(
+      parameters.selectedBuild.testsForStory.nodes[0].id,
+      undefined
+    );
+  }),
+} satisfies Story;
+
+export const Quarantined = {
+  parameters: {
+    selectedBuild: withTests(pendingBuild, quarantinedTests),
+  },
+} satisfies Story;
+
+export const QuarantinedAccepted = {
+  parameters: {
+    selectedBuild: withTests(pendingBuild, quarantinedAcceptedTests),
+  },
+} satisfies Story;
+
+export const Unquarantine = {
+  ...Quarantined,
+  play: playAll(async ({ canvas, parameters }) => {
+    await userEvent.click(await canvas.findByRole('button', { name: 'Unquarantine this story' }));
+    await expect(parameters.reviewTest.unquarantineTest).toHaveBeenCalledWith(
+      parameters.selectedBuild.testsForStory.nodes[0].id
+    );
   }),
 } satisfies Story;
 

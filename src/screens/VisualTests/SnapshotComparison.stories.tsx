@@ -29,6 +29,7 @@ const meta = {
         buildIsReviewable: true,
         acceptTest: fn().mockName('acceptTest'),
         unacceptTest: fn().mockName('unacceptTest'),
+        unquarantineTest: fn().mockName('unquarantineTest'),
         ...ctx.parameters.reviewTest,
       },
     })),

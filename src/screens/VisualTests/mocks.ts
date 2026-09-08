@@ -11,6 +11,7 @@ import {
   SelectedBuildFieldsFragment,
   StartedBuild,
   StoryTestFieldsFragment,
+  TestIgnoreReason,
   TestResult,
   TestStatus,
 } from '../../gql/graphql';
@@ -140,6 +141,29 @@ export const acceptedTests = makeTests({
     { status: TestStatus.Passed, viewport: 1200 },
   ],
 });
+
+const ignoredTests = (ignoreReason: TestIgnoreReason, status = TestStatus.Ignored) =>
+  makeTests({
+    browsers: [Browser.Chrome, Browser.Safari],
+    viewports: [
+      {
+        status,
+        ignoreReason,
+        viewport: 480,
+        comparisonResults: [ComparisonResult.Changed, ComparisonResult.Equal],
+      },
+      { status: TestStatus.Passed, viewport: 800 },
+      { status: TestStatus.Passed, viewport: 1200 },
+    ],
+  });
+
+export const manuallyIgnoredTests = ignoredTests(TestIgnoreReason.Manual);
+export const autoIgnoredTests = ignoredTests(TestIgnoreReason.Unstable);
+export const quarantinedTests = ignoredTests(TestIgnoreReason.Quarantine);
+export const quarantinedAcceptedTests = ignoredTests(
+  TestIgnoreReason.Quarantine,
+  TestStatus.Accepted
+);
 
 export const brokenTests = inProgressTests.map((test) => ({
   ...test,

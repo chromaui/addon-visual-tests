@@ -202,6 +202,29 @@ export const FragmentStoryTestFields = graphql(/* GraphQL */ `
   }
 `);
 
+export const MutationUnquarantineTest = graphql(/* GraphQL */ `
+  mutation UnquarantineTest($input: TestUnquarantineInput!) {
+    testUnquarantine(input: $input) {
+      __typename
+      ... on TestUnquarantineSuccess {
+        test {
+          id
+          status
+          ignoreReason
+        }
+      }
+      ... on TestUnquarantineFailure {
+        errors {
+          __typename
+          ... on MutationError {
+            message
+          }
+        }
+      }
+    }
+  }
+`);
+
 export const MutationReviewTest = graphql(/* GraphQL */ `
   mutation ReviewTest($input: ReviewTestInput!) {
     reviewTest(input: $input) {

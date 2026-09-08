@@ -24,7 +24,7 @@ import { GuidedTour } from '../GuidedTour/GuidedTour';
 import { Onboarding } from '../Onboarding/Onboarding';
 import { BuildProvider, useBuild } from './BuildContext';
 import { BuildResults } from './BuildResults';
-import { FragmentStatusTestFields, MutationReviewTest } from './graphql';
+import { FragmentStatusTestFields, MutationReviewTest, MutationUnquarantineTest } from './graphql';
 import { NoBuild } from './NoBuild';
 import { ReviewTestProvider } from './ReviewTestContext';
 
@@ -42,9 +42,12 @@ interface VisualTestsProps {
   storyId: string;
 }
 
+export type ReviewAction = 'accept' | 'unaccept' | 'unquarantine';
+
 interface ReviewTestInput {
   testId: string;
   status: ReviewTestInputStatus.Accepted | ReviewTestInputStatus.Pending;
+  /** Omit to review only this test. Batch review skips tests that are already IGNORED. */
   batch?: ReviewTestBatch;
 }
 
@@ -56,39 +59,68 @@ const useReview = ({
 }: {
   buildIsReviewable: boolean;
   userCanReview: boolean;
-  onReviewSuccess?: (input: ReviewTestInput) => void;
-  onReviewError?: (err: any, input: ReviewTestInput) => void;
+  onReviewSuccess?: (action: ReviewAction) => void;
+  onReviewError?: (err: any, action: ReviewAction) => void;
 }) => {
-  const [{ fetching: isReviewing }, runMutation] = useMutation(MutationReviewTest);
+  const [{ fetching: isReviewingTest }, runReviewMutation] = useMutation(MutationReviewTest);
+  const [{ fetching: isUnquarantining }, runUnquarantineMutation] =
+    useMutation(MutationUnquarantineTest);
 
-  const reviewTest = useCallback(
-    async (input: ReviewTestInput) => {
+  const guarded = useCallback(
+    async (action: ReviewAction, run: () => Promise<void>) => {
       try {
         if (!buildIsReviewable) throw new Error('Build is not reviewable');
         if (!userCanReview) throw new Error('No permission to review tests');
-        const { error } = await runMutation({ input });
-        if (error) throw error;
-        onReviewSuccess?.(input);
+        await run();
+        onReviewSuccess?.(action);
       } catch (err) {
-        onReviewError?.(err, input);
+        onReviewError?.(err, action);
       }
     },
-    [onReviewSuccess, onReviewError, runMutation, buildIsReviewable, userCanReview]
+    [onReviewSuccess, onReviewError, buildIsReviewable, userCanReview]
+  );
+
+  const reviewTest = useCallback(
+    (action: ReviewAction, input: ReviewTestInput) =>
+      guarded(action, async () => {
+        const { error } = await runReviewMutation({ input });
+        if (error) throw error;
+      }),
+    [guarded, runReviewMutation]
   );
 
   const acceptTest = useCallback(
-    (testId: string, batch: ReviewTestBatch = ReviewTestBatch.Spec) =>
-      reviewTest({ status: ReviewTestInputStatus.Accepted, testId, batch }),
+    (testId: string, batch?: ReviewTestBatch) =>
+      reviewTest('accept', { status: ReviewTestInputStatus.Accepted, testId, batch }),
     [reviewTest]
   );
 
   const unacceptTest = useCallback(
-    (testId: string, batch: ReviewTestBatch = ReviewTestBatch.Spec) =>
-      reviewTest({ status: ReviewTestInputStatus.Pending, testId, batch }),
+    (testId: string, batch?: ReviewTestBatch) =>
+      reviewTest('unaccept', { status: ReviewTestInputStatus.Pending, testId, batch }),
     [reviewTest]
   );
 
-  return { isReviewing, acceptTest, unacceptTest, buildIsReviewable, userCanReview };
+  const unquarantineTest = useCallback(
+    (testId: string) =>
+      guarded('unquarantine', async () => {
+        const { data, error } = await runUnquarantineMutation({ input: { testId } });
+        if (error) throw error;
+        if (data?.testUnquarantine.__typename === 'TestUnquarantineFailure') {
+          throw new Error(data.testUnquarantine.errors[0]?.message ?? 'Unknown error');
+        }
+      }),
+    [guarded, runUnquarantineMutation]
+  );
+
+  return {
+    isReviewing: isReviewingTest || isUnquarantining,
+    acceptTest,
+    unacceptTest,
+    unquarantineTest,
+    buildIsReviewable,
+    userCanReview,
+  };
 };
 
 const MutationUpdateUserPreferences = graphql(/* GraphQL */ `
@@ -225,15 +257,14 @@ export const VisualTestsWithoutSelectedBuildId = ({
   const reviewState = useReview({
     buildIsReviewable: !!selectedBuild && selectedBuild.id === lastBuildOnBranch?.id,
     userCanReview,
-    onReviewSuccess: rerunQuery,
-    onReviewError: (err, update) => {
+    onReviewSuccess: () => rerunQuery(),
+    onReviewError: (err, action) => {
       if (err instanceof Error) {
         addNotification({
           id: `${ADDON_ID}/errorAccepting/${Date.now()}`,
           content: {
-            headline: `Failed to ${
-              update.status === ReviewTestInputStatus.Accepted ? 'accept' : 'unaccept'
-            } changes`,
+            headline:
+              action === 'unquarantine' ? 'Failed to unquarantine' : `Failed to ${action} changes`,
             subHeadline: err.message,
           },
           icon: <FailedIcon color={color.negative} />,
