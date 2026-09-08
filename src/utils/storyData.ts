@@ -3,6 +3,7 @@ import {
   BrowserInfo,
   ComparisonResult,
   StoryTestFieldsFragment,
+  TestIgnoreReason,
   TestResult,
   TestStatus,
 } from '../gql/graphql';
@@ -78,6 +79,7 @@ const testResultToComparisonResult: Record<TestResult, ComparisonResult | undefi
   [TestResult.Fixed]: ComparisonResult.Fixed,
   [TestResult.Skipped]: undefined, // Shouldn't have any comparisons
   [TestResult.SystemError]: ComparisonResult.SystemError,
+  [TestResult.Unstable]: ComparisonResult.Changed,
 };
 
 const testStatusToTestResult: Record<TestStatus, TestResult | undefined> = {
@@ -88,6 +90,8 @@ const testStatusToTestResult: Record<TestStatus, TestResult | undefined> = {
   [TestStatus.Pending]: TestResult.Changed,
   [TestStatus.Passed]: TestResult.Equal,
   [TestStatus.InProgress]: undefined,
+  [TestStatus.Ignored]: TestResult.Changed,
+  [TestStatus.Unstable]: TestResult.Changed,
 };
 
 /**
@@ -97,6 +101,7 @@ export function makeTest(options: {
   id?: string;
   status?: TestStatus;
   result?: TestResult;
+  ignoreReason?: TestIgnoreReason;
   comparisons?: StoryTestFieldsFragment['comparisons'];
   comparisonResults?: ComparisonResult[];
   browsers?: Browser[];
@@ -150,6 +155,7 @@ export function makeTest(options: {
     id,
     status,
     result,
+    ignoreReason: options.ignoreReason ?? null,
     webUrl: `https://www.chromatic.com/test?appId=123&id=${id}`,
     comparisons,
     mode: { name: `${viewportWidth}px`, globals: {} },
@@ -168,6 +174,7 @@ export function makeTests(options: {
     viewport?: number;
     status?: TestStatus;
     result?: TestResult;
+    ignoreReason?: TestIgnoreReason;
     comparisons?: StoryTestFieldsFragment['comparisons'];
     comparisonResults?: ComparisonResult[];
   }[];

@@ -1,3 +1,4 @@
+import { MobileIcon } from '@storybook/icons';
 import React from 'react';
 import { ActionList, PopoverProvider } from 'storybook/internal/components';
 import { styled } from 'storybook/theming';
@@ -15,6 +16,8 @@ const browserIcons = {
   [Browser.Firefox]: <FirefoxIcon alt="Firefox" />,
   [Browser.Safari]: <SafariIcon alt="Safari" />,
   [Browser.Edge]: <EdgeIcon alt="Edge" />,
+  [Browser.Android]: <MobileIcon aria-label="Android" />,
+  [Browser.Ios]: <MobileIcon aria-label="iOS" />,
 } as const;
 
 const ButtonLabel = styled(ActionList.Text)({
