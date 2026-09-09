@@ -86,6 +86,10 @@ const Actions = styled.div<{ showDivider?: boolean }>(({ theme, showDivider }) =
   },
 }));
 
+const unquarantineConfirmation = `This test will no longer be ignored on all branches and may block new builds from passing.
+
+We recommend removing quarantine only after the test is stable, you've accepted the new baseline, and all active branches include the baseline update.`;
+
 const StyledAction = styled(ActionList.Action)({
   height: 'auto',
   flex: '0 1 100%',
@@ -399,8 +403,11 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
                       ariaLabel="Unquarantine this story"
                       disabled={isReviewing}
                       onClick={() => {
-                        unquarantineTest(selectedTest.id);
                         onHide();
+                        // Same confirmation as the webapp; a native confirm keeps this a one-liner
+                        if (window.confirm(unquarantineConfirmation)) {
+                          unquarantineTest(selectedTest.id);
+                        }
                       }}
                     >
                       <ActionContent>

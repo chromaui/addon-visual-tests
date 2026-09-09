@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, fn } from 'storybook/test';
+import { expect, fn, spyOn } from 'storybook/test';
 import { screen, userEvent } from 'storybook/test';
 
 import { panelModes } from '../../modes';
@@ -156,7 +156,9 @@ export const QuarantinedMoreActions = {
 export const Unquarantine = {
   ...Quarantined,
   play: playSequentially(QuarantinedMoreActions, async ({ parameters }) => {
+    const confirm = spyOn(window, 'confirm').mockReturnValue(true);
     await userEvent.click(await screen.findByRole('button', { name: 'Unquarantine this story' }));
+    await expect(confirm).toHaveBeenCalled();
     await expect(parameters.reviewTest.unquarantineTest).toHaveBeenCalledWith(
       parameters.selectedBuild.testsForStory.nodes[0].id
     );
