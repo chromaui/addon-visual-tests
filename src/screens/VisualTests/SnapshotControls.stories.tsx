@@ -144,10 +144,19 @@ export const QuarantinedAccepted = {
   },
 } satisfies Story;
 
+export const QuarantinedMoreActions = {
+  ...Quarantined,
+  play: playSequentially(async ({ canvas }) => {
+    await userEvent.keyboard('[Escape]');
+    await userEvent.click(await canvas.findByRole('button', { name: 'More actions' }));
+    await screen.findByText('Unquarantine');
+  }),
+} satisfies Story;
+
 export const Unquarantine = {
   ...Quarantined,
-  play: playAll(async ({ canvas, parameters }) => {
-    await userEvent.click(await canvas.findByRole('button', { name: 'Unquarantine this story' }));
+  play: playSequentially(QuarantinedMoreActions, async ({ parameters }) => {
+    await userEvent.click(await screen.findByRole('button', { name: 'Unquarantine this story' }));
     await expect(parameters.reviewTest.unquarantineTest).toHaveBeenCalledWith(
       parameters.selectedBuild.testsForStory.nodes[0].id
     );

@@ -1,7 +1,7 @@
 import { PlayIcon } from '@storybook/icons';
 import pluralize from 'pluralize';
 import React from 'react';
-import { Link } from 'storybook/internal/components';
+import { Link, TooltipMessage, WithTooltip } from 'storybook/internal/components';
 import { styled } from 'storybook/theming';
 
 import { ActionButton } from '../../components/ActionButton';
@@ -9,7 +9,7 @@ import { Badge } from '../../components/Badge';
 import { AlertIcon } from '../../components/icons/AlertIcon';
 import { ProgressIcon } from '../../components/icons/ProgressIcon';
 import { StatusIcon } from '../../components/icons/StatusIcon';
-import { StoryTestFieldsFragment, TestStatus } from '../../gql/graphql';
+import { StoryTestFieldsFragment, TestIgnoreReason, TestStatus } from '../../gql/graphql';
 import { formatDate } from '../../utils/formatDate';
 import {
   getIgnoreBadgeLabel,
@@ -36,6 +36,12 @@ const Info = styled.div(({ theme }) => ({
     fontSize: theme.typography.size.s2 - 1,
   },
 
+  // The badge carries no left margin so it lines up with the text when it wraps; the headline
+  // provides the spacing instead while they share a line.
+  '[data-has-badge] > b': {
+    marginRight: 8,
+  },
+
   '@container (min-width: 800px)': {
     margin: '6px 10px 6px 15px',
     alignItems: 'center',
@@ -43,6 +49,10 @@ const Info = styled.div(({ theme }) => ({
 
     small: {
       fontSize: 'inherit',
+    },
+
+    '[data-has-badge] > b': {
+      marginRight: 0,
     },
 
     '[data-hidden-large]': {
@@ -57,6 +67,25 @@ const Info = styled.div(({ theme }) => ({
     },
   },
 }));
+
+const quarantinedNote =
+  'This test was ignored across all branches. It will no longer block builds from passing. We continue taking snapshots of unstable tests to track stability over time for debugging.';
+
+// Keeps the ignore badge and status icon together when the headline wraps at narrow widths
+const StatusGroup = styled.span({
+  display: 'inline-flex',
+  alignItems: 'center',
+  whiteSpace: 'nowrap',
+});
+
+// No left margin so it aligns with the text when wrapped; the headline provides spacing instead
+const IgnoreBadge = styled(Badge)({
+  margin: 0,
+
+  '@container (min-width: 800px)': {
+    marginLeft: 6,
+  },
+});
 
 const Actions = styled.div({
   gridArea: 'actions',
@@ -118,6 +147,7 @@ export const StoryInfo = ({
   const showButton = (isErrored || isOutdated) && !isRunningStory && !changeCount;
   const ignoreBadgeLabel = getIgnoreBadgeLabel(selectedTest);
   const showUnstableBadge = shouldShowUnstableBadge(selectedTest);
+  const isQuarantined = selectedTest?.ignoreReason === TestIgnoreReason.Quarantine;
 
   let details;
   if (isOutdated) {
@@ -171,7 +201,7 @@ export const StoryInfo = ({
   } else {
     details = (
       <Info>
-        <span>
+        <span data-has-badge={ignoreBadgeLabel || showUnstableBadge ? '' : undefined}>
           <b>
             {brokenCount
               ? null
@@ -182,11 +212,25 @@ export const StoryInfo = ({
                 : 'No changes'}
             {brokenCount ? pluralize('error', brokenCount, true) : null}
           </b>
-          <StatusIcon
-            icon={brokenCount ? 'failed' : status === TestStatus.Pending ? 'changed' : 'passed'}
-          />
-          {showUnstableBadge && <Badge status="neutral">Unstable</Badge>}
-          {ignoreBadgeLabel && <Badge status="neutral">{ignoreBadgeLabel}</Badge>}
+          <StatusGroup>
+            {showUnstableBadge && <IgnoreBadge status="neutral">Unstable</IgnoreBadge>}
+            {ignoreBadgeLabel && isQuarantined && (
+              <WithTooltip
+                trigger="hover"
+                placement="bottom"
+                tooltip={<TooltipMessage desc={quarantinedNote} />}
+              >
+                {/* Solid red, matching the webapp's Quarantined pill */}
+                <IgnoreBadge status="critical">{ignoreBadgeLabel}</IgnoreBadge>
+              </WithTooltip>
+            )}
+            {ignoreBadgeLabel && !isQuarantined && (
+              <IgnoreBadge status="neutral">{ignoreBadgeLabel}</IgnoreBadge>
+            )}
+            <StatusIcon
+              icon={brokenCount ? 'failed' : status === TestStatus.Pending ? 'changed' : 'passed'}
+            />
+          </StatusGroup>
         </span>
         <small>
           {modeResults.length > 0 && (

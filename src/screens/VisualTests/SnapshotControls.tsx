@@ -1,6 +1,7 @@
 import {
   BatchAcceptIcon,
   ContrastIcon,
+  EllipsisIcon,
   LocationIcon,
   LockIcon,
   PlayIcon,
@@ -85,10 +86,15 @@ const Actions = styled.div<{ showDivider?: boolean }>(({ theme, showDivider }) =
   },
 }));
 
-const Action = styled(ActionList.Action)({
+const StyledAction = styled(ActionList.Action)({
   height: 'auto',
   flex: '0 1 100%',
 });
+
+// Menu items already show their label and description, so the ariaLabel tooltip is redundant
+const Action = (props: React.ComponentProps<typeof StyledAction>) => (
+  <StyledAction disableAllTooltips {...props} />
+);
 
 const ActionContent = styled(ActionList.Text)(({ theme }) => ({
   display: 'flex',
@@ -359,32 +365,67 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
             </div>
           )}
 
-          {canReview && isQuarantined && selectedTest && (
-            <ActionButton
-              id="button-unquarantine-story"
-              disabled={isReviewing}
-              ariaLabel="Unquarantine this story"
-              onClick={() => unquarantineTest(selectedTest.id)}
-              variant="outline"
-            >
-              Unquarantine
-            </ActionButton>
-          )}
-
           {!canReview && (
             <ActionButton readOnly tooltip="Reviewing disabled">
               <LockIcon />
             </ActionButton>
           )}
 
-          <ActionButton
-            ariaLabel={isOutdated ? 'Run new tests' : 'Rerun tests'}
-            onClick={startBuild}
-            disabled={isRunning}
-            variant="outline"
-          >
-            {isOutdated ? <PlayIcon /> : <SyncIcon />}
-          </ActionButton>
+          {canReview && isQuarantined && selectedTest ? (
+            // Unquarantine is too wide to sit next to the other actions at narrow panel widths, so
+            // it shares an overflow menu with Rerun whenever it applies.
+            <PopoverProvider
+              padding={0}
+              popover={({ onHide }) => (
+                <ActionList>
+                  <ActionList.Item>
+                    <Action
+                      ariaLabel={isOutdated ? 'Run new tests' : 'Rerun tests'}
+                      disabled={isRunning}
+                      onClick={() => {
+                        startBuild();
+                        onHide();
+                      }}
+                    >
+                      <ActionContent>
+                        <strong>{isOutdated ? 'Run new tests' : 'Rerun tests'}</strong>
+                        <span>Take new snapshots of every story in the Storybook</span>
+                      </ActionContent>
+                    </Action>
+                  </ActionList.Item>
+                  <ActionList.Item>
+                    <Action
+                      id="button-unquarantine-story"
+                      ariaLabel="Unquarantine this story"
+                      disabled={isReviewing}
+                      onClick={() => {
+                        unquarantineTest(selectedTest.id);
+                        onHide();
+                      }}
+                    >
+                      <ActionContent>
+                        <strong>Unquarantine</strong>
+                        <span>Stop ignoring changes to this story</span>
+                      </ActionContent>
+                    </Action>
+                  </ActionList.Item>
+                </ActionList>
+              )}
+            >
+              <ActionButton ariaLabel="More actions" variant="outline">
+                <EllipsisIcon />
+              </ActionButton>
+            </PopoverProvider>
+          ) : (
+            <ActionButton
+              ariaLabel={isOutdated ? 'Run new tests' : 'Rerun tests'}
+              onClick={startBuild}
+              disabled={isRunning}
+              variant="outline"
+            >
+              {isOutdated ? <PlayIcon /> : <SyncIcon />}
+            </ActionButton>
+          )}
         </Actions>
       )}
     </>
