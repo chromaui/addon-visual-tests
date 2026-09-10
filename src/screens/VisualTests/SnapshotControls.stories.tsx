@@ -102,7 +102,7 @@ export const ToggleBaseline = {
 export const BatchAcceptOptions = {
   play: playSequentially(async ({ canvas }) => {
     await userEvent.keyboard('[Escape]');
-    const menu = await canvas.findByRole('button', { name: 'Batch accept options' });
+    const menu = await canvas.findByRole('button', { name: 'Open batch accept options' });
     await userEvent.click(menu);
   }),
 } satisfies Story;
@@ -123,7 +123,7 @@ export const AutoIgnored = {
 export const AcceptIgnored = {
   ...Ignored,
   play: playAll(async ({ canvas, parameters }) => {
-    await expect(canvas.queryByRole('button', { name: 'Batch accept options' })).toBeNull();
+    await expect(canvas.queryByRole('button', { name: 'Open batch accept options' })).toBeNull();
     await userEvent.click(await canvas.findByRole('button', { name: 'Accept this story' }));
     await expect(parameters.reviewTest.acceptTest).toHaveBeenCalledWith(
       parameters.selectedBuild.testsForStory.nodes[0].id,

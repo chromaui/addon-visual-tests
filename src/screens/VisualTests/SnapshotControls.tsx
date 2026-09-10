@@ -278,7 +278,7 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
                 >
                   <ReviewButton
                     disabled={isReviewing}
-                    ariaLabel="Batch accept options"
+                    ariaLabel="Open batch accept options"
                     variant="solid"
                   >
                     {isReviewing ? (
@@ -347,7 +347,7 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
               >
                 <ReviewButton
                   disabled={isReviewing}
-                  ariaLabel="Batch accept options"
+                  ariaLabel="Open batch unaccept options"
                   variant="solid"
                   status="positive"
                 >
