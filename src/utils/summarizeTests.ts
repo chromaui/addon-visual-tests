@@ -11,6 +11,9 @@ import { aggregateResult } from './aggregateResult';
 export const isIgnored = (status: TestStatus) =>
   status === TestStatus.Ignored || status === TestStatus.Unstable;
 
+export const hasVisualChanges = (result?: TestResult | null) =>
+  !!result && [TestResult.Changed, TestResult.Added].includes(result);
+
 // Mirrors the webapp: quarantined tests show "Quarantined", auto-ignored (unstable) tests show
 // "Auto-ignored", and everything else that is ignored shows "Ignored".
 const ignoreBadgeLabels: Record<TestIgnoreReason, string> = {
@@ -85,7 +88,7 @@ export function summarizeTests(tests: StoryTestFieldsFragment[]) {
       }
       // Ignored tests don't count towards changes or errors; they don't need review.
       if (status !== TestStatus.Ignored) {
-        if (test.result && [TestResult.Changed, TestResult.Added].includes(test.result)) {
+        if (hasVisualChanges(test.result)) {
           acc.changeCount += 1;
         }
         if (

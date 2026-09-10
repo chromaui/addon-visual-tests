@@ -4,7 +4,7 @@ import { useQuery } from 'urql';
 import { getFragment } from '../../gql';
 import { StoryTestFieldsFragment, TestStatus } from '../../gql/graphql';
 import { GitInfoPayload } from '../../types';
-import { summarizeTests } from '../../utils/summarizeTests';
+import { hasVisualChanges, summarizeTests } from '../../utils/summarizeTests';
 import { sidebarTestStatuses } from '../../utils/testsToStatusUpdate';
 import { SelectedBuildInfo } from '../../utils/updateSelectedBuildInfo';
 import { useRequiredContext } from '../../utils/useRequiredContext';
@@ -111,6 +111,7 @@ type SelectedStory =
       hasTests: boolean;
       tests: StoryTestFieldsFragment[];
       summary: ReturnType<typeof summarizeTests>;
+      selectedTestHasChanges: boolean;
     } & ReturnType<typeof useTests>)
   | null;
 
@@ -140,6 +141,8 @@ export const BuildProvider = ({
     watchState.selectedBuild.testsForStory?.nodes;
   const tests = [...getFragment(FragmentStoryTestFields, testsForStory || [])];
   const summary = summarizeTests(tests);
+  const storyTests = useTests(tests);
+  const selectedTestHasChanges = hasVisualChanges(storyTests.selectedTest?.result);
 
   const { toggleDiff } = useControlsDispatch();
   useEffect(() => toggleDiff(summary.changeCount > 0), [toggleDiff, summary.changeCount]);
@@ -149,7 +152,9 @@ export const BuildProvider = ({
       // eslint-disable-next-line react-hooks/exhaustive-deps
       value={useMemo(() => watchState, [JSON.stringify(watchState?.selectedBuild)])}
     >
-      <StoryContext.Provider value={{ hasTests, tests, summary, ...useTests(tests) }}>
+      <StoryContext.Provider
+        value={{ hasTests, tests, summary, selectedTestHasChanges, ...storyTests }}
+      >
         {children}
       </StoryContext.Provider>
     </BuildContext.Provider>

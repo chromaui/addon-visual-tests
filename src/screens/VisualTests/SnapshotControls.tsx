@@ -18,13 +18,7 @@ import { ActionButton } from '../../components/ActionButton';
 import { ProgressIcon } from '../../components/icons/ProgressIcon';
 import { Placeholder } from '../../components/Placeholder';
 import { Text } from '../../components/Text';
-import {
-  ComparisonResult,
-  ReviewTestBatch,
-  TestIgnoreReason,
-  TestResult,
-  TestStatus,
-} from '../../gql/graphql';
+import { ComparisonResult, ReviewTestBatch, TestIgnoreReason, TestStatus } from '../../gql/graphql';
 import { isIgnored } from '../../utils/summarizeTests';
 import { useSelectedStoryState } from './BuildContext';
 import { useControlsDispatch, useControlsState } from './ControlsContext';
@@ -144,7 +138,8 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
   const { toggleBaselineImage, toggleDiff, toggleFocus } = useControlsDispatch();
   const { isRunning, startBuild } = useRunBuildState();
 
-  const { selectedTest, selectedComparison, summary } = useSelectedStoryState();
+  const { selectedTest, selectedComparison, selectedTestHasChanges, summary } =
+    useSelectedStoryState();
   const { changeCount, isInProgress } = summary;
 
   const {
@@ -167,14 +162,12 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
 
   const canReview = userCanReview && buildIsReviewable;
   const selectedIsIgnored = !!selectedTest && isIgnored(selectedTest.status);
-  // Ignored tests don't count towards changeCount, so gate them on their own result instead. Batch
-  // review skips IGNORED tests, so ignored tests are accepted one at a time without batch options.
-  const selectedHasChanges =
-    !!selectedTest?.result && [TestResult.Changed, TestResult.Added].includes(selectedTest.result);
+  // Ignored tests don't count towards changeCount, so gate them on selectedTestHasChanges instead.
+  // Batch review skips IGNORED tests, so ignored tests are accepted one at a time without batch options.
   const isAcceptable =
     !!selectedTest &&
     selectedTest.status !== TestStatus.Accepted &&
-    (selectedIsIgnored ? selectedHasChanges : changeCount > 0);
+    (selectedIsIgnored ? selectedTestHasChanges : changeCount > 0);
   const isUnacceptable = changeCount > 0 && selectedTest?.status === TestStatus.Accepted;
   // Mirrors the webapp: Unquarantine is offered while the story is quarantined, also after accept.
   const isQuarantined = selectedTest?.ignoreReason === TestIgnoreReason.Quarantine;
