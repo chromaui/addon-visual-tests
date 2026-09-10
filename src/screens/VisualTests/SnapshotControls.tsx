@@ -97,7 +97,7 @@ const StyledAction = styled(ActionList.Action)({
 
 // Menu items already show their label and description, so the ariaLabel tooltip is redundant
 const Action = (props: React.ComponentProps<typeof StyledAction>) => (
-  <StyledAction disableAllTooltips {...props} />
+  <StyledAction ariaLabel={false} {...props} />
 );
 
 const ActionContent = styled(ActionList.Text)(({ theme }) => ({
