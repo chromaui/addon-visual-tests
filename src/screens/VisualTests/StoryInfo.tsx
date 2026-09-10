@@ -234,7 +234,6 @@ export const StoryInfo = ({
             <StatusGroup>
               {showUnstableBadge ? (
                 <WithTooltip
-                  trigger="hover"
                   placement="bottom"
                   tooltip={<TooltipMessage desc={unstableNote} />}
                 >
@@ -243,7 +242,6 @@ export const StoryInfo = ({
               ) : null}
               {ignoreBadgeLabel ? (
                 <WithTooltip
-                  trigger="hover"
                   placement="bottom"
                   tooltip={<TooltipMessage desc={ignoreNotes[ignoreReason]} />}
                 >
