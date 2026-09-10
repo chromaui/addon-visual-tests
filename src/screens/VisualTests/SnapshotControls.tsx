@@ -112,10 +112,7 @@ const ActionContent = styled(ActionList.Text)(({ theme }) => ({
   },
 }));
 
-const ReviewButton = styled(ActionButton)<{
-  side?: 'left' | 'right';
-  status?: 'positive';
-}>(({ theme, side, status }) => ({
+const ReviewButton = styled(ActionButton)<{ status?: 'positive' }>(({ theme, status }) => ({
   ...(status === 'positive' && {
     backgroundColor: theme.background.positive,
     border: `1px solid ${lighten(0.35, theme.color.positive)}`,
@@ -123,17 +120,23 @@ const ReviewButton = styled(ActionButton)<{
     '&:hover': {
       backgroundColor: darken(0.05, theme.background.positive),
     },
+    // Hide the pair's inner divider so the two green buttons read as one control.
+    '&&&': { boxShadow: 'none' },
   }),
-  ...(side === 'left' && {
+}));
+
+// PopoverProvider wraps the chevron, so adjacent-sibling selectors on the buttons themselves miss.
+const ReviewButtonPair = styled.div(({ theme }) => ({
+  display: 'inline-flex',
+  [`& > ${ActionButton}:has(+ *)`]: {
     borderTopRightRadius: 0,
     borderBottomRightRadius: 0,
-  }),
-  ...(side === 'right' && {
+  },
+  [`& > *:last-child ${ActionButton}`]: {
     borderTopLeftRadius: 0,
     borderBottomLeftRadius: 0,
-    borderLeft:
-      status === 'positive' ? 'none' : `1px solid ${theme.base === 'dark' ? '#0006' : '#fff6'}`,
-  }),
+    boxShadow: `inset 1px 0 0 ${theme.base === 'dark' ? '#0006' : '#fff6'}`,
+  },
 }));
 
 export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
@@ -224,7 +227,7 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
       {(isAcceptable || isUnacceptable || isQuarantined) && (
         <Actions showDivider={hasControls}>
           {canReview && isAcceptable && selectedTest && (
-            <div>
+            <ReviewButtonPair>
               <ReviewButton
                 id="button-toggle-accept-story"
                 disabled={isReviewing}
@@ -232,7 +235,6 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
                 onClick={() =>
                   acceptTest(selectedTest.id, selectedIsIgnored ? undefined : ReviewTestBatch.Spec)
                 }
-                side={selectedIsIgnored ? undefined : 'left'}
                 variant="solid"
               >
                 {isReviewing && selectedIsIgnored ? (
@@ -284,7 +286,6 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
                   <ReviewButton
                     disabled={isReviewing}
                     ariaLabel="Batch accept options"
-                    side="right"
                     variant="solid"
                   >
                     {isReviewing ? (
@@ -295,17 +296,16 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
                   </ReviewButton>
                 </PopoverProvider>
               )}
-            </div>
+            </ReviewButtonPair>
           )}
 
           {canReview && isUnacceptable && (
-            <div>
+            <ReviewButtonPair>
               <ReviewButton
                 id="button-toggle-accept-story"
                 disabled={isReviewing}
                 ariaLabel="Unaccept this story"
                 onClick={() => unacceptTest(selectedTest.id, ReviewTestBatch.Spec)}
-                side="left"
                 variant="solid"
                 status="positive"
               >
@@ -355,7 +355,6 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
                 <ReviewButton
                   disabled={isReviewing}
                   ariaLabel="Batch accept options"
-                  side="right"
                   variant="solid"
                   status="positive"
                 >
@@ -366,7 +365,7 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
                   )}
                 </ReviewButton>
               </PopoverProvider>
-            </div>
+            </ReviewButtonPair>
           )}
 
           {!canReview && (
