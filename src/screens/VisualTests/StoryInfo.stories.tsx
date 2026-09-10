@@ -138,6 +138,22 @@ export const AutoIgnored: Story = {
   },
 };
 
+const unstableTest = (status = TestStatus.Pending) => makeTest({ status, isUnstable: true });
+
+export const Unstable: Story = {
+  args: {
+    tests: [unstableTest()],
+    selectedTest: unstableTest(),
+  },
+};
+
+export const UnstableAccepted: Story = {
+  args: {
+    tests: [unstableTest(TestStatus.Accepted)],
+    selectedTest: unstableTest(TestStatus.Accepted),
+  },
+};
+
 export const Quarantined: Story = {
   args: {
     tests: [ignoredTest(TestIgnoreReason.Quarantine)],

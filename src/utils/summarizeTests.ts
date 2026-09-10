@@ -33,6 +33,13 @@ export function getIgnoreBadgeLabel(
   return ignoreBadgeLabels[test.ignoreReason ?? TestIgnoreReason.Manual];
 }
 
+/** Mirrors the webapp: `isUnstable` is hidden when the test is already auto-ignored. */
+export function shouldShowUnstableBadge(
+  test?: Pick<StoryTestFieldsFragment, 'isUnstable' | 'ignoreReason'>
+) {
+  return !!test?.isUnstable && test.ignoreReason !== TestIgnoreReason.Unstable;
+}
+
 // Ignored comes last: any reviewed/passed mode outranks an ignored one, so a story only summarizes
 // as Ignored when every one of its tests is ignored.
 function pickStatus(statusCounts: { [K in TestStatus]?: number }) {

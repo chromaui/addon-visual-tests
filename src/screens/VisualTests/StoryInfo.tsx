@@ -11,7 +11,11 @@ import { ProgressIcon } from '../../components/icons/ProgressIcon';
 import { StatusIcon } from '../../components/icons/StatusIcon';
 import { StoryTestFieldsFragment, TestStatus } from '../../gql/graphql';
 import { formatDate } from '../../utils/formatDate';
-import { getIgnoreBadgeLabel, summarizeTests } from '../../utils/summarizeTests';
+import {
+  getIgnoreBadgeLabel,
+  shouldShowUnstableBadge,
+  summarizeTests,
+} from '../../utils/summarizeTests';
 import { useRunBuildState } from './RunBuildContext';
 
 const Info = styled.div(({ theme }) => ({
@@ -113,6 +117,7 @@ export const StoryInfo = ({
 
   const showButton = (isErrored || isOutdated) && !isRunningStory && !changeCount;
   const ignoreBadgeLabel = getIgnoreBadgeLabel(selectedTest);
+  const showUnstableBadge = shouldShowUnstableBadge(selectedTest);
 
   let details;
   if (isOutdated) {
@@ -180,6 +185,7 @@ export const StoryInfo = ({
           <StatusIcon
             icon={brokenCount ? 'failed' : status === TestStatus.Pending ? 'changed' : 'passed'}
           />
+          {showUnstableBadge && <Badge status="neutral">Unstable</Badge>}
           {ignoreBadgeLabel && <Badge status="neutral">{ignoreBadgeLabel}</Badge>}
         </span>
         <small>

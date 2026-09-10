@@ -8,7 +8,7 @@ import {
   TestStatus,
 } from '../gql/graphql';
 import { makeComparison, makeTest } from './storyData';
-import { getIgnoreBadgeLabel, summarizeTests } from './summarizeTests';
+import { getIgnoreBadgeLabel, shouldShowUnstableBadge, summarizeTests } from './summarizeTests';
 
 vi.mock('react', () => ({
   useState: vi.fn((x: any) => [x, vi.fn()]),
@@ -181,4 +181,20 @@ it('labels the ignore badge by reason', () => {
   expect(label(TestStatus.Accepted, TestIgnoreReason.Quarantine)).toBe('Quarantined');
   expect(label(TestStatus.Accepted, TestIgnoreReason.Manual)).toBeUndefined();
   expect(label(TestStatus.Accepted, TestIgnoreReason.Unstable)).toBeUndefined();
+});
+
+it('shows the Unstable badge from isUnstable, except when auto-ignored', () => {
+  expect(shouldShowUnstableBadge(undefined)).toBe(false);
+  expect(shouldShowUnstableBadge({ isUnstable: false, ignoreReason: null })).toBe(false);
+  expect(shouldShowUnstableBadge({ isUnstable: true, ignoreReason: null })).toBe(true);
+  expect(
+    shouldShowUnstableBadge({ isUnstable: true, ignoreReason: TestIgnoreReason.Quarantine })
+  ).toBe(true);
+  expect(shouldShowUnstableBadge({ isUnstable: true, ignoreReason: TestIgnoreReason.Manual })).toBe(
+    true
+  );
+  // Mirrors the webapp: auto-ignored unstable tests already have an Auto-ignored badge.
+  expect(
+    shouldShowUnstableBadge({ isUnstable: true, ignoreReason: TestIgnoreReason.Unstable })
+  ).toBe(false);
 });

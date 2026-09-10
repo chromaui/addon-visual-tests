@@ -102,6 +102,7 @@ export function makeTest(options: {
   status?: TestStatus;
   result?: TestResult;
   ignoreReason?: TestIgnoreReason;
+  isUnstable?: boolean;
   comparisons?: StoryTestFieldsFragment['comparisons'];
   comparisonResults?: ComparisonResult[];
   browsers?: Browser[];
@@ -156,6 +157,7 @@ export function makeTest(options: {
     status,
     result,
     ignoreReason: options.ignoreReason ?? null,
+    isUnstable: options.isUnstable ?? false,
     webUrl: `https://www.chromatic.com/test?appId=123&id=${id}`,
     comparisons,
     mode: { name: `${viewportWidth}px`, globals: {} },
@@ -175,6 +177,7 @@ export function makeTests(options: {
     status?: TestStatus;
     result?: TestResult;
     ignoreReason?: TestIgnoreReason;
+    isUnstable?: boolean;
     comparisons?: StoryTestFieldsFragment['comparisons'];
     comparisonResults?: ComparisonResult[];
   }[];
