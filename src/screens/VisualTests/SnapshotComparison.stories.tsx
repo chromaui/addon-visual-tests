@@ -3,8 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { delay, http } from 'msw';
 import React, { ComponentProps } from 'react';
 import type { StoryContext } from 'storybook/internal/types';
-import { fn } from 'storybook/test';
-import { findByRole, fireEvent, screen, userEvent, within } from 'storybook/test';
+import { expect, findByRole, fireEvent, fn, screen, userEvent, within } from 'storybook/test';
 
 import { Browser, ComparisonResult, TestResult, TestStatus } from '../../gql/graphql';
 import { panelModes } from '../../modes';
@@ -271,6 +270,17 @@ export const AutoIgnored = {
 
 export const Quarantined = {
   parameters: { selectedBuild: withTests(build, quarantinedTests) },
+} satisfies Story;
+
+// Ignored tests don't increment changeCount, so StoryInfo used to keep its Run tests
+// button in the same grid area as Accept / More actions.
+export const QuarantinedOutdated = {
+  args: { isOutdated: true },
+  parameters: { selectedBuild: withTests(build, quarantinedTests) },
+  play: playAll(async ({ canvas }) => {
+    await canvas.findByRole('button', { name: 'More actions' });
+    await expect(canvas.queryByRole('button', { name: 'Run tests' })).toBeNull();
+  }),
 } satisfies Story;
 
 export const QuarantinedAccepted = {

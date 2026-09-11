@@ -13,6 +13,7 @@ import { StoryTestFieldsFragment, TestIgnoreReason, TestStatus } from '../../gql
 import { formatDate } from '../../utils/formatDate';
 import {
   getIgnoreBadgeLabel,
+  hasVisualChanges,
   shouldShowUnstableBadge,
   summarizeTests,
 } from '../../utils/summarizeTests';
@@ -161,7 +162,17 @@ export const StoryInfo = ({
   // isErrored means there's a problem with the story
   const isErrored = isFailed || status === TestStatus.Broken;
 
-  const showButton = (isErrored || isOutdated) && !isRunningStory && !changeCount;
+  const selectedHasChanges = hasVisualChanges(selectedTest?.result);
+  const isQuarantined = selectedTest?.ignoreReason === TestIgnoreReason.Quarantine;
+  // SnapshotControls occupies the same `actions` grid area for Accept and the
+  // overflow menu. Ignored tests don't increment changeCount, so also hide when
+  // those review actions will render.
+  const showButton =
+    (isErrored || isOutdated) &&
+    !isRunningStory &&
+    !changeCount &&
+    !selectedHasChanges &&
+    !isQuarantined;
   const ignoreBadgeLabel = getIgnoreBadgeLabel(selectedTest);
   const showUnstableBadge = shouldShowUnstableBadge(selectedTest);
   const ignoreReason = selectedTest?.ignoreReason ?? TestIgnoreReason.Manual;
