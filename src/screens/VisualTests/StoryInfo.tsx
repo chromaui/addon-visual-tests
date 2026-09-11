@@ -233,10 +233,7 @@ export const StoryInfo = ({
           {hasBadge ? (
             <StatusGroup>
               {showUnstableBadge ? (
-                <WithTooltip
-                  placement="bottom"
-                  tooltip={<TooltipMessage desc={unstableNote} />}
-                >
+                <WithTooltip placement="bottom" tooltip={<TooltipMessage desc={unstableNote} />}>
                   <IgnoreBadge status="neutral">Unstable</IgnoreBadge>
                 </WithTooltip>
               ) : null}
