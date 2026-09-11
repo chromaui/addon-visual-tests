@@ -106,7 +106,10 @@ const ActionContent = styled(ActionList.Text)(({ theme }) => ({
   },
 }));
 
-const ReviewButton = styled(ActionButton)<{ status?: 'positive' }>(({ theme, status }) => ({
+const ReviewButton = styled(ActionButton)<{
+  side?: 'left' | 'right';
+  status?: 'positive';
+}>(({ theme, side, status }) => ({
   ...(status === 'positive' && {
     backgroundColor: theme.background.positive,
     border: `1px solid ${lighten(0.35, theme.color.positive)}`,
@@ -117,21 +120,23 @@ const ReviewButton = styled(ActionButton)<{ status?: 'positive' }>(({ theme, sta
     // Hide the pair's inner divider so the two green buttons read as one control.
     '&&&': { boxShadow: 'none' },
   }),
-}));
-
-// PopoverProvider wraps the chevron, so adjacent-sibling selectors on the buttons themselves miss.
-const ReviewButtonPair = styled.div(({ theme }) => ({
-  display: 'inline-flex',
-  [`& > ${ActionButton}:has(+ *)`]: {
+  // Applied on the button itself so they beat ActionList.Button radius. Parent :has
+  // selectors lost that fight after PopoverProvider wrapped the chevron.
+  ...(side === 'left' && {
     borderTopRightRadius: 0,
     borderBottomRightRadius: 0,
-  },
-  [`& > *:last-child ${ActionButton}`]: {
+  }),
+  ...(side === 'right' && {
     borderTopLeftRadius: 0,
     borderBottomLeftRadius: 0,
-    boxShadow: `inset 1px 0 0 ${theme.base === 'dark' ? '#0006' : '#fff6'}`,
-  },
+    borderLeft:
+      status === 'positive' ? 'none' : `1px solid ${theme.base === 'dark' ? '#0006' : '#fff6'}`,
+  }),
 }));
+
+const ReviewButtonPair = styled.div({
+  display: 'inline-flex',
+});
 
 export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
   const { baselineImageVisible, diffVisible, focusVisible } = useControlsState();
@@ -228,6 +233,7 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
                 onClick={() =>
                   acceptTest(selectedTest.id, selectedIsIgnored ? undefined : ReviewTestBatch.Spec)
                 }
+                side={selectedIsIgnored ? undefined : 'left'}
                 variant="solid"
               >
                 {isReviewing && selectedIsIgnored ? (
@@ -279,6 +285,7 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
                   <ReviewButton
                     disabled={isReviewing}
                     ariaLabel="Open batch accept options"
+                    side="right"
                     variant="solid"
                   >
                     {isReviewing ? (
@@ -299,6 +306,7 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
                 disabled={isReviewing}
                 ariaLabel="Unaccept this story"
                 onClick={() => unacceptTest(selectedTest.id, ReviewTestBatch.Spec)}
+                side="left"
                 variant="solid"
                 status="positive"
               >
@@ -348,6 +356,7 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
                 <ReviewButton
                   disabled={isReviewing}
                   ariaLabel="Open batch unaccept options"
+                  side="right"
                   variant="solid"
                   status="positive"
                 >

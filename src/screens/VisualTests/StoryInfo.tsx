@@ -89,6 +89,11 @@ const StatusGroup = styled.span({
   whiteSpace: 'nowrap',
   gap: 6,
 
+  // StatusIcon sets margin inline so it can sit next to headline text. Gap replaces that here.
+  svg: {
+    margin: '0 !important',
+  },
+
   '@container (min-width: 800px)': {
     marginLeft: 6,
   },
