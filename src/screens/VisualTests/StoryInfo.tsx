@@ -5,12 +5,17 @@ import { Link } from 'storybook/internal/components';
 import { styled } from 'storybook/theming';
 
 import { ActionButton } from '../../components/ActionButton';
+import { Badge } from '../../components/Badge';
 import { AlertIcon } from '../../components/icons/AlertIcon';
 import { ProgressIcon } from '../../components/icons/ProgressIcon';
 import { StatusIcon } from '../../components/icons/StatusIcon';
 import { StoryTestFieldsFragment, TestStatus } from '../../gql/graphql';
 import { formatDate } from '../../utils/formatDate';
-import { summarizeTests } from '../../utils/summarizeTests';
+import {
+  getIgnoreBadgeLabel,
+  shouldShowUnstableBadge,
+  summarizeTests,
+} from '../../utils/summarizeTests';
 import { useRunBuildState } from './RunBuildContext';
 
 const Info = styled.div(({ theme }) => ({
@@ -72,6 +77,8 @@ interface StoryInfoSectionProps {
   isStarting: boolean;
   /** Once the test has reached the started status, this is the tests of this story */
   tests?: StoryTestFieldsFragment[];
+  /** The test for the currently selected mode, used for the ignore/quarantine badge */
+  selectedTest?: StoryTestFieldsFragment;
   /** Once the test has reached the started status, this is start time of the build */
   startedAt?: Date;
   /** Did the build fail entirely? */
@@ -87,6 +94,7 @@ interface StoryInfoSectionProps {
 export const StoryInfo = ({
   isStarting,
   tests,
+  selectedTest,
   startedAt,
   isBuildFailed,
   isOutdated,
@@ -108,6 +116,8 @@ export const StoryInfo = ({
   const isErrored = isFailed || status === TestStatus.Broken;
 
   const showButton = (isErrored || isOutdated) && !isRunningStory && !changeCount;
+  const ignoreBadgeLabel = getIgnoreBadgeLabel(selectedTest);
+  const showUnstableBadge = shouldShowUnstableBadge(selectedTest);
 
   let details;
   if (isOutdated) {
@@ -175,6 +185,8 @@ export const StoryInfo = ({
           <StatusIcon
             icon={brokenCount ? 'failed' : status === TestStatus.Pending ? 'changed' : 'passed'}
           />
+          {showUnstableBadge && <Badge status="neutral">Unstable</Badge>}
+          {ignoreBadgeLabel && <Badge status="neutral">{ignoreBadgeLabel}</Badge>}
         </span>
         <small>
           {modeResults.length > 0 && (

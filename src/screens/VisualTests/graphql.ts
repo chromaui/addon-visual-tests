@@ -135,6 +135,8 @@ export const FragmentStoryTestFields = graphql(/* GraphQL */ `
     id
     status
     result
+    ignoreReason
+    isUnstable
     webUrl
     comparisons {
       id

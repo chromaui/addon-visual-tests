@@ -1,6 +1,47 @@
-import { ComparisonResult, StoryTestFieldsFragment, TestResult, TestStatus } from '../gql/graphql';
+import {
+  ComparisonResult,
+  StoryTestFieldsFragment,
+  TestIgnoreReason,
+  TestResult,
+  TestStatus,
+} from '../gql/graphql';
 import { aggregateResult } from './aggregateResult';
 
+/** `UNSTABLE` is deprecated in favor of `IGNORED` (with `ignoreReason: UNSTABLE`); treat it the same. */
+export const isIgnored = (status: TestStatus) =>
+  status === TestStatus.Ignored || status === TestStatus.Unstable;
+
+// Mirrors the webapp: quarantined tests show "Quarantined", auto-ignored (unstable) tests show
+// "Auto-ignored", and everything else that is ignored shows "Ignored".
+const ignoreBadgeLabels: Record<TestIgnoreReason, string> = {
+  [TestIgnoreReason.Quarantine]: 'Quarantined',
+  [TestIgnoreReason.Unstable]: 'Auto-ignored',
+  [TestIgnoreReason.Manual]: 'Ignored',
+};
+
+/**
+ * Badge label describing the ignore state of a single (selected) test. A quarantined test keeps its
+ * badge even once accepted (the story is still quarantined); other ignore reasons only apply while
+ * the test status is still IGNORED.
+ */
+export function getIgnoreBadgeLabel(
+  test?: Pick<StoryTestFieldsFragment, 'status' | 'ignoreReason'>
+) {
+  if (!test) return undefined;
+  if (test.ignoreReason === TestIgnoreReason.Quarantine) return ignoreBadgeLabels.QUARANTINE;
+  if (!isIgnored(test.status)) return undefined;
+  return ignoreBadgeLabels[test.ignoreReason ?? TestIgnoreReason.Manual];
+}
+
+/** Mirrors the webapp: `isUnstable` is hidden when the test is already auto-ignored. */
+export function shouldShowUnstableBadge(
+  test?: Pick<StoryTestFieldsFragment, 'isUnstable' | 'ignoreReason'>
+) {
+  return !!test?.isUnstable && test.ignoreReason !== TestIgnoreReason.Unstable;
+}
+
+// Ignored comes last: any reviewed/passed mode outranks an ignored one, so a story only summarizes
+// as Ignored when every one of its tests is ignored.
 function pickStatus(statusCounts: { [K in TestStatus]?: number }) {
   if ((statusCounts[TestStatus.Failed] ?? 0) > 0) return TestStatus.Failed;
   if ((statusCounts[TestStatus.InProgress] ?? 0) > 0) return TestStatus.InProgress;
@@ -8,6 +49,8 @@ function pickStatus(statusCounts: { [K in TestStatus]?: number }) {
   if ((statusCounts[TestStatus.Denied] ?? 0) > 0) return TestStatus.Denied;
   if ((statusCounts[TestStatus.Pending] ?? 0) > 0) return TestStatus.Pending;
   if ((statusCounts[TestStatus.Accepted] ?? 0) > 0) return TestStatus.Accepted;
+  if ((statusCounts[TestStatus.Passed] ?? 0) > 0) return TestStatus.Passed;
+  if ((statusCounts[TestStatus.Ignored] ?? 0) > 0) return TestStatus.Ignored;
   return TestStatus.Passed;
 }
 
@@ -34,16 +77,23 @@ export function summarizeTests(tests: StoryTestFieldsFragment[]) {
     modesByName: Record<string, StoryTestFieldsFragment['mode']>;
   }>(
     (acc, test) => {
-      acc.statusCounts[test.status] = (acc.statusCounts[test.status] || 0) + 1;
+      const status = isIgnored(test.status) ? TestStatus.Ignored : test.status;
+      acc.statusCounts[status] = (acc.statusCounts[status] || 0) + 1;
 
-      if (test.status === TestStatus.InProgress) {
+      if (status === TestStatus.InProgress) {
         acc.isInProgress = true;
       }
-      if (test.result && [TestResult.Changed, TestResult.Added].includes(test.result)) {
-        acc.changeCount += 1;
-      }
-      if (test.result && [TestResult.CaptureError, TestResult.SystemError].includes(test.result)) {
-        acc.brokenCount += 1;
+      // Ignored tests don't count towards changes or errors; they don't need review.
+      if (status !== TestStatus.Ignored) {
+        if (test.result && [TestResult.Changed, TestResult.Added].includes(test.result)) {
+          acc.changeCount += 1;
+        }
+        if (
+          test.result &&
+          [TestResult.CaptureError, TestResult.SystemError].includes(test.result)
+        ) {
+          acc.brokenCount += 1;
+        }
       }
       test.comparisons?.forEach(({ browser, result }) => {
         acc.resultsByBrowser[browser.id] = aggregateResult([

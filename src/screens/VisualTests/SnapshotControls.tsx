@@ -18,6 +18,7 @@ import { ProgressIcon } from '../../components/icons/ProgressIcon';
 import { Placeholder } from '../../components/Placeholder';
 import { Text } from '../../components/Text';
 import { ComparisonResult, ReviewTestBatch, TestStatus } from '../../gql/graphql';
+import { isIgnored } from '../../utils/summarizeTests';
 import { useSelectedStoryState } from './BuildContext';
 import { useControlsDispatch, useControlsState } from './ControlsContext';
 import { useReviewTestState } from './ReviewTestContext';
@@ -139,7 +140,12 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
       </Controls>
     );
 
-  const isAcceptable = changeCount > 0 && selectedTest?.status !== TestStatus.Accepted;
+  // Ignored tests can't be accepted from the addon (yet); the webapp is the place to review those.
+  const isAcceptable =
+    changeCount > 0 &&
+    !!selectedTest &&
+    selectedTest.status !== TestStatus.Accepted &&
+    !isIgnored(selectedTest.status);
   const isUnacceptable = changeCount > 0 && selectedTest?.status === TestStatus.Accepted;
   const hasControls = selectedComparison?.result === ComparisonResult.Changed;
 

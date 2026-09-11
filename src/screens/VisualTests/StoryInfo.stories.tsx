@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import React from 'react';
 import { fn } from 'storybook/test';
 
-import { Browser, TestStatus } from '../../gql/graphql';
+import { Browser, TestIgnoreReason, TestStatus } from '../../gql/graphql';
 import { panelModes } from '../../modes';
 import { makeTest, makeTests } from '../../utils/storyData';
 import { Grid } from './SnapshotComparison';
@@ -119,6 +119,67 @@ export const Failed: Story = {
   args: {
     tests: [makeTest({ status: TestStatus.Failed })],
   },
+};
+
+const ignoredTest = (ignoreReason: TestIgnoreReason, status = TestStatus.Ignored) =>
+  makeTest({ status, ignoreReason });
+
+export const Ignored: Story = {
+  args: {
+    tests: [ignoredTest(TestIgnoreReason.Manual)],
+    selectedTest: ignoredTest(TestIgnoreReason.Manual),
+  },
+};
+
+export const AutoIgnored: Story = {
+  args: {
+    tests: [ignoredTest(TestIgnoreReason.Unstable)],
+    selectedTest: ignoredTest(TestIgnoreReason.Unstable),
+  },
+};
+
+const unstableTest = (status = TestStatus.Pending) => makeTest({ status, isUnstable: true });
+
+export const Unstable: Story = {
+  args: {
+    tests: [unstableTest()],
+    selectedTest: unstableTest(),
+  },
+};
+
+export const UnstableAccepted: Story = {
+  args: {
+    tests: [unstableTest(TestStatus.Accepted)],
+    selectedTest: unstableTest(TestStatus.Accepted),
+  },
+};
+
+export const Quarantined: Story = {
+  args: {
+    tests: [ignoredTest(TestIgnoreReason.Quarantine)],
+    selectedTest: ignoredTest(TestIgnoreReason.Quarantine),
+  },
+};
+
+// A quarantined test that was accepted anyway keeps its badge next to the accepted headline
+export const QuarantinedAccepted: Story = {
+  args: {
+    tests: [ignoredTest(TestIgnoreReason.Quarantine, TestStatus.Accepted)],
+    selectedTest: ignoredTest(TestIgnoreReason.Quarantine, TestStatus.Accepted),
+  },
+};
+
+// The badge describes the selected mode, not the story: a passed mode is selected here so no badge
+export const IgnoredOtherModeSelected: Story = {
+  args: {
+    tests: makeTests({
+      viewports: [
+        { status: TestStatus.Passed, viewport: 480 },
+        { status: TestStatus.Ignored, ignoreReason: TestIgnoreReason.Quarantine, viewport: 800 },
+      ],
+    }),
+  },
+  render: (args) => <StoryInfo {...args} selectedTest={args.tests?.[0]} />,
 };
 
 export const PendingManyViewportsAndBrowsers: Story = {
