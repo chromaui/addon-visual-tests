@@ -1,7 +1,7 @@
 import { PlayIcon } from '@storybook/icons';
 import pluralize from 'pluralize';
 import React from 'react';
-import { Link } from 'storybook/internal/components';
+import { Link, TooltipMessage, WithTooltip } from 'storybook/internal/components';
 import { styled } from 'storybook/theming';
 
 import { ActionButton } from '../../components/ActionButton';
@@ -9,7 +9,7 @@ import { Badge } from '../../components/Badge';
 import { AlertIcon } from '../../components/icons/AlertIcon';
 import { ProgressIcon } from '../../components/icons/ProgressIcon';
 import { StatusIcon } from '../../components/icons/StatusIcon';
-import { StoryTestFieldsFragment, TestStatus } from '../../gql/graphql';
+import { StoryTestFieldsFragment, TestIgnoreReason, TestStatus } from '../../gql/graphql';
 import { formatDate } from '../../utils/formatDate';
 import {
   getIgnoreBadgeLabel,
@@ -36,6 +36,12 @@ const Info = styled.div(({ theme }) => ({
     fontSize: theme.typography.size.s2 - 1,
   },
 
+  // The badge carries no left margin so it lines up with the text when it wraps; the headline
+  // provides the spacing instead while they share a line.
+  '[data-has-badge] > b': {
+    marginRight: 8,
+  },
+
   '@container (min-width: 800px)': {
     margin: '6px 10px 6px 15px',
     alignItems: 'center',
@@ -43,6 +49,10 @@ const Info = styled.div(({ theme }) => ({
 
     small: {
       fontSize: 'inherit',
+    },
+
+    '[data-has-badge] > b': {
+      marginRight: 0,
     },
 
     '[data-hidden-large]': {
@@ -57,6 +67,42 @@ const Info = styled.div(({ theme }) => ({
     },
   },
 }));
+
+const ignoreNotes: Record<TestIgnoreReason, string> = {
+  [TestIgnoreReason.Quarantine]:
+    'This test was ignored across all branches. It will no longer block builds from passing. We continue taking snapshots of unstable tests to track stability over time for debugging.',
+  [TestIgnoreReason.Manual]:
+    'This test was temporarily skipped and does not block the current build from passing.',
+  [TestIgnoreReason.Unstable]:
+    'This test appears inconsistently every time it renders. Chromatic auto-ignored it to prevent it from blocking the current build.',
+};
+
+const unstableNote =
+  'This test appears inconsistently every time it renders. Unstable tests can block your CI.';
+
+// Keeps the ignore badge and status icon together when the headline wraps at narrow widths
+// Keeps the ignore badge and status icon together and vertically centered. Only used when there is
+// a badge, since the wrapper changes the icon's line box.
+const StatusGroup = styled.span({
+  display: 'inline-flex',
+  alignItems: 'center',
+  whiteSpace: 'nowrap',
+  gap: 6,
+
+  // StatusIcon sets margin inline so it can sit next to headline text. Gap replaces that here.
+  svg: {
+    margin: '0 !important',
+  },
+
+  '@container (min-width: 800px)': {
+    marginLeft: 6,
+  },
+});
+
+// No left margin so it aligns with the text when wrapped; the headline provides spacing instead
+const IgnoreBadge = styled(Badge)({
+  margin: 0,
+});
 
 const Actions = styled.div({
   gridArea: 'actions',
@@ -118,6 +164,8 @@ export const StoryInfo = ({
   const showButton = (isErrored || isOutdated) && !isRunningStory && !changeCount;
   const ignoreBadgeLabel = getIgnoreBadgeLabel(selectedTest);
   const showUnstableBadge = shouldShowUnstableBadge(selectedTest);
+  const ignoreReason = selectedTest?.ignoreReason ?? TestIgnoreReason.Manual;
+  const hasBadge = !!ignoreBadgeLabel || showUnstableBadge;
 
   let details;
   if (isOutdated) {
@@ -169,9 +217,14 @@ export const StoryInfo = ({
       </Info>
     );
   } else {
+    const statusIcon = (
+      <StatusIcon
+        icon={brokenCount ? 'failed' : status === TestStatus.Pending ? 'changed' : 'passed'}
+      />
+    );
     details = (
       <Info>
-        <span>
+        <span data-has-badge={hasBadge ? '' : undefined}>
           <b>
             {brokenCount
               ? null
@@ -182,11 +235,31 @@ export const StoryInfo = ({
                 : 'No changes'}
             {brokenCount ? pluralize('error', brokenCount, true) : null}
           </b>
-          <StatusIcon
-            icon={brokenCount ? 'failed' : status === TestStatus.Pending ? 'changed' : 'passed'}
-          />
-          {showUnstableBadge && <Badge status="neutral">Unstable</Badge>}
-          {ignoreBadgeLabel && <Badge status="neutral">{ignoreBadgeLabel}</Badge>}
+          {hasBadge ? (
+            <StatusGroup>
+              {showUnstableBadge ? (
+                <WithTooltip placement="bottom" tooltip={<TooltipMessage desc={unstableNote} />}>
+                  <IgnoreBadge status="neutral">Unstable</IgnoreBadge>
+                </WithTooltip>
+              ) : null}
+              {ignoreBadgeLabel ? (
+                <WithTooltip
+                  placement="bottom"
+                  tooltip={<TooltipMessage desc={ignoreNotes[ignoreReason]} />}
+                >
+                  {/* Quarantined is solid red, matching the webapp's pill */}
+                  <IgnoreBadge
+                    status={ignoreReason === TestIgnoreReason.Quarantine ? 'critical' : 'neutral'}
+                  >
+                    {ignoreBadgeLabel}
+                  </IgnoreBadge>
+                </WithTooltip>
+              ) : null}
+              {statusIcon}
+            </StatusGroup>
+          ) : (
+            statusIcon
+          )}
         </span>
         <small>
           {modeResults.length > 0 && (

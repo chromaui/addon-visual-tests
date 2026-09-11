@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, fn } from 'storybook/test';
+import { expect, fn, spyOn } from 'storybook/test';
 import { screen, userEvent } from 'storybook/test';
 
 import { panelModes } from '../../modes';
@@ -9,10 +9,14 @@ import { BuildProvider } from './BuildContext';
 import { ControlsProvider } from './ControlsContext';
 import {
   acceptedTests,
+  autoIgnoredTests,
   buildInfo,
   inProgressTests,
+  manuallyIgnoredTests,
   pendingBuild,
   pendingTests,
+  quarantinedAcceptedTests,
+  quarantinedTests,
   withTests,
 } from './mocks';
 import { ReviewTestProvider } from './ReviewTestContext';
@@ -40,6 +44,7 @@ const meta = {
       buildIsReviewable: true,
       acceptTest: fn().mockName('acceptTest'),
       unacceptTest: fn().mockName('unacceptTest'),
+      unquarantineTest: fn().mockName('unquarantineTest'),
     },
     selectedBuild: withTests(pendingBuild, pendingTests),
   },
@@ -97,8 +102,66 @@ export const ToggleBaseline = {
 export const BatchAcceptOptions = {
   play: playSequentially(async ({ canvas }) => {
     await userEvent.keyboard('[Escape]');
-    const menu = await canvas.findByRole('button', { name: 'Batch accept options' });
+    const menu = await canvas.findByRole('button', { name: 'Open batch accept options' });
     await userEvent.click(menu);
+  }),
+} satisfies Story;
+
+// Ignored tests are accepted one at a time (batch review skips them), so no batch options
+export const Ignored = {
+  parameters: {
+    selectedBuild: withTests(pendingBuild, manuallyIgnoredTests),
+  },
+} satisfies Story;
+
+export const AutoIgnored = {
+  parameters: {
+    selectedBuild: withTests(pendingBuild, autoIgnoredTests),
+  },
+} satisfies Story;
+
+export const AcceptIgnored = {
+  ...Ignored,
+  play: playAll(async ({ canvas, parameters }) => {
+    await expect(canvas.queryByRole('button', { name: 'Open batch accept options' })).toBeNull();
+    await userEvent.click(await canvas.findByRole('button', { name: 'Accept this story' }));
+    await expect(parameters.reviewTest.acceptTest).toHaveBeenCalledWith(
+      parameters.selectedBuild.testsForStory.nodes[0].id,
+      undefined
+    );
+  }),
+} satisfies Story;
+
+export const Quarantined = {
+  parameters: {
+    selectedBuild: withTests(pendingBuild, quarantinedTests),
+  },
+} satisfies Story;
+
+export const QuarantinedAccepted = {
+  parameters: {
+    selectedBuild: withTests(pendingBuild, quarantinedAcceptedTests),
+  },
+} satisfies Story;
+
+export const QuarantinedMoreActions = {
+  ...Quarantined,
+  play: playSequentially(async ({ canvas }) => {
+    await userEvent.keyboard('[Escape]');
+    await userEvent.click(await canvas.findByRole('button', { name: 'More actions' }));
+    await screen.findByText('Unquarantine');
+  }),
+} satisfies Story;
+
+export const Unquarantine = {
+  ...Quarantined,
+  play: playSequentially(QuarantinedMoreActions, async ({ parameters }) => {
+    const confirm = spyOn(window, 'confirm').mockReturnValue(true);
+    await userEvent.click(await screen.findByRole('button', { name: 'Unquarantine this story' }));
+    await expect(confirm).toHaveBeenCalled();
+    await expect(parameters.reviewTest.unquarantineTest).toHaveBeenCalledWith(
+      parameters.selectedBuild.testsForStory.nodes[0].id
+    );
   }),
 } satisfies Story;
 
