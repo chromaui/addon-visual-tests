@@ -89,7 +89,7 @@ export const useBuild = ({
   return {
     account: data?.project?.account,
     features: data?.project?.features,
-    manageUrl: data?.project?.manageUrl,
+    manageUrl: data?.project?.links?.manage,
     quarantineDashboardUrl: data?.project?.links?.quarantineDashboard ?? undefined,
     hasData: !!data && !storyDataIsStale,
     hasProject: !!data?.project,

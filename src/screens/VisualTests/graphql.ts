@@ -13,8 +13,8 @@ export const QueryBuild = graphql(/* GraphQL */ `
   ) {
     project(id: $projectId) {
       name
-      manageUrl
       links {
+        manage
         quarantineDashboard
       }
       account {

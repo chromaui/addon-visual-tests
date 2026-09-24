@@ -82,8 +82,8 @@ function mapQuery(
     project: {
       name: 'acme',
       features: { uiTests },
-      manageUrl: 'https://www.chromatic.com/manage?appId=123',
       links: {
+        manage: 'https://www.chromatic.com/manage?appId=123',
         quarantineDashboard: 'https://www.chromatic.com/manage/quarantine?appId=123',
       },
       lastBuildOnBranch,

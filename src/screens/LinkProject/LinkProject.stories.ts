@@ -36,12 +36,12 @@ const fewProjects = {
           {
             id: '123',
             name: 'optics',
-            webUrl: 'https://www.chromatic.com/builds?appId=123',
+            links: { home: 'https://www.chromatic.com/builds?appId=123' },
           },
           {
             id: '456',
             name: 'design-system',
-            webUrl: 'https://www.chromatic.com/builds?appId=456',
+            links: { home: 'https://www.chromatic.com/builds?appId=456' },
           },
         ],
       },
@@ -52,7 +52,7 @@ const fewProjects = {
           {
             id: '789',
             name: 'acme',
-            webUrl: 'https://www.chromatic.com/builds?appId=789',
+            links: { home: 'https://www.chromatic.com/builds?appId=789' },
           },
         ],
       },
@@ -71,43 +71,43 @@ const manyProjects = {
           {
             id: '123',
             name: 'optics',
-            webUrl: 'https://www.chromatic.com/builds?appId=123',
+            links: { home: 'https://www.chromatic.com/builds?appId=123' },
           },
           {
             id: '456',
             name: 'design-system',
-            webUrl: 'https://www.chromatic.com/builds?appId=456',
+            links: { home: 'https://www.chromatic.com/builds?appId=456' },
           },
           {
             id: '789',
             name: 'test-repo',
-            webUrl: 'https://www.chromatic.com/builds?appId=123',
+            links: { home: 'https://www.chromatic.com/builds?appId=123' },
           },
           {
             id: '101',
             name: 'shapes',
-            webUrl: 'https://www.chromatic.com/builds?appId=456',
+            links: { home: 'https://www.chromatic.com/builds?appId=456' },
           },
           {
             id: '102',
             name: 'chroma-pets',
-            webUrl: 'https://www.chromatic.com/builds?appId=123',
+            links: { home: 'https://www.chromatic.com/builds?appId=123' },
           },
           {
             id: '103',
             name: 'addon',
-            webUrl: 'https://www.chromatic.com/builds?appId=456',
+            links: { home: 'https://www.chromatic.com/builds?appId=456' },
           },
 
           {
             id: '104',
             name: 'another-app',
-            webUrl: 'https://www.chromatic.com/builds?appId=123',
+            links: { home: 'https://www.chromatic.com/builds?appId=123' },
           },
           {
             id: '105',
             name: 'below-the-fold',
-            webUrl: 'https://www.chromatic.com/builds?appId=456',
+            links: { home: 'https://www.chromatic.com/builds?appId=456' },
           },
         ],
       },
@@ -119,7 +119,7 @@ const manyProjects = {
           {
             id: '789',
             name: 'acme',
-            webUrl: 'https://www.chromatic.com/builds?appId=789',
+            links: { home: 'https://www.chromatic.com/builds?appId=789' },
           },
         ],
       },
@@ -131,7 +131,7 @@ const manyProjects = {
           {
             id: '7893',
             name: 'third',
-            webUrl: 'https://www.chromatic.com/builds?appId=789',
+            links: { home: 'https://www.chromatic.com/builds?appId=789' },
           },
         ],
       },
@@ -143,7 +143,7 @@ const manyProjects = {
           {
             id: '7894',
             name: 'fourth',
-            webUrl: 'https://www.chromatic.com/builds?appId=789',
+            links: { home: 'https://www.chromatic.com/builds?appId=789' },
           },
         ],
       },
@@ -155,7 +155,7 @@ const manyProjects = {
           {
             id: '7895',
             name: 'fifth',
-            webUrl: 'https://www.chromatic.com/builds?appId=789',
+            links: { home: 'https://www.chromatic.com/builds?appId=789' },
           },
         ],
       },
@@ -167,7 +167,7 @@ const manyProjects = {
           {
             id: '7896',
             name: 'acme',
-            webUrl: 'https://www.chromatic.com/builds?appId=789',
+            links: { home: 'https://www.chromatic.com/builds?appId=789' },
           },
         ],
       },
@@ -179,7 +179,7 @@ const manyProjects = {
           {
             id: '7897',
             name: 'seven',
-            webUrl: 'https://www.chromatic.com/builds?appId=789',
+            links: { home: 'https://www.chromatic.com/builds?appId=789' },
           },
         ],
       },
@@ -191,7 +191,7 @@ const manyProjects = {
           {
             id: '7897',
             name: 'below',
-            webUrl: 'https://www.chromatic.com/builds?appId=789',
+            links: { home: 'https://www.chromatic.com/builds?appId=789' },
           },
         ],
       },
