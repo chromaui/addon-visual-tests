@@ -528,7 +528,7 @@ enum TestResult {
   """
   The test was flagged as unstable (flaky) and auto-ignored; it does not block build acceptance.
   """
-  UNSTABLE
+  UNSTABLE @deprecated(reason: "No longer produced; use CHANGED")
 }
 
 """Connection to a list of PreparedBuildTest."""
@@ -1565,6 +1565,9 @@ type Project implements Node & Temporal {
   """Link to the project home on Chromatic."""
   webUrl: URL!
 
+  """Links to this Project's pages on Chromatic."""
+  links: ProjectLinks!
+
   """Project token to start builds with Chromatic CLI."""
   projectToken: String!
 
@@ -1692,6 +1695,20 @@ enum GitProvider {
 
   """GitLab"""
   GITLAB
+}
+
+"""Links to a Project's pages on Chromatic."""
+type ProjectLinks {
+  """Link to the project home on Chromatic."""
+  home: URL!
+
+  """Link to the project's manage screen on Chromatic."""
+  manage: URL!
+
+  """
+  Link to the Project's quarantine dashboard, or null if quarantine is not enabled for this Project.
+  """
+  quarantineDashboard: URL
 }
 
 """The final result of a completed Build."""

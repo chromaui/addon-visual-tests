@@ -1,7 +1,7 @@
 import { PlayIcon } from '@storybook/icons';
 import pluralize from 'pluralize';
 import React from 'react';
-import { Link, TooltipMessage, WithTooltip } from 'storybook/internal/components';
+import { Link, WithTooltip } from 'storybook/internal/components';
 import { styled } from 'storybook/theming';
 
 import { ActionButton } from '../../components/ActionButton';
@@ -81,6 +81,22 @@ const ignoreNotes: Record<TestIgnoreReason, string> = {
 const unstableNote =
   'This test appears inconsistently every time it renders. Unstable tests can block your CI.';
 
+// Storybook's TooltipMessage is deprecated and goes away in Storybook 11, so the badge tooltips
+// bring their own content. WithTooltip supplies the chrome but no padding.
+const BadgeNote = styled.div(({ theme }) => ({
+  padding: 15,
+  width: 280,
+  boxSizing: 'border-box',
+  color: theme.color.defaultText,
+  lineHeight: '18px',
+}));
+
+const BadgeNoteLink = styled(Link)(({ theme }) => ({
+  display: 'block',
+  marginTop: 8,
+  fontWeight: theme.typography.weight.bold,
+}));
+
 // Keeps the ignore badge and status icon together when the headline wraps at narrow widths
 // Keeps the ignore badge and status icon together and vertically centered. Only used when there is
 // a badge, since the wrapper changes the icon's line box.
@@ -136,6 +152,8 @@ interface StoryInfoSectionProps {
   shouldSwitchToLastBuildOnBranch: boolean;
   /** Select the last build on the branch if it isn't this build */
   switchToLastBuildOnBranch?: () => void;
+  /** Link to the project's quarantine dashboard, if quarantine is enabled */
+  quarantineDashboardUrl?: string | null;
 }
 
 export const StoryInfo = ({
@@ -147,6 +165,7 @@ export const StoryInfo = ({
   isOutdated,
   shouldSwitchToLastBuildOnBranch,
   switchToLastBuildOnBranch,
+  quarantineDashboardUrl,
 }: StoryInfoSectionProps) => {
   const { isRunning, startBuild } = useRunBuildState();
 
@@ -177,6 +196,8 @@ export const StoryInfo = ({
   const showUnstableBadge = shouldShowUnstableBadge(selectedTest);
   const ignoreReason = selectedTest?.ignoreReason ?? TestIgnoreReason.Manual;
   const hasBadge = !!ignoreBadgeLabel || showUnstableBadge;
+  const manageQuarantineUrl =
+    ignoreReason === TestIgnoreReason.Quarantine ? quarantineDashboardUrl : undefined;
 
   let details;
   if (isOutdated) {
@@ -249,14 +270,33 @@ export const StoryInfo = ({
           {hasBadge ? (
             <StatusGroup>
               {showUnstableBadge ? (
-                <WithTooltip placement="bottom" tooltip={<TooltipMessage desc={unstableNote} />}>
+                <WithTooltip
+                  trigger={['hover', 'focus']}
+                  placement="bottom"
+                  tooltip={<BadgeNote>{unstableNote}</BadgeNote>}
+                >
                   <IgnoreBadge status="neutral">Unstable</IgnoreBadge>
                 </WithTooltip>
               ) : null}
               {ignoreBadgeLabel ? (
                 <WithTooltip
+                  trigger={['hover', 'focus']}
+                  // Keeps the tooltip open while the pointer moves onto it, so its link can be
+                  // clicked. An array trigger opts out of the default hover delays, so the grace
+                  // period for crossing the gap to the tooltip has to be set explicitly.
+                  interactive
+                  delayHide={200}
                   placement="bottom"
-                  tooltip={<TooltipMessage desc={ignoreNotes[ignoreReason]} />}
+                  tooltip={
+                    <BadgeNote>
+                      {ignoreNotes[ignoreReason]}
+                      {manageQuarantineUrl && (
+                        <BadgeNoteLink href={manageQuarantineUrl} target="_blank" rel="noreferrer">
+                          Manage quarantined tests
+                        </BadgeNoteLink>
+                      )}
+                    </BadgeNote>
+                  }
                 >
                   {/* Quarantined is solid red, matching the webapp's pill */}
                   <IgnoreBadge

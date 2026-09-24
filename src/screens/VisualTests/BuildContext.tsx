@@ -90,6 +90,7 @@ export const useBuild = ({
     account: data?.project?.account,
     features: data?.project?.features,
     manageUrl: data?.project?.manageUrl,
+    quarantineDashboardUrl: data?.project?.links?.quarantineDashboard ?? undefined,
     hasData: !!data && !storyDataIsStale,
     hasProject: !!data?.project,
     hasSelectedBuild: selectedBuild?.branch.split(':').at(-1) === gitInfo.branch,

@@ -14,6 +14,9 @@ export const QueryBuild = graphql(/* GraphQL */ `
     project(id: $projectId) {
       name
       manageUrl
+      links {
+        quarantineDashboard
+      }
       account {
         billingUrl
         suspensionReason

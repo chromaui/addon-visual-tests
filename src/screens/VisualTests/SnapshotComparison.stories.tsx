@@ -270,6 +270,25 @@ export const AutoIgnored = {
 
 export const Quarantined = {
   parameters: { selectedBuild: withTests(build, quarantinedTests) },
+  play: playSequentially(async ({ canvas }) => {
+    const badge = await canvas.findByText('Quarantined');
+    await userEvent.hover(badge);
+    const [link] = await screen.findAllByRole('link', { name: 'Manage quarantined tests' });
+    await expect(link).toHaveAttribute(
+      'href',
+      'https://www.chromatic.com/manage/quarantine?appId=123'
+    );
+
+    // Reaching the link means leaving the badge and crossing the gap to the tooltip, so the
+    // tooltip has to survive the crossing and then stay open while the pointer rests on it.
+    await userEvent.unhover(badge);
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    await expect(link).toBeVisible();
+
+    await userEvent.hover(link);
+    await new Promise((resolve) => setTimeout(resolve, 400));
+    await expect(link).toBeVisible();
+  }),
 } satisfies Story;
 
 // Ignored tests don't increment changeCount, so StoryInfo used to keep its Run tests

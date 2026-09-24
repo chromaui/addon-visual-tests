@@ -83,6 +83,9 @@ function mapQuery(
       name: 'acme',
       features: { uiTests },
       manageUrl: 'https://www.chromatic.com/manage?appId=123',
+      links: {
+        quarantineDashboard: 'https://www.chromatic.com/manage/quarantine?appId=123',
+      },
       lastBuildOnBranch,
     },
     selectedBuild,
