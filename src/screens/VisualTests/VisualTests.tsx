@@ -264,7 +264,9 @@ export const VisualTestsWithoutSelectedBuildId = ({
           id: `${ADDON_ID}/errorAccepting/${Date.now()}`,
           content: {
             headline:
-              action === 'unquarantine' ? 'Failed to unquarantine' : `Failed to ${action} changes`,
+              action === 'unquarantine'
+                ? 'Failed to remove quarantine'
+                : `Failed to ${action} changes`,
             subHeadline: err.message,
           },
           icon: <FailedIcon color={color.negative} />,

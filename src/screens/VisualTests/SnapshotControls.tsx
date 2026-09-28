@@ -174,7 +174,7 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
     selectedTest.status !== TestStatus.Accepted &&
     (selectedIsIgnored ? selectedTestHasChanges : changeCount > 0);
   const isUnacceptable = changeCount > 0 && selectedTest?.status === TestStatus.Accepted;
-  // Mirrors the webapp: Unquarantine is offered while the story is quarantined, also after accept.
+  // Mirrors the webapp: Remove quarantine is offered while the story is quarantined, also after accept.
   const isQuarantined = selectedTest?.ignoreReason === TestIgnoreReason.Quarantine;
   const hasControls = selectedComparison?.result === ComparisonResult.Changed;
 
@@ -377,7 +377,7 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
           )}
 
           {canReview && isQuarantined && selectedTest ? (
-            // Unquarantine is too wide to sit next to the other actions at narrow panel widths, so
+            // Remove quarantine is too wide to sit next to the other actions at narrow panel widths, so
             // it shares an overflow menu with Rerun whenever it applies.
             <PopoverProvider
               padding={0}
@@ -400,8 +400,8 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
                   </ActionList.Item>
                   <ActionList.Item>
                     <Action
-                      id="button-unquarantine-story"
-                      ariaLabel="Unquarantine this story"
+                      id="button-remove-quarantine"
+                      ariaLabel="Remove quarantine for this story"
                       disabled={isReviewing}
                       onClick={() => {
                         onHide();
@@ -412,7 +412,7 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
                       }}
                     >
                       <ActionContent>
-                        <strong>Unquarantine</strong>
+                        <strong>Remove quarantine</strong>
                         <span>Stop ignoring changes to this story</span>
                       </ActionContent>
                     </Action>

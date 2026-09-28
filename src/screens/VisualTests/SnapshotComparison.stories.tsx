@@ -259,7 +259,7 @@ export const InteractionFailure = {
   },
 };
 
-// Ignored / quarantined states: badge in the header, single Accept, Unquarantine where applicable
+// Ignored / quarantined states: badge in the header, single Accept, Remove quarantine where applicable
 export const Ignored = {
   parameters: { selectedBuild: withTests(build, manuallyIgnoredTests) },
 } satisfies Story;

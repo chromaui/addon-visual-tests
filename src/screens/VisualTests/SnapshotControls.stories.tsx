@@ -149,15 +149,17 @@ export const QuarantinedMoreActions = {
   play: playSequentially(async ({ canvas }) => {
     await userEvent.keyboard('[Escape]');
     await userEvent.click(await canvas.findByRole('button', { name: 'More actions' }));
-    await screen.findByText('Unquarantine');
+    await screen.findByText('Remove quarantine');
   }),
 } satisfies Story;
 
-export const Unquarantine = {
+export const RemoveQuarantine = {
   ...Quarantined,
   play: playSequentially(QuarantinedMoreActions, async ({ parameters }) => {
     const confirm = spyOn(window, 'confirm').mockReturnValue(true);
-    await userEvent.click(await screen.findByRole('button', { name: 'Unquarantine this story' }));
+    await userEvent.click(
+      await screen.findByRole('button', { name: 'Remove quarantine for this story' })
+    );
     await expect(confirm).toHaveBeenCalled();
     await expect(parameters.reviewTest.unquarantineTest).toHaveBeenCalledWith(
       parameters.selectedBuild.testsForStory.nodes[0].id
