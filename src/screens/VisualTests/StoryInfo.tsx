@@ -1,7 +1,7 @@
 import { PlayIcon } from '@storybook/icons';
 import pluralize from 'pluralize';
 import React from 'react';
-import { Link, WithTooltip } from 'storybook/internal/components';
+import { Link, PopoverProvider } from 'storybook/internal/components';
 import { styled } from 'storybook/theming';
 
 import { ActionButton } from '../../components/ActionButton';
@@ -81,14 +81,33 @@ const ignoreNotes: Record<TestIgnoreReason, string> = {
 const unstableNote =
   'This test appears inconsistently every time it renders. Unstable tests can block your CI.';
 
-// Storybook's TooltipMessage is deprecated and goes away in Storybook 11, so the badge tooltips
-// bring their own content. WithTooltip supplies the chrome but no padding.
+// Storybook's TooltipMessage is deprecated and goes away in Storybook 11, so the badge notes
+// bring their own content. PopoverProvider supplies the chrome. Extra right padding clears the
+// close button, which sits in the corner of the dialog.
 const BadgeNote = styled.div(({ theme }) => ({
-  padding: 15,
+  padding: '15px 36px 15px 15px',
   width: 280,
   boxSizing: 'border-box',
   color: theme.color.defaultText,
   lineHeight: '18px',
+}));
+
+// The badge itself is not an interactive element. This button is the dialog trigger, so keyboard
+// users can open the note. It has no chrome of its own; the badge provides the visuals.
+const BadgeButton = styled.button(({ theme }) => ({
+  appearance: 'none',
+  background: 'none',
+  border: 0,
+  padding: 0,
+  font: 'inherit',
+  color: 'inherit',
+  cursor: 'pointer',
+  borderRadius: 20,
+
+  '&:focus-visible': {
+    outline: `2px solid ${theme.color.secondary}`,
+    outlineOffset: 2,
+  },
 }));
 
 const BadgeNoteLink = styled(Link)(({ theme }) => ({
@@ -120,6 +139,39 @@ const StatusGroup = styled.span({
 const IgnoreBadge = styled(Badge)({
   margin: 0,
 });
+
+const IgnoreBadgePopover = ({
+  label,
+  status,
+  note,
+  href,
+}: {
+  label: string;
+  status: 'neutral' | 'critical';
+  note: string;
+  href?: string;
+}) => (
+  <PopoverProvider
+    ariaLabel={label}
+    hasCloseButton
+    placement="bottom"
+    padding={0}
+    popover={
+      <BadgeNote>
+        {note}
+        {href && (
+          <BadgeNoteLink href={href} target="_blank" rel="noreferrer">
+            Manage quarantined tests
+          </BadgeNoteLink>
+        )}
+      </BadgeNote>
+    }
+  >
+    <BadgeButton type="button" aria-label={`${label}. Learn more`}>
+      <IgnoreBadge status={status}>{label}</IgnoreBadge>
+    </BadgeButton>
+  </PopoverProvider>
+);
 
 const Actions = styled.div({
   gridArea: 'actions',
@@ -270,41 +322,16 @@ export const StoryInfo = ({
           {hasBadge ? (
             <StatusGroup>
               {showUnstableBadge ? (
-                <WithTooltip
-                  trigger={['hover', 'focus']}
-                  placement="bottom"
-                  tooltip={<BadgeNote>{unstableNote}</BadgeNote>}
-                >
-                  <IgnoreBadge status="neutral">Unstable</IgnoreBadge>
-                </WithTooltip>
+                <IgnoreBadgePopover label="Unstable" status="neutral" note={unstableNote} />
               ) : null}
               {ignoreBadgeLabel ? (
-                <WithTooltip
-                  trigger={['hover', 'focus']}
-                  // Keeps the tooltip open while the pointer moves onto it, so its link can be
-                  // clicked. An array trigger opts out of the default hover delays, so the grace
-                  // period for crossing the gap to the tooltip has to be set explicitly.
-                  interactive
-                  delayHide={200}
-                  placement="bottom"
-                  tooltip={
-                    <BadgeNote>
-                      {ignoreNotes[ignoreReason]}
-                      {manageQuarantineUrl && (
-                        <BadgeNoteLink href={manageQuarantineUrl} target="_blank" rel="noreferrer">
-                          Manage quarantined tests
-                        </BadgeNoteLink>
-                      )}
-                    </BadgeNote>
-                  }
-                >
-                  {/* Quarantined is solid red, matching the webapp's pill */}
-                  <IgnoreBadge
-                    status={ignoreReason === TestIgnoreReason.Quarantine ? 'critical' : 'neutral'}
-                  >
-                    {ignoreBadgeLabel}
-                  </IgnoreBadge>
-                </WithTooltip>
+                <IgnoreBadgePopover
+                  label={ignoreBadgeLabel}
+                  // Quarantined is solid red, matching the webapp's pill
+                  status={ignoreReason === TestIgnoreReason.Quarantine ? 'critical' : 'neutral'}
+                  note={ignoreNotes[ignoreReason]}
+                  href={manageQuarantineUrl || undefined}
+                />
               ) : null}
               {statusIcon}
             </StatusGroup>
