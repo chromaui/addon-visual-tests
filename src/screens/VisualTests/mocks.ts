@@ -21,6 +21,7 @@ import { makeBrowserInfo, makeComparison, makeTest, makeTests } from '../../util
 export const buildInfo = (selectedBuild?: SelectedBuildFieldsFragment) => ({
   features: { uiTests: true },
   manageUrl: 'https://www.chromatic.com/manage?appId=123',
+  quarantineDashboardUrl: 'https://www.chromatic.com/manage/quarantine?appId=123',
   hasData: true,
   hasProject: true,
   hasSelectedBuild: !!selectedBuild,

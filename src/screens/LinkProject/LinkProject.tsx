@@ -34,7 +34,9 @@ const SelectProjectsQuery = graphql(/* GraphQL */ `
         projects {
           id
           name
-          webUrl
+          links {
+            home
+          }
           lastBuild {
             branch
             number

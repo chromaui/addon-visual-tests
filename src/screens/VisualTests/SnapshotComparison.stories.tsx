@@ -259,7 +259,7 @@ export const InteractionFailure = {
   },
 };
 
-// Ignored / quarantined states: badge in the header, single Accept, Unquarantine where applicable
+// Ignored / quarantined states: badge in the header, single Accept, Remove quarantine where applicable
 export const Ignored = {
   parameters: { selectedBuild: withTests(build, manuallyIgnoredTests) },
 } satisfies Story;
@@ -270,6 +270,22 @@ export const AutoIgnored = {
 
 export const Quarantined = {
   parameters: { selectedBuild: withTests(build, quarantinedTests) },
+  play: playSequentially(async ({ canvas }) => {
+    const badge = await canvas.findByText('Quarantined');
+    await userEvent.hover(badge);
+    await screen.findByText(/ignored across all branches/);
+    await userEvent.unhover(badge);
+
+    // The open note covers the menu button in this canvas, so open it from the keyboard.
+    const menu = await canvas.findByRole('button', { name: 'More actions' });
+    menu.focus();
+    await userEvent.keyboard('{Enter}');
+    const [link] = await screen.findAllByRole('link', { name: /^Manage quarantined tests/ });
+    await expect(link).toHaveAttribute(
+      'href',
+      'https://www.chromatic.com/manage/quarantine?appId=123'
+    );
+  }),
 } satisfies Story;
 
 // Ignored tests don't increment changeCount, so StoryInfo used to keep its Run tests
