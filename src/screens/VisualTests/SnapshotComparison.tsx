@@ -7,7 +7,7 @@ import { SnapshotImage } from '../../components/SnapshotImage';
 import { Text } from '../../components/Text';
 import { ComparisonResult, TestResult, TestStatus } from '../../gql/graphql';
 import { summarizeTests } from '../../utils/summarizeTests';
-import { useBuildState, useSelectedBuildState, useSelectedStoryState } from './BuildContext';
+import { useSelectedBuildState, useSelectedStoryState } from './BuildContext';
 import { BuildResultsFooter } from './BuildResultsFooter';
 import { useControlsDispatch, useControlsState } from './ControlsContext';
 import { SnapshotControls } from './SnapshotControls';
@@ -133,7 +133,6 @@ export const SnapshotComparison = ({
   const { toggleBaselineImage } = useControlsDispatch();
 
   const selectedBuild = useSelectedBuildState();
-  const { quarantineDashboardUrl } = useBuildState();
   const startedAt: Date = 'startedAt' in selectedBuild && selectedBuild.startedAt;
 
   const selectedStory = useSelectedStoryState();
@@ -201,7 +200,6 @@ export const SnapshotComparison = ({
         isOutdated,
         shouldSwitchToLastBuildOnBranch,
         switchToLastBuildOnBranch,
-        quarantineDashboardUrl,
       }}
     />
   );

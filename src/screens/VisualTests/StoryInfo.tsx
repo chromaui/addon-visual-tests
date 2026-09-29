@@ -1,7 +1,7 @@
 import { PlayIcon } from '@storybook/icons';
 import pluralize from 'pluralize';
 import React from 'react';
-import { Link, PopoverProvider } from 'storybook/internal/components';
+import { Link, WithTooltip } from 'storybook/internal/components';
 import { styled } from 'storybook/theming';
 
 import { ActionButton } from '../../components/ActionButton';
@@ -82,47 +82,13 @@ const unstableNote =
   'This test appears inconsistently every time it renders. Unstable tests can block your CI.';
 
 // Storybook's TooltipMessage is deprecated and goes away in Storybook 11, so the badge notes
-// bring their own content. PopoverProvider supplies the chrome. Extra right padding clears the
-// close button, which sits in the corner of the dialog.
+// bring their own content. WithTooltip supplies the chrome but no padding.
 const BadgeNote = styled.div(({ theme }) => ({
-  padding: '15px 36px 15px 15px',
+  padding: 15,
   width: 280,
   boxSizing: 'border-box',
   color: theme.color.defaultText,
   lineHeight: '18px',
-
-  // Popover renders its close button right after the note. Pointer users dismiss the dialog by
-  // clicking outside it or on the badge, so the button only shows once keyboard focus reaches it.
-  '& + button': {
-    opacity: 0,
-  },
-  '& + button:focus-visible': {
-    opacity: 1,
-  },
-}));
-
-// The badge itself is not an interactive element. This button is the dialog trigger, so keyboard
-// users can open the note. It has no chrome of its own; the badge provides the visuals.
-const BadgeButton = styled.button(({ theme }) => ({
-  appearance: 'none',
-  background: 'none',
-  border: 0,
-  padding: 0,
-  font: 'inherit',
-  color: 'inherit',
-  cursor: 'pointer',
-  borderRadius: 20,
-
-  '&:focus-visible': {
-    outline: `2px solid ${theme.color.secondary}`,
-    outlineOffset: 2,
-  },
-}));
-
-const BadgeNoteLink = styled(Link)(({ theme }) => ({
-  display: 'block',
-  marginTop: 8,
-  fontWeight: theme.typography.weight.bold,
 }));
 
 // Keeps the ignore badge and status icon together when the headline wraps at narrow widths
@@ -149,37 +115,22 @@ const IgnoreBadge = styled(Badge)({
   margin: 0,
 });
 
-const IgnoreBadgePopover = ({
+const BadgeTooltip = ({
   label,
   status,
   note,
-  href,
 }: {
   label: string;
   status: 'neutral' | 'critical';
   note: string;
-  href?: string;
 }) => (
-  <PopoverProvider
-    ariaLabel={label}
-    hasCloseButton
+  <WithTooltip
+    trigger={['hover', 'focus']}
     placement="bottom"
-    padding={0}
-    popover={
-      <BadgeNote>
-        {note}
-        {href && (
-          <BadgeNoteLink href={href} target="_blank" rel="noreferrer">
-            Manage quarantined tests
-          </BadgeNoteLink>
-        )}
-      </BadgeNote>
-    }
+    tooltip={<BadgeNote>{note}</BadgeNote>}
   >
-    <BadgeButton type="button" aria-label={`${label}. Learn more`}>
-      <IgnoreBadge status={status}>{label}</IgnoreBadge>
-    </BadgeButton>
-  </PopoverProvider>
+    <IgnoreBadge status={status}>{label}</IgnoreBadge>
+  </WithTooltip>
 );
 
 const Actions = styled.div({
@@ -213,8 +164,6 @@ interface StoryInfoSectionProps {
   shouldSwitchToLastBuildOnBranch: boolean;
   /** Select the last build on the branch if it isn't this build */
   switchToLastBuildOnBranch?: () => void;
-  /** Link to the project's quarantine dashboard, if quarantine is enabled */
-  quarantineDashboardUrl?: string | null;
 }
 
 export const StoryInfo = ({
@@ -226,7 +175,6 @@ export const StoryInfo = ({
   isOutdated,
   shouldSwitchToLastBuildOnBranch,
   switchToLastBuildOnBranch,
-  quarantineDashboardUrl,
 }: StoryInfoSectionProps) => {
   const { isRunning, startBuild } = useRunBuildState();
 
@@ -257,8 +205,6 @@ export const StoryInfo = ({
   const showUnstableBadge = shouldShowUnstableBadge(selectedTest);
   const ignoreReason = selectedTest?.ignoreReason ?? TestIgnoreReason.Manual;
   const hasBadge = !!ignoreBadgeLabel || showUnstableBadge;
-  const manageQuarantineUrl =
-    ignoreReason === TestIgnoreReason.Quarantine ? quarantineDashboardUrl : undefined;
 
   let details;
   if (isOutdated) {
@@ -331,15 +277,14 @@ export const StoryInfo = ({
           {hasBadge ? (
             <StatusGroup>
               {showUnstableBadge ? (
-                <IgnoreBadgePopover label="Unstable" status="neutral" note={unstableNote} />
+                <BadgeTooltip label="Unstable" status="neutral" note={unstableNote} />
               ) : null}
               {ignoreBadgeLabel ? (
-                <IgnoreBadgePopover
+                <BadgeTooltip
                   label={ignoreBadgeLabel}
                   // Quarantined is solid red, matching the webapp's pill
                   status={ignoreReason === TestIgnoreReason.Quarantine ? 'critical' : 'neutral'}
                   note={ignoreNotes[ignoreReason]}
-                  href={manageQuarantineUrl || undefined}
                 />
               ) : null}
               {statusIcon}

@@ -20,7 +20,7 @@ import { Placeholder } from '../../components/Placeholder';
 import { Text } from '../../components/Text';
 import { ComparisonResult, ReviewTestBatch, TestIgnoreReason, TestStatus } from '../../gql/graphql';
 import { isIgnored } from '../../utils/summarizeTests';
-import { useSelectedStoryState } from './BuildContext';
+import { useBuildState, useSelectedStoryState } from './BuildContext';
 import { useControlsDispatch, useControlsState } from './ControlsContext';
 import { useReviewTestState } from './ReviewTestContext';
 import { useRunBuildState } from './RunBuildContext';
@@ -84,14 +84,22 @@ const unquarantineConfirmation = `This test will no longer be ignored on all bra
 
 We recommend removing quarantine only after the test is stable, you've accepted the new baseline, and all active branches include the baseline update.`;
 
-const StyledAction = styled(ActionList.Action)({
+const menuItemStyle = {
   height: 'auto',
   flex: '0 1 100%',
-});
+};
 
-// Menu items already show their label and description, so the ariaLabel tooltip is redundant
-const Action = (props: React.ComponentProps<typeof StyledAction>) => (
+const StyledAction = styled(ActionList.Action)(menuItemStyle);
+const StyledMenuLink = styled(ActionList.Link)(menuItemStyle);
+
+// Menu items show a label and a description, so their text is the accessible name. A string
+// ariaLabel would also become a tooltip that repeats the label.
+type MenuItemProps<T extends React.ElementType> = Omit<React.ComponentProps<T>, 'ariaLabel'>;
+const Action = (props: MenuItemProps<typeof StyledAction>) => (
   <StyledAction ariaLabel={false} {...props} />
+);
+const MenuLink = (props: MenuItemProps<typeof StyledMenuLink>) => (
+  <StyledMenuLink ariaLabel={false} {...props} />
 );
 
 const ActionContent = styled(ActionList.Text)(({ theme }) => ({
@@ -145,6 +153,7 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
 
   const { selectedTest, selectedComparison, selectedTestHasChanges, summary } =
     useSelectedStoryState();
+  const { quarantineDashboardUrl } = useBuildState();
   const { changeCount, isInProgress } = summary;
 
   const {
@@ -249,7 +258,6 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
                     <ActionList>
                       <ActionList.Item>
                         <Action
-                          ariaLabel="Accept component"
                           disabled={isReviewing}
                           onClick={() => {
                             acceptTest(selectedTest.id, ReviewTestBatch.Component);
@@ -264,7 +272,6 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
                       </ActionList.Item>
                       <ActionList.Item>
                         <Action
-                          ariaLabel="Accept entire build"
                           disabled={isReviewing}
                           onClick={() => {
                             acceptTest(selectedTest.id, ReviewTestBatch.Build);
@@ -320,7 +327,6 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
                   <ActionList>
                     <ActionList.Item>
                       <Action
-                        ariaLabel="Unaccept component"
                         disabled={isReviewing}
                         onClick={() => {
                           unacceptTest(selectedTest.id, ReviewTestBatch.Component);
@@ -335,7 +341,6 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
                     </ActionList.Item>
                     <ActionList.Item>
                       <Action
-                        ariaLabel="Unaccept entire build"
                         disabled={isReviewing}
                         onClick={() => {
                           unacceptTest(selectedTest.id, ReviewTestBatch.Build);
@@ -385,7 +390,6 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
                 <ActionList>
                   <ActionList.Item>
                     <Action
-                      ariaLabel={isOutdated ? 'Run new tests' : 'Rerun tests'}
                       disabled={isRunning}
                       onClick={() => {
                         startBuild();
@@ -401,7 +405,6 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
                   <ActionList.Item>
                     <Action
                       id="button-remove-quarantine"
-                      ariaLabel="Remove quarantine for this story"
                       disabled={isReviewing}
                       onClick={() => {
                         onHide();
@@ -417,6 +420,21 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
                       </ActionContent>
                     </Action>
                   </ActionList.Item>
+                  {quarantineDashboardUrl && (
+                    <ActionList.Item>
+                      <MenuLink
+                        href={quarantineDashboardUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={onHide}
+                      >
+                        <ActionContent>
+                          <strong>Manage quarantined tests</strong>
+                          <span>Open the quarantine dashboard</span>
+                        </ActionContent>
+                      </MenuLink>
+                    </ActionList.Item>
+                  )}
                 </ActionList>
               )}
             >

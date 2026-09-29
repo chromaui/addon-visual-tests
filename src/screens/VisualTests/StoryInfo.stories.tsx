@@ -158,7 +158,6 @@ export const Quarantined: Story = {
   args: {
     tests: [ignoredTest(TestIgnoreReason.Quarantine)],
     selectedTest: ignoredTest(TestIgnoreReason.Quarantine),
-    quarantineDashboardUrl: 'https://www.chromatic.com/manage/quarantine?appId=123',
   },
 };
 
@@ -167,7 +166,6 @@ export const QuarantinedAccepted: Story = {
   args: {
     tests: [ignoredTest(TestIgnoreReason.Quarantine, TestStatus.Accepted)],
     selectedTest: ignoredTest(TestIgnoreReason.Quarantine, TestStatus.Accepted),
-    quarantineDashboardUrl: 'https://www.chromatic.com/manage/quarantine?appId=123',
   },
 };
 

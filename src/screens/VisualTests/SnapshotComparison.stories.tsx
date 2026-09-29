@@ -271,25 +271,20 @@ export const AutoIgnored = {
 export const Quarantined = {
   parameters: { selectedBuild: withTests(build, quarantinedTests) },
   play: playSequentially(async ({ canvas }) => {
-    await userEvent.click(await canvas.findByRole('button', { name: 'Quarantined. Learn more' }));
-    const [link] = await screen.findAllByRole('link', { name: 'Manage quarantined tests' });
+    const badge = await canvas.findByText('Quarantined');
+    await userEvent.hover(badge);
+    await screen.findByText(/ignored across all branches/);
+    await userEvent.unhover(badge);
+
+    // The open note covers the menu button in this canvas, so open it from the keyboard.
+    const menu = await canvas.findByRole('button', { name: 'More actions' });
+    menu.focus();
+    await userEvent.keyboard('{Enter}');
+    const [link] = await screen.findAllByRole('link', { name: /^Manage quarantined tests/ });
     await expect(link).toHaveAttribute(
       'href',
       'https://www.chromatic.com/manage/quarantine?appId=123'
     );
-    await expect(link).toBeVisible();
-
-    // The close button is only for keyboard users, so it stays hidden until it receives focus
-    const dialog = link.closest('[role="dialog"]') as HTMLElement;
-    const close = await findByRole(dialog, 'button', { name: 'Close' });
-    await expect(close).toHaveStyle({ opacity: '0' });
-    await userEvent.tab(); // link
-    await userEvent.tab(); // close button
-    await expect(close).toHaveFocus();
-    await expect(close).toHaveStyle({ opacity: '1' });
-
-    await userEvent.click(close);
-    await expect(link).not.toBeVisible();
   }),
 } satisfies Story;
 
