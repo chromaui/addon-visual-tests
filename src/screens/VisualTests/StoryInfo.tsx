@@ -90,6 +90,15 @@ const BadgeNote = styled.div(({ theme }) => ({
   boxSizing: 'border-box',
   color: theme.color.defaultText,
   lineHeight: '18px',
+
+  // Popover renders its close button right after the note. Pointer users dismiss the dialog by
+  // clicking outside it or on the badge, so the button only shows once keyboard focus reaches it.
+  '& + button': {
+    opacity: 0,
+  },
+  '& + button:focus-visible': {
+    opacity: 1,
+  },
 }));
 
 // The badge itself is not an interactive element. This button is the dialog trigger, so keyboard

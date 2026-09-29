@@ -279,8 +279,16 @@ export const Quarantined = {
     );
     await expect(link).toBeVisible();
 
-    const dialog = link.closest('[role="dialog"]');
-    await userEvent.click(await findByRole(dialog as HTMLElement, 'button', { name: 'Close' }));
+    // The close button is only for keyboard users, so it stays hidden until it receives focus
+    const dialog = link.closest('[role="dialog"]') as HTMLElement;
+    const close = await findByRole(dialog, 'button', { name: 'Close' });
+    await expect(close).toHaveStyle({ opacity: '0' });
+    await userEvent.tab(); // link
+    await userEvent.tab(); // close button
+    await expect(close).toHaveFocus();
+    await expect(close).toHaveStyle({ opacity: '1' });
+
+    await userEvent.click(close);
     await expect(link).not.toBeVisible();
   }),
 } satisfies Story;
