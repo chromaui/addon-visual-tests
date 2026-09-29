@@ -112,6 +112,10 @@ const ActionContent = styled(ActionList.Text)(({ theme }) => ({
   span: {
     color: theme.textMutedColor,
   },
+  // ActionList.Text pads its edges when it is the first or last child and only removes that padding
+  // inside a button. ActionList.Link renders an anchor, so its text would sit 8px further in.
+  '&:first-child': { paddingLeft: 0 },
+  '&:last-child': { paddingRight: 0 },
 }));
 
 const ReviewButton = styled(ActionButton)<{
