@@ -1,7 +1,7 @@
 import { VariablesOf } from '@graphql-typed-document-node/core';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { delay, HttpResponse } from 'msw';
-import { expect, fn } from 'storybook/test';
+import { expect, fn, spyOn } from 'storybook/test';
 import { findByLabelText, findByRole, fireEvent, waitFor } from 'storybook/test';
 
 import { INITIAL_BUILD_PAYLOAD } from '../../buildSteps';
@@ -38,6 +38,7 @@ import {
   pendingTestsNewBrowser,
   pendingTestsNewMode,
   pendingTestsNewStory,
+  quarantinedTests,
   startedBuild,
   withTests,
 } from './mocks';
@@ -786,6 +787,38 @@ export const AcceptingFailed = {
     await fireEvent.click(button);
     await waitFor(async () =>
       expect(argsByTarget['manager-api'].addNotification).toHaveBeenCalled()
+    );
+  }),
+} satisfies Story;
+
+export const UnquarantineFailed = {
+  args: {
+    selectedBuildInfo: { buildId: pendingBuild.id, storyId: meta.args.storyId },
+    $graphql: {
+      AddonVisualTestsBuild: {
+        lastBuildOnBranch: withTests(pendingBuild, quarantinedTests),
+      },
+    },
+  },
+  parameters: {
+    ...withGraphQLMutationParameters('UnquarantineTest', () =>
+      HttpResponse.json({ errors: [{ message: 'Unquarantine failed' }] })
+    ),
+  },
+  play: playAll(async ({ canvasElement, argsByTarget }) => {
+    const menu = await findByRole(canvasElement, 'button', { name: 'More actions' });
+    await fireEvent.click(menu);
+    const removeQuarantine = await findByRole(document.body, 'button', {
+      name: /^Remove quarantine/,
+    });
+    spyOn(window, 'confirm').mockReturnValue(true);
+    await fireEvent.click(removeQuarantine);
+    await waitFor(async () =>
+      expect(argsByTarget['manager-api'].addNotification).toHaveBeenCalledWith(
+        expect.objectContaining({
+          content: expect.objectContaining({ headline: 'Failed to remove quarantine' }),
+        })
+      )
     );
   }),
 } satisfies Story;
