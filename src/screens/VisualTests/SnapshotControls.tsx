@@ -1,6 +1,7 @@
 import {
   BatchAcceptIcon,
   ContrastIcon,
+  EllipsisIcon,
   LocationIcon,
   LockIcon,
   PlayIcon,
@@ -17,8 +18,9 @@ import { ActionButton } from '../../components/ActionButton';
 import { ProgressIcon } from '../../components/icons/ProgressIcon';
 import { Placeholder } from '../../components/Placeholder';
 import { Text } from '../../components/Text';
-import { ComparisonResult, ReviewTestBatch, TestStatus } from '../../gql/graphql';
-import { useSelectedStoryState } from './BuildContext';
+import { ComparisonResult, ReviewTestBatch, TestIgnoreReason, TestStatus } from '../../gql/graphql';
+import { isIgnored } from '../../utils/summarizeTests';
+import { useBuildState, useSelectedStoryState } from './BuildContext';
 import { useControlsDispatch, useControlsState } from './ControlsContext';
 import { useReviewTestState } from './ReviewTestContext';
 import { useRunBuildState } from './RunBuildContext';
@@ -78,10 +80,27 @@ const Actions = styled.div<{ showDivider?: boolean }>(({ theme, showDivider }) =
   },
 }));
 
-const Action = styled(ActionList.Action)({
+const unquarantineConfirmation = `This test will no longer be ignored on all branches and may block new builds from passing.
+
+We recommend removing quarantine only after the test is stable, you've accepted the new baseline, and all active branches include the baseline update.`;
+
+const menuItemStyle = {
   height: 'auto',
   flex: '0 1 100%',
-});
+};
+
+const StyledAction = styled(ActionList.Action)(menuItemStyle);
+const StyledMenuLink = styled(ActionList.Link)(menuItemStyle);
+
+// Menu items show a label and a description, so their text is the accessible name. A string
+// ariaLabel would also become a tooltip that repeats the label.
+type MenuItemProps<T extends React.ElementType> = Omit<React.ComponentProps<T>, 'ariaLabel'>;
+const Action = (props: MenuItemProps<typeof StyledAction>) => (
+  <StyledAction ariaLabel={false} {...props} />
+);
+const MenuLink = (props: MenuItemProps<typeof StyledMenuLink>) => (
+  <StyledMenuLink ariaLabel={false} {...props} />
+);
 
 const ActionContent = styled(ActionList.Text)(({ theme }) => ({
   display: 'flex',
@@ -93,10 +112,14 @@ const ActionContent = styled(ActionList.Text)(({ theme }) => ({
   span: {
     color: theme.textMutedColor,
   },
+  // ActionList.Text pads its edges when it is the first or last child and only removes that padding
+  // inside a button. ActionList.Link renders an anchor, so its text would sit 8px further in.
+  '&:first-child': { paddingLeft: 0 },
+  '&:last-child': { paddingRight: 0 },
 }));
 
 const ReviewButton = styled(ActionButton)<{
-  side: 'left' | 'right';
+  side?: 'left' | 'right';
   status?: 'positive';
 }>(({ theme, side, status }) => ({
   ...(status === 'positive' && {
@@ -106,7 +129,11 @@ const ReviewButton = styled(ActionButton)<{
     '&:hover': {
       backgroundColor: darken(0.05, theme.background.positive),
     },
+    // Hide the pair's inner divider so the two green buttons read as one control.
+    '&&&': { boxShadow: 'none' },
   }),
+  // Applied on the button itself so they beat ActionList.Button radius. Parent :has
+  // selectors lost that fight after PopoverProvider wrapped the chevron.
   ...(side === 'left' && {
     borderTopRightRadius: 0,
     borderBottomRightRadius: 0,
@@ -119,16 +146,28 @@ const ReviewButton = styled(ActionButton)<{
   }),
 }));
 
+const ReviewButtonPair = styled.div({
+  display: 'inline-flex',
+});
+
 export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
   const { baselineImageVisible, diffVisible, focusVisible } = useControlsState();
   const { toggleBaselineImage, toggleDiff, toggleFocus } = useControlsDispatch();
   const { isRunning, startBuild } = useRunBuildState();
 
-  const { selectedTest, selectedComparison, summary } = useSelectedStoryState();
+  const { selectedTest, selectedComparison, selectedTestHasChanges, summary } =
+    useSelectedStoryState();
+  const { quarantineDashboardUrl } = useBuildState();
   const { changeCount, isInProgress } = summary;
 
-  const { isReviewing, buildIsReviewable, userCanReview, acceptTest, unacceptTest } =
-    useReviewTestState();
+  const {
+    isReviewing,
+    buildIsReviewable,
+    userCanReview,
+    acceptTest,
+    unacceptTest,
+    unquarantineTest,
+  } = useReviewTestState();
 
   if (isInProgress)
     return (
@@ -139,8 +178,17 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
       </Controls>
     );
 
-  const isAcceptable = changeCount > 0 && selectedTest?.status !== TestStatus.Accepted;
+  const canReview = userCanReview && buildIsReviewable;
+  const selectedIsIgnored = !!selectedTest && isIgnored(selectedTest.status);
+  // Ignored tests don't count towards changeCount, so gate them on selectedTestHasChanges instead.
+  // Batch review skips IGNORED tests, so ignored tests are accepted one at a time without batch options.
+  const isAcceptable =
+    !!selectedTest &&
+    selectedTest.status !== TestStatus.Accepted &&
+    (selectedIsIgnored ? selectedTestHasChanges : changeCount > 0);
   const isUnacceptable = changeCount > 0 && selectedTest?.status === TestStatus.Accepted;
+  // Mirrors the webapp: Remove quarantine is offered while the story is quarantined, also after accept.
+  const isQuarantined = selectedTest?.ignoreReason === TestIgnoreReason.Quarantine;
   const hasControls = selectedComparison?.result === ComparisonResult.Changed;
 
   return (
@@ -187,78 +235,83 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
         </Controls>
       )}
 
-      {(isAcceptable || isUnacceptable) && (
+      {(isAcceptable || isUnacceptable || isQuarantined) && (
         <Actions showDivider={hasControls}>
-          {userCanReview && buildIsReviewable && isAcceptable && selectedTest && (
-            <div>
+          {canReview && isAcceptable && selectedTest && (
+            <ReviewButtonPair>
               <ReviewButton
                 id="button-toggle-accept-story"
                 disabled={isReviewing}
                 ariaLabel="Accept this story"
-                onClick={() => acceptTest(selectedTest.id, ReviewTestBatch.Spec)}
-                side="left"
+                onClick={() =>
+                  acceptTest(selectedTest.id, selectedIsIgnored ? undefined : ReviewTestBatch.Spec)
+                }
+                side={selectedIsIgnored ? undefined : 'left'}
                 variant="solid"
               >
+                {isReviewing && selectedIsIgnored ? (
+                  <ProgressIcon parentComponent="IconButton" />
+                ) : null}
                 Accept
               </ReviewButton>
 
-              <PopoverProvider
-                padding={0}
-                popover={({ onHide }) => (
-                  <ActionList>
-                    <ActionList.Item>
-                      <Action
-                        ariaLabel="Accept component"
-                        disabled={isReviewing}
-                        onClick={() => {
-                          acceptTest(selectedTest.id, ReviewTestBatch.Component);
-                          onHide();
-                        }}
-                      >
-                        <ActionContent>
-                          <strong>Accept component</strong>
-                          <span>Accept all unreviewed changes for this component</span>
-                        </ActionContent>
-                      </Action>
-                    </ActionList.Item>
-                    <ActionList.Item>
-                      <Action
-                        ariaLabel="Accept entire build"
-                        disabled={isReviewing}
-                        onClick={() => {
-                          acceptTest(selectedTest.id, ReviewTestBatch.Build);
-                          onHide();
-                        }}
-                      >
-                        <ActionContent>
-                          <strong>Accept entire build</strong>
-                          <span>
-                            Accept all unreviewed changes for every story in the Storybook
-                          </span>
-                        </ActionContent>
-                      </Action>
-                    </ActionList.Item>
-                  </ActionList>
-                )}
-              >
-                <ReviewButton
-                  disabled={isReviewing}
-                  ariaLabel="Batch accept options"
-                  side="right"
-                  variant="solid"
-                >
-                  {isReviewing ? (
-                    <ProgressIcon parentComponent="IconButton" />
-                  ) : (
-                    <BatchAcceptIcon />
+              {selectedIsIgnored ? null : (
+                <PopoverProvider
+                  padding={0}
+                  popover={({ onHide }) => (
+                    <ActionList>
+                      <ActionList.Item>
+                        <Action
+                          disabled={isReviewing}
+                          onClick={() => {
+                            acceptTest(selectedTest.id, ReviewTestBatch.Component);
+                            onHide();
+                          }}
+                        >
+                          <ActionContent>
+                            <strong>Accept component</strong>
+                            <span>Accept all unreviewed changes for this component</span>
+                          </ActionContent>
+                        </Action>
+                      </ActionList.Item>
+                      <ActionList.Item>
+                        <Action
+                          disabled={isReviewing}
+                          onClick={() => {
+                            acceptTest(selectedTest.id, ReviewTestBatch.Build);
+                            onHide();
+                          }}
+                        >
+                          <ActionContent>
+                            <strong>Accept entire build</strong>
+                            <span>
+                              Accept all unreviewed changes for every story in the Storybook
+                            </span>
+                          </ActionContent>
+                        </Action>
+                      </ActionList.Item>
+                    </ActionList>
                   )}
-                </ReviewButton>
-              </PopoverProvider>
-            </div>
+                >
+                  <ReviewButton
+                    disabled={isReviewing}
+                    ariaLabel="Open batch accept options"
+                    side="right"
+                    variant="solid"
+                  >
+                    {isReviewing ? (
+                      <ProgressIcon parentComponent="IconButton" />
+                    ) : (
+                      <BatchAcceptIcon />
+                    )}
+                  </ReviewButton>
+                </PopoverProvider>
+              )}
+            </ReviewButtonPair>
           )}
 
-          {userCanReview && buildIsReviewable && isUnacceptable && (
-            <div>
+          {canReview && isUnacceptable && (
+            <ReviewButtonPair>
               <ReviewButton
                 id="button-toggle-accept-story"
                 disabled={isReviewing}
@@ -278,7 +331,6 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
                   <ActionList>
                     <ActionList.Item>
                       <Action
-                        ariaLabel="Unaccept component"
                         disabled={isReviewing}
                         onClick={() => {
                           unacceptTest(selectedTest.id, ReviewTestBatch.Component);
@@ -293,7 +345,6 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
                     </ActionList.Item>
                     <ActionList.Item>
                       <Action
-                        ariaLabel="Unaccept entire build"
                         disabled={isReviewing}
                         onClick={() => {
                           unacceptTest(selectedTest.id, ReviewTestBatch.Build);
@@ -313,7 +364,7 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
               >
                 <ReviewButton
                   disabled={isReviewing}
-                  ariaLabel="Batch accept options"
+                  ariaLabel="Open batch unaccept options"
                   side="right"
                   variant="solid"
                   status="positive"
@@ -325,23 +376,86 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
                   )}
                 </ReviewButton>
               </PopoverProvider>
-            </div>
+            </ReviewButtonPair>
           )}
 
-          {!(userCanReview && buildIsReviewable) && (
+          {!canReview && (
             <ActionButton readOnly tooltip="Reviewing disabled">
               <LockIcon />
             </ActionButton>
           )}
 
-          <ActionButton
-            ariaLabel={isOutdated ? 'Run new tests' : 'Rerun tests'}
-            onClick={startBuild}
-            disabled={isRunning}
-            variant="outline"
-          >
-            {isOutdated ? <PlayIcon /> : <SyncIcon />}
-          </ActionButton>
+          {canReview && isQuarantined && selectedTest ? (
+            // Remove quarantine is too wide to sit next to the other actions at narrow panel widths, so
+            // it shares an overflow menu with Rerun whenever it applies.
+            <PopoverProvider
+              padding={0}
+              popover={({ onHide }) => (
+                <ActionList>
+                  <ActionList.Item>
+                    <Action
+                      disabled={isRunning}
+                      onClick={() => {
+                        startBuild();
+                        onHide();
+                      }}
+                    >
+                      <ActionContent>
+                        <strong>{isOutdated ? 'Run new tests' : 'Rerun tests'}</strong>
+                        <span>Take new snapshots of every story in the Storybook</span>
+                      </ActionContent>
+                    </Action>
+                  </ActionList.Item>
+                  <ActionList.Item>
+                    <Action
+                      id="button-remove-quarantine"
+                      disabled={isReviewing}
+                      onClick={() => {
+                        onHide();
+                        // Same confirmation as the webapp; a native confirm keeps this a one-liner
+                        if (window.confirm(unquarantineConfirmation)) {
+                          unquarantineTest(selectedTest.id);
+                        }
+                      }}
+                    >
+                      <ActionContent>
+                        <strong>Remove quarantine</strong>
+                        <span>Stop ignoring changes to this story</span>
+                      </ActionContent>
+                    </Action>
+                  </ActionList.Item>
+                  {quarantineDashboardUrl && (
+                    <ActionList.Item>
+                      <MenuLink
+                        href={quarantineDashboardUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={onHide}
+                      >
+                        <ActionContent>
+                          <strong>Manage quarantined tests</strong>
+                          <span>Open the quarantine dashboard</span>
+                        </ActionContent>
+                      </MenuLink>
+                    </ActionList.Item>
+                  )}
+                </ActionList>
+              )}
+            >
+              <ActionButton ariaLabel="More actions" variant="outline">
+                <EllipsisIcon />
+              </ActionButton>
+            </PopoverProvider>
+          ) : (
+            <ActionButton
+              ariaLabel={isOutdated ? 'Run new tests' : 'Rerun tests'}
+              onClick={startBuild}
+              disabled={isRunning}
+              variant="outline"
+            >
+              {isOutdated ? <PlayIcon /> : <SyncIcon />}
+            </ActionButton>
+          )}
         </Actions>
       )}
     </>

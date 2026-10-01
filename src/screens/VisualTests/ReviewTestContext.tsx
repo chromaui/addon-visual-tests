@@ -7,10 +7,10 @@ const initialState = {
   isReviewing: false,
   userCanReview: false,
   buildIsReviewable: false,
-  acceptTest: (_testId: string, _batch: ReviewTestBatch = ReviewTestBatch.Spec) =>
-    Promise.resolve(),
-  unacceptTest: (_testId: string, _batch: ReviewTestBatch = ReviewTestBatch.Spec) =>
-    Promise.resolve(),
+  /** Omit `batch` to review only this test (required for IGNORED tests, which batch review skips) */
+  acceptTest: (_testId: string, _batch?: ReviewTestBatch) => Promise.resolve(),
+  unacceptTest: (_testId: string, _batch?: ReviewTestBatch) => Promise.resolve(),
+  unquarantineTest: (_testId: string) => Promise.resolve(),
 };
 
 type State = typeof initialState;
