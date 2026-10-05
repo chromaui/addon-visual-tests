@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AuthSession } from '../auth/requestAccessToken';
 import { ACCESS_TOKEN_KEY } from '../env';
 import { __testUtils, createClient, setAuthenticatedSession } from './graphQLClient';
+import { __testUtils as rateLimitTestUtils } from './rateLimit';
 
 const createAuth = (overrides: Partial<AuthSession> = {}): AuthSession => ({
   version: 2,
@@ -53,6 +54,7 @@ describe('graphQLClient refresh auth', () => {
     ensureLocalStorage();
     localStorage.clear();
     vi.restoreAllMocks();
+    rateLimitTestUtils.reset();
   });
 
   it('updates access and refresh tokens after successful refresh', async () => {
@@ -253,5 +255,49 @@ describe('graphQLClient refresh auth', () => {
       accessToken: refreshedToken,
       refreshToken: 'refresh-token-2',
     });
+  });
+
+  it('retries a rate limited query once the rate limit window resets', async () => {
+    vi.useFakeTimers();
+    try {
+      setAuthenticatedSession(createAuth());
+      const client = createClient();
+      const resetAt = Math.floor(Date.now() / 1000) + 5;
+      const fetchSpy = vi
+        .spyOn(globalThis, 'fetch')
+        .mockResolvedValueOnce(
+          new Response(
+            JSON.stringify({
+              data: null,
+              errors: [
+                {
+                  message: 'Rate limit exceeded',
+                  extensions: {
+                    code: 'RATE_LIMITED',
+                    rateLimit: { limit: 1000, remaining: 0, used: 1000, resetAt },
+                  },
+                },
+              ],
+            }),
+            { status: 200, headers: { 'Content-Type': 'application/json' } }
+          )
+        )
+        .mockResolvedValueOnce(
+          new Response(JSON.stringify({ data: { viewer: null } }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          })
+        );
+
+      const pending = client.query('{ viewer { __typename } }', {}).toPromise();
+      await vi.advanceTimersByTimeAsync(5_000);
+      const result = await pending;
+
+      expect(fetchSpy).toHaveBeenCalledTimes(2);
+      expect(result.error).toBeUndefined();
+      expect(result.data).toEqual({ viewer: null });
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });
