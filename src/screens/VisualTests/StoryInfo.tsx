@@ -1,7 +1,7 @@
 import { PlayIcon } from '@storybook/icons';
 import pluralize from 'pluralize';
 import React from 'react';
-import { Link, TooltipMessage, WithTooltip } from 'storybook/internal/components';
+import { Link, WithTooltip } from 'storybook/internal/components';
 import { styled } from 'storybook/theming';
 
 import { ActionButton } from '../../components/ActionButton';
@@ -81,6 +81,16 @@ const ignoreNotes: Record<TestIgnoreReason, string> = {
 const unstableNote =
   'This test appears inconsistently every time it renders. Unstable tests can block your CI.';
 
+// Storybook's TooltipMessage is deprecated and goes away in Storybook 11, so the badge notes
+// bring their own content. WithTooltip supplies the chrome but no padding.
+const BadgeNote = styled.div(({ theme }) => ({
+  padding: 15,
+  width: 280,
+  boxSizing: 'border-box',
+  color: theme.color.defaultText,
+  lineHeight: '18px',
+}));
+
 // Keeps the ignore badge and status icon together when the headline wraps at narrow widths
 // Keeps the ignore badge and status icon together and vertically centered. Only used when there is
 // a badge, since the wrapper changes the icon's line box.
@@ -104,6 +114,24 @@ const StatusGroup = styled.span({
 const IgnoreBadge = styled(Badge)({
   margin: 0,
 });
+
+const BadgeTooltip = ({
+  label,
+  status,
+  note,
+}: {
+  label: string;
+  status: 'neutral' | 'critical';
+  note: string;
+}) => (
+  <WithTooltip
+    trigger={['hover', 'focus']}
+    placement="bottom"
+    tooltip={<BadgeNote>{note}</BadgeNote>}
+  >
+    <IgnoreBadge status={status}>{label}</IgnoreBadge>
+  </WithTooltip>
+);
 
 const Actions = styled.div({
   gridArea: 'actions',
@@ -249,22 +277,15 @@ export const StoryInfo = ({
           {hasBadge ? (
             <StatusGroup>
               {showUnstableBadge ? (
-                <WithTooltip placement="bottom" tooltip={<TooltipMessage desc={unstableNote} />}>
-                  <IgnoreBadge status="neutral">Unstable</IgnoreBadge>
-                </WithTooltip>
+                <BadgeTooltip label="Unstable" status="neutral" note={unstableNote} />
               ) : null}
               {ignoreBadgeLabel ? (
-                <WithTooltip
-                  placement="bottom"
-                  tooltip={<TooltipMessage desc={ignoreNotes[ignoreReason]} />}
-                >
-                  {/* Quarantined is solid red, matching the webapp's pill */}
-                  <IgnoreBadge
-                    status={ignoreReason === TestIgnoreReason.Quarantine ? 'critical' : 'neutral'}
-                  >
-                    {ignoreBadgeLabel}
-                  </IgnoreBadge>
-                </WithTooltip>
+                <BadgeTooltip
+                  label={ignoreBadgeLabel}
+                  // Quarantined is solid red, matching the webapp's pill
+                  status={ignoreReason === TestIgnoreReason.Quarantine ? 'critical' : 'neutral'}
+                  note={ignoreNotes[ignoreReason]}
+                />
               ) : null}
               {statusIcon}
             </StatusGroup>
