@@ -111,6 +111,93 @@ describe('withRateLimit', () => {
     expect(fetchFn).toHaveBeenCalledTimes(2);
   });
 
+  it('pauses for at least one second when the reset time has already passed', async () => {
+    const fetchFn = vi
+      .fn()
+      .mockResolvedValueOnce(
+        okResponse(rateLimitHeaders({ remaining: 0, resetAt: NOW_SECONDS - 5 }))
+      )
+      .mockResolvedValueOnce(okResponse(rateLimitHeaders()));
+    const rateLimitedFetch = withRateLimit(fetchFn);
+
+    await rateLimitedFetch('/api');
+    const pending = rateLimitedFetch('/api');
+
+    await vi.advanceTimersByTimeAsync(999);
+    expect(fetchFn).toHaveBeenCalledTimes(1);
+
+    await vi.advanceTimersByTimeAsync(1);
+    await pending;
+    expect(fetchFn).toHaveBeenCalledTimes(2);
+  });
+
+  it('resumes requests as soon as a response reports budget left in a newer window', async () => {
+    let resolveInFlight!: (response: Response) => void;
+    const fetchFn = vi
+      .fn()
+      .mockImplementationOnce(() => new Promise<Response>((resolve) => (resolveInFlight = resolve)))
+      .mockResolvedValueOnce(okResponse(rateLimitHeaders({ remaining: 0 })))
+      .mockResolvedValue(okResponse(rateLimitHeaders({ resetAt: NOW_SECONDS + 60 })));
+    const rateLimitedFetch = withRateLimit(fetchFn);
+
+    const inFlight = rateLimitedFetch('/api');
+    await rateLimitedFetch('/api'); // Starts a pause
+    const paused = rateLimitedFetch('/api');
+
+    await vi.advanceTimersByTimeAsync(1_000);
+    expect(fetchFn).toHaveBeenCalledTimes(2);
+
+    // The in-flight request comes back from a newer window, with budget left
+    resolveInFlight(okResponse(rateLimitHeaders({ resetAt: NOW_SECONDS + 60 })));
+    await inFlight;
+
+    // The paused request still waits out its timer, but requests after it go out right away
+    await rateLimitedFetch('/api');
+    expect(fetchFn).toHaveBeenCalledTimes(3);
+    expect(getRateLimitState()).toMatchObject({ remaining: 990, resetAt: NOW_SECONDS + 60 });
+
+    await vi.advanceTimersByTimeAsync(30_000);
+    await paused;
+  });
+
+  it('ignores outdated responses that arrive out of order', async () => {
+    const resolvers: ((response: Response) => void)[] = [];
+    const fetchFn = vi
+      .fn()
+      .mockImplementation(() => new Promise<Response>((resolve) => resolvers.push(resolve)));
+    const rateLimitedFetch = withRateLimit(fetchFn);
+
+    const requests = [rateLimitedFetch('/api'), rateLimitedFetch('/api'), rateLimitedFetch('/api')];
+    await vi.advanceTimersByTimeAsync(0);
+
+    // Budget is exhausted
+    resolvers[1](okResponse(rateLimitHeaders({ remaining: 0 })));
+    await requests[1];
+    // A response from earlier in the same window, reporting budget left
+    resolvers[0](okResponse(rateLimitHeaders({ remaining: 5 })));
+    await requests[0];
+    expect(getRateLimitState()).toMatchObject({ remaining: 0 });
+
+    const paused = rateLimitedFetch('/api');
+    await vi.advanceTimersByTimeAsync(0);
+    expect(fetchFn).toHaveBeenCalledTimes(3);
+
+    // A response from a newer window resumes requests
+    resolvers[2](okResponse(rateLimitHeaders({ resetAt: NOW_SECONDS + 60 })));
+    await requests[2];
+    // A late response from the previous window doesn't pause them again
+    const next = rateLimitedFetch('/api');
+    await vi.advanceTimersByTimeAsync(0);
+    expect(fetchFn).toHaveBeenCalledTimes(4);
+    resolvers[3](okResponse(rateLimitHeaders({ remaining: 0 })));
+    await next;
+    expect(getRateLimitState()).toMatchObject({ remaining: 990, resetAt: NOW_SECONDS + 60 });
+
+    await vi.advanceTimersByTimeAsync(30_000);
+    resolvers[4](okResponse(rateLimitHeaders({ resetAt: NOW_SECONDS + 60 })));
+    await paused;
+  });
+
   it('retries a RATE_LIMITED request once the window resets', async () => {
     const response = okResponse(rateLimitHeaders());
     const fetchFn = vi
@@ -142,6 +229,63 @@ describe('withRateLimit', () => {
 
     await vi.advanceTimersByTimeAsync(1);
     await expect(pending).resolves.toBe(response);
+  });
+
+  it('uses the reset time from the error body of a 429 response', async () => {
+    const limited = rateLimitedResponse(NOW_SECONDS + 10);
+    const fetchFn = vi
+      .fn()
+      .mockResolvedValueOnce(
+        new Response(await limited.text(), {
+          status: 429,
+          headers: { 'Content-Type': 'application/json' },
+        })
+      )
+      .mockResolvedValueOnce(okResponse());
+
+    const pending = withRateLimit(fetchFn)('/api');
+
+    await vi.advanceTimersByTimeAsync(9_999);
+    expect(fetchFn).toHaveBeenCalledTimes(1);
+
+    await vi.advanceTimersByTimeAsync(1);
+    await pending;
+    expect(fetchFn).toHaveBeenCalledTimes(2);
+  });
+
+  it('waits for the last known reset time after a 429 response without any details', async () => {
+    const fetchFn = vi
+      .fn()
+      .mockResolvedValueOnce(okResponse(rateLimitHeaders({ resetAt: NOW_SECONDS + 20 })))
+      .mockResolvedValueOnce(new Response(null, { status: 429 }))
+      .mockResolvedValueOnce(okResponse());
+    const rateLimitedFetch = withRateLimit(fetchFn);
+
+    await rateLimitedFetch('/api');
+    const pending = rateLimitedFetch('/api');
+
+    await vi.advanceTimersByTimeAsync(19_999);
+    expect(fetchFn).toHaveBeenCalledTimes(2);
+
+    await vi.advanceTimersByTimeAsync(1);
+    await pending;
+    expect(fetchFn).toHaveBeenCalledTimes(3);
+  });
+
+  it('waits the maximum after a 429 response when the reset time is unknown', async () => {
+    const fetchFn = vi
+      .fn()
+      .mockResolvedValueOnce(new Response(null, { status: 429 }))
+      .mockResolvedValueOnce(okResponse());
+
+    const pending = withRateLimit(fetchFn)('/api');
+
+    await vi.advanceTimersByTimeAsync(59_999);
+    expect(fetchFn).toHaveBeenCalledTimes(1);
+
+    await vi.advanceTimersByTimeAsync(1);
+    await pending;
+    expect(fetchFn).toHaveBeenCalledTimes(2);
   });
 
   it('holds back other requests while waiting to retry', async () => {
