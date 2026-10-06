@@ -10,7 +10,6 @@ import { telemetry } from 'storybook/internal/telemetry';
 import type { Options } from 'storybook/internal/types';
 
 import {
-  ADDON_ID,
   CANCEL_SHARE,
   CONFIG_INFO,
   GIT_INFO,
@@ -37,9 +36,9 @@ import type {
   ProjectInfoPayload,
   ShareProgress,
 } from './types.ts';
-import { ChannelFetch } from './utils/ChannelFetch.ts';
 import { getChromaticLogger, getConfiguration, getGitInfo, share } from './utils/chromaticNode.ts';
 import { getStorybookId } from './utils/getStorybookId.ts';
+import { isValidProjectId } from './utils/isValidProjectId.ts';
 import { SharedState } from './utils/SharedState.ts';
 import { updateChromaticConfig } from './utils/updateChromaticConfig.ts';
 
@@ -174,9 +173,6 @@ const watchConfigFile = async (
 async function serverChannel(channel: Channel, options: Options & { configFile?: string }) {
   const { configFile, presets } = options;
 
-  // Handle relayed fetch requests from the client
-  ChannelFetch.subscribe(ADDON_ID, channel);
-
   // Lazy load these APIs since we don't need them right away
   const apiPromise = presets.apply<any>('experimental_serverAPI');
   const corePromise = presets.apply('core');
@@ -191,7 +187,7 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
 
   let lastProjectId = initialProjectId;
   projectInfoState.on('change', async ({ projectId } = {}) => {
-    if (!projectId || projectId === lastProjectId) return;
+    if (!projectId || projectId === lastProjectId || !isValidProjectId(projectId)) return;
     lastProjectId = projectId;
 
     const writtenConfigFile = configFile;
@@ -344,9 +340,9 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
 
   const gitInfoObserver = observeGitInfo(
     5000,
-    (info) => {
+    ({ branch, slug, commit, committedAt, uncommittedHash, userEmailHash }) => {
       gitInfoError.value = undefined;
-      gitInfoState.value = info;
+      gitInfoState.value = { branch, slug, commit, committedAt, uncommittedHash, userEmailHash };
     },
     (error: Error) => {
       gitInfoError.value = error;
@@ -355,7 +351,11 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
 
   watchConfigFile(configFile, async (configuration) => {
     if (!lastProjectId) return;
-    configInfoState.value = await getConfigInfo(configuration, options);
+    // Shared state reaches every channel client, so never include the project token itself.
+    const redacted = configuration.projectToken
+      ? { ...configuration, projectToken: '***' }
+      : configuration;
+    configInfoState.value = await getConfigInfo(redacted, options);
   });
 
   channel.on(REMOVE_ADDON, () => {
