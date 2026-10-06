@@ -1,12 +1,16 @@
 import { getConfiguration, getGitInfo } from 'chromatic/node';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { START_BUILD } from './constants';
+import { runChromaticBuild } from './runChromaticBuild';
 import { updateChromaticConfig } from './utils/updateChromaticConfig';
 
 const VALID_PROJECT_ID = 'Project:6480e1b0042842f149cfd74c';
+const OTHER_PROJECT_ID = 'Project:6480e1b0042842f149cfd74d';
 
 const mocks = vi.hoisted(() => ({
   states: {} as Record<string, { value: any; listeners: ((value: any) => Promise<void>)[] }>,
+  channelHandlers: {} as Record<string, (...args: any[]) => unknown>,
 }));
 
 vi.mock('chromatic/node', () => ({
@@ -17,7 +21,10 @@ vi.mock('chromatic/node', () => ({
 
 vi.mock('storybook/internal/channels', () => ({}));
 vi.mock('storybook/internal/core-server', () => ({
-  experimental_getTestProviderStore: vi.fn(() => ({ runWithState: vi.fn(), setState: vi.fn() })),
+  experimental_getTestProviderStore: vi.fn(() => ({
+    runWithState: vi.fn((callback: () => Promise<void>) => callback()),
+    setState: vi.fn(),
+  })),
 }));
 vi.mock('storybook/internal/telemetry', () => ({ telemetry: vi.fn() }));
 vi.mock('storybook/internal/types', () => ({}));
@@ -43,13 +50,20 @@ vi.mock('./utils/SharedState', () => ({
   },
 }));
 
+vi.mock('./runChromaticBuild', () => ({ runChromaticBuild: vi.fn() }));
 vi.mock('./utils/updateChromaticConfig', () => ({ updateChromaticConfig: vi.fn() }));
 vi.mock('node:fs', () => ({ watch: vi.fn() }));
 vi.mock('node:module', () => ({ createRequire: vi.fn(() => (path: string) => path) }));
 
 async function startServerChannel() {
   const { default: preset } = await import('./preset');
-  const channel = { on: vi.fn(), emit: vi.fn(), off: vi.fn() };
+  const channel = {
+    on: vi.fn((event: string, handler: (...args: any[]) => unknown) => {
+      mocks.channelHandlers[event] = handler;
+    }),
+    emit: vi.fn(),
+    off: vi.fn(),
+  };
   await (preset as any).experimental_serverChannel(channel, {
     configDir: '.storybook',
     presets: { apply: vi.fn(async () => ({})) },
@@ -63,8 +77,10 @@ async function setProjectInfo(value: { projectId?: string }) {
 
 beforeEach(() => {
   mocks.states = {};
+  mocks.channelHandlers = {};
   vi.resetModules();
   vi.clearAllMocks();
+  vi.mocked(getConfiguration).mockResolvedValue({} as any);
 });
 
 describe('preset project info handler', () => {
@@ -81,6 +97,28 @@ describe('preset project info handler', () => {
     await setProjectInfo({ projectId: '"; malicious' });
 
     expect(updateChromaticConfig).not.toHaveBeenCalled();
+  });
+
+  it('keeps the linked project ID when a client sets another one', async () => {
+    vi.mocked(getConfiguration).mockResolvedValue({ projectId: VALID_PROJECT_ID } as any);
+
+    await setProjectInfo({ projectId: OTHER_PROJECT_ID });
+
+    expect(updateChromaticConfig).not.toHaveBeenCalled();
+    expect(mocks.states.projectInfo.value.projectId).toBe(VALID_PROJECT_ID);
+  });
+
+  it('runs builds for the linked project, not the one in shared state', async () => {
+    vi.mocked(getConfiguration).mockResolvedValue({ projectId: VALID_PROJECT_ID } as any);
+    await startServerChannel();
+    mocks.states.projectInfo.value = { projectId: OTHER_PROJECT_ID };
+
+    await mocks.channelHandlers[START_BUILD]({ accessToken: 'token' });
+
+    expect(runChromaticBuild).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ projectId: VALID_PROJECT_ID, userToken: 'token' })
+    );
   });
 });
 

@@ -187,7 +187,12 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
 
   let lastProjectId = initialProjectId;
   projectInfoState.on('change', async ({ projectId } = {}) => {
-    if (!projectId || projectId === lastProjectId || !isValidProjectId(projectId)) return;
+    if (!projectId || projectId === lastProjectId) return;
+    // Any channel client can set this state, so only accept a project ID when none is linked yet.
+    if (lastProjectId || !isValidProjectId(projectId)) {
+      projectInfoState.value = { ...projectInfoState.value, projectId: lastProjectId };
+      return;
+    }
     lastProjectId = projectId;
 
     const writtenConfigFile = configFile;
@@ -227,10 +232,13 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
   );
 
   channel.on(START_BUILD, async ({ accessToken: userToken }: { accessToken: string }) => {
-    const { projectId } = projectInfoState.value || {};
     testProviderStore.runWithState(async () => {
       try {
-        await runChromaticBuild(localBuildProgress, { configFile, projectId, userToken });
+        await runChromaticBuild(localBuildProgress, {
+          configFile,
+          projectId: lastProjectId,
+          userToken,
+        });
       } catch (e) {
         console.error(`Failed to run Chromatic build, with error:\n${e}`);
         throw e;
