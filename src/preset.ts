@@ -349,6 +349,9 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
   const gitInfoObserver = observeGitInfo(
     5000,
     ({ branch, slug, commit, committedAt, uncommittedHash, userEmailHash }) => {
+      // Shared state reaches every channel client, so pick only the fields the Manager uses.
+      // Never spread gitInfo: it includes privacy-sensitive fields (userEmail, committerEmail,
+      // committerName and repositoryRootDir) which must stay on the server.
       gitInfoError.value = undefined;
       gitInfoState.value = { branch, slug, commit, committedAt, uncommittedHash, userEmailHash };
     },
