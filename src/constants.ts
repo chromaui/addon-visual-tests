@@ -28,8 +28,8 @@ export const HIGHLIGHT_IGNORED_PARAM = 'highlightIgnored';
 export const HIGHLIGHT_IGNORED_ID = `${ADDON_ID}/highlightIgnored`;
 export const HIGHLIGHT_IGNORED_COUNT = `${ADDON_ID}/highlightIgnored/count`;
 export const HIGHLIGHT_IGNORED_SELECT = `${ADDON_ID}/highlightIgnored/select`;
-// Mirrors the export from `storybook/highlight`, which only exists in Storybook versions that support
-// `clickable` menu items. Defined locally so older supported versions keep working.
+// Mirror the export from `storybook/highlight`, which only exists in Storybook versions that support
+// `clickable` menu items. Replace with an import once SB 11 is the minimum supported version.
 export const HIGHLIGHT_MENU_CLICK = 'storybook/highlight/menu-click';
 export const HIGHLIGHT_IGNORED_DEFAULT_SELECTORS = [
   '[data-chromatic="ignore"]',
