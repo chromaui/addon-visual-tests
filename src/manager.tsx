@@ -7,7 +7,9 @@ import { GlobalIgnoreToggle } from './components/GlobalIgnoreToggle.tsx';
 import {
   ADDON_ID,
   HIGHLIGHT_IGNORED_DEFAULT_SELECTORS,
+  HIGHLIGHT_IGNORED_ID,
   HIGHLIGHT_IGNORED_SELECT,
+  HIGHLIGHT_MENU_CLICK,
   PANEL_ID,
   PARAM_KEY,
   SHARE_PROGRESS,
@@ -45,16 +47,28 @@ if (window.opener && !window.opener.closed) {
   }
 }
 
+const openIgnoredElementsDocs = (details: ClickEventDetails) => {
+  const isDefaultSelector = HIGHLIGHT_IGNORED_DEFAULT_SELECTORS.includes(details.selectors[0]);
+  window.open(
+    isDefaultSelector
+      ? 'https://www.chromatic.com/docs/ignoring-elements/#ignoring-elements-inline'
+      : 'https://www.chromatic.com/docs/ignoring-elements/#ignoring-elements-via-test-configuration',
+    '_blank'
+  );
+};
+
 addons.register(ADDON_ID, (api) => {
   api.on(HIGHLIGHT_IGNORED_SELECT, (_itemId: string, details: ClickEventDetails) => {
-    const isDefaultSelector = HIGHLIGHT_IGNORED_DEFAULT_SELECTORS.includes(details.selectors[0]);
-    window.open(
-      isDefaultSelector
-        ? 'https://www.chromatic.com/docs/ignoring-elements/#ignoring-elements-inline'
-        : 'https://www.chromatic.com/docs/ignoring-elements/#ignoring-elements-via-test-configuration',
-      '_blank'
-    );
+    openIgnoredElementsDocs(details);
   });
+  api.on(
+    HIGHLIGHT_MENU_CLICK,
+    (highlightId: string, _itemId: string, details: ClickEventDetails) => {
+      if (highlightId === HIGHLIGHT_IGNORED_ID) {
+        openIgnoredElementsDocs(details);
+      }
+    }
+  );
 
   addons.add(`${ADDON_ID}/ignore-highlight-tool`, {
     type: Addon_TypesEnum.TOOL,

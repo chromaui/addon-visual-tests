@@ -1,4 +1,12 @@
+import type { ClickEventDetails } from 'storybook/highlight';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+
+import {
+  HIGHLIGHT_IGNORED_DEFAULT_SELECTORS,
+  HIGHLIGHT_IGNORED_ID,
+  HIGHLIGHT_IGNORED_SELECT,
+  HIGHLIGHT_MENU_CLICK,
+} from './constants';
 
 vi.hoisted(() => {
   const store: Record<string, string> = {};
@@ -191,6 +199,69 @@ describe('manager', () => {
       await import('./manager');
 
       expect(opener.postMessage).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('ignored elements highlight menu', () => {
+    const INLINE_DOCS_URL =
+      'https://www.chromatic.com/docs/ignoring-elements/#ignoring-elements-inline';
+    const CONFIG_DOCS_URL =
+      'https://www.chromatic.com/docs/ignoring-elements/#ignoring-elements-via-test-configuration';
+
+    const detailsFor = (selector: string) =>
+      ({ top: 0, left: 0, width: 10, height: 10, selectors: [selector] }) as ClickEventDetails;
+
+    const getHandler = (event: string) => {
+      const call = storybookMocks.api.on.mock.calls.find(([name]) => name === event);
+      if (!call) throw new Error(`No handler registered for ${event}`);
+      return call[1] as (...args: unknown[]) => void;
+    };
+
+    it('opens the docs when the legacy clickEvent fires', async () => {
+      const windowMock = stubWindow();
+      (globalThis as { CONFIG_TYPE?: string }).CONFIG_TYPE = 'PRODUCTION';
+
+      await import('./manager');
+
+      getHandler(HIGHLIGHT_IGNORED_SELECT)(
+        'item',
+        detailsFor(HIGHLIGHT_IGNORED_DEFAULT_SELECTORS[0])
+      );
+      expect(windowMock.open).toHaveBeenCalledWith(INLINE_DOCS_URL, '_blank');
+
+      getHandler(HIGHLIGHT_IGNORED_SELECT)('item', detailsFor('.custom-ignore'));
+      expect(windowMock.open).toHaveBeenCalledWith(CONFIG_DOCS_URL, '_blank');
+    });
+
+    it('opens the docs when a clickable menu item of the ignored highlight is clicked', async () => {
+      const windowMock = stubWindow();
+      (globalThis as { CONFIG_TYPE?: string }).CONFIG_TYPE = 'PRODUCTION';
+
+      await import('./manager');
+
+      getHandler(HIGHLIGHT_MENU_CLICK)(
+        HIGHLIGHT_IGNORED_ID,
+        'item',
+        detailsFor(HIGHLIGHT_IGNORED_DEFAULT_SELECTORS[0])
+      );
+      expect(windowMock.open).toHaveBeenCalledWith(INLINE_DOCS_URL, '_blank');
+
+      getHandler(HIGHLIGHT_MENU_CLICK)(HIGHLIGHT_IGNORED_ID, 'item', detailsFor('.custom-ignore'));
+      expect(windowMock.open).toHaveBeenCalledWith(CONFIG_DOCS_URL, '_blank');
+    });
+
+    it('ignores clickable menu items of other highlights', async () => {
+      const windowMock = stubWindow();
+      (globalThis as { CONFIG_TYPE?: string }).CONFIG_TYPE = 'PRODUCTION';
+
+      await import('./manager');
+
+      getHandler(HIGHLIGHT_MENU_CLICK)(
+        'some-other-addon/highlight',
+        'item',
+        detailsFor(HIGHLIGHT_IGNORED_DEFAULT_SELECTORS[0])
+      );
+      expect(windowMock.open).not.toHaveBeenCalled();
     });
   });
 });
