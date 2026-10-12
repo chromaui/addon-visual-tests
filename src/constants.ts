@@ -36,10 +36,6 @@ export const HIGHLIGHT_IGNORED_DEFAULT_SELECTORS = [
   '[class~="chromatic-ignore"]',
 ];
 
-export const FETCH_ABORTED = `${ADDON_ID}/ChannelFetch/aborted`;
-export const FETCH_REQUEST = `${ADDON_ID}ChannelFetch/request`;
-export const FETCH_RESPONSE = `${ADDON_ID}ChannelFetch/response`;
-
 export const CONFIG_OVERRIDES = {
   // Local changes should never be auto-accepted
   autoAcceptChanges: false,

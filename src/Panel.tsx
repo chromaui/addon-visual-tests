@@ -48,7 +48,6 @@ import {
 import { isValidProjectId } from './utils/isValidProjectId';
 import { TelemetryProvider } from './utils/TelemetryContext';
 import { useBuildEvents } from './utils/useBuildEvents';
-import { useChannelFetch } from './utils/useChannelFetch';
 import { useProjectId } from './utils/useProjectId';
 import { clearSessionState, useSessionState } from './utils/useSessionState';
 import { useSharedState } from './utils/useSharedState';
@@ -136,10 +135,8 @@ export const Panel = ({ active }: PanelProps) => {
   const trackEvent = useCallback((data: any) => emit(TELEMETRY, data), [emit]);
   const { isRunning, startBuild, stopBuild } = useBuildEvents({ localBuildProgress, accessToken });
 
-  const channelFetch = useChannelFetch();
-  const fetch = globalThis.LOGLEVEL === 'debug' ? globalThis.fetch : channelFetch;
   const withProviders = (children: React.ReactNode) => (
-    <GraphQLClientProvider value={createClient({ fetch })}>
+    <GraphQLClientProvider value={createClient()}>
       <TelemetryProvider value={trackEvent}>
         <AuthProvider value={{ accessToken, setAccessToken, subdomain, setSubdomain }}>
           <UninstallProvider
