@@ -145,6 +145,7 @@
   },
   "auto": {
     "baseBranch": "main",
+    "versionBranches": "release-",
     "plugins": [
       "npm",
       "released",
