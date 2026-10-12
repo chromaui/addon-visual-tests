@@ -1,3 +1,20 @@
+# v4.1.4 (Mon Oct 12 2026)
+
+#### 🐛 Bug Fix
+
+- Release 4.1.4 [#467](https://github.com/chromaui/addon-visual-tests/pull/467) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### ⚠️ Pushed to `main`
+
+- Merge commit from fork ([@ghengeveld](https://github.com/ghengeveld))
+- Remove the channel fetch relay and restrict channel data ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v4.1.3 (Mon Nov 17 2025)
 
 #### 🐛 Bug Fix
