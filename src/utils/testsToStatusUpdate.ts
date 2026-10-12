@@ -11,6 +11,9 @@ export const statusMap: Record<TestStatus, StatusValue> = {
   [TestStatus.InProgress]: 'status-value:pending',
   [TestStatus.Accepted]: 'status-value:success',
   [TestStatus.Passed]: 'status-value:success',
+  // Ignored tests don't block the build, so they shouldn't draw attention in the sidebar.
+  [TestStatus.Ignored]: 'status-value:success',
+  [TestStatus.Unstable]: 'status-value:success', // deprecated alias of IGNORED
 };
 
 /**

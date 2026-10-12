@@ -7,6 +7,7 @@ import { authStore, SESSION_EXPIRED_EVENT_NAME } from '../auth/authStore';
 import type { AuthSession } from '../auth/requestAccessToken';
 import { ADDON_ID } from '../constants';
 import { CHROMATIC_API_URL } from '../env';
+import { withRateLimit } from './rateLimit';
 
 const PREEMPTIVE_REFRESH_WINDOW_SECONDS = 60;
 export const setAuthenticatedSession = (auth: AuthSession) => authStore.setAuth(auth);
@@ -68,7 +69,10 @@ const shouldPreemptivelyRefreshSession = () => {
   return expiration <= nowInSeconds + PREEMPTIVE_REFRESH_WINDOW_SECONDS;
 };
 
-export const createClient = (options?: Partial<ClientOptions>) =>
+// Defer to the global fetch at request time, so it can be swapped out (e.g. mocked) after creation.
+const globalFetch: typeof fetch = (input, init) => globalThis.fetch(input, init);
+
+export const createClient = ({ fetch = globalFetch, ...options }: Partial<ClientOptions> = {}) =>
   new Client({
     url: CHROMATIC_API_URL,
     exchanges: [
@@ -100,6 +104,7 @@ export const createClient = (options?: Partial<ClientOptions>) =>
     ],
     fetchOptions: getFetchOptions(), // Auth header (token) is handled by authExchange
     ...options,
+    fetch: withRateLimit(fetch),
   });
 
 export const __testUtils = {

@@ -76,7 +76,7 @@ const meta = {
               project: {
                 id: '123',
                 name: 'acme',
-                webUrl: 'https://www.chromatic.com/builds?appId=123',
+                links: { home: 'https://www.chromatic.com/builds?appId=123' },
                 lastBuild: {
                   branch: 'main',
                   number: 123,

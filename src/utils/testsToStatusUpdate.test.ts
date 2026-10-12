@@ -12,6 +12,11 @@ it('does not request tests which yield a successful status', () => {
   expect(successful).toEqual([]);
 });
 
+it('does not flag ignored tests in the sidebar', () => {
+  expect(statusMap[TestStatus.Ignored]).toBe('status-value:success');
+  expect(statusMap[TestStatus.Unstable]).toBe('status-value:success');
+});
+
 it('handles single test with no changes', () => {
   expect(
     testsToStatusUpdate([

@@ -193,6 +193,7 @@ export const SnapshotComparison = ({
     <StoryInfo
       {...{
         tests,
+        selectedTest,
         startedAt,
         isStarting,
         isBuildFailed,

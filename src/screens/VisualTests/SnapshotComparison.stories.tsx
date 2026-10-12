@@ -3,8 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { delay, http } from 'msw';
 import React, { ComponentProps } from 'react';
 import type { StoryContext } from 'storybook/internal/types';
-import { fn } from 'storybook/test';
-import { findByRole, fireEvent, screen, userEvent, within } from 'storybook/test';
+import { expect, findByRole, fireEvent, fn, screen, userEvent, within } from 'storybook/test';
 
 import { Browser, ComparisonResult, TestResult, TestStatus } from '../../gql/graphql';
 import { panelModes } from '../../modes';
@@ -13,7 +12,17 @@ import { makeComparison, makeTest, makeTests } from '../../utils/storyData';
 import { storyWrapper } from '../../utils/storyWrapper';
 import { BuildProvider } from './BuildContext';
 import { ControlsProvider } from './ControlsContext';
-import { buildInfo, interactionFailureTests, pendingBuild, pendingTests, withTests } from './mocks';
+import {
+  autoIgnoredTests,
+  buildInfo,
+  interactionFailureTests,
+  manuallyIgnoredTests,
+  pendingBuild,
+  pendingTests,
+  quarantinedAcceptedTests,
+  quarantinedTests,
+  withTests,
+} from './mocks';
 import { ReviewTestProvider } from './ReviewTestContext';
 import { SnapshotComparison } from './SnapshotComparison';
 
@@ -29,6 +38,7 @@ const meta = {
         buildIsReviewable: true,
         acceptTest: fn().mockName('acceptTest'),
         unacceptTest: fn().mockName('unacceptTest'),
+        unquarantineTest: fn().mockName('unquarantineTest'),
         ...ctx.parameters.reviewTest,
       },
     })),
@@ -248,6 +258,50 @@ export const InteractionFailure = {
     selectedBuild: withTests(build, interactionFailureTests),
   },
 };
+
+// Ignored / quarantined states: badge in the header, single Accept, Remove quarantine where applicable
+export const Ignored = {
+  parameters: { selectedBuild: withTests(build, manuallyIgnoredTests) },
+} satisfies Story;
+
+export const AutoIgnored = {
+  parameters: { selectedBuild: withTests(build, autoIgnoredTests) },
+} satisfies Story;
+
+export const Quarantined = {
+  parameters: { selectedBuild: withTests(build, quarantinedTests) },
+  play: playSequentially(async ({ canvas }) => {
+    const badge = await canvas.findByText('Quarantined');
+    await userEvent.hover(badge);
+    await screen.findByText(/ignored across all branches/);
+    await userEvent.unhover(badge);
+
+    // The open note covers the menu button in this canvas, so open it from the keyboard.
+    const menu = await canvas.findByRole('button', { name: 'More actions' });
+    menu.focus();
+    await userEvent.keyboard('{Enter}');
+    const [link] = await screen.findAllByRole('link', { name: /^Manage quarantined tests/ });
+    await expect(link).toHaveAttribute(
+      'href',
+      'https://www.chromatic.com/manage/quarantine?appId=123'
+    );
+  }),
+} satisfies Story;
+
+// Ignored tests don't increment changeCount, so StoryInfo used to keep its Run tests
+// button in the same grid area as Accept / More actions.
+export const QuarantinedOutdated = {
+  args: { isOutdated: true },
+  parameters: { selectedBuild: withTests(build, quarantinedTests) },
+  play: playAll(async ({ canvas }) => {
+    await canvas.findByRole('button', { name: 'More actions' });
+    await expect(canvas.queryByRole('button', { name: 'Run tests' })).toBeNull();
+  }),
+} satisfies Story;
+
+export const QuarantinedAccepted = {
+  parameters: { selectedBuild: withTests(build, quarantinedAcceptedTests) },
+} satisfies Story;
 
 export const NewBaseline = {
   parameters: {

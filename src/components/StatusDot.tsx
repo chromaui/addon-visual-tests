@@ -23,6 +23,8 @@ const Dot = styled.div<StatusDotProps & { overlay?: boolean }>(
         [TestStatus.Denied]: theme.color.positive,
         [TestStatus.Broken]: theme.color.negative,
         [TestStatus.Failed]: theme.color.negative,
+        [TestStatus.Ignored]: 'transparent',
+        [TestStatus.Unstable]: 'transparent',
         [ComparisonResult.Skipped]: 'transparent',
         [ComparisonResult.Equal]: theme.color.positive,
         [ComparisonResult.Fixed]: theme.color.positive,

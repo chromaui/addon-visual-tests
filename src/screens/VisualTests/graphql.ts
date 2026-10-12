@@ -13,7 +13,10 @@ export const QueryBuild = graphql(/* GraphQL */ `
   ) {
     project(id: $projectId) {
       name
-      manageUrl
+      links {
+        manage
+        quarantineDashboard
+      }
       account {
         billingUrl
         suspensionReason
@@ -135,6 +138,8 @@ export const FragmentStoryTestFields = graphql(/* GraphQL */ `
     id
     status
     result
+    ignoreReason
+    isUnstable
     webUrl
     comparisons {
       id
@@ -195,6 +200,29 @@ export const FragmentStoryTestFields = graphql(/* GraphQL */ `
       name
       component {
         name
+      }
+    }
+  }
+`);
+
+export const MutationUnquarantineTest = graphql(/* GraphQL */ `
+  mutation UnquarantineTest($input: TestUnquarantineInput!) {
+    testUnquarantine(input: $input) {
+      __typename
+      ... on TestUnquarantineSuccess {
+        test {
+          id
+          status
+          ignoreReason
+        }
+      }
+      ... on TestUnquarantineFailure {
+        errors {
+          __typename
+          ... on MutationError {
+            message
+          }
+        }
       }
     }
   }

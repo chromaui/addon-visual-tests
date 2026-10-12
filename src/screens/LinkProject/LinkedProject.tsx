@@ -36,7 +36,9 @@ const ProjectQuery = graphql(/* GraphQL */ `
     project(id: $projectId) {
       id
       name
-      webUrl
+      links {
+        home
+      }
       lastBuild {
         branch
         number
