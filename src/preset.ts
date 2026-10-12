@@ -15,7 +15,6 @@ import { telemetry } from 'storybook/internal/telemetry';
 import type { Options } from 'storybook/internal/types';
 
 import {
-  ADDON_ID,
   CHROMATIC_BASE_URL,
   CONFIG_INFO,
   CONFIG_OVERRIDES,
@@ -38,7 +37,7 @@ import {
   LocalBuildProgress,
   ProjectInfoPayload,
 } from './types';
-import { ChannelFetch } from './utils/ChannelFetch';
+import { isValidProjectId } from './utils/isValidProjectId';
 import { SharedState } from './utils/SharedState';
 import { updateChromaticConfig } from './utils/updateChromaticConfig';
 
@@ -170,9 +169,6 @@ const watchConfigFile = async (
 async function serverChannel(channel: Channel, options: Options & { configFile?: string }) {
   const { configFile, presets } = options;
 
-  // Handle relayed fetch requests from the client
-  ChannelFetch.subscribe(ADDON_ID, channel);
-
   // Lazy load these APIs since we don't need them right away
   const apiPromise = presets.apply<any>('experimental_serverAPI');
   const corePromise = presets.apply('core');
@@ -188,6 +184,11 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
   let lastProjectId = initialProjectId;
   projectInfoState.on('change', async ({ projectId } = {}) => {
     if (!projectId || projectId === lastProjectId) return;
+    // Any channel client can set this state, so only accept a project ID when none is linked yet.
+    if (lastProjectId || !isValidProjectId(projectId)) {
+      projectInfoState.value = { ...projectInfoState.value, projectId: lastProjectId };
+      return;
+    }
     lastProjectId = projectId;
 
     const writtenConfigFile = configFile;
@@ -227,10 +228,13 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
   );
 
   channel.on(START_BUILD, async ({ accessToken: userToken }) => {
-    const { projectId } = projectInfoState.value || {};
     testProviderStore.runWithState(async () => {
       try {
-        await runChromaticBuild(localBuildProgress, { configFile, projectId, userToken });
+        await runChromaticBuild(localBuildProgress, {
+          configFile,
+          projectId: lastProjectId,
+          userToken,
+        });
       } catch (e) {
         console.error(`Failed to run Chromatic build, with error:\n${e}`);
         throw e;
@@ -254,9 +258,12 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
 
   const gitInfoObserver = observeGitInfo(
     5000,
-    (info) => {
+    ({ branch, slug, commit, committedAt, uncommittedHash, userEmailHash }) => {
+      // Shared state reaches every channel client, so pick only the fields the Manager uses.
+      // Never spread gitInfo: it includes privacy-sensitive fields (userEmail, committerEmail,
+      // committerName and repositoryRootDir) which must stay on the server.
       gitInfoError.value = undefined;
-      gitInfoState.value = info;
+      gitInfoState.value = { branch, slug, commit, committedAt, uncommittedHash, userEmailHash };
     },
     (error: Error) => {
       gitInfoError.value = error;
@@ -265,7 +272,11 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
 
   watchConfigFile(configFile, async (configuration) => {
     if (!lastProjectId) return;
-    configInfoState.value = await getConfigInfo(configuration, options);
+    // Shared state reaches every channel client, so never include the project token itself.
+    const redacted = configuration.projectToken
+      ? { ...configuration, projectToken: '***' }
+      : configuration;
+    configInfoState.value = await getConfigInfo(redacted, options);
   });
 
   channel.on(REMOVE_ADDON, () => {
