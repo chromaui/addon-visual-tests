@@ -74,7 +74,6 @@ vi.mock('./utils/TelemetryContext', () => ({ TelemetryProvider: 'div' }));
 vi.mock('./utils/useBuildEvents', () => ({
   useBuildEvents: () => ({ isRunning: false, startBuild: vi.fn(), stopBuild: vi.fn() }),
 }));
-vi.mock('./utils/useChannelFetch', () => ({ useChannelFetch: () => vi.fn() }));
 vi.mock('./utils/useProjectId', () => ({
   useProjectId: () => ({
     loading: false,

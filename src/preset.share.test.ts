@@ -52,10 +52,6 @@ vi.mock('./utils/SharedState', () => ({
   },
 }));
 
-vi.mock('./utils/ChannelFetch', () => ({
-  ChannelFetch: { subscribe: vi.fn() },
-}));
-
 vi.mock('./runChromaticBuild', () => ({
   runChromaticBuild: vi.fn(),
   stopChromaticBuild: vi.fn(),
