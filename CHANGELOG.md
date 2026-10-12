@@ -1,3 +1,14 @@
+# v5.5.1 (Mon Oct 12 2026)
+
+#### 🐛 Bug Fix
+
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v5.5.0 (Mon Oct 12 2026)
 
 #### 🚀 Enhancement
