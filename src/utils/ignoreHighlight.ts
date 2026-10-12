@@ -9,6 +9,14 @@ import type { ChromaticParameters } from '../types';
 
 type ChromaticConfig = ChromaticParameters['chromatic'];
 
+// Storybook versions differ in how a menu item opts into click handling: older versions emit the
+// event named by `clickEvent`, newer versions emit HIGHLIGHT_MENU_CLICK for `clickable` items.
+// Setting both keeps the item clickable on every supported version.
+type IgnoreHighlightMenuItem = HighlightMenuItem & {
+  clickEvent?: string;
+  clickable?: boolean;
+};
+
 const defaultHighlightStyles = {
   backgroundColor: 'rgba(255, 173, 51, 0.2)',
   outline: '1px solid rgba(255, 173, 51, 0.7)',
@@ -50,7 +58,7 @@ export const getIgnoreHighlightOptions = (config: ChromaticConfig): HighlightOpt
     styles: defaultHighlightStyles,
     hoverStyles: defaultHoverStyles,
     focusStyles: defaultFocusStyles,
-    menu: selectors.map<HighlightMenuItem[]>((selector) => {
+    menu: selectors.map<IgnoreHighlightMenuItem[]>((selector) => {
       const isDefaultSelector = HIGHLIGHT_IGNORED_DEFAULT_SELECTORS.includes(selector);
       return [
         {
@@ -67,6 +75,7 @@ export const getIgnoreHighlightOptions = (config: ChromaticConfig): HighlightOpt
           iconRight: 'shareAlt',
           title: 'Learn how to configure ignored elements',
           clickEvent: HIGHLIGHT_IGNORED_SELECT,
+          clickable: true,
           selectors: [selector],
         },
       ];
