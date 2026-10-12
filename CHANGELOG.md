@@ -1,3 +1,20 @@
+# v3.2.8 (Mon Oct 12 2026)
+
+#### 🐛 Bug Fix
+
+- Release 3.2.8 [#468](https://github.com/chromaui/addon-visual-tests/pull/468) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### ⚠️ Pushed to `main`
+
+- Merge commit from fork ([@ghengeveld](https://github.com/ghengeveld))
+- Remove the channel fetch relay and restrict channel data ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v3.2.7 (Fri Jun 20 2025)
 
 #### 🐛 Bug Fix
