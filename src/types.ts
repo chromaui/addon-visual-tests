@@ -31,7 +31,10 @@ export type ConfigInfoPayload = {
   problems?: ConfigurationUpdate;
   suggestions?: ConfigurationUpdate;
 };
-export type GitInfoPayload = Omit<GitInfo, "committerEmail" | "committerName">;
+export type GitInfoPayload = Pick<
+  GitInfo,
+  "branch" | "slug" | "commit" | "committedAt" | "uncommittedHash" | "userEmailHash"
+>;
 
 export type ProjectInfoPayload = {
   projectId?: string;
