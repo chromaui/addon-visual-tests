@@ -1,3 +1,21 @@
+# v5.4.0 (Thu Oct 01 2026)
+
+#### 🚀 Enhancement
+
+- Add Accept for ignored tests and Unquarantine for quarantined tests [#457](https://github.com/chromaui/addon-visual-tests/pull/457) ([@ghengeveld](https://github.com/ghengeveld))
+- Show `Ignored`, `Auto-ignored`, `Quarantined` and `Unstable` badges [#456](https://github.com/chromaui/addon-visual-tests/pull/456) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### 🐛 Bug Fix
+
+- Link to the quarantine dashboard from the actions menu [#460](https://github.com/chromaui/addon-visual-tests/pull/460) ([@ghengeveld](https://github.com/ghengeveld))
+- Hide Run tests when snapshot review actions already occupy that slot [#459](https://github.com/chromaui/addon-visual-tests/pull/459) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
 # v5.3.1 (Wed Sep 02 2026)
 
 #### 🐛 Bug Fix
