@@ -135,6 +135,8 @@ describe('preset git info state', () => {
       userEmail: 'developer@example.com',
       userEmailHash: 'hash',
       repositoryRootDir: '/Users/developer/project',
+      cloneDepth: 'full',
+      cloneFilter: 'full',
     });
 
     await startServerChannel();
