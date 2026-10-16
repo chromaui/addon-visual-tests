@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import React from 'react';
-import { fn } from 'storybook/test';
+import { expect, fn, userEvent, within } from 'storybook/test';
 
 import { GlobalIgnoreToggleButton } from './GlobalIgnoreToggle';
 
@@ -47,6 +47,22 @@ export const Hidden: Story = {
 };
 
 export const Inactive: Story = {};
+
+export const TogglesPressedState: Story = {
+  globals: { theme: 'light' },
+  parameters: { chromatic: { disableSnapshot: true } },
+  play: async ({ args, canvasElement }) => {
+    const toggle = await within(canvasElement).findByRole('switch', {
+      name: 'Highlight ignored areas',
+    });
+    await expect(toggle).toHaveAttribute('aria-checked', 'false');
+
+    await userEvent.click(toggle);
+
+    await expect(toggle).toHaveAttribute('aria-checked', 'true');
+    await expect(args.onToggle).toHaveBeenCalledTimes(1);
+  },
+};
 
 export const Active: Story = {
   args: {

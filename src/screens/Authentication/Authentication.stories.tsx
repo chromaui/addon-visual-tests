@@ -1,7 +1,7 @@
 // @ts-nocheck TODO: Address SB 8 type errors
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { http, HttpResponse } from 'msw';
-import { expect, findByRole, findByText, fn, userEvent } from 'storybook/test';
+import { expect, findByRole, findByText, fn, screen, userEvent, waitFor } from 'storybook/test';
 
 import { ADDON_ID, HIGHLIGHT_IGNORED_PARAM } from '../../constants';
 import { panelModes } from '../../modes';
@@ -233,6 +233,25 @@ export const ReportsGoBackFromSetSubdomain = {
       location: 'Authentication',
       screen: 'Subdomain',
     });
+  }),
+} satisfies Story;
+
+export const EmptySubdomainError = {
+  globals: { theme: 'light' },
+  parameters: { chromatic: { disableSnapshot: true } },
+  play: playAll(SSO, async ({ canvasElement }) => {
+    const errorTooltips = () =>
+      screen
+        .queryAllByRole('tooltip')
+        .filter((tooltip) => tooltip.textContent === 'Please enter a subdomain');
+    const input = await findByRole(canvasElement, 'textbox');
+    await userEvent.click(await findByRole(canvasElement, 'button', { name: 'Continue' }));
+    await waitFor(() => expect(errorTooltips()).toHaveLength(1));
+
+    await userEvent.type(input, 'a');
+
+    await waitFor(() => expect(errorTooltips()).toHaveLength(0));
+    await expect(input).toHaveFocus();
   }),
 } satisfies Story;
 
