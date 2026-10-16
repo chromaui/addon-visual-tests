@@ -25,7 +25,7 @@ export const ShareToolbarButton = ({ api }: { api: API }) => (
       });
     }}
   >
-    <Button variant="ghost" padding="small" id="chromatic-share-button">
+    <Button ariaLabel={false} variant="ghost" padding="small" id="chromatic-share-button">
       Share
     </Button>
   </PopoverProvider>

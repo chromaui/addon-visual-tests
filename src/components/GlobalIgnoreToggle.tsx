@@ -1,6 +1,6 @@
 import { ContrastIgnoredIcon } from '@storybook/icons';
 import React, { useState } from 'react';
-import { IconButton } from 'storybook/internal/components';
+import { ToggleButton } from 'storybook/internal/components';
 import { useChannel, useGlobals } from 'storybook/manager-api';
 
 import { HIGHLIGHT_IGNORED_COUNT, HIGHLIGHT_IGNORED_PARAM } from '../constants';
@@ -19,13 +19,13 @@ export const GlobalIgnoreToggleButton = ({
   onToggle,
 }: GlobalIgnoreToggleButtonProps) => {
   return ignoreCount === 0 ? null : (
-    <IconButton
+    <ToggleButton
       key={HIGHLIGHT_IGNORED_PARAM}
-      active={enabled}
+      pressed={enabled}
       ariaLabel={
         locked
           ? `Highlights ${enabled ? 'enabled' : 'disabled'} by story globals`
-          : `${enabled ? 'Hide' : 'Show'} ignored areas`
+          : 'Highlight ignored areas'
       }
       padding="small"
       variant="ghost"
@@ -34,7 +34,7 @@ export const GlobalIgnoreToggleButton = ({
     >
       <ContrastIgnoredIcon />
       {ignoreCount}
-    </IconButton>
+    </ToggleButton>
   );
 };
 
