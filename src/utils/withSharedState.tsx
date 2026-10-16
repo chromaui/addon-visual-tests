@@ -1,11 +1,11 @@
 import type { Decorator } from '@storybook/react-vite';
 import React from 'react';
-import { mockChannel } from 'storybook/manager-api';
+import { Channel } from 'storybook/internal/channels';
 
 import { SharedState } from './SharedState';
 
 export function withSharedState(key: string, value: any): Decorator {
-  const state = SharedState.subscribe(key, mockChannel());
+  const state = SharedState.subscribe(key, new Channel({}));
   const initialState = state.value;
 
   return function sharedStateDecorator(Story) {

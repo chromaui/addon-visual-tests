@@ -25,7 +25,7 @@ export const SharePopupIdle = ({ onSignIn, onSignInWithSSO }: SharePopupIdleProp
       </ShareDescription>
     </TextBlock>
     <ButtonStack>
-      <Button size="medium" variant="solid" onClick={onSignIn}>
+      <Button ariaLabel={false} size="medium" variant="solid" onClick={onSignIn}>
         Sign in with Chromatic
       </Button>
       <ShareTextLink onClick={onSignInWithSSO}>Connect with SAML SSO</ShareTextLink>

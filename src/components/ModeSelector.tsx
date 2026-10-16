@@ -52,7 +52,7 @@ export const ModeSelector = ({
 
   if (modeResults.length === 1) {
     return (
-      <ActionList.Button readOnly tooltip={`View mode: ${selectedMode.name}`}>
+      <ActionList.Button readOnly ariaLabel={false} tooltip={`View mode: ${selectedMode.name}`}>
         <ActionList.Icon>{icon}</ActionList.Icon>
         <ButtonLabel>{selectedMode.name}</ButtonLabel>
       </ActionList.Button>
@@ -79,6 +79,7 @@ export const ModeSelector = ({
 
   return (
     <PopoverProvider
+      ariaLabel="Modes"
       padding={0}
       popover={({ onHide }) => (
         <ActionList>

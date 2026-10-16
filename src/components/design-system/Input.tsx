@@ -10,7 +10,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { TooltipMessage, WithTooltip } from 'storybook/internal/components';
+import { Tooltip, TooltipProvider } from 'storybook/internal/components';
 import { styled } from 'storybook/theming';
 
 import { Icon } from './Icon';
@@ -254,13 +254,13 @@ const InputContainer = styled.div<Pick<PureInputProps, 'orientation'>>(
     }
 );
 
-const ErrorTooltip = styled(WithTooltip)({
-  width: '100%',
-});
-
-const ErrorTooltipMessage = styled(TooltipMessage)({
-  width: 170,
-});
+const ErrorNote = styled.div(({ theme }) => ({
+  padding: 15,
+  width: 280,
+  boxSizing: 'border-box',
+  color: theme.color.defaultText,
+  lineHeight: '18px',
+}));
 
 const Action = styled.div({
   position: 'absolute',
@@ -291,7 +291,7 @@ interface PureInputProps {
   id: string;
   value?: string;
   appearance?: 'default' | 'pill' | 'code' | 'tertiary';
-  errorTooltipPlacement?: ComponentProps<typeof WithTooltip>['placement'];
+  errorTooltipPlacement?: ComponentProps<typeof TooltipProvider>['placement'];
   stackLevel?: 'top' | 'middle' | 'bottom';
   label: string;
   hideLabel?: boolean;
@@ -381,18 +381,17 @@ export const PureInput = forwardRef<
             used inside of a form that can choose when to show/hide error
             states based on various factors.
           */}
-          <ErrorTooltip
-            tabIndex={-1}
+          <TooltipProvider
             placement={errorTooltipPlacement}
-            startOpen
-            hasChrome={!!errorMessage && !suppressErrorMessage}
+            visible={!!errorMessage && !suppressErrorMessage}
             tooltip={
-              errorMessage && !suppressErrorMessage && <ErrorTooltipMessage desc={errorMessage} />
+              <Tooltip hasChrome padding={0}>
+                <ErrorNote>{errorMessage}</ErrorNote>
+              </Tooltip>
             }
-            role="none"
           >
             {inputEl}
-          </ErrorTooltip>
+          </TooltipProvider>
 
           {startingType === 'password' && (
             <Action>

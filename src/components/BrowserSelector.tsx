@@ -61,7 +61,7 @@ export const BrowserSelector = ({
 
   if (browserResults.length === 1) {
     return (
-      <ActionList.Button readOnly tooltip={`Tested in ${selectedBrowser.name}`}>
+      <ActionList.Button readOnly ariaLabel={false} tooltip={`Tested in ${selectedBrowser.name}`}>
         <ActionList.Icon>{icon}</ActionList.Icon>
         <ButtonLabel>{selectedBrowser.name}</ButtonLabel>
       </ActionList.Button>
@@ -82,6 +82,7 @@ export const BrowserSelector = ({
 
   return (
     <PopoverProvider
+      ariaLabel="Browsers"
       padding={0}
       popover={({ onHide }) => (
         <ActionList>
