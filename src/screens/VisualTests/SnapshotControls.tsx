@@ -257,6 +257,7 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
 
               {selectedIsIgnored ? null : (
                 <PopoverProvider
+                  ariaLabel="Batch accept options"
                   padding={0}
                   popover={({ onHide }) => (
                     <ActionList>
@@ -326,6 +327,7 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
               </ReviewButton>
 
               <PopoverProvider
+                ariaLabel="Batch unaccept options"
                 padding={0}
                 popover={({ onHide }) => (
                   <ActionList>
@@ -380,7 +382,7 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
           )}
 
           {!canReview && (
-            <ActionButton readOnly tooltip="Reviewing disabled">
+            <ActionButton readOnly ariaLabel="Reviewing disabled">
               <LockIcon />
             </ActionButton>
           )}
@@ -389,6 +391,7 @@ export const SnapshotControls = ({ isOutdated }: { isOutdated: boolean }) => {
             // Remove quarantine is too wide to sit next to the other actions at narrow panel widths, so
             // it shares an overflow menu with Rerun whenever it applies.
             <PopoverProvider
+              ariaLabel="More actions"
               padding={0}
               popover={({ onHide }) => (
                 <ActionList>

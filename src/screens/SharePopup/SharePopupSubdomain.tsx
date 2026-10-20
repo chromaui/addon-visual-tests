@@ -62,7 +62,7 @@ export const SharePopupSubdomain = ({ onSubmit, onBack }: SharePopupSubdomainPro
 
   return (
     <RelativeContainer>
-      <BackButton variant="ghost" onClick={onBack} aria-label="Back">
+      <BackButton ariaLabel={false} variant="ghost" onClick={onBack}>
         <ChevronLeftIcon size={12} aria-hidden="true" />
         Back
       </BackButton>
@@ -83,7 +83,13 @@ export const SharePopupSubdomain = ({ onSubmit, onBack }: SharePopupSubdomainPro
             error={inputError}
             errorTooltipPlacement="top"
           />
-          <Button size="medium" variant="solid" type="submit" style={{ flexShrink: 0 }}>
+          <Button
+            ariaLabel={false}
+            size="medium"
+            variant="solid"
+            type="submit"
+            style={{ flexShrink: 0 }}
+          >
             Connect
           </Button>
         </FormRow>

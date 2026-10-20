@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import React from 'react';
-import { fn } from 'storybook/test';
+import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test';
 
 import { Browser, TestIgnoreReason, TestStatus } from '../../gql/graphql';
 import { panelModes } from '../../modes';
@@ -135,6 +135,26 @@ export const AutoIgnored: Story = {
   args: {
     tests: [ignoredTest(TestIgnoreReason.Unstable)],
     selectedTest: ignoredTest(TestIgnoreReason.Unstable),
+  },
+};
+
+export const AutoIgnoredNoteOnKeyboardFocus: Story = {
+  ...AutoIgnored,
+  globals: { theme: 'light' },
+  parameters: { chromatic: { disableSnapshot: true } },
+  play: async ({ canvasElement }) => {
+    const badge = await within(canvasElement).findByText('Auto-ignored');
+
+    await waitFor(async () => {
+      await userEvent.tab();
+      await expect(badge.parentElement).toHaveFocus();
+    });
+
+    await waitFor(() =>
+      expect(screen.getAllByRole('tooltip').map((tooltip) => tooltip.textContent)).toContainEqual(
+        expect.stringContaining('Chromatic auto-ignored it')
+      )
+    );
   },
 };
 

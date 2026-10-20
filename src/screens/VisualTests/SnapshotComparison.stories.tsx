@@ -270,8 +270,10 @@ export const AutoIgnored = {
 
 export const Quarantined = {
   parameters: { selectedBuild: withTests(build, quarantinedTests) },
-  play: playSequentially(async ({ canvas }) => {
+  play: playSequentially(async ({ canvas, canvasElement }) => {
     const badge = await canvas.findByText('Quarantined');
+    // Tooltips ignore a hover until the page has seen the pointer move.
+    await userEvent.hover(canvasElement);
     await userEvent.hover(badge);
     await screen.findByText(/ignored across all branches/);
     await userEvent.unhover(badge);

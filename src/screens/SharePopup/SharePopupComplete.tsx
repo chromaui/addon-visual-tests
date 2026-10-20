@@ -129,7 +129,7 @@ export const SharePopupComplete = ({
             <InfoBannerText>
               Changes have been made since you last published this Storybook.
             </InfoBannerText>
-            <Button size="medium" variant="solid" onClick={onPublishAgain}>
+            <Button ariaLabel={false} size="medium" variant="solid" onClick={onPublishAgain}>
               Republish
             </Button>
           </InfoBanner>

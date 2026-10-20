@@ -51,7 +51,7 @@ export const SharePopupError = ({ reason, message, onRetry }: SharePopupErrorPro
         </ShareDescription>
       </TextBlock>
       <ButtonStack>
-        <Button size="medium" variant="solid" onClick={onRetry}>
+        <Button ariaLabel={false} size="medium" variant="solid" onClick={onRetry}>
           Publish &amp; copy link
         </Button>
         <ErrorRow>
