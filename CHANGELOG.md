@@ -2,7 +2,6 @@
 
 #### 🐛 Bug Fix
 
-
 #### Authors: 1
 
 - Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
