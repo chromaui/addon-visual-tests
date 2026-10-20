@@ -105,7 +105,8 @@ export const UrlCopyField = ({ url, placeholder, onCopy }: UrlCopyFieldProps) =>
             variant="ghost"
             size="small"
             padding="small"
-            aria-label="Copy link"
+            ariaLabel="Copy link"
+            disableAllTooltips
             onClick={handleCopy}
           >
             {copied ? <CheckIcon color="green" /> : <CopyIcon />}

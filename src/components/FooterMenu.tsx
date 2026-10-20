@@ -18,6 +18,7 @@ export const FooterMenu = () => {
 
   return (
     <PopoverProvider
+      ariaLabel="Addon menu"
       padding={0}
       popover={({ onHide }) => (
         <ActionList>

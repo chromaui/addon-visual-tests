@@ -16,7 +16,7 @@ export const SharePopupWelcome = ({ onPublish }: SharePopupWelcomeProps) => (
         This Storybook will be uploaded and available to collaborators for feedback.
       </ShareDescription>
     </TextBlock>
-    <Button size="medium" variant="solid" onClick={onPublish}>
+    <Button ariaLabel={false} size="medium" variant="solid" onClick={onPublish}>
       Publish &amp; copy link
     </Button>
     <WhoHasAccess />

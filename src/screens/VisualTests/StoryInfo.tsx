@@ -1,7 +1,7 @@
 import { PlayIcon } from '@storybook/icons';
 import pluralize from 'pluralize';
 import React from 'react';
-import { Link, WithTooltip } from 'storybook/internal/components';
+import { Link, Tooltip, TooltipProvider } from 'storybook/internal/components';
 import { styled } from 'storybook/theming';
 
 import { ActionButton } from '../../components/ActionButton';
@@ -81,8 +81,6 @@ const ignoreNotes: Record<TestIgnoreReason, string> = {
 const unstableNote =
   'This test appears inconsistently every time it renders. Unstable tests can block your CI.';
 
-// Storybook's TooltipMessage is deprecated and goes away in Storybook 11, so the badge notes
-// bring their own content. WithTooltip supplies the chrome but no padding.
 const BadgeNote = styled.div(({ theme }) => ({
   padding: 15,
   width: 280,
@@ -115,6 +113,10 @@ const IgnoreBadge = styled(Badge)({
   margin: 0,
 });
 
+const BadgeTrigger = styled.span({
+  display: 'inline-flex',
+});
+
 const BadgeTooltip = ({
   label,
   status,
@@ -124,13 +126,18 @@ const BadgeTooltip = ({
   status: 'neutral' | 'critical';
   note: string;
 }) => (
-  <WithTooltip
-    trigger={['hover', 'focus']}
+  <TooltipProvider
     placement="bottom"
-    tooltip={<BadgeNote>{note}</BadgeNote>}
+    tooltip={
+      <Tooltip hasChrome padding={0}>
+        <BadgeNote>{note}</BadgeNote>
+      </Tooltip>
+    }
   >
-    <IgnoreBadge status={status}>{label}</IgnoreBadge>
-  </WithTooltip>
+    <BadgeTrigger tabIndex={0}>
+      <IgnoreBadge status={status}>{label}</IgnoreBadge>
+    </BadgeTrigger>
+  </TooltipProvider>
 );
 
 const Actions = styled.div({
@@ -247,9 +254,7 @@ export const StoryInfo = ({
       <Info>
         <span>
           <b>
-            <Link isButton onClick={switchToLastBuildOnBranch}>
-              View latest snapshot
-            </Link>
+            <Link onClick={switchToLastBuildOnBranch}>View latest snapshot</Link>
           </b>
         </span>
         <span>Newer test results are available for this story</span>
