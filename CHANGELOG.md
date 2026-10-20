@@ -1,3 +1,34 @@
+# v5.5.1 (Mon Oct 12 2026)
+
+#### 🐛 Bug Fix
+
+
+#### Authors: 1
+
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+
+---
+
+# v5.5.0 (Mon Oct 12 2026)
+
+#### 🚀 Enhancement
+
+- Respect Chromatic API rate limit headers [#462](https://github.com/chromaui/addon-visual-tests/pull/462) ([@ghengeveld](https://github.com/ghengeveld))
+
+#### 🐛 Bug Fix
+
+- Bump browserslist from 4.27.0 to 4.28.8 in the npm_and_yarn group across 1 directory [#454](https://github.com/chromaui/addon-visual-tests/pull/454) ([@dependabot[bot]](https://github.com/dependabot[bot]) [@ghengeveld](https://github.com/ghengeveld) [@chromatic-release](https://github.com/chromatic-release))
+- Support the clickable highlight menu item API [#463](https://github.com/chromaui/addon-visual-tests/pull/463) ([@Sidnioulz](https://github.com/Sidnioulz))
+
+#### Authors: 4
+
+- [@chromatic-release](https://github.com/chromatic-release)
+- [@dependabot[bot]](https://github.com/dependabot[bot])
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Steve Dodier-Lazaro ([@Sidnioulz](https://github.com/Sidnioulz))
+
+---
+
 # v5.4.0 (Thu Oct 01 2026)
 
 #### 🚀 Enhancement
