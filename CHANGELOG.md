@@ -1,3 +1,21 @@
+# v5.6.0 (Tue Oct 20 2026)
+
+#### 🚀 Enhancement
+
+- Replace UI components removed in Storybook 11 [#471](https://github.com/chromaui/addon-visual-tests/pull/471) ([@valentinpalkovic](https://github.com/valentinpalkovic))
+
+#### 🐛 Bug Fix
+
+- Bump chromatic to 18.12.1 [#469](https://github.com/chromaui/addon-visual-tests/pull/469) ([@codykaup](https://github.com/codykaup))
+
+#### Authors: 3
+
+- Cody Kaup ([@codykaup](https://github.com/codykaup))
+- Gert Hengeveld ([@ghengeveld](https://github.com/ghengeveld))
+- Valentin Palkovic ([@valentinpalkovic](https://github.com/valentinpalkovic))
+
+---
+
 # v5.5.1 (Mon Oct 12 2026)
 
 #### 🐛 Bug Fix
