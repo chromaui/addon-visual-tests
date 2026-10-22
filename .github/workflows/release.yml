@@ -1,36 +1,228 @@
 name: Release
 
-on: [push]
+# The npm trusted publisher for @chromatic-com/storybook is bound to this file name (release.yml).
+# Every npm publish must go through this workflow, so don't rename it or move publishing elsewhere.
 
-permissions:
-  id-token: write # Required for OIDC
-  contents: write # Required for auto shipit
-  pull-requests: write # Required for auto shipit
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: Backport branch to release from (e.g. release-3.x)
+        required: true
+        type: string
+      bump:
+        description: Version bump
+        required: true
+        type: choice
+        default: patch
+        options:
+          - patch
+          - minor
+      dist-tag:
+        description: npm dist-tag to publish under (defaults to the branch name, never "latest")
+        required: false
+        type: string
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'workflow_dispatch' && inputs.branch || github.ref }}
 
 jobs:
-  release:
+  # Changesets flow on main: open/update the "Version Packages" PR, or publish once it's merged.
+
+  select-mode:
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci')"
+    permissions:
+      contents: read
+    outputs:
+      mode: ${{ steps.select-mode.outputs.mode }}
+      publish-plan-artifact-id: ${{ steps.select-mode.outputs.publish-plan-artifact-id }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+      - run: pnpm install --frozen-lockfile
+      - id: select-mode
+        uses: changesets/action/select-mode@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
+
+  version:
+    needs: select-mode
+    if: needs.select-mode.outputs.mode == 'version'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+      - run: pnpm install --frozen-lockfile
+      - name: Create or update the Version Packages PR
+        uses: changesets/action/version@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
+        with:
+          # A personal token rather than GITHUB_TOKEN, so the PR triggers the required CI checks.
+          github-token: ${{ secrets.GH_TOKEN }}
+        env:
+          # Used by @changesets/changelog-github to look up PRs and authors.
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
+  pack:
+    needs: select-mode
+    if: needs.select-mode.outputs.mode == 'publish'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      pack-dir-artifact-id: ${{ steps.pack.outputs.pack-dir-artifact-id }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - id: pack
+        uses: changesets/action/pack@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
+        with:
+          publish-plan-artifact-id: ${{ needs.select-mode.outputs.publish-plan-artifact-id }}
+
+  publish:
+    needs: pack
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # git tag + GitHub release
+      id-token: write # npm trusted publishing
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+      - run: pnpm install --frozen-lockfile
+      - id: publish
+        uses: changesets/action/publish@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
+        with:
+          pack-dir-artifact-id: ${{ needs.pack.outputs.pack-dir-artifact-id }}
+      - name: Notify Slack
+        if: steps.publish.outputs.published == 'true'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          PUBLISHED_PACKAGES: ${{ steps.publish.outputs.published-packages }}
+        run: |
+          version=$(jq -r '.[] | select(.name == "@chromatic-com/storybook") | .version' <<< "$PUBLISHED_PACKAGES")
+          url="https://github.com/${GITHUB_REPOSITORY}/releases/tag/v${version}"
+          jq -n --arg text ":package: Released \`@chromatic-com/storybook@${version}\` (<${url}|release notes>)" '{text: $text}' |
+            curl --fail --silent --show-error -X POST -H 'Content-Type: application/json' --data @- "$SLACK_WEBHOOK_URL"
+
+  # Manual backport release from a release-<major>.x branch. See RELEASING.md.
+
+  backport:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # npm trusted publishing
+    env:
+      BRANCH: ${{ inputs.branch }}
+      BUMP: ${{ inputs.bump }}
+      DIST_TAG: ${{ inputs.dist-tag || inputs.branch }}
+      COREPACK_ENABLE_DOWNLOAD_PROMPT: '0'
+    steps:
+      - name: Validate inputs
+        run: |
+          if [[ ! "$BRANCH" =~ ^release-[0-9]+\.x$ ]]; then
+            echo "::error::Backports must be released from a release-<major>.x branch, got '$BRANCH'"
+            exit 1
+          fi
+          if [[ "$DIST_TAG" == "latest" || "$DIST_TAG" == "next" ]]; then
+            echo "::error::Backports can't be published under the '$DIST_TAG' dist-tag"
+            exit 1
+          fi
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.branch }}
           token: ${{ secrets.GH_TOKEN }}
           fetch-depth: 0
-          fetch-tags: true
-          clean: true
 
-      - name: Use Node.js
-        uses: actions/setup-node@v4
+      # Node 24 ships npm 11, which trusted publishing requires.
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          cache: 'yarn'
-          node-version-file: .nvmrc
+          node-version: 24
+          package-manager-cache: false
 
+      # Older branches may still use Yarn, so install with whatever the branch uses.
       - name: Install dependencies
-        run: yarn install --immutable
+        run: |
+          corepack enable
+          if [[ -f pnpm-lock.yaml ]]; then
+            pnpm install --frozen-lockfile
+          elif [[ -f yarn.lock ]]; then
+            yarn install --immutable
+          else
+            npm ci
+          fi
 
-      - name: Create Release
-        run: yarn run release
+      - name: Bump version
+        id: version
+        run: |
+          npm version "$BUMP" --no-git-tag-version
+          echo "version=$(node -p 'require("./package.json").version')" >> "$GITHUB_OUTPUT"
+
+      - name: Build
+        run: npm run build
+
+      - name: Commit and tag
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "Release v${VERSION} [skip ci]"
+          git tag "v${VERSION}"
+          # Fail before publishing if we wouldn't be able to push the release commit and tag.
+          git push --atomic --dry-run origin "HEAD:refs/heads/${BRANCH}" "refs/tags/v${VERSION}"
+
+      - name: Publish to npm
+        run: npm publish --tag "$DIST_TAG"
+
+      - name: Push release commit and tag
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: git push --atomic origin "HEAD:refs/heads/${BRANCH}" "refs/tags/v${VERSION}"
+
+      - name: Create GitHub release
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: gh release create "v${VERSION}" --target "$BRANCH" --title "v${VERSION}" --generate-notes --latest=false
+
+      - name: Notify Slack
+        env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          url="https://github.com/${GITHUB_REPOSITORY}/releases/tag/v${VERSION}"
+          jq -n --arg text ":package: Released backport \`@chromatic-com/storybook@${VERSION}\` on \`${DIST_TAG}\` (<${url}|release notes>)" '{text: $text}' |
+            curl --fail --silent --show-error -X POST -H 'Content-Type: application/json' --data @- "$SLACK_WEBHOOK_URL"

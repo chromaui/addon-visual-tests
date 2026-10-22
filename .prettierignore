@@ -1,5 +1,5 @@
-.yarn
 dist
+pnpm-lock.yaml
 public
 src/gql
 src/utils/sha256.js
