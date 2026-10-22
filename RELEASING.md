@@ -66,20 +66,23 @@ This works with pnpm too (`pnpm add <url>`). Yarn needs a `.tgz` suffix on the U
 
 Fixes for older major versions are released from `release-<major>.x` branches (for example `release-3.x`), using a manual workflow. Backports are published under their own npm dist-tag, so they never become `latest`.
 
-1. If the branch doesn't exist yet, create it from the last release tag of that major version and push it:
+1. If the branch doesn't exist yet, create it from the last release tag of that major version. For versions released before the switch to Changesets, delete the old `auto` release workflow in the same go, **before the first push**: it publishes on every push, and npm accepts any workflow named `release.yml` from this repository.
 
    ```sh
    git switch -c release-3.x v3.2.8
+   git rm .github/workflows/release.yml .github/workflows/check-labels.yml
+   git commit -m "Remove auto release workflow"
    git push -u origin release-3.x
    ```
 
-2. Older branches may still contain a `.github/workflows/release.yml` that publishes on every push (using `auto`). Remove it from the branch before releasing from it, so only the backport workflow publishes.
-3. Open a PR against the `release-<major>.x` branch with the fix (for example, by cherry-picking the commit from `main`), and merge it.
-4. Go to **Actions → Release → Run workflow**. Keep **Use workflow from** set to `main`, and fill in:
+   `release-3.x` and `release-4.x` have already been prepared this way.
+
+2. Open a PR against the `release-<major>.x` branch with the fix (for example, by cherry-picking the commit from `main`), and merge it.
+3. Go to **Actions → Release → Run workflow**. Keep **Use workflow from** set to `main`, and fill in:
    - **Backport branch**: for example `release-3.x`
    - **Version bump**: `patch` or `minor`
    - **npm dist-tag**: leave empty to use the branch name (`release-3.x`)
-5. The workflow installs and builds the branch, bumps the version, publishes to npm, pushes a release commit and `vX.Y.Z` tag to the branch, creates a GitHub release with generated notes, and posts to Slack.
+4. The workflow installs and builds the branch, bumps the version, publishes to npm, pushes a release commit and `vX.Y.Z` tag to the branch, creates a GitHub release with generated notes, and posts to Slack.
 
 Users can install the latest backport with:
 
