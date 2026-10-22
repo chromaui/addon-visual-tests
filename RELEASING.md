@@ -60,7 +60,7 @@ npm install https://pkg.pr.new/@chromatic-com/storybook@<pr-number>
 npm install https://pkg.pr.new/@chromatic-com/storybook@<commit-sha>
 ```
 
-This works with pnpm and Yarn too (`pnpm add <url>`, `yarn add <url>`). The installed package is a full build of the addon. Its `version` field is the version on that branch, not a new version number.
+This works with pnpm too (`pnpm add <url>`). Yarn needs a `.tgz` suffix on the URL: `yarn add https://pkg.pr.new/@chromatic-com/storybook@<pr-number>.tgz`. The installed package is a full build of the addon. Its `version` field is the version on that branch, not a new version number.
 
 ## Backport releases
 
