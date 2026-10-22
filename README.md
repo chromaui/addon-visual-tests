@@ -29,7 +29,7 @@ If you have any questions or need help with the addon, please get in touch with 
 
 ## Contributing
 
-We welcome contributions! If you're a maintainer, refer to the following [instructions](./Development.md) to set up your development environment with Chromatic.
+We welcome contributions! If you're a maintainer, refer to the following [instructions](./Development.md) to set up your development environment with Chromatic. PRs that change the published package need a changeset; see [RELEASING.md](./RELEASING.md) for how releases, preview builds and backports work.
 
 ### Updating the GraphQL schema
 

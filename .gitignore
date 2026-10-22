@@ -2,7 +2,6 @@ dist/
 node_modules/
 .DS_Store
 .env
-yarn-error.log
 storybook-static/
 build-storybook.log
 chromatic.log
@@ -10,11 +9,3 @@ chromatic-build-*.xml
 chromatic-diagnostics.json
 coverage/
 .omc/
-
-**/.pnp.*
-**/.yarn/*
-!**/.yarn/patches
-!**/.yarn/plugins
-!**/.yarn/releases
-!**/.yarn/sdks
-!**/.yarn/versions

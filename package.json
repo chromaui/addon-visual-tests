@@ -1,6 +1,6 @@
 {
   "name": "@chromatic-com/storybook",
-  "version": "5.5.1",
+  "version": "5.6.0",
   "description": "Catch unexpected visual changes & UI bugs in your stories",
   "keywords": [
     "storybook-addons",
@@ -38,22 +38,19 @@
     "build-storybook": "storybook build --webpack-stats-json",
     "build:staging": "CHROMATIC_BASE_URL=https://www.staging-chromatic.com tsup",
     "build:watch": "run-p 'build --watch' 'codegen --watch'",
+    "changeset": "changeset",
     "chromatic": "chromatic --config-file production.config.json",
     "codegen": "graphql-codegen",
     "gate": "run-s lockfile:check format:check lint typecheck test",
     "lint": "eslint src --report-unused-disable-directives",
-    "lockfile:check": "yarn install --immutable",
+    "lockfile:check": "pnpm install --frozen-lockfile",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
-    "release": "yarn run build && auto shipit",
     "start": "run-p build:watch 'storybook --quiet'",
     "storybook": "CHROMATIC_ADDON_NAME='../src/dev.ts' storybook dev -p 6004",
     "storybook-from-dist": "CHROMATIC_USE_DIST_VERSION=true CHROMATIC_ADDON_NAME='../dist/index.js' storybook dev -p 6004",
     "test": "vitest --coverage",
     "typecheck": "tsc --noemit"
-  },
-  "resolutions": {
-    "jackspeak": "2.1.1"
   },
   "dependencies": {
     "@neoconfetti/react": "^1.0.0",
@@ -63,8 +60,11 @@
   },
   "devDependencies": {
     "@0no-co/graphqlsp": "^1.12.16",
-    "@auto-it/slack": "^11.2.1",
+    "@changesets/changelog-github": "^1.0.1",
+    "@changesets/cli": "^3.0.3",
     "@emotion/weak-memoize": "^0.3.1",
+    "@eslint/eslintrc": "^3.3.1",
+    "@eslint/js": "^9.38.0",
     "@graphql-codegen/cli": "^5.0.5",
     "@graphql-typed-document-node/core": "^3.2.0",
     "@parcel/watcher": "^2.4.1",
@@ -85,7 +85,6 @@
     "@vitejs/plugin-react": "^4.3.4",
     "@vitest/browser": "3.2.7",
     "@vitest/coverage-v8": "^3.0.8",
-    "auto": "^11.0.5",
     "boxen": "^5.0.1",
     "date-fns": "^2.30.0",
     "dedent": "^0.7.0",
@@ -100,6 +99,7 @@
     "msw": "^2.0.0",
     "msw-storybook-addon": "^3.0.0",
     "npm-run-all": "^4.1.5",
+    "pkg-pr-new": "^0.0.91",
     "playwright": "^1.62.0",
     "pluralize": "^8.0.0",
     "polished": "^4.2.2",
@@ -113,6 +113,7 @@
     "storybook": "^10.5.4",
     "ts-dedent": "^2.2.0",
     "tsup": "^8.3.5",
+    "type-fest": "^4.41.0",
     "typescript": "^5.7.3",
     "urql": "^4.0.3",
     "uuid": "^14.0.0",
@@ -126,28 +127,13 @@
   "peerDependencies": {
     "storybook": "^0.0.0-0 || ^10.1.0 || ^10.1.0-0 || ^10.2.0-0 || ^10.3.0-0 || ^10.4.0-0 || ^10.5.0-0 || ^10.6.0-0 || ^11.0.0-0"
   },
-  "packageManager": "yarn@4.12.0",
+  "packageManager": "pnpm@12.15.0",
   "engines": {
-    "node": ">=20.0.0",
-    "yarn": ">=1.22.18"
+    "node": ">=20.0.0"
   },
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
-  },
-  "auto": {
-    "baseBranch": "main",
-    "plugins": [
-      "npm",
-      "released",
-      [
-        "slack",
-        {
-          "atTarget": "support-team",
-          "iconEmoji": ":package:"
-        }
-      ]
-    ]
   },
   "bundler": {
     "exportEntries": [

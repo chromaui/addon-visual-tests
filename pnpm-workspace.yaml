@@ -1,0 +1,8 @@
+allowBuilds:
+  '@parcel/watcher': true
+  esbuild: true
+  # Its postinstall rewrites public/mockServiceWorker.js; update it deliberately with `msw init` instead.
+  msw: false
+
+overrides:
+  jackspeak: 2.1.1
