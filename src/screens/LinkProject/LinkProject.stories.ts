@@ -1,9 +1,9 @@
 // @ts-nocheck TODO: Address SB 8 type errors
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { delay, graphql, HttpResponse } from 'msw';
-import { expect, findByTestId, findByText, fn, userEvent } from 'storybook/test';
+import { expect, findByTestId, findByText, fn, queryByText, userEvent } from 'storybook/test';
 
-import { SelectProjectsQueryQuery } from '../../gql/graphql';
+import { ProjectKind, SelectProjectsQueryQuery } from '../../gql/graphql';
 import { panelModes } from '../../modes';
 import { playAll } from '../../utils/playAll';
 import { telemetrySpy } from '../../utils/telemetrySpy';
@@ -254,6 +254,41 @@ export const EmptyNoProjects: Story = {
       'https://www.figma.com/file/GFEbCgCVDtbZhngULbw2gP/Visual-testing-in-Storybook?type=design&node-id=508-317038&mode=design&t=P9IPi8sOGNpjCeNs-4'
     ),
   },
+};
+
+export const OnlyStorybookProjects: Story = {
+  parameters: {
+    ...withSelectProjectsQuery({
+      viewer: {
+        accounts: [
+          {
+            id: 'account:123',
+            name: 'yummly',
+            newProjectUrl: 'https://www.chromatic.com/apps?accountId=123&view=createProject',
+            projects: [
+              { id: '1', name: 'storybook-app', type: ProjectKind.Storybook },
+              { id: '2', name: 'playwright-app', type: ProjectKind.Playwright },
+              { id: '3', name: 'cypress-app', type: ProjectKind.Cypress },
+              { id: '4', name: 'vitest-app', type: ProjectKind.Vitest },
+              { id: '5', name: 'legacy-app', type: null },
+            ].map((project) => ({
+              ...project,
+              links: { home: `https://www.chromatic.com/builds?appId=${project.id}` },
+            })),
+          },
+        ],
+      },
+    }),
+  },
+  play: playAll(async ({ canvasElement }) => {
+    await findByText(canvasElement, 'storybook-app');
+    const projectList = await findByTestId(canvasElement, 'right-list');
+    // Projects whose type is unknown are kept, since older APIs don't report it.
+    await expect(queryByText(projectList, 'legacy-app')).toBeInTheDocument();
+    await expect(queryByText(projectList, 'playwright-app')).not.toBeInTheDocument();
+    await expect(queryByText(projectList, 'cypress-app')).not.toBeInTheDocument();
+    await expect(queryByText(projectList, 'vitest-app')).not.toBeInTheDocument();
+  }),
 };
 
 export const Loading: Story = {
