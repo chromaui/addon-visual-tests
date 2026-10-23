@@ -1,23 +1,23 @@
 import { describe, expect, it } from 'vitest';
 
-import { DEFAULT_CAPTURE_VIEW_SETTINGS, getCaptureViewSettings } from './settings';
+import { DEFAULT_EMULATOR_SETTINGS, getEmulatorSettings } from './settings';
 import { getUnemulatedFeatures } from './unemulated';
 
-describe('getCaptureViewSettings', () => {
+describe('getEmulatorSettings', () => {
   it('defaults to disabled with every part on', () => {
-    expect(getCaptureViewSettings(undefined)).toEqual(DEFAULT_CAPTURE_VIEW_SETTINGS);
+    expect(getEmulatorSettings(undefined)).toEqual(DEFAULT_EMULATOR_SETTINGS);
   });
 
   it('accepts a boolean', () => {
-    expect(getCaptureViewSettings(true)).toEqual({
-      ...DEFAULT_CAPTURE_VIEW_SETTINGS,
+    expect(getEmulatorSettings(true)).toEqual({
+      ...DEFAULT_EMULATOR_SETTINGS,
       enabled: true,
     });
   });
 
   it('merges partial settings and ignores invalid values', () => {
-    expect(getCaptureViewSettings({ enabled: true, mask: false, carets: 'nope' })).toEqual({
-      ...DEFAULT_CAPTURE_VIEW_SETTINGS,
+    expect(getEmulatorSettings({ enabled: true, mask: false, carets: 'nope' })).toEqual({
+      ...DEFAULT_EMULATOR_SETTINGS,
       enabled: true,
       mask: false,
     });

@@ -4,24 +4,24 @@ import { Button, PopoverProvider } from 'storybook/internal/components';
 import { useGlobals, useParameter, useStorybookState } from 'storybook/manager-api';
 import { styled } from 'storybook/theming';
 
-import { getGlobalsUpdate } from '../captureView/globals';
+import { EMULATOR_PARAM, EMULATOR_RESTORE_KEY, SELECTED_MODE_NAME } from '../constants';
+import { getGlobalsUpdate } from '../emulator/globals';
 import {
   type CaptureMode,
   getViewportGlobal,
   resolveCaptureModes,
   type ViewportParameters,
-} from '../captureView/modes';
-import { type CaptureViewSettings, getCaptureViewSettings } from '../captureView/settings';
-import { getUnemulatedFeatures } from '../captureView/unemulated';
-import { CAPTURE_VIEW_PARAM, CAPTURE_VIEW_RESTORE_KEY, SELECTED_MODE_NAME } from '../constants';
+} from '../emulator/modes';
+import { type EmulatorSettings, getEmulatorSettings } from '../emulator/settings';
+import { getUnemulatedFeatures } from '../emulator/unemulated';
 import type { ChromaticParameters } from '../types';
 import { useSharedState } from '../utils/useSharedState';
-import { CaptureViewMenu, type CaptureViewMenuProps } from './CaptureViewMenu';
+import { EmulatorMenu, type EmulatorMenuProps } from './EmulatorMenu';
 
 type Globals = Record<string, unknown>;
 
 // Styled manually, because Button's `active` prop is deprecated and ToggleButton would imply that
-// clicking toggles capture view, while it opens the settings popover.
+// clicking toggles the Chromatic emulator, while it opens the settings popover.
 const ToolButton = styled(Button, { shouldForwardProp: (prop) => prop !== 'enabled' })<{
   enabled: boolean;
 }>(({ theme, enabled }) =>
@@ -46,22 +46,22 @@ const IconWrapper = styled.span<{ warning: boolean }>(({ theme, warning }) => ({
     : {},
 }));
 
-export const CaptureViewButton = (props: CaptureViewMenuProps) => {
+export const EmulatorButton = (props: EmulatorMenuProps) => {
   const { settings, unemulated } = props;
   return (
     <PopoverProvider
       hasChrome
-      ariaLabel="Capture view settings"
+      ariaLabel="Chromatic emulator settings"
       placement="bottom"
       padding={0}
-      popover={<CaptureViewMenu {...props} />}
+      popover={<EmulatorMenu {...props} />}
     >
       <ToolButton
-        ariaLabel="Capture view"
+        ariaLabel="Chromatic emulator"
         tooltip={
           settings.enabled
-            ? 'Capture view is on: the preview matches how Chromatic captures this story. Click to configure.'
-            : 'Capture view: preview this story the way Chromatic captures it, with frozen animations, hidden carets and the snapshot viewport and crop. Click to configure.'
+            ? 'Chromatic emulator is on: the preview matches how Chromatic captures this story. Click to configure.'
+            : 'Chromatic emulator: preview this story the way Chromatic captures it, with frozen animations, hidden carets and the snapshot viewport and crop. Click to configure.'
         }
         variant="ghost"
         padding="small"
@@ -89,7 +89,7 @@ const mapValues = (value: unknown, fn: (value: unknown) => unknown): unknown =>
 
 const readSavedGlobals = (): Globals => {
   try {
-    const saved = JSON.parse(sessionStorage.getItem(CAPTURE_VIEW_RESTORE_KEY) || '{}');
+    const saved = JSON.parse(sessionStorage.getItem(EMULATOR_RESTORE_KEY) || '{}');
     return mapValues(saved, (value) => (value === UNDEFINED ? undefined : value)) as Globals;
   } catch {
     return {};
@@ -99,14 +99,14 @@ const readSavedGlobals = (): Globals => {
 const writeSavedGlobals = (saved: Globals) => {
   if (Object.keys(saved).length) {
     const encoded = mapValues(saved, (value) => (value === undefined ? UNDEFINED : value));
-    sessionStorage.setItem(CAPTURE_VIEW_RESTORE_KEY, JSON.stringify(encoded));
+    sessionStorage.setItem(EMULATOR_RESTORE_KEY, JSON.stringify(encoded));
   } else {
-    sessionStorage.removeItem(CAPTURE_VIEW_RESTORE_KEY);
+    sessionStorage.removeItem(EMULATOR_RESTORE_KEY);
   }
 };
 
 /**
- * Apply the mode globals and viewport size while capture view is active, and restore the
+ * Apply the mode globals and viewport size while the Chromatic emulator is active, and restore the
  * original globals afterwards.
  */
 const useModeGlobals = (active: boolean, mode: CaptureMode) => {
@@ -133,14 +133,14 @@ const useModeGlobals = (active: boolean, mode: CaptureMode) => {
   }, [target, storyId, updateGlobals]);
 };
 
-export const CaptureViewTool = () => {
+export const EmulatorTool = () => {
   const [globals, updateGlobals, storyGlobals] = useGlobals();
   const chromatic = useParameter<ChromaticParameters['chromatic']>('chromatic', {});
   const viewport = useParameter<ViewportParameters>('viewport', {});
   const [selectedModeName, setSelectedModeName] = useSharedState<string>(SELECTED_MODE_NAME);
 
-  const settings = getCaptureViewSettings(globals[CAPTURE_VIEW_PARAM]);
-  const locked = CAPTURE_VIEW_PARAM in (storyGlobals ?? {});
+  const settings = getEmulatorSettings(globals[EMULATOR_PARAM]);
+  const locked = EMULATOR_PARAM in (storyGlobals ?? {});
 
   // Parameter objects aren't referentially stable, so compare them by value
   const modesKey = JSON.stringify({ chromatic, viewport });
@@ -151,10 +151,10 @@ export const CaptureViewTool = () => {
   useModeGlobals(settings.enabled && settings.viewport, selectedMode);
 
   return (
-    <CaptureViewButton
+    <EmulatorButton
       settings={settings}
       locked={locked}
-      onChange={(next: CaptureViewSettings) => updateGlobals({ [CAPTURE_VIEW_PARAM]: next })}
+      onChange={(next: EmulatorSettings) => updateGlobals({ [EMULATOR_PARAM]: next })}
       modes={modes}
       selectedMode={selectedMode}
       onSelectMode={setSelectedModeName}

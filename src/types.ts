@@ -177,7 +177,7 @@ export interface ChromaticGlobals {
    * Preview the story the way Chromatic captures it. Set to `true` to enable every part, or pass
    * an object to toggle individual parts.
    */
-  chromaticCapture?:
+  chromaticEmulator?:
     | boolean
     | {
         enabled?: boolean;

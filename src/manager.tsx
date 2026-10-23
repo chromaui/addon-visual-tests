@@ -3,7 +3,7 @@ import type { ClickEventDetails } from 'storybook/highlight';
 import { type Addon_TestProviderType, Addon_TypesEnum } from 'storybook/internal/types';
 import { addons, experimental_getStatusStore } from 'storybook/manager-api';
 
-import { CaptureViewTool } from './components/CaptureViewTool.tsx';
+import { EmulatorTool } from './components/EmulatorTool.tsx';
 import { GlobalIgnoreToggle } from './components/GlobalIgnoreToggle.tsx';
 import {
   ADDON_ID,
@@ -78,11 +78,11 @@ addons.register(ADDON_ID, (api) => {
     render: () => <GlobalIgnoreToggle />,
   });
 
-  addons.add(`${ADDON_ID}/capture-view-tool`, {
+  addons.add(`${ADDON_ID}/emulator-tool`, {
     type: Addon_TypesEnum.TOOL,
-    title: 'Capture view',
+    title: 'Chromatic emulator',
     match: ({ viewMode }) => viewMode === 'story',
-    render: () => <CaptureViewTool />,
+    render: () => <EmulatorTool />,
   });
 
   addons.add(PANEL_ID, {

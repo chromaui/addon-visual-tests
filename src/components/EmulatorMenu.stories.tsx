@@ -2,10 +2,10 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import React from 'react';
 import { expect, fn, screen, userEvent, within } from 'storybook/test';
 
-import { resolveCaptureModes } from '../captureView/modes';
-import { DEFAULT_CAPTURE_VIEW_SETTINGS } from '../captureView/settings';
-import { CaptureViewMenu } from './CaptureViewMenu';
-import { CaptureViewButton } from './CaptureViewTool';
+import { resolveCaptureModes } from '../emulator/modes';
+import { DEFAULT_EMULATOR_SETTINGS } from '../emulator/settings';
+import { EmulatorMenu } from './EmulatorMenu';
+import { EmulatorButton } from './EmulatorTool';
 
 const [defaultMode] = resolveCaptureModes({});
 const modes = resolveCaptureModes({
@@ -19,11 +19,11 @@ const modes = resolveCaptureModes({
 });
 
 const meta = {
-  title: 'components/CaptureViewMenu',
-  component: CaptureViewMenu,
+  title: 'components/EmulatorMenu',
+  component: EmulatorMenu,
   globals: { theme: 'light' },
   args: {
-    settings: { ...DEFAULT_CAPTURE_VIEW_SETTINGS, enabled: true },
+    settings: { ...DEFAULT_EMULATOR_SETTINGS, enabled: true },
     locked: false,
     onChange: fn(),
     modes: [defaultMode],
@@ -32,7 +32,7 @@ const meta = {
     pauseAnimationAtEnd: true,
     unemulated: [],
   },
-} satisfies Meta<typeof CaptureViewMenu>;
+} satisfies Meta<typeof EmulatorMenu>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -41,7 +41,7 @@ export const Enabled: Story = {};
 
 export const Disabled: Story = {
   args: {
-    settings: DEFAULT_CAPTURE_VIEW_SETTINGS,
+    settings: DEFAULT_EMULATOR_SETTINGS,
   },
 };
 
@@ -56,7 +56,7 @@ export const MultipleModes: Story = {
 
 export const PartiallyDisabled: Story = {
   args: {
-    settings: { ...DEFAULT_CAPTURE_VIEW_SETTINGS, enabled: true, mask: false, identity: false },
+    settings: { ...DEFAULT_EMULATOR_SETTINGS, enabled: true, mask: false, identity: false },
   },
 };
 
@@ -74,7 +74,7 @@ export const TogglesParts: Story = {
     await userEvent.click(canvas.getByRole('checkbox', { name: /Freeze animations/ }));
     await expect(args.onChange).toHaveBeenCalledWith({ ...args.settings, animations: false });
 
-    await userEvent.click(canvas.getByRole('checkbox', { name: /^Capture view/ }));
+    await userEvent.click(canvas.getByRole('checkbox', { name: /^Chromatic emulator/ }));
     await expect(args.onChange).toHaveBeenCalledWith({ ...args.settings, enabled: false });
 
     await userEvent.click(canvas.getByRole('button', { name: /Desktop dark/ }));
@@ -84,19 +84,21 @@ export const TogglesParts: Story = {
 
 export const PartsDisabledWhenOff: Story = {
   parameters: { chromatic: { disableSnapshot: true } },
-  args: { settings: DEFAULT_CAPTURE_VIEW_SETTINGS },
+  args: { settings: DEFAULT_EMULATOR_SETTINGS },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(canvas.getByRole('checkbox', { name: /Freeze animations/ })).toBeDisabled();
-    await expect(canvas.getByRole('checkbox', { name: /^Capture view/ })).toBeEnabled();
+    await expect(canvas.getByRole('checkbox', { name: /^Chromatic emulator/ })).toBeEnabled();
   },
 };
 
 export const ToolbarButton: Story = {
-  render: (args) => <CaptureViewButton {...args} />,
+  render: (args) => <EmulatorButton {...args} />,
   args: { unemulated: ['color scheme: dark'] },
   play: async ({ canvasElement }) => {
-    await userEvent.click(within(canvasElement).getByRole('button', { name: 'Capture view' }));
+    await userEvent.click(
+      within(canvasElement).getByRole('button', { name: 'Chromatic emulator' })
+    );
     await expect(
       await screen.findByRole('checkbox', { name: /Freeze animations/ })
     ).toBeInTheDocument();

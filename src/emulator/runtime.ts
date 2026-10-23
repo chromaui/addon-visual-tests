@@ -1,31 +1,31 @@
 import { FORCE_REMOUNT, STORY_FINISHED, STORY_RENDERED } from 'storybook/internal/core-events';
 import { addons } from 'storybook/preview-api';
 
-import { CAPTURE_VIEW_PARAM } from '../constants';
+import { EMULATOR_PARAM } from '../constants';
 import type { ChromaticParameters } from '../types';
 import { setChromaticIdentity } from './identity';
 import { removeMask, renderMask } from './mask';
 import { type Box, measureCaptureBox } from './measure';
-import { type CaptureViewSettings, getCaptureViewSettings } from './settings';
-import { applyCaptureTweaks, CAPTURE_VIEW_ATTRIBUTE, removeCaptureTweaks } from './tweaks';
+import { type EmulatorSettings, getEmulatorSettings } from './settings';
+import { applyCaptureTweaks, EMULATOR_ATTRIBUTE, removeCaptureTweaks } from './tweaks';
 
 const MAX_DELAY = 15_000;
 
-interface CaptureViewState {
+interface EmulatorState {
   storyId: string;
   active: boolean;
-  settings: CaptureViewSettings;
+  settings: EmulatorSettings;
   chromatic: ChromaticParameters['chromatic'];
 }
 
-let state: CaptureViewState | undefined;
+let state: EmulatorState | undefined;
 let runId = 0;
 let listening = false;
 let stopMaskUpdates: (() => void) | undefined;
 
 // Our own elements and Storybook's highlight overlay aren't part of the captured story
 const isExcluded = (element: Element) =>
-  element.hasAttribute(CAPTURE_VIEW_ATTRIBUTE) || element.id.startsWith('storybook-highlights-');
+  element.hasAttribute(EMULATOR_ATTRIBUTE) || element.id.startsWith('storybook-highlights-');
 
 const nextFrame = () => new Promise((resolve) => requestAnimationFrame(resolve));
 
@@ -46,9 +46,7 @@ const startMaskUpdates = (cropToViewport: boolean) => {
   const onResize = () => update(true);
   const observer = new MutationObserver((records) => {
     const isOwnMutation = (node: Node) =>
-      !!(node instanceof Element ? node : node.parentElement)?.closest(
-        `[${CAPTURE_VIEW_ATTRIBUTE}]`
-      );
+      !!(node instanceof Element ? node : node.parentElement)?.closest(`[${EMULATOR_ATTRIBUTE}]`);
     if (records.some(({ target }) => !isOwnMutation(target))) update(true);
   });
 
@@ -82,7 +80,7 @@ const teardown = () => {
  * Prepare the rendered story the way Chromatic does right before capturing it: wait for fonts and
  * the configured delay, scroll to the top and apply the visual tweaks.
  */
-const applyCaptureView = async () => {
+const applyEmulator = async () => {
   const currentRunId = ++runId;
   removeCaptureTweaks(document);
 
@@ -118,15 +116,15 @@ const listen = () => {
   listening = true;
   const channel = addons.getChannel();
   channel.on(STORY_RENDERED, (storyId: string) => {
-    if (storyId === state?.storyId) applyCaptureView();
+    if (storyId === state?.storyId) applyEmulator();
   });
   channel.on(STORY_FINISHED, ({ storyId }: { storyId: string }) => {
-    if (storyId === state?.storyId) applyCaptureView();
+    if (storyId === state?.storyId) applyEmulator();
   });
 };
 
-export const withCaptureView = (StoryFn: () => unknown, context: any) => {
-  const settings = getCaptureViewSettings(context.globals?.[CAPTURE_VIEW_PARAM]);
+export const withEmulator = (StoryFn: () => unknown, context: any) => {
+  const settings = getEmulatorSettings(context.globals?.[EMULATOR_PARAM]);
   const active = settings.enabled && context.viewMode === 'story';
   const identity = active && settings.identity;
 

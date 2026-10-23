@@ -1,14 +1,14 @@
 import { HIGHLIGHT, REMOVE_HIGHLIGHT } from 'storybook/highlight';
 import { useChannel, useEffect } from 'storybook/preview-api';
 
-import { withCaptureView } from './captureView/runtime';
-import { DEFAULT_CAPTURE_VIEW_SETTINGS } from './captureView/settings';
 import {
-  CAPTURE_VIEW_PARAM,
+  EMULATOR_PARAM,
   HIGHLIGHT_IGNORED_COUNT,
   HIGHLIGHT_IGNORED_ID,
   HIGHLIGHT_IGNORED_PARAM,
 } from './constants';
+import { withEmulator } from './emulator/runtime';
+import { DEFAULT_EMULATOR_SETTINGS } from './emulator/settings';
 import { getIgnoreHighlightOptions } from './utils/ignoreHighlight';
 
 const WithIgnoreHighlight = (Story: any, { globals, parameters, id }: any) => {
@@ -50,9 +50,9 @@ const WithIgnoreHighlight = (Story: any, { globals, parameters, id }: any) => {
   return Story();
 };
 
-export const decorators = [WithIgnoreHighlight, withCaptureView];
+export const decorators = [WithIgnoreHighlight, withEmulator];
 
 export const initialGlobals = {
   [HIGHLIGHT_IGNORED_PARAM]: false,
-  [CAPTURE_VIEW_PARAM]: DEFAULT_CAPTURE_VIEW_SETTINGS,
+  [EMULATOR_PARAM]: DEFAULT_EMULATOR_SETTINGS,
 };

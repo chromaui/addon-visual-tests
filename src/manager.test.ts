@@ -69,8 +69,8 @@ vi.mock('storybook/internal/types', () => ({
   },
 }));
 
-vi.mock('./components/CaptureViewTool.tsx', () => ({
-  CaptureViewTool: () => null,
+vi.mock('./components/EmulatorTool.tsx', () => ({
+  EmulatorTool: () => null,
 }));
 
 vi.mock('./components/GlobalIgnoreToggle.tsx', () => ({

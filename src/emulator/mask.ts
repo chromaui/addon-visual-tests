@@ -1,7 +1,7 @@
 import type { Box } from './measure';
-import { CAPTURE_VIEW_ATTRIBUTE } from './tweaks';
+import { EMULATOR_ATTRIBUTE } from './tweaks';
 
-const MASK_ID = 'chromatic-capture-view-mask';
+const MASK_ID = 'chromatic-emulator-mask';
 const MASK_OPACITY = 0.85;
 
 const isTransparent = (color: string) =>
@@ -29,7 +29,7 @@ export const renderMask = (doc: Document, box: Box) => {
   if (!mask) {
     mask = doc.createElement('div');
     mask.id = MASK_ID;
-    mask.setAttribute(CAPTURE_VIEW_ATTRIBUTE, '');
+    mask.setAttribute(EMULATOR_ATTRIBUTE, '');
     mask.setAttribute('aria-hidden', 'true');
     const fill = doc.createElement('div');
     fill.setAttribute('data-fill', '');

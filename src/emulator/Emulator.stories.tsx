@@ -6,11 +6,11 @@ import { expect, within } from 'storybook/test';
 import { setChromaticIdentity } from './identity';
 import { getPageBackground, removeMask, renderMask } from './mask';
 import { type Box, measureCaptureBox } from './measure';
-import { applyCaptureTweaks, CAPTURE_VIEW_ATTRIBUTE, removeCaptureTweaks } from './tweaks';
+import { applyCaptureTweaks, EMULATOR_ATTRIBUTE, removeCaptureTweaks } from './tweaks';
 
 const fadeIn = `
-  @keyframes capture-view-fade-in { from { opacity: 0; } to { opacity: 1; } }
-  .fade-in { animation: capture-view-fade-in 10s linear; }
+  @keyframes emulator-fade-in { from { opacity: 0; } to { opacity: 1; } }
+  .fade-in { animation: emulator-fade-in 10s linear; }
 `;
 
 /** Renders a page-like fixture: a root (acting as the body) with a padded story container. */
@@ -48,7 +48,7 @@ const measure = (canvasElement: HTMLElement) => {
 };
 
 const meta = {
-  title: 'captureView/CaptureView',
+  title: 'emulator/Emulator',
   component: Fixture,
   globals: { theme: 'light' },
   parameters: { chromatic: { disableSnapshot: true } },
@@ -133,7 +133,7 @@ export const FreezesAnimationsAtEnd: Story = {
     } finally {
       removeCaptureTweaks(document);
     }
-    await expect(document.querySelector(`style[${CAPTURE_VIEW_ATTRIBUTE}]`)).toBeNull();
+    await expect(document.querySelector(`style[${EMULATOR_ATTRIBUTE}]`)).toBeNull();
     await expect(content.getAnimations()[0].playState).toBe('running');
   },
 };
@@ -193,17 +193,17 @@ export const MasksWithPageBackground: Story = {
     try {
       await expect(getPageBackground(document)).toBe('rgb(20, 30, 40)');
       renderMask(document, measure(canvasElement));
-      const fill = document.querySelector<HTMLElement>(`[${CAPTURE_VIEW_ATTRIBUTE}] [data-fill]`);
+      const fill = document.querySelector<HTMLElement>(`[${EMULATOR_ATTRIBUTE}] [data-fill]`);
       await expect(fill).toHaveStyle({ backgroundColor: 'rgb(20, 30, 40)' });
     } finally {
       removeMask(document);
       document.body.style.background = background;
     }
-    await expect(document.querySelector(`[${CAPTURE_VIEW_ATTRIBUTE}]`)).toBeNull();
+    await expect(document.querySelector(`[${EMULATOR_ATTRIBUTE}]`)).toBeNull();
   },
 };
 
-/** Try out capture view from the toolbar, with a few modes and things to freeze. */
+/** Try out the Chromatic emulator from the toolbar, with a few modes and things to freeze. */
 export const Playground: Story = {
   args: {
     children: (

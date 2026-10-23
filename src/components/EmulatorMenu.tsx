@@ -3,8 +3,8 @@ import React from 'react';
 import { ActionList, Form } from 'storybook/internal/components';
 import { styled } from 'storybook/theming';
 
-import type { CaptureMode } from '../captureView/modes';
-import type { CaptureViewPart, CaptureViewSettings } from '../captureView/settings';
+import type { CaptureMode } from '../emulator/modes';
+import type { EmulatorPart, EmulatorSettings } from '../emulator/settings';
 
 const Menu = styled.div(({ theme }) => ({
   width: 320,
@@ -77,7 +77,7 @@ const Notice = styled.div(({ theme }) => ({
   '& + &': { marginTop: 8 },
 }));
 
-const PART_DESCRIPTIONS: Record<CaptureViewPart, { title: string; description: string }> = {
+const PART_DESCRIPTIONS: Record<EmulatorPart, { title: string; description: string }> = {
   viewport: {
     title: 'Viewport & mode globals',
     description: 'Resize the preview to the snapshot viewport and apply the mode globals',
@@ -104,10 +104,10 @@ const PART_DESCRIPTIONS: Record<CaptureViewPart, { title: string; description: s
   },
 };
 
-export interface CaptureViewMenuProps {
-  settings: CaptureViewSettings;
+export interface EmulatorMenuProps {
+  settings: EmulatorSettings;
   locked: boolean;
-  onChange: (settings: CaptureViewSettings) => void;
+  onChange: (settings: EmulatorSettings) => void;
   modes: CaptureMode[];
   selectedMode: CaptureMode;
   onSelectMode: (name: string) => void;
@@ -117,7 +117,7 @@ export interface CaptureViewMenuProps {
 
 const formatSize = ({ width, height }: CaptureMode) => `${width}×${height}`;
 
-export const CaptureViewMenu = ({
+export const EmulatorMenu = ({
   settings,
   locked,
   onChange,
@@ -126,10 +126,10 @@ export const CaptureViewMenu = ({
   onSelectMode,
   pauseAnimationAtEnd,
   unemulated,
-}: CaptureViewMenuProps) => {
+}: EmulatorMenuProps) => {
   const partsDisabled = locked || !settings.enabled;
 
-  const describe = (part: CaptureViewPart) => {
+  const describe = (part: EmulatorPart) => {
     if (part === 'viewport') {
       return `Resize the preview to ${formatSize(selectedMode)} and apply the mode globals`;
     }
@@ -149,10 +149,10 @@ export const CaptureViewMenu = ({
             onChange={() => onChange({ ...settings, enabled: !settings.enabled })}
           />
           <Label>
-            <Title>Capture view</Title>
+            <Title>Chromatic emulator</Title>
             <Description>
               {locked
-                ? 'Capture view is set by the story globals.'
+                ? 'Chromatic emulator is set by the story globals.'
                 : 'Preview the story the way Chromatic captures it, so it matches the snapshot.'}
             </Description>
           </Label>
@@ -184,7 +184,7 @@ export const CaptureViewMenu = ({
       </Section>
 
       <Section>
-        {(Object.keys(PART_DESCRIPTIONS) as CaptureViewPart[]).map((part) => (
+        {(Object.keys(PART_DESCRIPTIONS) as EmulatorPart[]).map((part) => (
           <Row key={part} disabled={partsDisabled}>
             <Form.Checkbox
               checked={settings[part]}

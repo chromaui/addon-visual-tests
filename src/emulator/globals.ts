@@ -21,7 +21,7 @@ const isEqual = (a: unknown, b: unknown): boolean => {
  * by the story itself can't be changed and are skipped.
  *
  * @returns The globals update to apply (empty when nothing needs to change), and the new set of
- * original values to restore once capture view is turned off.
+ * original values to restore once the Chromatic emulator is turned off.
  */
 export const getGlobalsUpdate = ({
   current,

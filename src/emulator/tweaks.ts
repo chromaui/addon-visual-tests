@@ -1,9 +1,9 @@
 /**
  * Visual tweaks Chromatic applies to a story right before capturing it, to make snapshots
- * deterministic. They're grouped by the capture view setting that controls them.
+ * deterministic. They're grouped by the Chromatic emulator setting that controls them.
  */
 
-export const CAPTURE_VIEW_ATTRIBUTE = 'data-chromatic-capture-view';
+export const EMULATOR_ATTRIBUTE = 'data-chromatic-emulator';
 
 export interface TweakOptions {
   /** Freeze CSS and SVG animations and reset videos */
@@ -25,7 +25,7 @@ const getStyleTarget = (root: StyleRoot) => ('head' in root ? root.head : root);
 const addStyle = (root: StyleRoot, rules: string[], { prepend = false } = {}) => {
   const doc = 'head' in root ? root : root.ownerDocument;
   const style = doc.createElement('style');
-  style.setAttribute(CAPTURE_VIEW_ATTRIBUTE, '');
+  style.setAttribute(EMULATOR_ATTRIBUTE, '');
   const target = getStyleTarget(root);
   if (prepend) target.prepend(style);
   else target.append(style);
@@ -96,7 +96,7 @@ const resetVideos = (roots: StyleRoot[]) => {
       })
     );
   });
-  // Don't hold up the capture view on videos that never load
+  // Don't hold up the Chromatic emulator on videos that never load
   return Promise.race([Promise.all(loaded), new Promise((r) => setTimeout(r, 2000))]);
 };
 
@@ -168,7 +168,7 @@ export const applyCaptureTweaks = async (doc: Document, options: TweakOptions) =
 
 export const removeCaptureTweaks = (doc: Document) => {
   const roots = getStyleRoots(doc);
-  forEachElement(roots, `style[${CAPTURE_VIEW_ATTRIBUTE}]`, (style) => style.remove());
+  forEachElement(roots, `style[${EMULATOR_ATTRIBUTE}]`, (style) => style.remove());
   pausedSvgs.forEach((svg) => svg.unpauseAnimations());
   pausedSvgs.clear();
 
