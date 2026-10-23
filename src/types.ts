@@ -177,7 +177,7 @@ export interface ChromaticGlobals {
    * Preview the story the way Chromatic captures it. Set to `true` to turn on every part, or pass
    * an object to turn on individual parts.
    */
-  chromaticEmulator?:
+  chromatic?:
     | boolean
     | {
         /** Resize to the mode's viewport, apply its globals and mask outside the captured region */

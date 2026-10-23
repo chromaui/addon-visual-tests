@@ -19,7 +19,7 @@ export const DEFAULT_EMULATOR_SETTINGS: EmulatorSettings = {
 
 /**
  * Normalize the value of the Chromatic emulator global. The global is an object with a flag for
- * each part, but we also accept a plain boolean (e.g. `chromaticEmulator:!true` in the URL) to
+ * each part, but we also accept a plain boolean (e.g. `chromatic:!true` in the URL) to
  * turn every part on or off.
  */
 export const getEmulatorSettings = (value: unknown): EmulatorSettings => {
