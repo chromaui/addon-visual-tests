@@ -5,7 +5,7 @@ import { getViewportGlobal, resolveCaptureModes } from './modes';
 describe('resolveCaptureModes', () => {
   it('defaults to a single 1200x900 mode', () => {
     expect(resolveCaptureModes({})).toEqual([
-      { name: '1200px', globals: {}, width: 1200, height: 900, isDefault: true },
+      { name: '1200px', globals: {}, width: 1200, height: 900 },
     ]);
   });
 
@@ -57,9 +57,7 @@ describe('resolveCaptureModes', () => {
 
   it('falls back to the default mode when all modes are dropped', () => {
     const modes = resolveCaptureModes({ chromatic: { modes: { off: { disable: true } } } });
-    expect(modes).toEqual([
-      { name: '1200px', globals: {}, width: 1200, height: 900, isDefault: true },
-    ]);
+    expect(modes).toEqual([{ name: '1200px', globals: {}, width: 1200, height: 900 }]);
   });
 
   it('clamps viewport sizes', () => {

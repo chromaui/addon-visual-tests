@@ -2,21 +2,9 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import React from 'react';
 import { expect, fn, screen, userEvent, within } from 'storybook/test';
 
-import { resolveCaptureModes } from '../emulator/modes';
 import { DEFAULT_EMULATOR_SETTINGS } from '../emulator/settings';
 import { EmulatorMenu } from './EmulatorMenu';
 import { EmulatorButton } from './EmulatorTool';
-
-const [defaultMode] = resolveCaptureModes({});
-const modes = resolveCaptureModes({
-  chromatic: {
-    modes: {
-      Mobile: { viewport: 'mobile1', theme: 'light' },
-      Desktop: { viewport: 1440, theme: 'light' },
-      'Desktop dark': { viewport: 1440, theme: 'dark', colorScheme: 'dark' },
-    },
-  },
-});
 
 const allOn = { viewport: true, rendering: true, identity: true };
 
@@ -28,9 +16,6 @@ const meta = {
     settings: allOn,
     locked: false,
     onChange: fn(),
-    modes: [defaultMode],
-    selectedMode: defaultMode,
-    onSelectViewport: fn(),
   },
 } satisfies Meta<typeof EmulatorMenu>;
 
@@ -42,20 +27,6 @@ export const Enabled: Story = {};
 export const Disabled: Story = {
   args: {
     settings: DEFAULT_EMULATOR_SETTINGS,
-  },
-};
-
-export const MultipleModes: Story = {
-  args: {
-    modes,
-    selectedMode: modes[2],
-  },
-};
-
-export const SingleMode: Story = {
-  args: {
-    modes: [modes[0]],
-    selectedMode: modes[0],
   },
 };
 
@@ -71,36 +42,6 @@ export const LockedByStoryGlobals: Story = {
   },
 };
 
-export const DefaultModeOnly: Story = {
-  parameters: { chromatic: { disableSnapshot: true } },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    await expect(canvas.getByRole('menuitemradio', { name: /Default/ })).toHaveAttribute(
-      'aria-checked',
-      'true'
-    );
-    await expect(canvas.queryByText('1200px')).not.toBeInTheDocument();
-  },
-};
-
-export const SelectsViewport: Story = {
-  parameters: { chromatic: { disableSnapshot: true } },
-  args: { modes, selectedMode: modes[0], settings: DEFAULT_EMULATOR_SETTINGS },
-  play: async ({ args, canvasElement }) => {
-    const canvas = within(canvasElement);
-    await expect(canvas.getByRole('menuitemradio', { name: 'Off' })).toHaveAttribute(
-      'aria-checked',
-      'true'
-    );
-
-    await userEvent.click(canvas.getByRole('menuitemradio', { name: /Desktop dark/ }));
-    await expect(args.onSelectViewport).toHaveBeenCalledWith('Desktop dark');
-
-    await userEvent.click(canvas.getByRole('menuitemradio', { name: 'Off' }));
-    await expect(args.onSelectViewport).toHaveBeenCalledWith(null);
-  },
-};
-
 export const TogglesParts: Story = {
   parameters: { chromatic: { disableSnapshot: true } },
   args: { settings: DEFAULT_EMULATOR_SETTINGS },
@@ -111,6 +52,9 @@ export const TogglesParts: Story = {
 
     await userEvent.click(canvas.getByRole('checkbox', { name: /Identify as Chromatic/ }));
     await expect(args.onChange).toHaveBeenCalledWith({ ...args.settings, identity: true });
+
+    await userEvent.click(canvas.getByRole('checkbox', { name: /Viewport & capture area/ }));
+    await expect(args.onChange).toHaveBeenCalledWith({ ...args.settings, viewport: true });
   },
 };
 
@@ -129,11 +73,6 @@ export const PartsDisabledWhenLocked: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(canvas.getByRole('checkbox', { name: /Capture rendering/ })).toBeDisabled();
-    // Storybook buttons stay focusable when disabled, so they use aria-disabled
-    await expect(canvas.getByRole('menuitemradio', { name: 'Off' })).toHaveAttribute(
-      'aria-disabled',
-      'true'
-    );
     await expect(canvas.getByText(/set by the story globals/)).toBeInTheDocument();
   },
 };

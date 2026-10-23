@@ -117,7 +117,8 @@ export const EmulatorTool = () => {
   const [globals, updateGlobals, storyGlobals] = useGlobals();
   const chromatic = useParameter<ChromaticParameters['chromatic']>('chromatic', {});
   const viewport = useParameter<ViewportParameters>('viewport', {});
-  const [selectedModeName, setSelectedModeName] = useSharedState<string>(SELECTED_MODE_NAME);
+  // The mode is selected in the Visual Tests panel
+  const [selectedModeName] = useSharedState<string>(SELECTED_MODE_NAME);
 
   const settings = getEmulatorSettings(globals[EMULATOR_PARAM]);
   const locked = EMULATOR_PARAM in (storyGlobals ?? {});
@@ -130,19 +131,11 @@ export const EmulatorTool = () => {
 
   useModeGlobals(settings.viewport, selectedMode);
 
-  const setSettings = (next: EmulatorSettings) => updateGlobals({ [EMULATOR_PARAM]: next });
-
   return (
     <EmulatorButton
       settings={settings}
       locked={locked}
-      onChange={setSettings}
-      modes={modes}
-      selectedMode={selectedMode}
-      onSelectViewport={(modeName) => {
-        if (modeName) setSelectedModeName(modeName);
-        if (settings.viewport !== !!modeName) setSettings({ ...settings, viewport: !!modeName });
-      }}
+      onChange={(next: EmulatorSettings) => updateGlobals({ [EMULATOR_PARAM]: next })}
     />
   );
 };

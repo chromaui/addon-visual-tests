@@ -1,9 +1,8 @@
-import { CheckIcon, QuestionIcon } from '@storybook/icons';
+import { QuestionIcon } from '@storybook/icons';
 import React from 'react';
 import { ActionList, Form } from 'storybook/internal/components';
 import { styled } from 'storybook/theming';
 
-import type { CaptureMode } from '../emulator/modes';
 import { EMULATOR_PARTS, type EmulatorPart, type EmulatorSettings } from '../emulator/settings';
 
 const Menu = styled.div({
@@ -26,14 +25,11 @@ const CheckboxIcon = styled(ActionList.Icon)({
   marginTop: 9,
 });
 
-const SizeText = styled(ActionList.Text)({
-  flexGrow: 0,
-});
-
-// The viewport part is rendered as a list of modes to choose from, rather than a checkbox
-const TOGGLES = EMULATOR_PARTS.filter((part) => part !== 'viewport');
-
-const PARTS: Record<Exclude<EmulatorPart, 'viewport'>, { title: string; description: string }> = {
+const PARTS: Record<EmulatorPart, { title: string; description: string }> = {
+  viewport: {
+    title: 'Viewport & capture area',
+    description: "Match the snapshot's viewport, mode and crop",
+  },
   rendering: {
     title: 'Capture rendering',
     description: 'Freeze animations, hide carets and scrollbars',
@@ -48,65 +44,13 @@ export interface EmulatorMenuProps {
   settings: EmulatorSettings;
   locked: boolean;
   onChange: (settings: EmulatorSettings) => void;
-  modes: CaptureMode[];
-  selectedMode: CaptureMode;
-  /** Select a mode to match its viewport and capture area, or `null` to turn this off */
-  onSelectViewport: (modeName: string | null) => void;
 }
 
-const formatSize = ({ width, height }: CaptureMode) => `${width}×${height}`;
-
-export const EmulatorMenu = ({
-  settings,
-  locked,
-  onChange,
-  modes,
-  selectedMode,
-  onSelectViewport,
-}: EmulatorMenuProps) => {
-  const options = [
-    { name: null, label: 'Off', size: undefined },
-    ...modes.map((mode) => ({
-      name: mode.name,
-      label: mode.isDefault ? 'Default' : mode.name,
-      size: formatSize(mode),
-    })),
-  ];
-  const isSelected = (name: string | null) =>
-    name === null ? !settings.viewport : settings.viewport && name === selectedMode.name;
-
+export const EmulatorMenu = ({ settings, locked, onChange }: EmulatorMenuProps) => {
   return (
     <Menu>
       <ActionList>
-        <ActionList.Item>
-          <Text>
-            <span>Viewport & capture area</span>
-            <small>Match the snapshot's viewport, mode and crop</small>
-          </Text>
-        </ActionList.Item>
-        {options.map(({ name, label, size }) => (
-          <ActionList.Item key={label} active={isSelected(name)}>
-            <ActionList.Action
-              ariaLabel={false}
-              role="menuitemradio"
-              aria-checked={isSelected(name)}
-              disabled={locked}
-              onClick={() => onSelectViewport(name)}
-            >
-              <ActionList.Icon>{isSelected(name) && <CheckIcon />}</ActionList.Icon>
-              <ActionList.Text>{label}</ActionList.Text>
-              {size && (
-                <SizeText>
-                  <small>{size}</small>
-                </SizeText>
-              )}
-            </ActionList.Action>
-          </ActionList.Item>
-        ))}
-      </ActionList>
-
-      <ActionList>
-        {TOGGLES.map((part) => (
+        {EMULATOR_PARTS.map((part) => (
           <CheckboxItem key={part} disabled={locked}>
             <ActionList.Action as="label" ariaLabel={false} tabIndex={-1}>
               <CheckboxIcon>

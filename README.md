@@ -27,7 +27,7 @@ By default, the addon offers zero-config support to run visual tests with Storyb
 
 To debug a snapshot, use the Chromatic button in the toolbar to preview the story the way Chromatic captures it. Turn on any combination of:
 
-- **Viewport & capture area:** resize the preview to the mode's viewport, apply the mode's globals and mask everything outside the captured region.
+- **Viewport & capture area:** resize the preview to the viewport of the mode selected in the Visual Tests panel, apply that mode's globals and mask everything outside the captured region.
 - **Capture rendering:** freeze animations, hide carets and spellcheck markers, hide scrollbars and render text like the capture browser.
 - **Identify as Chromatic:** make `isChromatic()` return true.
 
