@@ -23,6 +23,16 @@ Start Storybook and navigate to the Visual Tests panel to run your first visual 
 
 By default, the addon offers zero-config support to run visual tests with Storybook and Chromatic. However, if you need, you can customize it by providing a few options. See the [Chromatic documentation](https://www.chromatic.com/docs/visual-tests-addon/) for more information on configuring and using it with your Storybook.
 
+## Chromatic emulator
+
+To debug a snapshot, use the Chromatic button in the toolbar to preview the story the way Chromatic captures it. Turn on any combination of:
+
+- **Viewport & capture area:** resize the preview to the viewport of the mode selected in the Visual Tests panel, apply that mode's globals and mask everything outside the captured region.
+- **Capture rendering:** freeze animations, hide carets and spellcheck markers, hide scrollbars and render text like the capture browser.
+- **Identify as Chromatic:** make `isChromatic()` return true.
+
+Some capture settings can't be reproduced in the browser, such as `prefersReducedMotion`, `forcedColors`, `media`, color scheme and locale. Code that reads the user agent before the story renders (e.g. at module load) won't see Chromatic's user agent.
+
 ## Getting Help
 
 If you have any questions or need help with the addon, please get in touch with the Chromatic team. [Sign in](https://www.chromatic.com/start) to your Chromatic account and click the chat icon in the bottom right corner of the screen to start a conversation with us.

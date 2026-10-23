@@ -69,6 +69,10 @@ vi.mock('storybook/internal/types', () => ({
   },
 }));
 
+vi.mock('./components/EmulatorTool.tsx', () => ({
+  EmulatorTool: () => null,
+}));
+
 vi.mock('./components/GlobalIgnoreToggle.tsx', () => ({
   GlobalIgnoreToggle: () => null,
 }));
