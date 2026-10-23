@@ -173,6 +173,21 @@ export interface ChromaticParameters {
 
 export interface ChromaticGlobals {
   ignoredRegions?: boolean;
+  /**
+   * Preview the story the way Chromatic captures it. Set to `true` to enable every part, or pass
+   * an object to toggle individual parts.
+   */
+  chromaticCapture?:
+    | boolean
+    | {
+        enabled?: boolean;
+        viewport?: boolean;
+        animations?: boolean;
+        carets?: boolean;
+        rendering?: boolean;
+        identity?: boolean;
+        mask?: boolean;
+      };
 }
 
 export interface ChromaticTypes {
