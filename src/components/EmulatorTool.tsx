@@ -13,7 +13,6 @@ import {
   type ViewportParameters,
 } from '../emulator/modes';
 import { type EmulatorSettings, getEmulatorSettings, isEmulatorActive } from '../emulator/settings';
-import { getUnemulatedFeatures } from '../emulator/unemulated';
 import type { ChromaticParameters } from '../types';
 import { useSharedState } from '../utils/useSharedState';
 import { EmulatorMenu, type EmulatorMenuProps } from './EmulatorMenu';
@@ -28,26 +27,8 @@ const ToolButton = styled(Button, { shouldForwardProp: (prop) => prop !== 'enabl
   enabled ? { color: theme.color.secondary, background: theme.background.hoverable } : {}
 );
 
-const IconWrapper = styled.span<{ warning: boolean }>(({ theme, warning }) => ({
-  position: 'relative',
-  display: 'inline-flex',
-  '&::after': warning
-    ? {
-        content: '""',
-        position: 'absolute',
-        top: -2,
-        right: -2,
-        width: 6,
-        height: 6,
-        borderRadius: '50%',
-        background: theme.color.warning,
-        boxShadow: `0 0 0 1px ${theme.barBg}`,
-      }
-    : {},
-}));
-
 export const EmulatorButton = (props: EmulatorMenuProps) => {
-  const { settings, unemulated } = props;
+  const { settings } = props;
   const active = isEmulatorActive(settings);
   return (
     <PopoverProvider
@@ -68,9 +49,7 @@ export const EmulatorButton = (props: EmulatorMenuProps) => {
         padding="small"
         enabled={active}
       >
-        <IconWrapper warning={active && unemulated.length > 0}>
-          <ChromaticIcon />
-        </IconWrapper>
+        <ChromaticIcon />
       </ToolButton>
     </PopoverProvider>
   );
@@ -160,7 +139,6 @@ export const EmulatorTool = () => {
       selectedMode={selectedMode}
       onSelectMode={setSelectedModeName}
       pauseAnimationAtEnd={chromatic?.pauseAnimationAtEnd ?? true}
-      unemulated={getUnemulatedFeatures(chromatic, selectedMode.globals)}
     />
   );
 };

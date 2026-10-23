@@ -1,4 +1,4 @@
-import { AlertIcon } from '@storybook/icons';
+import { QuestionIcon } from '@storybook/icons';
 import React from 'react';
 import { ActionList, Form } from 'storybook/internal/components';
 import { styled } from 'storybook/theming';
@@ -35,13 +35,6 @@ const Heading = styled(ActionList.Text)(({ theme }) => ({
   color: theme.textMutedColor,
 }));
 
-const WarningIcon = styled(ActionList.Icon)(({ theme }) => ({
-  color: theme.color.warning,
-  alignSelf: 'flex-start',
-  marginTop: 9,
-  marginLeft: 8,
-}));
-
 const PART_TITLES: Record<EmulatorPart, string> = {
   viewport: 'Viewport & capture area',
   rendering: 'Capture rendering',
@@ -56,7 +49,6 @@ export interface EmulatorMenuProps {
   selectedMode: CaptureMode;
   onSelectMode: (name: string) => void;
   pauseAnimationAtEnd: boolean;
-  unemulated: string[];
 }
 
 const formatSize = ({ width, height }: CaptureMode) => `${width}×${height}`;
@@ -69,7 +61,6 @@ export const EmulatorMenu = ({
   selectedMode,
   onSelectMode,
   pauseAnimationAtEnd,
-  unemulated,
 }: EmulatorMenuProps) => {
   const descriptions: Record<EmulatorPart, string> = {
     viewport: `Resize the preview to ${formatSize(selectedMode)}, apply the mode globals and mask everything outside the captured region`,
@@ -138,25 +129,18 @@ export const EmulatorMenu = ({
             </Text>
           </ActionList.Item>
         )}
-        {unemulated.length > 0 && (
-          <ActionList.Item>
-            <WarningIcon>
-              <AlertIcon />
-            </WarningIcon>
-            <Text>
-              <small>
-                Not emulated, because the capture browser sets it: {unemulated.join(', ')}.
-              </small>
-            </Text>
-          </ActionList.Item>
-        )}
         <ActionList.Item>
-          <Text>
-            <small>
-              Code that reads the user agent before the story renders (e.g. at module load) won't
-              see Chromatic's user agent. Font rendering may differ from the capture browser.
-            </small>
-          </Text>
+          <ActionList.Link
+            ariaLabel={false}
+            href="https://www.chromatic.com/docs/snapshots/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <ActionList.Icon>
+              <QuestionIcon />
+            </ActionList.Icon>
+            <ActionList.Text>Learn more</ActionList.Text>
+          </ActionList.Link>
         </ActionList.Item>
       </ActionList>
     </Menu>

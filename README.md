@@ -31,7 +31,7 @@ To debug a snapshot, use the Chromatic button in the toolbar to preview the stor
 - **Capture rendering:** freeze animations, hide carets and spellcheck markers, hide scrollbars and render text like the capture browser.
 - **Identify as Chromatic:** make `isChromatic()` return true.
 
-Some capture settings can't be reproduced in the browser, such as `prefersReducedMotion`, `forcedColors`, `media`, color scheme and locale. The menu lists these when they apply. Code that reads the user agent before the story renders (e.g. at module load) won't see Chromatic's user agent.
+Some capture settings can't be reproduced in the browser, such as `prefersReducedMotion`, `forcedColors`, `media`, color scheme and locale. Code that reads the user agent before the story renders (e.g. at module load) won't see Chromatic's user agent.
 
 ## Getting Help
 

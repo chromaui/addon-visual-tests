@@ -32,7 +32,6 @@ const meta = {
     selectedMode: defaultMode,
     onSelectMode: fn(),
     pauseAnimationAtEnd: true,
-    unemulated: [],
   },
 } satisfies Meta<typeof EmulatorMenu>;
 
@@ -52,7 +51,6 @@ export const MultipleModes: Story = {
     modes,
     selectedMode: modes[2],
     pauseAnimationAtEnd: false,
-    unemulated: ['color scheme: dark', 'browser locale: fr-FR'],
   },
 };
 
@@ -100,6 +98,15 @@ export const TogglesParts: Story = {
   },
 };
 
+export const LinksToDocs: Story = {
+  parameters: { chromatic: { disableSnapshot: true } },
+  play: async ({ canvasElement }) => {
+    const link = within(canvasElement).getByRole('link', { name: 'Learn more' });
+    await expect(link).toHaveAttribute('href', 'https://www.chromatic.com/docs/snapshots/');
+    await expect(link).toHaveAttribute('target', '_blank');
+  },
+};
+
 export const PartsDisabledWhenLocked: Story = {
   parameters: { chromatic: { disableSnapshot: true } },
   args: { locked: true },
@@ -112,7 +119,6 @@ export const PartsDisabledWhenLocked: Story = {
 
 export const ToolbarButton: Story = {
   render: (args) => <EmulatorButton {...args} />,
-  args: { unemulated: ['color scheme: dark'] },
   play: async ({ canvasElement }) => {
     await userEvent.click(
       within(canvasElement).getByRole('button', { name: 'Chromatic emulator' })
