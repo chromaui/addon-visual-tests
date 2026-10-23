@@ -6,75 +6,40 @@ import { styled } from 'storybook/theming';
 import type { CaptureMode } from '../emulator/modes';
 import type { EmulatorPart, EmulatorSettings } from '../emulator/settings';
 
-const Menu = styled.div(({ theme }) => ({
+const Menu = styled.div({
   width: 320,
-  fontSize: theme.typography.size.s2,
-  color: theme.color.defaultText,
-}));
+});
 
-const Section = styled.div(({ theme }) => ({
-  padding: '10px 12px',
-  '& + &': {
-    borderTop: `1px solid ${theme.appBorderColor}`,
-  },
-}));
+// ActionList.Text truncates its <span> children, but these titles and descriptions should wrap
+const Text = styled(ActionList.Text)({
+  '& > span': { whiteSpace: 'normal' },
+});
 
-const Heading = styled.div(({ theme }) => ({
-  fontSize: theme.typography.size.s1,
-  fontWeight: theme.typography.weight.bold,
-  color: theme.textMutedColor,
-  marginBottom: 6,
-}));
-
-const Row = styled.label<{ disabled?: boolean }>(({ disabled }) => ({
-  display: 'flex',
-  alignItems: 'flex-start',
-  gap: 8,
-  padding: '4px 0',
-  cursor: disabled ? 'not-allowed' : 'pointer',
+const CheckboxItem = styled(ActionList.Item)<{ disabled?: boolean }>(({ disabled }) => ({
   opacity: disabled ? 0.5 : 1,
-  input: { flexShrink: 0, marginTop: 2 },
+  label: { cursor: disabled ? 'not-allowed' : 'pointer' },
 }));
 
-const Label = styled.div({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 2,
+// Align the checkbox with the title rather than centering it on the title and description
+const CheckboxIcon = styled(ActionList.Icon)({
+  alignSelf: 'flex-start',
+  marginTop: 9,
 });
 
-const Title = styled.span(({ theme }) => ({
+const SizeText = styled(ActionList.Text)({
+  flexGrow: 0,
+});
+
+const Heading = styled(ActionList.Text)(({ theme }) => ({
   fontWeight: theme.typography.weight.bold,
-}));
-
-const Description = styled.span(({ theme }) => ({
-  fontSize: theme.typography.size.s1,
-  color: theme.textMutedColor,
-  lineHeight: '16px',
-}));
-
-const ModeList = styled(ActionList)({
-  margin: '0 -8px',
-});
-
-const ModeLabel = styled(ActionList.Text)<{ active?: boolean }>(({ theme, active }) => ({
-  color: active ? theme.color.secondary : 'inherit',
-  fontWeight: active ? theme.typography.weight.bold : 'inherit',
-}));
-
-const ModeSize = styled.span(({ theme }) => ({
-  marginLeft: 'auto',
-  fontSize: theme.typography.size.s1,
   color: theme.textMutedColor,
 }));
 
-const Notice = styled.div(({ theme }) => ({
-  display: 'flex',
-  gap: 8,
-  fontSize: theme.typography.size.s1,
-  color: theme.textMutedColor,
-  lineHeight: '16px',
-  svg: { flexShrink: 0, marginTop: 1, color: theme.color.warning },
-  '& + &': { marginTop: 8 },
+const WarningIcon = styled(ActionList.Icon)(({ theme }) => ({
+  color: theme.color.warning,
+  alignSelf: 'flex-start',
+  marginTop: 9,
+  marginLeft: 8,
 }));
 
 const PART_DESCRIPTIONS: Record<EmulatorPart, { title: string; description: string }> = {
@@ -139,80 +104,113 @@ export const EmulatorMenu = ({
     return PART_DESCRIPTIONS[part].description;
   };
 
+  const checkbox = ({
+    key,
+    title,
+    description,
+    checked,
+    disabled,
+    onToggle,
+  }: {
+    key: string;
+    title: string;
+    description: string;
+    checked: boolean;
+    disabled: boolean;
+    onToggle: () => void;
+  }) => (
+    <CheckboxItem key={key} disabled={disabled}>
+      <ActionList.Action as="label" ariaLabel={false} tabIndex={-1}>
+        <CheckboxIcon>
+          <Form.Checkbox checked={checked} disabled={disabled} onChange={onToggle} />
+        </CheckboxIcon>
+        <Text>
+          <span>{title}</span>
+          <small>{description}</small>
+        </Text>
+      </ActionList.Action>
+    </CheckboxItem>
+  );
+
   return (
     <Menu>
-      <Section>
-        <Row disabled={locked}>
-          <Form.Checkbox
-            checked={settings.enabled}
-            disabled={locked}
-            onChange={() => onChange({ ...settings, enabled: !settings.enabled })}
-          />
-          <Label>
-            <Title>Chromatic emulator</Title>
-            <Description>
-              {locked
-                ? 'Chromatic emulator is set by the story globals.'
-                : 'Preview the story the way Chromatic captures it, so it matches the snapshot.'}
-            </Description>
-          </Label>
-        </Row>
-      </Section>
+      <ActionList>
+        {checkbox({
+          key: 'enabled',
+          title: 'Chromatic emulator',
+          description: locked
+            ? 'Chromatic emulator is set by the story globals.'
+            : 'Preview the story the way Chromatic captures it, so it matches the snapshot.',
+          checked: settings.enabled,
+          disabled: locked,
+          onToggle: () => onChange({ ...settings, enabled: !settings.enabled }),
+        })}
+      </ActionList>
 
-      <Section>
-        <Heading>Mode</Heading>
+      <ActionList>
+        <ActionList.Item>
+          <Heading>Mode</Heading>
+        </ActionList.Item>
         {modes.length > 1 ? (
-          <ModeList>
-            {modes.map((mode) => (
-              <ActionList.Item key={mode.name}>
-                <ActionList.Action
-                  ariaLabel={false}
-                  aria-pressed={mode.name === selectedMode.name}
-                  onClick={() => onSelectMode(mode.name)}
-                >
-                  <ModeLabel active={mode.name === selectedMode.name}>{mode.name}</ModeLabel>
-                  <ModeSize>{formatSize(mode)}</ModeSize>
-                </ActionList.Action>
-              </ActionList.Item>
-            ))}
-          </ModeList>
+          modes.map((mode) => (
+            <ActionList.Item key={mode.name} active={mode.name === selectedMode.name}>
+              <ActionList.Action
+                ariaLabel={false}
+                aria-pressed={mode.name === selectedMode.name}
+                onClick={() => onSelectMode(mode.name)}
+              >
+                <ActionList.Text>{mode.name}</ActionList.Text>
+                <SizeText>
+                  <small>{formatSize(mode)}</small>
+                </SizeText>
+              </ActionList.Action>
+            </ActionList.Item>
+          ))
         ) : (
-          <Description>
-            {selectedMode.name} · {formatSize(selectedMode)}
-          </Description>
+          <ActionList.Item>
+            <ActionList.Text>{selectedMode.name}</ActionList.Text>
+            <SizeText>
+              <small>{formatSize(selectedMode)}</small>
+            </SizeText>
+          </ActionList.Item>
         )}
-      </Section>
+      </ActionList>
 
-      <Section>
-        {(Object.keys(PART_DESCRIPTIONS) as EmulatorPart[]).map((part) => (
-          <Row key={part} disabled={partsDisabled}>
-            <Form.Checkbox
-              checked={settings[part]}
-              disabled={partsDisabled}
-              onChange={() => onChange({ ...settings, [part]: !settings[part] })}
-            />
-            <Label>
-              <Title>{PART_DESCRIPTIONS[part].title}</Title>
-              <Description>{describe(part)}</Description>
-            </Label>
-          </Row>
-        ))}
-      </Section>
+      <ActionList>
+        {(Object.keys(PART_DESCRIPTIONS) as EmulatorPart[]).map((part) =>
+          checkbox({
+            key: part,
+            title: PART_DESCRIPTIONS[part].title,
+            description: describe(part),
+            checked: settings[part],
+            disabled: partsDisabled,
+            onToggle: () => onChange({ ...settings, [part]: !settings[part] }),
+          })
+        )}
+      </ActionList>
 
-      <Section>
+      <ActionList>
         {unemulated.length > 0 && (
-          <Notice>
-            <AlertIcon />
-            <span>Not emulated, because the capture browser sets it: {unemulated.join(', ')}.</span>
-          </Notice>
+          <ActionList.Item>
+            <WarningIcon>
+              <AlertIcon />
+            </WarningIcon>
+            <Text>
+              <small>
+                Not emulated, because the capture browser sets it: {unemulated.join(', ')}.
+              </small>
+            </Text>
+          </ActionList.Item>
         )}
-        <Notice>
-          <span>
-            Code that reads the user agent before the story renders (e.g. at module load) won't see
-            Chromatic's user agent. Font rendering may differ from the capture browser.
-          </span>
-        </Notice>
-      </Section>
+        <ActionList.Item>
+          <Text>
+            <small>
+              Code that reads the user agent before the story renders (e.g. at module load) won't
+              see Chromatic's user agent. Font rendering may differ from the capture browser.
+            </small>
+          </Text>
+        </ActionList.Item>
+      </ActionList>
     </Menu>
   );
 };
