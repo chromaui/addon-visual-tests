@@ -46,7 +46,7 @@ const PARTS: Record<EmulatorPart, { title: string; description: string }> = {
   },
   identity: {
     title: 'Identify as Chromatic',
-    description: 'Make isChromatic() return true and set data-chromatic on the body',
+    description: 'Set user agent and body data-attribute',
   },
 };
 
