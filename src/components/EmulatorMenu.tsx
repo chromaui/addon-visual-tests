@@ -1,4 +1,4 @@
-import { QuestionIcon } from '@storybook/icons';
+import { CheckIcon, QuestionIcon } from '@storybook/icons';
 import React from 'react';
 import { ActionList, Form } from 'storybook/internal/components';
 import { styled } from 'storybook/theming';
@@ -30,16 +30,10 @@ const SizeText = styled(ActionList.Text)({
   flexGrow: 0,
 });
 
-const Heading = styled(ActionList.Text)(({ theme }) => ({
-  fontWeight: theme.typography.weight.bold,
-  color: theme.textMutedColor,
-}));
+// The viewport part is rendered as a list of modes to choose from, rather than a checkbox
+const TOGGLES = EMULATOR_PARTS.filter((part) => part !== 'viewport');
 
-const PARTS: Record<EmulatorPart, { title: string; description: string }> = {
-  viewport: {
-    title: 'Viewport & capture area',
-    description: "Match the snapshot's viewport, mode and crop",
-  },
+const PARTS: Record<Exclude<EmulatorPart, 'viewport'>, { title: string; description: string }> = {
   rendering: {
     title: 'Capture rendering',
     description: 'Freeze animations, hide carets and scrollbars',
@@ -56,7 +50,8 @@ export interface EmulatorMenuProps {
   onChange: (settings: EmulatorSettings) => void;
   modes: CaptureMode[];
   selectedMode: CaptureMode;
-  onSelectMode: (name: string) => void;
+  /** Select a mode to match its viewport and capture area, or `null` to turn this off */
+  onSelectViewport: (modeName: string | null) => void;
 }
 
 const formatSize = ({ width, height }: CaptureMode) => `${width}×${height}`;
@@ -67,43 +62,51 @@ export const EmulatorMenu = ({
   onChange,
   modes,
   selectedMode,
-  onSelectMode,
+  onSelectViewport,
 }: EmulatorMenuProps) => {
+  const options = [
+    { name: null, label: 'Off', size: undefined },
+    ...modes.map((mode) => ({
+      name: mode.name,
+      label: mode.isDefault ? 'Default' : mode.name,
+      size: formatSize(mode),
+    })),
+  ];
+  const isSelected = (name: string | null) =>
+    name === null ? !settings.viewport : settings.viewport && name === selectedMode.name;
+
   return (
     <Menu>
-      {!selectedMode.isDefault && (
-        <ActionList>
-          <ActionList.Item>
-            <Heading>Mode</Heading>
+      <ActionList>
+        <ActionList.Item>
+          <Text>
+            <span>Viewport & capture area</span>
+            <small>Match the snapshot's viewport, mode and crop</small>
+          </Text>
+        </ActionList.Item>
+        {options.map(({ name, label, size }) => (
+          <ActionList.Item key={label} active={isSelected(name)}>
+            <ActionList.Action
+              ariaLabel={false}
+              role="menuitemradio"
+              aria-checked={isSelected(name)}
+              disabled={locked}
+              onClick={() => onSelectViewport(name)}
+            >
+              <ActionList.Icon>{isSelected(name) && <CheckIcon />}</ActionList.Icon>
+              <ActionList.Text>{label}</ActionList.Text>
+              {size && (
+                <SizeText>
+                  <small>{size}</small>
+                </SizeText>
+              )}
+            </ActionList.Action>
           </ActionList.Item>
-          {modes.length > 1 ? (
-            modes.map((mode) => (
-              <ActionList.Item key={mode.name} active={mode.name === selectedMode.name}>
-                <ActionList.Action
-                  ariaLabel={false}
-                  aria-pressed={mode.name === selectedMode.name}
-                  onClick={() => onSelectMode(mode.name)}
-                >
-                  <ActionList.Text>{mode.name}</ActionList.Text>
-                  <SizeText>
-                    <small>{formatSize(mode)}</small>
-                  </SizeText>
-                </ActionList.Action>
-              </ActionList.Item>
-            ))
-          ) : (
-            <ActionList.Item>
-              <ActionList.Text>{selectedMode.name}</ActionList.Text>
-              <SizeText>
-                <small>{formatSize(selectedMode)}</small>
-              </SizeText>
-            </ActionList.Item>
-          )}
-        </ActionList>
-      )}
+        ))}
+      </ActionList>
 
       <ActionList>
-        {EMULATOR_PARTS.map((part) => (
+        {TOGGLES.map((part) => (
           <CheckboxItem key={part} disabled={locked}>
             <ActionList.Action as="label" ariaLabel={false} tabIndex={-1}>
               <CheckboxIcon>

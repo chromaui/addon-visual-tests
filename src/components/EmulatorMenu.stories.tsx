@@ -30,7 +30,7 @@ const meta = {
     onChange: fn(),
     modes: [defaultMode],
     selectedMode: defaultMode,
-    onSelectMode: fn(),
+    onSelectViewport: fn(),
   },
 } satisfies Meta<typeof EmulatorMenu>;
 
@@ -71,28 +71,46 @@ export const LockedByStoryGlobals: Story = {
   },
 };
 
-export const HidesDefaultMode: Story = {
+export const DefaultModeOnly: Story = {
   parameters: { chromatic: { disableSnapshot: true } },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await expect(canvas.queryByText('Mode')).not.toBeInTheDocument();
+    await expect(canvas.getByRole('menuitemradio', { name: /Default/ })).toHaveAttribute(
+      'aria-checked',
+      'true'
+    );
     await expect(canvas.queryByText('1200px')).not.toBeInTheDocument();
+  },
+};
+
+export const SelectsViewport: Story = {
+  parameters: { chromatic: { disableSnapshot: true } },
+  args: { modes, selectedMode: modes[0], settings: DEFAULT_EMULATOR_SETTINGS },
+  play: async ({ args, canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByRole('menuitemradio', { name: 'Off' })).toHaveAttribute(
+      'aria-checked',
+      'true'
+    );
+
+    await userEvent.click(canvas.getByRole('menuitemradio', { name: /Desktop dark/ }));
+    await expect(args.onSelectViewport).toHaveBeenCalledWith('Desktop dark');
+
+    await userEvent.click(canvas.getByRole('menuitemradio', { name: 'Off' }));
+    await expect(args.onSelectViewport).toHaveBeenCalledWith(null);
   },
 };
 
 export const TogglesParts: Story = {
   parameters: { chromatic: { disableSnapshot: true } },
-  args: { modes, selectedMode: modes[0], settings: DEFAULT_EMULATOR_SETTINGS },
+  args: { settings: DEFAULT_EMULATOR_SETTINGS },
   play: async ({ args, canvasElement }) => {
     const canvas = within(canvasElement);
     await userEvent.click(canvas.getByRole('checkbox', { name: /Capture rendering/ }));
     await expect(args.onChange).toHaveBeenCalledWith({ ...args.settings, rendering: true });
 
-    await userEvent.click(canvas.getByRole('checkbox', { name: /Viewport & capture area/ }));
-    await expect(args.onChange).toHaveBeenCalledWith({ ...args.settings, viewport: true });
-
-    await userEvent.click(canvas.getByRole('button', { name: /Desktop dark/ }));
-    await expect(args.onSelectMode).toHaveBeenCalledWith('Desktop dark');
+    await userEvent.click(canvas.getByRole('checkbox', { name: /Identify as Chromatic/ }));
+    await expect(args.onChange).toHaveBeenCalledWith({ ...args.settings, identity: true });
   },
 };
 
@@ -111,6 +129,11 @@ export const PartsDisabledWhenLocked: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(canvas.getByRole('checkbox', { name: /Capture rendering/ })).toBeDisabled();
+    // Storybook buttons stay focusable when disabled, so they use aria-disabled
+    await expect(canvas.getByRole('menuitemradio', { name: 'Off' })).toHaveAttribute(
+      'aria-disabled',
+      'true'
+    );
     await expect(canvas.getByText(/set by the story globals/)).toBeInTheDocument();
   },
 };

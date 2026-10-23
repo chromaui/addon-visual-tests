@@ -130,14 +130,19 @@ export const EmulatorTool = () => {
 
   useModeGlobals(settings.viewport, selectedMode);
 
+  const setSettings = (next: EmulatorSettings) => updateGlobals({ [EMULATOR_PARAM]: next });
+
   return (
     <EmulatorButton
       settings={settings}
       locked={locked}
-      onChange={(next: EmulatorSettings) => updateGlobals({ [EMULATOR_PARAM]: next })}
+      onChange={setSettings}
       modes={modes}
       selectedMode={selectedMode}
-      onSelectMode={setSelectedModeName}
+      onSelectViewport={(modeName) => {
+        if (modeName) setSelectedModeName(modeName);
+        if (settings.viewport !== !!modeName) setSettings({ ...settings, viewport: !!modeName });
+      }}
     />
   );
 };
