@@ -25,7 +25,11 @@ By default, the addon offers zero-config support to run visual tests with Storyb
 
 ## Chromatic emulator
 
-To debug a snapshot, use the Chromatic button in the toolbar to turn on the Chromatic emulator. It previews the story the way Chromatic captures it: the preview is resized to the snapshot viewport, the mode's globals are applied, animations are frozen, carets are hidden, `isChromatic()` returns true and everything outside the captured region is masked. Each of these can be switched off separately from the same menu, to find out which one causes a difference.
+To debug a snapshot, use the Chromatic button in the toolbar to preview the story the way Chromatic captures it. Turn on any combination of:
+
+- **Viewport & capture area:** resize the preview to the mode's viewport, apply the mode's globals and mask everything outside the captured region.
+- **Capture rendering:** freeze animations, hide carets and spellcheck markers, hide scrollbars and render text like the capture browser.
+- **Identify as Chromatic:** make `isChromatic()` return true.
 
 Some capture settings can't be reproduced in the browser, such as `prefersReducedMotion`, `forcedColors`, `media`, color scheme and locale. The menu lists these when they apply. Code that reads the user agent before the story renders (e.g. at module load) won't see Chromatic's user agent.
 

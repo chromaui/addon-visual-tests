@@ -4,7 +4,7 @@ import { ActionList, Form } from 'storybook/internal/components';
 import { styled } from 'storybook/theming';
 
 import type { CaptureMode } from '../emulator/modes';
-import type { EmulatorPart, EmulatorSettings } from '../emulator/settings';
+import { EMULATOR_PARTS, type EmulatorPart, type EmulatorSettings } from '../emulator/settings';
 
 const Menu = styled.div({
   width: 320,
@@ -42,31 +42,10 @@ const WarningIcon = styled(ActionList.Icon)(({ theme }) => ({
   marginLeft: 8,
 }));
 
-const PART_DESCRIPTIONS: Record<EmulatorPart, { title: string; description: string }> = {
-  viewport: {
-    title: 'Viewport & mode globals',
-    description: 'Resize the preview to the snapshot viewport and apply the mode globals',
-  },
-  animations: {
-    title: 'Freeze animations',
-    description: 'Restart and pause CSS and SVG animations, reset videos',
-  },
-  carets: {
-    title: 'Hide carets & spellcheck',
-    description: 'Hide the text cursor and spelling or grammar markers',
-  },
-  rendering: {
-    title: 'Capture rendering',
-    description: 'Geometric precision text rendering, no scrollbars, eager image loading',
-  },
-  identity: {
-    title: 'Identify as Chromatic',
-    description: 'Make isChromatic() return true and set data-chromatic on the body',
-  },
-  mask: {
-    title: 'Mask outside capture area',
-    description: 'Dim everything that falls outside the captured region',
-  },
+const PART_TITLES: Record<EmulatorPart, string> = {
+  viewport: 'Viewport & capture area',
+  rendering: 'Capture rendering',
+  identity: 'Identify as Chromatic',
 };
 
 export interface EmulatorMenuProps {
@@ -92,104 +71,73 @@ export const EmulatorMenu = ({
   pauseAnimationAtEnd,
   unemulated,
 }: EmulatorMenuProps) => {
-  const partsDisabled = locked || !settings.enabled;
-
-  const describe = (part: EmulatorPart) => {
-    if (part === 'viewport') {
-      return `Resize the preview to ${formatSize(selectedMode)} and apply the mode globals`;
-    }
-    if (part === 'animations') {
-      return `${PART_DESCRIPTIONS[part].description}, paused at the ${pauseAnimationAtEnd ? 'end' : 'start'}`;
-    }
-    return PART_DESCRIPTIONS[part].description;
+  const descriptions: Record<EmulatorPart, string> = {
+    viewport: `Resize the preview to ${formatSize(selectedMode)}, apply the mode globals and mask everything outside the captured region`,
+    rendering: `Freeze animations at their ${pauseAnimationAtEnd ? 'end' : 'start'}, hide carets and spellcheck markers, no scrollbars, geometric precision text rendering`,
+    identity: 'Make isChromatic() return true and set data-chromatic on the body',
   };
-
-  const checkbox = ({
-    key,
-    title,
-    description,
-    checked,
-    disabled,
-    onToggle,
-  }: {
-    key: string;
-    title: string;
-    description: string;
-    checked: boolean;
-    disabled: boolean;
-    onToggle: () => void;
-  }) => (
-    <CheckboxItem key={key} disabled={disabled}>
-      <ActionList.Action as="label" ariaLabel={false} tabIndex={-1}>
-        <CheckboxIcon>
-          <Form.Checkbox checked={checked} disabled={disabled} onChange={onToggle} />
-        </CheckboxIcon>
-        <Text>
-          <span>{title}</span>
-          <small>{description}</small>
-        </Text>
-      </ActionList.Action>
-    </CheckboxItem>
-  );
 
   return (
     <Menu>
+      {!selectedMode.isDefault && (
+        <ActionList>
+          <ActionList.Item>
+            <Heading>Mode</Heading>
+          </ActionList.Item>
+          {modes.length > 1 ? (
+            modes.map((mode) => (
+              <ActionList.Item key={mode.name} active={mode.name === selectedMode.name}>
+                <ActionList.Action
+                  ariaLabel={false}
+                  aria-pressed={mode.name === selectedMode.name}
+                  onClick={() => onSelectMode(mode.name)}
+                >
+                  <ActionList.Text>{mode.name}</ActionList.Text>
+                  <SizeText>
+                    <small>{formatSize(mode)}</small>
+                  </SizeText>
+                </ActionList.Action>
+              </ActionList.Item>
+            ))
+          ) : (
+            <ActionList.Item>
+              <ActionList.Text>{selectedMode.name}</ActionList.Text>
+              <SizeText>
+                <small>{formatSize(selectedMode)}</small>
+              </SizeText>
+            </ActionList.Item>
+          )}
+        </ActionList>
+      )}
+
       <ActionList>
-        {checkbox({
-          key: 'enabled',
-          title: 'Chromatic emulator',
-          description: locked
-            ? 'Chromatic emulator is set by the story globals.'
-            : 'Preview the story the way Chromatic captures it, so it matches the snapshot.',
-          checked: settings.enabled,
-          disabled: locked,
-          onToggle: () => onChange({ ...settings, enabled: !settings.enabled }),
-        })}
+        {EMULATOR_PARTS.map((part) => (
+          <CheckboxItem key={part} disabled={locked}>
+            <ActionList.Action as="label" ariaLabel={false} tabIndex={-1}>
+              <CheckboxIcon>
+                <Form.Checkbox
+                  checked={settings[part]}
+                  disabled={locked}
+                  onChange={() => onChange({ ...settings, [part]: !settings[part] })}
+                />
+              </CheckboxIcon>
+              <Text>
+                <span>{PART_TITLES[part]}</span>
+                <small>{descriptions[part]}</small>
+              </Text>
+            </ActionList.Action>
+          </CheckboxItem>
+        ))}
       </ActionList>
 
       <ActionList>
-        <ActionList.Item>
-          <Heading>Mode</Heading>
-        </ActionList.Item>
-        {modes.length > 1 ? (
-          modes.map((mode) => (
-            <ActionList.Item key={mode.name} active={mode.name === selectedMode.name}>
-              <ActionList.Action
-                ariaLabel={false}
-                aria-pressed={mode.name === selectedMode.name}
-                onClick={() => onSelectMode(mode.name)}
-              >
-                <ActionList.Text>{mode.name}</ActionList.Text>
-                <SizeText>
-                  <small>{formatSize(mode)}</small>
-                </SizeText>
-              </ActionList.Action>
-            </ActionList.Item>
-          ))
-        ) : (
+        {locked && (
           <ActionList.Item>
-            <ActionList.Text>{selectedMode.name}</ActionList.Text>
-            <SizeText>
-              <small>{formatSize(selectedMode)}</small>
-            </SizeText>
+            <Text>
+              <small>The Chromatic emulator is set by the story globals.</small>
+            </Text>
           </ActionList.Item>
         )}
-      </ActionList>
-
-      <ActionList>
-        {(Object.keys(PART_DESCRIPTIONS) as EmulatorPart[]).map((part) =>
-          checkbox({
-            key: part,
-            title: PART_DESCRIPTIONS[part].title,
-            description: describe(part),
-            checked: settings[part],
-            disabled: partsDisabled,
-            onToggle: () => onChange({ ...settings, [part]: !settings[part] }),
-          })
-        )}
-      </ActionList>
-
-      <ActionList>
         {unemulated.length > 0 && (
           <ActionList.Item>
             <WarningIcon>

@@ -6,7 +6,7 @@ import type { ChromaticParameters } from '../types';
 import { setChromaticIdentity } from './identity';
 import { removeMask, renderMask } from './mask';
 import { type Box, measureCaptureBox } from './measure';
-import { type EmulatorSettings, getEmulatorSettings } from './settings';
+import { type EmulatorSettings, getEmulatorSettings, isEmulatorActive } from './settings';
 import { applyCaptureTweaks, EMULATOR_ATTRIBUTE, removeCaptureTweaks } from './tweaks';
 
 const MAX_DELAY = 15_000;
@@ -99,15 +99,15 @@ const applyEmulator = async () => {
 
   window.scrollTo(0, 0);
   await applyCaptureTweaks(document, {
-    animations: settings.animations,
-    carets: settings.carets,
+    animations: settings.rendering,
+    carets: settings.rendering,
     rendering: settings.rendering,
     identity: settings.identity,
     pauseAnimationAtEnd: chromatic?.pauseAnimationAtEnd ?? true,
   });
   if (currentRunId !== runId) return;
 
-  if (settings.mask) startMaskUpdates(!!chromatic?.cropToViewport);
+  if (settings.viewport) startMaskUpdates(!!chromatic?.cropToViewport);
   else stopMaskUpdates?.();
 };
 
@@ -125,7 +125,7 @@ const listen = () => {
 
 export const withEmulator = (StoryFn: () => unknown, context: any) => {
   const settings = getEmulatorSettings(context.globals?.[EMULATOR_PARAM]);
-  const active = settings.enabled && context.viewMode === 'story';
+  const active = isEmulatorActive(settings) && context.viewMode === 'story';
   const identity = active && settings.identity;
 
   listen();

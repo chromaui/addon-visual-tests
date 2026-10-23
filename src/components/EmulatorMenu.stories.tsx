@@ -18,12 +18,14 @@ const modes = resolveCaptureModes({
   },
 });
 
+const allOn = { viewport: true, rendering: true, identity: true };
+
 const meta = {
   title: 'components/EmulatorMenu',
   component: EmulatorMenu,
   globals: { theme: 'light' },
   args: {
-    settings: { ...DEFAULT_EMULATOR_SETTINGS, enabled: true },
+    settings: allOn,
     locked: false,
     onChange: fn(),
     modes: [defaultMode],
@@ -54,9 +56,16 @@ export const MultipleModes: Story = {
   },
 };
 
-export const PartiallyDisabled: Story = {
+export const SingleMode: Story = {
   args: {
-    settings: { ...DEFAULT_EMULATOR_SETTINGS, enabled: true, mask: false, identity: false },
+    modes: [modes[0]],
+    selectedMode: modes[0],
+  },
+};
+
+export const PartiallyEnabled: Story = {
+  args: {
+    settings: { ...DEFAULT_EMULATOR_SETTINGS, rendering: true },
   },
 };
 
@@ -66,29 +75,38 @@ export const LockedByStoryGlobals: Story = {
   },
 };
 
+export const HidesDefaultMode: Story = {
+  parameters: { chromatic: { disableSnapshot: true } },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.queryByText('Mode')).not.toBeInTheDocument();
+    await expect(canvas.queryByText('1200px')).not.toBeInTheDocument();
+  },
+};
+
 export const TogglesParts: Story = {
   parameters: { chromatic: { disableSnapshot: true } },
-  args: { modes },
+  args: { modes, selectedMode: modes[0], settings: DEFAULT_EMULATOR_SETTINGS },
   play: async ({ args, canvasElement }) => {
     const canvas = within(canvasElement);
-    await userEvent.click(canvas.getByRole('checkbox', { name: /Freeze animations/ }));
-    await expect(args.onChange).toHaveBeenCalledWith({ ...args.settings, animations: false });
+    await userEvent.click(canvas.getByRole('checkbox', { name: /Capture rendering/ }));
+    await expect(args.onChange).toHaveBeenCalledWith({ ...args.settings, rendering: true });
 
-    await userEvent.click(canvas.getByRole('checkbox', { name: /^Chromatic emulator/ }));
-    await expect(args.onChange).toHaveBeenCalledWith({ ...args.settings, enabled: false });
+    await userEvent.click(canvas.getByRole('checkbox', { name: /Viewport & capture area/ }));
+    await expect(args.onChange).toHaveBeenCalledWith({ ...args.settings, viewport: true });
 
     await userEvent.click(canvas.getByRole('button', { name: /Desktop dark/ }));
     await expect(args.onSelectMode).toHaveBeenCalledWith('Desktop dark');
   },
 };
 
-export const PartsDisabledWhenOff: Story = {
+export const PartsDisabledWhenLocked: Story = {
   parameters: { chromatic: { disableSnapshot: true } },
-  args: { settings: DEFAULT_EMULATOR_SETTINGS },
+  args: { locked: true },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await expect(canvas.getByRole('checkbox', { name: /Freeze animations/ })).toBeDisabled();
-    await expect(canvas.getByRole('checkbox', { name: /^Chromatic emulator/ })).toBeEnabled();
+    await expect(canvas.getByRole('checkbox', { name: /Capture rendering/ })).toBeDisabled();
+    await expect(canvas.getByText(/set by the story globals/)).toBeInTheDocument();
   },
 };
 
@@ -100,7 +118,7 @@ export const ToolbarButton: Story = {
       within(canvasElement).getByRole('button', { name: 'Chromatic emulator' })
     );
     await expect(
-      await screen.findByRole('checkbox', { name: /Freeze animations/ })
+      await screen.findByRole('checkbox', { name: /Capture rendering/ })
     ).toBeInTheDocument();
   },
 };

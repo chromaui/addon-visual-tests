@@ -21,6 +21,8 @@ export interface CaptureMode {
   width: number;
   /** Viewport height in CSS pixels */
   height: number;
+  /** Whether this is Chromatic's default mode, used when a story doesn't define any modes */
+  isDefault?: boolean;
 }
 
 export const DEFAULT_VIEWPORT_WIDTH = 1200;
@@ -121,7 +123,8 @@ export const resolveCaptureModes = ({
       ? fromViewports(chromatic.viewports, viewports)
       : [];
 
-  return modes.length > 0 ? modes : [toCaptureMode(`${DEFAULT_VIEWPORT_WIDTH}px`, {})];
+  if (modes.length > 0) return modes;
+  return [{ ...toCaptureMode(`${DEFAULT_VIEWPORT_WIDTH}px`, {}), isDefault: true }];
 };
 
 /** The `viewport` global value that sizes the Storybook preview to the given mode. */

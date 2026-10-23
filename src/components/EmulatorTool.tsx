@@ -12,7 +12,7 @@ import {
   resolveCaptureModes,
   type ViewportParameters,
 } from '../emulator/modes';
-import { type EmulatorSettings, getEmulatorSettings } from '../emulator/settings';
+import { type EmulatorSettings, getEmulatorSettings, isEmulatorActive } from '../emulator/settings';
 import { getUnemulatedFeatures } from '../emulator/unemulated';
 import type { ChromaticParameters } from '../types';
 import { useSharedState } from '../utils/useSharedState';
@@ -48,6 +48,7 @@ const IconWrapper = styled.span<{ warning: boolean }>(({ theme, warning }) => ({
 
 export const EmulatorButton = (props: EmulatorMenuProps) => {
   const { settings, unemulated } = props;
+  const active = isEmulatorActive(settings);
   return (
     <PopoverProvider
       hasChrome
@@ -59,15 +60,15 @@ export const EmulatorButton = (props: EmulatorMenuProps) => {
       <ToolButton
         ariaLabel="Chromatic emulator"
         tooltip={
-          settings.enabled
+          active
             ? 'Chromatic emulator is on: the preview matches how Chromatic captures this story. Click to configure.'
             : 'Chromatic emulator: preview this story the way Chromatic captures it, with frozen animations, hidden carets and the snapshot viewport and crop. Click to configure.'
         }
         variant="ghost"
         padding="small"
-        enabled={settings.enabled}
+        enabled={active}
       >
-        <IconWrapper warning={settings.enabled && unemulated.length > 0}>
+        <IconWrapper warning={active && unemulated.length > 0}>
           <ChromaticIcon />
         </IconWrapper>
       </ToolButton>
@@ -148,7 +149,7 @@ export const EmulatorTool = () => {
   const modes = useMemo(() => resolveCaptureModes({ chromatic, viewport }), [modesKey]);
   const selectedMode = modes.find(({ name }) => name === selectedModeName) ?? modes[0];
 
-  useModeGlobals(settings.enabled && settings.viewport, selectedMode);
+  useModeGlobals(settings.viewport, selectedMode);
 
   return (
     <EmulatorButton
