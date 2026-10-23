@@ -35,10 +35,19 @@ const Heading = styled(ActionList.Text)(({ theme }) => ({
   color: theme.textMutedColor,
 }));
 
-const PART_TITLES: Record<EmulatorPart, string> = {
-  viewport: 'Viewport & capture area',
-  rendering: 'Capture rendering',
-  identity: 'Identify as Chromatic',
+const PARTS: Record<EmulatorPart, { title: string; description: string }> = {
+  viewport: {
+    title: 'Viewport & capture area',
+    description: "Match the snapshot's viewport, mode and crop",
+  },
+  rendering: {
+    title: 'Capture rendering',
+    description: 'Freeze animations, hide carets and scrollbars',
+  },
+  identity: {
+    title: 'Identify as Chromatic',
+    description: 'Make isChromatic() return true and set data-chromatic on the body',
+  },
 };
 
 export interface EmulatorMenuProps {
@@ -48,7 +57,6 @@ export interface EmulatorMenuProps {
   modes: CaptureMode[];
   selectedMode: CaptureMode;
   onSelectMode: (name: string) => void;
-  pauseAnimationAtEnd: boolean;
 }
 
 const formatSize = ({ width, height }: CaptureMode) => `${width}×${height}`;
@@ -60,14 +68,7 @@ export const EmulatorMenu = ({
   modes,
   selectedMode,
   onSelectMode,
-  pauseAnimationAtEnd,
 }: EmulatorMenuProps) => {
-  const descriptions: Record<EmulatorPart, string> = {
-    viewport: `Resize the preview to ${formatSize(selectedMode)}, apply the mode globals and mask everything outside the captured region`,
-    rendering: `Freeze animations at their ${pauseAnimationAtEnd ? 'end' : 'start'}, hide carets and spellcheck markers, no scrollbars, geometric precision text rendering`,
-    identity: 'Make isChromatic() return true and set data-chromatic on the body',
-  };
-
   return (
     <Menu>
       {!selectedMode.isDefault && (
@@ -113,8 +114,8 @@ export const EmulatorMenu = ({
                 />
               </CheckboxIcon>
               <Text>
-                <span>{PART_TITLES[part]}</span>
-                <small>{descriptions[part]}</small>
+                <span>{PARTS[part].title}</span>
+                <small>{PARTS[part].description}</small>
               </Text>
             </ActionList.Action>
           </CheckboxItem>

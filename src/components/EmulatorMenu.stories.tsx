@@ -31,7 +31,6 @@ const meta = {
     modes: [defaultMode],
     selectedMode: defaultMode,
     onSelectMode: fn(),
-    pauseAnimationAtEnd: true,
   },
 } satisfies Meta<typeof EmulatorMenu>;
 
@@ -50,7 +49,6 @@ export const MultipleModes: Story = {
   args: {
     modes,
     selectedMode: modes[2],
-    pauseAnimationAtEnd: false,
   },
 };
 

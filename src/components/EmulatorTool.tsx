@@ -138,7 +138,6 @@ export const EmulatorTool = () => {
       modes={modes}
       selectedMode={selectedMode}
       onSelectMode={setSelectedModeName}
-      pauseAnimationAtEnd={chromatic?.pauseAnimationAtEnd ?? true}
     />
   );
 };
