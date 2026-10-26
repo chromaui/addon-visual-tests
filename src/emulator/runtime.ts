@@ -3,6 +3,7 @@ import { addons } from 'storybook/preview-api';
 
 import { EMULATOR_PARAM } from '../constants';
 import type { ChromaticParameters } from '../types';
+import { isEmulatorEnabled } from './flag';
 import { setChromaticIdentity } from './identity';
 import { removeMask, renderMask } from './mask';
 import { type Box, measureCaptureBox } from './measure';
@@ -124,6 +125,8 @@ const listen = () => {
 };
 
 export const withEmulator = (StoryFn: () => unknown, context: any) => {
+  if (!isEmulatorEnabled()) return StoryFn();
+
   const settings = getEmulatorSettings(context.globals?.[EMULATOR_PARAM]);
   const active = isEmulatorActive(settings) && context.viewMode === 'story';
   const identity = active && settings.identity;

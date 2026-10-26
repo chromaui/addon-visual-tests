@@ -7,6 +7,7 @@ import {
   HIGHLIGHT_IGNORED_SELECT,
   HIGHLIGHT_MENU_CLICK,
 } from './constants';
+import { EMULATOR_FLAG } from './emulator/flag';
 
 vi.hoisted(() => {
   const store: Record<string, string> = {};
@@ -114,6 +115,7 @@ afterEach(() => {
   vi.clearAllMocks();
   vi.unstubAllGlobals();
   delete (globalThis as { CONFIG_TYPE?: string }).CONFIG_TYPE;
+  delete (globalThis as Record<string, unknown>)[EMULATOR_FLAG];
 });
 
 describe('manager', () => {
@@ -266,6 +268,29 @@ describe('manager', () => {
         detailsFor(HIGHLIGHT_IGNORED_DEFAULT_SELECTORS[0])
       );
       expect(windowMock.open).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Chromatic emulator', () => {
+    const isEmulatorTool = ([id]: unknown[]) => String(id).endsWith('/emulator-tool');
+
+    it('does not register the toolbar button by default', async () => {
+      stubWindow();
+      (globalThis as { CONFIG_TYPE?: string }).CONFIG_TYPE = 'PRODUCTION';
+
+      await import('./manager');
+
+      expect(storybookMocks.addons.add.mock.calls.some(isEmulatorTool)).toBe(false);
+    });
+
+    it('registers the toolbar button when the feature flag is set', async () => {
+      stubWindow();
+      (globalThis as { CONFIG_TYPE?: string }).CONFIG_TYPE = 'PRODUCTION';
+      (globalThis as Record<string, unknown>)[EMULATOR_FLAG] = true;
+
+      await import('./manager');
+
+      expect(storybookMocks.addons.add.mock.calls.some(isEmulatorTool)).toBe(true);
     });
   });
 });

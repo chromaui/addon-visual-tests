@@ -20,6 +20,7 @@ const config: StorybookConfig = {
       name: useDistVersion ? '../dist/preset.js' : '../src/dev.ts',
       options: {
         configFile: configFileMap[CHROMATIC_BASE_URL || '"https://www.chromatic.com"'],
+        experimental_emulator: true,
       },
     },
     '@storybook/addon-mcp',

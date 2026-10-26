@@ -16,6 +16,7 @@ import {
   SHARE_PROGRESS,
   TEST_PROVIDER_ID,
 } from './constants.ts';
+import { isEmulatorEnabled } from './emulator/flag.ts';
 import { Panel } from './Panel';
 import { isSharePopupOpen } from './screens/SharePopup/SharePopup';
 import { ShareToolbarButton } from './screens/SharePopup/ShareToolbarButton';
@@ -78,12 +79,14 @@ addons.register(ADDON_ID, (api) => {
     render: () => <GlobalIgnoreToggle />,
   });
 
-  addons.add(`${ADDON_ID}/emulator-tool`, {
-    type: Addon_TypesEnum.TOOL,
-    title: 'Chromatic emulator',
-    match: ({ viewMode }) => viewMode === 'story',
-    render: () => <EmulatorTool />,
-  });
+  if (isEmulatorEnabled()) {
+    addons.add(`${ADDON_ID}/emulator-tool`, {
+      type: Addon_TypesEnum.TOOL,
+      title: 'Chromatic emulator',
+      match: ({ viewMode }) => viewMode === 'story',
+      render: () => <EmulatorTool />,
+    });
+  }
 
   addons.add(PANEL_ID, {
     type: Addon_TypesEnum.PANEL,

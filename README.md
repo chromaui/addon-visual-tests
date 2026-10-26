@@ -25,6 +25,15 @@ By default, the addon offers zero-config support to run visual tests with Storyb
 
 ## Chromatic emulator
 
+The Chromatic emulator is experimental and disabled by default. To try it, enable it in your addon options:
+
+```ts
+// .storybook/main.ts
+export default {
+  addons: [{ name: '@chromatic-com/storybook', options: { experimental_emulator: true } }],
+};
+```
+
 To debug a snapshot, use the Chromatic button in the toolbar to preview the story the way Chromatic captures it. Turn on any combination of:
 
 - **Viewport & capture area:** resize the preview to the viewport of the mode selected in the Visual Tests panel, apply that mode's globals and mask everything outside the captured region.
