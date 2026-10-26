@@ -1,5 +1,11 @@
 # @chromatic-com/storybook
 
+## 5.6.1
+
+### Patch Changes
+
+- [#472](https://github.com/chromaui/addon-visual-tests/pull/472) [`8134981`](https://github.com/chromaui/addon-visual-tests/commit/813498188174e69b2ea8baa181a45c31bce19aa2) Thanks [@ghengeveld](https://github.com/ghengeveld)! - Only show Storybook projects when selecting a project to link, hiding Playwright, Cypress and Vitest projects.
+
 ## v5.6.0 (Tue Oct 20 2026)
 
 #### 🚀 Enhancement
