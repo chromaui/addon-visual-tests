@@ -26,6 +26,7 @@ import {
   TELEMETRY,
   TEST_PROVIDER_ID,
 } from './constants.ts';
+import { getEmulatorFlagScript } from './emulator/flag.ts';
 import { CHROMATIC_BASE_URL } from './env.ts';
 import { runChromaticBuild, stopChromaticBuild } from './runChromaticBuild.ts';
 import type {
@@ -377,20 +378,33 @@ async function serverChannel(channel: Channel, options: Options & { configFile?:
   return channel;
 }
 
+type AddonOptions = Options & {
+  /** Enable the experimental Chromatic emulator in the toolbar */
+  experimental_emulator?: boolean;
+};
+
 // Inject the Storybook installation identifier into the manager so the
 // addon can scope its localStorage keys per Storybook. Without this, two
 // different Storybooks served on the same dev port (different projects,
 // different Chromatic accounts) would silently share the cached access
 // token, since localStorage is scoped to origin only.
-async function managerHead(head: string) {
+async function managerHead(head: string, options: AddonOptions) {
   const storybookId = await getStorybookId();
-  if (!storybookId) return head;
-  return `${head}\n<script>window.__CHROMATIC_STORYBOOK_ID__ = ${JSON.stringify(storybookId)};</script>`;
+  if (storybookId) {
+    head = `${head}\n<script>window.__CHROMATIC_STORYBOOK_ID__ = ${JSON.stringify(storybookId)};</script>`;
+  }
+  return options.experimental_emulator ? `${head}\n${getEmulatorFlagScript()}` : head;
+}
+
+// The Chromatic emulator is behind a feature flag, which needs to be available in the preview too.
+async function previewHead(head: string, options: AddonOptions) {
+  return options.experimental_emulator ? `${head}\n${getEmulatorFlagScript()}` : head;
 }
 
 const config = {
   managerEntries,
   managerHead,
+  previewHead,
   previewAnnotations,
   experimental_serverChannel: serverChannel,
   staticDirs: async (inputDirs: string[]) => [

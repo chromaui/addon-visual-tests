@@ -3,6 +3,7 @@ import type { ClickEventDetails } from 'storybook/highlight';
 import { type Addon_TestProviderType, Addon_TypesEnum } from 'storybook/internal/types';
 import { addons, experimental_getStatusStore } from 'storybook/manager-api';
 
+import { EmulatorTool } from './components/EmulatorTool.tsx';
 import { GlobalIgnoreToggle } from './components/GlobalIgnoreToggle.tsx';
 import {
   ADDON_ID,
@@ -15,6 +16,7 @@ import {
   SHARE_PROGRESS,
   TEST_PROVIDER_ID,
 } from './constants.ts';
+import { isEmulatorEnabled } from './emulator/flag.ts';
 import { Panel } from './Panel';
 import { isSharePopupOpen } from './screens/SharePopup/SharePopup';
 import { ShareToolbarButton } from './screens/SharePopup/ShareToolbarButton';
@@ -76,6 +78,15 @@ addons.register(ADDON_ID, (api) => {
     match: ({ viewMode }) => viewMode === 'story',
     render: () => <GlobalIgnoreToggle />,
   });
+
+  if (isEmulatorEnabled()) {
+    addons.add(`${ADDON_ID}/emulator-tool`, {
+      type: Addon_TypesEnum.TOOL,
+      title: 'Chromatic emulator',
+      match: ({ viewMode }) => viewMode === 'story',
+      render: () => <EmulatorTool />,
+    });
+  }
 
   addons.add(PANEL_ID, {
     type: Addon_TypesEnum.PANEL,

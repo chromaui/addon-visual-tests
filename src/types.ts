@@ -173,6 +173,20 @@ export interface ChromaticParameters {
 
 export interface ChromaticGlobals {
   ignoredRegions?: boolean;
+  /**
+   * Preview the story the way Chromatic captures it. Set to `true` to turn on every part, or pass
+   * an object to turn on individual parts.
+   */
+  chromatic?:
+    | boolean
+    | {
+        /** Resize to the mode's viewport, apply its globals and mask outside the captured region */
+        viewport?: boolean;
+        /** Freeze animations, hide carets and spellcheck markers, capture text rendering */
+        rendering?: boolean;
+        /** Make `isChromatic()` return true */
+        identity?: boolean;
+      };
 }
 
 export interface ChromaticTypes {

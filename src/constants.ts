@@ -28,6 +28,8 @@ export const HIGHLIGHT_IGNORED_PARAM = 'highlightIgnored';
 export const HIGHLIGHT_IGNORED_ID = `${ADDON_ID}/highlightIgnored`;
 export const HIGHLIGHT_IGNORED_COUNT = `${ADDON_ID}/highlightIgnored/count`;
 export const HIGHLIGHT_IGNORED_SELECT = `${ADDON_ID}/highlightIgnored/select`;
+export const EMULATOR_PARAM = 'chromatic';
+export const EMULATOR_RESTORE_KEY = `${ADDON_ID}/emulator/restoreGlobals`;
 // Mirror the export from `storybook/highlight`, which only exists in Storybook versions that support
 // `clickable` menu items. Replace with an import once SB 11 is the minimum supported version.
 export const HIGHLIGHT_MENU_CLICK = 'storybook/highlight/menu-click';
