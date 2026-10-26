@@ -19,9 +19,14 @@ import { Screen } from '../../components/Screen';
 import { Stack } from '../../components/Stack';
 import { Text } from '../../components/Text';
 import { graphql } from '../../gql';
-import type { Project, SelectProjectsQueryQuery } from '../../gql/graphql';
+import { type Project, ProjectKind, type SelectProjectsQueryQuery } from '../../gql/graphql';
 import { useTelemetry } from '../../utils/TelemetryContext';
 import { useSessionState } from '../../utils/useSessionState';
+
+// The addon can only run Storybook builds, so hide E2E (Playwright, Cypress) and Vitest projects.
+// A null type is a project kind the API doesn't name yet, which can't be Storybook either.
+const isStorybookProject = (project: { type?: ProjectKind | null }) =>
+  project.type === ProjectKind.Storybook;
 
 const SelectProjectsQuery = graphql(/* GraphQL */ `
   query SelectProjectsQuery {
@@ -34,6 +39,7 @@ const SelectProjectsQuery = graphql(/* GraphQL */ `
         projects {
           id
           name
+          type
           links {
             home
           }
@@ -277,7 +283,8 @@ function SelectProject({
                   )}
                   {selectedAccount?.projects?.map(
                     (project) =>
-                      project && (
+                      project &&
+                      isStorybookProject(project) && (
                         <ListItem
                           appearance="secondary"
                           key={project.id}
