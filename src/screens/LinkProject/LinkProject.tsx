@@ -24,9 +24,9 @@ import { useTelemetry } from '../../utils/TelemetryContext';
 import { useSessionState } from '../../utils/useSessionState';
 
 // The addon can only run Storybook builds, so hide E2E (Playwright, Cypress) and Vitest projects.
-// A null type means the API didn't report it, in which case we keep the project.
+// A null type is a project kind the API doesn't name yet, which can't be Storybook either.
 const isStorybookProject = (project: { type?: ProjectKind | null }) =>
-  !project.type || project.type === ProjectKind.Storybook;
+  project.type === ProjectKind.Storybook;
 
 const SelectProjectsQuery = graphql(/* GraphQL */ `
   query SelectProjectsQuery {

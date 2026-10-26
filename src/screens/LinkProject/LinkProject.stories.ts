@@ -36,11 +36,13 @@ const fewProjects = {
           {
             id: '123',
             name: 'optics',
+            type: ProjectKind.Storybook,
             links: { home: 'https://www.chromatic.com/builds?appId=123' },
           },
           {
             id: '456',
             name: 'design-system',
+            type: ProjectKind.Storybook,
             links: { home: 'https://www.chromatic.com/builds?appId=456' },
           },
         ],
@@ -52,6 +54,7 @@ const fewProjects = {
           {
             id: '789',
             name: 'acme',
+            type: ProjectKind.Storybook,
             links: { home: 'https://www.chromatic.com/builds?appId=789' },
           },
         ],
@@ -71,42 +74,50 @@ const manyProjects = {
           {
             id: '123',
             name: 'optics',
+            type: ProjectKind.Storybook,
             links: { home: 'https://www.chromatic.com/builds?appId=123' },
           },
           {
             id: '456',
             name: 'design-system',
+            type: ProjectKind.Storybook,
             links: { home: 'https://www.chromatic.com/builds?appId=456' },
           },
           {
             id: '789',
             name: 'test-repo',
+            type: ProjectKind.Storybook,
             links: { home: 'https://www.chromatic.com/builds?appId=123' },
           },
           {
             id: '101',
             name: 'shapes',
+            type: ProjectKind.Storybook,
             links: { home: 'https://www.chromatic.com/builds?appId=456' },
           },
           {
             id: '102',
             name: 'chroma-pets',
+            type: ProjectKind.Storybook,
             links: { home: 'https://www.chromatic.com/builds?appId=123' },
           },
           {
             id: '103',
             name: 'addon',
+            type: ProjectKind.Storybook,
             links: { home: 'https://www.chromatic.com/builds?appId=456' },
           },
 
           {
             id: '104',
             name: 'another-app',
+            type: ProjectKind.Storybook,
             links: { home: 'https://www.chromatic.com/builds?appId=123' },
           },
           {
             id: '105',
             name: 'below-the-fold',
+            type: ProjectKind.Storybook,
             links: { home: 'https://www.chromatic.com/builds?appId=456' },
           },
         ],
@@ -119,6 +130,7 @@ const manyProjects = {
           {
             id: '789',
             name: 'acme',
+            type: ProjectKind.Storybook,
             links: { home: 'https://www.chromatic.com/builds?appId=789' },
           },
         ],
@@ -131,6 +143,7 @@ const manyProjects = {
           {
             id: '7893',
             name: 'third',
+            type: ProjectKind.Storybook,
             links: { home: 'https://www.chromatic.com/builds?appId=789' },
           },
         ],
@@ -143,6 +156,7 @@ const manyProjects = {
           {
             id: '7894',
             name: 'fourth',
+            type: ProjectKind.Storybook,
             links: { home: 'https://www.chromatic.com/builds?appId=789' },
           },
         ],
@@ -155,6 +169,7 @@ const manyProjects = {
           {
             id: '7895',
             name: 'fifth',
+            type: ProjectKind.Storybook,
             links: { home: 'https://www.chromatic.com/builds?appId=789' },
           },
         ],
@@ -167,6 +182,7 @@ const manyProjects = {
           {
             id: '7896',
             name: 'acme',
+            type: ProjectKind.Storybook,
             links: { home: 'https://www.chromatic.com/builds?appId=789' },
           },
         ],
@@ -179,6 +195,7 @@ const manyProjects = {
           {
             id: '7897',
             name: 'seven',
+            type: ProjectKind.Storybook,
             links: { home: 'https://www.chromatic.com/builds?appId=789' },
           },
         ],
@@ -191,6 +208,7 @@ const manyProjects = {
           {
             id: '7897',
             name: 'below',
+            type: ProjectKind.Storybook,
             links: { home: 'https://www.chromatic.com/builds?appId=789' },
           },
         ],
@@ -270,7 +288,7 @@ export const OnlyStorybookProjects: Story = {
               { id: '2', name: 'playwright-app', type: ProjectKind.Playwright },
               { id: '3', name: 'cypress-app', type: ProjectKind.Cypress },
               { id: '4', name: 'vitest-app', type: ProjectKind.Vitest },
-              { id: '5', name: 'legacy-app', type: null },
+              { id: '5', name: 'unknown-app', type: null },
             ].map((project) => ({
               ...project,
               links: { home: `https://www.chromatic.com/builds?appId=${project.id}` },
@@ -283,11 +301,11 @@ export const OnlyStorybookProjects: Story = {
   play: playAll(async ({ canvasElement }) => {
     await findByText(canvasElement, 'storybook-app');
     const projectList = await findByTestId(canvasElement, 'right-list');
-    // Projects whose type is unknown are kept, since older APIs don't report it.
-    await expect(queryByText(projectList, 'legacy-app')).toBeInTheDocument();
     await expect(queryByText(projectList, 'playwright-app')).not.toBeInTheDocument();
     await expect(queryByText(projectList, 'cypress-app')).not.toBeInTheDocument();
     await expect(queryByText(projectList, 'vitest-app')).not.toBeInTheDocument();
+    // A null type is a project kind the API doesn't name yet, so it isn't Storybook either.
+    await expect(queryByText(projectList, 'unknown-app')).not.toBeInTheDocument();
   }),
 };
 
